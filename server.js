@@ -16,16 +16,15 @@ const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
 const child_process_1 = require("child_process");
 const ws_1 = __importDefault(require("ws"));
+const { v4: uuidv4 } = require('uuid');
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.static("public"));
 // Start GDB session
-let gdbProcess = null;
-let program = null;
-;
 let gdbBuffer = "";
 let localsWritten = false;
 let localsToWrite = false;
+let runningProcesses = new Map();
 app.use(express_1.default.urlencoded({ extended: true }));
 const problemCreator_js_1 = __importDefault(require("./server/routes/problemCreator.js"));
 app.use('/', problemCreator_js_1.default);
@@ -54,14 +53,28 @@ app.post("/compile", (req, res) => {
 });
 // WebSocket Server for Debugging
 const wss = new ws_1.default.Server({ port: 8080 });
+const clients = new Map();
+function addProcessToMap(clientId, process) {
+    runningProcesses.set(clientId, process);
+}
+function removeProcessFromMap(clientId) {
+    runningProcesses.delete(clientId);
+}
+function getProcessFromMap(clientId) {
+    return runningProcesses.get(clientId);
+}
 wss.on("connection", (ws) => {
-    console.log("Client connected to GDB server");
-    if (gdbProcess) {
-        gdbProcess.kill(); // Ensure only one GDB session runs at a time
-    }
-    if (program) {
-        program.kill(); // Ensure only one GDB session runs at a time
-    }
+    let gdbProcess;
+    let program;
+    const clientId = uuidv4(); // Generate a unique ID
+    clients.set(clientId, ws);
+    // if (gdbProcess) {
+    //     gdbProcess.kill(); // Ensure only one GDB session runs at a time
+    // }
+    // if (program) {
+    //     program.kill(); // Ensure only one GDB session runs at a time
+    // }
+    console.log("Client connected to GDB server" + clientId);
     let mode = "run"; //debug
     // debug only for now
     function executeCommand(childProcess, command) {
@@ -107,6 +120,7 @@ wss.on("connection", (ws) => {
             if (command == "execute") {
                 if (!program) {
                     program = (0, child_process_1.spawn)("user_program.exe");
+                    addProcessToMap(clientId, program);
                     mode = "run";
                     // program.stdin?.resume();
                     // program.stdin?.setEncoding('utf8');
@@ -139,9 +153,10 @@ wss.on("connection", (ws) => {
                 mode = "debug";
                 if (!gdbProcess) {
                     gdbProcess = (0, child_process_1.spawn)("gdb", ["-q", "-ex", "set pagination off", "-ex", "set print thread-events off", "user_program.exe"]);
+                    addProcessToMap(clientId, gdbProcess);
                     app.get("/requestValue", (req, res) => {
                         const command = req.query.value;
-                        console.log(command);
+                        console.log(clientId + " " + command);
                         if (!gdbProcess)
                             res.status(400).send('Bad Request: GDB process not active');
                         if (!command)
@@ -158,7 +173,7 @@ wss.on("connection", (ws) => {
                                     // We have everything, remove listener
                                     (_a = gdbProcess === null || gdbProcess === void 0 ? void 0 : gdbProcess.stdout) === null || _a === void 0 ? void 0 : _a.removeListener("data", onData);
                                     resolve();
-                                    console.log(gdbBuffer);
+                                    console.log(clientId + " " + gdbBuffer);
                                     return res.send(({
                                         error: false,
                                         input: false,
@@ -199,7 +214,7 @@ wss.on("connection", (ws) => {
                         // Use .on instead of .once, because GDB output can be split
                         (_e = gdbProcess === null || gdbProcess === void 0 ? void 0 : gdbProcess.stdout) === null || _e === void 0 ? void 0 : _e.on("data", (data) => {
                             gdbBuffer += data.toString();
-                            console.log(gdbBuffer);
+                            console.log(clientId + " " + gdbBuffer);
                             ws.send(JSON.stringify({
                                 error: false,
                                 input: false,
@@ -247,14 +262,11 @@ wss.on("connection", (ws) => {
         // gdbProcess.stdin.write("run\n");
     });
     ws.on("close", () => {
-        if (gdbProcess) {
-            gdbProcess.kill();
-            gdbProcess = null;
+        const process = getProcessFromMap(clientId);
+        if (process) {
+            process.kill();
+            removeProcessFromMap(clientId);
         }
-        if (program) {
-            program.kill();
-            program = null;
-        }
-        console.log("Client disconnected");
+        console.log("Client " + clientId + " disconnected");
     });
 });

@@ -1,4 +1,5 @@
 "use strict";
+// Ensure Ace Editor is globally available or import it properly
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const AceRange = ace.require("ace/range").Range;
 function getCompiledCode() {
     return fetch("http://localhost:3000/getCompiledCode", {
@@ -103,71 +105,6 @@ function parseDebuggerOutput(input, { onNewVariable = (newVar) => { }, onArrayIn
     }
     return Array.from(variableStore.values());
 }
-// const variableStore = new Map();
-//     function parseDebuggerOutput(input) {
-//     const cleanedInput = input
-//         .replace(/\(gdb\)/g, '')
-//         .replace(/\n\s*/g, ' ')
-//         .trim();
-//     const regex = /(\w+)\s*=\s*(.*?)(?=\s+\w+\s*=|$)/g;
-//     const result = [];
-//     let match;
-//     while ((match = regex.exec(cleanedInput)) !== null) {
-//         const name = match[1];
-//         const rawValue = match[2].trim();
-//         let type = 'string';
-//         let value = rawValue;
-//         // Parse array
-//         if (rawValue.startsWith('{') && rawValue.endsWith('}')) {
-//         type = 'array';
-//         const inner = rawValue.slice(1, -1).trim();
-//         const array = [];
-//         const arrayRegex = /(-?\d+)\s*<repeats\s+(\d+)\s+times>|-?\d+/g;
-//         let valMatch;
-//         while ((valMatch = arrayRegex.exec(inner)) !== null) {
-//             if (valMatch[2]) {
-//             const val = parseInt(valMatch[1], 10);
-//             const count = parseInt(valMatch[2], 10);
-//             array.push(...Array(count).fill(val));
-//             } else {
-//             array.push(parseInt(valMatch[0], 10));
-//             }
-//         }
-//         value = array;
-//         const existing = variableStore.get(name);
-//         const isEqual = existing &&
-//         existing.type === type &&
-//         (
-//             (type === 'array' && arraysEqual(existing.value, value)) ||
-//             (type !== 'array' && existing.value === value)
-//         );
-//         if(!existing)
-//         {
-//             createDisplayVector({name: name, varname: name, value: value, type: type})
-//         }
-//         if(!isEqual)
-//         {
-//             updateDisplayVector({name: name, varname: name,value: value, type: type})
-//         }
-//         } else if (!isNaN(Number(rawValue))) {
-//         type = 'int';
-//         value = Number(rawValue);
-//         }
-//         // const existing = variableStore.get(name);
-//         // const isEqual = existing &&
-//         // existing.type === type &&
-//         // (
-//         //     (type === 'array' && arraysEqual(existing.value, value)) ||
-//         //     (type !== 'array' && existing.value === value)
-//         // );
-//        // if (!isEqual) {
-//         const updatedVar = {name: name, varname: name, value: value, type: type};
-//         variableStore.set(name, updatedVar);
-//         result.push(updatedVar); // include only new or changed variables
-//        // }
-//     }
-//     return result;
-//     }
 // Helper to compare arrays
 function arraysEqual(a, b) {
     if (a.length !== b.length)
@@ -188,8 +125,15 @@ var editor = ace.edit("editor", {
     placeholder: "hello",
     tooltipFollowsMouse: true,
     animatedScroll: true,
+    //   fontSize: "18px",
 });
-editor.setTheme("ace/theme/monokai");
+// window.onload = function() {
+//   //  document.querySelector('#editor textarea')?.setAttribute('inputmode', 'none')
+//   const ddd = document.querySelector('.ace_text-input');
+//   if(!ddd)  return;
+//   writeOutput(window.getComputedStyle(ddd).fontSize)    
+// }
+editor.setTheme("ace/theme/twilight");
 editor.setHighlightActiveLine(true);
 editor.resize();
 const renderer = editor.renderer;
@@ -213,6 +157,10 @@ getCompiledCode()
     code = data.code;
     editor.session.setValue(code);
 });
+// standardise the json
+function sendWebsocketCommand(cmd, argsArr = []) {
+    ws.send(JSON.stringify({ command: cmd, args: argsArr }));
+}
 function addGhostMarkers(editor, word, ghostText) {
     const session = editor.getSession();
     const tokenizer = session.getMode().getTokenizer();
@@ -269,13 +217,12 @@ function clearGhostMarkers(editor) {
         editor._ghostMarkerIds = [];
     }
 }
-// function addGhostTextToTokens(editor: any, word: string | any[], ghostSuffix: any) {
-//     clearGhostText(editor); // clear any previous ghost text
-//     const positions = findTokenPositions(editor, word);
-//     positions.forEach(pos => {
-//         setGhostText(editor, ghostSuffix, pos.row, pos.column + word.length);
-//     });
-// }
+function writeOutput(data) {
+    if (outputArea) {
+        outputArea.textContent += data + "\n";
+        outputArea.scrollTop = outputArea.scrollHeight;
+    }
+}
 //websocket
 const ws = new WebSocket("ws://localhost:8080");
 let consoleText = "";
@@ -294,10 +241,7 @@ ws.onmessage = (event) => {
     let eventJson = JSON.parse(event.data);
     let command = eventJson.message;
     let data = eventJson.body;
-    if (outputArea) {
-        outputArea.textContent += data + "\n";
-        outputArea.scrollTop = outputArea.scrollHeight;
-    }
+    writeOutput(data);
     const session = editor.getSession();
     const doc = session.getDocument();
     const text = doc.getValue();
@@ -313,45 +257,6 @@ ws.onmessage = (event) => {
         const textToVar = (_a = data.split('(gdb)').pop()) === null || _a === void 0 ? void 0 : _a.replace(/\n/g, ';').match(/(?<!\w\S)(\b\w+)\s*=.*/g);
         if (command == "info locals") //if we have variables in the chunk
          {
-            //    // Step 1: Clean and flatten the input
-            //     const cleanedInput = data
-            //     .replace(/\(gdb\)/g, '')
-            //     .replace(/\n\s*/g, ' ')
-            //     .trim();
-            //     // Step 2: Match each variable
-            //     const regex = /(\w+)\s*=\s*(.*?)(?=\s+\w+\s*=|$)/g;
-            //     while ((match = regex.exec(cleanedInput)) !== null) {
-            //     const name = match[1];
-            //     const rawValue = match[2].trim();
-            //     let type = 'string';
-            //     let value = rawValue;
-            //     // Check if it's an array (curly braces)
-            //     if (rawValue.startsWith('{') && rawValue.endsWith('}')) {
-            //         type = 'array';
-            //         // Extract contents inside the braces
-            //         const inner = rawValue.slice(1, -1).trim();
-            //         // Match values and repeat patterns like "0 <repeats 54 times>"
-            //         const array = [];
-            //         const arrayRegex = /(-?\d+)\s*<repeats\s+(\d+)\s+times>|-?\d+/g;
-            //         let valMatch;
-            //         while ((valMatch = arrayRegex.exec(inner)) !== null) {
-            //         if (valMatch[2]) {
-            //             // It's a repeat pattern
-            //             const val = parseInt(valMatch[1], 10);
-            //             const count = parseInt(valMatch[2], 10);
-            //             array.push(...Array(count).fill(val));
-            //         } else {
-            //             // Single number
-            //             array.push(parseInt(valMatch[0], 10));
-            //         }
-            //         }
-            //         value = array;
-            //     } else if (!isNaN(Number(rawValue))) {
-            //         type = 'int';
-            //         value = Number(rawValue);
-            //     }
-            //     variables.push({ name, value, type });
-            //     }
             variables = parseDebuggerOutput(data, { onNewVariable: (variable) => {
                     if (variable.type != "array")
                         return;
@@ -368,88 +273,10 @@ ws.onmessage = (event) => {
             const element = variables[index];
             if (variables.length == 0)
                 break;
-            //if(variables.find((vartofind) => !((vartofind.varname != element.split(" = ")[0]) && (vartofind.value != element.split(" = ")[1])))) break; // dont make a double variable
-            // for (const ghostVar of variables)
-            // {
-            //addGhostMarkers(editor, element.varname, element.value.toString())
-            // ghostManager.clear();
-            //ghostManager.add(element.varname, element.value.toString());
-            // }
-            // const newVar = new variable;
-            // newVar.varname = element.varname;
-            // newVar.type = "number";
-            // const target = newVar.varname;
-            // let wordIndex = text.indexOf(target);
-            // const position = doc.indexToPosition(wordIndex, 0);
-            // const ranges = [];
-            // while ((wordIndex = text.indexOf(target, wordIndex)) !== -1) {
-            //     if(text[wordIndex+1]!=/\s/) break;
-            // const start = doc.indexToPosition(wordIndex, 0);
-            // const end = doc.indexToPosition(wordIndex + target.length, 0);
-            // ranges.push(
-            //     new Range(start.row, start.column, end.row, end.column)
-            // );
-            // wordIndex += target.length;
-            // }
-            // //console.log(variables)
-            // ranges.forEach(range => {
-            //     //console.log(range)
-            //     // const markerId = editor.getSession().addMarker(
-            //     // range, // From line 3, column 0 to column 1
-            //     // "variable",
-            //     // "text", // Can be "line", "text", or "fullLine"
-            //     // true
-            //     // );
-            //     renderer.setGhostText("aaa",{row: start.row, column: start.column})
-            // });
             //array type
-            if (element.type == "array") {
-                // let bufferArr=[];
-                // const elements = element.value;
-                // elements.forEach(value => {
-                //   // if(parseArray(value).length>0) bufferArr = bufferArr.concat(parseArray(value));
-                //   // else 
-                //    bufferArr.push(value)
-                // });
-                // console.log(element.split(" = ")[1].replace("{", "").replace("}", ""))
-                //console.log(bufferArr)
-                // newVar.value = bufferArr;
-                // newVar.type = "array";
-                //displayVector(elements, document.getElementById("vector-display"))
+            if (element.type == "array")
                 updateDisplayVector(element);
-            }
-            // else
-            // newVar.value = element.value;
-            // variables[index] =  newVar;
         }
-        // variables.forEach(vars => {
-        // });
-        // const codeWords = code.split(' ');
-        // let newWords = "";
-        // const length = codeWords.length
-        //    // if(vars==="") return;
-        //      for (let index = 0; index < length; index++) {
-        //         const element = codeWords[index];
-        //         let ok = 0;
-        //         //console.log(element);
-        //         variables.forEach(vars => {
-        //             element.split(/[!-@]/g).forEach(letter => {
-        //                 if(letter==vars.varname) //  && !["int", "double", "float"].includes(index+2)
-        //                 {
-        //                     ok=1
-        //                     const markerId = editor.getSession().addMarker(
-        //                     new Range(2, 0, 2, 1), // From line 3, column 0 to column 1
-        //                     "myCustomMarker",
-        //                     "text", // Can be "line", "text", or "fullLine"
-        //                     true
-        //                     );
-        //                     //newWords += vars.value + " /*" + vars.varname + "*/ "
-        //                 }
-        //             });
-        //      });
-        //      if (ok==0)  newWords += element + " ";
-        // }    
-        // editor.setValue(newWords,-1);  
     }
     else {
         if (data.match(/^(\d)+(?=\s)?/gm) != null) //check if its a chunk with line number
@@ -549,12 +376,6 @@ function compileCode() {
         code = editor.getValue();
     });
 }
-// function variable(name, value, type)
-// {
-//     this.varname = name;
-//     this.value = value;
-//     this.type = type;
-// }
 function sendDebugCommand(cmd) {
     //editor.setValue(code, -1);
     sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
@@ -563,10 +384,6 @@ function sendDebugCommand(cmd) {
     const consoleElem = document.getElementById('console');
     if (cmd == "execute" && (consoleElem === null || consoleElem === void 0 ? void 0 : consoleElem.value) != "")
         submitConsole(consoleElem);
-}
-// standardise the json
-function sendWebsocketCommand(cmd, argsArr = []) {
-    ws.send(JSON.stringify({ command: cmd, args: argsArr }));
 }
 function playback() {
     sendDebugCommand("run");
@@ -609,16 +426,27 @@ function displayVector(array, vectCont) {
 }
 let vectDisplays = [];
 function createDisplayVector(variable) {
+    var _a;
     // console.log(variable)
     if (variable.type != "array")
         return;
     // vectDisplays.add(variable)
     const vectorContainer = document.getElementById('vector-container');
     if (vectorContainer) {
-        vectorContainer.innerHTML += `<div id=${variable.varname} class='vector-display'><h>${variable.varname}</h></div>\n`;
+        vectorContainer.innerHTML += `<div id=${variable.varname} class='vector-display'><div class='vector-header'><h>${variable.varname}</h><button onclick='resizeVectorContainer(this)'>x</button></div><div class='item-container'></div></div>\n`;
     }
     if (Array.isArray(variable.value)) {
-        displayVector(variable.value, document.getElementById(variable.varname));
+        displayVector(variable.value, (_a = document.getElementById(variable.varname)) === null || _a === void 0 ? void 0 : _a.getElementsByClassName('item-container')[0]);
+    }
+}
+function resizeVectorContainer(elem) {
+    var _a, _b;
+    const itemContainer = (_b = (_a = elem.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.getElementsByClassName('item-container')[0];
+    if (itemContainer) {
+        itemContainer.style.height = itemContainer.style.height === '0px' ? 'auto' : '0px';
+        itemContainer.style.minHeight = itemContainer.style.minHeight === '0px' ? '100px' : '0px';
+        itemContainer.style.overflow = itemContainer.style.overflow === 'hidden' ? 'visible' : 'hidden';
+        // itemContainer.style.display = itemContainer.style.display === 'none' ? 'flex' : 'none';
     }
 }
 function updateDisplayVector(variable) {
@@ -644,5 +472,5 @@ function updateDisplayVectorElement(variable, index) {
 }
 function getDisplayVectorElement(variable, index) {
     var _a;
-    return (_a = document.getElementById(variable.varname)) === null || _a === void 0 ? void 0 : _a.children[index + 1]; // offset by the ammount of default children aka the header of the container
+    return (_a = document.getElementById(variable.varname)) === null || _a === void 0 ? void 0 : _a.getElementsByClassName('item-container')[0].children[index]; // offset by the ammount of default children aka the header of the container
 }

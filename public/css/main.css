@@ -7,17 +7,28 @@ body
 header
 {
     height: 75px;
+    
+    background-color: rgb(33, 101, 33);
+    color: white;
+    grid-area: header;
+}
+
+header .vertical
+{
+    display: none;
+    height: 100%;
+    width: 50px;
+}
+
+header .horizontal
+{
     display: grid;
     grid-template-columns: auto 1fr;
     margin-bottom: 20px;
     padding-left: 20px;
     padding-right: 20px;
-    background-color: rgb(33, 101, 33);
-    color: white;
-    grid-row: 1 ;
-    grid-column: 1 / -1;
-    grid-area: header;
 }
+
 header h1
 {
     display: inline;
@@ -47,3 +58,4 @@ header nav ul li
         color: inherit;
     }
 }
+

@@ -1,55 +1,12 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C++ Debugger</title>
-</head>
-<body>
-    <h1>C++ Online Debugger</h1>
-    <textarea id="code" rows="10" cols="50">#include <iostream>\nint main() {\n    std::cout << "Hello, Debugger!";\n    return 0;\n}</textarea>
-    <button onclick="compileCode()">Compile & Run</button>
-    <button onclick="sendDebugCommand('break main')">Set Breakpoint</button>
-    <button onclick="sendDebugCommand('run')">Run in Debugger</button>
-    <button onclick="sendDebugCommand('next')">Step Over</button>
-    <button onclick="sendDebugCommand('print x')">Print Variable</button>
-    
-    <pre id="output"></pre>
-
-    <script>
-        const ws = new WebSocket("ws://localhost:8080");
-
-        ws.onmessage = (event) => {
-            document.getElementById("output").textContent += event.data + "\n";
-        };
-
-        function compileCode() {
-            fetch("http://localhost:3000/compile", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code: document.getElementById("code").value })
-            })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("output").textContent = data.output || data.error;
-            });
-        }
-
-        function sendDebugCommand(cmd) {
-            ws.send(cmd);
-        }
-    </script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>C++ Debugger</title>
-   <link rel="stylesheet" href="css/codeEditor.css">
-   <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/codeEditor.css">
+   
 </head>
 
 
@@ -69,6 +26,8 @@ int main() {
 
     <div class="container">
         <header>
+            <div class="horizontal">
+                
             <h1>C++ Online Debugger</h1>
             <nav>
                 <ul>
@@ -77,6 +36,12 @@ int main() {
                     <li><a href="#">Contact</a></li>
                 </ul>
             </nav>
+            
+            </div>
+
+            <div class="vertical">
+                
+            </div>
         </header>
 
             <div id="editor-container">
@@ -92,23 +57,23 @@ int main() {
                     }
                 </div>
             </div>
-            <div class="main-window">
-            <div class="buttons">
-                <button onclick="compileCode()">Compile</button>
-                <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button>
-                <button onclick="playback()">Playback</button>
-                <button onclick="sendDebugCommand('run')">Run in Debugger</button>
-                <button onclick="sendDebugCommand('next')">Step Over</button>
-                <button onclick="sendDebugCommand('execute')">Execute Code</button>
-                <button onclick="sendDebugCommand('continue')">Continue Execution</button>
-                <button onclick="sendDebugCommand('quit')">Stop Debugging</button>
-            </div>
+           
+                <div class="buttons">
+                    <button onclick="compileCode()">Compile</button>
+                    <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button>
+                    <button onclick="playback()">Playback</button>
+                    <button onclick="sendDebugCommand('run')">Run in Debugger</button>
+                    <button onclick="sendDebugCommand('next')">Step Over</button>
+                    <button onclick="sendDebugCommand('execute')">Execute Code</button>
+                    <button onclick="sendDebugCommand('continue')">Continue Execution</button>
+                    <button onclick="sendDebugCommand('quit')">Stop Debugging</button>
+                </div>
 
-            <div id="vector-container"></div>
+            
             
 
-        </div>
-
+             
+        <div id="vector-container"></div>
         <div id="output-container">
             <div> <h2>Output</h2>
                 <button onclick="this.parentElement.parentElement.style.display = 'None'">x</button>
@@ -133,6 +98,11 @@ int main() {
     <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js" crossorigin="anonymous"></script>
 
     <script src="js/codeEditor.js" type="text/javascript" charset="utf-8"></script>
+
+    <script>
+
+        writeOutput(window.innerWidth)
+    </script>
 </body>
 </html>
 
