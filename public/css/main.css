@@ -1,0 +1,49 @@
+body
+{
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+header
+{
+    height: 75px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    margin-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: rgb(33, 101, 33);
+    color: white;
+    grid-row: 1 ;
+    grid-column: 1 / -1;
+    grid-area: header;
+}
+header h1
+{
+    display: inline;
+}
+header nav
+{
+    display: inline;
+}
+
+header nav ul
+{
+    list-style: none;
+    padding: 0;
+    margin: 0 20px;
+    display: flex;
+    gap: 20px;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+}
+header nav ul li
+{
+    display: inline;
+    & :link
+    {
+        text-decoration: none;
+        color: inherit;
+    }
+}

@@ -1,0 +1,138 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Debugger</title>
+</head>
+<body>
+    <h1>C++ Online Debugger</h1>
+    <textarea id="code" rows="10" cols="50">#include <iostream>\nint main() {\n    std::cout << "Hello, Debugger!";\n    return 0;\n}</textarea>
+    <button onclick="compileCode()">Compile & Run</button>
+    <button onclick="sendDebugCommand('break main')">Set Breakpoint</button>
+    <button onclick="sendDebugCommand('run')">Run in Debugger</button>
+    <button onclick="sendDebugCommand('next')">Step Over</button>
+    <button onclick="sendDebugCommand('print x')">Print Variable</button>
+    
+    <pre id="output"></pre>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8080");
+
+        ws.onmessage = (event) => {
+            document.getElementById("output").textContent += event.data + "\n";
+        };
+
+        function compileCode() {
+            fetch("http://localhost:3000/compile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: document.getElementById("code").value })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("output").textContent = data.output || data.error;
+            });
+        }
+
+        function sendDebugCommand(cmd) {
+            ws.send(cmd);
+        }
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Debugger</title>
+   <link rel="stylesheet" href="css/codeEditor.css">
+   <link rel="stylesheet" href="css/main.css">
+</head>
+
+
+
+
+    <!-- <textarea id="code" rows="10" cols="50">
+#include <iostream>
+int main() {
+    int x = 5;
+    std::cout << "Hello, Debugger!";
+    return 0;
+}</textarea> -->
+
+
+<body>
+    
+
+    <div class="container">
+        <header>
+            <h1>C++ Online Debugger</h1>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+            <div id="editor-container">
+                <div id="editor-tabs">
+                    <span>main.cpp</span>
+                </div>
+                <div id="editor">   
+                    #include 
+                    int main() {
+                        int x = 5;
+                        std::cout << "Hello, Debugger!";
+                        return 0;
+                    }
+                </div>
+            </div>
+            <div class="main-window">
+            <div class="buttons">
+                <button onclick="compileCode()">Compile</button>
+                <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button>
+                <button onclick="playback()">Playback</button>
+                <button onclick="sendDebugCommand('run')">Run in Debugger</button>
+                <button onclick="sendDebugCommand('next')">Step Over</button>
+                <button onclick="sendDebugCommand('execute')">Execute Code</button>
+                <button onclick="sendDebugCommand('continue')">Continue Execution</button>
+                <button onclick="sendDebugCommand('quit')">Stop Debugging</button>
+            </div>
+
+            <div id="vector-container"></div>
+            
+
+        </div>
+
+        <div id="output-container">
+            <div> <h2>Output</h2>
+                <button onclick="this.parentElement.parentElement.style.display = 'None'">x</button>
+            </div>
+           
+            <pre id="output" style="line-height: px;"></pre>
+            <div id="console-container">
+            
+                <textarea id="console" oninput="//submitConsole(this);"></textarea>
+            <button onclick="submitConsole(document.getElementById('console'))">Send</button>
+            </div>
+        </div>
+       
+        
+        
+       
+    </div>
+
+    <script>var exports = {};</script>
+    <script src="/ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/varMarkers.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js" crossorigin="anonymous"></script>
+
+    <script src="js/codeEditor.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>
+
