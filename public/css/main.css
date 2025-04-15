@@ -11,6 +11,7 @@ header
     background-color: rgb(33, 101, 33);
     color: white;
     grid-area: header;
+    margin: -1rem -1rem 1rem -1rem;
 }
 
 header .vertical
@@ -28,7 +29,11 @@ header .horizontal
     padding-left: 20px;
     padding-right: 20px;
 }
+header .horizontal
+{
+    grid-template-columns: auto 1fr 2fr;
 
+}
 header h1
 {
     display: inline;

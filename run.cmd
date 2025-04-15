@@ -2,6 +2,7 @@
 echo Starting TypeScript compiler...
 cd
 call npx tsc
+
 if %errorlevel% neq 0 (
     echo TypeScript compilation failed.
     pause
