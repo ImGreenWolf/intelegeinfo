@@ -1,20 +1,13 @@
 "use strict";
 // Ensure Ace Editor is globally available or import it properly
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WebSocketMessageType = void 0;
+exports.ConsoleMessageType = exports.WebSocketMessageType = void 0;
 exports.createFile = createFile;
 /* IMPORTS */
 // FileManagement.ts
 const FileContainer = document.getElementById("editor-tabs-container");
+if (!FileContainer)
+    console.error("Couldn't find file container!");
 function onFileCreate(fileName) {
     // const command = JSON.parse(messageBodyJson);
     // const fileName = command.content;
@@ -50,6 +43,11 @@ function parseArray(str) {
     }
 }
 class Variable {
+    varname;
+    value;
+    type;
+    updatedIndices;
+    indexes;
     constructor(name, value, type, updatedIndices = []) {
         this.varname = name;
         this.value = value;
@@ -73,9 +71,17 @@ var WebSocketMessageType;
     WebSocketMessageType["Heartbeat"] = "heartbeat";
     WebSocketMessageType["FileManagement"] = "FileManagement";
 })(WebSocketMessageType || (exports.WebSocketMessageType = WebSocketMessageType = {}));
+var ConsoleMessageType;
+(function (ConsoleMessageType) {
+    ConsoleMessageType["UserChat"] = "chat";
+    ConsoleMessageType["Error"] = "error";
+    ConsoleMessageType["Info"] = "information";
+    ConsoleMessageType["Debug"] = "debug";
+    ConsoleMessageType["SessionInfo"] = "session";
+    ConsoleMessageType["Output"] = "output";
+})(ConsoleMessageType || (exports.ConsoleMessageType = ConsoleMessageType = {}));
 const variableStore = new Map();
 function parseDebuggerOutput(input, { onNewVariable = (newVar) => { }, onArrayIndexChange = (name, change) => { }, } = {}) {
-    var _a;
     const cleanedInput = input
         .replace(/\(gdb\)/g, "")
         .replace(/\n\s*/g, " ")
@@ -119,7 +125,7 @@ function parseDebuggerOutput(input, { onNewVariable = (newVar) => { }, onArrayIn
         else if (type === "array" && existing.type === "array") {
             const updatedIndices = [];
             for (let i = 0; i <
-                Math.max((_a = existing.value) === null || _a === void 0 ? void 0 : _a.length, value.length); i++) {
+                Math.max(existing.value?.length, value.length); i++) {
                 if (Array.isArray(existing.value) &&
                     existing.value[i] !== value[i]) {
                     const change = {
@@ -184,6 +190,7 @@ let marker; //selection marker
 const renderer = editor.renderer;
 // Initialize ghostManager with the correct type
 const ghostManager = new (class {
+    editor;
     constructor(editor) {
         this.editor = editor;
     }
@@ -205,6 +212,35 @@ getCompiledCode()
     // editor.session.setValue(code);
     // isRemoteChange = false;
 });
+// DOCUMENT FUNCTIONS //
+const namePrompt = document.getElementById("name-prompt");
+const consoleInput = document.getElementById('console');
+function createFileNamePrompt() {
+    if (!namePrompt)
+        return;
+    namePrompt.style.display = "initial";
+    namePrompt.innerText = "";
+    namePrompt.focus();
+    function handleEnterKey(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            createFile(this.innerText);
+            openFile(this.innerText);
+            this.style.display = "none";
+            this.innerText = "";
+            this.removeEventListener("keypress", handleEnterKey);
+        }
+    }
+    const enterListener = namePrompt.addEventListener("keypress", handleEnterKey);
+}
+if (consoleInput)
+    consoleInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            submitConsole(consoleInput);
+        }
+    });
+// END DOCUMENT FUNCTIONS //
 // standardise the json
 function sendWebsocketCommand(cmd, argsArr = []) {
     ws.send(JSON.stringify({ command: cmd, args: argsArr, type: WebSocketMessageType.Output }));
@@ -265,16 +301,44 @@ function clearGhostMarkers(editor) {
         editor._ghostMarkerIds = [];
     }
 }
-function writeOutput(data) {
+function writeOutput(data, messageJson) {
     if (outputArea) {
-        outputArea.textContent += data + "\n";
+        console.log(messageJson.body);
+        if (messageJson.messageType) {
+            const messageType = messageJson.messageType;
+            switch (messageType) {
+                case ConsoleMessageType.UserChat:
+                    outputArea.innerHTML += `<span class="console-chat"><span>${messageJson.clientDisplayName}</span> ${data}</span>`;
+                    break;
+                case ConsoleMessageType.SessionInfo:
+                    outputArea.innerHTML += `<span class="console-session-info">${data}</span>`;
+                    break;
+                case ConsoleMessageType.Info:
+                    outputArea.innerHTML += `<span class="console-info">${data}</span>`;
+                    break;
+                case ConsoleMessageType.Error:
+                    outputArea.innerHTML += `<span class="console-error">${data}</span>`;
+                    break;
+                case ConsoleMessageType.Debug:
+                    outputArea.innerHTML += `<span class="console-debug">${data}</span>`;
+                    break;
+                case ConsoleMessageType.Output:
+                default:
+                    outputArea.innerHTML += `<pre>${data}</pre>`;
+                    break;
+            }
+        }
+        else {
+            outputArea.innerHTML += `<pre>${data}</pre>`;
+        }
+        // outputArea.textContent += "\n";
         outputArea.scrollTop = outputArea.scrollHeight;
     }
 }
 function copySessionLink() {
     const clientId = wsSessionId;
     let sessionLink;
-    if (window.location.search)
+    if (!window.location.search.includes("?session"))
         sessionLink = window.location.hostname + `?session=${clientId}`;
     else
         sessionLink = window.location.toString();
@@ -286,13 +350,13 @@ function copySessionLink() {
     else
         window.alert(sessionLink);
 }
-function createFile() {
-    const command = JSON.stringify({ type: WebSocketMessageType.FileManagement, command: FileManagementCommands.Create, body: "jsjsjsj.txt" });
+function createFile(fileName = "untitled.txt") {
+    const command = JSON.stringify({ type: WebSocketMessageType.FileManagement, command: FileManagementCommands.Create, body: fileName });
     ws.send(command);
     //ws.send({command: FileManagementCommands.Create, args: []});
     // console.log("create file " + command)
 }
-function openFile(fileName) {
+function openFile(fileName = "main.cpp") {
     const command = JSON.stringify({ type: WebSocketMessageType.FileManagement, command: FileManagementCommands.Open, body: fileName });
     ws.send(command);
 }
@@ -302,14 +366,18 @@ let consoleText = "";
 let variables = [];
 const variableArrayIndexes = [];
 function submitConsole(elem) {
-    const sendText = elem === null || elem === void 0 ? void 0 : elem.value.replace(consoleText, "");
-    if (sendText == "")
+    //     const sendText = elem?.value.replace(consoleText, "")
+    //     if(sendText == "") return;
+    //     console.log(sendText);
+    //    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
+    //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Console }));
+    //    consoleText = elem?.value || "Error: invalid element";
+    //    consoleInput.value = "";
+    const sendText = elem?.value;
+    if (!sendText)
         return;
-    console.log(sendText);
-    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
     ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Console }));
-    consoleText = (elem === null || elem === void 0 ? void 0 : elem.value) || "Error: invalid element";
-    // console.log(elem.value)
+    consoleInput.value = "";
 }
 let wsClientId;
 let wsSessionId;
@@ -317,7 +385,7 @@ const outputArea = document.getElementById("output");
 ws.onopen = (ev) => {
     const sessionId = new URLSearchParams(window.location.search).get("session");
     //writeOutput(sessionId || "No session ID found in URL.");
-    ws.send(JSON.stringify({ error: false, input: false, type: WebSocketMessageType.Handshake, sessionId: (sessionId === null || sessionId === void 0 ? void 0 : sessionId.toString()) || null })); // Send initial message to server
+    ws.send(JSON.stringify({ error: false, input: false, type: WebSocketMessageType.Handshake, sessionId: sessionId?.toString() || null })); // Send initial message to server
     console.log("logged in");
     editor.on("change", (delta) => {
         if (isRemoteChange)
@@ -361,6 +429,7 @@ var FileManagementCommands;
     FileManagementCommands["Rename"] = "rename";
     FileManagementCommands["Open"] = "open";
 })(FileManagementCommands || (FileManagementCommands = {}));
+let ping = -1;
 ws.onmessage = (event) => {
     let eventJson = JSON.parse(event.data);
     let command = eventJson.message;
@@ -368,26 +437,25 @@ ws.onmessage = (event) => {
     const type = eventJson.type;
     //console.log(type);
     //console.log(eventJson)
-    function handleOutput() {
-        var _a;
-        writeOutput(data);
+    function handleOutput(eventJson) {
+        writeOutput(data, eventJson);
         const session = editor.getSession();
         const doc = session.getDocument();
         const text = doc.getValue();
-        function asyncExecuteCommand(command) {
-            return __awaiter(this, void 0, void 0, function* () {
-                return yield fetch("/requestValue?value=" + command, {
-                    cache: "no-store",
-                });
+        async function asyncExecuteCommand(command) {
+            return await fetch("/requestValue?value=" + command, {
+                cache: "no-store",
             });
         }
         // handle variables
         if (command == "info locals") {
             const variablesSection = document.getElementById("variables");
             let unprocVariables;
-            const textToVar = (_a = data
+            const textToVar = data
                 .split("(gdb)")
-                .pop()) === null || _a === void 0 ? void 0 : _a.replace(/\n/g, ";").match(/(?<!\w\S)(\b\w+)\s*=.*/g);
+                .pop()
+                ?.replace(/\n/g, ";")
+                .match(/(?<!\w\S)(\b\w+)\s*=.*/g);
             if (command == "info locals") {
                 //if we have variables in the chunk
                 variables = parseDebuggerOutput(data, {
@@ -492,20 +560,20 @@ ws.onmessage = (event) => {
     }
     switch (type) {
         case WebSocketMessageType.Error:
-            writeOutput(data);
+            writeOutput(data, eventJson);
             break;
         case WebSocketMessageType.Output:
-            handleOutput();
+            handleOutput(eventJson);
             break;
         case WebSocketMessageType.End:
-            writeOutput(data);
+            writeOutput(data, eventJson);
             break;
         case WebSocketMessageType.Console:
-            writeOutput(data);
+            writeOutput(data, eventJson);
             break;
         case WebSocketMessageType.Handshake:
             wsClientId = eventJson.clientId;
-            wsSessionId = eventJson.clientId;
+            wsSessionId = eventJson.sessionId;
             writeOutput(wsClientId);
             break;
         case WebSocketMessageType.CodeChange:
@@ -521,6 +589,7 @@ ws.onmessage = (event) => {
         case WebSocketMessageType.CodeSelection:
             if (!data) //clear selection 
              {
+                console.log("removed sleection");
                 editor.session.removeMarker(marker);
                 return;
             }
@@ -530,7 +599,7 @@ ws.onmessage = (event) => {
             //if(start.end==end.end || start.row*end.row * start.column * start*end.column==0) return;
             const range = new AceRange(start.row, start.column, end.row, end.column);
             editor.session.removeMarker(marker);
-            marker = editor.session.addMarker(range, "ace_remote_selection", "line", false);
+            marker = editor.session.addMarker(range, "ace_remote_selection", "text", false);
             console.log("selection ", selection);
             break;
         case WebSocketMessageType.ColabData:
@@ -547,8 +616,11 @@ ws.onmessage = (event) => {
             });
             break;
         case WebSocketMessageType.Heartbeat:
+            ping = Date.now() - ping - eventJson.expectedDelay;
             ws.send(JSON.stringify({ type: WebSocketMessageType.Heartbeat })); // send heartbeat to server
-            console.log("heartbeat");
+            if (ping != -1)
+                console.log("heartbeat ping: " + ping);
+            ping = Date.now();
             break;
         case WebSocketMessageType.FileManagement:
             //   data.command should work too but it doesnt TODO
@@ -583,9 +655,9 @@ ws.onmessage = (event) => {
                         const session = editorSessions.get(fileName);
                         if (session)
                             editor.setSession(session);
-                        if (fileContent.toString() != (session === null || session === void 0 ? void 0 : session.getValue().toString())) {
+                        if (fileContent.toString() != session?.getValue().toString()) {
                             isRemoteChange = true;
-                            session === null || session === void 0 ? void 0 : session.setValue(fileContent);
+                            session?.setValue(fileContent);
                             isRemoteChange = false;
                         }
                     }
@@ -611,20 +683,42 @@ function removePrevActiveElem(index, varName, varIndex) {
     }
     variableArrayIndexes[varIndex.charCodeAt(0)] = index;
 }
+const markers = [];
 function compileCode() {
     fetch("/compile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: editor.getValue() }),
+        body: JSON.stringify({ code: editor.getValue(), clientId: wsClientId, sessionId: wsSessionId }),
     })
         .then((res) => res.json())
         .then((data) => {
         const output = document.getElementById("output");
         if (!output)
             return;
+        let errorOutputString = '';
+        const errorAnnotations = [];
+        if (!data.success) {
+            // ON ERROR
+            for (const errorMessage of data.error) {
+                errorOutputString += errorMessage.error + "\n";
+                if (errorMessage.row != -1) {
+                    const row = errorMessage.row - 1;
+                    const column = errorMessage.column;
+                    errorAnnotations.push({ row: row, column: column, text: errorMessage.error, type: "error" });
+                    // editor.session.addMarker(new AceRange(row, column, row, column), "ace-error-line", "fullLine")
+                    markers.push(editor.session.addMarker(new AceRange(row, column, row, column + 1), "ace-error-line", "fullLine"));
+                }
+            }
+            editor.session.setAnnotations(errorAnnotations);
+        }
+        else {
+            editor.session.setAnnotations([]);
+            for (const markerId of markers)
+                editor.session.removeMarker(markerId);
+        }
         output.textContent = data.success
-            ? "Compilation successful!\n"
-            : data.error;
+            ? "Compilation of " + data.fileName + " successful!\n"
+            : errorOutputString || "Compilation error. (couldnt retrieve error message, sorry)";
         code = editor.getValue();
     });
 }
@@ -634,7 +728,7 @@ function sendDebugCommand(cmd) {
     if (cmd == "next" || cmd == "continue")
         sendWebsocketCommand("info locals", []); // ws.send({command: 'info locals' , args: []});
     const consoleElem = document.getElementById("console");
-    if (cmd == "execute" && (consoleElem === null || consoleElem === void 0 ? void 0 : consoleElem.value) != "")
+    if (cmd == "execute" && consoleElem?.value != "")
         submitConsole(consoleElem);
 }
 function playback() {
@@ -678,7 +772,6 @@ function displayVector(array, vectCont) {
 }
 let vectDisplays = [];
 function createDisplayVector(variable) {
-    var _a;
     // console.log(variable)
     if (variable.type != "array")
         return;
@@ -688,13 +781,13 @@ function createDisplayVector(variable) {
         vectorContainer.innerHTML += `<div id=${variable.varname} class='vector-display'><div class='vector-header'><h>${variable.varname}</h><button onclick='resizeVectorContainer(this)'>x</button></div><div class='item-container'></div></div>\n`;
     }
     if (Array.isArray(variable.value)) {
-        displayVector(variable.value, (_a = document
-            .getElementById(variable.varname)) === null || _a === void 0 ? void 0 : _a.getElementsByClassName("item-container")[0]);
+        displayVector(variable.value, document
+            .getElementById(variable.varname)
+            ?.getElementsByClassName("item-container")[0]);
     }
 }
 function resizeVectorContainer(elem) {
-    var _a, _b;
-    const itemContainer = (_b = (_a = elem.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.getElementsByClassName("item-container")[0];
+    const itemContainer = elem.parentElement?.parentElement?.getElementsByClassName("item-container")[0];
     if (itemContainer) {
         itemContainer.style.height =
             itemContainer.style.height === "0px" ? "auto" : "0px";
@@ -727,7 +820,7 @@ function updateDisplayVectorElement(variable, index) {
     // removePrevActiveElem(index, variable.varname, variable)
 }
 function getDisplayVectorElement(variable, index) {
-    var _a;
-    return (_a = document
-        .getElementById(variable.varname)) === null || _a === void 0 ? void 0 : _a.getElementsByClassName("item-container")[0].children[index]; // offset by the ammount of default children aka the header of the container
+    return document
+        .getElementById(variable.varname)
+        ?.getElementsByClassName("item-container")[0].children[index]; // offset by the ammount of default children aka the header of the container
 }

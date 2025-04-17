@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 class ProblemManager {
+    baseDir;
     constructor(baseDirectory = '../../public/problems') {
         this.baseDir = path_1.default.join(__dirname, baseDirectory);
         this.ensureBaseDirectory();
@@ -24,7 +25,11 @@ class ProblemManager {
             throw new Error(`Problem folder already exists: ${folderName}`);
         }
         fs_1.default.mkdirSync(folderPath);
-        const meta = Object.assign({ name: problemName, created: new Date().toISOString() }, metadata);
+        const meta = {
+            name: problemName,
+            created: new Date().toISOString(),
+            ...metadata,
+        };
         fs_1.default.writeFileSync(path_1.default.join(folderPath, 'meta.json'), JSON.stringify(meta, null, 2));
         // Create empty solution file
         fs_1.default.writeFileSync(path_1.default.join(folderPath, 'solution.js'), `// Solution for: ${problemName}\n\n`);

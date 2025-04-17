@@ -14,8 +14,8 @@
     grid-template-rows: auto 1.5fr 1fr;
     grid-template-areas:
     'header header'
-    'main sidebar'
-    'buttons output';
+    'main output'
+    'buttons sidebar';
     overflow: visible;
     padding: 1rem;
     min-height: calc(100vh - 2rem);
@@ -61,7 +61,7 @@
     justify-content: space-between;
     padding: 0 5px;
     
-    & #editor-tabs-container
+    & .editor-tabs-container
     {
         display: flex;
         justify-content: flex-start;
@@ -88,6 +88,13 @@
 #editor-container
 {
     grid-area: main;
+}
+
+#name-prompt
+{
+    /* position: absolute;
+    width: 200px; */
+    
 }
 .main-window, .buttons
 {
@@ -131,13 +138,14 @@
     display: grid;
     grid-template-rows: auto 1fr;
     grid-area: output;
-    & *
+    & div *
     {
         display: inline;
     }
     & div
     {
-        padding: 10px
+        padding: 10px;
+        display: inline;
     }
     & button
     {
@@ -151,18 +159,47 @@
         font-size: 16px;
         margin: auto;
         float: right;
+        display: inline;
     }
 }
-pre#output
+#output
 {
     overflow-y: scroll;
    
-   border-top: 1px solid black;
+    border-top: 1px solid black;
     display: inline-block;
     margin: 10px;
-    
+    padding-left: 10px;
+    font-size: 13px;
 }
 
+pre
+{
+    display: block;
+    margin: 0;
+}
+#output>span
+{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    width: 100%;
+    display: block;
+}
+
+.console-chat
+{
+}
+.console-session-info
+{
+    
+}
+.console-info
+{
+
+}
+.console-error
+{
+
+}
 #output-container textarea
 {
     width: 80%;
@@ -184,6 +221,12 @@ pre#output
     /* border: 2px red solid; */
     box-sizing: border-box;
     outline: 2px solid red;
+}
+
+.ace-error-line
+{
+    background-color: rgba(255, 0, 0, 0.444);
+    position: absolute;
 }
 .vector-display
 {
@@ -294,19 +337,22 @@ pointer-events: none;
 /* header override */
 .colab-client
 {
-
-    width: 75px;
     text-align: center;
+    min-width: 50px;
+    width: 5px;
+    display: table;
 }
+
 
 #colab-container
 {
     display: flex;
     align-items: center;
     align-content: center;
-    justify-content: center;
+    justify-content: space-evenly;
     height: 100%;
-    width: 100%;
+    max-width: 100%;
+    min-width: 200px;
     margin: auto;
 }
 

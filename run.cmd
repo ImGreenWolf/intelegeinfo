@@ -11,7 +11,6 @@ if %errorlevel% neq 0 (
 echo TypeScript compilation completed successfully.
 echo Starting Node.js server...
 call node server.js
-pause
 if %errorlevel% neq 0 (
     echo Node.js server failed to start.
     pause

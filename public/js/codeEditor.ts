@@ -1,6 +1,6 @@
 // Ensure Ace Editor is globally available or import it properly
 
-import Ace from "ace-builds";
+import Ace, { edit } from "ace-builds";
 // import { Marker } from "ace-builds-internal/search_highlight";
 import { text } from "body-parser";
 // import * as FileManagement from "./FIleManagement";
@@ -15,7 +15,7 @@ import { UUID } from "crypto";
 
 // FileManagement.ts
 const FileContainer = document.getElementById("editor-tabs-container") as HTMLDivElement;
-
+if(!FileContainer) console.error("Couldn't find file container!")
  function onFileCreate(fileName: string) {
         // const command = JSON.parse(messageBodyJson);
         
@@ -50,6 +50,7 @@ const FileContainer = document.getElementById("editor-tabs-container") as HTMLDi
 //  import * as Ace from "ace-builds";
 declare const ace: typeof Ace;
 import modelist from "ace-builds/src-noconflict/ext-modelist";
+import { JsonOptions } from "vite";
 const AceRange = ace.require("ace/range").Range;
 const aceModes: typeof modelist = ace.require("ace/ext/modelist");
 
@@ -108,6 +109,15 @@ export enum WebSocketMessageType {
     ColabData = "colabData",
     Heartbeat = "heartbeat",
     FileManagement = "FileManagement",
+}
+
+export enum ConsoleMessageType {
+    UserChat = 'chat',
+    Error = 'error',
+    Info = 'information',
+    Debug = 'debug',
+    SessionInfo = "session",
+    Output = 'output',
 }
 
 const variableStore = new Map<string, Variable>();
@@ -273,6 +283,63 @@ getCompiledCode()
         // isRemoteChange = false;
     });
 
+
+
+
+
+
+
+
+        // DOCUMENT FUNCTIONS //
+
+
+        const namePrompt = document.getElementById("name-prompt");
+        const consoleInput = document.getElementById('console') as HTMLInputElement;
+        
+        function createFileNamePrompt()
+        {
+            if(!namePrompt) return;
+            namePrompt.style.display = "initial";
+            namePrompt.innerText = "";
+            namePrompt.focus();
+            function handleEnterKey(this:HTMLElement, e: KeyboardEvent) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+    
+                    
+                    createFile(this.innerText)
+                    openFile(this.innerText)          
+                    this.style.display = "none";
+                    this.innerText = "";
+                    this.removeEventListener("keypress", handleEnterKey);
+                }
+
+            }
+            const enterListener = namePrompt.addEventListener("keypress", handleEnterKey);
+
+        }
+        if(consoleInput)
+            consoleInput.addEventListener("keypress", (e: KeyboardEvent) => {
+                
+                if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+
+                submitConsole(consoleInput);
+                
+            }
+
+               
+            });
+
+
+        // END DOCUMENT FUNCTIONS //
+
+
+
+
+
+
+
 // standardise the json
 function sendWebsocketCommand(cmd: string, argsArr: string[] = []) {
     ws.send(JSON.stringify({ command: cmd, args: argsArr, type: WebSocketMessageType.Output }));
@@ -366,9 +433,41 @@ function clearGhostMarkers(editor: {
     }
 }
 
-function writeOutput(data: string) {
+function writeOutput(data: string, messageJson?: any) {
     if (outputArea) {
-        outputArea.textContent += data + "\n";
+       console.log(messageJson.body)
+        if(messageJson.messageType)
+        {
+            const messageType = messageJson.messageType 
+            switch(messageType)
+            {
+                case ConsoleMessageType.UserChat:
+                    outputArea.innerHTML += `<span class="console-chat"><span>${messageJson.clientDisplayName}</span> ${data}</span>`;
+                break;
+                case ConsoleMessageType.SessionInfo:
+                    outputArea.innerHTML += `<span class="console-session-info">${data}</span>`;
+                break;
+                case ConsoleMessageType.Info:
+                    outputArea.innerHTML += `<span class="console-info">${data}</span>`;
+                break;
+                case ConsoleMessageType.Error:
+                    outputArea.innerHTML += `<span class="console-error">${data}</span>`;
+                break;
+                case ConsoleMessageType.Debug:
+                    outputArea.innerHTML += `<span class="console-debug">${data}</span>`;
+                break;
+                case ConsoleMessageType.Output:
+                default:
+                    outputArea.innerHTML += `<pre>${data}</pre>`;
+                    break;
+            }
+        }
+        else
+        {
+            outputArea.innerHTML += `<pre>${data}</pre>`;
+
+        }
+        // outputArea.textContent += "\n";
         outputArea.scrollTop = outputArea.scrollHeight;
     }
 }
@@ -376,7 +475,8 @@ function writeOutput(data: string) {
 function copySessionLink() {
     const clientId = wsSessionId;
     let sessionLink;
-    if(window.location.search)
+    
+    if(!window.location.search.includes("?session"))
          sessionLink = window.location.hostname + `?session=${clientId}`;
     else 
         sessionLink = window.location.toString();
@@ -388,14 +488,14 @@ function copySessionLink() {
     } else
     window.alert(sessionLink)
 }
-export function createFile() {
-    const command = JSON.stringify({type: WebSocketMessageType.FileManagement, command: FileManagementCommands.Create, body: "jsjsjsj.txt" });
+export function createFile(fileName:string = "untitled.txt") {
+    const command = JSON.stringify({type: WebSocketMessageType.FileManagement, command: FileManagementCommands.Create, body: fileName });
     ws.send(command);
      //ws.send({command: FileManagementCommands.Create, args: []});
    // console.log("create file " + command)
 }
 
-function openFile(fileName: string)
+function openFile(fileName: string = "main.cpp")
 {
     const command = JSON.stringify({type: WebSocketMessageType.FileManagement, command: FileManagementCommands.Open, body: fileName });
     ws.send(command);
@@ -416,13 +516,18 @@ const variableArrayIndexes: number[] = [];
 
 
 function submitConsole(elem: HTMLInputElement | null) {
-    const sendText = elem?.value.replace(consoleText, "")
-    if(sendText == "") return;
-    console.log(sendText);
-   //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
-   ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Console }));
-   consoleText = elem?.value || "Error: invalid element";
-    // console.log(elem.value)
+//     const sendText = elem?.value.replace(consoleText, "")
+//     if(sendText == "") return;
+//     console.log(sendText);
+//    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
+//    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Console }));
+//    consoleText = elem?.value || "Error: invalid element";
+//    consoleInput.value = "";
+    const sendText = elem?.value;
+    if(!sendText) return;
+    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Console }));
+    consoleInput.value = "";
+
 }
 
 
@@ -483,7 +588,13 @@ enum FileManagementCommands {
     Open = "open",
 }
 
+type errorObject = {
+    row: Number,
+    column: Number,
+    error: String,
+}
 
+let ping = -1;
 
 ws.onmessage = (event) => {
     
@@ -494,8 +605,8 @@ ws.onmessage = (event) => {
     //console.log(type);
     //console.log(eventJson)
 
-    function handleOutput() {
-        writeOutput(data);
+    function handleOutput(eventJson: any) {
+        writeOutput(data, eventJson);
 
         const session = editor.getSession();
         const doc = session.getDocument();
@@ -648,20 +759,27 @@ ws.onmessage = (event) => {
     
     switch (type) {
         case WebSocketMessageType.Error:
-            writeOutput(data);
+            writeOutput(data,eventJson);
             break;
         case WebSocketMessageType.Output:
-            handleOutput();
+            handleOutput(eventJson);
             break;
         case WebSocketMessageType.End:
-            writeOutput(data);
+            writeOutput(data,eventJson);
             break;
+
+
         case WebSocketMessageType.Console:
-            writeOutput(data);
+            writeOutput(data, eventJson);
+
             break;
+
+
+
+
         case WebSocketMessageType.Handshake:
             wsClientId = eventJson.clientId;
-            wsSessionId = eventJson.clientId;
+            wsSessionId = eventJson.sessionId;
             writeOutput(wsClientId);
             break;
         case WebSocketMessageType.CodeChange:
@@ -678,7 +796,7 @@ ws.onmessage = (event) => {
         case  WebSocketMessageType.CodeSelection:
             if(!data) //clear selection 
             {
-                
+                console.log("removed sleection")
                 editor.session.removeMarker(marker);
                 return;
             }
@@ -688,7 +806,7 @@ ws.onmessage = (event) => {
             //if(start.end==end.end || start.row*end.row * start.column * start*end.column==0) return;
             const range = new AceRange(start.row, start.column, end.row, end.column);
             editor.session.removeMarker(marker);
-            marker = editor.session.addMarker(range, "ace_remote_selection", "line", false);
+            marker = editor.session.addMarker(range, "ace_remote_selection", "text", false);
             console.log("selection ", selection);
             break;
         case WebSocketMessageType.ColabData:
@@ -704,8 +822,13 @@ ws.onmessage = (event) => {
             });
             break;
         case WebSocketMessageType.Heartbeat:
+            
+            ping = Date.now() - ping - eventJson.expectedDelay;
+            
             ws.send(JSON.stringify({type: WebSocketMessageType.Heartbeat})); // send heartbeat to server
-            console.log("heartbeat")
+            if(ping != -1)
+                console.log("heartbeat ping: " + ping)
+            ping = Date.now()
         break;
         case WebSocketMessageType.FileManagement:
             //   data.command should work too but it doesnt TODO
@@ -784,20 +907,53 @@ function removePrevActiveElem(index: any, varName: string, varIndex: string) {
     }
     variableArrayIndexes[varIndex.charCodeAt(0)] = index;
 }
-
+const markers: number[] = [];
 function compileCode() {
     fetch("/compile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: editor.getValue() }),
+        body: JSON.stringify({ code: editor.getValue(), clientId: wsClientId, sessionId: wsSessionId}),
     })
         .then((res) => res.json())
         .then((data) => {
+            
             const output = document.getElementById("output") as HTMLInputElement;
             if (!output) return;
+             let errorOutputString = '';
+             const errorAnnotations: Ace.Ace.Annotation[] = [];
+            
+            if(!data.success)
+            {
+                // ON ERROR
+               
+               for(const errorMessage of data.error)
+               {
+                 errorOutputString += errorMessage.error + "\n"; 
+                 
+                 if(errorMessage.row != -1)
+                 {
+                    const row = errorMessage.row-1
+                    const column = errorMessage.column;
+                    errorAnnotations.push({row: row, column: column, text: errorMessage.error, type: "error"})
+                    // editor.session.addMarker(new AceRange(row, column, row, column), "ace-error-line", "fullLine")
+                   markers.push(editor.session.addMarker(new AceRange(row, column, row, column+1), "ace-error-line", "screenLine"));
+                 }
+                    
+               }
+
+               editor.session.setAnnotations(errorAnnotations)
+
+            } else
+            {
+                editor.session.setAnnotations([]);
+            for(const markerId of markers)
+                editor.session.removeMarker(markerId);
+            }
+            
+            
             output.textContent = data.success
-                ? "Compilation successful!\n"
-                : data.error;
+                ? "Compilation of " + data.fileName + " successful!\n"
+                : errorOutputString || "Compilation error. (couldnt retrieve error message, sorry)";
             code = editor.getValue();
         });
 }
