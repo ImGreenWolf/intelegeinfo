@@ -22,4 +22,5 @@ var ConsoleMessageType;
     ConsoleMessageType["Debug"] = "debug";
     ConsoleMessageType["SessionInfo"] = "session";
     ConsoleMessageType["Output"] = "output";
+    ConsoleMessageType["DebugProgram"] = "debugProgram";
 })(ConsoleMessageType || (exports.ConsoleMessageType = ConsoleMessageType = {}));

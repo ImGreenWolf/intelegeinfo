@@ -102,6 +102,8 @@ enum FileManagementCommands {
 }
 
 
+
+
   
 
         //          LOCAL  SERVER  VARIABLES       //
@@ -229,7 +231,7 @@ fs.readdir(path.join(__dirname, "cache"), (err, files) => {
     }
 
     files.forEach((file) => {
-        fs.rmdir(path.join(__dirname, "cache", file), { recursive: true }, (err) => {
+        fs.rm(path.join(__dirname, "cache", file), { recursive: true, force: true }, (err) => {
             if (err) {
                 console.error("Error deleting cache folder:", err);
             } else {
@@ -367,7 +369,8 @@ fs.readdir(path.join(__dirname, "cache"), (err, files) => {
 
   enum commandType {
     Show = "sessions",
-    Clients = "clients"
+    Clients = "clients",
+    Processes = 'processes'
 }
 
     // TODO Improve this a lot, find a better way of calling these functions
@@ -376,6 +379,12 @@ fs.readdir(path.join(__dirname, "cache"), (err, files) => {
     const command = commandString.toString().toLowerCase().trim().split(' ');
     console.log(command)
     const params = command.splice(0) as UUID[];
+
+    function showProcesses()
+    {
+        console.log(runningProcesses)
+        
+    }
 
     function showSessions()
     {
@@ -391,6 +400,7 @@ fs.readdir(path.join(__dirname, "cache"), (err, files) => {
         
     }
     
+    
 
     switch (commandString.toString().split(' ')[0].toLowerCase().trim())
     {
@@ -399,6 +409,8 @@ fs.readdir(path.join(__dirname, "cache"), (err, files) => {
             break;
         case commandType.Clients:
             showClients()
+            case commandType.Processes:
+            showProcesses()
         break;
         default:
             console.log("Unrecognized command: " + command)
@@ -490,8 +502,8 @@ app.post("/compile", (req: express.Request<{}, {}, CompileRequestBody>, res: exp
 
 
 wss.on("connection", (ws: WebSocket) => {
-    let gdbProcess: ChildProcess;
-    let program: ChildProcess;
+    let gdbProcess: ChildProcess | undefined;
+    let program: ChildProcess | undefined;
     let sessionId: UUID;
     let clientId: UUID;
     let clientObj: ClientObject | undefined
@@ -502,6 +514,7 @@ wss.on("connection", (ws: WebSocket) => {
     let heartbeatInterval: any;
     let clientSession: EditorSession;
     let gdbBuffer = "";
+    
     // TODO add session map 
     // if (gdbProcess) {
     //     gdbProcess.kill(); // Ensure only one GDB session runs at a time
@@ -514,10 +527,10 @@ wss.on("connection", (ws: WebSocket) => {
     const customStream = new Writable({
         write(chunk, encoding, callback) {
           console.log(`Received from WebSocket, sending to C++ stdin: ${chunk.toString()}`);
-          program.stdin?.write(chunk, encoding, callback); // Forward to child stdin
+          program?.stdin?.write(chunk, encoding, callback); // Forward to child stdin
         },
         final(callback) {
-            program.stdin?.end(); // Close stdin when done
+            program?.stdin?.end(); // Close stdin when done
           callback();
         }
       });
@@ -644,6 +657,7 @@ wss.on("connection", (ws: WebSocket) => {
         const clientFilesPath = path.join(__dirname, "cache", sessionId,"clientFiles");
         printClientConsoleInfo("connected to worker: " + process.pid)
 
+        //create cache folder for session if its a new one
         if(!fs.existsSync(path.join(__dirname, "cache", sessionId)) || !cooperator)
         {
             // fs.mkdir(path.join(__dirname, "cache", sessionId), { recursive: true }, (err) => {
@@ -661,26 +675,33 @@ wss.on("connection", (ws: WebSocket) => {
                 const defaultText = fs.readFileSync("user_code.cpp").toString();
 
                 fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
-                    listFiles(clientFilesPath)
-                    openFile("main.cpp")
+                    listFiles(clientFilesPath).then(() => {
+                        openFile("main.cpp")
+
+                    })
                     });
             })
         } else 
         {
             console.error("Cache folder already exists for sessionId " + sessionId);
-            listFiles(clientFilesPath)
-            if(!fs.existsSync(path.join(clientFilesPath, "main.cpp"))) console.error("No default file was found!")
-            openFile("main.cpp")
+            listFiles(clientFilesPath).then(()=>{
+                if(!fs.existsSync(path.join(clientFilesPath, "main.cpp"))) console.error("No default file was found!") // TODO replace with async function
+                openFile("main.cpp")
+            })
+          
         }
-        
+            // display join message
             getThisClientSession().replicateFunction((client:ClientObject) => {
                 printClientConsoleSessionInfo(clientObj?.displayName + " joined!", client)
             }, clientObj);
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Console, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
+           
             console.log("Client connected to GDB server" + clientId);
+            
+            // Send initial message to client
+            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, clientId: clientId, sessionId: sessionId})); 
 
-            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, clientId: clientId, sessionId: sessionId})); // Send initial message to client
-            if(getThisClientSession()?.clients.size > 1)
+            if(getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
             {
                 let displayNames:string[] = [];
                 getThisClientSession()?.clients.forEach((client, id) => {
@@ -688,8 +709,18 @@ wss.on("connection", (ws: WebSocket) => {
 
                })
 
-               replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, body: JSON.stringify({clients:displayNames, thisClientId: clientId, thisSessionId: sessionId})});
-
+               replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, clients:displayNames, thisClientId: clientId, thisSessionId: sessionId});
+               console.log(getThisClientSession().clientCommandBuffer)
+               
+               setTimeout(() => {
+                getThisClientSession().clientCommandBuffer.forEach((cmdBuf, remoteClientid) => {
+                    if(clientId != remoteClientid)
+                        if(getThisClientSession().clientsActiveFile.get(remoteClientid) === getThisClientSession().clientsActiveFile.get(clientId))
+                             ws.send(JSON.stringify(cmdBuf.codeSelection))
+                   });
+               }, 100);
+               
+               
             }
 
    }
@@ -716,24 +747,28 @@ wss.on("connection", (ws: WebSocket) => {
                         input: boolean;
                         type: WebSocketMessageType,
                         messageType: ConsoleMessageType,
+                        clientId: UUID,
                         body: string;
                         message: string;
+                        msgId: number;
                     } = {
                         error: false,
                         input: false,
                         type: WebSocketMessageType.Output,
-                        messageType: ConsoleMessageType.Output,
+                        messageType: ConsoleMessageType.DebugProgram,
+                        clientId: clientId,
                         body: gdbBuffer,
-                        message: command.toString()
+                        message: command.toString(),
+                        msgId: gdbProcess?.pid || -1,
                     };
-                    getThisClientSession()?.clients.forEach((client, id) => {
+                    getThisClientSession()?.clients.forEach((client, id) => { // TODO replace with replicateFunction()
                         //send response to all clients
                         const clientSocket = clients.get(client.clientId);
                         if(!clientSocket)
                             {
                             
                                 //sessions.delete(sessionId);
-                                if(getThisClientSession()?.clients.has(clientId))  console.error("Client not found in session while trying to time out client  " + sessionId);
+                                if(getThisClientSession()?.clients.has(clientId))  console.error("Client not found in session while manually replicating to client  " + sessionId);
                                      else getThisClientSession()?.clients.delete(client.clientId);
                                  clients.delete(client.clientId);
 
@@ -741,7 +776,9 @@ wss.on("connection", (ws: WebSocket) => {
                             } 
                         clientSocket?.send(JSON.stringify(response));
                     });
-                    
+                    console.log(command)
+                    if(command === 'quit' && childProcess)
+                        closeProcess(childProcess)
     
                     resolve(); 
                 }
@@ -750,7 +787,7 @@ wss.on("connection", (ws: WebSocket) => {
             {
             // Use .on instead of .once, because GDB output can be split
             childProcess.stdout?.on("data", onData);
-    
+            
             // Send the command
             childProcess.stdin?.write(command + "\n");
             } else console.error("GDB process not found for session " + sessionId);
@@ -761,28 +798,35 @@ wss.on("connection", (ws: WebSocket) => {
     let CommandQueue = Promise.resolve();
 
     function queueCommand(process: ChildProcess,command: string, sessionId: UUID): Promise<void> {
-        CommandQueue = CommandQueue.then(() => executeCommand(process, command, sessionId));
+        CommandQueue = CommandQueue.then(() => executeCommand(process, command, sessionId)).catch(() =>
+        {
+            printClientConsoleError("failed to queue debugger command")
+        })
         return CommandQueue;
     }
    
-    function listFiles(dir: string) {
-        fs.readdir(dir, (err, files) => {
+    function listFiles(dir: string): Promise<void> {
+        
+        return new Promise((resolve, reject) => {
+            fs.readdir(dir, (err, files) => {
             if (err) {
                 printClientConsoleError("Error listing files: " + err.message);
+                reject()
             } else {
                 // const fileContentMap: Map<string, string> = new Map<string, string>();
                 // files.forEach(element => {
                 //     fileContentMap.set(element, fs.readFileSync(path.join(clientFilesPath, element)).toString());
                 // });
+                if(!files) return reject();
                 const targetFiles = files.filter(file => {
                     return ![".exe", ".o"].includes(path.extname(file).toLowerCase());
                 });
-
+                resolve()
                 ws.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {command: FileManagementCommands.List, content: targetFiles}})); // Send the list of files to the client
             }
-        });
-        
-        }
+            });
+        })
+    }
 
     function openFile(fileName: string)
     {
@@ -874,7 +918,6 @@ wss.on("connection", (ws: WebSocket) => {
                         //         sessions.set(sessionId, [clientId]);
                         //         getThisClientSession()?.clientsActiveFile
                         //     }
-                        console.log(sessionMap)
                         const activeSession = sessionMap.has(messageJSON.sessionId) || (isShared && shared.getSession(messageJSON.sessionId));
                         if(activeSession) // = There is an active session, join it.
                         {
@@ -966,7 +1009,11 @@ wss.on("connection", (ws: WebSocket) => {
                     if(getProcessFromMap(sessionId)!=undefined)
                         getProcessFromMap(sessionId)?.stdin?.write(messageJSON.command + "\n");
                     console.log("sent to program", messageJSON.command)
-                    replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Console, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
+                    // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Console, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
+                    replicateFunction((clientWs) => {
+                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
+                    });
+                    getThisClientSession().messageIndex++; // counter used to id and group console mssages.
                     // clients.forEach((client, id) => {
                         
                     //         client.send(JSON.stringify({error: false, input: false, clientId: clientId, type: WebSocketMessageType.Console, body: messageJSON.command})); // Send initial message to client
@@ -976,25 +1023,38 @@ wss.on("connection", (ws: WebSocket) => {
 
 
                 case WebSocketMessageType.CodeChange:
+
+                const shouldSave:boolean = messageJSON.saveFile;
+                const fileName: string = messageJSON.fileName;
+                if(true && type===WebSocketMessageType.CodeChange) // TODO replace true with shouldSave 
+                    {
+                     console.log(messageJSON)
+                     //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
+                     fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
+                         if(err) console.log("Failed saving file!")
+                             console.log("saved file")
+                     });
+                    }
+
+                    replicateFunction((clientWs) => {
+                        clientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId, body: messageJSON}))
+                        }, clientObj)
+                    
+                    break;
+                    
                 case WebSocketMessageType.CodeSelection:
                     //fs.writeFileSync(path.join(__dirname, "cache", sessionId , "user_code.cpp"), messageJSON.code);
                    // console.log(type + " for sessionId " + sessionId);
+                    const codeSelectionJSON = {type: WebSocketMessageType.CodeSelection, clientId: clientId, body: messageJSON}
+                    getThisClientSession().clientCommandBuffer.set(clientId, {codeSelection: codeSelectionJSON})
 
-                   const shouldSave:boolean = messageJSON.saveFile;
-                    const fileName: string = messageJSON.fileName;
-                    
-                   if(true && type===WebSocketMessageType.CodeChange)
-                   {
-                    console.log(messageJSON)
-                    //   TODO make a more efficient way of updating the file, either by streams or a save button.
-                    fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
-                        if(err) console.log("Failed saving file!")
-                            console.log("saved file")
-                    });
-                   }
-
-                   replicateSocketMessage(sessionId, clientId, true, {type: type, body: messageJSON}, (client) => { let filter = getThisClientSession()?.clientsActiveFile.get(client) != fileName; console.log(getThisClientSession()?.clientsActiveFile.get(client) + fileName); return filter;});
+                                                                                // rename this to something more apropriate eg guily client idk
+                //    replicateSocketMessage(sessionId, clientId, true, {type: type, clientId: clientId, body: messageJSON}, (client) => { let filter = getThisClientSession()?.clientsActiveFile.get(client) != fileName; console.log(getThisClientSession()?.clientsActiveFile.get(client) + fileName); return filter;});
                    
+                   replicateFunction((clientWs, localClientId) => {
+                        if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
+                             clientWs.send(JSON.stringify(codeSelectionJSON))
+                    }, clientObj)
                 
                     // clients.forEach((client, id) => {
                     //     if(clientId!=id)
@@ -1078,8 +1138,8 @@ wss.on("connection", (ws: WebSocket) => {
                             // execute code normally.
                             if(!getProcessFromMap(sessionId)) // check if program is running
                             {
-                                async function executeProgram() {
-                                    new Promise<void>((resolve, reject) => {
+                                async function executeProgram(): Promise<void> {
+                                    return new Promise<void>((resolve, reject) => {
                                             console.log("executing program")
                                             const filePath = path.join(__dirname, "cache", sessionId, "main.exe");
                                             fs.stat(filePath, (err, stats) => {
@@ -1134,37 +1194,36 @@ wss.on("connection", (ws: WebSocket) => {
 
                                             program.stdout?.on("data", (data) => {
                                                 gdbBuffer += data.toString();
-                                                getThisClientSession().replicateFunction(() => {
 
                                                     replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString()}));  // Send GDB output to the client
+                                                        clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                                                     });
                                                     gdbBuffer = "";
-                                                });
+      
                                                 
-                                                program.on("spawn", () => {
+                                                program?.on("spawn", () => {
                                                     console.log("Program started successfully");
                                                 })
                                                 
-                                                program.stderr?.on("data", (data) => {
+                                                program?.stderr?.on("data", (data) => {
                                                     gdbBuffer += data.toString();
                                                     replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output,}));  // Send GDB output to the client
+                                                        clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output, clientId: clientId}));  // Send GDB output to the client
                                                     });
                                                         gdbBuffer = "";
                                                 });
                                                 
-                                                program.on("close", (code) => {
+                                                program?.on("close", (code) => {
                                                     if(code === null) return ws.send("Program exited with invalid code");
                                                     gdbBuffer = "Program exited with code: " + code?.toString();
                                                     replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({error: false, input: false, end: true, type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString()}));  // Send GDB output to the client
+                                                        clientWs.send(JSON.stringify({error: false, input: false, end: true, type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                                                         });
                                                     
                                                     gdbBuffer = "";
                                                     // removeProcessFromMap(sessionId);
-                                                    closeProcess(program,sessionId)
-                                                    resolve(); // Resolve the promise when the process closes
+                                                    closeProcess(program,sessionId).then(resolve)
+                                                    // resolve(); // Resolve the promise when the process closes
                                                 });
                                                 //await queueCommand(program,message);
                                             });
@@ -1179,7 +1238,9 @@ wss.on("connection", (ws: WebSocket) => {
                                 printClientConsoleError('program is already running! killing program') // await queueCommand(program,command, sessionId);
                                 // getProcessFromMap(sessionId)?.kill(); // kill the program
                                 // removeProcessFromMap(sessionId);
-                                closeProcess(getProcessFromMap(sessionId))
+                                closeProcess(getProcessFromMap(sessionId)).catch(() => {
+                                    console.error("failed closing process.")
+                                })
                             }
                             
                         }
@@ -1191,10 +1252,16 @@ wss.on("connection", (ws: WebSocket) => {
                                 const filePath = path.join(__dirname, "cache", sessionId, "main.exe");
                                 gdbProcess = spawn("gdb", ["-q", "-ex", "set pagination off", "-ex", "set print thread-events off", filePath]);
                                 addProcessToMap(sessionId, gdbProcess);
-
+                                printClientConsoleDebug("started debugging process.")
+                                gdbProcess.on('close', (code) => {
+                                    console.log('CLOSED DEBUG PROCESS')
+                                    onClosedProcess();
+                                    gdbProcess = undefined;
+                                })
                                 app.get("/requestValue", (req,res) => {
                                     const command = req.query.value;
-                                    console.log(clientId + " " + command)
+                                    const cmdId: number = parseInt(req.query.cmdId as string);
+                                    // console.log(clientId + " " + command)
                                     if(mode != "debug") res.status(400).send('Bad Request: GDB process not active');
                                     if(!gdbProcess)  res.status(400).send('Bad Request: GDB process not active');
                                     if(!command)     res.status(400).send('Bad Request: invalid command');
@@ -1205,24 +1272,34 @@ wss.on("connection", (ws: WebSocket) => {
                                         let gdbBuffer = "";
                                 
                                         const onData = (data: Buffer) => {
-                                            gdbBuffer += data.toString();
-                                
-                                            // Check if the full response has arrived
+                                           
+                                                gdbBuffer += data.toString();
+                                                    // Check if the full response has arrived
                                             if (gdbBuffer.includes("(gdb)")) {
+                                                if(parseInt((gdbBuffer.toString().match(/(?<=\$)\d*/)?.[0] as string)) === cmdId+1) {
+                                                    
                                                 // We have everything, remove listener
                                                 gdbProcess?.stdout?.removeListener("data", onData);
                                                 resolve();
-                                                console.log(clientId + " " + gdbBuffer)
                                                 return res.send(({
                                                     error: false,
                                                     input: false,
                                                     type: WebSocketMessageType.Output,
+                                                    messageType: ConsoleMessageType.Debug,
                                                     body: gdbBuffer,
-                                                    message: command?.toString()
+                                                    message: command?.toString(),
+                                                    cmdId: cmdId,
+                                                    msgId: gdbProcess?.pid
                                                 }));
+
+                                                } else gdbBuffer = "";
                                 
-                                                
                                             }
+                                            
+                                
+                                        
+                                                
+                                            
                                         };
                                         if(gdbProcess && gdbProcess.stdin && gdbProcess.stdout) 
                                         {
@@ -1252,13 +1329,11 @@ wss.on("connection", (ws: WebSocket) => {
                                 //     process.stdout.write('data: ' + chunk);
                                 // });
                             }
-                            else  await queueCommand(gdbProcess,command, sessionId);// gdbProcess.stdin.write(message + "\n");
+                            else  await queueCommand(getProcessFromMap(sessionId) as ChildProcess,command, sessionId);// gdbProcess.stdin.write(message + "\n");
                                 
                                 
                 
                         } else {
-
-
                             if(mode=="debug")
                             {
                                 
@@ -1282,7 +1357,12 @@ wss.on("connection", (ws: WebSocket) => {
                                             }));
                                         });
                                     } 
-                                else if(gdbProcess) await queueCommand(gdbProcess,command,sessionId)
+                                else  queueCommand(getProcessFromMap(sessionId) as ChildProcess,command,sessionId).then(() => {
+
+                                    console.log('jjjjjjjjjjjjjjjjjjjjjj')
+                                }).catch(() => {
+                                    console.log('jj;jhvbgoujgfhvhg')
+                                })
                                     
                                 
 
@@ -1310,7 +1390,7 @@ wss.on("connection", (ws: WebSocket) => {
                                     program.stdin?.write(command); //program.stdin.write(message + "\n");
                                     console.log("sent to program")
                                 }
-                                
+                                console.log('oooooooooooo')
                             }
                         }
                  }
@@ -1331,23 +1411,44 @@ wss.on("connection", (ws: WebSocket) => {
     //    console.log("Client " + clientId + " connected to GDB server dkkkkkkkkkkk");
     // });
 
-    function closeProcess(process: ChildProcess | undefined, processId?: UUID)
+    function onClosedProcess(processId?: UUID) {
+        removeProcessFromMap(processId || sessionId);
+        if(isShared) shared.removeProcess(processId || sessionId)
+            const filePath = path.join(__dirname, "cache", sessionId, "main.exe");
+          fs.unlinkSync(filePath)
+    }
+
+    function closeProcess(process: ChildProcess | undefined, processId?: UUID): Promise<void>
             {
-                if (process) {
-                  if(!process.killed)  process.kill();
-                    removeProcessFromMap(processId || sessionId);
-                    if(isShared) shared.removeProcess(processId || sessionId)
-                }
+                return new Promise((resolve, reject) => {
+                    
+                    if (process) {
+                  
+                    if(!process.killed)  process.kill();
+                    process.on(('close'), (code) => {
+                        
+                        
+                        onClosedProcess(processId || sessionId);
+                        resolve();
+                    })
+
+                    setTimeout(() => {
+                        reject()
+                    }, 1000)
+                    
+                  }})
+                
             }
 
     function onCloseSession() {
 
         const process = getProcessFromMap(sessionId);
+        
         replicateSocketMessage(sessionId, clientId, true, {type: WebSocketMessageType.CodeSelection, body: ""});
         clients.delete(clientId);
         clearInterval(heartbeatInterval); // Clear the interval to stop sending pings
         // getThisClientSession()?.clients.splice(getThisClientSession()?.clients.indexOf(clientId)||-1 , 1);
-        getThisClientSession()?.onRemoveClient(clientId)
+        getThisClientSession()?.removeClient(clientId)
         if(isShared) shared.removeClient(clientId);
         //sessions.delete(sessionId);
         // if(sessions.get(sessionId)?.indexOf(clientId) === -1)  console.error("Client not found in session " + sessionId);
@@ -1356,21 +1457,34 @@ wss.on("connection", (ws: WebSocket) => {
         if(getThisClientSession()?.clients.size == 0) 
             {
                    // sessions.delete(sessionId);
-                    
-            fs.rmdir(path.join(__dirname, "cache", sessionId), { recursive: true }, (err) => {
-                console.log("deleted cache folder for sessionId " + sessionId);
-            });
-            
-            closeProcess(process)
-            sessionMap.delete(sessionId);
-            if(isShared) shared.removeSession(sessionId);
-            console.log("Deleted session " + sessionId);
+            closeProcess(process).then(() => {
+
+                const dirPath = path.join(__dirname, "cache", sessionId); 
+                if(dirPath) 
+                    fs.rm(dirPath, { recursive: true, force: true }, (err) => { // TODO Implement a way to unlink files so, if a process is running, it will unlink so the files can be properly deleted.
+                        if(err)
+                            console.error(err)
+                        console.log("deleted cache folder for sessionId " + sessionId);
+                    });
+                else 
+                    console.error(new Error("Couldnt delete session folder, invalid path."))
+                
+                
+                sessionMap.delete(sessionId);
+                if(isShared) shared.removeSession(sessionId);
+                console.log("Deleted session " + sessionId);
+
+            })
+
         } else
         {
             //session is still active, send message to other clients
             if(getThisClientSession()?.clients.size != 0)
                 replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, body: JSON.stringify({clients: getThisClientSession()?.clients})});
-                replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Console, body: "$: Client " + clientId + " disconnected!"});
+                replicateFunction((clientWs) => {
+                    clientWs.send(JSON.stringify({type: WebSocketMessageType.ColabData, colabCommand: "DISCONECT", thisClientId: clientId, thisSessionId: sessionId, body: clientObj?.displayName + " has left."}))
+                }, clientObj)
+                // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Console, body: "$: Client " + clientId + " disconnected!"});
         }
 
     }
@@ -1380,6 +1494,18 @@ wss.on("connection", (ws: WebSocket) => {
         onCloseSession();
         console.log("Client " + clientId + " disconnected");
     });
+    
+    function replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID) => void, excludeClientObj?:ClientObject) {
+        // if(!getThisClientSession() || !getThisClientSession().clientsSockets) return console.error(new Error("invalid session or client sockers"));
+        let excludeClientId: UUID | undefined;
+        if(excludeClientObj)
+             excludeClientId = getThisClientSession().getClientId(excludeClientObj);
+        getThisClientSession().clientsSockets.forEach((thisClientWs, thisClientId) => {
+            if(!thisClientWs) return;
+            if(excludeClientId != thisClientId)
+                callback(thisClientWs as WebSocket, thisClientId as UUID);
+        });
+    }
     
 });
 
@@ -1392,8 +1518,3 @@ process.on('SIGTERM', () => {
 })
 
 
-function replicateFunction(callback: (client: WebSocket) => void) {
-    clients.forEach((client) => {
-        callback(client as WebSocket);
-    });
-}

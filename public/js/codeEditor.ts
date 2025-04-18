@@ -118,6 +118,7 @@ export enum ConsoleMessageType {
     Debug = 'debug',
     SessionInfo = "session",
     Output = 'output',
+    DebugProgram  = "debugProgram"
 }
 
 const variableStore = new Map<string, Variable>();
@@ -331,6 +332,11 @@ getCompiledCode()
                
             });
 
+        function toggleConsoleDebugProgram(elem: HTMLElement)
+        {
+            elem.classList.toggle('open');
+            elem.children[1].classList.toggle('open');
+        }
 
         // END DOCUMENT FUNCTIONS //
 
@@ -435,36 +441,63 @@ function clearGhostMarkers(editor: {
 
 function writeOutput(data: string, messageJson?: any) {
     if (outputArea) {
-       console.log(messageJson.body)
-        if(messageJson.messageType)
+
+        if(messageJson && messageJson.messageType)
         {
-            const messageType = messageJson.messageType 
+            const msgId = messageJson.id as number || -1;
+            if(messageJson.id===-1)
+                console.error(new Error("invalid message id: " + messageJson))
+            const messageType = messageJson.messageType ;
+            const messageClientId = messageJson.clientId ;
             switch(messageType)
             {
+                
+
                 case ConsoleMessageType.UserChat:
-                    outputArea.innerHTML += `<span class="console-chat"><span>${messageJson.clientDisplayName}</span> ${data}</span>`;
+                    let messageGroup = outputArea;
+                    const group = outputArea.querySelector(`[msg-id="${msgId-1}"]`) as HTMLElement;
+                    
+                    const ownMessageClass = messageClientId === wsClientId ? "chat-ownMessage" : "";
+                    if((group?.getAttribute("clientId") as UUID) == messageClientId)
+                    {
+                        messageGroup = group;
+                        messageGroup.getElementsByClassName('chat-content-container')[0].innerHTML += `<span class="chat-content"> ${data}</span>`;
+                        messageGroup.setAttribute('msg-id', msgId+"")
+                        // messageGroup.classList.add('console-chat-group')
+                    }
+                    else
+                        outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" msg-id="${msgId}" clientId="${(messageClientId as string).trim()}"><span class="chat-displayName">${messageJson.clientDisplayName}</span><div class="chat-content-container"><span class="chat-content">${data}</span></div></span>`;
                 break;
                 case ConsoleMessageType.SessionInfo:
-                    outputArea.innerHTML += `<span class="console-session-info">${data}</span>`;
+                    outputArea.innerHTML += `<span class="console-session-info" msg-id="${msgId}">${data}</span>`;
                 break;
                 case ConsoleMessageType.Info:
-                    outputArea.innerHTML += `<span class="console-info">${data}</span>`;
+                    outputArea.innerHTML += `<span class="console-info" msg-id="${msgId}">${data}</span>`;
                 break;
                 case ConsoleMessageType.Error:
-                    outputArea.innerHTML += `<span class="console-error">${data}</span>`;
+                    outputArea.innerHTML += `<span class="console-error" msg-id="${msgId}">${data}</span>`;
                 break;
                 case ConsoleMessageType.Debug:
-                    outputArea.innerHTML += `<span class="console-debug">${data}</span>`;
+                 
+                outputArea.innerHTML += `<div  msg-id="${msgId}"><span class="console-debug">${data}</span></div>`;
+                break;
+                case ConsoleMessageType.DebugProgram:
+                    const groupDebug = outputArea.querySelector(`.debug-program[msg-id="${msgId}"] .debug-program-container`) as HTMLElement;
+                    if(groupDebug)
+                    groupDebug.innerHTML += `<span class="console-debug">${data}</span>`;
+                    else 
+                    outputArea.innerHTML += `<div class="debug-program" msg-id="${msgId}"><button onclick="toggleConsoleDebugProgram(this.parentElement)">x</button><div class="debug-program-container"></div></div>`
+                
                 break;
                 case ConsoleMessageType.Output:
                 default:
-                    outputArea.innerHTML += `<pre>${data}</pre>`;
+                    outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}"}>${data}</pre>`;
                     break;
             }
         }
         else
         {
-            outputArea.innerHTML += `<pre>${data}</pre>`;
+            outputArea.innerHTML += `<pre class="console-output" msg-id="-1">${data}</pre>`;
 
         }
         // outputArea.textContent += "\n";
@@ -504,7 +537,7 @@ function openFile(fileName: string = "main.cpp")
 }
 
 
-
+let cmdId = 0;
 
 
 
@@ -537,6 +570,79 @@ const outputArea = document.getElementById("output");
 
 
 
+type CursorPosition = { row: number; column: number };
+
+// Class to render one visual cursor
+class VisualCursor implements Ace.Ace.MarkerLike {
+  constructor(public cursorId: string,private getPosition: () => CursorPosition) {}
+  type: string = "line";
+  clazz: string = "ace_remote_cursor";
+  markerRef: Ace.Ace.MarkerLike | undefined = undefined;
+  update(
+    html: string[],
+    markerLayer: any,
+    session: Ace.Ace.EditSession,
+    config: any,
+  ): void {
+    const pos = this.getPosition();
+    const screenPos = session.documentToScreenPosition(pos.row, pos.column);
+    const top = markerLayer.$getTop(screenPos.row, config);
+    const left = markerLayer.$padding + screenPos.column * config.characterWidth;
+
+   
+    markerLayer.elt("ace_remote_cursor",
+        `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px;`)
+         // FOR FUTURE REFERENCE, HTML DOESNT WORK ANYMORE, USE ELT
+
+  }
+}
+
+// Manager class for multiple visual cursors
+class MultiCursorManager {
+  private cursorsPos: Map<string, CursorPosition> = new Map();
+  private cursors: Map<string, VisualCursor> = new Map();
+  constructor(private editor: Ace.Ace.Editor) {}
+
+  addCursor(cursorId: string, position: CursorPosition): VisualCursor {
+    this.cursorsPos.set(cursorId, position);
+    
+    const marker = new VisualCursor(cursorId, () => this.cursorsPos.get(cursorId)!);
+    
+    const markerDyn =this.editor.session.addDynamicMarker(marker, true);
+    marker.markerRef = markerDyn;
+    this.cursors.set(cursorId, marker);
+    return marker;
+  }
+
+  updateCursor(cursorId: string, position: CursorPosition) {
+    if (this.cursorsPos.has(cursorId)) {
+      this.cursorsPos.set(cursorId, position);
+      this.editor.renderer.updateFull(); // Triggers redraw
+    }
+  }
+
+  removeCursor(cursorId: string) {
+
+    this.editor.session.removeMarker((this.cursors.get(cursorId)?.markerRef as Ace.Ace.MarkerLike).id || 0)
+    const success = this.cursors.delete(cursorId);
+    this.cursors.delete(cursorId)
+    this.editor.renderer.updateFrontMarkers();
+    return success;
+  }
+   replicateCursor(cursorId: string,  position: CursorPosition) {
+    if(this.cursors.has(cursorId))
+        {
+            this.updateCursor(cursorId, position)
+            return this.cursorsPos.get(cursorId);
+        }
+    else 
+       return this.addCursor(cursorId,  position)
+  }
+}
+
+// Initialize the manager
+const cursorManager = new MultiCursorManager(editor);
+
 ws.onopen = (ev) => {
     const sessionId = new URLSearchParams(window.location.search).get("session");
     //writeOutput(sessionId || "No session ID found in URL.");
@@ -567,6 +673,10 @@ ws.onopen = (ev) => {
         if(!currentFileName) console.error('Current file name is invalid')
         ws.send(JSON.stringify({ range: editor.getSelectionRange(),  fileName: currentFileName, type: WebSocketMessageType.CodeSelection })); // Send code to server on change
     });  
+    
+       
+
+    // Add the dynamic marker
     
 
     // setInterval(() => {
@@ -613,8 +723,8 @@ ws.onmessage = (event) => {
 
         const text = doc.getValue();
 
-        async function asyncExecuteCommand(command: string) {
-            return await fetch("/requestValue?value=" + command, {
+        async function asyncExecuteCommand(command: string, cmdId: number) {
+            return await fetch("/requestValue?value=" + command + "&cmdId="+cmdId, {
                 cache: "no-store",
             });
         }
@@ -688,32 +798,38 @@ ws.onmessage = (event) => {
 
                 
 
-                console.log(conditions);
-                setTimeout(() => {
-                    let i = 1;
+                // setTimeout(() => {
+                let i = 1;
+                if(playbackSpeed < 4) // dont bother if speed is too high.
                     for (const condition of conditions) {
-                        console.log(condition);
-                        asyncExecuteCommand(condition)
+                        asyncExecuteCommand(condition, cmdId++)
                             .then(function (response) {
                                 return response.json();
                             })
                             .then(function (data) {
                                 const exprValue = data.body.toString();
-
-                                buffer += (
-                                    exprValue.replace(exprValue.match(/\$\d*/), condition) + "; "
-                                )
-                                    .replace("(gdb)", "")
-                                    .replace("\n", "");
-                                console.log(buffer);
-                                if (i++ == conditions.length) {
-                                    renderer.setGhostText("   " + buffer, pos);
+                                if((parseInt((exprValue as string).match(/(?<=\$)\d*/)?.[0] as string) === cmdId) && !Number.isNaN((parseInt((exprValue as string).match(/(?<=\$)\d*/)?.[0] as string))))
+                                {
+                                    buffer += (
+                                        exprValue.replace(exprValue.match(/\$\d*/), condition) + "; "
+                                    )
+                                        .replace("(gdb)", "")
+                                        .replace("\n", "");
                                     console.log(buffer);
-                                    buffer = "";
+                                    if (i++ == conditions.length) { // wait to buffer all values
+                                        renderer.setGhostText("   " + buffer, pos);
+                                        console.log(buffer);
+                                        buffer = "";
+                                    }
                                 }
+                                else
+                                renderer.setGhostText("   " + buffer, pos);
+
+                               
                             });
                     }
-                }, 500);
+                
+                // }, 50);
 
                 const regex =
                     /(\b(?<=^(\d)+(?=\s)?\s*)(\w*)(\[(\w|\d)\]))|(?<=[(-/])(\w*)(\[(\w|\d)\])/g;
@@ -731,7 +847,8 @@ ws.onmessage = (event) => {
                             const index = variables.find(
                                 (vari) => vari.varname === varIndex
                             ).value;
-                            variable.indexes[indexCode] = index;
+                            if(variable.indexes.length > indexCode) return;
+                                variable.indexes[indexCode] = index;
                             //console.log(index)
                             //document.getElementById(varName).children[index].classList.add("active-vector-element");
                             removePrevActiveElem(index, varName, varIndex); // TODO remove +1
@@ -798,21 +915,41 @@ ws.onmessage = (event) => {
             {
                 console.log("removed sleection")
                 editor.session.removeMarker(marker);
+                cursorManager.removeCursor(eventJson.clientId);
                 return;
             }
+            
             const selection = eventJson.body.range;
             const start = selection.start;
             const end = selection.end;
+            
             //if(start.end==end.end || start.row*end.row * start.column * start*end.column==0) return;
             const range = new AceRange(start.row, start.column, end.row, end.column);
-            editor.session.removeMarker(marker);
-            marker = editor.session.addMarker(range, "ace_remote_selection", "text", false);
+            if(marker) editor.session.removeMarker(marker);
+            if(start && end)
+            {
+                if(start!==end)
+                 marker = editor.session.addMarker(range, "ace_remote_selection", "line", false);
+            
+                cursorManager.replicateCursor(eventJson.clientId,{row: end.row, column: end.column})
+             
+            }
+
+
+
             console.log("selection ", selection);
             break;
         case WebSocketMessageType.ColabData:
-            const colabClients: UUID[] = JSON.parse(eventJson.body).clients;
-            const colabSessionId = JSON.parse(eventJson.body).thisSessionId;
-            const colabCLientId = JSON.parse(eventJson.body).thisClientId;
+            const colabClients: UUID[] = eventJson.clients;
+            const colabSessionId = eventJson.thisSessionId;
+            const colabClientId = eventJson.thisClientId;
+            const colabCommand = eventJson.colabCommand;
+            console.log("collab command= " + colabCommand)
+            if(colabCommand == "DISCONECT" && colabCommand)
+            {
+                const success = cursorManager.removeCursor(colabClientId)
+                writeOutput(eventJson.body, eventJson)
+            }
             const colabContainer = document.getElementById("colab-container") || null;
             if (!colabContainer) return;
             colabContainer.innerHTML = "";
@@ -950,10 +1087,10 @@ function compileCode() {
                 editor.session.removeMarker(markerId);
             }
             
-            
-            output.textContent = data.success
+            writeOutput(data.success
                 ? "Compilation of " + data.fileName + " successful!\n"
-                : errorOutputString || "Compilation error. (couldnt retrieve error message, sorry)";
+                : errorOutputString || "Compilation error. (couldnt retrieve error message, sorry)")
+            
             code = editor.getValue();
         });
 }
@@ -968,19 +1105,35 @@ function sendDebugCommand(cmd: string) {
     const consoleElem = document.getElementById("console") as HTMLInputElement;
     if (cmd == "execute" && consoleElem?.value != "") submitConsole(consoleElem);
 }
-
-function playback() {
+let playbackSpeed = 1;
+let playbackId: NodeJS.Timeout;
+export function playback() {
+    sendDebugCommand('break main')
     sendDebugCommand("run");
     onRun();
     let i = debugLine;
-    const playback = setInterval(() => {
+    setPlaybackSpeed(1)
+}
+function setPlaybackSpeed(newPlaybackSpeed: number)
+{
+    document.getElementById('speed-control')?.children[playbackSpeed-1].classList.remove('active-speed')
+    playbackSpeed = newPlaybackSpeed;
+    updatePlaybackSpeed()
+}
+function updatePlaybackSpeed()
+{
+    document.getElementById('speed-control')?.children[playbackSpeed-1].classList.add('active-speed')
+    if(playbackId) clearInterval(playbackId);
+    playbackId = setInterval(() => {
+        if(!ws.OPEN) return clearInterval(playbackId);
         sendDebugCommand("next");
-        if (debugLine >= editor.session.getLength()) {
-            clearInterval(playback);
+        if (debugLine >= editor.session.getLength() + 2) { // add offset to complete exectuin and display result.
+            clearInterval(playbackId);
             onExit();
         }
-    }, 100);
+    }, 300 / playbackSpeed);
 }
+
 function onRun() {
     editor.setReadOnly(true);
 }

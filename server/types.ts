@@ -20,12 +20,21 @@ export class ClientObject {
       
   }
 
+interface CommandBuffer {
+    codeSelection: any;
+
+
+}
 
 export class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string> = new Map<UUID, string>(); // client , file name
     clients: Map<UUID,ClientObject> = new Map<UUID,ClientObject>();
     clientsDisplayNames: string[];
+    clientsSockets: Map<UUID, WebSocket> = new Map();
+    messageIndex: number = 1;
+    clientCommandBuffer: Map<UUID, CommandBuffer> = new Map();
+
     public constructor(sessionId?: UUID) {
         this.sessionId = sessionId || uuidv4() as UUID;
         this.clientsDisplayNames = this.getDisplayNames();
@@ -64,10 +73,7 @@ export class EditorSession {
       
     private getDisplayNames(): string[]
     {
-        const nouns = ["lup", "leu", "raton", "pisică", "câine", "maimuță", "elefant",
-             "tigru", "urs", "vulpe", "șarpe", "iepure", "căprioară", "girafă", "rinocer",
-            "hipopotam", "zebră", "crocodil", "aligator", "panteră", "jaguar", "pinguin",
-            "lebădă", "vultur", "șoim", "bufniță", "liliac", "delfin", "rechin", "meduză"]; // const nouns = ["lupul", "leul", "ratonul", "pisica", "cainele", "maimuta"];
+        const nouns = ["lup", "leu", "raton", "pisică", "câine", "maimuță", "elefant","tigru", "urs", "vulpe", "șarpe", "iepure", "căprioară", "girafă", "rinocer","hipopotam", "zebră", "crocodil", "aligator", "panteră", "jaguar", "pinguin","lebădă", "vultur", "șoim", "bufniță", "liliac", "delfin", "rechin", "meduză"]; // const nouns = ["lupul", "leul", "ratonul", "pisica", "cainele", "maimuta"];
         // const prefixAdjFem = ["rapida", "curajoasa", "frumoasa", "destepta"];
         // const prefixAdjMasc = ["rapid", "curajos", "frumos", "destept"];
         // const suffixAdjMasc = ["copilul", "beta", "micul", "curajosul", "marele"];
@@ -113,7 +119,7 @@ export class EditorSession {
             let newNown = noun;
             if(Math.random() > (prefixAdj.length/suffixAdj.length/2%2))
             {
-                
+                // add termination
                 ["ul", "le"].forEach(termination => {
                     if(noun.endsWith(termination))
                         return newNown = noun.replace(termination, "")
@@ -126,6 +132,7 @@ export class EditorSession {
                
             else 
             { 
+                
                 switch(noun.substring(noun.length-1)) {
 
                     case "e":
@@ -135,7 +142,7 @@ export class EditorSession {
 
                     case "a":
                     case "ă":
-                        newNown = noun.slice(noun.length) + "a"
+                        newNown = noun.slice(0,     noun.length-1) + "a"
                         break;
 
                     default:
@@ -172,10 +179,10 @@ export class EditorSession {
 
     }
 
-    public onRemoveClient(clientId: UUID)
+    public removeClient(clientId: UUID)
     {
         this.clients.delete(clientId);
-
+        this.clientCommandBuffer.delete(clientId)
         this.clientsActiveFile.delete(clientId)
 
     }
@@ -184,7 +191,7 @@ export class EditorSession {
     {
         const newClient = new ClientObject(this.sessionId, this);
         console.log("spawning new client with id: " + newClient.clientId)
-        
+        this.clientsSockets.set(newClient.clientId, ws)
         this.clients.set(newClient.clientId, newClient);
         
         return newClient.clientId;

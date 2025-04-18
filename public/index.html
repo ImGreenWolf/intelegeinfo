@@ -38,9 +38,7 @@ int main() {
                     
                 <h1>ÎnțelegeInfo</h1>
                 <div id="colab-container">
-                    <div class="colab-client" id="1">aaa</div>
-                    <div class="colab-client" id="2">sss</div>
-                    <div class="colab-client" id="3">cccc</div>
+
                 </div>
                 <nav>
                     
@@ -88,12 +86,17 @@ int main() {
            
                 <div class="buttons">
                     <button onclick="compileCode()">Compile</button>
-                    <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button>
-                    <button onclick="playback()">Playback</button>
-                    <button onclick="sendDebugCommand('run')">Run in Debugger</button>
-                    <button onclick="sendDebugCommand('next')">Step Over</button>
                     <button onclick="sendDebugCommand('execute')">Execute Code</button>
-                    <button onclick="sendDebugCommand('continue')">Continue Execution</button>
+                    <!-- <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button> -->
+                    <button onclick="playback()">Playback</button>
+                    <div class="speed-control" id="speed-control"> 
+                        <button onclick="setPlaybackSpeed(1)">1x</button>
+                        <button onclick="setPlaybackSpeed(2)">2x</button>
+                        <button onclick="setPlaybackSpeed(3)">3x</button>
+                    </div>
+                    <button onclick="sendDebugCommand('run')">Run in Debugger</button> 
+                    <button onclick="sendDebugCommand('next')">Step Over</button>
+                    <!-- <button onclick="sendDebugCommand('continue')">Continue Execution</button> -->
                     <button onclick="sendDebugCommand('quit')">Stop Debugging</button>
                 </div>
 

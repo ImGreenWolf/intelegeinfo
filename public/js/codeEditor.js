@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConsoleMessageType = exports.WebSocketMessageType = void 0;
 exports.createFile = createFile;
+exports.playback = playback;
 /* IMPORTS */
 // FileManagement.ts
 const FileContainer = document.getElementById("editor-tabs-container");
@@ -79,6 +80,7 @@ var ConsoleMessageType;
     ConsoleMessageType["Debug"] = "debug";
     ConsoleMessageType["SessionInfo"] = "session";
     ConsoleMessageType["Output"] = "output";
+    ConsoleMessageType["DebugProgram"] = "debugProgram";
 })(ConsoleMessageType || (exports.ConsoleMessageType = ConsoleMessageType = {}));
 const variableStore = new Map();
 function parseDebuggerOutput(input, { onNewVariable = (newVar) => { }, onArrayIndexChange = (name, change) => { }, } = {}) {
@@ -240,6 +242,10 @@ if (consoleInput)
             submitConsole(consoleInput);
         }
     });
+function toggleConsoleDebugProgram(elem) {
+    elem.classList.toggle('open');
+    elem.children[1].classList.toggle('open');
+}
 // END DOCUMENT FUNCTIONS //
 // standardise the json
 function sendWebsocketCommand(cmd, argsArr = []) {
@@ -303,33 +309,53 @@ function clearGhostMarkers(editor) {
 }
 function writeOutput(data, messageJson) {
     if (outputArea) {
-        console.log(messageJson.body);
-        if (messageJson.messageType) {
+        if (messageJson && messageJson.messageType) {
+            const msgId = messageJson.id || -1;
+            if (messageJson.id === -1)
+                console.error(new Error("invalid message id: " + messageJson));
             const messageType = messageJson.messageType;
+            const messageClientId = messageJson.clientId;
             switch (messageType) {
                 case ConsoleMessageType.UserChat:
-                    outputArea.innerHTML += `<span class="console-chat"><span>${messageJson.clientDisplayName}</span> ${data}</span>`;
+                    let messageGroup = outputArea;
+                    const group = outputArea.querySelector(`[msg-id="${msgId - 1}"]`);
+                    const ownMessageClass = messageClientId === wsClientId ? "chat-ownMessage" : "";
+                    if (group?.getAttribute("clientId") == messageClientId) {
+                        messageGroup = group;
+                        messageGroup.getElementsByClassName('chat-content-container')[0].innerHTML += `<span class="chat-content"> ${data}</span>`;
+                        messageGroup.setAttribute('msg-id', msgId + "");
+                        // messageGroup.classList.add('console-chat-group')
+                    }
+                    else
+                        outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" msg-id="${msgId}" clientId="${messageClientId.trim()}"><span class="chat-displayName">${messageJson.clientDisplayName}</span><div class="chat-content-container"><span class="chat-content">${data}</span></div></span>`;
                     break;
                 case ConsoleMessageType.SessionInfo:
-                    outputArea.innerHTML += `<span class="console-session-info">${data}</span>`;
+                    outputArea.innerHTML += `<span class="console-session-info" msg-id="${msgId}">${data}</span>`;
                     break;
                 case ConsoleMessageType.Info:
-                    outputArea.innerHTML += `<span class="console-info">${data}</span>`;
+                    outputArea.innerHTML += `<span class="console-info" msg-id="${msgId}">${data}</span>`;
                     break;
                 case ConsoleMessageType.Error:
-                    outputArea.innerHTML += `<span class="console-error">${data}</span>`;
+                    outputArea.innerHTML += `<span class="console-error" msg-id="${msgId}">${data}</span>`;
                     break;
                 case ConsoleMessageType.Debug:
-                    outputArea.innerHTML += `<span class="console-debug">${data}</span>`;
+                    outputArea.innerHTML += `<div  msg-id="${msgId}"><span class="console-debug">${data}</span></div>`;
+                    break;
+                case ConsoleMessageType.DebugProgram:
+                    const groupDebug = outputArea.querySelector(`.debug-program[msg-id="${msgId}"] .debug-program-container`);
+                    if (groupDebug)
+                        groupDebug.innerHTML += `<span class="console-debug">${data}</span>`;
+                    else
+                        outputArea.innerHTML += `<div class="debug-program" msg-id="${msgId}"><button onclick="toggleConsoleDebugProgram(this.parentElement)">x</button><div class="debug-program-container"></div></div>`;
                     break;
                 case ConsoleMessageType.Output:
                 default:
-                    outputArea.innerHTML += `<pre>${data}</pre>`;
+                    outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}"}>${data}</pre>`;
                     break;
             }
         }
         else {
-            outputArea.innerHTML += `<pre>${data}</pre>`;
+            outputArea.innerHTML += `<pre class="console-output" msg-id="-1">${data}</pre>`;
         }
         // outputArea.textContent += "\n";
         outputArea.scrollTop = outputArea.scrollHeight;
@@ -360,6 +386,7 @@ function openFile(fileName = "main.cpp") {
     const command = JSON.stringify({ type: WebSocketMessageType.FileManagement, command: FileManagementCommands.Open, body: fileName });
     ws.send(command);
 }
+let cmdId = 0;
 // websocket //
 const ws = new WebSocket("ws:/" + window.location.hostname + ":8080");
 let consoleText = "";
@@ -382,6 +409,66 @@ function submitConsole(elem) {
 let wsClientId;
 let wsSessionId;
 const outputArea = document.getElementById("output");
+// Class to render one visual cursor
+class VisualCursor {
+    cursorId;
+    getPosition;
+    constructor(cursorId, getPosition) {
+        this.cursorId = cursorId;
+        this.getPosition = getPosition;
+    }
+    type = "line";
+    clazz = "ace_remote_cursor";
+    markerRef = undefined;
+    update(html, markerLayer, session, config) {
+        const pos = this.getPosition();
+        const screenPos = session.documentToScreenPosition(pos.row, pos.column);
+        const top = markerLayer.$getTop(screenPos.row, config);
+        const left = markerLayer.$padding + screenPos.column * config.characterWidth;
+        markerLayer.elt("ace_remote_cursor", `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px;`);
+        // FOR FUTURE REFERENCE, HTML DOESNT WORK ANYMORE, USE ELT
+    }
+}
+// Manager class for multiple visual cursors
+class MultiCursorManager {
+    editor;
+    cursorsPos = new Map();
+    cursors = new Map();
+    constructor(editor) {
+        this.editor = editor;
+    }
+    addCursor(cursorId, position) {
+        this.cursorsPos.set(cursorId, position);
+        const marker = new VisualCursor(cursorId, () => this.cursorsPos.get(cursorId));
+        const markerDyn = this.editor.session.addDynamicMarker(marker, true);
+        marker.markerRef = markerDyn;
+        this.cursors.set(cursorId, marker);
+        return marker;
+    }
+    updateCursor(cursorId, position) {
+        if (this.cursorsPos.has(cursorId)) {
+            this.cursorsPos.set(cursorId, position);
+            this.editor.renderer.updateFull(); // Triggers redraw
+        }
+    }
+    removeCursor(cursorId) {
+        this.editor.session.removeMarker((this.cursors.get(cursorId)?.markerRef).id || 0);
+        const success = this.cursors.delete(cursorId);
+        this.cursors.delete(cursorId);
+        this.editor.renderer.updateFrontMarkers();
+        return success;
+    }
+    replicateCursor(cursorId, position) {
+        if (this.cursors.has(cursorId)) {
+            this.updateCursor(cursorId, position);
+            return this.cursorsPos.get(cursorId);
+        }
+        else
+            return this.addCursor(cursorId, position);
+    }
+}
+// Initialize the manager
+const cursorManager = new MultiCursorManager(editor);
 ws.onopen = (ev) => {
     const sessionId = new URLSearchParams(window.location.search).get("session");
     //writeOutput(sessionId || "No session ID found in URL.");
@@ -411,6 +498,7 @@ ws.onopen = (ev) => {
             console.error('Current file name is invalid');
         ws.send(JSON.stringify({ range: editor.getSelectionRange(), fileName: currentFileName, type: WebSocketMessageType.CodeSelection })); // Send code to server on change
     });
+    // Add the dynamic marker
     // setInterval(() => {
     //     const code = editor.getValue();
     //     //console.log(delta);
@@ -442,8 +530,8 @@ ws.onmessage = (event) => {
         const session = editor.getSession();
         const doc = session.getDocument();
         const text = doc.getValue();
-        async function asyncExecuteCommand(command) {
-            return await fetch("/requestValue?value=" + command, {
+        async function asyncExecuteCommand(command, cmdId) {
+            return await fetch("/requestValue?value=" + command + "&cmdId=" + cmdId, {
                 cache: "no-store",
             });
         }
@@ -501,29 +589,32 @@ ws.onmessage = (event) => {
                 for (const match of data.matchAll(forRegex)) {
                     conditions.push(match[2].trim());
                 }
-                console.log(conditions);
-                setTimeout(() => {
-                    let i = 1;
+                // setTimeout(() => {
+                let i = 1;
+                if (playbackSpeed < 4) // dont bother if speed is too high.
                     for (const condition of conditions) {
-                        console.log(condition);
-                        asyncExecuteCommand(condition)
+                        asyncExecuteCommand(condition, cmdId++)
                             .then(function (response) {
                             return response.json();
                         })
                             .then(function (data) {
                             const exprValue = data.body.toString();
-                            buffer += (exprValue.replace(exprValue.match(/\$\d*/), condition) + "; ")
-                                .replace("(gdb)", "")
-                                .replace("\n", "");
-                            console.log(buffer);
-                            if (i++ == conditions.length) {
-                                renderer.setGhostText("   " + buffer, pos);
+                            if ((parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]) === cmdId) && !Number.isNaN((parseInt(exprValue.match(/(?<=\$)\d*/)?.[0])))) {
+                                buffer += (exprValue.replace(exprValue.match(/\$\d*/), condition) + "; ")
+                                    .replace("(gdb)", "")
+                                    .replace("\n", "");
                                 console.log(buffer);
-                                buffer = "";
+                                if (i++ == conditions.length) { // wait to buffer all values
+                                    renderer.setGhostText("   " + buffer, pos);
+                                    console.log(buffer);
+                                    buffer = "";
+                                }
                             }
+                            else
+                                renderer.setGhostText("   " + buffer, pos);
                         });
                     }
-                }, 500);
+                // }, 50);
                 const regex = /(\b(?<=^(\d)+(?=\s)?\s*)(\w*)(\[(\w|\d)\]))|(?<=[(-/])(\w*)(\[(\w|\d)\])/g;
                 if (data.match(regex) != null)
                     data.match(regex).forEach((variable) => {
@@ -540,6 +631,8 @@ ws.onmessage = (event) => {
                         const indexCode = varIndex.charCodeAt(0);
                         if (variables.find((vari) => vari.varname === varIndex)) {
                             const index = variables.find((vari) => vari.varname === varIndex).value;
+                            if (variable.indexes.length > indexCode)
+                                return;
                             variable.indexes[indexCode] = index;
                             //console.log(index)
                             //document.getElementById(varName).children[index].classList.add("active-vector-element");
@@ -591,6 +684,7 @@ ws.onmessage = (event) => {
              {
                 console.log("removed sleection");
                 editor.session.removeMarker(marker);
+                cursorManager.removeCursor(eventJson.clientId);
                 return;
             }
             const selection = eventJson.body.range;
@@ -598,14 +692,25 @@ ws.onmessage = (event) => {
             const end = selection.end;
             //if(start.end==end.end || start.row*end.row * start.column * start*end.column==0) return;
             const range = new AceRange(start.row, start.column, end.row, end.column);
-            editor.session.removeMarker(marker);
-            marker = editor.session.addMarker(range, "ace_remote_selection", "text", false);
+            if (marker)
+                editor.session.removeMarker(marker);
+            if (start && end) {
+                if (start !== end)
+                    marker = editor.session.addMarker(range, "ace_remote_selection", "line", false);
+                cursorManager.replicateCursor(eventJson.clientId, { row: end.row, column: end.column });
+            }
             console.log("selection ", selection);
             break;
         case WebSocketMessageType.ColabData:
-            const colabClients = JSON.parse(eventJson.body).clients;
-            const colabSessionId = JSON.parse(eventJson.body).thisSessionId;
-            const colabCLientId = JSON.parse(eventJson.body).thisClientId;
+            const colabClients = eventJson.clients;
+            const colabSessionId = eventJson.thisSessionId;
+            const colabClientId = eventJson.thisClientId;
+            const colabCommand = eventJson.colabCommand;
+            console.log("collab command= " + colabCommand);
+            if (colabCommand == "DISCONECT" && colabCommand) {
+                const success = cursorManager.removeCursor(colabClientId);
+                writeOutput(eventJson.body, eventJson);
+            }
             const colabContainer = document.getElementById("colab-container") || null;
             if (!colabContainer)
                 return;
@@ -706,7 +811,7 @@ function compileCode() {
                     const column = errorMessage.column;
                     errorAnnotations.push({ row: row, column: column, text: errorMessage.error, type: "error" });
                     // editor.session.addMarker(new AceRange(row, column, row, column), "ace-error-line", "fullLine")
-                    markers.push(editor.session.addMarker(new AceRange(row, column, row, column + 1), "ace-error-line", "fullLine"));
+                    markers.push(editor.session.addMarker(new AceRange(row, column, row, column + 1), "ace-error-line", "screenLine"));
                 }
             }
             editor.session.setAnnotations(errorAnnotations);
@@ -716,9 +821,9 @@ function compileCode() {
             for (const markerId of markers)
                 editor.session.removeMarker(markerId);
         }
-        output.textContent = data.success
+        writeOutput(data.success
             ? "Compilation of " + data.fileName + " successful!\n"
-            : errorOutputString || "Compilation error. (couldnt retrieve error message, sorry)";
+            : errorOutputString || "Compilation error. (couldnt retrieve error message, sorry)");
         code = editor.getValue();
     });
 }
@@ -731,17 +836,33 @@ function sendDebugCommand(cmd) {
     if (cmd == "execute" && consoleElem?.value != "")
         submitConsole(consoleElem);
 }
+let playbackSpeed = 1;
+let playbackId;
 function playback() {
+    sendDebugCommand('break main');
     sendDebugCommand("run");
     onRun();
     let i = debugLine;
-    const playback = setInterval(() => {
+    setPlaybackSpeed(1);
+}
+function setPlaybackSpeed(newPlaybackSpeed) {
+    document.getElementById('speed-control')?.children[playbackSpeed - 1].classList.remove('active-speed');
+    playbackSpeed = newPlaybackSpeed;
+    updatePlaybackSpeed();
+}
+function updatePlaybackSpeed() {
+    document.getElementById('speed-control')?.children[playbackSpeed - 1].classList.add('active-speed');
+    if (playbackId)
+        clearInterval(playbackId);
+    playbackId = setInterval(() => {
+        if (!ws.OPEN)
+            return clearInterval(playbackId);
         sendDebugCommand("next");
-        if (debugLine >= editor.session.getLength()) {
-            clearInterval(playback);
+        if (debugLine >= editor.session.getLength() + 2) { // add offset to complete exectuin and display result.
+            clearInterval(playbackId);
             onExit();
         }
-    }, 100);
+    }, 300 / playbackSpeed);
 }
 function onRun() {
     editor.setReadOnly(true);

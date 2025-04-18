@@ -25,6 +25,9 @@ class EditorSession {
     clientsActiveFile = new Map(); // client , file name
     clients = new Map();
     clientsDisplayNames;
+    clientsSockets = new Map();
+    messageIndex = 1;
+    clientCommandBuffer = new Map();
     constructor(sessionId) {
         this.sessionId = sessionId || (0, uuid_1.v4)();
         this.clientsDisplayNames = this.getDisplayNames();
@@ -55,10 +58,7 @@ class EditorSession {
         return session;
     }
     getDisplayNames() {
-        const nouns = ["lup", "leu", "raton", "pisică", "câine", "maimuță", "elefant",
-            "tigru", "urs", "vulpe", "șarpe", "iepure", "căprioară", "girafă", "rinocer",
-            "hipopotam", "zebră", "crocodil", "aligator", "panteră", "jaguar", "pinguin",
-            "lebădă", "vultur", "șoim", "bufniță", "liliac", "delfin", "rechin", "meduză"]; // const nouns = ["lupul", "leul", "ratonul", "pisica", "cainele", "maimuta"];
+        const nouns = ["lup", "leu", "raton", "pisică", "câine", "maimuță", "elefant", "tigru", "urs", "vulpe", "șarpe", "iepure", "căprioară", "girafă", "rinocer", "hipopotam", "zebră", "crocodil", "aligator", "panteră", "jaguar", "pinguin", "lebădă", "vultur", "șoim", "bufniță", "liliac", "delfin", "rechin", "meduză"]; // const nouns = ["lupul", "leul", "ratonul", "pisica", "cainele", "maimuta"];
         // const prefixAdjFem = ["rapida", "curajoasa", "frumoasa", "destepta"];
         // const prefixAdjMasc = ["rapid", "curajos", "frumos", "destept"];
         // const suffixAdjMasc = ["copilul", "beta", "micul", "curajosul", "marele"];
@@ -97,6 +97,7 @@ class EditorSession {
             const prefixAdj = isFemale ? prefixAdjFem : prefixAdjMasc;
             let newNown = noun;
             if (Math.random() > (prefixAdj.length / suffixAdj.length / 2 % 2)) {
+                // add termination
                 ["ul", "le"].forEach(termination => {
                     if (noun.endsWith(termination))
                         return newNown = noun.replace(termination, "");
@@ -115,7 +116,7 @@ class EditorSession {
                         break;
                     case "a":
                     case "ă":
-                        newNown = noun.slice(noun.length) + "a";
+                        newNown = noun.slice(0, noun.length - 1) + "a";
                         break;
                     default:
                         if (noun.endsWith('u'))
@@ -137,13 +138,15 @@ class EditorSession {
     getClientObjectById(clientId) {
         return this.clients.get(clientId);
     }
-    onRemoveClient(clientId) {
+    removeClient(clientId) {
         this.clients.delete(clientId);
+        this.clientCommandBuffer.delete(clientId);
         this.clientsActiveFile.delete(clientId);
     }
     spawnClient(ws) {
         const newClient = new ClientObject(this.sessionId, this);
         console.log("spawning new client with id: " + newClient.clientId);
+        this.clientsSockets.set(newClient.clientId, ws);
         this.clients.set(newClient.clientId, newClient);
         return newClient.clientId;
     }
