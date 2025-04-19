@@ -1250,7 +1250,7 @@ wss.on("connection", (ws: WebSocket) => {
                             if(!getProcessFromMap(sessionId)) {
 
                                 const filePath = path.join(__dirname, "cache", sessionId, "main.exe");
-                                gdbProcess = spawn("gdb", ["-q", "-ex", "set pagination off", "-ex", "set print thread-events off", filePath]);
+                                gdbProcess = spawn("gdb", ["-q", "-ex", "set pagination off", "--interpreter=mi", "set print thread-events off", filePath]);
                                 addProcessToMap(sessionId, gdbProcess);
                                 printClientConsoleDebug("started debugging process.")
                                 gdbProcess.on('close', (code) => {
