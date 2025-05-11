@@ -258,7 +258,7 @@ router.get('/verifyemail', (req, res) => {
                 if(user.emailValidated) return res.send('Your account is already verified') 
 
     
-    Profile.parseUserInfoInFile(id, rootDirName+'public/pages/emailCodeVerification.html').then(file => {
+    Profile.parseUserInfoInFile(id, path.join(rootDirName,'public','pages','emailCodeVerification.html')).then(file => {
 
 
         const code = generateCode()

@@ -218,7 +218,7 @@ exports.router.get('/verifyemail', (req, res) => {
     getUserData(id).then(user => {
         if (user.emailValidated)
             return res.send('Your account is already verified');
-        Profile.parseUserInfoInFile(id, 'C:/Users/radub_qd/intelegeinfo/public/pages/emailCodeVerification.html').then(file => {
+        Profile.parseUserInfoInFile(id, path_1.default.join(rootDirName, 'public', 'pages', 'emailCodeVerification.html')).then(file => {
             const code = generateCode();
             let censoredEmail = user.email;
             for (const match of user.email.matchAll(/#{(\w*) ?(?:\?)(.*): ?(.*)}|#{(\w*)}/g))
