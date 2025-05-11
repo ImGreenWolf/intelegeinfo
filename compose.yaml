@@ -39,7 +39,7 @@ services:
         condition: service_healthy
     secrets:
       - db-password
-  db:
+  postgres:
     image: postgres
     restart: always
     user: postgres
