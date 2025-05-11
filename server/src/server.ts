@@ -41,11 +41,11 @@ app.use(express.static("public"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'public', 'codeEditor.js')))
 
-
-app.get('/editor/codeEditor.js', (req, res) => {
-    res.sendFile(path.join(rootDirName,'dist', 'public', 'codeEditor.js'))
-})
+// app.get('/editor/codeEditor.js', (req, res) => {
+//     res.sendFile(path.join(rootDirName,'dist', 'public', 'codeEditor.js'))
+// })
 
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'dist', 'public', 'mode_cpp_custom.js'))

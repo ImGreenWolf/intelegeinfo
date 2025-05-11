@@ -71,9 +71,10 @@ app.use(express_1.default.static("public"));
 // app.use('dist',express.static(path.join(rootDirName,'dist')));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
-app.get('/editor/codeEditor.js', (req, res) => {
-    res.sendFile(path_1.default.join(rootDirName, 'dist', 'public', 'codeEditor.js'));
-});
+app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(rootDirName, 'dist', 'public', 'codeEditor.js')));
+// app.get('/editor/codeEditor.js', (req, res) => {
+//     res.sendFile(path.join(rootDirName,'dist', 'public', 'codeEditor.js'))
+// })
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path_1.default.join(rootDirName, 'dist', 'public', 'mode_cpp_custom.js'));
 });
