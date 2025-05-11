@@ -92,9 +92,13 @@ function createFile() {
 const codeMap = new Map();
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id;
+    if (!sessionId) {
+        res.status(500).send({ error: "session id invalid" });
+        return;
+    }
     const code = users.generateCode();
     const link = req.hostname + '/editor?session=' + sessionId;
-    qrcode.toDataURL(link + "&method=qrcode", { errorCorrectionLevel: "low", type: "image/webp", margin: 2 }).then(value => {
+    qrcode.toDataURL(link + "&method=qrcode", { errorCorrectionLevel: "low", type: "image/png", margin: 0, width: 100 }).then(value => {
         codeMap.set(parseInt(code), sessionId);
         res.send({ qrsvg: value, code, link });
         setTimeout(() => {

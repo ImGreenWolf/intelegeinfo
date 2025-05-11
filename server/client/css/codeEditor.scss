@@ -1108,8 +1108,16 @@ pointer-events: none;
         img 
         {
             width: 100%;
+            aspect-ratio: 1;
+            background-color: rgb(242, 242, 242);
+            padding: 10px;
+            box-sizing: border-box;
             border-radius: 10px;
             user-select: none;
+            &:not([src])
+            {
+            background-color: rgb(22, 22, 22);
+            }
         }
         
         p.code

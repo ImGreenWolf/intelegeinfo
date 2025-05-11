@@ -863,14 +863,9 @@ function copySessionLink() {
   //   });
   // } else window.alert(sessionLink);
   if(!wsSessionId) window.alert('Invalid session id.')
-  fetch('/editor/sharesession?id='+wsSessionId)
-  .then(res => {
-    return res.json();
-  })
-  .then(data => {
-    
-    
-    const shareContainer = document.createElement('div')
+
+
+        const shareContainer = document.createElement('div')
     shareContainer.classList.add('share-container');
   
     shareContainer.innerHTML =
@@ -891,10 +886,10 @@ function copySessionLink() {
     </form>
     <div id='connect-data-container'>
       <div id='connect-data-inner'>
-        <img src="${data.qrsvg}">
+        <img id="data.qrurl"> 
         <p>or</p>
         <div class='connect-info'>
-          <p class='code'>${data.code}</p><button id='copy-link'>copy</button>
+          <p class='code' id="data.code">}xxxxxx</p><button id='copy-link'>copy</button>
         </div>
       </div>
     </div>
@@ -909,6 +904,56 @@ function copySessionLink() {
       shareContainer.remove();
       // shareContainer.animate()
     }
+
+
+
+  fetch('/editor/sharesession?id='+wsSessionId)
+  .then(res => {
+    return res.json();
+  })
+  .then(data => {
+    
+    document.getElementById('data.code')!.innerText = data.code;
+    (document.getElementById('data.qrurl')! as HTMLImageElement).src = data.qrsvg;
+    // const shareContainer = document.createElement('div')
+    // shareContainer.classList.add('share-container');
+  
+    // shareContainer.innerHTML =
+    // `
+    // <form id="createSessionForm" action="/editor/startsession/${wsSessionId}" method="POST">
+    //   <button id='close-share-session'>x</button>
+
+    //   <label for="chat">Enable Chat <input type="checkbox" name="chat" checked></label>
+      
+    //   <label for="code-permission">Editor Permission 
+    //       <select id='code-permission' name='codePermission'>
+    //         <option value='0'>Everyone</option>
+    //         <option value='2'>Only host</option>
+    //         <option value='1'>Require Permission</option>
+    //       </select>
+    //   </label>
+    //   <button type="submit" id="submit-create-session">Create Session</button>
+    // </form>
+    // <div id='connect-data-container'>
+    //   <div id='connect-data-inner'>
+    //     <img src="${data.qrsvg}">
+    //     <p>or</p>
+    //     <div class='connect-info'>
+    //       <p class='code'>${data.code}</p><button id='copy-link'>copy</button>
+    //     </div>
+    //   </div>
+    // </div>
+    
+    // `
+
+    
+  
+    // document.body.appendChild(shareContainer)
+
+    // document.getElementById('close-share-session')!.onclick = function (this, ev) {
+    //   shareContainer.remove();
+    //   // shareContainer.animate()
+    // }
     document.getElementById('createSessionForm')!.onsubmit =  function (this, ev) {
       ev.preventDefault()
       const formData = new FormData(ev.target as HTMLFormElement)
@@ -1246,6 +1291,9 @@ ws.onmessage = (event) => {
   let command = eventJson.message;
   let data = eventJson.body;
   const type: string = eventJson.type;
+
+  // if(type!=WebSocketMessageType.Handshake && !wsSessionId)
+  //   return window.alert('editor was not initialised. Session id is invalid.')
   //console.log(type);
   //console.log(eventJson)
 
@@ -1522,13 +1570,21 @@ ws.onmessage = (event) => {
       break;
 
     case WebSocketMessageType.Handshake:
+      if(wsSessionId || eventJson.sessionId)
+      {
       wsClientId = eventJson.clientId;
       wsSessionId = eventJson.sessionId;
       
-        if(eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
-          document.getElementById('share')?.classList.add('host')
+      }
+
+      if(eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
+        document.getElementById('share')?.classList.add('host')
+      
+      writeOutput(eventJson.body, eventJson);
+
+
       const projectData = eventJson.project;
-        const sessionData = eventJson.session;
+      const sessionData = eventJson.session;
       if(projectData)
       {
         
@@ -1548,7 +1604,7 @@ ws.onmessage = (event) => {
       }
       
 
-      writeOutput(eventJson.body, eventJson);
+      
       break;
     case WebSocketMessageType.CodeChange:
       // editor.session.getDocument().applyDelta(delta);
