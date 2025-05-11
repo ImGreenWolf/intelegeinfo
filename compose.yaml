@@ -13,6 +13,12 @@ services:
       context: .
     environment:
       NODE_ENV: production
+      DATABASE_URL: "postgresql://postgres:bb250981@localhost:5432/intelegeinfo"
+      GOOGLE_CLIENT_ID: 1084614977813-af126bl44fhu54nh1etlnl3n2tf5jkq5.apps.googleusercontent.com
+      GOOGLE_CLIENT_SECRET: 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
+      REDIRECT_URI: http://intelegeinfo.go.ro/login/callback
+      GOOGLE_EMAILV_REFRESHTOKEN: 1//04n8XPu2K9TXOCgYIARAAGAQSNwF-L9IrU288TNCyzWo52jQyHOjh4dBbLe6gHNtgOZDs0_ck2xCreFdPY4_59IWVqTu7oo46Flw
+      GOOGLE_EMAILV_ACCESSTOKEN: ya29.a0AZYkNZgdtqHLEmo56Mb7QAavn4xyvzFUgHRRRKmt1bHv2GJ-pSRnBSYuh8yrwbmPOWxb_O0RrMWpre2_wKDDe8d5MIxB51LW5KbpKiznGLXPq9Wvhf6TjZ5ZruAtNz1XoaCo1v5zqyi9WINOoIEroUxE6jB6059nOeBWq1AEaCgYKAZ0SARISFQHGX2MiHTOP--PUJog2SpjAIS63cw0175
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -38,6 +44,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    secrets:
+      - db-password
   db:
     image: postgres
     restart: always
@@ -60,5 +68,5 @@ volumes:
   db-data:
 secrets:
   db-password:
-    file: db_password.txt
+    file: db/password.txt
 
