@@ -46,15 +46,17 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const signup = __importStar(require("./signup"));
+const path_1 = __importDefault(require("path"));
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/login.html"));
 const validEmail = 'a@c';
 const salt = bcryptjs_1.default.genSaltSync(10);
 const validPassword = bcryptjs_1.default.hashSync("123", salt);
-const privateKeyPem = fs_1.default.readFileSync('../private.pem', 'utf8') || "supersecretprivatekey";
+const rootDirName = path_1.default.resolve("./");
+const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, '/private.pem'), 'utf8') || "supersecretprivatekey";
 const privateKey = node_forge_1.default.pki.privateKeyFromPem(privateKeyPem);
-const publicKeyPem = fs_1.default.readFileSync('../public.pem', 'utf8') || "supersecretpublickey";
+const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, '/public.pem'), 'utf8') || "supersecretpublickey";
 ;
 function createToken(user) {
     return jsonwebtoken_1.default.sign({

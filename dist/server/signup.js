@@ -11,12 +11,14 @@ const node_forge_1 = __importDefault(require("node-forge"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const login_1 = require("./login");
+const path_1 = __importDefault(require("path"));
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/signup.html"));
-const privateKeyPem = fs_1.default.readFileSync('../private.pem', 'utf8') || "supersecretprivatekey";
+const rootDirName = path_1.default.resolve("./");
+const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, '/private.pem'), 'utf8') || "supersecretprivatekey";
 const privateKey = node_forge_1.default.pki.privateKeyFromPem(privateKeyPem);
-const publicKeyPem = fs_1.default.readFileSync('../public.pem', 'utf8') || "supersecretpublickey";
+const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, '/public.pem'), 'utf8') || "supersecretpublickey";
 // function createToken(user: UserObject) {
 //     return jwt.sign( 
 //       { sub: user.id, username: user.username },

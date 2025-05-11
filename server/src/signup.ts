@@ -8,13 +8,16 @@ import { UUID } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from './dbClient';
 import {onLoggedIn} from "./login"
+import path from 'path';
+
+
 const router = express.Router();
 router.use(bodyParser.json());
 router.use(express.static("public/pages/signup.html"))
-
-const privateKeyPem = fs.readFileSync('../private.pem', 'utf8') || "supersecretprivatekey"
+const rootDirName = path.resolve("./")
+const privateKeyPem = fs.readFileSync(path.join(rootDirName,'/private.pem'), 'utf8') || "supersecretprivatekey"
 const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-const publicKeyPem = fs.readFileSync('../public.pem', 'utf8') || "supersecretpublickey";
+const publicKeyPem = fs.readFileSync(path.join(rootDirName,'/public.pem'), 'utf8') || "supersecretpublickey";
 
 
 
