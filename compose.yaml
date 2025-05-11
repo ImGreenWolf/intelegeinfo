@@ -13,7 +13,7 @@ services:
       context: .
     environment:
       NODE_ENV: production
-      DATABASE_URL: "postgresql://postgres:bb250981@localhost:5432/intelegeinfo"
+      DATABASE_URL: "postgresql://postgres:bb250981@postgres:5432/intelegeinfo"
       GOOGLE_CLIENT_ID: 1084614977813-af126bl44fhu54nh1etlnl3n2tf5jkq5.apps.googleusercontent.com
       GOOGLE_CLIENT_SECRET: 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
       REDIRECT_URI: http://intelegeinfo.go.ro/login/callback
@@ -24,6 +24,8 @@ services:
       - /usr/src/app/node_modules
     networks:
       - prisma-network
+    stdin_open: true
+    tty: true  
     ports:
       - 3000:3000
       - "8080:8080"
@@ -47,11 +49,12 @@ services:
       - db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=intelegeinfo
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 5432
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - "5432:5432"
     networks:
       - prisma-network
     command: postgres -c listen_addresses='*'
