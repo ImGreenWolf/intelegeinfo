@@ -172,7 +172,7 @@ app.post('/editor/startsession/:id', (req, res) => {
 
 
 
-const privateKeyPem = fs.readFileSync('../private.pem', 'utf8');
+const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem'), 'utf8');
 export function authMiddleware(req: any, res: any, next:any, role?:string) {
     // if() return res.status(403).json({ error: 'failed reading cookies' });
     const token = req.cookies.token

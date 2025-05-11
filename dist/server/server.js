@@ -158,7 +158,7 @@ app.get('/editor', (req, res) => {
         }
     });
 });
-const privateKeyPem = fs_1.default.readFileSync('../private.pem', 'utf8');
+const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem'), 'utf8');
 function authMiddleware(req, res, next, role) {
     // if() return res.status(403).json({ error: 'failed reading cookies' });
     const token = req.cookies.token;
