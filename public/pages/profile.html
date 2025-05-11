@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#{username}</title>
+    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        <div class="container" id="profile">
+            <div style="height: 100%;">
+                
+                <div class="content-container">
+                    <img src="user/profilePicture/#{id}" class="profile-pic-large">
+                    <h1>Hello #{username}</h1>
+                    <div class="info-container">
+                        <div class="email">
+                            <p>email: #{email}</p>
+                            #{emailValidated ?<img src="../media/check-mark-svgrepo-com.svg" class="email-verified">:<a href="user/verifyemail?id=#{id}">Verify Email</a>}</div>
+                        
+                        <p>password: **********</p>
+                        <button onclick="logOut()">Log out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="container">
+            <h1>Projects</h1>
+        </div>
+        <div class="container">
+            <h1>Projects</h1>
+            #{projectsList}
+        </div>
+        
+    </div>
+    
+    
+    
+</body>
+<script>
+
+    fetch('/user/listProjects', {
+    method: "GET",
+    headers: {'Content-Type': 'application/json'},
+  }).then(response => response.json()).catch(err => {})
+  .then(data => {
+    
+    console.log(data)
+  })
+    async function logOut()
+    {
+        const msg = await fetch('?logout=true', {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+        })
+        msg.json().then(data => {
+            window.location.href = data.redir
+        })
+    }
+</script>
+</html>

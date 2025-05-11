@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "composite": true,
+      "module": "ES2020",
+      "target": "ES2024",
+      "outDir": "../dist/public",
+      "tsBuildInfoFile": "../dist/public/.tsbuildinfo",
+      "rootDir": "src",
+      "strict": true,
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "skipLibCheck": true,
+      "noImplicitAny": false
+
+    },
+    "include": ["src"],
+    "references": [
+      { "path": "../shared" }
+    ]
+  }

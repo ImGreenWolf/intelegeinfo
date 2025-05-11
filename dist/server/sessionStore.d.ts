@@ -1,0 +1,34 @@
+import { ChildProcess } from 'child_process';
+import { EditorSession } from './types';
+import { UUID } from 'crypto';
+declare class SharedStateManager {
+    private static instance;
+    private redis;
+    private pubSub;
+    private clients;
+    private runningProcesses;
+    private sessionMap;
+    private WORKER_ID;
+    private constructor();
+    static getInstance(): SharedStateManager;
+    private initializeSubscriptions;
+    getClient(id: UUID): UUID | undefined;
+    addClient(id: UUID, sessionId: UUID): Promise<void>;
+    removeClient(id: UUID): Promise<void>;
+    getProcess(id: UUID): ChildProcess | undefined;
+    addProcess(id: UUID, process: ChildProcess): Promise<void>;
+    removeProcess(id: UUID): Promise<void>;
+    getSession(id: UUID): EditorSession | undefined;
+    getClientIds(): Promise<UUID[]>;
+    getAllSessions(): Promise<Record<UUID, EditorSession>>;
+    updateSession(id: UUID, session: EditorSession): Promise<void>;
+    removeSession(id: UUID): Promise<void>;
+    private notifyUpdate;
+    private loadClients;
+    private loadProcesses;
+    private loadSessions;
+    private updateCallbacks;
+    onUpdate(event: string, callback: () => void): void;
+    close(): Promise<void>;
+}
+export default SharedStateManager;

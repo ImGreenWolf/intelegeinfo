@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Page</title>
+  <link rel="stylesheet" href="../css/login-signup.css">
+  <link rel="stylesheet" href="../css/main.css">
+
+</head>
+<body>
+  <header>
+    <div class="horizontal">
+            
+        <h1><a href="/">ÎnțelegeInfo</a></h1>
+        <div id="colab-container">
+
+        </div>
+
+    
+    </div>
+
+    <div class="vertical">
+        
+    </div>
+</header>
+
+<div style="height: 100%;">
+  <form id="loginForm">
+    <h2>Login</h2>
+
+    <div class="input-container">
+      <input type="email" name="email" required id="email" placeholder="email.." autocomplete="email">
+      <input type="password" name="password" required id="password" class="animhidden"  placeholder="password.." autocomplete="current-password">
+      <input type="hidden" name='loginMethod' value="local">
+    </div>
+
+    <div class="button-container">
+
+      <div>
+        <button type="submit">Login</button>
+        <a href="./signup">or create an account instead</a>
+      </div>
+      <p id="message"></p>
+      <div class="login-method-container">
+        <button onclick="loginWithGoogle()" class="google login-method">Login with Google</button>
+      </div>
+    
+    </div>
+  </form>
+
+
+  
+</div>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@v3.0.2/umd/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/0.10.0/forge.min.js"></script>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      document.getElementById("message").textContent = '';
+      const formData = new FormData(e.target);
+      
+      const salt = bcrypt.genSaltSync(4);
+
+
+
+        const pubKeyPem = await fetch('/login/public-key').then(res => res.text());
+        const publicKey = forge.pki.publicKeyFromPem(pubKeyPem);
+
+        
+        const encrypted = publicKey.encrypt(formData.get('password'), 'RSA-OAEP');
+        const encryptedBase64 = forge.util.encode64(encrypted);
+
+        formData.set("password", encryptedBase64)
+        const data = Object.fromEntries(formData.entries());
+
+
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      })
+      .then(function (response) {
+        if(response.ok || response.code === 200)
+        window.location.href = '/profile';
+          return response.json();
+    }).then((result) => { 
+        
+        document.getElementById("message").textContent = result.message;
+ 
+      })
+
+      // const result = await response.json();
+      
+    });
+
+    async function loginWithGoogle()
+    {
+      // await fetch('/login/google', {
+      //   method: 'GET',
+      //   referrerPolicy: "same-origin",
+      //   mode: "no-cors"
+      // }).then(res => {
+
+      //   res.redirected
+      // })
+
+      window.location.href = ('login/google')
+    }
+const emailInput =    document.getElementById("email");
+emailInput.addEventListener("focusout", async function (e) {
+      if(emailInput.checkValidity())
+      document.getElementById("password").classList.add('active-field')
+    })
+
+    emailInput.addEventListener("paste", async function (e) {
+      if(emailInput.checkValidity())
+      document.getElementById("password").classList.add('active-field')
+    })
+
+
+
+
+    // document.getElementById("email").addEventListener("submit", async function (e) {
+    //   // if(e.key == 'enter')
+    //   document.getElementById("password").classList.add('active-field')
+
+
+        function handleEnterKey(e) {
+            if (e.key === "Enter") {
+              if(emailInput.checkValidity())
+            {
+              e.preventDefault();
+              const passField = document.getElementById("password")
+              passField.classList.add('active-field')
+              passField.focus()
+              
+              emailInput.removeEventListener("keypress", handleEnterKey);
+            }
+            }
+             
+  } 
+  emailInput.addEventListener("keypress", handleEnterKey);
+
+
+    
+
+  </script>
+</body>
+</html>

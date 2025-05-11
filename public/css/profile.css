@@ -1,0 +1,76 @@
+html, body {
+  background-color: rgb(37, 37, 37);
+  height: 100%;
+}
+
+.main-container {
+  display: grid;
+  justify-content: space-around;
+  height: 100%;
+  color: black;
+  font-family: Poppins;
+  grid-template-columns: auto auto;
+  align-content: space-between;
+  padding: 200px 50px 50px 50px;
+  box-sizing: border-box;
+}
+
+.container {
+  background-color: white;
+  width: 500px;
+  height: 250px;
+  padding: 30px;
+}
+
+.email-verified {
+  height: 0.5lh;
+  display: inline;
+  margin-left: 10px;
+  color: green;
+}
+
+#profile h1 {
+  display: inline-block;
+  text-align: center;
+  align-self: end;
+  font-family: Oswald;
+  margin: 0;
+  grid-column: 2 span 2;
+}
+
+#profile .content-container {
+  position: relative;
+  display: grid;
+  flex-wrap: wrap;
+  grid-template-columns: auto auto 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  bottom: 0;
+  gap: 30px;
+}
+
+#profile {
+  grid-row: span 2;
+  height: auto;
+  width: 700px;
+}
+#profile .email * {
+  display: inline;
+}
+#profile .info-container {
+  grid-column: 2 span 2;
+}
+
+#profile .profile-pic-large {
+  margin: -30px 10px 10px -30px;
+  width: 200px;
+  border-radius: 50%;
+  padding: 10px;
+  background-color: rgb(255, 255, 255);
+  grid-row: span 2;
+  top: -110px;
+  position: relative;
+  grid-column: 1/span 2;
+}
+
+/*# sourceMappingURL=profile.css.map */

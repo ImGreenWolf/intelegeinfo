@@ -1,0 +1,107 @@
+        form#codeForm
+        {
+            position: absolute;
+            width: 500px;
+            height: 400px;
+            color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            align-items: center;
+        }
+        form#codeForm .input-container
+        {
+            position: relative;
+        }
+        form#codeForm input[type=number]
+        {
+            height: 2lh;
+            width: 25ch;
+            padding-left: 3ch;
+            padding-block: 0;
+            letter-spacing: 3ch;
+            text-align: start;
+            font-size: 32px;
+            border: 0;
+            outline: none !important;
+            background-color: transparent;
+            color: white;
+        }
+        form#codeForm .display
+        {
+            position: absolute;
+            left: 0;
+            transform: translateY(-50%);
+            top: 50%;
+            width: 26.25ch;
+            display: flex;
+            padding-left: 2ch;
+            justify-content: flex-start;
+            font-size: 32px;
+            pointer-events: none;
+            gap: 1ch;
+        }
+        form#codeForm .display div
+        {
+            height: 2lh;
+            width: 3ch;
+            &::after
+            {
+                content: '';
+                height: 2lh;
+                width: 3ch;
+                border: 2px solid white;
+                border-radius: 0.5lh;
+                display: block;
+                margin: auto;
+                box-sizing: border-box;
+        box-shadow: rgba(0, 0, 0, 0.16) -7px 11px 8px 7px, rgba(0, 0, 0, 0.23) 0px 9px 8px 3px;
+            }
+        }
+
+        form#codeForm .text-container
+        {
+            width: 400px;
+            /* margin-left: 45px; */
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            
+        
+        }
+
+        form#codeForm input::-webkit-outer-spin-button,
+        form#codeForm input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+        form#codeForm .button-container
+        {
+            display: flex;
+            gap: 20px;
+            flex-direction: column;
+            & button 
+            {
+                background-color: transparent;
+                border: 3px solid white;
+                border-radius: 2lh;
+                height: 2lh;
+                color: white;
+                font-size: 20px;
+                width: 15ch;
+                transition-duration: 0.5s;
+            }
+            & button:hover
+            {
+                transform: matrix3d(1, 0, 0, 0, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, 0, 0, 1);
+            }
+            & a:any-link
+            {
+                color: white;
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+                text-decoration: underline;
+            }
+        }

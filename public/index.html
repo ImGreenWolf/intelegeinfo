@@ -7,14 +7,17 @@
     <meta name="author" content="Radu Bitere">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C++ Debugger</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/codeEditor.css">
+    <link rel="stylesheet" href="/css/codeEditor.css">
+    <link rel="stylesheet" href="/css/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Special+Gothic+Expanded+One&display=swap" rel="stylesheet">
     <script src="/ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-
+    
     <!-- <script data-main="js/codeEditor" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script> -->
+
+
+    <link rel="stylesheet" href="/css/index.css">
 </head>
 
 
@@ -31,15 +34,90 @@ int main() {
 
 <body>
     
+    <div class="main-container">
+        <div id="editor-container">
+           
+            <div id="editor-tabs">
+                <div  class="editor-tabs-container">  
+                    <div  id="editor-tabs-container" class="editor-tabs-container" style="width: auto;">     
+                        <span class="file-tab">main.cpp</span>
+                    </div>              
+                    <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
+                </div>
+                
+                <button class="share-session" onclick="copySessionLink()">share</button>
+                 
+                <button class="create-file" onclick="createFileNamePrompt()">+</button>
+            </div>
+
+            <div id="display-editor">#include &lt;iostream&gt;
+    using namespace std;
+
+    int main()
+    {
+        int n,i;
+        cin >> n;
+        for(i=0;i&lt;n;i++)
+            cout &gt;&gt; "Hello world";
+        return 0;
+    }</div>
+
+        </div>
+
+
+       
+
+        <div id="text-container">
+            <h>Intelege Info</h>
+            <a href="/editor">Deschide Editorul</a>
+        </div>
+
+        <!-- <div id="vector-container">
+            <div id="display-vector" class="vector-display">
+                <div class="vector-header"></div>
+                <div class="item-container"></div>
+            </div>
+            <div id="display-vector2" class="vector-display">
+                <div class="vector-header"></div>
+                <div class="item-container"></div>
+            </div>
+        </div> -->
+
+
+        <div id="output-container" style="width: 500px;     transform: matrix(0.95, 0.1, 0, 1, 0, 0);">
+           
+           
+            <samp id="output">
+            <pre class="console-output" msg-id="-1">Compilation of main.cpp successful!</pre>
+            <span class="console-chat chat-ownMessage" msg-id="1" clientid="067c15c7-e9c3-4fcb-8d30-f985a1755a1d">
+                <span class="chat-displayName">Hipopotamul cunoscut</span>
+                <div class="chat-content-container">
+                    <span class="chat-content">Bine ai venit!</span>
+                </div>
+            </span>
+            <pre class="console-output" msg-id="-1">
+            Hello world
+            Hello world
+            Hello world
+            </pre>
+<pre class="console-output" msg-id="-1">Program exited with code: 0</pre></samp>
+            <div id="console-container">
+            
+                <textarea id="console" oninput="//submitConsole(this);"></textarea>
+            <button onclick="submitConsole(document.getElementById('console'))">Send</button>
+            </div>
+        </div>
+
+    </div>
+
+
 
     <div class="container">
         <header>
             <div class="horizontal">
                     
                 <h1>ÎnțelegeInfo</h1>
-                <div id="colab-container">
-
-                </div>
+ 
                 <nav>
                     
                     <ul>
@@ -56,80 +134,14 @@ int main() {
             </div>
         </header>
 
-            <!-- <div id="name-prompt">
-                <textarea id="name-prompt-text"></textarea>
-                <button onclick="createFile(document.getElementById('name-prompt-text').value)">Create</button>
-            </div> -->
-
-            <div id="editor-container">
-                <div id="editor-tabs">
-                    <div  class="editor-tabs-container">  
-                        <div  id="editor-tabs-container" class="editor-tabs-container" style="width: auto;">     
-
-                        </div>              
-                        <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
-                    </div>
-                    
-                    <button class="share-session" onclick="copySessionLink()">share</button>
-                     
-                    <button class="create-file" onclick="createFileNamePrompt()">+</button>
-                </div>
-                <div id="editor">   
-    #include 
-    int main() {
-        int x = 5;
-        std::cout << "Hello, Debugger!";
-        return 0;
-    }
-                </div>
-            </div>
-           
-                <div class="buttons">
-                    <button onclick="compileCode()">Compile</button>
-                    <button onclick="sendDebugCommand('execute')">Execute Code</button>
-                    <!-- <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button> -->
-                    <button onclick="playback()">Playback</button>
-                    <div class="speed-control" id="speed-control"> 
-                        <button onclick="setPlaybackSpeed(1)">1x</button>
-                        <button onclick="setPlaybackSpeed(2)">2x</button>
-                        <button onclick="setPlaybackSpeed(3)">3x</button>
-                    </div>
-                    <button onclick="sendDebugCommand('run')">Run in Debugger</button> 
-                    <button onclick="sendDebugCommand('next')">Step Over</button>
-                    <!-- <button onclick="sendDebugCommand('continue')">Continue Execution</button> -->
-                    <button onclick="sendDebugCommand('quit')">Stop Debugging</button>
-                </div>
-
-            
-            
-
-             
-        <div id="vector-container"></div>
-        <div id="output-container">
-            <div> <h2>Output</h2>
-                <button onclick="this.parentElement.parentElement.style.display = 'None'">x</button>
-            </div>
-           
-            <samp id="output" style="line-height: px;"></samp>
-            <div id="console-container">
-            
-                <textarea id="console" oninput="//submitConsole(this);"></textarea>
-            <button onclick="submitConsole(document.getElementById('console'))">Send</button>
-            </div>
-        </div>
-       
         
-        
-       
-    </div>
 
 
     <script>var exports = {};</script>
     <!-- <script src="js/types.js"  type="module" charset="utf-8"></script> -->
     <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js" crossorigin="anonymous"></script>
     <script src="ace-builds-master/src-noconflict/ext-modelist.js"></script>
-    <script src="js/codeEditor.js" type="text/javascript" charset="utf-8"></script>
-   
+
     <script>
         
 
@@ -138,6 +150,34 @@ int main() {
 
         //         e.currentTarget.closest("form").submit();
         //     }
+
+        let editor = ace.edit('display-editor', {
+            hasCssTransforms: true,
+            mode: "ace/mode/c_cpp",
+
+        })
+
+        editor.setTheme("ace/theme/twilight");
+        
+        const editorText = editor.session.getValue();
+        let newText = "";
+        let i=0;
+        const introTyping = setInterval(() => {
+            newText += editorText[i++]
+            if(i-1>=editorText.length) return clearInterval(introTyping)
+            editor.session.setValue(newText)
+        }, 40);
+
+        editor.on("focus", (change) =>
+    {
+        clearInterval(introTyping)
+        openEditor()
+    })
+
+    function openEditor(text)
+    {
+        location.href += "/editor"
+    }
     </script>
 </body>
 </html>

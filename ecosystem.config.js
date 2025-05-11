@@ -4,8 +4,8 @@ module.exports = {
       {
         name: 'node-app',
         script: 'server.js',
-        instances: '2', // or a number
-        exec_mode: 'cluster', // enables load balancing
+        instances: '1', // or a number
+        exec_mode: 'fork', // enables load balancing
         watch: false
       }
     ]

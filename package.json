@@ -2,37 +2,51 @@
   "name": "intelegeinfo",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server/server.js --permission /cache /saved",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "npx tsc -b"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.7.0",
     "ace-builds": "^1.39.1",
+    "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "child_process": "^1.0.2",
     "compression": "^1.8.0",
     "connect-redis": "^8.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "ioredis": "^5.6.1",
+    "jsonwebtoken": "^9.0.2",
+    "node-forge": "^1.3.1",
+    "node-gyp": "^11.2.0",
+    "nodemailer": "^7.0.2",
+    "pg": "^8.15.6",
+    "qrcode": "^1.5.4",
     "redis": "^4.7.0",
     "uuid": "^11.1.0",
     "ws": "^8.18.1"
   },
   "devDependencies": {
     "@types/ace": "^0.0.52",
+    "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.14.1",
+    "@types/node-forge": "^1.3.11",
+    "@types/nodemailer": "^6.4.17",
+    "@types/qrcode": "^1.5.5",
     "@types/ws": "^8.18.1",
-    "typescript": "^5.8.3",
-    "vite": "^6.2.6"
+    "nodemon": "^3.1.10",
+    "prisma": "^6.7.0",
+    "typescript": "^5.8.3"
   }
 }

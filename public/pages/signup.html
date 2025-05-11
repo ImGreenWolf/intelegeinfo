@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="../css/login-signup.css">
+  <link rel="stylesheet" href="../css/main.css">
+
+  <title>Signup Page</title>
+</head>
+<body>
+  <header>
+    <div class="horizontal">
+            
+        <h1><a href="/">ÎnțelegeInfo</a></h1>
+        <div id="colab-container">
+
+        </div>
+    
+    </div>
+
+    <div class="vertical">
+        
+    </div>
+</header>
+
+<div style="height: 100%;">
+  <form id="loginForm">
+    <h2>Signup</h2>
+
+    <div class="input-container">
+      <input type="text" name="username" required placeholder="username.." autocomplete="nickname">
+      <input type="text" name="firstName" required placeholder="first name.." autocomplete="name" autocapitalize="on">
+      <input type="text" name="lastName"required  placeholder="last name.." autocomplete="family-name" autocapitalize="on">
+      <input type="email" name="email" required id="email" placeholder="email.." autocomplete="email" autocapitalize="on">
+      <input type="password" name="password" required id="password" placeholder="password.." autocomplete="new-password">
+      <input type="hidden" name='loginMethod' value="local">
+    </div>
+
+    <div class="button-container">
+
+      <div>
+        <button type="submit">Signup</button>
+        <a href="./login">or log in an existing account instead</a>
+      </div>
+      <p id="message"></p>
+      <div class="login-method-container">
+        <button onclick="loginWithGoogle()" class="google login-method">Login with Google</button>
+      </div>
+    
+    </div>
+  </form>
+
+
+  
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@v3.0.2/umd/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/0.10.0/forge.min.js"></script>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      
+      const pubKeyPem = await fetch('/signup/public-key').then(res => res.text());
+      const publicKey = forge.pki.publicKeyFromPem(pubKeyPem);
+
+      
+      const encrypted = publicKey.encrypt(formData.get('password'), 'RSA-OAEP');
+      const encryptedBase64 = forge.util.encode64(encrypted);
+      formData.set("password", encryptedBase64)
+
+      const data = Object.fromEntries(formData.entries());
+
+
+      const response = await fetch('/signup', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+      });
+
+        const result = await response.json();
+        document.getElementById("message").textContent = result.message ? result.message : result.error;
+
+        setTimeout(() => {
+          window.location.href = result.redirect + `?id=${result.id}`
+        }, 1000);
+        
+    });
+
+    
+  </script>
+</body>
+</html>

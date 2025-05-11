@@ -1,0 +1,11 @@
+//          Compilator C++ online | intelegeinfo.go.ro
+
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    wtffff
+    return 0;
+}
