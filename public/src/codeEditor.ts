@@ -863,7 +863,7 @@ function copySessionLink() {
   //   });
   // } else window.alert(sessionLink);
   if(!wsSessionId) window.alert('Invalid session id.')
-  fetch('./sharesession?id='+wsSessionId)
+  fetch('/editor/sharesession?id='+wsSessionId)
   .then(res => {
     return res.json();
   })
