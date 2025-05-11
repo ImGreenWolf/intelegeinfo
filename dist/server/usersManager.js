@@ -60,7 +60,7 @@ const hmacuUtil = __importStar(require("../../dist/shared/hmacUtils"));
 const server_1 = require("./server");
 const users = __importStar(require("./usersManager"));
 const rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
-const privateKeyPem = fs_1.default.readFileSync('../private.pem', 'utf8') || "supersecretprivatekey";
+const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem')) || "supersecretprivatekey";
 // const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
 exports.router = express_1.default.Router();
 exports.router.use(body_parser_1.default.json());

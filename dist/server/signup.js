@@ -16,9 +16,9 @@ const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/signup.html"));
 const rootDirName = path_1.default.resolve("./");
-const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, '/private.pem'), 'utf8') || "supersecretprivatekey";
+const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem'), 'utf8') || "supersecretprivatekey";
 const privateKey = node_forge_1.default.pki.privateKeyFromPem(privateKeyPem);
-const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, '/public.pem'), 'utf8') || "supersecretpublickey";
+const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
 // function createToken(user: UserObject) {
 //     return jwt.sign( 
 //       { sub: user.id, username: user.username },

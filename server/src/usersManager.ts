@@ -16,7 +16,7 @@ import { authMiddleware, sessionMap } from "./server";
 import * as users from './usersManager'
 
 const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
-const privateKeyPem = fs.readFileSync('../private.pem', 'utf8') || "supersecretprivatekey";
+const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem')) || "supersecretprivatekey";
 // const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
 export const router = express.Router();
 router.use(bodyParser.json());

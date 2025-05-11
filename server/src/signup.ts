@@ -15,9 +15,9 @@ const router = express.Router();
 router.use(bodyParser.json());
 router.use(express.static("public/pages/signup.html"))
 const rootDirName = path.resolve("./")
-const privateKeyPem = fs.readFileSync(path.join(rootDirName,'/private.pem'), 'utf8') || "supersecretprivatekey"
+const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem'), 'utf8') || "supersecretprivatekey"
 const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-const publicKeyPem = fs.readFileSync(path.join(rootDirName,'/public.pem'), 'utf8') || "supersecretpublickey";
+const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";
 
 
 
