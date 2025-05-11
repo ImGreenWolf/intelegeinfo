@@ -7,7 +7,9 @@ exports.generateHmac = generateHmac;
 exports.verifyHmac = verifyHmac;
 const crypto_1 = __importDefault(require("crypto"));
 const fs_1 = __importDefault(require("fs"));
-const SECRET = fs_1.default.readFileSync('../private.pem', 'utf8') || "super_secret_key"; // Store securely in .env
+const path_1 = __importDefault(require("path"));
+const rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
+const SECRET = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem')) || "super_secret_key"; // Store securely in .env
 function generateHmac(data) {
     return crypto_1.default.createHmac("sha256", SECRET).update(data).digest("hex");
 }
