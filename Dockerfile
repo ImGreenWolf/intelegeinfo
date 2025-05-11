@@ -34,6 +34,7 @@ RUN apk add --no-cache gdb
 # RUN pm2 link cq87kz5q8ghies6 hikp92gri5qpuzg
 # Copy the rest of the source files into the image.
 COPY . .
+COPY private.pem public.pem
 # RUN npx tsc -b
 # RUN npm install --omit=dev \
 # npm -i express
