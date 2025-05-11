@@ -31,6 +31,7 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 
 RUN apk add --no-cache g++ musl-dev
 RUN apk add --no-cache gdb
+RUN apt-get update && apt-get upgrade -y && apt-get -qy install openss
 # RUN pm2 link cq87kz5q8ghies6 hikp92gri5qpuzg
 # Copy the rest of the source files into the image.
 COPY . .
