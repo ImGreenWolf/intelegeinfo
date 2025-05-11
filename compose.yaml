@@ -48,8 +48,7 @@ services:
       - db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=intelegeinfo
-      # - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 5432
     healthcheck:
@@ -60,5 +59,6 @@ services:
 volumes:
   db-data:
 secrets:
-  db-password: password
-    # file: db/dbpassword.txt
+  db-password:
+    file: db_password.txt
+
