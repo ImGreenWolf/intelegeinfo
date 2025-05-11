@@ -1,7 +1,8 @@
 import crypto from "crypto";
 import fs from "fs"
-
-const SECRET = fs.readFileSync('../private.pem', 'utf8') || "super_secret_key"; // Store securely in .env
+import path from "path";
+const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
+const SECRET = fs.readFileSync(path.join(rootDirName,'private.pem')) || "super_secret_key"; // Store securely in .env
 
 export function generateHmac(data: string): string {
   return crypto.createHmac("sha256", SECRET).update(data).digest("hex");
