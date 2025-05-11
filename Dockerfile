@@ -45,7 +45,8 @@ EXPOSE 8080
 USER node
 
 # Run the application.
-CMD node dist/server/server.js
+# CMD node dist/server/server.js
+CMD ["sh", "-c", "npm run db:deploy && npm run dev"]
 #CMD ["pm2-runtime", "ecosystem.config.js"]
 
 
