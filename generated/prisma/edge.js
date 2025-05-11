@@ -155,6 +155,10 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-musl"
       }
     ],
     "previewFeatures": [],
@@ -172,16 +176,17 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:bb250981@localhost:5432/intelegeinfo"
+        "value": null
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Project {\n  id        Int      @id @default(autoincrement())\n  name      String\n  fileUUID  String   @unique\n  createdAt DateTime @default(now())\n  user      User     @relation(fields: [userId], references: [id])\n  userId    Int\n}\n\nmodel User {\n  id             Int       @id @default(autoincrement())\n  username       String\n  firstName      String\n  lastName       String\n  email          String    @unique\n  emailValidated Boolean   @default(false)\n  userColor      String    @default(\"#FFFFFF\")\n  picture        String    @default(\"default\")\n  role           Role      @default(USER)\n  createdAt      DateTime  @default(now())\n  password       String\n  loginMethod    String    @default(\"local\")\n  projects       Project[]\n}\n\nenum Role {\n  USER\n  ADMIN\n}\n",
-  "inlineSchemaHash": "a33740936307dc7039137b97afd6ea9754a5e6104cfbd6250c46f28d3160cb08",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"linux-musl\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Project {\n  id        Int      @id @default(autoincrement())\n  name      String\n  fileUUID  String   @unique\n  createdAt DateTime @default(now())\n  user      User     @relation(fields: [userId], references: [id])\n  userId    Int\n}\n\nmodel User {\n  id             Int       @id @default(autoincrement())\n  username       String\n  firstName      String\n  lastName       String\n  email          String    @unique\n  emailValidated Boolean   @default(false)\n  userColor      String    @default(\"#FFFFFF\")\n  picture        String    @default(\"default\")\n  role           Role      @default(USER)\n  createdAt      DateTime  @default(now())\n  password       String\n  loginMethod    String    @default(\"local\")\n  projects       Project[]\n}\n\nenum Role {\n  USER\n  ADMIN\n}\n",
+  "inlineSchemaHash": "3995d139bdcc5e0023ea696c9e4493b86c535a4c3d1933a34f7cc50ebb87b32b",
   "copyEngine": true
 }
 config.dirname = '/'
