@@ -1,2 +1,4 @@
 cache/
-*.pem
+# *.pem
+node_modules/
+backups/
