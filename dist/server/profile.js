@@ -120,17 +120,18 @@ function parseUserInfoInFile(userId, fileSrc, params) {
             for (const match of file.matchAll(/#{(.*)(?:\?)(.*):(.*)}|#{(.*)}/g)) {
                 if (!(paramJSON[match[4]?.trim()] || paramJSON[match[1]?.trim()])) {
                     console.log('couldnt find value for match ' + (match[4] ? match[4] : match[1]));
-                    break;
-                }
-                // console.log(match)
-                if (match[2]) {
-                    if (match[1])
-                        file = file.replace(match[0], replaceVariables(match[2], params));
-                    else
-                        file = file.replace(match[0], replaceVariables(match[3], params));
                 }
                 else {
-                    file = file.replace(match[0], paramJSON[match[4].trim()]);
+                    // console.log(match)
+                    if (match[2]) {
+                        if (match[1])
+                            file = file.replace(match[0], replaceVariables(match[2], params));
+                        else
+                            file = file.replace(match[0], replaceVariables(match[3], params));
+                    }
+                    else {
+                        file = file.replace(match[0], paramJSON[match[4].trim()]);
+                    }
                 }
             }
             return file;

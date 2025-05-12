@@ -124,10 +124,10 @@ export function parseUserInfoInFile(userId,fileSrc: string, params?: User | any)
                                     {
                                         
                                         console.log('couldnt find value for match ' + (match[4] ? match[4] : match[1]));
-                                        break;
-                                    }
-                                
-                                // console.log(match)
+                                        
+                                    } else
+                                    {
+  // console.log(match)
                                 if(match[2])
                                 {
                                     
@@ -141,6 +141,9 @@ export function parseUserInfoInFile(userId,fileSrc: string, params?: User | any)
                                      file = file.replace(match[0], paramJSON[match[4].trim()])
 
                                 }
+                                    }
+                                
+                              
                                 
                             }
                             return file;
