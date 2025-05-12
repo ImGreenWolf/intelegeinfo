@@ -273,8 +273,13 @@ router.get('/verifyemail', (req, res) => {
             to: user.email,
             subject: code.toString() + ' | Verificare Email',
             // html: callbackFile,
-            text: code.toString()
-    
+            text: code.toString(),
+            auth: {
+                user: 'intelegeinfo@gmail.com',
+                refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
+                accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+                expires: 1484314697598,
+            },
           };
           if(false)
           res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail))
