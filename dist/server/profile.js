@@ -118,7 +118,8 @@ function parseUserInfoInFile(userId, fileSrc, params) {
             const paramJSON = params;
             let file = data;
             for (const match of file.matchAll(/#{(.*)(?:\?)(.*):(.*)}|#{(.*)}/g)) {
-                if (!(paramJSON[match[4]?.trim()] || paramJSON[match[1]?.trim()])) {
+                if (!(paramJSON[match[4]?.trim()] != undefined || paramJSON[match[1]?.trim()] != undefined)) // !! had to add !=undefined because it was pickuping up emailValidated = false and projectList = '' as invalid matches lmao.
+                 {
                     console.log('couldnt find value for match ' + (match[4] ? match[4] : match[1]));
                 }
                 else {

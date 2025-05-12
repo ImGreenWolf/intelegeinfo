@@ -57,12 +57,13 @@ router.use('/', (req, res) => {
 
                 const userId =users.getClientId(users.getJWT(req));
                 console.log("user id" + userId)
-                
+                    
                  users.getUserData(userId as number).then(async user => {
                     interface webParams extends users.UserNoPassword
                     {
                         projectsList?: string
                     }
+                    
                     const params: webParams = user;
                     const projects = await users.listAllProjects(userId)
 
@@ -73,7 +74,7 @@ router.use('/', (req, res) => {
                     }
 
                     parseUserInfoInFile(userId, "public/pages/profile.html", params).then(file => {
-                    res.send(file)
+                        res.send(file)
                         
                     }).catch(err => {
                         if(err.userNoExist)
@@ -120,27 +121,27 @@ export function parseUserInfoInFile(userId,fileSrc: string, params?: User | any)
                         
                         for(const match of file.matchAll(/#{(.*)(?:\?)(.*):(.*)}|#{(.*)}/g))
                             {
-                                if(!(paramJSON[match[4]?.trim()] || paramJSON[match[1]?.trim()])) 
+                                if(!(paramJSON[match[4]?.trim()]!=undefined || paramJSON[match[1]?.trim()]!=undefined)) // !! had to add !=undefined because it was pickuping up emailValidated = false and projectList = '' as invalid matches lmao.
                                     {
                                         
                                         console.log('couldnt find value for match ' + (match[4] ? match[4] : match[1]));
-                                        
-                                    } else
+                                    }
+                                     else
                                     {
   // console.log(match)
-                                if(match[2])
-                                {
-                                    
-                                    if(match[1])
-                                        file = file.replace(match[0], replaceVariables(match[2], params))
-                                    else
-                                         file = file.replace(match[0], replaceVariables(match[3], params))
-                                    
-                                } else 
-                                {
-                                     file = file.replace(match[0], paramJSON[match[4].trim()])
+                                            if(match[2])
+                                            {
+                                                
+                                                if(match[1])
+                                                    file = file.replace(match[0], replaceVariables(match[2], params))
+                                                else
+                                                    file = file.replace(match[0], replaceVariables(match[3], params))
+                                                
+                                            } else 
+                                            {
+                                                file = file.replace(match[0], paramJSON[match[4].trim()])
 
-                                }
+                                            }
                                     }
                                 
                               

@@ -20,7 +20,8 @@
                     <div class="info-container">
                         <div class="email">
                             <p>email: #{email}</p>
-                            #{emailValidated ?<img src="../media/check-mark-svgrepo-com.svg" class="email-verified">:<a href="user/verifyemail?id=#{id}">Verify Email</a>}</div>
+                            #{emailValidated ? <img src="../media/check-mark-svgrepo-com.svg" class="email-verified"> : <a href="user/verifyemail?id=#{id}">Verify Email</a>}
+                        </div>
                         
                         <p>password: **********</p>
                         <button onclick="logOut()">Log out</button>
