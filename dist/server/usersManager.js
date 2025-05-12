@@ -59,6 +59,8 @@ const path_1 = __importDefault(require("path"));
 const hmacuUtil = __importStar(require("../../dist/shared/hmacUtils"));
 const server_1 = require("./server");
 const users = __importStar(require("./usersManager"));
+const googleapis_1 = require("googleapis");
+const OAuth2 = googleapis_1.google.auth.OAuth2;
 const rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem')) || "supersecretprivatekey";
 // const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
@@ -198,27 +200,45 @@ exports.router.get('/profilePicture/:id', (req, res) => {
         res.status(500).send('failed: ' + err);
     });
 });
+const oauth2Client = new OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, // Client Secret
+"https://developers.google.com/oauthplayground" // Redirect URL
+);
 let transporter;
-transporter = nodemailer_1.default.createTransport({
-    service: "gmail",
-    auth: {
-        type: "OAuth2",
-        user: 'intelegeinfo@gmail.com',
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
-        accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
+oauth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_EMAILV_REFRESHTOKEN
 });
+async function updateTransporter() {
+    oauth2Client.getAccessToken().then(accessToken => {
+        transporter = nodemailer_1.default.createTransport({
+            service: "gmail",
+            auth: {
+                type: "OAuth2",
+                user: 'intelegeinfo@gmail.com',
+                clientId: process.env.GOOGLE_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
+                accessToken: accessToken.token, //process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+                expires: Date.now(),
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
+        console.info('Updated access token: ' + accessToken.token);
+    }).catch(err => {
+        console.error('Failed to generate access token for email: ' + err);
+    });
+}
+updateTransporter();
+setInterval(updateTransporter, 3600 * 1000);
 exports.router.get('/verifyemail', (req, res) => {
     const id = parseInt(req.query.id);
     getUserData(id).then(user => {
         if (user.emailValidated)
             return res.send('Your account is already verified');
-        Profile.parseUserInfoInFile(id, path_1.default.join(rootDirName, 'public', 'pages', 'emailCodeVerification.html')).then(file => {
+        Profile.parseUserInfoInFile(id, path_1.default.join(rootDirName, 'public', 'pages', 'emailCodeVerification.html')).catch(err => {
+            res.status(403).send({ message: "error parsing file", err });
+        }).then(file => {
             const code = generateCode();
             let censoredEmail = user.email;
             for (const match of user.email.matchAll(/#{(\w*) ?(?:\?)(.*): ?(.*)}|#{(\w*)}/g))
@@ -233,7 +253,7 @@ exports.router.get('/verifyemail', (req, res) => {
                     user: 'intelegeinfo@gmail.com',
                     refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
                     accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
-                    expires: 1484314697598,
+                    expires: Date.now(),
                 },
             };
             if (false)
@@ -244,11 +264,10 @@ exports.router.get('/verifyemail', (req, res) => {
                         res.status(500).send({ message: "error sending email", error });
                     }
                     else {
+                        console.log(info);
                         res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail));
                     }
                 });
-        }).catch(err => {
-            res.status(403).send({ message: "error parsing file", err });
         });
     }).catch(err => {
         res.status(403).send({ message: "error getting user data", err });

@@ -14,6 +14,8 @@ import path from "path";
 import * as hmacuUtil from "../../dist/shared/hmacUtils";
 import { authMiddleware, sessionMap } from "./server";
 import * as users from './usersManager'
+import { google } from "googleapis";
+const OAuth2 = google.auth.OAuth2;
 
 const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
 const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem')) || "supersecretprivatekey";
@@ -227,13 +229,25 @@ router.get('/profilePicture/:id', (req, res) => {
 
 
 
-
+const oauth2Client = new OAuth2(
+     process.env.GOOGLE_CLIENT_ID,
+     process.env.GOOGLE_CLIENT_SECRET, // Client Secret
+     "https://developers.google.com/oauthplayground" // Redirect URL
+);
 
 
 let transporter;
 
+oauth2Client.setCredentials({
+     refresh_token: process.env.GOOGLE_EMAILV_REFRESHTOKEN
+});
 
-    transporter = nodemailer.createTransport({
+
+async function updateTransporter() {
+          oauth2Client.getAccessToken().then(accessToken => {
+
+
+         transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
           type: "OAuth2",
@@ -241,12 +255,25 @@ let transporter;
           clientId: process.env.GOOGLE_CLIENT_ID!,
           clientSecret:  process.env.GOOGLE_CLIENT_SECRET!,
           refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
-          accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+          accessToken: accessToken.token,//process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+          expires: Date.now(),
         },
         tls: {
             rejectUnauthorized: false
         }
       })
+
+      console.info('Updated access token: ' + accessToken.token)
+    }).catch(err => {
+        console.error('Failed to generate access token for email: ' + err)
+    })
+    }
+
+updateTransporter()
+setInterval(updateTransporter, 3600*1000);
+
+
+    
 
 
 router.get('/verifyemail', (req, res) => {
@@ -258,7 +285,9 @@ router.get('/verifyemail', (req, res) => {
                 if(user.emailValidated) return res.send('Your account is already verified') 
 
     
-    Profile.parseUserInfoInFile(id, path.join(rootDirName,'public','pages','emailCodeVerification.html')).then(file => {
+    Profile.parseUserInfoInFile(id, path.join(rootDirName,'public','pages','emailCodeVerification.html')).catch(err => {
+        res.status(403).send({message: "error parsing file",err})
+            }).then(file => {
 
 
         const code = generateCode()
@@ -278,7 +307,7 @@ router.get('/verifyemail', (req, res) => {
                 user: 'intelegeinfo@gmail.com',
                 refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
                 accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
-                expires: 1484314697598,
+                expires: Date.now(),
             },
           };
           if(false)
@@ -288,15 +317,12 @@ router.get('/verifyemail', (req, res) => {
             if (error) {
                 res.status(500).send({message: "error sending email",error});
             } else {
+                console.log(info)
                 res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail))
                      }
 
         })
-      }).catch(err => {
-        res.status(403).send({message: "error parsing file",err})
-
-      
-    })
+      })
 }).catch(err => {
     res.status(403).send({message: "error getting user data",err})
 

@@ -17,7 +17,7 @@ services:
         - GOOGLE_CLIENT_ID=1084614977813-af126bl44fhu54nh1etlnl3n2tf5jkq5.apps.googleusercontent.com
         - GOOGLE_CLIENT_SECRET=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
         - REDIRECT_URI=http://intelegeinfo.go.ro/login/callback
-        - GOOGLE_EMAILV_REFRESHTOKEN=1//04n8XPu2K9TXOCgYIARAAGAQSNwF-L9IrU288TNCyzWo52jQyHOjh4dBbLe6gHNtgOZDs0_ck2xCreFdPY4_59IWVqTu7oo46Flw
+        - GOOGLE_EMAILV_REFRESHTOKEN=1//04hD0D336MYMsCgYIARAAGAQSNwF-L9IrySmmRx30BuZJZwMQb7zetoVBCV2Jh074jY_7_eWIuBC1Rzceh0eF7h5xdsc_tFuA5rk
         - GOOGLE_EMAILV_ACCESSTOKEN=ya29.a0AW4XtxgP0qjhDi190u35R29loyLu2z3PR4RlPJjtM8fmxERElmB-8hu5KanQd5E7CTSuOcyrtbw6syNspbxDLDBlvMGru_Af7wrjxEsHj1PZeoq7QAbn_vMqFNJpc92StjwTSOaECXRKqo__YEkprbp0lDrAxyRkERqpoB_qaCgYKAZoSARISFQHGX2MiPyYiylRZ7nWAJfmvTUEetg0175
     volumes:
       - .:/usr/src/app

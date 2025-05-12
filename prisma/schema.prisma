@@ -49,3 +49,8 @@ model Code {
   code Int  @id @unique
   hmac String
 }
+
+model RefreshToken {
+  code Int  @id @unique
+  hmac String
+}
