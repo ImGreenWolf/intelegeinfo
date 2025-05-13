@@ -288,3 +288,50 @@ background-color: transparent;
 {
     grid-area: auto !important;
 }
+
+
+
+
+ @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
+
+
+    .main-container
+{
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 75px);
+    display: grid;
+    align-items: center;
+    justify-content: space-around;
+    margin: auto;
+    flex-wrap: wrap;
+    overflow: hidden;
+    grid-template-columns: 1fr;
+        justify-content: center;
+    justify-items: center;
+    
+
+    /* gap: 1s00px; */
+    
+}
+#editor-container
+{
+    display: none;
+}
+
+#output-container
+{
+    display: none;
+}
+
+.container
+{
+    overflow-x: hidden;
+}
+h 
+{
+    font-size: 50px !important;
+}
+
+ }
+

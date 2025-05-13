@@ -61,14 +61,13 @@ header
     font-family:  Poppins, Helvetica, sans-serif;
     // border-bottom: 4px dashed theme.$border-color;
     // margin: -1rem -1rem 1rem -1rem;
-
     &::after
     {
       --size: 15px;
       --m: 3;
       --p: calc(var(--m)*var(--size));
       --R: calc(var(--size)*sqrt(var(--m)*var(--m) + 1));
-
+      
       filter: drop-shadow(0 5px 5px);
       content: "";
       display: block;
@@ -104,6 +103,7 @@ header .horizontal
     padding-right: 20px;
     justify-items: center;
     align-items: center;
+    min-height: 75px;
 }
 header .horizontal
 {
@@ -112,8 +112,14 @@ header .horizontal
 }
 header h1
 {
+    @extend .logo-font;
     display: inline;
-    font-family: "Playwrite DK Loopet", 'Courier New', Courier, monospace;
+    
+}
+
+.logo-font
+{
+font-family: "Playwrite DK Loopet", 'Courier New', Courier, monospace;
     transform: rotate(-5deg);
     text-decoration: underline;
     text-align: center;
