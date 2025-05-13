@@ -242,31 +242,31 @@ function displayMessagePopup(message) {
 // 
 // 
 // 
-//TODO Add playback controls and rest of buttons or figure out a fix.
-document.getElementById('compile').onclick = compileCode;
-document.getElementById('saveProject').onclick = saveProject;
-document.getElementById('createFile').onclick = createFileNamePrompt;
-document.getElementById('share').onclick = copySessionLink;
-document.getElementById('join-session').onclick = joinsession;
-document.getElementById('console').oninput = onConsoleInput;
-if (document.getElementById('listProjects'))
-    document.getElementById('listProjects').onclick = listProjects;
-document.getElementById('compile').onclick = compileCode;
-document.getElementById('execute-control').onclick = () => {
-    sendDebugCommand('execute');
-};
-document.getElementById('run').onclick = () => {
-    sendDebugCommand('run');
-};
-document.getElementById('next').onclick = () => {
-    sendDebugCommand('next');
-};
-document.getElementById('quit').onclick = () => {
-    sendDebugCommand('quit');
-};
-document.getElementById('playback').onclick = () => {
-    sendDebugCommand('playback');
-};
+// //TODO Add playback controls and rest of buttons or figure out a fix.
+// (document.getElementById('compile') as HTMLButtonElement).onclick = compileCode;
+// (document.getElementById('saveProject') as HTMLButtonElement).onclick = saveProject;
+// (document.getElementById('createFile') as HTMLButtonElement).onclick = createFileNamePrompt;
+// (document.getElementById('share') as HTMLButtonElement).onclick = copySessionLink;
+// (document.getElementById('join-session') as HTMLButtonElement).onclick = joinsession;
+// (document.getElementById('console') as HTMLTextAreaElement).oninput = onConsoleInput;
+// if((document.getElementById('listProjects') as HTMLButtonElement))
+//   (document.getElementById('listProjects') as HTMLButtonElement).onclick = listProjects;
+// (document.getElementById('compile') as HTMLButtonElement).onclick = compileCode;
+// (document.getElementById('execute-control') as HTMLButtonElement).onclick = () => {
+//   sendDebugCommand('execute');
+// }
+// (document.getElementById('run') as HTMLButtonElement).onclick = () => {
+//   sendDebugCommand('run');
+// }
+// (document.getElementById('next') as HTMLButtonElement).onclick = () => {
+//   sendDebugCommand('next');
+// }
+// (document.getElementById('quit') as HTMLButtonElement).onclick = () => {
+//   sendDebugCommand('quit');
+// }
+// (document.getElementById('playback') as HTMLButtonElement).onclick = () => {
+//   sendDebugCommand('playback');
+// }
 const namePrompt = document.getElementById("name-prompt");
 const consoleInput = document.getElementById("console");
 if (new URLSearchParams(window.location.search).has('save'))
@@ -307,7 +307,7 @@ function onFileCreate(fileName) {
     }
     // FileContainer.innerHTML += `<span>${fileName}</span>`
 }
-function createFileNamePrompt() {
+export function createFileNamePrompt() {
     if (!namePrompt)
         return;
     namePrompt.style.display = "initial";
@@ -332,12 +332,12 @@ if (consoleInput)
             submitConsole(consoleInput);
         }
     });
-function toggleConsoleDebugProgram(elem) {
+export function toggleConsoleDebugProgram(elem) {
     elem.classList.toggle("open");
     elem.children[1].classList.toggle("open");
 }
-export function onConsoleInput(ev) {
-    const console = this;
+export function onConsoleInput(elem, ev) {
+    const console = elem;
     if (console.value != '') {
         if (!console.classList.contains('filled'))
             console.classList.add('filled');
@@ -412,7 +412,7 @@ function loadProject(id) {
         displayMessagePopup(err);
     });
 }
-function listProjects() {
+export function listProjects() {
     if (!wsSessionId)
         return;
     fetch('/user/listProjects', {
@@ -609,7 +609,7 @@ function writeOutput(data, messageJson, manuallScroll) {
             outputArea.scrollTop = outputArea.scrollHeight;
     }
 }
-function joinsession() {
+export function joinsession() {
     const shareContainer = document.createElement('div');
     shareContainer.classList.add('share-container');
     shareContainer.innerHTML =
@@ -674,7 +674,7 @@ function joinsession() {
     //   displayMessagePopup(data.link)
     // }
 }
-function copySessionLink() {
+export function copySessionLink() {
     const clientId = wsSessionId;
     let sessionLink;
     sessionLink = window.location.origin + window.location.pathname + `?session=${clientId}`;
@@ -824,7 +824,7 @@ console.log(WSUrl);
 export const ws = new WebSocket(WSUrl);
 let variables = [];
 const variableArrayIndexes = [];
-function submitConsole(elem) {
+export function submitConsole(elem) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;
     //     console.log(sendText);
@@ -842,7 +842,7 @@ function submitConsole(elem) {
     }));
     consoleInput.value = "";
     typingIndicatorDelay = 300;
-    onConsoleInput.call(elem);
+    onConsoleInput(elem);
     ws.send(JSON.stringify({ type: WebSocketMessageType.ConsoleTyping, status: "end" }));
 }
 let wsClientId;
@@ -915,7 +915,7 @@ ws.onclose = (ev) => {
     const socketStopped = document.createElement('div');
     socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error');
     const socketText = document.createElement('p');
-    socketText.innerHTML = serviceRestart ? 'Sorry, the server stopped. Please refresh your browser in a few moments..' : ev.reason;
+    socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
     socketStopped.appendChild(socketText);
     document.getElementById('editor')?.appendChild(socketStopped);
     if (serviceRestart)
@@ -1592,7 +1592,7 @@ export function compileCode(ev) {
         code = editor.getValue();
     });
 }
-function sendDebugCommand(cmd) {
+export function sendDebugCommand(cmd) {
     //editor.setValue(code, -1);
     const cmdBut = document.getElementById("buttons");
     if (cmd == "run") {
@@ -1621,13 +1621,13 @@ export function playback() {
     let i = debugLine;
     updatePlaybackSpeed();
 }
-function restartPlayback() {
+export function restartPlayback() {
     sendDebugCommand("run");
     setPlaybackSpeed(1);
     playback();
 }
 const childIndexOf = 1;
-function setPlaybackSpeed(newPlaybackSpeed) {
+export function setPlaybackSpeed(newPlaybackSpeed) {
     document
         .getElementById("speed-control")
         ?.children[playbackSpeed - 1 + childIndexOf].classList.remove("active-speed");

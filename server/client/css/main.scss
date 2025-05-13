@@ -54,12 +54,38 @@ body
 }
 header
 {
-    height: 75px;
-    
-    background-color: theme.$foreground-color;
+
+    background-color: theme.$foreground-color; // theme.$background-color; //theme.$foreground-color;
     color: theme.$text-color;
     grid-area: header;
+    font-family:  Poppins, Helvetica, sans-serif;
+    // border-bottom: 4px dashed theme.$border-color;
     // margin: -1rem -1rem 1rem -1rem;
+
+    &::after
+    {
+      --size: 15px;
+      --m: 3;
+      --p: calc(var(--m)*var(--size));
+      --R: calc(var(--size)*sqrt(var(--m)*var(--m) + 1));
+
+      filter: drop-shadow(0 5px 5px);
+      content: "";
+      display: block;
+      width: calc(100% + 0.5rem + 2px);
+      height: calc(var(--size)*2);
+      bottom: calc(var(--size)*-0.75);
+      position: relative;
+       background-color: theme.$foreground-color;
+      
+      margin: -10px;
+      mask:
+        radial-gradient(var(--R) at 50% calc(100% - (var(--size) + var(--p))), #000 99%, #0000 101%)
+          calc(50% - 2 * var(--size)) 0/calc(4 * var(--size)) 100%,
+        radial-gradient(var(--R) at 50% calc(100% + var(--p)), #0000 99%, #000 101%) 
+          50% calc(100% - var(--size)) / calc(4 * var(--size)) 100% repeat-x;
+    }
+ 
 }
 
 header .vertical
@@ -72,19 +98,26 @@ header .vertical
 header .horizontal
 {
     display: grid;
-    grid-template-columns: auto 300px;
+    grid-template-columns: 200px 300px;
     // margin-bottom: 20px;
     padding-left: 20px;
     padding-right: 20px;
+    justify-items: center;
+    align-items: center;
 }
 header .horizontal
 {
-    grid-template-columns: auto 1fr 0.5fr;
+    grid-template-columns: 300px 1fr auto;
 
 }
 header h1
 {
     display: inline;
+    font-family: "Playwrite DK Loopet", 'Courier New', Courier, monospace;
+    transform: rotate(-5deg);
+    text-decoration: underline;
+    text-align: center;
+    font-weight: 500;
 }
 
 header h1 a:visited, header h1 a:any-link
@@ -97,6 +130,7 @@ header h1 a:visited, header h1 a:any-link
 header nav
 {
     display: inline;
+    
 }
 
 header nav ul
@@ -109,10 +143,12 @@ header nav ul
     justify-content: space-between;
     align-items: center;
     height: 100%;
+    // .flex-direction: row-reverse;
 }
 header nav ul li
 {
-    display: inline;
+    display: flex;
+    flex-shrink: 1;
     & :link
     {
         text-decoration: none;
@@ -128,13 +164,14 @@ header nav ul li
 
 #signup, #login
 {
-    padding: 15px 30px;
+    padding: 10px 15px;
+    flex-shrink: 1;
     border: 2px solid theme.$text-color;
     display: inline-block;
-    width: 60px;
+    min-width: 100px;
     text-align: center;
     margin: 0 10px;
-    border-radius: 1lh;
+    border-radius: 10px;
     outline-offset: 2px;
 }
 
@@ -167,7 +204,33 @@ header a p
   font-weight: 500;
 }
 
-header a
+.dropdown-container 
 {
+      position: relative;
+}
+.dropdown-container:has( input:not(:checked)) .dropdown
+{
+  display: none;
+}
+.dropdown
+{
+  position: absolute;
+  right: 0;
+  top: 75px;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.457);
+  backdrop-filter: blur(3px);
+  padding: 30px;
+  min-width: 200px;
+  border-radius: 10px;
+  box-shadow: 0 20px 30px 10px rgba(0, 0, 0, 0.229);
+  border: 4px solid rgba(128, 128, 128, 0.153);
+}
 
+#mobile-dropdown
+{
+  display: none;
+  // padding: 10px;
+  width: 25px;
+  height: 25px;
 }

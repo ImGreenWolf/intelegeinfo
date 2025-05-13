@@ -259,6 +259,7 @@ header {
   padding: 5px 5px;
   font-family: "Poppins", sans-serif;
   border-bottom: 1px solid gray;
+  align-items: center;
 }
 #editor-tabs .editor-tabs-container {
   display: flex;
@@ -374,11 +375,28 @@ header {
   border-radius: 2lh;
 }
 
+#createFile {
+  color: white;
+  height: 100%;
+  padding: 5px;
+  box-sizing: content-box;
+}
+#createFile::after {
+  content: "";
+  background-image: url(../media/plus-svgrepo-com.svg);
+  background-size: cover;
+  display: block;
+  width: 10px;
+  height: 10px;
+  position: relative;
+}
+
 #session-controls {
   display: flex;
   gap: 5px;
   border-left: 1px solid gray;
   padding: 1px 1px 1px 5px;
+  align-items: center;
 }
 #session-controls button {
   font-size: 12px !important;
@@ -541,7 +559,6 @@ button {
 #console-container {
   display: flex;
   transition-duration: 0.2s;
-  height: 50px;
   align-items: center;
 }
 
@@ -560,12 +577,13 @@ button {
   height: 1lh;
   transition-duration: 0.2s;
   transition-delay: 0.1s;
+  overflow: hidden;
 }
 
 #console-container button {
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 3rem;
+  height: 3rem;
   background-image: url("../media/paper-plane-icon.svg");
   background-repeat: no-repeat;
   background-position: center;
@@ -1037,17 +1055,60 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login {
   transition-duration: 0.3s;
   user-select: none;
   outline-offset: 0.5px;
+  text-align: center;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+button.inset-button *, #editor-tabs span:not(#active-open-file).inset-button *, #signup.inset-button *, #login.inset-button * {
+  transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
 }
 button:hover, #editor-tabs span:not(#active-open-file):hover, #signup:hover, #login:hover {
-  outline: 1px solid white !important;
-  transform: translateY(1px) scale(97%);
+  outline: 1px solid rgba(255, 255, 255, 0.8) !important;
+  transform: translateY(0.5px) scale(95%);
   transition-duration: 0.1s;
 }
 button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #editor-tabs span:not(#active-open-file) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
   transition-duration: 0.02s;
-  transform: scale(1.05);
-  transform: translateY(2px) scale(95%);
-  box-shadow: none;
+  transform: translateY(1px) scale(90%);
+}
+
+.ridge-gradient.inset-button {
+  background-image: linear-gradient(rgb(46.55, 46.55, 46.55), rgb(38.9, 38.9, 38.9), rgb(49.1, 49.1, 49.1));
+  box-sizing: content-box;
+  padding: 2px;
+  height: min-content;
+  border-radius: 25px;
+  display: flex;
+}
+.ridge-gradient.inset-button.black {
+  border-radius: 5px;
+  background-image: linear-gradient(25deg, rgb(25.5, 25.5, 25.5), hsl(0, 0%, -5%), rgb(38.25, 38.25, 38.25));
+}
+.ridge-gradient.inset-button:has(#createFile) {
+  border-radius: 50%;
+}
+
+.inset-button a {
+  background-color: rgb(44, 44, 44);
+  color: white;
+  padding: 0.5lh;
+  font-size: 24px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-decoration: none;
+  padding: auto;
+  align-items: center;
+  transition-duration: 0.1s;
+  text-rendering: auto;
+  border-radius: 25px;
+  font-family: Poppins;
+  font-weight: 600;
+  text-shadow: 2px 2px 5px black;
+  box-shadow: -5px 20px 5px 5px rgba(37, 37, 37, 0.8), inset 0px -10px 5px -10px rgba(44, 44, 44, 0.8), inset 0px 10px 10px -5px rgb(56.75, 56.75, 56.75);
+}
+.inset-button a:hover {
+  box-shadow: 0px 0px 5px 0px rgba(37, 37, 37, 0.8), inset 0px -10px 5px -10px rgba(44, 44, 44, 0.8), inset 0px 10px 10px -5px rgb(56.75, 56.75, 56.75);
+  transform: scale(97%);
 }
 
 /* media queries */
@@ -1093,7 +1154,7 @@ button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #
     font-size: 10px;
   }
   header #signup, header #login {
-    padding: 5px 10px;
+    padding: 10px 20px;
   }
   .buttons button {
     width: 25%;
@@ -1102,13 +1163,40 @@ button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #
     overflow: visible;
   }
   #output-container textarea {
-    max-width: 30%;
-    padding: 5px;
-    font-size: 12px;
+    max-width: 100%;
+    padding: 20px;
+    font-size: 18px;
   }
   header h1 {
     font-size: 20px;
     width: 50%;
+  }
+  header nav {
+    width: 50vw;
+  }
+  header ul {
+    justify-content: flex-end !important;
+  }
+  * {
+    font-size: 24px;
+  }
+  #join-session:not(.tight-screen) {
+    display: none;
+  }
+  #mobile-dropdown {
+    display: block;
+  }
+  #editor {
+    font-size: 24px;
+  }
+  #output {
+    font-size: 24px;
+  }
+  #console {
+    font-size: 24px;
+  }
+  .chat-content {
+    font-size: 24px;
   }
 }
 /*
