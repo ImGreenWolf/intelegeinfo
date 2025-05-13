@@ -68,6 +68,7 @@ app.use(compression());
 app.use(express_1.default.json());
 // app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
 app.use(express_1.default.static("public"));
+app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
 // app.use('dist',express.static(path.join(rootDirName,'dist')));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
@@ -127,12 +128,11 @@ app.post('/editor/startsession/:id', (req, res) => {
         const { chat, codePermission } = req.body;
         if (exports.sessionMap.get(id).isPublic) {
             exports.sessionMap.get(id).makeSessionPublic(chat === 'on' ? true : false, codePermission);
-            res.status(500);
+            res.status(200);
             return;
         }
-        console.log(types_2.EditorPermission[codePermission]);
         exports.sessionMap.get(id).makeSessionPublic(chat === 'on' ? true : false, codePermission);
-        res.send('succsess');
+        res.status(201).send('');
     }
     else {
         res.status(500);

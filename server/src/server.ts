@@ -37,6 +37,7 @@ app.use(compression())
 app.use(express.json());
 // app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
 app.use(express.static("public"));
+app.use('/client/scripts',express.static(path.join('dist', 'public')));
 // app.use('dist',express.static(path.join(rootDirName,'dist')));
 
 app.use(express.urlencoded({ extended: true }));
@@ -126,13 +127,12 @@ app.post('/editor/startsession/:id', (req, res) => {
         if(sessionMap.get(id).isPublic)
         {
             sessionMap.get(id).makeSessionPublic(chat==='on' ? true : false, codePermission as EditorPermission)
-            res.status(500)
+            res.status(200)
             return;
         }
-            
-        console.log(EditorPermission[codePermission])
+
         sessionMap.get(id).makeSessionPublic(chat==='on' ? true : false, codePermission as EditorPermission)
-        res.send('succsess')
+        res.status(201).send('')
     }
     else {
         res.status(500)

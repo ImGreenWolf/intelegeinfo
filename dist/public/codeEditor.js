@@ -1,25 +1,4 @@
 // Ensure Ace Editor is globally available or import it properly
-// import QRCode from 'qrcode'
-// import { WebSocketMessageType } from "../../dist/shared/types";
-// const WebSocketMessageType = require("../../dist/shared/types")
-/* IMPORTS */
-// FileManagement.ts
-const FileContainer = document.getElementById("editor-tabs-container");
-if (!FileContainer)
-    console.error("Couldn't find file container!");
-function onFileCreate(fileName) {
-    // const command = JSON.parse(messageBodyJson);
-    // const fileName = command.content;
-    console.log(fileName);
-    const fileElem = document.createElement("span");
-    fileElem.className = "file-tab";
-    fileElem.innerText = fileName;
-    fileElem.onclick = () => {
-        openFile(fileElem.innerHTML);
-    };
-    FileContainer.appendChild(fileElem);
-    // FileContainer.innerHTML += `<span>${fileName}</span>`
-}
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
 var codeLens = ace.require("ace/ext/code_lens");
@@ -232,6 +211,26 @@ const ghostManager = new (class {
 ///
 //
 const byteSize = (str) => new Blob([str]).size;
+function displayMessagePopup(message) {
+    function createPopup(classList, innerHTML) {
+        if (!innerHTML)
+            return;
+        const popup = document.createElement('div');
+        popup.classList.add("client-popup");
+        if (classList.split[' '])
+            for (const classname of classList.split[' '])
+                popup.classList.add(classname);
+        popup.innerHTML = `<button class="client-popup-close">x</button><div>${innerHTML}</div>`;
+        document.body.appendChild(popup);
+        setTimeout(() => {
+            popup.remove();
+        }, 1000 * 5);
+    }
+    createPopup('', `
+    <p>${message}</p>
+    
+    `);
+}
 //
 ///
 ////
@@ -272,6 +271,42 @@ const namePrompt = document.getElementById("name-prompt");
 const consoleInput = document.getElementById("console");
 if (new URLSearchParams(window.location.search).has('save'))
     document.getElementById('saveProject')?.classList.add('saved');
+/* IMPORTS */
+// FileManagement.ts
+const FileContainer = document.getElementById("editor-tabs-container");
+if (!FileContainer)
+    console.error("Couldn't find file container!");
+function onFileCreate(fileName) {
+    // const command = JSON.parse(messageBodyJson);
+    // const fileName = command.content;
+    const fileElem = document.createElement("span");
+    fileElem.className = "file-tab";
+    fileElem.innerText = fileName;
+    fileElem.onclick = () => {
+        openFile(fileElem.innerHTML);
+    };
+    FileContainer.appendChild(fileElem);
+    if (editorSessions.has(fileName)) {
+        const session = editorSessions.get(fileName);
+        if (!session.fileElement) {
+            const newSession = {
+                editor: session.editor,
+                fileName: session.fileName,
+                fileElement: fileElem
+            };
+            editorSessions.set(fileName, newSession);
+        }
+    }
+    else {
+        const newSession = {
+            editor: undefined,
+            fileName: fileName,
+            fileElement: fileElem
+        };
+        editorSessions.set(fileName, newSession);
+    }
+    // FileContainer.innerHTML += `<span>${fileName}</span>`
+}
 function createFileNamePrompt() {
     if (!namePrompt)
         return;
@@ -337,11 +372,11 @@ export function saveProject() {
                     }).then(response => {
                         if (!response.ok)
                             if (response.status === 401)
-                                window.alert('Please log in!');
+                                displayMessagePopup('Please log in!');
                         document.getElementById('active-project-name')?.classList.remove('dirty');
                     })
                         .catch(err => {
-                        window.alert('Please log in! ' + err);
+                        displayMessagePopup('heyy');
                     });
                     document.getElementById('saveProject')?.classList.add('saved');
                     this.style.display = "none";
@@ -353,12 +388,12 @@ export function saveProject() {
         }
         else {
             if (loggedin.status == 401)
-                window.alert('Pentru a-ti salva proiectele trebuie sa intri in cont sau sa-ti faci unul nou!');
+                displayMessagePopup('Pentru a-ti salva proiectele trebuie sa intri in cont sau sa-ti faci unul nou!');
             else
-                window.alert('Eroare: ' + loggedin.statusText);
+                displayMessagePopup('Eroare: ' + loggedin.statusText);
         }
     }).catch(err => {
-        window.alert(err);
+        displayMessagePopup(err);
     });
 }
 function loadProject(id) {
@@ -374,7 +409,7 @@ function loadProject(id) {
         }
     })
         .catch(err => {
-        window.alert(err);
+        displayMessagePopup(err);
     });
 }
 function listProjects() {
@@ -391,7 +426,7 @@ function listProjects() {
                 throw "invalid data";
         }
         catch {
-            window.alert('please log in');
+            displayMessagePopup('please log in');
         }
         const container = document.createElement('div');
         container.classList.add('project-list-container');
@@ -402,7 +437,7 @@ function listProjects() {
         closeButton.innerText = 'x';
         container.appendChild(closeButton);
         const currentSaveId = new URLSearchParams(window.location.search).get('save');
-        // window.alert(JSON.stringify(data.projects))
+        // displayMessagePopup(JSON.stringify(data.projects))
         const listcontainer = document.createElement('ul');
         listcontainer.classList.add('project-list');
         for (const project of data.projects) {
@@ -434,7 +469,7 @@ function listProjects() {
         document.body.appendChild(container);
     });
     // .catch(err => {
-    //   window.alert('nigger ' + err)
+    //   displayMessagePopup('nigger ' + err)
     // })
 }
 // END DOCUMENT FUNCTIONS //
@@ -579,14 +614,15 @@ function joinsession() {
     shareContainer.classList.add('share-container');
     shareContainer.innerHTML =
         `
-    <link rel="stylesheet" href="../css/codeVerification.css">
+
+    <script src="../dist/public/emailCodeVerificationClient.js" async type="text/javascript"></script>
     <form id="codeForm" method="get">
         <div class="text-container">
             <h1>Join a session</h1>
         </div>
         <div class="input-container">
-            <input type="number" maxlength="6" name="code" id="joinCode" autocomplete="off">
-            <div class="display">
+            <input type="number" maxlength="6" name="code" id="code" autocomplete="off">
+            <div class="display" id="display">
                 <div></div>
                 <div></div>
                 <div></div>
@@ -597,26 +633,37 @@ function joinsession() {
         </div>
         <div class="button-container">
             <button  type="submit">Alatura-te</button>
+            <p id="code-error"></p>
         </div>
         
     </form>
     
     `;
     document.body.appendChild(shareContainer);
+    const script = document.createElement('script');
+    const file = "/client/scripts/emailCodeVerificationClient.js";
+    script.setAttribute('src', file);
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('async', 'true');
+    document.body.insertBefore(script, shareContainer);
     const form = document.getElementById('codeForm');
-    const codeInput = document.getElementById('joinCode');
+    const codeInput = document.getElementById('code');
     codeInput.oninput = onCodeInput;
     function onCodeInput() {
         if (codeInput.value.length >= 6)
             submit();
     }
     async function submit() {
-        const codeInput = document.getElementById('joinCode');
-        await fetch('./joinsession?code=' + codeInput.valueAsNumber, {}).then(response => {
+        const codeInput = document.getElementById('code');
+        if (codeInput.valueAsNumber == undefined)
+            return;
+        await fetch('editor/joinsession?code=' + codeInput.valueAsNumber, {}).then(response => {
             return response.json();
         }).then(res => {
             location.href = res.redirect;
             console.log('redirecting..');
+        }).catch(err => {
+            document.getElementById('code-error').innerText = err;
         });
     }
     form.addEventListener('submit', async (ev) => {
@@ -624,7 +671,7 @@ function joinsession() {
         submit();
     });
     // document.getElementById('copy-link')!.onclick = () => {
-    //   window.alert(data.link)
+    //   displayMessagePopup(data.link)
     // }
 }
 function copySessionLink() {
@@ -635,9 +682,9 @@ function copySessionLink() {
     //   navigator.clipboard.writeText(sessionLink).then(() => {
     //     console.log("Code copied to clipboard!");
     //   });
-    // } else window.alert(sessionLink);
+    // } else displayMessagePopup(sessionLink);
     if (!wsSessionId)
-        window.alert('Invalid session id.');
+        displayMessagePopup('Invalid session id.');
     const shareContainer = document.createElement('div');
     shareContainer.classList.add('share-container');
     shareContainer.innerHTML =
@@ -655,6 +702,7 @@ function copySessionLink() {
           </select>
       </label>
       <button type="submit" id="submit-create-session">Create Session</button>
+      <p id='session-create-error'></p>
     </form>
     <div id='connect-data-container'>
       <div id='connect-data-inner'>
@@ -713,26 +761,39 @@ function copySessionLink() {
         document.getElementById('createSessionForm').onsubmit = function (ev) {
             ev.preventDefault();
             const formData = new FormData(ev.target);
-            if (!formData.has('chat'))
-                formData.set('chat', '');
-            const entryData = Object.fromEntries(formData.entries());
-            fetch('/editor/startsession/' + wsSessionId, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(entryData)
-            }).then(res => {
-                document.getElementById('connect-data-container')?.classList.add('created');
-                const sessionCodeNode = document.createElement('h2');
-                sessionCodeNode.innerText = data.code;
-                sessionCodeNode.classList.add('session-code');
-                document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'));
-                // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
-                if (!window.location.search.includes("session="))
-                    window.history.pushState({ page: "another" }, "another page", window.location.search + (window.location.search ? "&" : "?") + "session=" + wsSessionId);
-            });
+            try {
+                if (!formData.has('chat'))
+                    formData.set('chat', '');
+                const entryData = Object.fromEntries(formData.entries());
+                if (!wsSessionId)
+                    throw "Invalid session id.";
+                const startedSessionId = wsSessionId;
+                fetch('/editor/startsession/' + wsSessionId, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(entryData)
+                }).then(res => {
+                    document.getElementById('connect-data-container')?.classList.add('created');
+                    const sessionCodeNode = document.createElement('h2');
+                    sessionCodeNode.innerText = data.code;
+                    sessionCodeNode.classList.add('session-code');
+                    document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'));
+                    // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
+                    if (!window.location.search.includes("session=") && startedSessionId != undefined)
+                        window.history.pushState({ page: "updated session info" }, "intelge info", window.location.search + (window.location.search ? "&" : "?") + "session=" + startedSessionId);
+                }).catch(err => {
+                    throw err;
+                });
+            }
+            catch (err) {
+                if (typeof err == "string")
+                    document.getElementById('session-create-error').innerText = err;
+                else
+                    console.error(err);
+            }
         };
         document.getElementById('copy-link').onclick = () => {
-            window.alert(data.link);
+            displayMessagePopup(data.link);
         };
     });
 }
@@ -975,7 +1036,7 @@ ws.onmessage = (event) => {
     let data = eventJson.body;
     const type = eventJson.type;
     // if(type!=WebSocketMessageType.Handshake && !wsSessionId)
-    //   return window.alert('editor was not initialised. Session id is invalid.')
+    //   return displayMessagePopup('editor was not initialised. Session id is invalid.')
     //console.log(type);
     //console.log(eventJson)
     // try{
@@ -1423,25 +1484,40 @@ ws.onmessage = (event) => {
                     const fileName = eventJson.body.fileName;
                     const fileContent = eventJson.body.content;
                     currentFileName = fileName;
-                    console.log("Opened file: ", fileName);
+                    console.log(editorSessions.get(fileName));
                     if (!editorSessions.has(fileName)) {
                         const newSession = ace.createEditSession(fileContent);
                         // undo manager?
                         // if(fileName.split('.')[1] != 'cpp')
                         newSession.setMode(aceModes.getModeForPath(fileName).mode);
                         editor.setSession(newSession);
-                        editorSessions.set(fileName, newSession);
+                        const session = {
+                            editor: newSession,
+                            fileName: fileName,
+                            fileElement: undefined
+                        };
+                        editorSessions.set(fileName, session);
                     }
                     else {
+                        if (!editorSessions.get(fileName)?.editor)
+                            editorSessions.get(fileName).editor = ace.createEditSession(fileContent);
                         console.log("File already opened: ", fileName);
                         const session = editorSessions.get(fileName);
-                        if (session)
-                            editor.setSession(session);
-                        if (fileContent.toString() != session?.getValue().toString()) {
-                            isRemoteChange = true;
-                            session?.setValue(fileContent);
+                        if (session) {
+                            session.editor.setMode(aceModes.getModeForPath(fileName).mode);
+                            editor.setSession(session.editor);
+                        }
+                        if (fileContent.toString() != session?.editor.getValue().toString()) {
+                            isRemoteChange = true; // must add this to prevent sending on changed event
+                            session.editor.setValue(fileContent);
                             isRemoteChange = false;
                         }
+                    }
+                    if (document.getElementById('active-open-file'))
+                        document.getElementById('active-open-file').id = '';
+                    const elem = editorSessions.get(fileName)?.fileElement;
+                    if (elem) {
+                        elem.id = 'active-open-file';
                     }
                     break;
                 default:

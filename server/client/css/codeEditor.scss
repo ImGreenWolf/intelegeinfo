@@ -44,6 +44,12 @@
     100% {opacity: 100%; transform: translateY(0); filter: blur(0px);}
 }
 
+@keyframes client-popup {
+    0% {transform: translateX(-50%); opacity: 0; filter: blur(10px);}
+    10%, 90% {opacity: 100%; transform: translate(-50%,-50%); filter: blur(0px);}
+    100% {transform: translateX(-50%); opacity: 0; filter: blur(10px);}
+}
+
 
 #active-project-name.dirty::after
 {
@@ -221,7 +227,7 @@ header
     text-align: center;
     display: flex;
     justify-content: space-between;
-    padding: 3px 3px;
+    padding: 5px 5px;
     font-family: "Poppins", sans-serif;
     border-bottom: 1px solid theme.$border-color;
     // border-radius: 1lh 1lh 0 0;
@@ -257,7 +263,21 @@ header
         min-width: 70px;
         border: 1px solid theme.$border-color;
         cursor: pointer;
-        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px 2px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+        box-sizing: border-box;
+        transition-duration: 0.2s;
+        &#active-open-file
+        {
+            border: 2px solid theme.$text-color;
+            
+        }
+        &:not(#active-open-file)
+        {
+            // border-bottom: 3px solid color.adjust($color: theme.$border-color, $lightness: -20%);
+            transform: translateY(-1px);
+            box-shadow: theme.$border-color 0px 2px 0px 0px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+        }
     }
 
     
@@ -269,7 +289,40 @@ header
     width: 20px;
 }
 
-
+.client-popup
+{
+    position: absolute;
+    bottom: 150px;
+    left: 50%;
+    min-width: 300px;
+    max-height: 50px;
+    text-align: center;
+    padding: 5px;
+    transform: translate(-50%, 0);
+    z-index: 20;
+    background-color: color.adjust($color: theme.$background-color, $alpha: -3);
+    backdrop-filter: blur(2px);
+    box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
+    // border: 1px solid theme.$border-color;
+    border-radius: 0.5lh;
+    animation: client-popup 5s;
+    animation-fill-mode: both;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .client-popup-close
+    {
+        border-radius: 50%;
+        width: 25px;
+        aspect-ratio: 1;
+        background-color: transparent;
+        border: 1px solid theme.$border-color;
+    }
+    & div
+    {
+        width: 100%;
+    }
+}
 .pop-up
 {
     position: absolute;
@@ -1191,21 +1244,25 @@ pointer-events: none;
 
 
 
-button, #editor-tabs span, #signup, #login
+button, #editor-tabs span:not(#active-open-file), #signup, #login
 {
     transition-duration: 0.3s;
     user-select: none;
-
+    outline-offset: 0.5px;
     &:hover{
-        background-color: adjust-color($color: theme.$background-color,$alpha: -0.2);
+        // background-color: adjust-color($color: theme.$background-color,$alpha: -0.2);
+        // backdrop-filter: blur(10px);
+
         outline: 1px solid theme.$text-color !important;
-        backdrop-filter: blur(10px);
+        transform: translateY(1px) scale(97%);
         transition-duration: 0.1s;
     }
     &:active,:focus
     {
         transition-duration: 0.02s;
         transform: scale(1.05);
+        transform: translateY(2px) scale(95%);
+        box-shadow: none;
     }
 }
 

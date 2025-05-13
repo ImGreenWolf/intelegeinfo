@@ -81,6 +81,23 @@
     filter: blur(0px);
   }
 }
+@keyframes client-popup {
+  0% {
+    transform: translateX(-50%);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  10%, 90% {
+    opacity: 100%;
+    transform: translate(-50%, -50%);
+    filter: blur(0px);
+  }
+  100% {
+    transform: translateX(-50%);
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
 #active-project-name.dirty::after {
   content: "*";
   margin: 0.1em;
@@ -239,7 +256,7 @@ header {
   text-align: center;
   display: flex;
   justify-content: space-between;
-  padding: 3px 3px;
+  padding: 5px 5px;
   font-family: "Poppins", sans-serif;
   border-bottom: 1px solid gray;
 }
@@ -269,11 +286,51 @@ header {
   min-width: 70px;
   border: 1px solid gray;
   cursor: pointer;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px 2px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  box-sizing: border-box;
+  transition-duration: 0.2s;
+}
+#editor-tabs span#active-open-file {
+  border: 2px solid white;
+}
+#editor-tabs span:not(#active-open-file) {
+  transform: translateY(-1px);
+  box-shadow: gray 0px 2px 0px 0px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
 
 .remove-proj {
   width: 20px;
+}
+
+.client-popup {
+  position: absolute;
+  bottom: 150px;
+  left: 50%;
+  min-width: 300px;
+  max-height: 50px;
+  text-align: center;
+  padding: 5px;
+  transform: translate(-50%, 0);
+  z-index: 20;
+  background-color: rgba(37, 37, 37, 0);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
+  border-radius: 0.5lh;
+  animation: client-popup 5s;
+  animation-fill-mode: both;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.client-popup .client-popup-close {
+  border-radius: 50%;
+  width: 25px;
+  aspect-ratio: 1;
+  background-color: transparent;
+  border: 1px solid gray;
+}
+.client-popup div {
+  width: 100%;
 }
 
 .pop-up, .share-container, .project-list-container {
@@ -976,19 +1033,21 @@ value {
   justify-self: start;
 }
 
-button, #editor-tabs span, #signup, #login {
+button, #editor-tabs span:not(#active-open-file), #signup, #login {
   transition-duration: 0.3s;
   user-select: none;
+  outline-offset: 0.5px;
 }
-button:hover, #editor-tabs span:hover, #signup:hover, #login:hover {
-  background-color: rgba(37, 37, 37, 0.8);
+button:hover, #editor-tabs span:not(#active-open-file):hover, #signup:hover, #login:hover {
   outline: 1px solid white !important;
-  backdrop-filter: blur(10px);
+  transform: translateY(1px) scale(97%);
   transition-duration: 0.1s;
 }
-button:active, button :focus, #editor-tabs span:active, #editor-tabs span :focus, #signup:active, #signup :focus, #login:active, #login :focus {
+button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #editor-tabs span:not(#active-open-file) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
   transition-duration: 0.02s;
   transform: scale(1.05);
+  transform: translateY(2px) scale(95%);
+  box-shadow: none;
 }
 
 /* media queries */
