@@ -135,7 +135,12 @@ background-color: transparent;
         border-left-color: color.adjust($color: theme.$highlight-color, $lightness: 10% * theme.$dark-theme);
         border-right-color: color.adjust($color: theme.$highlight-color, $lightness: 1% * theme.$dark-theme);
 
-        box-shadow: 0 0 10px 10px inset rgba(255, 255, 255, 0.141);
+        box-shadow: 0 0 10px 10px inset color.adjust($color: theme.$highlight-color, $lightness: 10%);
+
+        &:hover
+        {
+            border: 3px solid color.adjust($color: theme.$highlight-color, $lightness: 30%);
+        }
     }
     
 }
