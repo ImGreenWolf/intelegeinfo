@@ -530,7 +530,7 @@ exports.wss.on("connection", (ws, req) => {
             //handle heartbeat
             heartbeatInterval = setInterval(() => {
                 exports.server.getConnections(function (error, count) {
-                    console.log(count);
+                    console.log(Date.now + ":   " + count);
                 });
                 heartbeatTimestamp = Date.now(); // Update the heartbeat timestamp when a message is received
                 ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Heartbeat, connections: exports.server.connections, expectedDelay: heartbeatTimeout })); // Send a ping message to the client every 30 seconds
@@ -991,7 +991,7 @@ exports.wss.on("connection", (ws, req) => {
                         if (!clientObj)
                             break;
                         clientObj.ping = Date.now() - heartbeatTimestamp;
-                        console.log("Client ping: " + clientObj?.ping);
+                        // console.log("Client ping: " + clientObj?.ping)
                         //console.log("Received heartbeat from client " + clientId);
                         break;
                     /*
