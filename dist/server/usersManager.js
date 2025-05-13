@@ -209,6 +209,7 @@ oauth2Client.setCredentials({
 });
 async function updateTransporter() {
     oauth2Client.getAccessToken().then(accessToken => {
+        process.env.GOOGLE_EMAILV_ACCESSTOKEN = accessToken.token;
         transporter = nodemailer_1.default.createTransport({
             service: "gmail",
             auth: {
@@ -218,18 +219,18 @@ async function updateTransporter() {
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET,
                 refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
                 accessToken: accessToken.token, //process.env.GOOGLE_EMAILV_ACCESSTOKEN,
-                expires: Date.now(),
+                //   expires: Date.now(),
             },
             tls: {
                 rejectUnauthorized: false
             }
         });
-        console.info('Updated access token: ' + accessToken.token);
+        console.info('Updated access token: ' + accessToken.res);
     }).catch(err => {
         console.error('Failed to generate access token for email: ' + err);
     });
 }
-updateTransporter();
+// updateTransporter()
 setInterval(updateTransporter, 3600 * 1000);
 exports.router.get('/verifyemail', (req, res) => {
     const id = parseInt(req.query.id);

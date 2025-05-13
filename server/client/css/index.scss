@@ -1,15 +1,22 @@
+@use 'theme';
+@use 'sass:color';
 .main-container
 {
     position: relative;
     width: 100%;
     height: calc(100vh - 75px);
-    display: flex;
+    display: grid;
     align-items: center;
     justify-content: space-around;
     margin: auto;
     flex-wrap: wrap;
     overflow: hidden;
+    grid-template-columns: 1fr 1fr 1fr;
+        justify-content: center;
+    justify-items: center;
+
     /* gap: 1s00px; */
+    
 }
 
 .main-container div#text-container
@@ -17,25 +24,120 @@
     position: relative;
     width: 500px;
     text-align: center;
+    display: grid;
+    grid-template-rows: auto auto;
+    align-content: space-evenly;
+    height: 100%;
     /* left: 50%;
     transform: translate(-50%, -50%); */
     /* top: 50%; */
-    &  a
+    .ridge-gradient.inset-button
     {
-        font-size: 16px;
-        background-color: green;
-        padding: 0.5lh;
-        max-width: 50%;
-        width: 200px;
-        color: white;
-        position: relative;
-        left: 50%;
-        transform: translateX(-50%);
-        display: block;
-        text-rendering: auto;
-        border-radius: 1lh;
-        margin-top: 30px;
+        background-image: 
+        linear-gradient(
+        color.adjust($color: theme.$main-button-color, $lightness: 1% * theme.$dark-theme),
+        color.adjust($color: theme.$main-button-color, $lightness: -2% * theme.$dark-theme),
+        color.adjust($color: theme.$main-button-color, $lightness: 2% * theme.$dark-theme));
+        height: 100px;
+        margin: auto;
+        width: 300px;
+        box-sizing: content-box;
+        padding: 5px;
+        border-radius: 25px;
+        display: flex;
+        justify-content: stretch;
+        align-items: stretch;
+        overflow: hidden;
     }
+    .inset-button a
+    {
+        
+        
+        background-color: theme.$main-button-color;
+        color: theme.$text-color;
+        padding: 0.5lh;
+        font-size: 24px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        text-decoration: none;
+        padding: auto;
+        align-items: center;
+        transition-duration: 0.1s;
+        text-rendering: auto;
+        border-radius: 25px;
+        font-family: Poppins;
+        font-weight: 600;
+        text-shadow: 2px 2px 5px black;
+        // border: 8px solid color.adjust($color: theme.$main-button-color, $lightness: 3% * theme.$dark-theme);
+        
+        box-shadow: 
+        -5px 20px 5px 5px color.adjust($color: theme.$background-color, $alpha: -0.2%),
+        inset 0px -10px 5px -10px color.adjust($color: theme.$main-button-color, $alpha: -0.2%),
+        inset 0px 10px 10px -5px color.adjust($color: theme.$main-button-color, $lightness: 5% * theme.$dark-theme)
+        ;
+
+        
+        &:hover
+        {
+            // box-shadow: none;
+            box-shadow: 
+            0px 0px 5px 0px color.adjust($color: theme.$background-color, $alpha: -0.2%),
+            inset 0px -10px 5px -10px color.adjust($color: theme.$main-button-color, $alpha: -0.2%),
+            inset 0px 10px 10px -5px color.adjust($color: theme.$main-button-color, $lightness: 5% * theme.$dark-theme);
+            transform: scale(97%);
+
+        }
+    }
+
+
+    .ridge-gradient
+    {
+
+        height: 100px;
+        margin: auto;
+        width: 300px;
+        box-sizing: content-box;
+        padding: 5px;
+        border-radius: 25px;
+        display: flex;
+        justify-content: stretch;
+        align-items: stretch;
+background-color: transparent;
+    }
+
+    a
+    {
+        
+        
+        // background-color: theme.$main-button-color;
+        background-color: theme.$highlight-color;
+        backdrop-filter: blur(3px);
+        color: theme.$text-color;
+        padding: 0.5lh;
+        font-size: 24px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        text-decoration: none;
+        padding: auto;
+        align-items: center;
+        transition-duration: 0.1s;
+        text-rendering: auto;
+        border-radius: 15px;
+        font-family: Poppins;
+        font-weight: 600;
+        text-shadow: 2px 2px 5px black;
+        box-shadow: 0 40px 30px 0px rgb(22, 22, 22);
+        border: 3px solid rgb(63, 63, 63);
+        border-top-color: color.adjust($color: theme.$highlight-color, $lightness: 10% * theme.$dark-theme);
+        border-bottom-color: color.adjust($color: theme.$highlight-color, $lightness: 1% * theme.$dark-theme);
+        border-left-color: color.adjust($color: theme.$highlight-color, $lightness: 10% * theme.$dark-theme);
+        border-right-color: color.adjust($color: theme.$highlight-color, $lightness: 1% * theme.$dark-theme);
+
+        box-shadow: 0 0 10px 10px inset rgba(255, 255, 255, 0.141);
+    }
+    
 }
 .main-container h
 {
@@ -145,7 +247,9 @@
     align-items: flex-start;
     align-content: flex-start;
     gap: 10px;
-    transform: matrix(0.95, 0.02, 0, 1, 0, 0) perspective(20px);
+    
+    
+    // matrix(0.95, 0.02, 0, 1, 0, 0) perspective(20px);
     position: relative;
     width: 500px;
     height: 300px;
@@ -155,7 +259,14 @@
 {
     cursor: pointer;
     transform: matrix(0.95, -0.1, 0, 1, 0, 0);
-    box-shadow: -20px -6px 20px 0px gray;
+    // transform: matrix3d(
+    //     1, 0, 0, 0,
+    //     0, 1, 0, 0,
+    //     0, 0, 1, 0,
+    //     0, 0, 0, 1);
+    // transform: matrix3d(1, -0.2, -18, 0.001, 1, 1, -10, -0.001, 3, 20, 15, 37, 96, 0, 0, 1);
+    // transform: matrix3d(0.98,0,-0.17,0.001,0.00,1,0.00,-0.0003,0.17,0,0.98,0,0,0,0,1);
+    box-shadow: -20px 16px 20px 0px rgb(0, 0, 0);
     border: 1px solid black;
     border-radius: 10px;
     overflow: hidden;
@@ -166,4 +277,9 @@
 {
     width: 500px;
     height: 300px;
+}
+
+.main-container>*
+{
+    grid-area: auto !important;
 }

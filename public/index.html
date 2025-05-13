@@ -69,7 +69,10 @@ int main() {
 
         <div id="text-container">
             <h>Intelege Info</h>
-            <a href="/editor">Deschide Editorul</a>
+            <div class="ridge-gradient">
+                <a href="/editor">Deschide Editorul</a>
+            </div>
+            
         </div>
 
         <!-- <div id="vector-container">
@@ -171,7 +174,7 @@ int main() {
         editor.on("focus", (change) =>
     {
         clearInterval(introTyping)
-        openEditor()
+        // openEditor()
     })
 
     function openEditor(text)

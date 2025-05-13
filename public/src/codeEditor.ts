@@ -799,9 +799,8 @@ function joinsession()
                 <div></div>
             </div>
         </div>
-        <input type="text" value="#{code}"hidden id="hmac">
         <div class="button-container">
-            <button  type="submit">Verifica</button>
+            <button  type="submit">Alatura-te</button>
         </div>
         
     </form>
@@ -849,6 +848,10 @@ function joinsession()
     //   window.alert(data.link)
     // }
 }
+
+
+
+
 
 function copySessionLink() {
   const clientId = wsSessionId;

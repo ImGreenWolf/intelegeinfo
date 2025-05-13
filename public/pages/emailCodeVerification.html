@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify your account</title>
     <link rel="stylesheet" href="../css/codeVerification.css">
+    <link rel="stylesheet" href="../css/main.css">
     <style>
         body
         {
@@ -13,6 +14,21 @@
 
     </style>
 </head>
+        <header>
+            <div class="horizontal">
+                    
+                <h1><a href="/">ÎnțelegeInfo</a></h1>
+                <div id="colab-container">
+
+                </div>
+
+            
+            </div>
+
+            <div class="vertical">
+                
+            </div>
+        </header>
 <body>
     <form id="codeForm" method="post">
         <div class="text-container">
@@ -20,8 +36,8 @@
             <p>Am trimis un cod de verificare la #{emailCensored}</p>
         </div>
         <div class="input-container">
-            <input type="number" maxlength="6" max="6" name="code" id="code" oninput="onCodeInput()" autocomplete="off">
-            <div class="display">
+            <input type="number" maxlength="6" name="code" id="code" autocomplete="off">
+            <div class="display" id="display">
                 <div></div>
                 <div></div>
                 <div></div>
@@ -41,14 +57,53 @@
 
 
 <script>
+    
     const form = document.getElementById('codeForm')
     const codeInput = document.getElementById('code')
-    function onCodeInput()
-    {
-        if(codeInput.value.length<6)
-        form.children[index+1].focus();
-        else 
-        submit()
+    const display = document.getElementById('display')
+
+    let lastIndex=0;
+
+    codeInput.oninput = (ev) => {
+
+        // if(index<=0)
+        //     display.children[0].innerHTML = ''
+        const code = ev.target.value;
+        // ev.target.value='';
+        const index = code.length-1 //ev.target.value.length-1;
+
+        if(index>5)
+            return;
+        
+        console.log(index)
+        if(index>=lastIndex)
+        {
+            display.children[index].innerHTML = code[index]
+            display.children[index].classList.add('filled')
+        }
+        else
+            for(i=index+1;i<=lastIndex;i++)
+            {
+                display.children[i].innerHTML = ''
+                display.children[i].classList.remove('filled')
+            }
+                
+
+
+        lastIndex = index;
+        // for(let i=0;i<6;i++)
+        //     if(i<=index && index!=0)
+        //     {
+                
+                   
+        //         display.children[i].classList.add('filled')
+                
+        //     }
+        //     else
+        //     {
+        //         display.children[i].classList.remove('filled')
+        //         display.children[i].innerHTML = ''
+        //     }
     }
 
     async function submit()
