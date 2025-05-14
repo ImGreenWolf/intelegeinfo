@@ -716,11 +716,11 @@ wss.on("connection", (ws: WebSocket, req) => {
 
         //handle heartbeat
         heartbeatInterval = setInterval(() => {
-            server.getConnections(function(error, count) {
+            // server.getConnections(function(error, count) {
 
-                console.log(Date.now + ":   " + count);
+            //     console.log(Date.now + ":   " + count);
             
-            });
+            // });
             heartbeatTimestamp = Date.now(); // Update the heartbeat timestamp when a message is received
             ws.send(JSON.stringify({type: WebSocketMessageType.Heartbeat, connections: server.connections, expectedDelay: heartbeatTimeout})); // Send a ping message to the client every 30 seconds
             if(Date.now() - heartbeatTimestamp >= heartbeatTimeout*2) {
@@ -2379,7 +2379,15 @@ const runCommand = `docker run --rm -v "${dockerSandboxPath}":"${dockerSandboxPa
 
 
 
+setInterval(() => {
+            server.getConnections(function(error, count) {
+                if(count)
+                    console.log(Date.now.toString() + ":   " + count);
+            
+            });
 
+        })
+    
 
 
 app.use(handle404);
