@@ -251,7 +251,7 @@ header {
 }
 
 #editor-tabs {
-  height: 25px;
+  min-height: 30px;
   background-color: black;
   text-align: center;
   display: flex;
@@ -267,6 +267,7 @@ header {
   align-items: center;
   gap: 5px;
   width: 100%;
+  height: 100%;
 }
 #editor-tabs button {
   border: 1px solid gray;
@@ -275,11 +276,14 @@ header {
   border: 1px solid gold;
 }
 #editor-tabs span {
-  font-size: 10px;
-  line-height: 25px;
   display: inline-block;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: auto 0;
+  padding: 2px 10px;
+  font-size: 0.75rem;
   background-color: black;
   border-radius: 1lh;
   height: 100%;
@@ -397,9 +401,6 @@ header {
   border-left: 1px solid gray;
   padding: 1px 1px 1px 5px;
   align-items: center;
-}
-#session-controls button {
-  font-size: 12px !important;
 }
 #session-controls .create-file {
   border-radius: 50%;
@@ -793,6 +794,41 @@ value {
 .output-console-container div {
   padding: 5px;
 }
+.output-console-container .console-output {
+  text-align: start;
+}
+.output-console-container .console-input {
+  text-align: end;
+}
+.output-console-container .console-return {
+  text-align: center;
+}
+@keyframes blink {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #fff;
+  }
+}
+.output-console-container textarea {
+  background-color: transparent;
+  resize: none;
+  min-width: 1ch;
+  max-width: fit-content;
+  height: 1lh;
+  display: block;
+  color: white;
+  margin: 10px;
+}
+.output-console-container textarea::after {
+  content: "";
+  width: 10px;
+  height: 100%;
+  background-color: white;
+  display: block;
+  position: relative;
+}
 .output-console-container::before {
   width: 100%;
   content: "program output";
@@ -1074,7 +1110,7 @@ button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #
 .ridge-gradient.inset-button {
   background-image: linear-gradient(rgb(46.55, 46.55, 46.55), rgb(38.9, 38.9, 38.9), rgb(49.1, 49.1, 49.1));
   box-sizing: content-box;
-  padding: 2px;
+  padding: 3.5px;
   height: min-content;
   border-radius: 25px;
   display: flex;

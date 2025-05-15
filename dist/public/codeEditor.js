@@ -49,6 +49,7 @@ export var WebSocketMessageType;
     WebSocketMessageType["Output"] = "output";
     WebSocketMessageType["End"] = "end";
     WebSocketMessageType["Console"] = "console";
+    WebSocketMessageType["Chat"] = "chat";
     WebSocketMessageType["ConsoleTyping"] = "consolekeepalive";
     WebSocketMessageType["CodeChange"] = "codeChange";
     WebSocketMessageType["CodeSelection"] = "codeSelection";
@@ -329,7 +330,7 @@ if (consoleInput)
     consoleInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            submitConsole(consoleInput);
+            submitConsole(consoleInput, WebSocketMessageType.Chat);
         }
     });
 export function toggleConsoleDebugProgram(elem) {
@@ -593,8 +594,8 @@ function writeOutput(data, messageJson, manuallScroll) {
                     break;
                 case ConsoleMessageType.Output:
                     if (document.getElementById('active-console'))
-                        messageGroup = document.getElementById('active-console').querySelector(' div');
-                    messageGroup.innerHTML += `<pre class="console-output">${data}</pre>`;
+                        messageGroup = document.getElementById('active-console').querySelector(' div'); // TODO improve this selection
+                    messageGroup.innerHTML += `<pre class="console-${messageJson.type == WebSocketMessageType.End ? "return" : messageJson.type == WebSocketMessageType.Console ? "input" : "output"}">${data}</pre>`;
                     break;
                 default:
                     outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${data}</pre>`;
@@ -824,12 +825,12 @@ console.log(WSUrl);
 export const ws = new WebSocket(WSUrl);
 let variables = [];
 const variableArrayIndexes = [];
-export function submitConsole(elem) {
+export function submitConsole(elem, type) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;
     //     console.log(sendText);
     //    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
-    //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Console }));
+    //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Chat }));
     //    consoleText = elem?.value || "Error: invalid element";
     //    consoleInput.value = "";
     const sendText = elem?.value;
@@ -837,8 +838,8 @@ export function submitConsole(elem) {
         return;
     ws.send(JSON.stringify({
         command: sendText,
-        args: ["console"],
-        type: WebSocketMessageType.Console,
+        // args: ["console"],
+        type,
     }));
     consoleInput.value = "";
     typingIndicatorDelay = 300;
@@ -1199,6 +1200,7 @@ ws.onmessage = (event) => {
         case WebSocketMessageType.Error:
             writeOutput(data, eventJson);
             break;
+        case WebSocketMessageType.Console:
         case WebSocketMessageType.Output:
             if (byteSize(eventJson.body) > 64000) // 1000000 is 1Mb
              {
@@ -1221,7 +1223,7 @@ ws.onmessage = (event) => {
             }
             onExit();
             break;
-        case WebSocketMessageType.Console:
+        case WebSocketMessageType.Chat:
             if (eventJson.clientId) {
                 const blockScroll = /*eventJson.clientId !== wsClientId && */ document.querySelector(`[msg-id="${msgId}"]`) ? (outputArea.scrollTop > document.querySelector(`[msgId="${msgId}"]`).clientHeight) : true;
                 writeOutput(data, eventJson, blockScroll);
@@ -1354,6 +1356,18 @@ ws.onmessage = (event) => {
                 editor.session.setAnnotations(errorAnnotations);
             }
             else {
+                if (eventJson.input == 1) {
+                    const console = document.createElement('textarea');
+                    document.querySelector('#active-console')?.appendChild(console);
+                    console.addEventListener("keypress", (e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            submitConsole(console, WebSocketMessageType.Console);
+                            console.remove();
+                        }
+                    });
+                    console.focus();
+                }
                 editor.session.setAnnotations([]);
                 document.getElementById('buttons')?.classList.add('compiled');
                 for (const markerId of markers)
@@ -1610,7 +1624,7 @@ export function sendDebugCommand(cmd) {
         sendWebsocketCommand("info locals\n ", []); // ws.send({command: 'info locals' , args: []});
     const consoleElem = document.getElementById("console");
     if (cmd == "execute" && consoleElem?.value != "")
-        submitConsole(consoleElem);
+        submitConsole(consoleElem, WebSocketMessageType.Console);
 }
 let playbackSpeed = 1;
 let playbackId;
@@ -1659,7 +1673,8 @@ function onRun() {
     document.getElementById('compile-status').style.opacity = '0.25';
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';
-    outputArea.innerHTML += "<div id='active-console' class='output-console-container'><div></div></div>";
+    outputArea.innerHTML += "<div id='active-console' class='output-console-container'><div class='program-output'></div></div>";
+    // document.getElementsByClassName('program-console')[0].remove()
     // TODO Add separate input area for interactive console.
 }
 function onExit() {

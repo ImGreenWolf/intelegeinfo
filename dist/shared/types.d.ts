@@ -4,6 +4,7 @@ export declare enum WebSocketMessageType {
     Output = "output",
     End = "end",
     Console = "console",
+    Chat = "chat",
     ConsoleTyping = "consolekeepalive",
     CodeChange = "codeChange",
     CodeSelection = "codeSelection",

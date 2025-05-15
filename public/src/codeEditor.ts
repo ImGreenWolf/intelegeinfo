@@ -97,6 +97,7 @@ export enum WebSocketMessageType {
   Output = "output",
   End = "end",
   Console = "console",
+  Chat = "chat",
   ConsoleTyping = 'consolekeepalive',
   CodeChange = "codeChange",
   CodeSelection = "codeSelection",
@@ -456,7 +457,7 @@ if (consoleInput)
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
 
-      submitConsole(consoleInput);
+      submitConsole(consoleInput, WebSocketMessageType.Chat);
     }
   });
 
@@ -820,9 +821,10 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?) {
           break;
         case ConsoleMessageType.Output:
           if(document.getElementById('active-console'))
-            messageGroup = document.getElementById('active-console')!.querySelector(' div')!
-          messageGroup.innerHTML += `<pre class="console-output">${data}</pre>`;
+            messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
+          messageGroup.innerHTML += `<pre class="console-${messageJson.type == WebSocketMessageType.End ? "return" : messageJson.type == WebSocketMessageType.Console  ? "input" :"output"}">${data}</pre>`;
           break;
+
         default:
           outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${data}</pre>`;
           break;
@@ -1116,12 +1118,12 @@ export const ws = new WebSocket(WSUrl);
 let variables: any[] = [];
 const variableArrayIndexes: number[] = [];
 
-export function submitConsole(elem: HTMLTextAreaElement | null) {
+export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType) {
   //     const sendText = elem?.value.replace(consoleText, "")
   //     if(sendText == "") return;
   //     console.log(sendText);
   //    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
-  //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Console }));
+  //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Chat }));
   //    consoleText = elem?.value || "Error: invalid element";
   //    consoleInput.value = "";
   const sendText = elem?.value;
@@ -1129,8 +1131,8 @@ export function submitConsole(elem: HTMLTextAreaElement | null) {
   ws.send(
     JSON.stringify({
       command: sendText,
-      args: ["console"],
-      type: WebSocketMessageType.Console,
+      // args: ["console"],
+      type,
     })
   );
   consoleInput.value = "";
@@ -1602,6 +1604,7 @@ ws.onmessage = (event) => {
     case WebSocketMessageType.Error:
       writeOutput(data, eventJson);
       break;
+    case WebSocketMessageType.Console:
     case WebSocketMessageType.Output:
       
       if(byteSize(eventJson.body) > 64000) // 1000000 is 1Mb
@@ -1632,8 +1635,8 @@ ws.onmessage = (event) => {
 
       
       break;
-
-    case WebSocketMessageType.Console:
+    
+    case WebSocketMessageType.Chat:
       if(eventJson.clientId)
       {
         
@@ -1838,6 +1841,23 @@ ws.onmessage = (event) => {
         }
         editor.session.setAnnotations(errorAnnotations);
       } else {
+        if(eventJson.input == 1)
+        {
+          const console = document.createElement('textarea')as HTMLTextAreaElement;
+          document.querySelector('#active-console')?.appendChild(console) 
+
+          console.addEventListener("keypress", (e: KeyboardEvent) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+
+              submitConsole(console, WebSocketMessageType.Console)
+              console.remove()
+            }
+           });
+
+           console.focus();
+        }
+          
         editor.session.setAnnotations([]);
         document.getElementById('buttons')?.classList.add('compiled')
         for (const markerId of markers) editor.session.removeMarker(markerId);
@@ -2152,7 +2172,7 @@ export function sendDebugCommand(cmd: string) {
   if (cmd == "next" || cmd == "continue")
     sendWebsocketCommand("info locals\n ", []); // ws.send({command: 'info locals' , args: []});
   const consoleElem = document.getElementById("console") as HTMLTextAreaElement;
-  if (cmd == "execute" && consoleElem?.value != "") submitConsole(consoleElem);
+  if (cmd == "execute" && consoleElem?.value != "") submitConsole(consoleElem, WebSocketMessageType.Console);
 }
 
 let playbackSpeed = 1;
@@ -2210,7 +2230,13 @@ function onRun() {
   if(document.getElementById('active-console'))
     document.getElementById('active-console')!.id = '';
 
-  outputArea!.innerHTML += "<div id='active-console' class='output-console-container'><div></div></div>"
+  outputArea!.innerHTML += "<div id='active-console' class='output-console-container'><div class='program-output'></div></div>"
+  
+  // document.getElementsByClassName('program-console')[0].remove()
+
+  
+
+
   // TODO Add separate input area for interactive console.
 }
 

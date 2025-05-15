@@ -153,7 +153,7 @@ app.post('/editor/startsession/:id', (req, res) => {
             if(logged) 
                 {
                         users.getUserData(userId as number).then((userdata) => {
-                        text = file.toString().replace('#{login}',` <li><button class="share-session" onclick="listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`)
+                        text = file.toString().replace('#{login}',` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`)
                         text = text.replace(/\*\{(.*)\}/g, '$1')
                         
                         
@@ -672,6 +672,7 @@ wss.on("connection", (ws: WebSocket, req) => {
     let clientSession: EditorSession;
     let gdbBuffer = "";
     let checkSyntaxTimeout;
+    let dataTimeout;
 
     const cookies = req.headers.cookie;
     const jwtCookie = cookies
@@ -841,7 +842,9 @@ wss.on("connection", (ws: WebSocket, req) => {
             detached: true,
         });
 
-
+        
+        
+        
 
         compileProcess.stdout.on('data', data => {
             
@@ -854,6 +857,7 @@ wss.on("connection", (ws: WebSocket, req) => {
         })
     })
 
+    
    
 }
 
@@ -952,7 +956,7 @@ wss.on("connection", (ws: WebSocket, req) => {
             const clientSocket = clients.get(targetClientId);
             console.log(message)
             if (clientSocket) {
-                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Console, body: message, messageType: ConsoleMessageType.Info }));
+                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.Info }));
             } else {
                 console.error("Client not found:", targetClientId);
             }
@@ -963,7 +967,7 @@ wss.on("connection", (ws: WebSocket, req) => {
             const clientSocket = clients.get(targetClientId);
             if (clientSocket) {
                 console.debug("DEBUG: " + message)
-                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Console, body: message, messageType: ConsoleMessageType.Debug }));
+                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.Debug }));
             } else {
                 console.error("Client not found:", targetClientId);
             }
@@ -973,7 +977,7 @@ wss.on("connection", (ws: WebSocket, req) => {
             const targetClientId = client?.clientId || clientId;
             const clientSocket = clients.get(targetClientId);
             if (clientSocket) {
-                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Console, body: message, messageType: ConsoleMessageType.SessionInfo }));
+                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.SessionInfo }));
             } else {
                 console.error("Client not found:", targetClientId);
             }
@@ -1094,7 +1098,7 @@ wss.on("connection", (ws: WebSocket, req) => {
             replicateFunction((clientWs, LocalclientId) => {
                 printClientConsoleSessionInfo(clientObj?.displayName + " joined!", getThisClientSession().getClientObjectById(LocalclientId))
             }, clientObj);
-            // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Console, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
+            // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
            const session = clientSession.clients.size!=1 ? {isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit} : undefined;
             const welcomeMessage =  !userLoggedIn ?
            `Bine ai venit pe Intelege Info!
@@ -1421,18 +1425,34 @@ wss.on("connection", (ws: WebSocket, req) => {
                     
                     break;
                     */
+
                 case WebSocketMessageType.Console:
-                    if(!clientObj.canChat) break;
-                    if(getProcessFromMap()!=undefined)
+                     if(getProcessFromMap()!=undefined)
+                     {
                         getProcessFromMap()?.stdin?.write(messageJSON.command + "\n");
-                    // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Console, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
+                        dataTimeout = setTimeout(() => {
+                                                                clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                                            }, 200);
+                     }
+
                     replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
+                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Output,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
+                    });
+                    break;
+                case WebSocketMessageType.Chat:
+
+                
+
+                    if(!clientObj.canChat) break;
+                   
+                    // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
+                    replicateFunction((clientWs) => {
+                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
                     });
                     getThisClientSession().messageIndex++; // counter used to id and group console mssages.
                     // clients.forEach((client, id) => {
                         
-                    //         client.send(JSON.stringify({error: false, input: false, clientId: clientId, type: WebSocketMessageType.Console, body: messageJSON.command})); // Send initial message to client
+                    //         client.send(JSON.stringify({error: false, input: false, clientId: clientId, type: WebSocketMessageType.Chat, body: messageJSON.command})); // Send initial message to client
                         
                     // });
                     break;
@@ -1764,9 +1784,12 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     mode = "run";
                                                     let spawnDate = Date.now()
 
+                                                    let programTimeout;
+
+
                                                     gdbBuffer = "";
-                                                    
-                                                    const programTimeout = setTimeout(() => {
+                                                    if(messageJSON.textMode)
+                                                     programTimeout = setTimeout(() => {
                                                         onClosedProgram(-1, "<span style='color: red'>Program timed out!</span>")
                                                         closeProcess(program)
                                                         resolve()
@@ -1775,11 +1798,21 @@ wss.on("connection", (ws: WebSocket, req) => {
 
                                                     spawnPromise = new Promise<void>((resolve, reject) => {
                                                         program?.on("spawn", () => {
-                                                            console.log("Program started successfully");
+                                                            clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
+                                                            
+                                                            dataTimeout = 
+                                                            setTimeout(() => {
+                                                                clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                                            }, 200);
                                                             resolve()
+                                                            
                                                         })
 
                                                 })
+
+               
+
+                                               
                                                     // program.stdin?.on('finish', function () {
                                                     // console.log("await input")
                                                     // });
@@ -1794,13 +1827,13 @@ wss.on("connection", (ws: WebSocket, req) => {
 
                                                     // const onProgramOut = new Readable({
                                                     //     read(size: 0) {
-                                                    //         ws.send(JSON.stringify({error: false, input: false, type: WebSocketMessageType.Console, body: "$: Awaiting input: \n"})); // Send GDB output to the client
+                                                    //         ws.send(JSON.stringify({error: false, input: false, type: WebSocketMessageType.Chat, body: "$: Awaiting input: \n"})); // Send GDB output to the client
 
                                                     //     }
                                                     // });
                                                     // onProgramOut.on("data", (data) => {
                                                     //     printClientConsoleError("Awaiting input: " + data.toString())
-                                                    //      ws.send(JSON.stringify({error: false, input: false, type: WebSocketMessageType.Console, body: "$: Awaiting input: \n"})); // Send GDB output to the client
+                                                    //      ws.send(JSON.stringify({error: false, input: false, type: WebSocketMessageType.Chat, body: "$: Awaiting input: \n"})); // Send GDB output to the client
 
                                                     // })
                                                     //   program.stdout?.pipe(onProgramOut) //TODO Try and figure out a way to pipe input from the program to the client
@@ -1816,6 +1849,9 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                             
 
                                                     // })
+                                       
+
+                                        
                                         
 
                                         program.stdout?.on("data", (data) => {
@@ -1825,7 +1861,13 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                 //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                                                 // });
                                                 // gdbBuffer = "";
+                                                clearTimeout(dataTimeout)
+                                                dataTimeout = setTimeout(() => {
+                                                                clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                                            }, 200);
                                             });
+
+                                       
                                             
                                             
                                             
@@ -1839,6 +1881,8 @@ wss.on("connection", (ws: WebSocket, req) => {
                                             });
                                             
                                             program?.on("close", (code) => {
+
+                                                clearTimeout(dataTimeout);
                                                 switch(code)
                                                 {
                                                     case 0:
@@ -2079,17 +2123,18 @@ wss.on("connection", (ws: WebSocket, req) => {
                             {
                                 if(program)
                                 {
-
                                     program?.stdin?.write(command); //program.stdin.write(message + "\n");
-                                    console.log("sent to program")
+                                    // dataTimeout = setTimeout(() => {
+                                                                clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                                            // }, 200);
+                                    // console.log("sent to program")
                                 }
-                                console.log('oooooooooooo')
                             }
                         }
                  
                     } catch(err)
                     {
-                        printClientConsoleInfo("please compile program")
+                        printClientConsoleError(err)
                         console.log(err)
                     }
         }}
@@ -2218,7 +2263,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                 clientWs.send(JSON.stringify({type: WebSocketMessageType.ColabData, colabCommand: "DISCONECT", session, thisClientId: clientId, thisSessionId: sessionId, body: clientObj?.displayName + " has left."}))
             }, clientObj)
             console.info('session is still active')
-            // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Console, body: "$: Client " + clientId + " disconnected!"});
+            // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, body: "$: Client " + clientId + " disconnected!"});
         }
 
     }
@@ -2290,6 +2335,7 @@ import { execSync } from 'child_process';
 import { randomUUID } from 'crypto';
 import { Project, User } from "../../generated/prisma";
 import { IncomingMessage } from "http";
+import { stdin } from "process";
 
 /**
  * Build and run the C++ executable in a Docker container with sandbox folder access.
@@ -2379,14 +2425,32 @@ const runCommand = `docker run --rm -v "${dockerSandboxPath}":"${dockerSandboxPa
 
 
 
-setInterval(() => {
+server.on("connection", (socket) => {
+
+            
             server.getConnections(function(error, count) {
+                if(error)
+                    console.log(error)
                 if(count)
-                    console.log(Date.now.toString() + ":   " + count);
+                    console.log(new Date().toLocaleTimeString() + " $   " + count);
             
             });
 
-        })
+})
+
+
+server.on("request", () => {
+            server.connections
+            server.getConnections(function(error, count) {
+                if(error)
+                    console.log(error)
+                if(count)
+                    console.log(new Date().toLocaleTimeString() + " $   " + count);
+            
+            });
+
+})
+        
     
 
 

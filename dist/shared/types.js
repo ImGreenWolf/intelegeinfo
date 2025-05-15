@@ -8,6 +8,7 @@ var WebSocketMessageType;
     WebSocketMessageType["Output"] = "output";
     WebSocketMessageType["End"] = "end";
     WebSocketMessageType["Console"] = "console";
+    WebSocketMessageType["Chat"] = "chat";
     WebSocketMessageType["ConsoleTyping"] = "consolekeepalive";
     WebSocketMessageType["CodeChange"] = "codeChange";
     WebSocketMessageType["CodeSelection"] = "codeSelection";
