@@ -1388,10 +1388,10 @@ exports.wss.on("connection", (ws, req) => {
                                                                     });
                                                                 });
                                                             }
-                                                            else
-                                                                replicateFunction((clientWs) => {
-                                                                    clientWs.send(JSON.stringify({ messageType: types_1.ConsoleMessageType.Output, type: types_1.WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId })); // Send GDB output to the client
-                                                                });
+                                                            // else
+                                                            //     replicateFunction((clientWs) => {
+                                                            //         clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
+                                                            //     });
                                                             // if(code === null) return ws.send("Program exited with invalid code");
                                                             clearTimeout(programTimeout);
                                                             gdbBuffer = message; //"Program exited with code: " + code?.toString();
@@ -1400,9 +1400,10 @@ exports.wss.on("connection", (ws, req) => {
                                                                 program.stderr.removeAllListeners();
                                                             }
                                                             replicateFunction((clientWs) => {
-                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: gdbBuffer.toString(), clientId: clientId })); // Send GDB output to the client
+                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
                                                             });
                                                         }
+                                                        // buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId))
                                                         program = (0, child_process_1.spawn)(filePath, {
                                                             cwd: path_1.default.join(rootDirName, "cache", sessionId, "clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         }); // start program
@@ -1464,6 +1465,9 @@ exports.wss.on("connection", (ws, req) => {
                                                             //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                                                             // });
                                                             // gdbBuffer = "";
+                                                            replicateFunction((clientWs) => {
+                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
+                                                            });
                                                             clearTimeout(dataTimeout);
                                                             dataTimeout = setTimeout(() => {
                                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });

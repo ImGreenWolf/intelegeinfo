@@ -16813,10 +16813,13 @@ var Marker = /** @class */ (function () {
     Marker.prototype.setMarkers = function (markers) {
         this.markers = markers;
     };
-    Marker.prototype.elt = function (className, css) {
+    Marker.prototype.elt = function (className, css, marker) {
         var x = this.i != -1 && this.element.childNodes[this.i];
         if (!x) {
+            
             x = document.createElement("div");
+            // window.editor.onMarkerUpdate(marker, x)
+            
             this.element.appendChild(x);
             this.i = -1;
         }
@@ -16825,6 +16828,9 @@ var Marker = /** @class */ (function () {
         }
         x.style.cssText = css;
         x.className = className;
+         this.session._signal("markerUpdate", {elem: x, marker: marker, changedCss: x.style.cssText != css});
+            // x.id = 'error-marker-'+this.i;
+        
     };
     Marker.prototype.update = function (config) {
         if (!config)
@@ -16832,8 +16838,10 @@ var Marker = /** @class */ (function () {
         this.config = config;
         this.i = 0;
         var html;
+        
         for (var key in this.markers) {
             var marker = this.markers[key];
+            var id = marker //marker.id;
             if (!marker.range) {
                 marker.update(html, this, this.session, config);
                 continue;
@@ -16848,19 +16856,19 @@ var Marker = /** @class */ (function () {
                 marker.renderer(html, range, left, top, config);
             }
             else if (marker.type == "fullLine") {
-                this.drawFullLineMarker(html, range, marker.clazz, config);
+                this.drawFullLineMarker(html, range, marker.clazz, config,'', id);
             }
             else if (marker.type == "screenLine") {
-                this.drawScreenLineMarker(html, range, marker.clazz, config);
+                this.drawScreenLineMarker(html, range, marker.clazz, config,'', id);
             }
             else if (range.isMultiLine()) {
                 if (marker.type == "text")
-                    this.drawTextMarker(html, range, marker.clazz, config);
+                    this.drawTextMarker(html, range, marker.clazz, config,'', id);
                 else
-                    this.drawMultiLineMarker(html, range, marker.clazz, config);
+                    this.drawMultiLineMarker(html, range, marker.clazz, config,'', id);
             }
             else {
-                this.drawSingleLineMarker(html, range, marker.clazz + " ace_start" + " ace_br15", config);
+                this.drawSingleLineMarker(html, range, marker.clazz + " ace_start" + " ace_br15", config, 0, '', id);
             }
         }
         if (this.i != -1) {
@@ -16871,8 +16879,9 @@ var Marker = /** @class */ (function () {
     Marker.prototype.$getTop = function (row, layerConfig) {
         return (row - layerConfig.firstRowScreen) * layerConfig.lineHeight;
     };
-    Marker.prototype.drawTextMarker = function (stringBuilder, range, clazz, layerConfig, extraStyle) {
+    Marker.prototype.drawTextMarker = function (stringBuilder, range, clazz, layerConfig, extraStyle, id) {
         var session = this.session;
+        console.log(id)
         var start = range.start.row;
         var end = range.end.row;
         var row = start;
@@ -16888,11 +16897,12 @@ var Marker = /** @class */ (function () {
             curr = next;
             next = row + 1 < end ? session.getScreenLastRowColumn(row + 1) : row == end ? 0 : range.end.column;
             this.drawSingleLineMarker(stringBuilder, lineRange, clazz + (row == start ? " ace_start" : "") + " ace_br"
-                + getBorderClass(row == start || row == start + 1 && range.start.column, prev < curr, curr > next, row == end), layerConfig, row == end ? 0 : 1, extraStyle);
+                + getBorderClass(row == start || row == start + 1 && range.start.column, prev < curr, curr > next, row == end), layerConfig, row == end ? 0 : 1, extraStyle, id);
         }
     };
-    Marker.prototype.drawMultiLineMarker = function (stringBuilder, range, clazz, config, extraStyle) {
+    Marker.prototype.drawMultiLineMarker = function (stringBuilder, range, clazz, config, extraStyle, id) {
         var padding = this.$padding;
+        console.log(id)
         var height = config.lineHeight;
         var top = this.$getTop(range.start.row, config);
         var left = padding + range.start.column * config.characterWidth;
@@ -16901,16 +16911,16 @@ var Marker = /** @class */ (function () {
             var range1 = range.clone();
             range1.end.row = range1.start.row;
             range1.end.column = this.session.getLine(range1.start.row).length;
-            this.drawBidiSingleLineMarker(stringBuilder, range1, clazz + " ace_br1 ace_start", config, null, extraStyle);
+            this.drawBidiSingleLineMarker(stringBuilder, range1, clazz + " ace_br1 ace_start", config, null, extraStyle, id);
         }
         else {
-            this.elt(clazz + " ace_br1 ace_start", "height:" + height + "px;" + "right:" + padding + "px;" + "top:" + top + "px;left:" + left + "px;" + (extraStyle || ""));
+            this.elt(clazz + " ace_br1 ace_start", "height:" + height + "px;" + "right:" + padding + "px;" + "top:" + top + "px;left:" + left + "px;" + (extraStyle || ""), id);
         }
         if (this.session.$bidiHandler.isBidiRow(range.end.row)) {
             var range1 = range.clone();
             range1.start.row = range1.end.row;
             range1.start.column = 0;
-            this.drawBidiSingleLineMarker(stringBuilder, range1, clazz + " ace_br12", config, null, extraStyle);
+            this.drawBidiSingleLineMarker(stringBuilder, range1, clazz + " ace_br12", config, null, extraStyle, id);
         }
         else {
             top = this.$getTop(range.end.row, config);
@@ -16918,7 +16928,7 @@ var Marker = /** @class */ (function () {
             this.elt(clazz + " ace_br12", "height:" + height + "px;" +
                 "width:" + width + "px;" +
                 "top:" + top + "px;" +
-                "left:" + padding + "px;" + (extraStyle || ""));
+                "left:" + padding + "px;" + (extraStyle || ""),id);
         }
         height = (range.end.row - range.start.row - 1) * config.lineHeight;
         if (height <= 0)
@@ -16928,45 +16938,48 @@ var Marker = /** @class */ (function () {
         this.elt(clazz + (radiusClass ? " ace_br" + radiusClass : ""), "height:" + height + "px;" +
             "right:" + padding + "px;" +
             "top:" + top + "px;" +
-            "left:" + padding + "px;" + (extraStyle || ""));
+            "left:" + padding + "px;" + (extraStyle || ""),id);
     };
-    Marker.prototype.drawSingleLineMarker = function (stringBuilder, range, clazz, config, extraLength, extraStyle) {
+    Marker.prototype.drawSingleLineMarker = function (stringBuilder, range, clazz, config, extraLength, extraStyle, id) {
         if (this.session.$bidiHandler.isBidiRow(range.start.row))
             return this.drawBidiSingleLineMarker(stringBuilder, range, clazz, config, extraLength, extraStyle);
         var height = config.lineHeight;
+        console.log(id)
         var width = (range.end.column + (extraLength || 0) - range.start.column) * config.characterWidth;
         var top = this.$getTop(range.start.row, config);
         var left = this.$padding + range.start.column * config.characterWidth;
         this.elt(clazz, "height:" + height + "px;" +
             "width:" + width + "px;" +
             "top:" + top + "px;" +
-            "left:" + left + "px;" + (extraStyle || ""));
+            "left:" + left + "px;" + (extraStyle || ""), id);
     };
-    Marker.prototype.drawBidiSingleLineMarker = function (stringBuilder, range, clazz, config, extraLength, extraStyle) {
+    Marker.prototype.drawBidiSingleLineMarker = function (stringBuilder, range, clazz, config, extraLength, extraStyle, id) {
         var height = config.lineHeight, top = this.$getTop(range.start.row, config), padding = this.$padding;
         var selections = this.session.$bidiHandler.getSelections(range.start.column, range.end.column);
         selections.forEach(function (selection) {
             this.elt(clazz, "height:" + height + "px;" +
                 "width:" + (selection.width + (extraLength || 0)) + "px;" +
                 "top:" + top + "px;" +
-                "left:" + (padding + selection.left) + "px;" + (extraStyle || ""));
+                "left:" + (padding + selection.left) + "px;" + (extraStyle || ""), id);
         }, this);
     };
-    Marker.prototype.drawFullLineMarker = function (stringBuilder, range, clazz, config, extraStyle) {
+    Marker.prototype.drawFullLineMarker = function (stringBuilder, range, clazz, config, extraStyle, id) {
         var top = this.$getTop(range.start.row, config);
+        console.log(id)
         var height = config.lineHeight;
         if (range.start.row != range.end.row)
             height += this.$getTop(range.end.row, config) - top;
         this.elt(clazz, "height:" + height + "px;" +
             "top:" + top + "px;" +
-            "left:0;right:0;" + (extraStyle || ""));
+            "left:0;right:0;" + (extraStyle || ""), id);
     };
-    Marker.prototype.drawScreenLineMarker = function (stringBuilder, range, clazz, config, extraStyle) {
+    Marker.prototype.drawScreenLineMarker = function (stringBuilder, range, clazz, config, extraStyle, id) {
         var top = this.$getTop(range.start.row, config);
+        console.log(id)
         var height = config.lineHeight;
         this.elt(clazz, "height:" + height + "px;" +
             "top:" + top + "px;" +
-            "left:0;right:0;" + (extraStyle || ""));
+            "left:0;right:0;" + (extraStyle || ""), id);
     };
     return Marker;
 }());

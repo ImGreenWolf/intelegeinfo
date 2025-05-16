@@ -1,6 +1,6 @@
 // Ensure Ace Editor is globally available or import it properly
 
-import Ace from "ace-builds";
+import Ace, { edit } from "ace-builds";
 // import { Marker } from "ace-builds-internal/search_highlight";
 import { text } from "body-parser";
 // import * as FileManagement from "./FIleManagement";
@@ -299,7 +299,7 @@ const ghostManager: GhostManager = new (class implements GhostManager {
 const byteSize = (str: string) => new Blob([str]).size;
 
 
-function displayMessagePopup(message)
+export function displayMessagePopup(message)
 {
   function createPopup(classList: string, innerHTML): typeof popup | undefined
   {
@@ -372,6 +372,54 @@ const consoleInput = document.getElementById("console") as HTMLTextAreaElement;
 
 if(new URLSearchParams(window.location.search).has('save'))
   document.getElementById('saveProject')?.classList.add('saved')
+
+
+export function onMarkerUpdate(marker:any, elem: HTMLDivElement)
+{
+ 
+}
+
+editor.on('changeSession', (e) => 
+{
+
+  //TODO Check if i can imrove the changedCss check, so it
+  // doesnt create new listener for each update.
+  let errorDisplay: HTMLDivElement | undefined;
+  let errorDisplayTimeout: NodeJS.Timeout;
+ editor.session.on('markerUpdate', (marker) => {
+    if(!marker.changedCss) return;
+
+
+    marker.elem.addEventListener('mouseover', ev => {
+      if(errorDisplay) return;
+      if(errorDisplayTimeout)
+        clearTimeout(errorDisplayTimeout)
+      
+      errorDisplayTimeout = setTimeout(() => {
+        errorDisplay = document.createElement('div')
+        const top = marker.elem.getBoundingClientRect().top;
+        const left = marker.elem.getBoundingClientRect().left
+        errorDisplay.style.cssText = `top: ${top}px; left: ${left}px; position: absolute;`
+        errorDisplay.innerText = compileErrorObjs.get(marker.marker.id)!.text
+        errorDisplay.classList.add('compile-error-tooltip')
+        document.body.appendChild(errorDisplay)
+      }, 200);
+      
+
+    })
+     marker.elem.addEventListener('mouseleave', ev => {
+      if(errorDisplayTimeout)
+        clearTimeout(errorDisplayTimeout)
+      if(!errorDisplay) return;
+
+      errorDisplay.remove()
+      errorDisplay = undefined;
+    })
+  })
+
+})
+
+
 
 
 /* IMPORTS */
@@ -755,7 +803,8 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?) {
     const msgText = data.replaceAll("<", "&lt").replaceAll(">", "&gt");
 
     if (messageJson && messageJson.messageType) {
-      const msgId = (messageJson.id as number) || -1;
+      const localmsgId = (messageJson.id as number) || -1;
+      msgId = localmsgId;
       if (messageJson.id === -1)
         console.error(new Error("invalid message id: " + messageJson));
       const messageType = messageJson.messageType;
@@ -765,7 +814,7 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?) {
         case ConsoleMessageType.UserChat:
           
           const group = outputArea.querySelector(
-            `[msg-id="${msgId - 1}"]`
+            `[msg-id="${localmsgId - 1}"]`
           ) as HTMLElement;
 
           const ownMessageClass =
@@ -776,25 +825,25 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?) {
             messageGroup.getElementsByClassName(
               "chat-content-container"
             )[0].innerHTML += `<span class="chat-content"> ${msgText}</span>`;
-            messageGroup.setAttribute("msg-id", msgId + "");
+            messageGroup.setAttribute("msg-id", localmsgId + "");
             // messageGroup.classList.add('console-chat-group')
           } else
-            outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" msg-id="${msgId}" clientId="${(
+            outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" msg-id="${localmsgId}" clientId="${(
               messageClientId as string
             ).trim()}"><span class="chat-displayName">${
               messageJson.clientDisplayName
             }</span><div class="chat-content-container"><span class="chat-content">${msgText}</span></div></span>`;
           break;
         case ConsoleMessageType.SessionInfo:
-          outputArea.innerHTML += `<span class="console-session-info" msg-id="${msgId}">${msgText}</span>`;
+          outputArea.innerHTML += `<span class="console-session-info" msg-id="${localmsgId}">${msgText}</span>`;
           break;
         case ConsoleMessageType.Info:
-          outputArea.innerHTML += `<span class="console-info" msg-id="${msgId}">${msgText}</span>`;
+          outputArea.innerHTML += `<span class="console-info" msg-id="${localmsgId}">${msgText}</span>`;
           break;
         case ConsoleMessageType.Error:
           const errorElem = document.createElement('span')
           errorElem.classList.add('console-error')
-          errorElem.setAttribute('msg-id', msgId.toString())
+          errorElem.setAttribute('msg-id', localmsgId.toString())
           // errorElem.id = 'compile-error'
           errorElem.innerHTML = msgText;
           errorElem.onclick = () => {
@@ -822,7 +871,7 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?) {
         case ConsoleMessageType.Output:
           if(document.getElementById('active-console'))
             messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
-          messageGroup.innerHTML += `<pre class="console-${messageJson.type == WebSocketMessageType.End ? "return" : messageJson.type == WebSocketMessageType.Console  ? "input" :"output"}">${data}</pre>`;
+          messageGroup.innerHTML += `<pre class="console-program-${messageJson.type == WebSocketMessageType.End ? "return" : messageJson.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
           break;
 
         default:
@@ -1171,11 +1220,24 @@ class VisualCursor implements Ace.Ace.MarkerLike {
 
     markerLayer.elt(
       "ace_remote_cursor",
-      `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px;`
+      `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px; --color: green`
     );
     // FOR FUTURE REFERENCE, HTML DOESNT WORK ANYMORE, USE ELT
   }
 }
+
+outputArea!.onscroll = ev => {
+          const lastMessageGroup: HTMLDivElement = document.querySelector('[msg-id="'+ ((msgId!=-1) ? msgId.toString() : '0') +'"]')!;
+          console.log(outputArea!.scrollTop + outputArea!.scrollHeight)
+           console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight )
+          const blockScroll =  outputArea!.scrollHeight - outputArea!.clientHeight - outputArea!.scrollTop > 1//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
+
+  if(!blockScroll)
+        {
+          document.getElementById('message-indicator')?.remove()
+        }
+}
+
 
 // Manager class for multiple visual cursors
 class MultiCursorManager {
@@ -1352,6 +1414,32 @@ type FileEditorSession = {
   fileName: string,
   fileElement: HTMLElement | undefined,
 }
+ class CompileError {
+  range: Ace.Range;
+  annotation;
+  markerId: number;
+  text: string
+  constructor(range: Ace.Range, text: string)
+  {
+    this.text = text;
+    this.range = range
+    this.annotation = {
+      row: range.start.row,
+      column: range.start.column,
+      text: text,
+      type: "error",
+    }
+
+    this.markerId = editor.session.addMarker(
+      range,
+      "ace_carret_error",
+      "text",
+      true
+    )
+
+  }
+}
+
 
 let ping = -1;
 function cleanDebug()
@@ -1383,7 +1471,7 @@ function dirtyFile(fileName: string)
 
 const markers: number[] = [];
 const errorAnnotations: Ace.Ace.Annotation[] = [];
-
+const compileErrorObjs: Map<number,CompileError> = new Map();
 
 //    END   //
 
@@ -1604,6 +1692,8 @@ ws.onmessage = (event) => {
     case WebSocketMessageType.Error:
       writeOutput(data, eventJson);
       break;
+
+
     case WebSocketMessageType.Console:
     case WebSocketMessageType.Output:
       
@@ -1613,11 +1703,15 @@ ws.onmessage = (event) => {
        
         break;
       }
+      else 
+      // writeOutput(data, eventJson)
+
       handleOutput(eventJson);
       if(eventJson.message === 'end')
         cleanDebug()
         
       break;
+
     case WebSocketMessageType.End:
       if(eventJson.body==="gdb")
       {
@@ -1628,7 +1722,7 @@ ws.onmessage = (event) => {
       }
       else
       {
-        writeOutput(data + "  |   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time +"</span>ms" + (eventJson.notes  != "" ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>": ""), eventJson);
+        writeOutput( data + "  |   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time +"</span>ms" + (eventJson.notes  != "" ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>": ""), eventJson);
       }
 
       onExit()
@@ -1640,13 +1734,16 @@ ws.onmessage = (event) => {
       if(eventJson.clientId)
       {
         
-        const blockScroll = /*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
-        writeOutput(data, eventJson, blockScroll);
+        const lastMessageGroup: HTMLDivElement = document.querySelector('[msg-id="'+ ((msgId!=-1) ? msgId.toString() : '0') +'"]')!;
+        const blockScroll = outputArea!.scrollHeight - outputArea!.clientHeight - outputArea!.scrollTop > 1 // lastMessageGroup? lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight > outputArea!.scrollTop : false//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
 
+
+        // if(!document.querySelector('[msgId='+msgId+']')) return;
         if(blockScroll)
         {
           if(document.getElementById('message-indicator'))
           {
+
             const existingIndicator = document.getElementById('message-indicator');
             if(existingIndicator?.innerText)
               existingIndicator!.innerText = (parseInt(existingIndicator!.innerText) + 1).toString() + "+"
@@ -1654,15 +1751,25 @@ ws.onmessage = (event) => {
           }
           else
           {
+
+            outputArea!.innerHTML += "<br>"
             const messageIndicator = document.createElement('div')
             messageIndicator.id = 'message-indicator';
             messageIndicator.innerText = "1+"
             document.getElementById('output-container')?.appendChild(messageIndicator)
             lastViewedMessage = msgId;
-          }
-             
 
+          }
+
+
+        } else
+        {
+          document.getElementById('message-indicator')?.remove()
         }
+
+
+        writeOutput(data, eventJson, blockScroll);
+
            
       }
       else
@@ -1766,30 +1873,35 @@ ws.onmessage = (event) => {
               else
                 for(const location of result.locations)
                 {
+
+                 
                   const range: Ace.Range = new AceRange(
                     location.caret.line-1,
                     location.caret.column-1,
                     location.finish? location.finish.line-1 : location.caret.line-1,
                     location.finish? location.finish.column : location.caret.column)
 
-                  errorAnnotations.push({
-                    row: range.start.row,
-                    column: range.start.column,
-                    text: result.message,
-                    type: "error",
-                  });
+                  const compileErrorObj = new CompileError(range, result.message)
+                  compileErrorObjs.set(compileErrorObj.markerId, compileErrorObj)
+                  errorAnnotations.push(compileErrorObj.annotation);
                 
                   markers.push(
-                    editor.session.addMarker(
-                      range,
-                      "ace_carret_error",
-                      "text"
-                    )
+                    compileErrorObj.markerId
+                    
                   );
-                  
-
+                  // window.alert((editor.renderer as any).$markerFront);
                   //  writeOutput(result.message, {messageType: 'error', params: {range, row: range.start.row+1, column: range.start.column+1, rowend: range.end.row+1, columnemnd: range.end.column+1}})
                   editor.session.setAnnotations(errorAnnotations);
+                  
+
+                  // for(const error of document.getElementsByClassName('ace_carret_error') as HTMLCollectionOf<HTMLDivElement>)
+                  // {
+                  //   error.addEventListener('click', ev => {
+
+                  //     window.alert('jsdjdjd')
+                  //   })
+                  // }
+
                 }
            
           break;
@@ -1847,7 +1959,8 @@ ws.onmessage = (event) => {
           document.querySelector('#active-console')?.appendChild(console) 
 
           console.addEventListener("keypress", (e: KeyboardEvent) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            
+            if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
               e.preventDefault();
 
               submitConsole(console, WebSocketMessageType.Console)
@@ -1899,6 +2012,7 @@ ws.onmessage = (event) => {
       if (marker) editor.session.removeMarker(marker);
       if (start && end) {
         if (start !== end)
+
           marker = editor.session.addMarker(
             range,
             "ace_remote_selection",
@@ -2231,8 +2345,8 @@ function onRun() {
     document.getElementById('active-console')!.id = '';
 
   outputArea!.innerHTML += "<div id='active-console' class='output-console-container'><div class='program-output'></div></div>"
-  
-  // document.getElementsByClassName('program-console')[0].remove()
+  //<div class='header'>  <div class='button-container' ><button>close</button> <button>maxi</button> <button>mini</button> </div> program output</div>
+
 
   
 

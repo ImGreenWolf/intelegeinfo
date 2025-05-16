@@ -23,6 +23,8 @@ export declare enum ConsoleMessageType {
     Output = "output",
     DebugProgram = "debugProgram"
 }
+export declare function displayMessagePopup(message: any): void;
+export declare function onMarkerUpdate(marker: any, elem: HTMLDivElement): void;
 export declare function createFileNamePrompt(): void;
 export declare function toggleConsoleDebugProgram(elem: HTMLElement): void;
 export declare function onConsoleInput(elem: HTMLTextAreaElement, ev?: Event): void;

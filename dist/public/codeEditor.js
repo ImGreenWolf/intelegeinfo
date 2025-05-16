@@ -212,7 +212,7 @@ const ghostManager = new (class {
 ///
 //
 const byteSize = (str) => new Blob([str]).size;
-function displayMessagePopup(message) {
+export function displayMessagePopup(message) {
     function createPopup(classList, innerHTML) {
         if (!innerHTML)
             return;
@@ -272,6 +272,41 @@ const namePrompt = document.getElementById("name-prompt");
 const consoleInput = document.getElementById("console");
 if (new URLSearchParams(window.location.search).has('save'))
     document.getElementById('saveProject')?.classList.add('saved');
+export function onMarkerUpdate(marker, elem) {
+}
+editor.on('changeSession', (e) => {
+    //TODO Check if i can imrove the changedCss check, so it
+    // doesnt create new listener for each update.
+    let errorDisplay;
+    let errorDisplayTimeout;
+    editor.session.on('markerUpdate', (marker) => {
+        if (!marker.changedCss)
+            return;
+        marker.elem.addEventListener('mouseover', ev => {
+            if (errorDisplay)
+                return;
+            if (errorDisplayTimeout)
+                clearTimeout(errorDisplayTimeout);
+            errorDisplayTimeout = setTimeout(() => {
+                errorDisplay = document.createElement('div');
+                const top = marker.elem.getBoundingClientRect().top;
+                const left = marker.elem.getBoundingClientRect().left;
+                errorDisplay.style.cssText = `top: ${top}px; left: ${left}px; position: absolute;`;
+                errorDisplay.innerText = compileErrorObjs.get(marker.marker.id).text;
+                errorDisplay.classList.add('compile-error-tooltip');
+                document.body.appendChild(errorDisplay);
+            }, 200);
+        });
+        marker.elem.addEventListener('mouseleave', ev => {
+            if (errorDisplayTimeout)
+                clearTimeout(errorDisplayTimeout);
+            if (!errorDisplay)
+                return;
+            errorDisplay.remove();
+            errorDisplay = undefined;
+        });
+    });
+});
 /* IMPORTS */
 // FileManagement.ts
 const FileContainer = document.getElementById("editor-tabs-container");
@@ -542,7 +577,8 @@ function writeOutput(data, messageJson, manuallScroll) {
     if (outputArea) {
         const msgText = data.replaceAll("<", "&lt").replaceAll(">", "&gt");
         if (messageJson && messageJson.messageType) {
-            const msgId = messageJson.id || -1;
+            const localmsgId = messageJson.id || -1;
+            msgId = localmsgId;
             if (messageJson.id === -1)
                 console.error(new Error("invalid message id: " + messageJson));
             const messageType = messageJson.messageType;
@@ -550,27 +586,27 @@ function writeOutput(data, messageJson, manuallScroll) {
             let messageGroup = outputArea;
             switch (messageType) {
                 case ConsoleMessageType.UserChat:
-                    const group = outputArea.querySelector(`[msg-id="${msgId - 1}"]`);
+                    const group = outputArea.querySelector(`[msg-id="${localmsgId - 1}"]`);
                     const ownMessageClass = messageClientId === wsClientId ? "chat-ownMessage" : "";
                     if (group?.getAttribute("clientId") == messageClientId && group === outputArea.lastChild) {
                         messageGroup = group;
                         messageGroup.getElementsByClassName("chat-content-container")[0].innerHTML += `<span class="chat-content"> ${msgText}</span>`;
-                        messageGroup.setAttribute("msg-id", msgId + "");
+                        messageGroup.setAttribute("msg-id", localmsgId + "");
                         // messageGroup.classList.add('console-chat-group')
                     }
                     else
-                        outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" msg-id="${msgId}" clientId="${messageClientId.trim()}"><span class="chat-displayName">${messageJson.clientDisplayName}</span><div class="chat-content-container"><span class="chat-content">${msgText}</span></div></span>`;
+                        outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" msg-id="${localmsgId}" clientId="${messageClientId.trim()}"><span class="chat-displayName">${messageJson.clientDisplayName}</span><div class="chat-content-container"><span class="chat-content">${msgText}</span></div></span>`;
                     break;
                 case ConsoleMessageType.SessionInfo:
-                    outputArea.innerHTML += `<span class="console-session-info" msg-id="${msgId}">${msgText}</span>`;
+                    outputArea.innerHTML += `<span class="console-session-info" msg-id="${localmsgId}">${msgText}</span>`;
                     break;
                 case ConsoleMessageType.Info:
-                    outputArea.innerHTML += `<span class="console-info" msg-id="${msgId}">${msgText}</span>`;
+                    outputArea.innerHTML += `<span class="console-info" msg-id="${localmsgId}">${msgText}</span>`;
                     break;
                 case ConsoleMessageType.Error:
                     const errorElem = document.createElement('span');
                     errorElem.classList.add('console-error');
-                    errorElem.setAttribute('msg-id', msgId.toString());
+                    errorElem.setAttribute('msg-id', localmsgId.toString());
                     // errorElem.id = 'compile-error'
                     errorElem.innerHTML = msgText;
                     errorElem.onclick = () => {
@@ -595,7 +631,7 @@ function writeOutput(data, messageJson, manuallScroll) {
                 case ConsoleMessageType.Output:
                     if (document.getElementById('active-console'))
                         messageGroup = document.getElementById('active-console').querySelector(' div'); // TODO improve this selection
-                    messageGroup.innerHTML += `<pre class="console-${messageJson.type == WebSocketMessageType.End ? "return" : messageJson.type == WebSocketMessageType.Console ? "input" : "output"}">${data}</pre>`;
+                    messageGroup.innerHTML += `<pre class="console-program-${messageJson.type == WebSocketMessageType.End ? "return" : messageJson.type == WebSocketMessageType.Console ? "input" : "output"}">${data} </pre>`;
                     break;
                 default:
                     outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${data}</pre>`;
@@ -865,10 +901,19 @@ class VisualCursor {
         const screenPos = session.documentToScreenPosition(pos.row, pos.column);
         const top = markerLayer.$getTop(screenPos.row, config);
         const left = markerLayer.$padding + screenPos.column * config.characterWidth;
-        markerLayer.elt("ace_remote_cursor", `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px;`);
+        markerLayer.elt("ace_remote_cursor", `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px; --color: green`);
         // FOR FUTURE REFERENCE, HTML DOESNT WORK ANYMORE, USE ELT
     }
 }
+outputArea.onscroll = ev => {
+    const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
+    console.log(outputArea.scrollTop + outputArea.scrollHeight);
+    console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight);
+    const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; //*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
+    if (!blockScroll) {
+        document.getElementById('message-indicator')?.remove();
+    }
+};
 // Manager class for multiple visual cursors
 class MultiCursorManager {
     editor;
@@ -1012,6 +1057,23 @@ var FileManagementCommands;
     FileManagementCommands["Rename"] = "rename";
     FileManagementCommands["Open"] = "open";
 })(FileManagementCommands || (FileManagementCommands = {}));
+class CompileError {
+    range;
+    annotation;
+    markerId;
+    text;
+    constructor(range, text) {
+        this.text = text;
+        this.range = range;
+        this.annotation = {
+            row: range.start.row,
+            column: range.start.column,
+            text: text,
+            type: "error",
+        };
+        this.markerId = editor.session.addMarker(range, "ace_carret_error", "text", true);
+    }
+}
 let ping = -1;
 function cleanDebug() {
     renderer.removeGhostText();
@@ -1030,6 +1092,7 @@ function dirtyFile(fileName) {
 // STATE VARIABLES //
 const markers = [];
 const errorAnnotations = [];
+const compileErrorObjs = new Map();
 //    END   //
 ws.onmessage = (event) => {
     let eventJson = JSON.parse(event.data);
@@ -1207,7 +1270,9 @@ ws.onmessage = (event) => {
                 writeOutput('error! output exceeded 64kb');
                 break;
             }
-            handleOutput(eventJson);
+            else
+                // writeOutput(data, eventJson)
+                handleOutput(eventJson);
             if (eventJson.message === 'end')
                 cleanDebug();
             break;
@@ -1225,8 +1290,9 @@ ws.onmessage = (event) => {
             break;
         case WebSocketMessageType.Chat:
             if (eventJson.clientId) {
-                const blockScroll = /*eventJson.clientId !== wsClientId && */ document.querySelector(`[msg-id="${msgId}"]`) ? (outputArea.scrollTop > document.querySelector(`[msgId="${msgId}"]`).clientHeight) : true;
-                writeOutput(data, eventJson, blockScroll);
+                const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
+                const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; // lastMessageGroup? lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight > outputArea!.scrollTop : false//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
+                // if(!document.querySelector('[msgId='+msgId+']')) return;
                 if (blockScroll) {
                     if (document.getElementById('message-indicator')) {
                         const existingIndicator = document.getElementById('message-indicator');
@@ -1234,6 +1300,7 @@ ws.onmessage = (event) => {
                             existingIndicator.innerText = (parseInt(existingIndicator.innerText) + 1).toString() + "+";
                     }
                     else {
+                        outputArea.innerHTML += "<br>";
                         const messageIndicator = document.createElement('div');
                         messageIndicator.id = 'message-indicator';
                         messageIndicator.innerText = "1+";
@@ -1241,6 +1308,10 @@ ws.onmessage = (event) => {
                         lastViewedMessage = msgId;
                     }
                 }
+                else {
+                    document.getElementById('message-indicator')?.remove();
+                }
+                writeOutput(data, eventJson, blockScroll);
             }
             else
                 writeOutput(data, eventJson);
@@ -1308,15 +1379,19 @@ ws.onmessage = (event) => {
                             else
                                 for (const location of result.locations) {
                                     const range = new AceRange(location.caret.line - 1, location.caret.column - 1, location.finish ? location.finish.line - 1 : location.caret.line - 1, location.finish ? location.finish.column : location.caret.column);
-                                    errorAnnotations.push({
-                                        row: range.start.row,
-                                        column: range.start.column,
-                                        text: result.message,
-                                        type: "error",
-                                    });
-                                    markers.push(editor.session.addMarker(range, "ace_carret_error", "text"));
+                                    const compileErrorObj = new CompileError(range, result.message);
+                                    compileErrorObjs.set(compileErrorObj.markerId, compileErrorObj);
+                                    errorAnnotations.push(compileErrorObj.annotation);
+                                    markers.push(compileErrorObj.markerId);
+                                    // window.alert((editor.renderer as any).$markerFront);
                                     //  writeOutput(result.message, {messageType: 'error', params: {range, row: range.start.row+1, column: range.start.column+1, rowend: range.end.row+1, columnemnd: range.end.column+1}})
                                     editor.session.setAnnotations(errorAnnotations);
+                                    // for(const error of document.getElementsByClassName('ace_carret_error') as HTMLCollectionOf<HTMLDivElement>)
+                                    // {
+                                    //   error.addEventListener('click', ev => {
+                                    //     window.alert('jsdjdjd')
+                                    //   })
+                                    // }
                                 }
                             break;
                         default:
@@ -1360,7 +1435,7 @@ ws.onmessage = (event) => {
                     const console = document.createElement('textarea');
                     document.querySelector('#active-console')?.appendChild(console);
                     console.addEventListener("keypress", (e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
+                        if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
                             e.preventDefault();
                             submitConsole(console, WebSocketMessageType.Console);
                             console.remove();
@@ -1674,7 +1749,7 @@ function onRun() {
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';
     outputArea.innerHTML += "<div id='active-console' class='output-console-container'><div class='program-output'></div></div>";
-    // document.getElementsByClassName('program-console')[0].remove()
+    //<div class='header'>  <div class='button-container' ><button>close</button> <button>maxi</button> <button>mini</button> </div> program output</div>
     // TODO Add separate input area for interactive console.
 }
 function onExit() {
