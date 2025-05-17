@@ -30,7 +30,7 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 //   }
 
 
-function onSignedIn(params: any, res:Response, password: string)
+function onSignedIn(params: any, res:Response, password: string, req)
 {
   const { email, username, loginMethod, firstName, lastName} = params
   prisma.user.create({
@@ -44,7 +44,7 @@ function onSignedIn(params: any, res:Response, password: string)
     }
   }).then((user) => {
       if(!user) res.status(400).json({ error: 'Failed to create user' });
-      onLoggedIn(user, res)
+      onLoggedIn(user, res, req)
       res.json({message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id})
 
 
@@ -58,7 +58,7 @@ function onSignedIn(params: any, res:Response, password: string)
 
 
 
-function createUser(params:any, res: Response, password: string,)
+function createUser(params:any, res: Response, password: string, req)
 {
   const { email, name, loginMethod, } = params;
   prisma.user.findUnique({ // TODO Finda  better way to check if a user exists.
@@ -67,12 +67,12 @@ function createUser(params:any, res: Response, password: string,)
       email
     }       
 }).then((user) => {
-  if(!user) onSignedIn(params, res, password)
+  if(!user) onSignedIn(params, res, password, req)
     else return res.status(400).json({ error: 'An account with this email already exists! Try logging in!'});
 
 }).catch((reason) => 
     {
-      onSignedIn(params, res, password)
+      onSignedIn(params, res, password, req)
     
     })
 }
@@ -100,12 +100,12 @@ router.post('/', (req, res) => {
       // TODO: Compare decryptedPassword with stored password hash
       // console.log('Decrypted password:', decryptedPassword);
 
-      createUser(req.body, res, hashedPassword)
+      createUser(req.body, res, hashedPassword, req)
 
     }
     else
     {
-      createUser(req.body, res, password)
+      createUser(req.body, res, password, req)
 
     }
     

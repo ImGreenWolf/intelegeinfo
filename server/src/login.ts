@@ -33,15 +33,22 @@ function createToken(user: any) {
     }, privateKeyPem, {  algorithm: 'RS256', expiresIn: '1h'});
   }
 
-export function onLoggedIn(user: unknown, res: Response)
+export function onLoggedIn(user: unknown, res: Response, req: Request)
 {
-  var token = createToken(user)
-
-  res.cookie('token', token, {
-      httpOnly: true,
-      secure: false, // Set to true in production (HTTPS)
-      maxAge: 3600000, // 1 hour
-    });
+  let token = createToken(user)
+  let secure = req.secure;
+  let keepLoggedIn =   req.body.keepLoggedIn;
+  if(keepLoggedIn)
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure, // Set to true in production (HTTPS)
+        maxAge: 3600000 * 24 * 31, // 1 hour
+      });
+  else
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure, // Set to true in production (HTTPS)
+      });
 
   // res.redirect('../editor')
 }
@@ -82,7 +89,7 @@ router.post('/', (req, res) => {
                   //     maxAge: 3600000, // 1 hour
                   //   });
 
-                  onLoggedIn(user, res)
+                  onLoggedIn(user, res, req)
 
                   res.status(200).json({ message: 'Login successful! Hello ' + user.username});
 
@@ -225,7 +232,7 @@ router.get('/callback', async (req:any, res:any) => {
         //     maxAge: 3600000, // 1 hour
         //   });
 
-        onLoggedIn(userExists, res)
+        onLoggedIn(userExists, res, req)
         res.send('Hello ' + userExists.username + `<script>setTimeout(() => {location.href='/editor'}, 2000)</script>`)
 
         }else
@@ -361,7 +368,7 @@ router.post('/createGoogleAcc',(req, res)=> {
       password
     }
   }).then(user => {
-    onLoggedIn(user, res)
+    onLoggedIn(user, res, req)
 
     res.json({message: 'good'})
   }).catch(err => {

@@ -26,7 +26,7 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 
 //       { expiresIn: '1h' }
 //     );
 //   }
-function onSignedIn(params, res, password) {
+function onSignedIn(params, res, password, req) {
     const { email, username, loginMethod, firstName, lastName } = params;
     dbClient_1.default.user.create({
         data: {
@@ -40,13 +40,13 @@ function onSignedIn(params, res, password) {
     }).then((user) => {
         if (!user)
             res.status(400).json({ error: 'Failed to create user' });
-        (0, login_1.onLoggedIn)(user, res);
+        (0, login_1.onLoggedIn)(user, res, req);
         res.json({ message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id });
     }).catch(reason => {
         res.status(400).json({ error: 'Failed to create user: ' + reason });
     });
 }
-function createUser(params, res, password) {
+function createUser(params, res, password, req) {
     const { email, name, loginMethod, } = params;
     dbClient_1.default.user.findUnique({
         where: {
@@ -54,11 +54,11 @@ function createUser(params, res, password) {
         }
     }).then((user) => {
         if (!user)
-            onSignedIn(params, res, password);
+            onSignedIn(params, res, password, req);
         else
             return res.status(400).json({ error: 'An account with this email already exists! Try logging in!' });
     }).catch((reason) => {
-        onSignedIn(params, res, password);
+        onSignedIn(params, res, password, req);
     });
 }
 function prepareEncrPassForDB(password) {
@@ -73,10 +73,10 @@ router.post('/', (req, res) => {
             const hashedPassword = prepareEncrPassForDB(password);
             // TODO: Compare decryptedPassword with stored password hash
             // console.log('Decrypted password:', decryptedPassword);
-            createUser(req.body, res, hashedPassword);
+            createUser(req.body, res, hashedPassword, req);
         }
         else {
-            createUser(req.body, res, password);
+            createUser(req.body, res, password, req);
         }
     }
     catch (err) {

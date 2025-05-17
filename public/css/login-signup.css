@@ -1,24 +1,36 @@
+body {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "header" "body";
+}
+body > div {
+  display: flex;
+  grid-area: "body";
+}
+
 form {
   margin: auto;
-  width: 500px;
+  max-width: 500px;
   display: flex;
   flex-flow: column;
   border: 1px solid white;
   border-radius: 10px;
-  padding: 10px;
+  padding: 0 50px;
   gap: 50px;
   align-items: center;
-  height: 800px;
+  height: 75vh;
   justify-content: center;
-  margin: auto;
+  font-size: 1rem;
 }
 
 input {
   height: 2lh;
   border-radius: 2lh;
   padding: 0.2lh 1lh;
-  font-size: 18px;
-  width: 300px;
+  font-size: 1rem;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 0;
   background-image: url(https://www.svgrepo.com/show/4356/right-arrow.svg);
   background-repeat: no-repeat;
@@ -28,7 +40,7 @@ input {
 }
 
 form h2 {
-  font-size: 42px;
+  font-size: 3rem;
 }
 
 input[type=password].animhidden:not(.active-field) {
@@ -45,7 +57,7 @@ input[type=password].animhidden {
 }
 
 button {
-  font-size: 18px;
+  font-size: 1rem;
   width: 150px;
   background-color: white;
   border: 0;
@@ -60,15 +72,16 @@ button[type=submit] {
   margin: 5px auto;
 }
 
-button:active, button:focus {
+button:active, button:focus, button:focus {
   box-shadow: none;
   transition-duration: 0.1s;
   transform: translateY(2px);
+  outline: none;
 }
 
 button.login-method {
-  font-size: 18px;
   width: 75%;
+  font-size: 80%;
   background-color: white;
   border: 0;
   background-image: url(https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg);
@@ -93,9 +106,30 @@ button.login-method {
   height: 300px;
   gap: 50px;
 }
+.button-container a {
+  font-size: 0.75rem;
+  text-align: center;
+  width: 100%;
+  display: inline-block;
+}
+.button-container a:visited, .button-container a, .button-container a:any-link {
+  color: white;
+}
 
 #message {
   color: rgb(193, 0, 0);
+  font-size: 1rem;
+}
+
+@media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
+  form {
+    max-width: 100%;
+    max-height: 75%;
+    padding: 0 25px;
+  }
+  html {
+    font-size: 12px;
+  }
 }
 
 /*# sourceMappingURL=login-signup.css.map */

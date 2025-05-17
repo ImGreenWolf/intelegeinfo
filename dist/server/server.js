@@ -1394,7 +1394,7 @@ exports.wss.on("connection", (ws, req) => {
                                                             //     });
                                                             // if(code === null) return ws.send("Program exited with invalid code");
                                                             clearTimeout(programTimeout);
-                                                            gdbBuffer = message; //"Program exited with code: " + code?.toString();
+                                                            // gdbBuffer = message//"Program exited with code: " + code?.toString();
                                                             if (program) {
                                                                 program.stdout.removeAllListeners();
                                                                 program.stderr.removeAllListeners();
