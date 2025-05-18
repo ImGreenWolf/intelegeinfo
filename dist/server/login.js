@@ -63,7 +63,7 @@ function createToken(user) {
         iss: "intelegeinfo.go.ro",
         sub: user.id,
         role: user.role
-    }, privateKeyPem, { algorithm: 'RS256', expiresIn: '1h' });
+    }, privateKeyPem, { algorithm: 'RS256', expiresIn: 3600000 * 24 * 31 });
 }
 function onLoggedIn(user, res, req) {
     let token = createToken(user);

@@ -33,6 +33,8 @@ import { router as usersManager } from './usersManager'
 
 const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
 
+
+
 app.use(compression())
 app.use(express.json());
 // app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
@@ -60,18 +62,6 @@ app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'))
 })
 
-/* IMPORTS */
-
-// FileManagement.ts
-
- function createFile() {
-        
-    }
-        
-
-
-
-/*END IMPORTS*/
 
 
 
@@ -80,15 +70,32 @@ const codeMap: Map<number, UUID> = new Map()
 
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id as UUID;
+    const session = sessionMap[sessionId];
+    const link = req.hostname+'/editor?session='+sessionId
     if(!sessionId)
     {
         res.status(500).send({error: "session id invalid"})
         return;
     }
+    if(session)
+    {
+        if(session.isPublic) 
+        {
+            
+            res.send({qrsvg: session.qrCode, code: session.joinCode, link})
+        }
+    }
+    
     const code = users.generateCode()
-    const link = req.hostname+'/editor?session='+sessionId
-    qrcode.toDataURL(link+"&method=qrcode", {errorCorrectionLevel: "low", type: "image/png", margin: 0, width: 100}).then(value => {
+    
+    qrcode.toDataURL(link+"&uri_method=qrcode", {errorCorrectionLevel: "low", type: "image/png", margin: 0, width: 100}).then(value => {
         codeMap.set(parseInt(code), sessionId)
+        if(session)
+        {
+            session.joinCode = code;
+            session.qrCode = value;
+        }
+
         res.send({qrsvg: value, code, link})
         setTimeout(() => {
             codeMap.delete(parseInt(code))
@@ -175,14 +182,13 @@ app.post('/editor/startsession/:id', (req, res) => {
 
     })
 
-
+app.use(cookieParser());
 
 const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem'), 'utf8');
-export function authMiddleware(req: any, res: any, next:any, role?:string) {
+export function authMiddleware(req, res, next:any, role?:string) {
     // if() return res.status(403).json({ error: 'failed reading cookies' });
-    const token = req.cookies.token
-    // console.log(token)
-    console.log('authing')
+    const token = req.cookies.token;
+
     if (!token)  
     {
         res.status(401).json({ error: 'Unauthorized' });
@@ -194,7 +200,7 @@ export function authMiddleware(req: any, res: any, next:any, role?:string) {
         // req.user = user;
         next();
     } catch (err) {
-        res.status(403).json({ error: 'Invalid token' });
+        res.clearCookie('cookiename').status(403).json({ error: 'Invalid token' });
     }
 }
 function handle404(req:any, res:any, next:NextFunction) 
@@ -210,21 +216,10 @@ function handle404(req:any, res:any, next:NextFunction)
   
 
 
-
-app.set('view engine', 'ejs');
 app.use('/login', loginManager);
 app.use('/signup', signupManager);
 app.use('/profile', authMiddleware, profileManager)
 app.use('/user', usersManager)
-
-
-
-
-
-
-
-
-
 
 
 
@@ -259,7 +254,7 @@ enum FileManagementCommands {
 
  
 
-        //          LOCAL  SERVER  VARIABLES       //
+    //          LOCAL  SERVER  VARIABLES       //
 
 let compileProcess: ChildProcess;
 
@@ -267,7 +262,7 @@ let compileProcess: ChildProcess;
 
 
 
-        //          GLOBAL  SERVER  VARIABLES       //
+    //          GLOBAL  SERVER  VARIABLES       //
        export const server = app.listen(3000, '0.0.0.0', () => console.log("Server running on port 3000"));
        export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 
@@ -679,7 +674,10 @@ wss.on("connection", (ws: WebSocket, req) => {
       ?.split("; ")
       .find((c) => c.startsWith("token="))
       ?.split("=")[1];
-    
+    const recoveredSession: UUID | undefined = cookies
+      ?.split("; ")
+      .find((c) => c.startsWith("session="))
+      ?.split("=")[1] as UUID;
     let userData: users.UserNoPassword |undefined;
     let userLoggedIn: boolean = false
     users.getUserData(users.getClientId(jwtCookie as string) as number).then((userdata) => {
@@ -713,7 +711,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 
     function handshake(req: IncomingMessage) {
         const urlParams = new URL("http://intelegeinfo.go.ro/editor"+ req.url).searchParams
-        const wssessionId: UUID | undefined = urlParams.get('session') !="null" || urlParams.get('session') as UUID != undefined ? urlParams.get('session') as UUID : undefined;
+        const wssessionId: UUID | undefined = urlParams.get('session') != undefined || urlParams.get('session') as UUID != undefined ? urlParams.get('session') as UUID : recoveredSession ? recoveredSession : undefined;
 
         //handle heartbeat
         heartbeatInterval = setInterval(() => {
@@ -742,7 +740,7 @@ wss.on("connection", (ws: WebSocket, req) => {
         
             // TODO Check if session exists, otherwise create a new one and make this client the host.
 
-        
+        console.log(wssessionId)
         if(wssessionId) { 
             //client connected to existing session
 
@@ -769,7 +767,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                 clientSession = createThisClientSession(wssessionId);
                 clientId = getThisClientSession()?.spawnClient(ws, userData)
                 clientObj = getThisClientSession().getClientObjectById(clientId);
-                clients.set(clientId, ws);
+                clients.set(clientId, ws); // TODO remove this map
 
                 // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
                 if(clientSession && !isShared) {
@@ -1050,7 +1048,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                     }catch {
                     printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. ", getThisClientSession().getClientObjectById(clientId))
                     defaultText = fs.readFileSync("user_code.cpp").toString();
-            }
+                    }
         }
             else defaultText = fs.readFileSync("user_code.cpp").toString();
     
@@ -2233,14 +2231,15 @@ wss.on("connection", (ws: WebSocket, req) => {
                 .finally(() => {
 
                     const dirPath = path.join(rootDirName, "cache", sessionId); 
-                    if(dirPath) 
-                        fs.rm(dirPath, { recursive: true }, (err) => { // TODO Implement a way to unlink files so, if a process is running, it will unlink so the files can be properly deleted.
-                            if(err)
-                                console.error(err)
-                            console.log("deleted cache folder for sessionId " + sessionId);
-                        });
-                    else 
-                        console.error(new Error("Couldnt delete session folder, invalid path."))
+                    if(false) // TODO check if its okay to delete the session folder
+                        if(dirPath) 
+                            fs.rm(dirPath, { recursive: true }, (err) => { // TODO Implement a way to unlink files so, if a process is running, it will unlink so the files can be properly deleted.
+                                if(err)
+                                    console.error(err)
+                                console.log("deleted cache folder for sessionId " + sessionId);
+                            });
+                        else 
+                            console.error(new Error("Couldnt delete session folder, invalid path."))
                     
                     sessionMap.delete(sessionId);
                     if(isShared) shared.removeSession(sessionId);
@@ -2430,31 +2429,31 @@ const runCommand = `docker run --rm -v "${dockerSandboxPath}":"${dockerSandboxPa
 
 
 
-server.on("connection", (socket) => {
+// server.on("connection", (socket) => {
 
             
-            server.getConnections(function(error, count) {
-                if(error)
-                    console.log(error)
-                if(count)
-                    console.log(new Date().toLocaleTimeString() + " $   " + count);
+//             server.getConnections(function(error, count) {
+//                 if(error)
+//                     console.log(error)
+//                 if(count)
+//                     console.log(new Date().toLocaleTimeString() + " $   " + count);
             
-            });
+//             });
 
-})
+// })
 
 
-server.on("request", () => {
-            server.connections
-            server.getConnections(function(error, count) {
-                if(error)
-                    console.log(error)
-                if(count)
-                    console.log(new Date().toLocaleTimeString() + " $   " + count);
+// server.on("request", () => {
+//             server.connections
+//             server.getConnections(function(error, count) {
+//                 if(error)
+//                     console.log(error)
+//                 if(count)
+//                     console.log(new Date().toLocaleTimeString() + " $   " + count);
             
-            });
+//             });
 
-})
+// })
         
     
 

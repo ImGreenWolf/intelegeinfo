@@ -38,6 +38,8 @@ export declare class EditorSession {
     isPublic: boolean;
     enableChat: boolean;
     editorPermission: EditorPermission;
+    joinCode: number;
+    qrCode: any;
     makeSessionPublic(enableChat: boolean, editorPermission: EditorPermission): void;
     constructor(sessionId?: UUID);
     toJSON(): any;

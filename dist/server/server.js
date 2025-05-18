@@ -85,22 +85,27 @@ app.get('/editor/cpp_worker.js', (req, res) => {
 app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path_1.default.join(rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
 });
-/* IMPORTS */
-// FileManagement.ts
-function createFile() {
-}
-/*END IMPORTS*/
 const codeMap = new Map();
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id;
+    const session = exports.sessionMap[sessionId];
+    const link = req.hostname + '/editor?session=' + sessionId;
     if (!sessionId) {
         res.status(500).send({ error: "session id invalid" });
         return;
     }
+    if (session) {
+        if (session.isPublic) {
+            res.send({ qrsvg: session.qrCode, code: session.joinCode, link });
+        }
+    }
     const code = users.generateCode();
-    const link = req.hostname + '/editor?session=' + sessionId;
-    qrcode.toDataURL(link + "&method=qrcode", { errorCorrectionLevel: "low", type: "image/png", margin: 0, width: 100 }).then(value => {
+    qrcode.toDataURL(link + "&uri_method=qrcode", { errorCorrectionLevel: "low", type: "image/png", margin: 0, width: 100 }).then(value => {
         codeMap.set(parseInt(code), sessionId);
+        if (session) {
+            session.joinCode = code;
+            session.qrCode = value;
+        }
         res.send({ qrsvg: value, code, link });
         setTimeout(() => {
             codeMap.delete(parseInt(code));
@@ -163,12 +168,11 @@ app.get('/editor', (req, res) => {
         }
     });
 });
+app.use((0, cookie_parser_1.default)());
 const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem'), 'utf8');
 function authMiddleware(req, res, next, role) {
     // if() return res.status(403).json({ error: 'failed reading cookies' });
     const token = req.cookies.token;
-    // console.log(token)
-    console.log('authing');
     if (!token) {
         res.status(401).json({ error: 'Unauthorized' });
     }
@@ -179,7 +183,7 @@ function authMiddleware(req, res, next, role) {
             next();
     }
     catch (err) {
-        res.status(403).json({ error: 'Invalid token' });
+        res.clearCookie('cookiename').status(403).json({ error: 'Invalid token' });
     }
 }
 function handle404(req, res, next) {
@@ -189,7 +193,6 @@ function handle404(req, res, next) {
     else
         res.json('Oops! Page not found.');
 }
-app.set('view engine', 'ejs');
 app.use('/login', login_js_1.default);
 app.use('/signup', signup_js_1.default);
 app.use('/profile', authMiddleware, profile_js_1.default);
@@ -500,6 +503,10 @@ exports.wss.on("connection", (ws, req) => {
         ?.split("; ")
         .find((c) => c.startsWith("token="))
         ?.split("=")[1];
+    const recoveredSession = cookies
+        ?.split("; ")
+        .find((c) => c.startsWith("session="))
+        ?.split("=")[1];
     let userData;
     let userLoggedIn = false;
     users.getUserData(users.getClientId(jwtCookie)).then((userdata) => {
@@ -527,7 +534,7 @@ exports.wss.on("connection", (ws, req) => {
         }
         function handshake(req) {
             const urlParams = new URL("http://intelegeinfo.go.ro/editor" + req.url).searchParams;
-            const wssessionId = urlParams.get('session') != "null" || urlParams.get('session') != undefined ? urlParams.get('session') : undefined;
+            const wssessionId = urlParams.get('session') != undefined || urlParams.get('session') != undefined ? urlParams.get('session') : recoveredSession ? recoveredSession : undefined;
             //handle heartbeat
             heartbeatInterval = setInterval(() => {
                 // server.getConnections(function(error, count) {
@@ -548,6 +555,7 @@ exports.wss.on("connection", (ws, req) => {
                 }
             }, heartbeatTimeout);
             // TODO Check if session exists, otherwise create a new one and make this client the host.
+            console.log(wssessionId);
             if (wssessionId) {
                 //client connected to existing session
                 const activeSession = exports.sessionMap.has(wssessionId) || (isShared && shared.getSession(wssessionId));
@@ -574,7 +582,7 @@ exports.wss.on("connection", (ws, req) => {
                     clientSession = createThisClientSession(wssessionId);
                     clientId = getThisClientSession()?.spawnClient(ws, userData);
                     clientObj = getThisClientSession().getClientObjectById(clientId);
-                    exports.clients.set(clientId, ws);
+                    exports.clients.set(clientId, ws); // TODO remove this map
                     // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
                     if (clientSession && !isShared) {
                         exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
@@ -1764,14 +1772,15 @@ exports.wss.on("connection", (ws, req) => {
                 closeProcess(process)
                     .finally(() => {
                     const dirPath = path_1.default.join(rootDirName, "cache", sessionId);
-                    if (dirPath)
-                        fs_1.default.rm(dirPath, { recursive: true }, (err) => {
-                            if (err)
-                                console.error(err);
-                            console.log("deleted cache folder for sessionId " + sessionId);
-                        });
-                    else
-                        console.error(new Error("Couldnt delete session folder, invalid path."));
+                    if (false) // TODO check if its okay to delete the session folder
+                        if (dirPath)
+                            fs_1.default.rm(dirPath, { recursive: true }, (err) => {
+                                if (err)
+                                    console.error(err);
+                                console.log("deleted cache folder for sessionId " + sessionId);
+                            });
+                        else
+                            console.error(new Error("Couldnt delete session folder, invalid path."));
                     exports.sessionMap.delete(sessionId);
                     if (isShared)
                         shared.removeSession(sessionId);
@@ -1911,21 +1920,21 @@ ENTRYPOINT CMD ["./main.exe"]
     });
     return childProcess; // Return the child process so it can be handled externally
 }
-exports.server.on("connection", (socket) => {
-    exports.server.getConnections(function (error, count) {
-        if (error)
-            console.log(error);
-        if (count)
-            console.log(new Date().toLocaleTimeString() + " $   " + count);
-    });
-});
-exports.server.on("request", () => {
-    exports.server.connections;
-    exports.server.getConnections(function (error, count) {
-        if (error)
-            console.log(error);
-        if (count)
-            console.log(new Date().toLocaleTimeString() + " $   " + count);
-    });
-});
+// server.on("connection", (socket) => {
+//             server.getConnections(function(error, count) {
+//                 if(error)
+//                     console.log(error)
+//                 if(count)
+//                     console.log(new Date().toLocaleTimeString() + " $   " + count);
+//             });
+// })
+// server.on("request", () => {
+//             server.connections
+//             server.getConnections(function(error, count) {
+//                 if(error)
+//                     console.log(error)
+//                 if(count)
+//                     console.log(new Date().toLocaleTimeString() + " $   " + count);
+//             });
+// })
 app.use(handle404);

@@ -73,7 +73,9 @@ export class EditorSession {
     isPublic: boolean
     enableChat: boolean
     editorPermission: EditorPermission
-
+    joinCode: number;
+    qrCode;
+    
     public makeSessionPublic(enableChat: boolean, editorPermission: EditorPermission)
     {
         this.isPublic = true

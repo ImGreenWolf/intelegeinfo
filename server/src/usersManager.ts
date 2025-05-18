@@ -80,7 +80,7 @@ export function getUserData(id: number): Promise<UserNoPassword>
 export function getIdFromJWT(req: any)
 {
 
-        return getClientId(getJWT(req))
+    return getClientId(getJWT(req))
     
     
 }
@@ -126,48 +126,55 @@ export function addProject(id: number, data: any)
 }
 
  export function listAllProjects(userId): Promise<any>
-        {
-            return new Promise<any>((resolve, reject) => {
-                users.default.project.findMany({
-                    where:
-                    {
-                        userId
-                    }
-                    
-                }).then(projects => {
-                   resolve({projects})
-                }).catch(err => {
-                    reject(err)
-                });
-            })
-           
+{
+    return new Promise<any>((resolve, reject) => {
+        users.default.project.findMany({
+            where:
+            {
+                userId
+            }
             
-        }
+        }).then(projects => {
+            resolve({projects})
+        }).catch(err => {
+            reject(err)
+        });
+    })
+    
+    
+}
 
 export function listProjects(userId, projects): Promise<any>
-        {
-            return new Promise<any>((resolve, reject) => {
-                users.default.project.findMany({
-                    where:
-                    {
-                        userId
-                    }
-                    
-                }).then(projects => {
-                   resolve({projects})
-                }).catch(err => {
-                    reject(err)
-                });
-            })
-           
+{
+    return new Promise<any>((resolve, reject) => {
+        users.default.project.findMany({
+            where:
+            {
+                userId
+            }
             
-        }
+        }).then(projects => {
+            resolve({projects})
+        }).catch(err => {
+            reject(err)
+        });
+    })
+    
+    
+}
 
 
 export function getClientId(token: string)
 {
     if(!token)  return; // throw {code: 401, message:'invalid token'};
-    const userState = jwt.verify(token, privateKeyPem);
+    let userState;
+    try {
+     userState = jwt.verify(token, privateKeyPem);
+    }
+    catch
+    {
+        return
+    }
     if(!userState) return; //throw {code: 401, message:'invalid state'};
     const userId= parseInt((userState as any).sub);
     if(!userId) return; //throw {code: 401, message:'couldnt get id'}
@@ -351,7 +358,7 @@ router.post('/verifyemail', (req, res) => {
                 }
             }).then(user => {
 
-                onLoggedIn(user, res)
+                onLoggedIn(user, res, req)
                 res.status(200).json({sucess: true, redirect: '/'})
                 
             }).catch(err => {

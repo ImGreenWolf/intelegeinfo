@@ -161,7 +161,13 @@ function listProjects(userId, projects) {
 function getClientId(token) {
     if (!token)
         return; // throw {code: 401, message:'invalid token'};
-    const userState = jsonwebtoken_1.default.verify(token, privateKeyPem);
+    let userState;
+    try {
+        userState = jsonwebtoken_1.default.verify(token, privateKeyPem);
+    }
+    catch {
+        return;
+    }
     if (!userState)
         return; //throw {code: 401, message:'invalid state'};
     const userId = parseInt(userState.sub);
@@ -288,7 +294,7 @@ exports.router.post('/verifyemail', (req, res) => {
                     emailValidated: true
                 }
             }).then(user => {
-                (0, login_1.onLoggedIn)(user, res);
+                (0, login_1.onLoggedIn)(user, res, req);
                 res.status(200).json({ sucess: true, redirect: '/' });
             }).catch(err => {
                 res.status(403).send(err);

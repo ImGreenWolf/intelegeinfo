@@ -59,6 +59,8 @@ class EditorSession {
     isPublic;
     enableChat;
     editorPermission;
+    joinCode;
+    qrCode;
     makeSessionPublic(enableChat, editorPermission) {
         this.isPublic = true;
         this.enableChat = enableChat;

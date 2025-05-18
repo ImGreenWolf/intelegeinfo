@@ -374,10 +374,12 @@ if(new URLSearchParams(window.location.search).has('save'))
   document.getElementById('saveProject')?.classList.add('saved')
 
 
-export function onMarkerUpdate(marker:any, elem: HTMLDivElement)
-{
+// export function onMarkerUpdate(marker:any, elem: HTMLDivElement)
+// {
  
-}
+// }
+
+
 
 editor.on('changeSession', (e) => 
 {
@@ -573,14 +575,16 @@ export function saveProject()
               if(!response.ok)
                 if(response.status === 401)
                   displayMessagePopup('Please log in!')
-              
-                  document.getElementById('active-project-name') ?.classList.remove('dirty')
+                
+              // save was sucsessfull
+              document.getElementById('active-project-name') ?.classList.remove('dirty')
+              modifiedFile = false;
               
             })
             .catch(err => {
 
               
-              displayMessagePopup('heyy');
+              displayMessagePopup(err);
             })
       
             document.getElementById('saveProject')?.classList.add('saved')
@@ -818,7 +822,7 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?) {
           ) as HTMLElement;
 
           const ownMessageClass =
-            messageClientId === wsClientId ? "chat-ownMessage" : "";
+            messageClientId === wsClientId || !wsClientId ? "chat-ownMessage" : "";
             
           if ((group?.getAttribute("clientId") as UUID) == messageClientId && group === outputArea.lastChild) {
             messageGroup = group;
@@ -1161,7 +1165,13 @@ const saveId = new URLSearchParams(window.location.search).get("save");
 
 // websocket //
 const WSUrl = "ws://" + window.location.hostname  + ":" + window.location.port + (sessionId || saveId ? "?" : "") + (sessionId ? "session="+sessionId+"&" : "")  + (saveId ? "save="+saveId : "")
-console.log(WSUrl)
+
+
+if(document.cookie.split('session=')[1]!='')
+  if(!window.confirm('You have a previous unsaved session, would you like to recover it?'))
+      document.cookie = 'session=';
+
+
 export const ws = new WebSocket(WSUrl);
 
 let variables: any[] = [];
@@ -1298,15 +1308,24 @@ ws.onclose = (ev) => {
   socketStopped.appendChild(socketText)
   document.getElementById('editor')?.appendChild(socketStopped)
   if(serviceRestart)
-  setTimeout(() => {
-     window.location.reload()
-  }, 2000);
+    setTimeout(() => {
+      window.location.reload()
+    }, 2000);
 }
 
 
 ws.onopen = (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
+
+  
+  window.onbeforeunload = (ev => {
+    
+    if(modifiedFile)
+      ev.preventDefault()
+  })
+
+
 
   const cookie = () => { 
     if(document.cookie.split(';').length === 0)
@@ -1320,15 +1339,7 @@ ws.onopen = (ev) => {
     if(cookie.split('=')[0] === 'token')
      return cookie.split('=')[1]
   })}
-  console.log(cookie())
-  // ws.send( //   TODO Remove all handshake referecnes, moved this to ws.on connect 
-  //   JSON.stringify({
-  //     type: WebSocketMessageType.Handshake,
-  //     sessionId: sessionId?.toString() || null,
-  //     token: cookie(),
-  //   })
-  // ); // Send initial message to server
-  console.log("logged in");
+
 
   editor.on("change", (delta: any) => {
     if (isRemoteChange) return;
@@ -1364,7 +1375,9 @@ ws.onopen = (ev) => {
       })
     ); // Send code to server on change // TODO Remove code from body.
   });
+
   editor.on("changeSelection", () => {
+
     if (isRemoteChange) return;
     const selection = editor.getSelectionRange();
     // const start = selection.start;
@@ -1440,7 +1453,7 @@ type FileEditorSession = {
   }
 }
 
-
+let modifiedFile = false;
 let ping = -1;
 function cleanDebug()
 {
@@ -1452,7 +1465,7 @@ function cleanDebug()
 
 function dirtyFile(fileName: string)
 {
-  
+  modifiedFile = true;
   const saveFile: boolean = fileName ? !["c", "exe"].includes(
       fileName.split(".").pop() || ""
     ) : true;
@@ -1779,11 +1792,15 @@ ws.onmessage = (event) => {
       break;
 
     case WebSocketMessageType.Handshake:
-      if(wsSessionId || eventJson.sessionId)
+      if(!wsSessionId && !wsClientId || eventJson.sessionId)
       {
       wsClientId = eventJson.clientId;
       wsSessionId = eventJson.sessionId;
-      
+      // if(!document.cookie.includes('session='))
+      setTimeout(() => {
+        document.cookie = 'session='+wsSessionId+';' 
+      }, 15000);
+      //console.log(editor.session.toJSON()) // TODO Implement saving the editor session in a file on the server or on the client.
       }
 
       if(eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
