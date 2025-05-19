@@ -2230,7 +2230,7 @@ wss.on("connection", (ws: WebSocket, req) => {
         //    else sessions.get(sessionId)?.splice(sessions.get(sessionId)?.indexOf(clientId) || -1, 1);
         
           
-        console.log("clients in sessions " + clientSession.clients.size)
+        // console.log("clients in sessions " + clientSession.clients.size)
         if(clientSession.clients.size === 0 || clientSession===undefined) 
             {
                    // sessions.delete(sessionId);
