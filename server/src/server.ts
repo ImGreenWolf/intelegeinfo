@@ -1475,7 +1475,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                      //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
                      fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
                          if(err) console.log("Failed saving file!")
-                             console.log("saved file")
+                            //  console.log("saved file")
 
                          if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
@@ -1487,7 +1487,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify(    [   {kind: 'success'} ]     )}))
                                         })
     
-                                console.log(JSON.parse(json))
+                                // console.log(JSON.parse(json))
     
                                 replicateFunction((clientWs, localClientId) => {
                                     if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))

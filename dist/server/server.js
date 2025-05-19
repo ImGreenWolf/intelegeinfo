@@ -1184,7 +1184,7 @@ exports.wss.on("connection", (ws, req) => {
                                                 if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
                                             });
-                                        console.log(JSON.parse(json));
+                                        // console.log(JSON.parse(json))
                                         replicateFunction((clientWs, localClientId) => {
                                             if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));

@@ -1922,7 +1922,7 @@ ws.onmessage = (event) => {
               errorAnnotations.length = 0;
               editor.session.setAnnotations([]);
               document.getElementById('compile-error')?.remove()
-              compileErrorObjs.forEach(element => {
+              compileErrorObjs.forEach(element => {   // TODO improve this
                 element.display?.remove()
               });
               // compileErrorObjs.clear()
