@@ -558,7 +558,6 @@ exports.wss.on("connection", (ws, req) => {
                 }
             }, heartbeatTimeout);
             // TODO Check if session exists, otherwise create a new one and make this client the host.
-            console.log(wssessionId);
             if (wssessionId) {
                 //client connected to existing session
                 const activeSession = exports.sessionMap.has(wssessionId) || (isShared && shared.getSession(wssessionId));
