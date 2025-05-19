@@ -860,9 +860,10 @@ const sessionId = new URLSearchParams(window.location.search).get("session");
 const saveId = new URLSearchParams(window.location.search).get("save");
 // websocket //
 const WSUrl = "ws://" + window.location.hostname + ":" + window.location.port + (sessionId || saveId ? "?" : "") + (sessionId ? "session=" + sessionId + "&" : "") + (saveId ? "save=" + saveId : "");
-if (document.cookie.split('session=')[1] != '')
+if (document.cookie.split('session=')[1]) {
     if (!window.confirm('You have a previous unsaved session, would you like to recover it?'))
         document.cookie = 'session=';
+}
 export const ws = new WebSocket(WSUrl);
 let variables = [];
 const variableArrayIndexes = [];
@@ -981,17 +982,6 @@ ws.onopen = (ev) => {
         if (modifiedFile)
             ev.preventDefault();
     });
-    const cookie = () => {
-        if (document.cookie.split(';').length === 0) {
-            if (document.cookie.split('=')[0] === 'token')
-                return document.cookie.split('=')[1];
-        }
-        else
-            document.cookie.split(';').forEach(cookie => {
-                if (cookie.split('=')[0] === 'token')
-                    return cookie.split('=')[1];
-            });
-    };
     editor.on("change", (delta) => {
         if (isRemoteChange)
             return;
@@ -1323,6 +1313,7 @@ ws.onmessage = (event) => {
                 wsClientId = eventJson.clientId;
                 wsSessionId = eventJson.sessionId;
                 // if(!document.cookie.includes('session='))
+                document.cookie = 'session=';
                 setTimeout(() => {
                     document.cookie = 'session=' + wsSessionId + ';';
                 }, 15000);

@@ -63,17 +63,17 @@ function createToken(user) {
         iss: "intelegeinfo.go.ro",
         sub: user.id,
         role: user.role
-    }, privateKeyPem, { algorithm: 'RS256', expiresIn: 3600000 * 24 * 31 });
+    }, privateKeyPem, { algorithm: 'RS256', expiresIn: 1000 * 60 * 60 * 24 * 31 });
 }
 function onLoggedIn(user, res, req) {
     let token = createToken(user);
-    let secure = req.secure;
+    let secure = false; //req.secure;
     let keepLoggedIn = req.body.keepLoggedIn;
     if (keepLoggedIn)
         res.cookie('token', token, {
             httpOnly: true,
             secure, // Set to true in production (HTTPS)
-            maxAge: 3600000 * 24 * 31, // 1 hour
+            maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days //1 hour
         });
     else
         res.cookie('token', token, {
