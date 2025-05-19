@@ -405,9 +405,9 @@ editor.on('changeSession', (e) =>
         errorDisplay.innerText = compileErrorObjs.get(marker.marker.id)!.text
         errorDisplay.classList.add('compile-error-tooltip')
         document.body.appendChild(errorDisplay)
+        compileErrorObjs.get(marker.marker.id)!.display = errorDisplay;
       }, 200);
       
-
     })
      marker.elem.addEventListener('mouseleave', ev => {
       if(errorDisplayTimeout)
@@ -1422,6 +1422,7 @@ type FileEditorSession = {
   annotation;
   markerId: number;
   text: string
+  display: HTMLDivElement|undefined;
   constructor(range: Ace.Range, text: string)
   {
     this.text = text;
@@ -1890,6 +1891,7 @@ ws.onmessage = (event) => {
                     location.finish? location.finish.column : location.caret.column)
 
                   const compileErrorObj = new CompileError(range, result.message)
+                  // compileErrorObjs.get(markerId)!.display?.remove()
                   compileErrorObjs.set(compileErrorObj.markerId, compileErrorObj)
                   errorAnnotations.push(compileErrorObj.annotation);
                 
@@ -1920,6 +1922,10 @@ ws.onmessage = (event) => {
               errorAnnotations.length = 0;
               editor.session.setAnnotations([]);
               document.getElementById('compile-error')?.remove()
+              compileErrorObjs.forEach(element => {
+                element.display?.remove()
+              });
+              // compileErrorObjs.clear()
             break;
         }
         // writeOutput(result.kind)

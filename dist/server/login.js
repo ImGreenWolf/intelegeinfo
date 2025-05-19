@@ -62,13 +62,15 @@ function createToken(user) {
     return jsonwebtoken_1.default.sign({
         iss: "intelegeinfo.go.ro",
         sub: user.id,
-        role: user.role
-    }, privateKeyPem, { algorithm: 'RS256', expiresIn: 1000 * 60 * 60 * 24 * 31 });
+        role: user.role,
+    }, privateKeyPem, { algorithm: 'RS256', expiresIn: 1000000 });
 }
 function onLoggedIn(user, res, req) {
+    if (!user)
+        throw 'Invalid user';
     let token = createToken(user);
     let secure = false; //req.secure;
-    let keepLoggedIn = req.body.keepLoggedIn;
+    let keepLoggedIn = req.body.keepLoggedIn || false;
     if (keepLoggedIn)
         res.cookie('token', token, {
             httpOnly: true,

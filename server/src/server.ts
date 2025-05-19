@@ -1497,7 +1497,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                              }).catch(err => {
                                 console.error('error: ' + err)
                              })
-                         }, 500);
+                         }, 50);
                          
 
 
@@ -1616,8 +1616,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                             // fs.accessSync(filePath) // disabled to auto compile
 
                             async function executeProgram(): Promise<void> {
-                                return new Promise<void>((resolve, reject) => {
-                                        console.log("executing program")
+                                return new Promise<void>((resolveExectute, reject) => {
                                         // const filePath = path.join(rootDirName, "cache", sessionId, "main.exe");
                                         fs.stat(filePath, (err, stats) => {
                                             
@@ -1910,6 +1909,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                 // removeProcessFromMap(sessionId);
                                                 onClosedProcess()
                                                 resolve()
+                                                resolveExectute()
                                                 // closeProcess(program,sessionId).then(() => {
                                                 //     replicateFunction((clientWs) => {
                                                 //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client

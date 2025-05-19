@@ -1192,7 +1192,7 @@ exports.wss.on("connection", (ws, req) => {
                                     }).catch(err => {
                                         console.error('error: ' + err);
                                     });
-                                }, 500);
+                                }, 50);
                             });
                         }
                         // replicate changes to others
@@ -1288,8 +1288,7 @@ exports.wss.on("connection", (ws, req) => {
                                 if (command == "execute") {
                                     // fs.accessSync(filePath) // disabled to auto compile
                                     async function executeProgram() {
-                                        return new Promise((resolve, reject) => {
-                                            console.log("executing program");
+                                        return new Promise((resolveExectute, reject) => {
                                             // const filePath = path.join(rootDirName, "cache", sessionId, "main.exe");
                                             fs_1.default.stat(filePath, (err, stats) => {
                                                 if (err) {
@@ -1505,6 +1504,7 @@ exports.wss.on("connection", (ws, req) => {
                                                             // removeProcessFromMap(sessionId);
                                                             onClosedProcess();
                                                             resolve();
+                                                            resolveExectute();
                                                             // closeProcess(program,sessionId).then(() => {
                                                             //     replicateFunction((clientWs) => {
                                                             //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
