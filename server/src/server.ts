@@ -1053,8 +1053,8 @@ wss.on("connection", (ws: WebSocket, req) => {
                 // fs.renameSync()
                 // defaultText =  
                 // console.log(defaultText)
-                    }catch {
-                    printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. ", getThisClientSession().getClientObjectById(clientId))
+                    }catch(err) {
+                    printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId))
                     defaultText = fs.readFileSync("user_code.cpp").toString();
                     }
         }

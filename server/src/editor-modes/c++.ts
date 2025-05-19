@@ -16,7 +16,6 @@ class CppMode extends EditorMode {
 
 
 
-
 // function windowsPathToDocker(path: string): string {
 //     const drive = path[0].toLowerCase();
 //     return `/${drive}${path.slice(2).replace(/\\/g, '/')}`;
