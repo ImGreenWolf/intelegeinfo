@@ -39,6 +39,14 @@
     opacity: 100%;
   }
 }
+@keyframes fade-out {
+  100% {
+    opacity: 0;
+  }
+  0% {
+    opacity: 100%;
+  }
+}
 @keyframes trhobber-rotate {
   0% {
     transform: translate(-50%, -50%) rotate(0deg);
@@ -223,6 +231,7 @@ header {
   box-sizing: border-box;
   contain: style size layout;
   font-variant-ligatures: no-common-ligatures;
+  animation: fade-out 10s cubic-bezier(0.6, 0.04, 0.98, 0.335) 5s forwards;
 }
 
 .ace_tooltip.editor-theme {
@@ -1174,6 +1183,26 @@ button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #
 .inset-button a:hover {
   box-shadow: 0px 0px 5px 0px rgba(37, 37, 37, 0.8), inset 0px -10px 5px -10px rgba(44, 44, 44, 0.8), inset 0px 10px 10px -5px rgb(56.75, 56.75, 56.75);
   transform: scale(97%);
+}
+
+.cursor {
+  position: absolute;
+  width: 1rem;
+  aspect-ratio: 1;
+  background-image: url("../media/mouse-cursor-svgrepo-com.svg");
+  z-index: 100;
+  pointer-events: none;
+  background-size: cover;
+  transform: scaleX(-1);
+  opacity: 0.75;
+  color: green;
+}
+.cursor.inactive {
+  animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;
+}
+.cursor.touch {
+  background-image: radial-gradient(transparent, white);
+  border-radius: 50%;
 }
 
 /* media queries */

@@ -58,6 +58,7 @@ export var WebSocketMessageType;
     WebSocketMessageType["FileManagement"] = "FileManagement";
     WebSocketMessageType["CompileResult"] = "CompileResult";
     WebSocketMessageType["ExecuteStatus"] = "executestatus";
+    WebSocketMessageType["MouseUpdate"] = "MouseUpdate";
 })(WebSocketMessageType || (WebSocketMessageType = {}));
 export var ConsoleMessageType;
 (function (ConsoleMessageType) {
@@ -154,6 +155,10 @@ let debugLine = 1; // debug row
 let lastDebugId;
 let lastViewedMessage;
 let currentFileName;
+let posX = 0;
+let posY = 0;
+let stepint;
+let isColabSession = false;
 // ace.config.setModuleUrl('ace/mode/c_cpp_worker', 'cpp_worker.js');
 // ace.config.setModuleUrl('ace/mode/c_cpp_custom', 'mode_cpp_custom.js');
 const editorSessions = new Map();
@@ -309,6 +314,29 @@ editor.on('changeSession', (e) => {
         });
     });
 });
+let lastTime = 0;
+function addMouseListener(session) {
+    // TODO Maybe limit this only to the editor itself.
+    const deltaTime = 30;
+    if (session != undefined && session.canEdit && session.canChat)
+        document.onpointermove = (ev => {
+            if (ev.timeStamp - lastTime > deltaTime) {
+                lastTime = ev.timeStamp;
+                const posX = ev.pageX;
+                const posY = ev.pageY;
+                const sizeX = document.body.clientWidth;
+                const sizeY = document.body.clientHeight;
+                const pointerType = ev.pointerType;
+                if (pointerType == "touch") {
+                    const height = ev.height;
+                    const width = ev.width;
+                    ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height }));
+                }
+                else
+                    ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType }));
+            }
+        });
+}
 /* IMPORTS */
 // FileManagement.ts
 const FileContainer = document.getElementById("editor-tabs-container");
@@ -715,6 +743,7 @@ export function joinsession() {
     //   displayMessagePopup(data.link)
     // }
 }
+let session;
 export function copySessionLink() {
     const clientId = wsSessionId;
     let sessionLink;
@@ -730,7 +759,7 @@ export function copySessionLink() {
     shareContainer.classList.add('share-container');
     shareContainer.innerHTML =
         `
-    <form id="createSessionForm" action="/editor/startsession/${wsSessionId}" method="POST">
+    <form id="createSessionForm">
       <button id='close-share-session'>x</button>
 
       <label for="chat">Enable Chat <input type="checkbox" name="chat" checked></label>
@@ -761,82 +790,92 @@ export function copySessionLink() {
         shareContainer.remove();
         // shareContainer.animate()
     };
-    fetch('/editor/sharesession?id=' + wsSessionId)
-        .then(res => {
-        return res.json();
-    })
-        .then(data => {
-        document.getElementById('data.code').innerText = data.code;
-        document.getElementById('data.qrurl').src = data.qrsvg;
-        // const shareContainer = document.createElement('div')
-        // shareContainer.classList.add('share-container');
-        // shareContainer.innerHTML =
-        // `
-        // <form id="createSessionForm" action="/editor/startsession/${wsSessionId}" method="POST">
-        //   <button id='close-share-session'>x</button>
-        //   <label for="chat">Enable Chat <input type="checkbox" name="chat" checked></label>
-        //   <label for="code-permission">Editor Permission 
-        //       <select id='code-permission' name='codePermission'>
-        //         <option value='0'>Everyone</option>
-        //         <option value='2'>Only host</option>
-        //         <option value='1'>Require Permission</option>
-        //       </select>
-        //   </label>
-        //   <button type="submit" id="submit-create-session">Create Session</button>
-        // </form>
-        // <div id='connect-data-container'>
-        //   <div id='connect-data-inner'>
-        //     <img src="${data.qrsvg}">
-        //     <p>or</p>
-        //     <div class='connect-info'>
-        //       <p class='code'>${data.code}</p><button id='copy-link'>copy</button>
-        //     </div>
-        //   </div>
-        // </div>
-        // `
-        // document.body.appendChild(shareContainer)
-        // document.getElementById('close-share-session')!.onclick = function (this, ev) {
-        //   shareContainer.remove();
-        //   // shareContainer.animate()
-        // }
-        document.getElementById('createSessionForm').onsubmit = function (ev) {
-            ev.preventDefault();
-            const formData = new FormData(ev.target);
-            try {
-                if (!formData.has('chat'))
-                    formData.set('chat', '');
-                const entryData = Object.fromEntries(formData.entries());
-                if (!wsSessionId)
-                    throw "Invalid session id.";
-                const startedSessionId = wsSessionId;
-                fetch('/editor/startsession/' + wsSessionId, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(entryData)
-                }).then(res => {
-                    document.getElementById('connect-data-container')?.classList.add('created');
-                    const sessionCodeNode = document.createElement('h2');
-                    sessionCodeNode.innerText = data.code;
-                    sessionCodeNode.classList.add('session-code');
-                    document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'));
-                    // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
-                    if (!window.location.search.includes("session=") && startedSessionId != undefined)
-                        window.history.pushState({ page: "updated session info" }, "intelge info", window.location.search + (window.location.search ? "&" : "?") + "session=" + startedSessionId);
-                }).catch(err => {
-                    throw err;
-                });
-            }
-            catch (err) {
-                if (typeof err == "string")
-                    document.getElementById('session-create-error').innerText = err;
-                else
-                    console.error(err);
-            }
-        };
-        document.getElementById('copy-link').onclick = () => {
-            displayMessagePopup(data.link);
-        };
-    });
+    document.getElementById('createSessionForm').onsubmit = function (ev) {
+        ev.preventDefault();
+    };
+    if (session) {
+        document.getElementById('connect-data-container')?.classList.add('created');
+        document.getElementById('data.code').innerText = session.code;
+        document.getElementById('data.qrurl').src = session.img;
+    }
+    else
+        fetch('/editor/sharesession?id=' + wsSessionId)
+            .then(res => {
+            return res.json();
+        })
+            .then(data => {
+            session = { code: data.code, img: data.qrsvg };
+            document.getElementById('data.code').innerText = data.code;
+            document.getElementById('data.qrurl').src = data.qrsvg;
+            // const shareContainer = document.createElement('div')
+            // shareContainer.classList.add('share-container');
+            // shareContainer.innerHTML =
+            // `
+            // <form id="createSessionForm" action="/editor/startsession/${wsSessionId}" method="POST">
+            //   <button id='close-share-session'>x</button>
+            //   <label for="chat">Enable Chat <input type="checkbox" name="chat" checked></label>
+            //   <label for="code-permission">Editor Permission 
+            //       <select id='code-permission' name='codePermission'>
+            //         <option value='0'>Everyone</option>
+            //         <option value='2'>Only host</option>
+            //         <option value='1'>Require Permission</option>
+            //       </select>
+            //   </label>
+            //   <button type="submit" id="submit-create-session">Create Session</button>
+            // </form>
+            // <div id='connect-data-container'>
+            //   <div id='connect-data-inner'>
+            //     <img src="${data.qrsvg}">
+            //     <p>or</p>
+            //     <div class='connect-info'>
+            //       <p class='code'>${data.code}</p><button id='copy-link'>copy</button>
+            //     </div>
+            //   </div>
+            // </div>
+            // `
+            // document.body.appendChild(shareContainer)
+            // document.getElementById('close-share-session')!.onclick = function (this, ev) {
+            //   shareContainer.remove();
+            //   // shareContainer.animate()
+            // }
+            document.getElementById('createSessionForm').onsubmit = function (ev) {
+                ev.preventDefault();
+                const formData = new FormData(ev.target);
+                try {
+                    if (!formData.has('chat'))
+                        formData.set('chat', '');
+                    const entryData = Object.fromEntries(formData.entries());
+                    if (!wsSessionId)
+                        throw "Invalid session id.";
+                    const startedSessionId = wsSessionId;
+                    fetch('/editor/startsession/' + wsSessionId, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(entryData)
+                    }).then(res => {
+                        document.getElementById('connect-data-container')?.classList.add('created');
+                        const sessionCodeNode = document.createElement('h2');
+                        sessionCodeNode.innerText = data.code;
+                        sessionCodeNode.classList.add('session-code');
+                        document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'));
+                        // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
+                        if (!window.location.search.includes("session=") && startedSessionId != undefined)
+                            window.history.pushState({ page: "updated session info" }, "intelge info", window.location.search + (window.location.search ? "&" : "?") + "session=" + startedSessionId);
+                    }).catch(err => {
+                        throw err;
+                    });
+                }
+                catch (err) {
+                    if (typeof err == "string")
+                        document.getElementById('session-create-error').innerText = err;
+                    else
+                        console.error(err);
+                }
+            };
+            document.getElementById('copy-link').onclick = () => {
+                displayMessagePopup(data.link);
+            };
+        });
 }
 export function createFile(fileName = "untitled.txt") {
     const command = JSON.stringify({
@@ -882,7 +921,7 @@ export function submitConsole(elem, type) {
     ws.send(JSON.stringify({
         command: sendText,
         // args: ["console"],
-        type,
+        type: type || WebSocketMessageType.Chat,
     }));
     consoleInput.value = "";
     typingIndicatorDelay = 300;
@@ -1282,6 +1321,60 @@ ws.onmessage = (event) => {
             }
             onExit();
             break;
+        case WebSocketMessageType.MouseUpdate:
+            if (!eventJson.clientId)
+                break;
+            let cursor = document.getElementById('cursor-' + eventJson.clientId);
+            const sizeX = document.body.clientWidth;
+            const sizeY = document.body.clientHeight;
+            if ((sizeX / eventJson.sizeX < 0.7 || sizeY / eventJson.sizeY < 0.7 || sizeX / eventJson.sizeX > 1.3 || sizeY / eventJson.sizeY > 1.3)) {
+                clearInterval(stepint);
+                if (cursor)
+                    cursor.remove();
+                break;
+            }
+            // maybe check if the pointer type switched
+            if (!cursor) {
+                cursor = document.createElement('div');
+                cursor.id = 'cursor-' + eventJson.clientId;
+                cursor.classList.add('cursor');
+                if (eventJson.pointerType != "mouse") {
+                    cursor.classList.add(eventJson.pointerType);
+                    cursor.style.width = eventJson.width;
+                    cursor.style.height = eventJson.height;
+                }
+                document.body.appendChild(cursor);
+            }
+            console.log(eventJson.pointerType);
+            //  TODO Imrpove this
+            if (sizeX / eventJson.sizeX < 1.1 && sizeX / eventJson.sizeX > 0.9)
+                cursor.style.filter = '';
+            else
+                cursor.style.filter = `blur(${(1 - sizeX / eventJson.sizeX) * 7}px)`; //(Math.max(Math.abs(sizeX/eventJson.sizeX), Math.abs(sizeY/eventJson.sizeY)))
+            let lposX = posX;
+            let lposY = posY;
+            const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+            posX = Math.min(sizeX - remSize, eventJson.posX * sizeX / eventJson.sizeX);
+            posY = Math.min(sizeY - remSize, eventJson.posY * sizeY / eventJson.sizeY);
+            let step = 0;
+            const stepSize = 1 / 30;
+            clearInterval(stepint);
+            if (false)
+                stepint = setInterval(() => {
+                    const cposX = lposX * (1 - step) + posX * step;
+                    const cposY = lposY * (1 - step) + posY * step;
+                    cursor.style.left = cposX + 'px';
+                    cursor.style.top = cposY + 'px';
+                    step += stepSize;
+                    if (step >= 1)
+                        clearInterval(stepint);
+                }, stepSize);
+            else {
+                cursor.style.left = posX + 'px';
+                cursor.style.top = posY + 'px';
+            }
+            // TODO Add incative class to cursor when user doesnt move it.
+            break;
         case WebSocketMessageType.Chat:
             if (eventJson.clientId) {
                 const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
@@ -1314,12 +1407,15 @@ ws.onmessage = (event) => {
             if (!wsSessionId && !wsClientId || eventJson.sessionId) {
                 wsClientId = eventJson.clientId;
                 wsSessionId = eventJson.sessionId;
+                isColabSession = eventJson.session != undefined;
+                console.log(eventJson.session);
                 // if(!document.cookie.includes('session='))
                 document.cookie = 'session=';
                 setTimeout(() => {
                     document.cookie = 'session=' + wsSessionId + ';';
                 }, 15000);
                 //console.log(editor.session.toJSON()) // TODO Implement saving the editor session in a file on the server or on the client.
+                addMouseListener(eventJson);
             }
             if (eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
                 document.getElementById('share')?.classList.add('host');
@@ -1533,14 +1629,18 @@ ws.onmessage = (event) => {
             const colabSessionId = eventJson.thisSessionId;
             const colabClientId = eventJson.thisClientId;
             const colabCommand = eventJson.colabCommand;
-            console.log("collab command= " + colabCommand);
+            isColabSession = true;
             switch (colabCommand) {
                 case "DISCONECT":
                     const success = cursorManager.removeCursor(colabClientId);
+                    document.getElementById('cursor-' + colabClientId)?.remove();
                     writeOutput(eventJson.body, eventJson);
                     break;
                 case "HOST":
                     writeOutput(eventJson.body, eventJson);
+                case "JOIN":
+                    addMouseListener(eventJson.session);
+                    break;
             }
             const colabContainer = document.getElementById("colab-container") || null;
             if (!colabContainer)

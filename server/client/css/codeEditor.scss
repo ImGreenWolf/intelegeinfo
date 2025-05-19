@@ -24,6 +24,11 @@
     0% {opacity: 0;}
     100% {opacity: 100%;}
 }
+
+@keyframes fade-out {
+    100% {opacity: 0;}
+    0% {opacity: 100%;}
+}
 @keyframes trhobber-rotate {
     0% {transform: translate(-50%, -50%) rotate(0deg);}
     100% {transform: translate(-50%, -50%) rotate(360deg);}
@@ -190,6 +195,7 @@ header
     box-sizing: border-box;
     contain: style size layout;
     font-variant-ligatures: no-common-ligatures;
+    animation: fade-out 10s cubic-bezier(0.6, 0.04, 0.98, 0.335) 5s forwards;
 }
 .ace_tooltip.editor-theme
 {
@@ -1457,6 +1463,41 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
 
         }
     }
+
+.cursor
+{
+    position: absolute;
+    width: 1rem;
+    aspect-ratio: 1;
+    // background-color: green;
+    background-image: url("../media/mouse-cursor-svgrepo-com.svg");
+    z-index: 100;
+    pointer-events: none;
+    // -webkit-mask-image: url("../media/mouse-cursor-svgrepo-com.svg");
+    // mask-image: url("../media/mouse-cursor-svgrepo-com.svg");
+    background-size: cover;
+    // mask-size: 105%;
+    // mask-position: center;
+    transform: scaleX(-1);
+    // filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.416));
+    opacity: 0.75;
+    // backdrop-filter: blur(3px);
+    color: green;
+    &.inactive
+    {
+        animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;
+    }
+
+    &.touch
+    {
+        background-image: radial-gradient(transparent, white);
+        border-radius: 50%;
+        // animation: fade-out 0.3s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;;
+    }
+
+}
+
+
 
 
 

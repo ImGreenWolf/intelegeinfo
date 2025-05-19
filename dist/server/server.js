@@ -89,7 +89,7 @@ const codeMap = new Map();
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id;
     const session = exports.sessionMap[sessionId];
-    const link = req.hostname + '/editor?session=' + sessionId;
+    const link = req.protocol + "://" + req.host + '/editor?session=' + sessionId;
     if (!sessionId) {
         res.status(500).send({ error: "session id invalid" });
         return;
@@ -857,14 +857,14 @@ exports.wss.on("connection", (ws, req) => {
                     `Bine ai revenit ${userData?.username} pe Intelege Info!
             Poti salva codul tau apasand pe butonul save.`;
             // Send initial message to client
-            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Handshake, clientId: clientId, messageType: types_1.ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project, session }));
+            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Handshake, clientId: clientId, messageType: types_1.ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project, session, canEdit: clientObj.canEdit }));
             if (getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
              {
                 let displayNames = [];
                 getThisClientSession()?.clients.forEach((client, id) => {
                     displayNames.push(client.displayName);
                 });
-                replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.ColabData, clients: displayNames, thisClientId: clientId, thisSessionId: sessionId });
+                replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.ColabData, colabCommand: "JOIN", clients: displayNames, thisClientId: clientId, thisSessionId: sessionId, session });
                 console.log(getThisClientSession().clientCommandBuffer);
                 setTimeout(() => {
                     getThisClientSession().clientCommandBuffer.forEach((cmdBuf, remoteClientid) => {
@@ -1162,6 +1162,12 @@ exports.wss.on("connection", (ws, req) => {
                         //         client.send(JSON.stringify({error: false, input: false, clientId: clientId, type: WebSocketMessageType.Chat, body: messageJSON.command})); // Send initial message to client
                         // });
                         break;
+                    case types_1.WebSocketMessageType.MouseUpdate:
+                        replicateFunction((thisClientWs, thisClientId) => {
+                            if (clientSession.getClientObjectById(thisClientId).canEdit)
+                                thisClientWs.send(JSON.stringify({ ...messageJSON, clientId })); // TODO Sanitize this
+                        }, clientObj);
+                        break;
                     case types_1.WebSocketMessageType.CodeChange:
                         if (!clientObj.canEdit)
                             break;
@@ -1174,7 +1180,7 @@ exports.wss.on("connection", (ws, req) => {
                             fs_1.default.writeFile(path_1.default.join(clientFilesPath, fileName), messageJSON.body, (err) => {
                                 if (err)
                                     console.log("Failed saving file!");
-                                console.log("saved file");
+                                //  console.log("saved file")
                                 if (checkSyntaxTimeout)
                                     clearTimeout(checkSyntaxTimeout);
                                 checkSyntaxTimeout = setTimeout(() => {

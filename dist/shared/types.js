@@ -17,6 +17,7 @@ var WebSocketMessageType;
     WebSocketMessageType["FileManagement"] = "FileManagement";
     WebSocketMessageType["CompileResult"] = "CompileResult";
     WebSocketMessageType["ExecuteStatus"] = "executestatus";
+    WebSocketMessageType["MouseUpdate"] = "MouseUpdate";
 })(WebSocketMessageType || (exports.WebSocketMessageType = WebSocketMessageType = {}));
 var ConsoleMessageType;
 (function (ConsoleMessageType) {

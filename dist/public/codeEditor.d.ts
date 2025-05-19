@@ -12,7 +12,8 @@ export declare enum WebSocketMessageType {
     Heartbeat = "heartbeat",
     FileManagement = "FileManagement",
     CompileResult = "CompileResult",
-    ExecuteStatus = "executestatus"
+    ExecuteStatus = "executestatus",
+    MouseUpdate = "MouseUpdate"
 }
 export declare enum ConsoleMessageType {
     UserChat = "chat",
@@ -33,7 +34,7 @@ export declare function joinsession(): void;
 export declare function copySessionLink(): void;
 export declare function createFile(fileName?: string): void;
 export declare const ws: WebSocket;
-export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType): void;
+export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined): void;
 export declare function compileCode(this: any, ev: any): void;
 export declare function sendDebugCommand(cmd: string): void;
 export declare function playback(): void;

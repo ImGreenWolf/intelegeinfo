@@ -71,7 +71,7 @@ const codeMap: Map<number, UUID> = new Map()
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id as UUID;
     const session = sessionMap[sessionId];
-    const link = req.hostname+'/editor?session='+sessionId
+    const link = req.protocol + "://" + req.host+'/editor?session='+sessionId
     if(!sessionId)
     {
         res.status(500).send({error: "session id invalid"})
@@ -1113,7 +1113,7 @@ wss.on("connection", (ws: WebSocket, req) => {
             `Bine ai revenit ${userData?.username} pe Intelege Info!
             Poti salva codul tau apasand pe butonul save.`
             // Send initial message to client
-            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, clientId: clientId,messageType: ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project,  session})); 
+            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, clientId: clientId,messageType: ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project,  session, canEdit: clientObj.canEdit})); 
 
             if(getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
             {
@@ -1123,7 +1123,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 
                })
 
-               replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, clients:displayNames, thisClientId: clientId, thisSessionId: sessionId});
+               replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN",clients:displayNames, thisClientId: clientId, thisSessionId: sessionId, session});
                console.log(getThisClientSession().clientCommandBuffer)
                
                setTimeout(() => {
@@ -1462,7 +1462,12 @@ wss.on("connection", (ws: WebSocket, req) => {
                     // });
                     break;
 
-
+                case WebSocketMessageType.MouseUpdate:
+                    replicateFunction((thisClientWs, thisClientId) => {
+                        if(clientSession.getClientObjectById(thisClientId).canEdit)
+                            thisClientWs.send(JSON.stringify({ ...messageJSON, clientId})) // TODO Sanitize this
+                    }, clientObj)
+                break;
                 case WebSocketMessageType.CodeChange:
                     if(!clientObj.canEdit) break;
                 const shouldSave:boolean = messageJSON.saveFile;

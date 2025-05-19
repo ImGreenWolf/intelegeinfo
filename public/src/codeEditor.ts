@@ -106,6 +106,7 @@ export enum WebSocketMessageType {
   FileManagement = "FileManagement",
   CompileResult = "CompileResult",
   ExecuteStatus =  "executestatus",
+  MouseUpdate = "MouseUpdate"
 }
 
 export enum ConsoleMessageType {
@@ -223,6 +224,11 @@ let debugLine = 1; // debug row
 let lastDebugId: any;
 let lastViewedMessage: number;
 let currentFileName: string;
+
+let posX=0;
+let posY=0;
+let stepint;
+let isColabSession=false;
 
 // ace.config.setModuleUrl('ace/mode/c_cpp_worker', 'cpp_worker.js');
 // ace.config.setModuleUrl('ace/mode/c_cpp_custom', 'mode_cpp_custom.js');
@@ -414,7 +420,7 @@ editor.on('changeSession', (e) =>
         clearTimeout(errorDisplayTimeout)
       if(!errorDisplay) return;
 
-      errorDisplay.remove()
+      errorDisplay.remove();
       errorDisplay = undefined;
     })
   })
@@ -422,6 +428,35 @@ editor.on('changeSession', (e) =>
 })
 
 
+let lastTime=0;
+function addMouseListener(session)
+{
+
+  // TODO Maybe limit this only to the editor itself.
+  const deltaTime = 30;
+  if(session!=undefined && session.canEdit && session.canChat)
+  document.onpointermove = (ev => {
+
+  if(ev.timeStamp-lastTime>deltaTime)
+    {
+      lastTime = ev.timeStamp
+      const posX = ev.pageX
+      const posY = ev.pageY
+      const sizeX = document.body.clientWidth;
+      const sizeY = document.body.clientHeight;
+      const pointerType = ev.pointerType;
+      if(pointerType == "touch")
+      {
+        const height = ev.height;
+        const width = ev.width;
+        ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height}))
+      }
+        else
+      ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType}))
+
+    }
+      })
+}
 
 
 /* IMPORTS */
@@ -979,8 +1014,12 @@ export function joinsession()
 
 
 
-
-
+interface SessionInfo  {
+  code: string;
+  img: any;
+  
+}
+let session: SessionInfo | undefined;
 export function copySessionLink() {
   const clientId = wsSessionId;
   let sessionLink: string;
@@ -1001,7 +1040,7 @@ export function copySessionLink() {
   
     shareContainer.innerHTML =
     `
-    <form id="createSessionForm" action="/editor/startsession/${wsSessionId}" method="POST">
+    <form id="createSessionForm">
       <button id='close-share-session'>x</button>
 
       <label for="chat">Enable Chat <input type="checkbox" name="chat" checked></label>
@@ -1037,14 +1076,22 @@ export function copySessionLink() {
       // shareContainer.animate()
     }
 
-
-
+ document.getElementById('createSessionForm')!.onsubmit =  function (this, ev) {
+      ev.preventDefault()
+ }
+  if(session)
+  {
+    document.getElementById('connect-data-container')?.classList.add('created')
+    document.getElementById('data.code')!.innerText = session.code;
+    (document.getElementById('data.qrurl')! as HTMLImageElement).src = session.img;
+  }
+  else
   fetch('/editor/sharesession?id='+wsSessionId)
   .then(res => {
     return res.json();
   })
   .then(data => {
-    
+    session = {code: data.code, img: data.qrsvg};
     document.getElementById('data.code')!.innerText = data.code;
     (document.getElementById('data.qrurl')! as HTMLImageElement).src = data.qrsvg;
     // const shareContainer = document.createElement('div')
@@ -1180,7 +1227,7 @@ export const ws = new WebSocket(WSUrl);
 let variables: any[] = [];
 const variableArrayIndexes: number[] = [];
 
-export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType) {
+export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined) {
   //     const sendText = elem?.value.replace(consoleText, "")
   //     if(sendText == "") return;
   //     console.log(sendText);
@@ -1194,7 +1241,7 @@ export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketM
     JSON.stringify({
       command: sendText,
       // args: ["console"],
-      type,
+      type: type || WebSocketMessageType.Chat,
     })
   );
   consoleInput.value = "";
@@ -1733,7 +1780,71 @@ ws.onmessage = (event) => {
 
       
       break;
-    
+    case WebSocketMessageType.MouseUpdate:
+       if(!eventJson.clientId) break;
+      let cursor = document.getElementById('cursor-'+eventJson.clientId)
+      const sizeX = document.body.clientWidth;
+      const sizeY = document.body.clientHeight;
+
+        if((sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3)) 
+          {
+            clearInterval(stepint)
+            if(cursor)
+              cursor!.remove();
+            break;
+          }
+      // maybe check if the pointer type switched
+      if(!cursor)
+      {
+        cursor = document.createElement('div')
+        cursor.id = 'cursor-'+eventJson.clientId;
+        cursor.classList.add('cursor')
+
+        if(eventJson.pointerType != "mouse")
+        {
+          cursor.classList.add(eventJson.pointerType)
+          cursor.style.width = eventJson.width;
+          cursor.style.height = eventJson.height;
+        }
+        document.body.appendChild(cursor)
+
+      }
+
+        console.log(eventJson.pointerType)
+        //  TODO Imrpove this
+        if(sizeX/eventJson.sizeX<1.1 && sizeX/eventJson.sizeX>0.9)
+          cursor.style.filter = '';
+        else
+          cursor.style.filter = `blur(${(1-sizeX/eventJson.sizeX)*7}px)` //(Math.max(Math.abs(sizeX/eventJson.sizeX), Math.abs(sizeY/eventJson.sizeY)))
+        let lposX = posX;
+        let lposY = posY
+        const remSize: number = parseFloat(getComputedStyle(document.documentElement).fontSize)
+         posX = Math.min(sizeX-remSize, eventJson.posX* sizeX/eventJson.sizeX);
+         posY = Math.min(sizeY-remSize, eventJson.posY* sizeY/eventJson.sizeY);
+        let step =0;
+        const stepSize=1/30
+        clearInterval(stepint)
+        if(false)
+         stepint = setInterval(() => {
+          
+          const cposX = lposX*(1-step) + posX*step;
+          const cposY = lposY*(1-step) + posY*step;
+          cursor!.style.left = cposX+'px';
+          cursor!.style.top = cposY+'px';
+          step+=stepSize;
+          if(step>=1)
+            clearInterval(stepint)
+        }, stepSize);
+        else
+        {
+          cursor!.style.left = posX+'px';
+          cursor!.style.top = posY+'px';
+        }
+        
+      // TODO Add incative class to cursor when user doesnt move it.
+
+       
+    break;
     case WebSocketMessageType.Chat:
       if(eventJson.clientId)
       {
@@ -1787,13 +1898,20 @@ ws.onmessage = (event) => {
       {
       wsClientId = eventJson.clientId;
       wsSessionId = eventJson.sessionId;
+      isColabSession = eventJson.session!=undefined
+      console.log(eventJson.session)
       // if(!document.cookie.includes('session='))
       document.cookie='session='
       setTimeout(() => {
         document.cookie = 'session='+wsSessionId+';' 
       }, 15000);
       //console.log(editor.session.toJSON()) // TODO Implement saving the editor session in a file on the server or on the client.
-      }
+        
+        addMouseListener(eventJson)
+        }
+
+      
+
 
       if(eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
         document.getElementById('share')?.classList.add('host')
@@ -2099,15 +2217,19 @@ ws.onmessage = (event) => {
       const colabSessionId = eventJson.thisSessionId;
       const colabClientId = eventJson.thisClientId;
       const colabCommand = eventJson.colabCommand;
-      console.log("collab command= " + colabCommand);
+      isColabSession = true;
       switch(colabCommand) 
       {
         case "DISCONECT":
                 const success = cursorManager.removeCursor(colabClientId);
+                document.getElementById('cursor-'+colabClientId)?.remove()
                 writeOutput(eventJson.body, eventJson);
             break;
         case "HOST":
           writeOutput(eventJson.body, eventJson);
+        case "JOIN":
+          addMouseListener(eventJson.session)
+        break;
       }
       
       const colabContainer = document.getElementById("colab-container") || null;
