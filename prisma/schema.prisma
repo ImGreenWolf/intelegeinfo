@@ -46,11 +46,15 @@ enum Role {
 }
 
 model Code {
-  code Int  @id @unique
-  hmac String
+  code String  @id @unique
+  value String
+  iat DateTime @default(now())
+  exp DateTime @default(now())
 }
 
 model RefreshToken {
-  code Int  @id @unique
+  code String  @id @unique
   hmac String
+  iat DateTime @default(now())
+  exp DateTime @default(now())
 }

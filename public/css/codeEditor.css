@@ -576,7 +576,7 @@ button {
   align-self: center;
 }
 #output pre {
-  font-family: "Poppins", sans-serif;
+  font-family: monospace;
   display: block;
   margin: 10px;
   animation: text-write 0.05s;
@@ -795,7 +795,7 @@ value {
 
 .console-error {
   display: block;
-  color: rgb(255, 0, 0);
+  color: rgb(152, 94, 94);
   text-shadow: 2px 2px 2px black;
   white-space: pre;
   cursor: pointer;
@@ -830,14 +830,20 @@ value {
   padding: 5px;
 }
 .output-console-container .console-inline-message, .output-console-container .console-program-input, .output-console-container .console-program-output {
-  display: inline !important;
+  display: inline;
   margin: 0 !important;
 }
+.output-console-container .console-program-output {
+  word-spacing: 1ch;
+}
 .output-console-container .console-program-input {
+  word-spacing: 1ch;
+  display: block;
   color: gray;
 }
 .output-console-container .console-program-return {
   text-align: center;
+  white-space: break-spaces;
 }
 @keyframes blink {
   from, to {

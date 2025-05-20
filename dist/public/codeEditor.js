@@ -314,6 +314,19 @@ editor.on('changeSession', (e) => {
         });
     });
 });
+function getPointerRelativePosition(editor, x, y) {
+    const rect = editor.container.getBoundingClientRect();
+    // Normalize mouse coordinates within editor container
+    const relX = (x - rect.left) / rect.width;
+    const relY = (y - rect.top) / rect.height;
+    return { relX, relY, rect }; // values from 0 to 1
+}
+function getPixelFromRelativePosition(editor, relX, relY, rect) {
+    // const rect = editor.container.getBoundingClientRect();
+    const x = rect.left + relX * rect.width;
+    const y = rect.top + relY * rect.height;
+    return { x, y };
+}
 let lastTime = 0;
 function addMouseListener(session) {
     // TODO Maybe limit this only to the editor itself.
@@ -326,6 +339,7 @@ function addMouseListener(session) {
                 const posY = ev.pageY;
                 const sizeX = document.body.clientWidth;
                 const sizeY = document.body.clientHeight;
+                const pos = getPointerRelativePosition(editor, posX, posY);
                 const pointerType = ev.pointerType;
                 if (pointerType == "touch") {
                     const height = ev.height;
@@ -333,7 +347,7 @@ function addMouseListener(session) {
                     ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height }));
                 }
                 else
-                    ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType }));
+                    ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect }));
             }
         });
 }
@@ -1317,7 +1331,7 @@ ws.onmessage = (event) => {
                 cmdBut?.classList.remove("execute-control");
             }
             else {
-                writeOutput(data + "  |   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time + "</span>ms" + (eventJson.notes != "" ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>" : ""), eventJson);
+                writeOutput(data + "  |<span>   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time + "</span>ms" + (eventJson.notes != "" && eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>" : "" + "</span>"), eventJson);
             }
             onExit();
             break;
@@ -1327,17 +1341,19 @@ ws.onmessage = (event) => {
             let cursor = document.getElementById('cursor-' + eventJson.clientId);
             const sizeX = document.body.clientWidth;
             const sizeY = document.body.clientHeight;
-            if ((sizeX / eventJson.sizeX < 0.7 || sizeY / eventJson.sizeY < 0.7 || sizeX / eventJson.sizeX > 1.3 || sizeY / eventJson.sizeY > 1.3)) {
-                clearInterval(stepint);
-                if (cursor)
-                    cursor.remove();
-                break;
-            }
+            // if((sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3)) 
+            //   {
+            //     clearInterval(stepint)
+            //     if(cursor)
+            //       cursor!.remove();
+            //     break;
+            //   }
             // maybe check if the pointer type switched
             if (!cursor) {
                 cursor = document.createElement('div');
                 cursor.id = 'cursor-' + eventJson.clientId;
                 cursor.classList.add('cursor');
+                cursor.setAttribute('name', "user");
                 if (eventJson.pointerType != "mouse") {
                     cursor.classList.add(eventJson.pointerType);
                     cursor.style.width = eventJson.width;
@@ -1345,7 +1361,6 @@ ws.onmessage = (event) => {
                 }
                 document.body.appendChild(cursor);
             }
-            console.log(eventJson.pointerType);
             //  TODO Imrpove this
             if (sizeX / eventJson.sizeX < 1.1 && sizeX / eventJson.sizeX > 0.9)
                 cursor.style.filter = '';
@@ -1354,12 +1369,19 @@ ws.onmessage = (event) => {
             let lposX = posX;
             let lposY = posY;
             const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-            posX = Math.min(sizeX - remSize, eventJson.posX * sizeX / eventJson.sizeX);
-            posY = Math.min(sizeY - remSize, eventJson.posY * sizeY / eventJson.sizeY);
+            const relPos = getPixelFromRelativePosition(editor, eventJson.relPosX, eventJson.relPosY, eventJson.rect);
+            if (sizeX / eventJson.sizeX < 0.7 || sizeY / eventJson.sizeY < 0.7 || sizeX / eventJson.sizeX > 1.3 || sizeY / eventJson.sizeY > 1.3) {
+                posX = relPos.x;
+                posY = relPos.y;
+            }
+            else {
+                posX = Math.min(sizeX - remSize, eventJson.posX * sizeX / eventJson.sizeX);
+                posY = Math.min(sizeY - remSize, eventJson.posY * sizeY / eventJson.sizeY);
+            }
             let step = 0;
             const stepSize = 1 / 30;
             clearInterval(stepint);
-            if (false)
+            if (true) // interpolate cursor position
                 stepint = setInterval(() => {
                     const cposX = lposX * (1 - step) + posX * step;
                     const cposY = lposY * (1 - step) + posY * step;
