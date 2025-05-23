@@ -137,7 +137,7 @@ function parseDebuggerOutput(
     .replace(/\n\s*/g, " ")
     .trim();
 
-  const regex = /(\w+)\s*=\s*(.*?)(?=\s+\w+\s*=|$)/g;
+  const regex = /(\w+)\s*:\s*(.*?)(?=\s+\w+\s*:|$)/g;
 
   let match;
   while ((match = regex.exec(cleanedInput)) !== null) {
@@ -164,6 +164,95 @@ function parseDebuggerOutput(
           array.push(parseInt(valMatch[0], 10));
         }
       }
+
+      value = array;
+    } else if (!isNaN(Number(rawValue))) {
+      type = "int";
+      value = Number(rawValue);
+    }
+
+    const existing = variableStore.get(name);
+
+    if (!existing) {
+      const newVar = new Variable(name, value, type);
+      variableStore.set(name, newVar);
+      onNewVariable(newVar);
+    } else if (type === "array" && existing.type === "array") {
+      const updatedIndices: any = [];
+
+      for (
+        let i = 0;i <Math.max((existing.value as any[])?.length, (value as any[]).length);i++
+      ) {
+        if (
+          Array.isArray(existing.value)
+        //    &&
+        //   existing.value[i] !== (value as any[])[i]
+        ) {
+          const change = {
+            index: i,
+            old: existing.value[i],
+            new: (value as any[])[i],
+          };
+          const changed = existing.value[i] !== (value as any[])[i];
+          updatedIndices.push(change);
+          onArrayIndexChange(name, change, changed);
+        }
+      }
+
+      if (updatedIndices.length > 0) {
+        const updatedVar = new Variable(name, value, type, updatedIndices);
+        variableStore.set(name, updatedVar);
+      }
+    } else if (existing.value !== value || existing.type !== type) {
+      const updatedVar = new Variable(name, value, type);
+      variableStore.set(name, updatedVar);
+    }
+  }
+
+  return Array.from(variableStore.values());
+}
+
+
+function parseMIDebuggerOutput(
+  input: Record<string, string>,
+  {
+    onNewVariable = (newVar: Variable) => {},
+    onArrayIndexChange = (
+      name: string,
+      change: { index: number; old: any; new: any },
+      changed: boolean
+    ) => {},
+  } = {}
+) {
+  const cleanedInput: any = input
+
+  const regex = /(\w+)\s*:\s*(.*?)(?=\s+\w+\s*:|$)/g;
+
+  let match;
+  for(const variable of cleanedInput.variables) {
+    const name = variable.name;
+    const rawValue = variable.value;
+
+    let type: "string" | "int" | "array" = "string";
+    let value: string | number | any[] = rawValue; // might be broken
+
+    // Parse arrays
+    if (Array.isArray(rawValue)) {
+      type = "array";
+      //const inner = //rawValue.slice(1, -1).trim();
+      const array: number[] = rawValue//[];
+
+      // const arrayRegex = /(-?\d+)\s*<repeats\s+(\d+)\s+times>|-?\d+/g;
+      // let valMatch;
+      // while ((valMatch = arrayRegex.exec(inner)) !== null) {
+      //   if (valMatch[2]) {
+      //     const val = parseInt(valMatch[1], 10);
+      //     const count = parseInt(valMatch[2], 10);
+      //     array.push(...Array(count).fill(val));
+      //   } else {
+      //     array.push(parseInt(valMatch[0], 10));
+      //   }
+      // }
 
       value = array;
     } else if (!isNaN(Number(rawValue))) {
@@ -1238,7 +1327,7 @@ const saveId = new URLSearchParams(window.location.search).get("save");
 const WSUrl = "ws://" + window.location.hostname  + ":" + window.location.port + (sessionId || saveId ? "?" : "") + (sessionId ? "session="+sessionId+"&" : "")  + (saveId ? "save="+saveId : "")
 
 
-if(document.cookie.split('session=')[1])
+if(document.cookie.split('session=')[1]!='')
 {
   if(!window.confirm('You have a previous unsaved session, would you like to recover it?'))
       document.cookie = 'session=';
@@ -1388,6 +1477,136 @@ ws.onclose = (ev) => {
 }
 
 
+
+var event = ace.require("ace/lib/event");
+var Range = ace.require("ace/range").Range;
+var Tooltip = ace.require("ace/tooltip").Tooltip;
+
+// const tooltips: Map<string, string> = new Map()
+// tooltips.set('cout', 'scrie cod')
+const tooltip = (await (await fetch('/editor/tooltipHints')).json())
+class TokenTooltip extends Tooltip {
+    constructor(editor) {
+        if (editor.tokenTooltip)
+            return;
+        super(editor.container);
+        editor.tokenTooltip = this;
+        this.editor = editor;
+  
+        this.update = this.update.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseOut = this.onMouseOut.bind(this);
+        event.addListener(editor.renderer.scroller, "mousemove", this.onMouseMove);
+        event.addListener(editor.renderer.content, "mouseout", this.onMouseOut);
+        
+    }
+    token = {};
+    
+    range = new Range();
+    
+    async update() {
+      
+        this.$timer = null;
+        
+        var r = this.editor.renderer;
+        if (this.lastT - (r.timeStamp || 0) > 5000) {
+            r.rect = null;
+            r.timeStamp = this.lastT;
+            this.maxHeight = window.innerHeight;
+            this.maxWidth = window.innerWidth;
+        }
+
+        var canvasPos = r.rect || (r.rect = r.scroller.getBoundingClientRect());
+        var offset = (this.x + r.scrollLeft - canvasPos.left - r.$padding) / r.characterWidth;
+        var row = Math.floor((this.y + r.scrollTop - canvasPos.top) / r.lineHeight);
+        var col = Math.round(offset);
+
+        var screenPos = {row: row, column: col, side: offset - col > 0 ? 1 : -1};
+        var session = this.editor.session;
+        var docPos = session.screenToDocumentPosition(screenPos.row, screenPos.column);
+        var token = session.getTokenAt(docPos.row, docPos.column);
+
+        if (!token && !session.getLine(docPos.row)) {
+            token = {
+                type: "",
+                value: "",
+                state: session.bgTokenizer.getState(0)
+            };
+        }
+        
+        if (!token || !tooltip[token.value]) {
+            session.removeMarker(this.marker);
+            this.hide();
+            return;
+        }
+        const tooltipValue = tooltip[token.value] || undefined //(await (await fetch('/editor/tooltipHints/'+token.value)).json()).description;
+        var tokenText = tooltipValue.description + "\n<span>" + tooltipValue.example+"</span>";
+
+
+        if (token.state)
+            tokenText += "|" + token.state;
+        if (token.merge)
+            tokenText += "\n  merge";
+        if (token.stateTransitions)
+            tokenText += "\n  " + token.stateTransitions.join("\n  ");
+
+        if (this.tokenText != tokenText) {
+            this.setHtml(tokenText);
+            this.width = this.getWidth();
+            this.height = this.getHeight();
+            this.tokenText = tokenText;
+        }
+        if (!this.isOpen) {
+            this.setTheme(r.theme);
+            this.setClassName('ii-hoverHints')
+        }
+
+        this.show(null, this.x, this.y);
+
+        this.token = token;
+        session.removeMarker(this.marker);
+        this.range = new Range(docPos.row, token.start, docPos.row, token.start + token.value.length);
+        this.marker = session.addMarker(this.range, "ace_bracket", "text");
+    };
+    
+    onMouseMove(e) {
+        this.x = e.clientX;
+        this.y = e.clientY;
+        if (this.isOpen) {
+            this.lastT = e.timeStamp;
+            this.setPosition(this.x, this.y);
+        }
+        if (!this.$timer)
+            this.$timer = setTimeout(this.update, this.isOpen ? 100 : 1500);
+    };
+
+    onMouseOut(e) {
+        if (e && e.currentTarget.contains(e.relatedTarget))
+            return;
+        this.hide();
+        this.editor.session.removeMarker(this.marker);
+        this.$timer = clearTimeout(this.$timer);
+    };
+
+    setPosition(x, y) {
+        if (x + 10 + this.width > this.maxWidth)
+            x = window.innerWidth - this.width - 10;
+        if (y > window.innerHeight * 0.75 || y + 20 + this.height > this.maxHeight)
+            y = y - this.height - 30;
+
+        Tooltip.prototype.setPosition.call(this, x + 10, y + 20);
+    };
+
+    destroy() {
+        this.onMouseOut(undefined);
+        event.removeListener(this.editor.renderer.scroller, "mousemove", this.onMouseMove);
+        event.removeListener(this.editor.renderer.content, "mouseout", this.onMouseOut);
+        delete this.editor.tokenTooltip;
+    };
+
+}
+
+
 ws.onopen = (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
@@ -1398,8 +1617,32 @@ ws.onopen = (ev) => {
     if(modifiedFile)
       ev.preventDefault()
   })
+  let hoverTooltip = 0;
+  const tooltip = new TokenTooltip(editor);
 
-
+  // editor.on('mousemove', ev => {
+  //   const mouseDocPos = ev.getDocumentPosition();
+  //   if(hoverTooltip)
+  //     editor.session.removeMarker(hoverTooltip)
+  //   if(editor.session.getTokenAt(ev.getDocumentPosition().row, ev.getDocumentPosition().column))
+  //   if(editor.session.getTokenAt(ev.getDocumentPosition().row, ev.getDocumentPosition().column).type == 'identifier')
+  //   {
+  //     const wordRange = editor.session.getWordRange(mouseDocPos.row, mouseDocPos.column)
+  //     const hoverToken = editor.session.getTokenAt(ev.getDocumentPosition().row, ev.getDocumentPosition().column);
+  //     editor.
+  //     // new Ace.Range()
+  //     const range: Ace.Range = new AceRange(wordRange.start.row, wordRange.start.column,  wordRange.end.row, wordRange.end.column  +hoverToken.value.length);
+  //     hoverTooltip = editor.session.addMarker(
+  //       range,
+  //       'ii-token-highlight',
+  //       "text",
+  //       false
+  //     )
+  //     console.log(wordRange)
+  //   }
+      
+   
+  // })
 
 
   editor.on("change", (delta: any) => {
@@ -1588,17 +1831,18 @@ ws.onmessage = (event) => {
     }
 
     // handle variables
-    if (command == "info locals") {
+    if (eventJson.variables!=undefined) {
       const variablesSection = document.getElementById("variables");
       let unprocVariables;
-      const textToVar = data
-        .split("(gdb)")
-        .pop()
-        ?.replace(/\n/g, ";")
-        .match(/(?<!\w\S)(\b\w+)\s*=.*/g);
-      if (command == "info locals") {
+      const variablesString = JSON.stringify(eventJson.variables)
+      // const textToVar = data
+      //   .split("(gdb)")
+      //   .pop()
+      //   ?.replace(/\n/g, ";")
+      //   .match(/(?<!\w\S)(\b\w+)\s*=.*/g);
+      if (eventJson.variables!=undefined) {
         //if we have variables in the chunk
-        variables = parseDebuggerOutput(data, {
+        variables = parseMIDebuggerOutput(eventJson, {
           onNewVariable: (variable) => {
             if (variable.type != "array") return;
             createDisplayVector(variable);
@@ -1620,6 +1864,8 @@ ws.onmessage = (event) => {
             // console.log(changes.updatedIndices)
           },
         });
+
+        console.log(variables)
       }
       
       // set variables
@@ -1659,9 +1905,9 @@ ws.onmessage = (event) => {
       });
     } else {
       //TODO DMDMDMDM Check if line number string contains (gdb) to prevent standard output from being parsed as line number
-      if (data.match(/^(\d)+(?=\s)?/gm) != null) {
+      if (eventJson.body.frame && eventJson.body.frame.line) {
         //check if its a chunk with line number
-        debugLine = parseInt(data.match(/^(\d)+(?=\s)?/gm)); // update debug row
+        debugLine = eventJson.body.frame.line;//parseInt(data.match(/^(\d)+(?=\s)?/gm)); // update debug row
         setDebugLineStyle(debugLine);
 
         const conditionRegex = /(?:if|while)\s*\(([^(){};]+?)\)/g;
@@ -2443,7 +2689,7 @@ document.getElementById('compile-error')?.remove()
 export function sendDebugCommand(cmd: string) {
   //editor.setValue(code, -1);
   const cmdBut = document.getElementById("buttons");
-  if (cmd == "run") {
+  if (cmd == "-exec-run") {
     cmdBut?.classList.add("debug-control");
     cmdBut?.classList.remove("execute-control");
     onRun()
@@ -2454,10 +2700,10 @@ export function sendDebugCommand(cmd: string) {
   }
 
   sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
-  if (cmd == "next" || cmd == "continue")
-    sendWebsocketCommand("info locals\n ", []); // ws.send({command: 'info locals' , args: []});
+  if (cmd == "-exec-next" || cmd == "-exec-continue")
+    sendWebsocketCommand("-stack-list-variables --all-values ", []); // ws.send({command: 'info locals' , args: []});
   const consoleElem = document.getElementById("console") as HTMLTextAreaElement;
-  if (cmd == "execute" && consoleElem?.value != "") submitConsole(consoleElem, WebSocketMessageType.Console);
+  if (cmd == "-exec-execute" && consoleElem?.value != "") submitConsole(consoleElem, WebSocketMessageType.Console);
 }
 
 let playbackSpeed = 1;
@@ -2465,7 +2711,7 @@ let playbackId: NodeJS.Timeout;
 let processRunning: boolean;
 
 export function playback() {
-  sendDebugCommand("break main");
+  sendDebugCommand("-stack-list-variables --all-values");
 
   onRun();
   let i = debugLine;
@@ -2473,7 +2719,7 @@ export function playback() {
 }
 
 export function restartPlayback() {
-  sendDebugCommand("run");
+  sendDebugCommand("-exec-run");
   setPlaybackSpeed(1);
   playback();
 }
@@ -2495,7 +2741,7 @@ function updatePlaybackSpeed() {
   if (playbackId) clearInterval(playbackId);
   playbackId = setInterval(() => {
     if (!ws.OPEN || processRunning) return clearInterval(playbackId);
-    sendDebugCommand("next");
+    sendDebugCommand("-exec-next");
     if (debugLine >= editor.session.getLength() + 2) {
       // add offset to complete exectuin and display result.
       clearInterval(playbackId);
@@ -2634,4 +2880,3 @@ function getDisplayVectorElement(variable: { varname: string }, index: number) {
     .getElementById(variable.varname)
     ?.getElementsByClassName("item-container")[0].children[index]; // offset by the ammount of default children aka the header of the container
 }
-

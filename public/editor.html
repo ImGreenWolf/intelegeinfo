@@ -14,7 +14,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
    
     <script src="/ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="https://github.com/panva/jose/tree/7c1cf51fe8983e757c7f9d8ec5b851275998604b/src" type="text/javascript"></script>
     <!-- <script data-main="js/codeEditor" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script> -->
     <script src="/ace-builds-master/src-noconflict/mode-c_cpp.js"></script>
     <script  type="module" src="/editor/codeEditor.js" type="text/javascript" charset="utf-8"></script>
@@ -111,7 +110,7 @@ int main() {
                 <div class="buttons" id="buttons">
                     <p id="compile-status"></p>
                     <button onclick="window.editor.sendDebugCommand('execute')" class="execute-control" id="execute-control">Execute Code</button>
-                    <button onclick="window.editor.sendDebugCommand('run')" id="run">Run in Debugger</button> 
+                    <button onclick="window.editor.sendDebugCommand('-exec-run')" id="run">Run in Debugger</button> 
                     <button onclick="window.editor.compileCode()" class="compile" id="compile">Compile</button>
                     <!-- <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button> -->
                     <button onclick="window.editor.playback()" class="debug-control" id="playback">Playback</button>
@@ -121,10 +120,10 @@ int main() {
                         <button onclick="window.editor.setPlaybackSpeed(2)">>></button>
                         <button onclick="window.editor.setPlaybackSpeed(3)">>>></button>
                     </div>
-                    <button onclick="window.editor.sendDebugCommand('next')" class="debug-control" id="next">Step Over</button>
+                    <button onclick="window.editor.sendDebugCommand('-exec-next')" class="debug-control" id="next">Step Over</button>
 
                     <!-- <button onclick="sendDebugCommand('continue')">Continue Execution</button> -->
-                    <button onclick="window.editor.sendDebugCommand('quit')" class="debug-control" id="quit">Stop Debugging</button>
+                    <button onclick="window.editor.sendDebugCommand('-exec-quit')" class="debug-control" id="quit">Stop Debugging</button>
                 </div>
 
             

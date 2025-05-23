@@ -235,11 +235,18 @@ header {
 }
 
 .ace_tooltip.editor-theme {
-  border-radius: 1lh;
-  padding: 5px;
-  background-color: rgba(107, 107, 107, 0.2705882353);
+  padding: 1rem;
+  padding-top: 0.5rem;
+  background-color: rgba(72, 72, 72, 0.2705882353);
   backdrop-filter: blur(2px);
+  border-top-width: 4px;
+  border-top-color: rgb(89, 0, 10);
+  animation: fade-in 0.1s;
   overflow: visible;
+}
+.ace_tooltip.editor-theme span {
+  font-size: 0.75rem;
+  opacity: 0.75;
 }
 
 .ace_carret_error {
@@ -939,6 +946,11 @@ value {
   position: absolute;
   box-shadow: 0 0 20px 10px rgba(255, 0, 0, 0.2);
   animation: fade 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.ii-token-highlight {
+  background-color: rgba(255, 0, 0, 0.444);
+  position: absolute;
 }
 
 .vector-display {

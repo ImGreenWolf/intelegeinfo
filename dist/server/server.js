@@ -144,6 +144,16 @@ app.post('/editor/startsession/:id', (req, res) => {
         return;
     }
 });
+app.get('/editor/tooltipHints', (req, res) => {
+    res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(rootDirName, 'server', 'data', 'tooltips.json')).toString()));
+});
+app.get('/editor/tooltipHints/:id', (req, res) => {
+    const tooltipid = req.params.id;
+    if (!tooltipid)
+        res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(rootDirName, 'server', 'data', 'tooltips.json')).toString()));
+    else
+        res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(rootDirName, 'server', 'data', 'tooltips.json')).toString())[tooltipid]);
+});
 // app.get('/problem', problemCreator);
 app.get('/editor', (req, res) => {
     fs_1.default.readFile(path_1.default.join(rootDirName, 'public', 'editor.html'), (err, file) => {
@@ -389,35 +399,38 @@ var commandType;
     commandType["Processes"] = "processes";
 })(commandType || (commandType = {}));
 // TODO Improve this a lot, find a better way of calling these functions
-process.stdin.on('data', (commandString) => {
-    const command = commandString.toString().toLowerCase().trim().split(' ');
-    console.log(command);
-    const params = command.splice(0);
-    function showProcesses() {
-        console.log(exports.runningProcesses);
-    }
-    function showSessions() {
-        console.log(exports.sessionMap);
-    }
-    function showClients() {
-        if (!params[1])
-            return console.error("Please provide session id.");
-        console.log(exports.sessionMap.get(params[1])?.clients);
-    }
-    switch (commandString.toString().split(' ')[0].toLowerCase().trim()) {
-        case commandType.Show:
-            showSessions();
-            break;
-        case commandType.Clients:
-            showClients();
-        case commandType.Processes:
-            showProcesses();
-            break;
-        default:
-            console.log("Unrecognized command: " + command);
-            break;
-    }
-});
+//   process.stdin.on('data', (commandString) => {
+//     const command = commandString.toString().toLowerCase().trim().split(' ');
+//     console.log(command)
+//     const params = command.splice(0) as UUID[];
+//     function showProcesses()
+//     {
+//         console.log(runningProcesses)
+//     }
+//     function showSessions()
+//     {
+//         console.log(sessionMap)
+//     }
+//     function showClients()
+//     {
+//         if(!params[1]) return console.error("Please provide session id.")
+//         console.log(sessionMap.get(params[1])?.clients)
+//     }
+//     switch (commandString.toString().split(' ')[0].toLowerCase().trim())
+//     {
+//         case commandType.Show:
+//             showSessions();
+//             break;
+//         case commandType.Clients:
+//             showClients()
+//             case commandType.Processes:
+//             showProcesses()
+//         break;
+//         default:
+//             console.log("Unrecognized command: " + command)
+//             break;
+//     }
+// })
 function compileFile(clientId, sessionId) {
     return new Promise((resolve, reject) => {
         // const clientId = req.body.clientId;
@@ -431,7 +444,7 @@ function compileFile(clientId, sessionId) {
             console.log(new Error("Couldnt retrieve editorSession from memory database"));
         //fs.writeFileSync(path.join(filePath,"main.cpp"), code);
         // console.log(path.extname(getThisClientSession()?.clientsActiveFile.get(clientId)||"aaa"));
-        compileProcess = (0, child_process_1.spawn)("g++", ["-g", path_1.default.join(filePath, codeFile || "main.cpp"), "-o", path_1.default.join(exeFile, "main.exe")], {
+        compileProcess = (0, child_process_1.spawn)("g++", ["-g", "-O0", path_1.default.join(filePath, codeFile || "main.cpp"), "-o", path_1.default.join(exeFile, "main.exe")], {
             windowsHide: true,
             detached: true,
         });
@@ -880,47 +893,72 @@ exports.wss.on("connection", (ws, req) => {
         async function executeCommand(childProcess, command, sessionId) {
             return new Promise((resolve, reject) => {
                 let gdbBuffer = "";
+                console.log(command);
                 const onData = (data) => {
                     gdbBuffer += data.toString();
-                    console.log(gdbBuffer);
+                    // console.log(gdbBuffer);
+                    // if(gdbBuffer.startsWith('=')) {
+                    //     resolve();
+                    // }
                     // Check if the full response has arrived
                     if (gdbBuffer.includes("(gdb)")) {
                         // We have everything, remove listener
                         childProcess.stdout.removeListener("data", onData);
-                        const response = {
-                            error: false,
-                            input: false,
-                            type: types_1.WebSocketMessageType.Output,
-                            messageType: types_1.ConsoleMessageType.DebugProgram,
-                            clientId: clientId,
-                            body: gdbBuffer,
-                            message: command.toString(),
-                            msgId: gdbProcess?.pid || -1,
-                        };
-                        getThisClientSession()?.clients.forEach((client, id) => {
-                            //send response to all clients
-                            const clientSocket = exports.clients.get(client.clientId);
-                            if (!clientSocket) {
-                                //sessions.delete(sessionId);
-                                if (getThisClientSession()?.clients.has(clientId))
-                                    console.error("Client not found in session while manually replicating to client  " + sessionId);
-                                else
-                                    getThisClientSession()?.clients.delete(client.clientId);
-                                exports.clients.delete(client.clientId);
-                                return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
+                        // const resMap: Map<string, string> = new Map();
+                        //     if(gdbBuffer.includes("frame="))
+                        // {
+                        // gdbBuffer.toString().split('\n')[0].split(',').forEach((pair) => {
+                        //     if(pair.includes("="))
+                        //         resMap.set(pair.split('=')[0].replace("{", ""),
+                        //      pair.split('=')[1].replace("}", "").replace("{", "").replaceAll('"', ""))
+                        // })
+                        gdbBuffer.toString().split('\n').forEach(element => {
+                            if (element != '') {
+                                const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
+                                console.log(gdbOutput.json + '\n' + gdbOutput.err);
+                                // console.log(gdbOutput.json);
+                                const response = {
+                                    error: gdbOutput.err ? gdbOutput.err : false,
+                                    input: false,
+                                    type: types_1.WebSocketMessageType.Output,
+                                    messageType: types_1.ConsoleMessageType.DebugProgram,
+                                    clientId: clientId,
+                                    body: gdbOutput.json ? gdbOutput.json : undefined,
+                                    message: 'next', //command.toString(),
+                                    msgId: gdbProcess?.pid || -1,
+                                    line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                                    variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined
+                                };
+                                getThisClientSession()?.clients.forEach((client, id) => {
+                                    //send response to all clients 
+                                    const clientSocket = exports.clients.get(client.clientId);
+                                    if (!clientSocket) {
+                                        //sessions.delete(sessionId);
+                                        if (getThisClientSession()?.clients.has(clientId))
+                                            console.error("Client not found in session while manually replicating to client  " + sessionId);
+                                        else
+                                            getThisClientSession()?.clients.delete(client.clientId);
+                                        exports.clients.delete(client.clientId);
+                                        return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
+                                    }
+                                    clientSocket?.send(JSON.stringify(response));
+                                });
                             }
-                            clientSocket?.send(JSON.stringify(response));
                         });
-                        if (command === 'quit' && childProcess)
+                        // }
+                        if (command === '-exec-quit' && childProcess)
                             closeProcess(childProcess);
                         resolve();
                     }
                 };
-                if (childProcess && childProcess.stdin && childProcess.stdout) {
+                if (true) //childProcess && childProcess.stdin && childProcess.stdout
+                 {
                     // Use .on instead of .once, because GDB output can be split
                     childProcess.stdout?.on("data", onData);
+                    // console.log('command')
                     // Send the command
-                    childProcess.stdin?.write(command + "\n");
+                    // childProcess.stdin?.write(""+'\n');
+                    childProcess.stdin?.write(command + '\n');
                 }
                 else
                     console.error("GDB process not found for session " + sessionId);
@@ -1284,6 +1322,7 @@ exports.wss.on("connection", (ws, req) => {
                                 openFile(messageJSON.body);
                                 break;
                         }
+                        break;
                     default:
                         if (!clientObj.canEdit)
                             break;
@@ -1549,11 +1588,11 @@ exports.wss.on("connection", (ws, req) => {
                                     else
                                         executeProgram();
                                 }
-                                else if (command == "run") {
+                                else if (command == "-exec-run") {
                                     if (!getProcessFromMap()) {
                                         fs_1.default.accessSync(filePath);
                                         mode = "debug"; //set mode to debug
-                                        gdbProcess = (0, child_process_1.spawn)("gdb", ["-q", "-ex", "set pagination off", /*"set print thread-events off", "-interpreter= mi", */ filePath]);
+                                        gdbProcess = (0, child_process_1.spawn)("gdb", ["-q", "-interpreter=mi", filePath]); //"-ex", "set pagination off", 
                                         addProcessToMap(sessionId, gdbProcess);
                                         if (!getThisClientSession().process)
                                             console.error('Invalid session while starting debug process');
@@ -1563,6 +1602,17 @@ exports.wss.on("connection", (ws, req) => {
                                         //     onClosedProcess();
                                         //     gdbProcess = undefined;
                                         // })
+                                        // process.stdin.pipe(gdbProcess.stdin)
+                                        // gdbProcess.stdin.write('-file-exec-and-symbols'+filePath+'\n');
+                                        // gdbProcess.stdin.write();
+                                        queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
+                                        // gdbProcess.stdin.write('-exec-run\n');
+                                        gdbProcess.stdout.on('data', (derr) => {
+                                            console.log(derr.toString());
+                                        });
+                                        gdbProcess.stderr.on('data', (derr) => {
+                                            console.error(derr.toString());
+                                        });
                                         app.get("/requestValue", (req, res) => {
                                             const command = req.query.value;
                                             const cmdId = parseInt(req.query.cmdId);
@@ -1612,13 +1662,18 @@ exports.wss.on("connection", (ws, req) => {
                                             });
                                         });
                                         try {
-                                            getThisClientSession().process?.stdin?.write("break main\nrun\n");
+                                            // gdbProcess.stdout?.on("data", (data) => {
+                                            //     console.log(data.toString())
+                                            // });
+                                            // getThisClientSession().process?.stdin?.write("-break-insert main\n-exec-run\n")
                                         }
                                         catch {
                                             console.error(new Error('failed executing starting commands'));
                                         }
                                         // queueCommand(getProcessFromMap(sessionId) as ChildProcess,command, sessionId);// gdbProcess.stdin.write(message + "\n");
                                         // queueCommand(getProcessFromMap(sessionId) as ChildProcess,"break main", sessionId);// gdbProcess.stdin.write(message + "\n");
+                                        // queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);
+                                        //  queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);
                                         queueCommand(getProcessFromMap(), command, sessionId);
                                         // gdbProcess.stdout.on("data", (data) => {
                                         //     gdbBuffer += data.toString();
@@ -1637,7 +1692,7 @@ exports.wss.on("connection", (ws, req) => {
                                     else
                                         await queueCommand(getProcessFromMap(), command, sessionId); // gdbProcess.stdin.write(message + "\n");
                                 }
-                                else if (command === "quit") {
+                                else if (command === "-exec-quit") {
                                     onClosedProcess(); //.then(() => {
                                     printClientConsoleInfo("Closed process");
                                     replicateFunction((clientWs) => {
@@ -1646,6 +1701,7 @@ exports.wss.on("connection", (ws, req) => {
                                 }
                                 else {
                                     if (mode == "debug") {
+                                        queueCommand(getProcessFromMap(), '-stack-list-variables --all-values', sessionId);
                                         if (args.includes('console')) {
                                             gdbProcess?.stdin?.write(command + "\n");
                                             console.log("executed console command " + command);
@@ -1863,6 +1919,7 @@ function windowsPathToDocker(path) {
 }
 const child_process_2 = require("child_process");
 const crypto_1 = require("crypto");
+const gdbUtilities_1 = require("./gdbUtilities");
 /**
  * Build and run the C++ executable in a Docker container with sandbox folder access.
  *
