@@ -2323,7 +2323,7 @@ wss.on("connection", (ws: WebSocket, req) => {
         
           
         // console.log("clients in sessions " + clientSession.clients.size)
-        if(clientSession.clients.size === 0 || clientSession===undefined) 
+        if(clientSession.clients.size === 0 || clientSession==undefined) 
             {
                    // sessions.delete(sessionId);
                 closeProcess(process)
