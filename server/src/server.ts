@@ -1155,7 +1155,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 
         
 
-   handshake(req)
+//    handshake(req)
        
 
     // debug mode only for now
@@ -1327,6 +1327,13 @@ wss.on("connection", (ws: WebSocket, req) => {
             if(JSON.parse(message.toString()).data != undefined)
              messageJSON = JSON.parse(message.toString()).data;
             else messageJSON = JSON.parse(message.toString());
+
+            if(messageJSON.initial==true)
+            {
+                handshake(req)
+                return;
+            }
+
             const command = messageJSON.command
             const args = messageJSON.args;
             const type: WebSocketMessageType = messageJSON.type;

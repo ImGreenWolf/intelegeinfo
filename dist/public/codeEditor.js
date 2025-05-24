@@ -1369,45 +1369,11 @@ ws.onopen = (ev) => {
     });
     let hoverTooltip = 0;
     const tooltip = new TokenTooltip(editor);
-    // editor.on('mousemove', ev => {
-    //   const mouseDocPos = ev.getDocumentPosition();
-    //   if(hoverTooltip)
-    //     editor.session.removeMarker(hoverTooltip)
-    //   if(editor.session.getTokenAt(ev.getDocumentPosition().row, ev.getDocumentPosition().column))
-    //   if(editor.session.getTokenAt(ev.getDocumentPosition().row, ev.getDocumentPosition().column).type == 'identifier')
-    //   {
-    //     const wordRange = editor.session.getWordRange(mouseDocPos.row, mouseDocPos.column)
-    //     const hoverToken = editor.session.getTokenAt(ev.getDocumentPosition().row, ev.getDocumentPosition().column);
-    //     editor.
-    //     // new Ace.Range()
-    //     const range: Ace.Range = new AceRange(wordRange.start.row, wordRange.start.column,  wordRange.end.row, wordRange.end.column  +hoverToken.value.length);
-    //     hoverTooltip = editor.session.addMarker(
-    //       range,
-    //       'ii-token-highlight',
-    //       "text",
-    //       false
-    //     )
-    //     console.log(wordRange)
-    //   }
-    // })
+    ws.send(JSON.stringify({ initial: true }));
     editor.on("change", (delta) => {
         if (isRemoteChange)
             return;
         const code = editor.getValue();
-        //    if(!currentFileName) console.error('Current file name is invalid')
-        //         const saveFile: boolean = !["c","exe"].includes(currentFileName.split(".").pop()||"");
-        //    writeOutput('waasassasa')
-        //     new WSMessage(WebSocketMessageType.CodeChange, { body: code,  delta: delta, type: WebSocketMessageType.CodeChange, fileName: currentFileName, saveFile: true, }, msgMap, msgId++, (data) => {
-        //         if (editor.getValue() !== data.body && data.clientId !== wsClientId) {
-        //             const delta = data.body.delta;
-        //             console.log(data)
-        //             isRemoteChange = true;
-        //             editor.session.getDocument().applyDelta(delta);
-        //             isRemoteChange = false;
-        //         }
-        //         writeOutput('waas')
-        // })
-        // console.log("changed")
         if (!currentFileName)
             console.error("Current file name is invalid");
         dirtyFile(currentFileName);
@@ -1723,7 +1689,6 @@ ws.onmessage = (event) => {
             // let lposX = cursorObj.posX;
             // let lposY = cursorObj.posY;
             //  cursors.set(eventJson.clientId, {...cursorObj, posX: updatedPos.posX, posY: updatedPos.posY, lposX, lposY})
-            console.log(cursors.get(eventJson.clientId));
             // TODO Add incative class to cursor when user doesnt move it.
             break;
         case WebSocketMessageType.Chat:

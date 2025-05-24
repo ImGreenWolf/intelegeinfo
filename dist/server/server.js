@@ -888,7 +888,7 @@ exports.wss.on("connection", (ws, req) => {
                 }, 100);
             }
         }
-        handshake(req);
+        //    handshake(req)
         // debug mode only for now
         async function executeCommand(childProcess, command, sessionId) {
             return new Promise((resolve, reject) => {
@@ -1026,6 +1026,10 @@ exports.wss.on("connection", (ws, req) => {
                     messageJSON = JSON.parse(message.toString()).data;
                 else
                     messageJSON = JSON.parse(message.toString());
+                if (messageJSON.initial == true) {
+                    handshake(req);
+                    return;
+                }
                 const command = messageJSON.command;
                 const args = messageJSON.args;
                 const type = messageJSON.type;
