@@ -1375,7 +1375,7 @@ export function copySessionLink() {
         <img id="data.qrurl"> 
         <p>or</p>
         <div class='connect-info'>
-          <p class='code' id="data.code">}xxxxxx</p><button id='copy-link'>copy</button>
+          <p class='code' id="data.code">xxxxxx</p><button id='copy-link'>copy</button>
         </div>
       </div>
     </div>
@@ -2359,6 +2359,8 @@ ws.onmessage = (event) => {
       wsSessionId = eventJson.sessionId;
       isColabSession = eventJson.session!=undefined
       console.log(eventJson.session)
+              displayMessagePopup(wsSessionId)
+
       // if(!document.cookie.includes('session='))
       document.cookie='session='
       setTimeout(() => {
