@@ -68,7 +68,9 @@ let debugLine = 1; // debug row
 let lastDebugId: any;
 let lastViewedMessage: number;
 let currentFileName: string;
-
+let wsClientId: UUID;
+let wsSessionId: UUID;
+const outputArea = document.getElementById("output");
 // let posX=0;
 // let posY=0;
 let stepint;
@@ -1564,9 +1566,7 @@ export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketM
 
 }
 
-let wsClientId: UUID;
-let wsSessionId: UUID;
-const outputArea = document.getElementById("output");
+
 
 type CursorPosition = { row: number; column: number };
 
@@ -2353,7 +2353,7 @@ ws.onmessage = (event) => {
       break;
 
     case WebSocketMessageType.Handshake:
-      if(!wsSessionId && !wsClientId || eventJson.sessionId)
+      if((!wsSessionId && !wsClientId) || eventJson.sessionId)
       {
       wsClientId = eventJson.clientId;
       wsSessionId = eventJson.sessionId;

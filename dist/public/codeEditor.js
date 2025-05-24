@@ -34,6 +34,9 @@ let debugLine = 1; // debug row
 let lastDebugId;
 let lastViewedMessage;
 let currentFileName;
+let wsClientId;
+let wsSessionId;
+const outputArea = document.getElementById("output");
 // let posX=0;
 // let posY=0;
 let stepint;
@@ -1163,9 +1166,6 @@ export function submitConsole(elem, type) {
     onConsoleInput(elem);
     ws.send(JSON.stringify({ type: WebSocketMessageType.ConsoleTyping, status: "end" }));
 }
-let wsClientId;
-let wsSessionId;
-const outputArea = document.getElementById("output");
 // Class to render one visual cursor
 class VisualCursor {
     cursorId;
@@ -1755,7 +1755,7 @@ ws.onmessage = (event) => {
                 writeOutput(data, eventJson);
             break;
         case WebSocketMessageType.Handshake:
-            if (!wsSessionId && !wsClientId || eventJson.sessionId) {
+            if ((!wsSessionId && !wsClientId) || eventJson.sessionId) {
                 wsClientId = eventJson.clientId;
                 wsSessionId = eventJson.sessionId;
                 isColabSession = eventJson.session != undefined;

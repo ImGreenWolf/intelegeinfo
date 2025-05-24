@@ -175,6 +175,7 @@ router.get('/callback', async (req, res) => {
             })
         });
         const tokenData = (await tokenRes.json());
+        console.log(tokenData.refresh_token);
         // Step 4: Fetch user info using access token
         const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
             headers: { Authorization: `Bearer ${tokenData.access_token}` }
@@ -185,6 +186,7 @@ router.get('/callback', async (req, res) => {
                 email: userInfo.email
             },
         });
+        console.log(userExists);
         if (userExists) {
             if (userExists.loginMethod === 'google') {
                 console.log(userExists.password);
