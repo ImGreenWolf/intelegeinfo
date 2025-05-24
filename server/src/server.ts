@@ -1517,17 +1517,22 @@ wss.on("connection", (ws: WebSocket, req) => {
                 case WebSocketMessageType.MouseUpdate:
                     replicateFunction((thisClientWs, thisClientId) => {
                         if(clientSession.getClientObjectById(thisClientId).canEdit)
-                            thisClientWs.send(JSON.stringify({ ...messageJSON, clientId})) // TODO Sanitize this
+                            thisClientWs.send(JSON.stringify({ ...messageJSON, clientId, displayName: clientObj.displayName, color: clientObj.color})) // TODO Sanitize this
                     }, clientObj)
                 break;
                 case WebSocketMessageType.CodeChange:
                     if(!clientObj.canEdit) break;
-                const shouldSave:boolean = messageJSON.saveFile;
+                let shouldSave:boolean = messageJSON.saveFile;
+                let shouldSaveTimeout;
+                if(shouldSave==false)
+                shouldSaveTimeout = setTimeout(() => {
+                    shouldSave=true;
+                }, 500);
                 const fileName: string = messageJSON.fileName;
                     // save code to file
-                if(true && type===WebSocketMessageType.CodeChange) // TODO replace true with shouldSave 
+                if(shouldSave && type===WebSocketMessageType.CodeChange) // TODO replace true with shouldSave 
                     {
-                                            
+                           shouldSave=false                 
 
                      //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
                      fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {

@@ -29,6 +29,13 @@
     100% {opacity: 0;}
     0% {opacity: 100%;}
 }
+
+@keyframes touch-cursor {
+    0% {opacity: 0; transform: scale(0);}
+    10% {opacity: 100%; transform: scale(1);}
+    100% {opacity: 0;}
+}
+
 @keyframes trhobber-rotate {
     0% {transform: translate(-50%, -50%) rotate(0deg);}
     100% {transform: translate(-50%, -50%) rotate(360deg);}
@@ -1486,21 +1493,20 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
 {
     position: absolute;
     width: 1rem;
-    aspect-ratio: 1;
-    // background-color: green;
+    height: 1rem;
     background-image: url("../media/mouse-cursor-svgrepo-com.svg");
+    // clip-path: url("../media/mouse-cursor-svgrepo-com.svg#cursor");
+    // background-color: white;
     z-index: 100;
+
     pointer-events: none;
     // -webkit-mask-image: url("../media/mouse-cursor-svgrepo-com.svg");
-    // mask-image: url("../media/mouse-cursor-svgrepo-com.svg");
+    contain: strict;
     background-size: cover;
-    // mask-size: 105%;
-    // mask-position: center;
-    transform: scaleX(-1);
-    // filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.416));
     opacity: 0.75;
-    // backdrop-filter: blur(3px);
     color: green;
+    // mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+    // mask-size: cover;
     &.inactive
     {
         animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;
@@ -1508,21 +1514,39 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
 
     &.touch
     {
-        background-image: radial-gradient(transparent, white);
+        background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
+        border: 1px solid white;
         border-radius: 50%;
-        // animation: fade-out 0.3s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;;
+        transform: translate(-50%, -50%);
+        // animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;;
     }
-    // &::before
-    // {
-    //     transform: scaleX(-1);
-    //     content: attr(name);
-    //     position: relative;
-    //     z-index: 99;
-    //     top: -10px;
-    //     right: -10px;
-    //     font-family: Poppins;
-    //     color: white;
-    // }
+
+    &.pen
+    {
+        background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
+        border: 2px solid white;
+        border-radius: 50%;
+        
+        animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;;
+    }
+
+    & span
+    {
+        // transform: scaleX(-1);
+        // content: attr(name);
+        position: relative;
+        z-index: 99;
+        bottom: -0.25rem;
+        right: -1rem;
+        opacity: 0;
+        font-family: Poppins;
+        color: rgba(255, 255, 255, 0.463);
+        font-size: 0.5rem;
+        background-color: color.adjust($color: theme.$background-color, $alpha: -0.25);
+        backdrop-filter: blur(2px);
+        padding: 0.1rem 0.5rem ;
+        transition-duration: 0.1s   ;
+    }
 
 }
 
@@ -1572,7 +1596,7 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
             'buttons buttons'
             'output output'
             'sidebar sidebar';
-            
+        font-size: 1rem;
     }
 
     .buttons
@@ -1597,7 +1621,7 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
     {
         width: 40px;
         min-height: 40px;
-        font-size: 10px;
+        font-size: 0.5rem;
     }
 
     header #signup, header #login
@@ -1638,7 +1662,7 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
 
         }
     } 
-    *
+    html, *
     {
         font-size: 24px;
     }
@@ -1655,20 +1679,20 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
     
     #editor
     {
-        font-size: 24px;
+        font-size: 1rem;
     }
     #output
     {
-        font-size: 24px;
+        font-size: 1rem;
     }
     #console
     {
-        font-size: 24px;
+        font-size: 1rem;
     }
 
     .chat-content
     {
-        font-size: 24px;
+        font-size: 1rem;
     }
 }
 /*

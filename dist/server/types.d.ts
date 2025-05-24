@@ -12,7 +12,8 @@ export declare class ClientObject {
     CWebSocket: WebSocket;
     canEdit: boolean;
     canChat: boolean;
-    constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string);
+    color: string;
+    constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: string | Record<string, any>): void;
 }
 interface CommandBuffer {

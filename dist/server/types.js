@@ -13,15 +13,18 @@ class ClientObject {
     CWebSocket;
     canEdit = true;
     canChat = true;
+    color = "#ffffff";
     // EditorSessionObject: EditorSession
-    constructor(sessionId, EditorSession, WebSocket, displayName) {
+    constructor(sessionId, EditorSession, WebSocket, displayName, user) {
         this.sessionId = sessionId;
         this.clientId = (0, uuid_1.v4)();
         this.ping = 0;
         this.CWebSocket = WebSocket;
         // this.EditorSessionObject = EditorSession;
-        if (displayName)
-            this.displayName = displayName;
+        if (user) {
+            this.displayName = user.username;
+            this.color = user.userColor;
+        }
         else {
             const displayNames = EditorSession.clientsDisplayNames;
             if (false)
@@ -282,7 +285,7 @@ Tralalero Tralala`.split('\n');
     spawnClient(ws, userData) {
         let newClient;
         if (userData != undefined)
-            newClient = new ClientObject(this.sessionId, this, ws, userData.username);
+            newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
         else
             newClient = new ClientObject(this.sessionId, this, ws);
         if (this.clients.size == 0) {
