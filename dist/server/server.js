@@ -514,6 +514,7 @@ exports.wss.on("connection", (ws, req) => {
     let gdbBuffer = "";
     let checkSyntaxTimeout;
     let dataTimeout;
+    let project;
     const cookies = req.headers.cookie;
     const jwtCookie = cookies
         ?.split("; ")
@@ -799,10 +800,23 @@ exports.wss.on("connection", (ws, req) => {
                 // ;
             });
         }
+        function sendConnectionMessage() {
+            // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
+            const session = clientSession.clients.size != 1 ? { isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit } : undefined;
+            const welcomeMessage = !userLoggedIn ?
+                `Bine ai venit pe Intelege Info!
+        Scrie niste cod, apoi apasa compile si execute code, sau ruleaza in debugger.
+        Invita-ti prietenii sa editeze codul impreuna cu tine in timp real apasand butonul share`
+                :
+                    `Bine ai revenit ${userData?.username} pe Intelege Info!
+        Poti salva codul tau apasand pe butonul save.`;
+            // Send initial message to client
+            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Handshake, clientId: clientId, messageType: types_1.ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project, session, canEdit: clientObj.canEdit }));
+            return session;
+        }
         async function connectionReady(cooperator = false, req) {
             const urlParams = new URL("ws:/intelegeinfo.go.ro:8080" + req.url).searchParams;
             let defaultText;
-            let project;
             let savedProject;
             if (urlParams.has("save")) {
                 try {
@@ -860,17 +874,7 @@ exports.wss.on("connection", (ws, req) => {
             replicateFunction((clientWs, LocalclientId) => {
                 printClientConsoleSessionInfo(clientObj?.displayName + " joined!", getThisClientSession().getClientObjectById(LocalclientId));
             }, clientObj);
-            // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
-            const session = clientSession.clients.size != 1 ? { isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit } : undefined;
-            const welcomeMessage = !userLoggedIn ?
-                `Bine ai venit pe Intelege Info!
-            Scrie niste cod, apoi apasa compile si execute code, sau ruleaza in debugger.
-            Invita-ti prietenii sa editeze codul impreuna cu tine in timp real apasand butonul share`
-                :
-                    `Bine ai revenit ${userData?.username} pe Intelege Info!
-            Poti salva codul tau apasand pe butonul save.`;
-            // Send initial message to client
-            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Handshake, clientId: clientId, messageType: types_1.ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project, session, canEdit: clientObj.canEdit }));
+            const session = sendConnectionMessage();
             if (getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
              {
                 let displayNames = [];
@@ -878,7 +882,6 @@ exports.wss.on("connection", (ws, req) => {
                     displayNames.push(client.displayName);
                 });
                 replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.ColabData, colabCommand: "JOIN", clients: displayNames, thisClientId: clientId, thisSessionId: sessionId, session });
-                console.log(getThisClientSession().clientCommandBuffer);
                 setTimeout(() => {
                     getThisClientSession().clientCommandBuffer.forEach((cmdBuf, remoteClientid) => {
                         if (clientId != remoteClientid)
@@ -888,7 +891,7 @@ exports.wss.on("connection", (ws, req) => {
                 }, 100);
             }
         }
-        //    handshake(req)
+        handshake(req);
         // debug mode only for now
         async function executeCommand(childProcess, command, sessionId) {
             return new Promise((resolve, reject) => {
@@ -1026,10 +1029,6 @@ exports.wss.on("connection", (ws, req) => {
                     messageJSON = JSON.parse(message.toString()).data;
                 else
                     messageJSON = JSON.parse(message.toString());
-                if (messageJSON.initial == true) {
-                    handshake(req);
-                    return;
-                }
                 const command = messageJSON.command;
                 const args = messageJSON.args;
                 const type = messageJSON.type;
@@ -1047,140 +1046,138 @@ exports.wss.on("connection", (ws, req) => {
                         // console.log("Client ping: " + clientObj?.ping)
                         //console.log("Received heartbeat from client " + clientId);
                         break;
-                    /*
-                    case WebSocketMessageType.Handshake:
-    
-    
-                        //handle heartbeat
-                        heartbeatInterval = setInterval(() => {
-                            server.getConnections(function(error, count) {
-    
-                                console.log(count);
+                    case types_1.WebSocketMessageType.Handshake:
+                        sendConnectionMessage();
+                        /*
+                //handle heartbeat
+                heartbeatInterval = setInterval(() => {
+                    server.getConnections(function(error, count) {
+
+                        console.log(count);
+                    
+                    });
+                    heartbeatTimestamp = Date.now(); // Update the heartbeat timestamp when a message is received
+                    ws.send(JSON.stringify({type: WebSocketMessageType.Heartbeat, connections: server.connections, expectedDelay: heartbeatTimeout})); // Send a ping message to the client every 30 seconds
+                    if(Date.now() - heartbeatTimestamp >= heartbeatTimeout*2) {
+                        //console.log("Client " + clientId + " timed out ");
+                        
                             
-                            });
-                            heartbeatTimestamp = Date.now(); // Update the heartbeat timestamp when a message is received
-                            ws.send(JSON.stringify({type: WebSocketMessageType.Heartbeat, connections: server.connections, expectedDelay: heartbeatTimeout})); // Send a ping message to the client every 30 seconds
-                            if(Date.now() - heartbeatTimestamp >= heartbeatTimeout*2) {
-                                //console.log("Client " + clientId + " timed out ");
-                                
-                                    
-                                //sessions.delete(sessionId);
-    
-    
-                                if(getThisClientSession()?.clients.get(clientId))  console.error("Client not found in session while trying to time out client  " + sessionId);
-                                    else getThisClientSession()?.clients.delete(clientId)
-                                clients.delete(clientId);
-                                clearInterval(heartbeatInterval); // Clear the interval to stop sending pings
-                                ws.close(); // Close the connection if no response received within double of timeout seconds
-                            }
-                            
-                        }, heartbeatTimeout);
-                       
-                            // TODO Check if session exists, otherwise create a new one and make this client the host.
-                        if(messageJSON.sessionId) {
-                            //client connected to existing session
-    
-    
-                         //   sessionId = messageJSON.sessionId;
-                         //   clientId = uuidv4();
-    
-                            // console.log("Client " + clientId + " connected to session " + sessionId);
-                            //   if(sessions.has(sessionId))
-                            //     sessions.get(sessionId)?.push(clientId);
-                            // else
-                            //     {
-                            //         sessions.set(sessionId, [clientId]);
-                            //         getThisClientSession()?.clientsActiveFile
-                            //     }
-                            const activeSession = sessionMap.has(messageJSON.sessionId) || (isShared && shared.getSession(messageJSON.sessionId));
-                            if(activeSession) // = There is an active session, join it.
-                            {
-                                
-                                if(isShared) {if(shared.getSession(messageJSON.sessionId)) clientSession = shared.getSession(messageJSON.sessionId) as EditorSession;} // sessionMap.get(messageJSON.sessionId ||  uuidv4() as UUID) || new EditorSession;
-                                 if(!sessionMap.get(messageJSON.sessionId as UUID)) return console.error(new Error("Didnt find session in sessionMap while joing session"))
-                                    else clientSession = sessionMap.get(messageJSON.sessionId as UUID) as EditorSession;
-                                
-                                clientId = (getThisClientSession() || clientSession)?.spawnClient(ws,userData)
-    
-                                clientObj = getThisClientSession().getClientObjectById(clientId);
-                                clients.set(clientId, ws);
-    
-                                // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
-                            }
-                            else // there is no session, create it.
-                            {
-                                //getThisClientSession()?.clients.push(clientId); // add client to client list.
-                                clientSession = createThisClientSession(messageJSON.sessionId);
-                                clientId = getThisClientSession()?.spawnClient(ws, userData)
-                                clientObj = getThisClientSession().getClientObjectById(clientId);
-                                clients.set(clientId, ws);
-    
-                                // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
-                                if(clientSession && !isShared) {
-                                    sessionMap.set(clientSession.sessionId, clientSession) // TODO Implement this in EditorSession class & polish it
-                                }
-                            }
-    
-                                sessionId = getThisClientSession().sessionId;
-                                clientFilesPath = path.join(rootDirName, "cache", sessionId,"clientFiles");
-    
-                            // clients.set(clientId, ws);
-                            if(clientObj && isShared)
-                            {
-                                shared.getSession(sessionId)?.clients.set(clientId, clientObj)
-                                shared.addClient(clientId, sessionId);
-                                shared.updateSession(sessionId, clientSession)
-                            }
-                            
-                            connectionReady(true)
-                        } else
-                        {
-    
-                            //client connected to new SOLO session
-    
-    
-                         //   clientId = uuidv4(); // Generate a unique ID
-                         //   sessionId = clientId; // Use the generated ID as the session ID
-                            // sessions.set(clientId, [sessionId]);
-                             clientSession = createThisClientSession();
-                            
-                            if(getThisClientSession() != undefined)
-                            {
-                                sessionId = clientSession.sessionId;
-    
-                                // getThisClientSession().sessionId = sessionId;
-                                // getThisClientSession()?.clients.set(clientId); // add client to client list.
-                                clientId = getThisClientSession()?.spawnClient(ws, userData)
-                                clientObj = getThisClientSession().getClientObjectById(clientId);
-    
-                                clientFilesPath = path.join(rootDirName, "cache", sessionId,"clientFiles");
-                                sessionMap.set(clientSession.sessionId, clientSession) // TODO Implement this in EditorSession class & polish it
-    
-                            } else
-                            console.error(new Error("Failed to create SOLO session"))
-                            if(clientObj && shared)
-                                {
-                                    shared.getSession(sessionId)?.clients.set(clientId, clientObj)
-                                    shared.addClient(clientId, sessionId);
-                                    shared.updateSession(sessionId, clientSession)
-                                }
-                            
-                            clients.set(clientId, ws);
-                            // printClientConsoleDebug('solo session: ' + clientSession.sessionId)
-    
-                            connectionReady(false)
+                        //sessions.delete(sessionId);
+
+
+                        if(getThisClientSession()?.clients.get(clientId))  console.error("Client not found in session while trying to time out client  " + sessionId);
+                            else getThisClientSession()?.clients.delete(clientId)
+                        clients.delete(clientId);
+                        clearInterval(heartbeatInterval); // Clear the interval to stop sending pings
+                        ws.close(); // Close the connection if no response received within double of timeout seconds
+                    }
+                    
+                }, heartbeatTimeout);
+               
+                    // TODO Check if session exists, otherwise create a new one and make this client the host.
+                if(messageJSON.sessionId) {
+                    //client connected to existing session
+
+
+                 //   sessionId = messageJSON.sessionId;
+                 //   clientId = uuidv4();
+
+                    // console.log("Client " + clientId + " connected to session " + sessionId);
+                    //   if(sessions.has(sessionId))
+                    //     sessions.get(sessionId)?.push(clientId);
+                    // else
+                    //     {
+                    //         sessions.set(sessionId, [clientId]);
+                    //         getThisClientSession()?.clientsActiveFile
+                    //     }
+                    const activeSession = sessionMap.has(messageJSON.sessionId) || (isShared && shared.getSession(messageJSON.sessionId));
+                    if(activeSession) // = There is an active session, join it.
+                    {
+                        
+                        if(isShared) {if(shared.getSession(messageJSON.sessionId)) clientSession = shared.getSession(messageJSON.sessionId) as EditorSession;} // sessionMap.get(messageJSON.sessionId ||  uuidv4() as UUID) || new EditorSession;
+                         if(!sessionMap.get(messageJSON.sessionId as UUID)) return console.error(new Error("Didnt find session in sessionMap while joing session"))
+                            else clientSession = sessionMap.get(messageJSON.sessionId as UUID) as EditorSession;
+                        
+                        clientId = (getThisClientSession() || clientSession)?.spawnClient(ws,userData)
+
+                        clientObj = getThisClientSession().getClientObjectById(clientId);
+                        clients.set(clientId, ws);
+
+                        // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
+                    }
+                    else // there is no session, create it.
+                    {
+                        //getThisClientSession()?.clients.push(clientId); // add client to client list.
+                        clientSession = createThisClientSession(messageJSON.sessionId);
+                        clientId = getThisClientSession()?.spawnClient(ws, userData)
+                        clientObj = getThisClientSession().getClientObjectById(clientId);
+                        clients.set(clientId, ws);
+
+                        // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
+                        if(clientSession && !isShared) {
+                            sessionMap.set(clientSession.sessionId, clientSession) // TODO Implement this in EditorSession class & polish it
                         }
-    
-                        
-                    //    if(fs.existsSync(path.join(rootDirName, "cache", sessionId)))
-                      //      fs.writeFileSync(path.join(rootDirName, "cache", sessionId , "user_code.cpp"), "// C++ code here\n");
-    
-                   
-                    // printClientConsoleDebug('joined session: ' + clientSession.sessionId)
-    
-                        
+                    }
+
+                        sessionId = getThisClientSession().sessionId;
+                        clientFilesPath = path.join(rootDirName, "cache", sessionId,"clientFiles");
+
+                    // clients.set(clientId, ws);
+                    if(clientObj && isShared)
+                    {
+                        shared.getSession(sessionId)?.clients.set(clientId, clientObj)
+                        shared.addClient(clientId, sessionId);
+                        shared.updateSession(sessionId, clientSession)
+                    }
+                    
+                    connectionReady(true)
+                } else
+                {
+
+                    //client connected to new SOLO session
+
+
+                 //   clientId = uuidv4(); // Generate a unique ID
+                 //   sessionId = clientId; // Use the generated ID as the session ID
+                    // sessions.set(clientId, [sessionId]);
+                     clientSession = createThisClientSession();
+                    
+                    if(getThisClientSession() != undefined)
+                    {
+                        sessionId = clientSession.sessionId;
+
+                        // getThisClientSession().sessionId = sessionId;
+                        // getThisClientSession()?.clients.set(clientId); // add client to client list.
+                        clientId = getThisClientSession()?.spawnClient(ws, userData)
+                        clientObj = getThisClientSession().getClientObjectById(clientId);
+
+                        clientFilesPath = path.join(rootDirName, "cache", sessionId,"clientFiles");
+                        sessionMap.set(clientSession.sessionId, clientSession) // TODO Implement this in EditorSession class & polish it
+
+                    } else
+                    console.error(new Error("Failed to create SOLO session"))
+                    if(clientObj && shared)
+                        {
+                            shared.getSession(sessionId)?.clients.set(clientId, clientObj)
+                            shared.addClient(clientId, sessionId);
+                            shared.updateSession(sessionId, clientSession)
+                        }
+                    
+                    clients.set(clientId, ws);
+                    // printClientConsoleDebug('solo session: ' + clientSession.sessionId)
+
+                    connectionReady(false)
+                }
+
+                
+            //    if(fs.existsSync(path.join(rootDirName, "cache", sessionId)))
+              //      fs.writeFileSync(path.join(rootDirName, "cache", sessionId , "user_code.cpp"), "// C++ code here\n");
+
+           
+            // printClientConsoleDebug('joined session: ' + clientSession.sessionId)
+
+                 */
                         break;
-                        */
                     case types_1.WebSocketMessageType.Console:
                         if (getProcessFromMap() != undefined) {
                             getProcessFromMap()?.stdin?.write(messageJSON.command + "\n");

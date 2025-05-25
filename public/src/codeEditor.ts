@@ -1818,9 +1818,14 @@ ws.onopen = (ev) => {
       ev.preventDefault()
   })
   let hoverTooltip = 0;
+
+  setTimeout(() => {
+    if(wsSessionId==undefined)
+      ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+  }, 2000);
+
   const tooltip = new TokenTooltip(editor);
 
-  ws.send(JSON.stringify({initial: true}))
 
   editor.on("change", (delta: any) => {
     if (isRemoteChange) return;

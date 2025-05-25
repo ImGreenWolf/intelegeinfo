@@ -689,7 +689,7 @@ wss.on("connection", (ws: WebSocket, req) => {
     let gdbBuffer = "";
     let checkSyntaxTimeout;
     let dataTimeout;
-
+    let project;
     const cookies = req.headers.cookie;
     const jwtCookie = cookies
       ?.split("; ")
@@ -849,35 +849,35 @@ wss.on("connection", (ws: WebSocket, req) => {
     }
     
     function checkCodeSyntax(code: string): Promise<string>
-{
-    return new Promise((resolve, reject) => {
-        const editorSession = isShared ? shared.getSession(sessionId) || sessionMap.get(sessionId): sessionMap.get(sessionId);
-        const exeFile = path.join(rootDirName, "cache", sessionId);
-        const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
-        const codeFile = !["cpp"].includes(path.extname(editorSession?.clientsActiveFile.get(clientId)|| "main.cpp"))? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
-        compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
-            windowsHide: true,
-            detached: true,
-        });
+    {
+        return new Promise((resolve, reject) => {
+            const editorSession = isShared ? shared.getSession(sessionId) || sessionMap.get(sessionId): sessionMap.get(sessionId);
+            const exeFile = path.join(rootDirName, "cache", sessionId);
+            const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
+            const codeFile = !["cpp"].includes(path.extname(editorSession?.clientsActiveFile.get(clientId)|| "main.cpp"))? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
+            compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
+                windowsHide: true,
+                detached: true,
+            });
 
-        
-        
-        
-
-        compileProcess.stdout.on('data', data => {
             
-            resolve(data.toString())
+            
+            
+
+            compileProcess.stdout.on('data', data => {
+                
+                resolve(data.toString())
+            })
+
+            compileProcess.stderr.on('data', data => {
+                
+                resolve(data.toString())
+            })
         })
 
-        compileProcess.stderr.on('data', data => {
-            
-            resolve(data.toString())
-        })
-    })
-
+        
     
-   
-}
+    }
 
 
 
@@ -1046,11 +1046,27 @@ wss.on("connection", (ws: WebSocket, req) => {
                 });
    }
 
+    function sendConnectionMessage() 
+    {
+            // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
+    const session = clientSession.clients.size!=1 ? {isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit} : undefined;
+        const welcomeMessage =  !userLoggedIn ?
+    `Bine ai venit pe Intelege Info!
+        Scrie niste cod, apoi apasa compile si execute code, sau ruleaza in debugger.
+        Invita-ti prietenii sa editeze codul impreuna cu tine in timp real apasand butonul share`
+        :
+        `Bine ai revenit ${userData?.username} pe Intelege Info!
+        Poti salva codul tau apasand pe butonul save.`
+        // Send initial message to client
+        ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, clientId: clientId,messageType: ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project,  session, canEdit: clientObj.canEdit})); 
+        return session;
+    }
+
    async function connectionReady(cooperator: boolean = false, req: IncomingMessage) 
    {
         const urlParams = new URL("ws:/intelegeinfo.go.ro:8080"+req.url).searchParams
         let defaultText: string;
-        let project;
+        
         let savedProject: Project;
         if(urlParams.has("save"))
         {
@@ -1116,17 +1132,9 @@ wss.on("connection", (ws: WebSocket, req) => {
             replicateFunction((clientWs, LocalclientId) => {
                 printClientConsoleSessionInfo(clientObj?.displayName + " joined!", getThisClientSession().getClientObjectById(LocalclientId))
             }, clientObj);
-            // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
-           const session = clientSession.clients.size!=1 ? {isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit} : undefined;
-            const welcomeMessage =  !userLoggedIn ?
-           `Bine ai venit pe Intelege Info!
-            Scrie niste cod, apoi apasa compile si execute code, sau ruleaza in debugger.
-            Invita-ti prietenii sa editeze codul impreuna cu tine in timp real apasand butonul share`
-            :
-            `Bine ai revenit ${userData?.username} pe Intelege Info!
-            Poti salva codul tau apasand pe butonul save.`
-            // Send initial message to client
-            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, clientId: clientId,messageType: ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project,  session, canEdit: clientObj.canEdit})); 
+
+           
+            const session = sendConnectionMessage()
 
             if(getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
             {
@@ -1137,7 +1145,6 @@ wss.on("connection", (ws: WebSocket, req) => {
                })
 
                replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN",clients:displayNames, thisClientId: clientId, thisSessionId: sessionId, session});
-               console.log(getThisClientSession().clientCommandBuffer)
                
                setTimeout(() => {
                 getThisClientSession().clientCommandBuffer.forEach((cmdBuf, remoteClientid) => {
@@ -1155,7 +1162,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 
         
 
-//    handshake(req)
+   handshake(req)
        
 
     // debug mode only for now
@@ -1328,11 +1335,6 @@ wss.on("connection", (ws: WebSocket, req) => {
              messageJSON = JSON.parse(message.toString()).data;
             else messageJSON = JSON.parse(message.toString());
 
-            if(messageJSON.initial==true)
-            {
-                handshake(req)
-                return;
-            }
 
             const command = messageJSON.command
             const args = messageJSON.args;
@@ -1355,10 +1357,11 @@ wss.on("connection", (ws: WebSocket, req) => {
                    
                     //console.log("Received heartbeat from client " + clientId);
                     break;
-                /*
+                
                 case WebSocketMessageType.Handshake:
 
-
+                    sendConnectionMessage()
+                            /*
                     //handle heartbeat
                     heartbeatInterval = setInterval(() => {
                         server.getConnections(function(error, count) {
@@ -1486,9 +1489,9 @@ wss.on("connection", (ws: WebSocket, req) => {
                
                 // printClientConsoleDebug('joined session: ' + clientSession.sessionId)
 
-                    
+                     */
                     break;
-                    */
+                   
 
                 case WebSocketMessageType.Console:
                      if(getProcessFromMap()!=undefined)
