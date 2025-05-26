@@ -1354,7 +1354,7 @@ export function joinsession()
             return response.json()
         }).then(res => {
 
-            
+              if(res.redirect)
                 location.href = res.redirect;  
                 console.log('redirecting..')
             

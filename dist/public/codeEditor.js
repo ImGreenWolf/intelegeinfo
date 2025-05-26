@@ -1009,7 +1009,8 @@ export function joinsession() {
         await fetch('editor/joinsession?code=' + codeInput.valueAsNumber, {}).then(response => {
             return response.json();
         }).then(res => {
-            location.href = res.redirect;
+            if (res.redirect)
+                location.href = res.redirect;
             console.log('redirecting..');
         }).catch(err => {
             document.getElementById('code-error').innerText = err;
