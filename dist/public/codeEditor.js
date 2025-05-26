@@ -37,11 +37,53 @@ let currentFileName;
 let wsClientId;
 let wsSessionId;
 const outputArea = document.getElementById("output");
+const outputConsoles = [];
+let activeConsole;
 // let posX=0;
 // let posY=0;
 let stepint;
 let isColabSession = false;
 let lastEventJson;
+class Console {
+    element;
+    stdin = [];
+    event = new Event("open");
+    constructor() {
+        if (outputConsoles.length > 0)
+            outputConsoles[outputConsoles.length - 1].callbackCreate(this);
+        const thisConsole = document.createElement('div');
+        outputArea.appendChild(thisConsole);
+        thisConsole.id = 'active-console';
+        thisConsole.className = 'output-console-container';
+        thisConsole.innerHTML = "<div class='program-output'></div>";
+        const resendButton = document.createElement('button');
+        resendButton.innerText = '↻';
+        resendButton.classList = 'retry-program custom-button';
+        resendButton.onclick = (ev) => {
+            sendDebugCommand("execute");
+            ws.send(JSON.stringify({
+                command: this.stdin.join(" "),
+                // args: ["console"],
+                type: WebSocketMessageType.Console,
+            }));
+            //   ws.send(
+            // JSON.stringify({
+            //   command: "execute",
+            //   textMode: this.stdin.join(" "),
+            //   type: WebSocketMessageType.Output,
+            // })
+            // );
+        };
+        thisConsole.appendChild(resendButton);
+        this.element = thisConsole;
+    }
+    callbackCreate(callerConsole) {
+        callerConsole.stdin = this.stdin;
+    }
+    sendCommand(cmd) {
+        this.stdin.push(cmd);
+    }
+}
 class EditorCursor {
     cursor;
     posX = 0;
@@ -1145,7 +1187,7 @@ if (document.cookie.split('session=')[1] != '') {
 export const ws = new WebSocket(WSUrl);
 let variables = [];
 const variableArrayIndexes = [];
-export function submitConsole(elem, type) {
+export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;
     //     console.log(sendText);
@@ -1161,6 +1203,8 @@ export function submitConsole(elem, type) {
         // args: ["console"],
         type: type || WebSocketMessageType.Chat,
     }));
+    if (Console)
+        Console.sendCommand(sendText);
     consoleInput.value = "";
     typingIndicatorDelay = 300;
     onConsoleInput(elem);
@@ -1360,6 +1404,9 @@ class TokenTooltip extends Tooltip {
     }
     ;
 }
+ws.onerror = (err) => {
+    displayMessagePopup("WEBSOCKER ERROR: " + err);
+};
 ws.onopen = (ev) => {
     const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
     //writeOutput(sessionId || "No session ID found in URL.");
@@ -1371,7 +1418,11 @@ ws.onopen = (ev) => {
     setTimeout(() => {
         if (wsSessionId == undefined)
             ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
-    }, 2000);
+        setTimeout(() => {
+            if (wsSessionId == undefined)
+                ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+        }, 1500);
+    }, 500);
     const tooltip = new TokenTooltip(editor);
     editor.on("change", (delta) => {
         if (isRemoteChange)
@@ -1391,6 +1442,8 @@ ws.onopen = (ev) => {
     editor.on("changeSelection", () => {
         if (isRemoteChange)
             return;
+        if (!isColabSession)
+            return;
         const selection = editor.getSelectionRange();
         // const start = selection.start;
         // const end = selection.end;
@@ -1400,7 +1453,7 @@ ws.onopen = (ev) => {
         if (!currentFileName)
             console.error("Current file name is invalid");
         ws.send(JSON.stringify({
-            range: editor.getSelectionRange(),
+            range: selection,
             fileName: currentFileName,
             type: WebSocketMessageType.CodeSelection,
         })); // Send code to server on change
@@ -1727,8 +1780,6 @@ ws.onmessage = (event) => {
                 wsClientId = eventJson.clientId;
                 wsSessionId = eventJson.sessionId;
                 isColabSession = eventJson.session != undefined;
-                console.log(eventJson.session);
-                displayMessagePopup(wsSessionId);
                 // if(!document.cookie.includes('session='))
                 document.cookie = 'session=';
                 setTimeout(() => {
@@ -1858,7 +1909,7 @@ ws.onmessage = (event) => {
                     console.addEventListener("keypress", (e) => {
                         if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
                             e.preventDefault();
-                            submitConsole(console, WebSocketMessageType.Console);
+                            submitConsole(console, WebSocketMessageType.Console, activeConsole);
                             console.remove();
                         }
                     });
@@ -2125,7 +2176,7 @@ export function sendDebugCommand(cmd) {
         sendWebsocketCommand("-stack-list-variables --all-values ", []); // ws.send({command: 'info locals' , args: []});
     const consoleElem = document.getElementById("console");
     if (cmd == "-exec-execute" && consoleElem?.value != "")
-        submitConsole(consoleElem, WebSocketMessageType.Console);
+        submitConsole(consoleElem, WebSocketMessageType.Console, activeConsole);
 }
 let playbackSpeed = 1;
 let playbackId;
@@ -2174,7 +2225,8 @@ function onRun() {
     document.getElementById('compile-status').style.opacity = '0.25';
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';
-    outputArea.innerHTML += "<div id='active-console' class='output-console-container'><div class='program-output'></div></div>";
+    activeConsole = new Console();
+    outputConsoles.push(activeConsole);
     //<div class='header'>  <div class='button-container' ><button>close</button> <button>maxi</button> <button>mini</button> </div> program output</div>
     // TODO Add separate input area for interactive console.
 }

@@ -270,6 +270,7 @@ header
     display: flex;
     justify-content: space-between;
     padding: 5px 5px;
+    padding-bottom: 0px;
     font-family: "Poppins", sans-serif;
     border-bottom: 1px solid theme.$border-color;
     align-items: center;
@@ -306,7 +307,7 @@ header
         padding: 2px 10px;
         font-size: 0.75rem;
         background-color: theme.$button-color;
-        border-radius: 1lh;
+        border-radius: 0.5lh 0.5lh 0 0;//1lh;
         height: 100%;
         color: theme.$text-color;
         min-width: 70px;
@@ -317,7 +318,7 @@ header
         transition-duration: 0.2s;
         &#active-open-file
         {
-            border: 2px solid theme.$text-color;
+            border: 1px solid theme.$text-color;
             cursor: default;
         }
         &:not(#active-open-file)
@@ -435,8 +436,8 @@ header
          background-position: center;
          background-repeat: no-repeat;
          display: block;
-         width: 1em;
-         height: 1em;
+         width: 1rem;
+         height: 1rem;
          position: relative;
     }
 }
@@ -448,11 +449,8 @@ header
     border-left: 1px solid theme.$border-color;
     padding:  1px 1px 1px 5px;
     align-items: center;
-    button
-    {
-        // font-size: 12px; //!important;
-        
-    }
+    margin-bottom: 5px;
+
     .create-file
     {
         border-radius: 50%;
@@ -534,7 +532,7 @@ header
     // opacity: 0.5;
     outline: 3px solid theme.$accent-color;
 }
-button
+button:not(.custom-button)
 {
     background-color: theme.$button-color;
     color: theme.$text-color;
@@ -590,7 +588,7 @@ button
         // padding: 10px;
         /* display: inline; */
     }
-    & button
+    & button:not(.custom-button)
     {
         margin: 5px;
         padding: 5px 10px;
@@ -616,7 +614,7 @@ button
     margin: 10px;
     padding: 20px 10px;
     font-size: 13px;
-    gap: 5px;
+    gap: 1lh;
     position: relative;
     font-family: "Poppins", sans-serif;
 
@@ -979,8 +977,10 @@ value
     // text-align: center;
     background-color: theme.$background-color;
     padding: 2em;
+    position: relative;
     max-width: 75%;
     min-width: 50%;
+    z-index: 2;
     transition-duration: 0.2s;
     border-radius: 0.25lh;
     // border: 2px solid theme.$border-color;
@@ -1063,9 +1063,59 @@ value
         margin: -1em;
         margin-bottom: 1em;
     }
+    
+    
 }
 
 
+
+.retry-program
+{
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+    border: 1px solid theme.$border-color;
+    background-color: theme.$button-color;
+    color: theme.$text-color;
+    left: -25px;
+    opacity: 1;
+    z-index: 1;
+    transition-duration: 0.2s;
+    width: 25px;
+    height: 25px;
+    padding: 2px;
+     &:hover
+     {
+        transform: translate(-50%,-50%) rotate(25deg);
+        -webkit-transform: translate(-50%,-50%) rotate(24deg);
+        
+     }
+}
+.output-console-container::after
+{
+    content: '';
+    width: 50px;
+    height: 100%;
+    position: absolute;
+    display: block;
+    left: -50px;
+    top: 0;
+    bottom: 0;
+   
+}
+.output-console-container::after:not(:hover)
+{
+    opacity: 0;
+    left: 0;
+    transform: translate(-50%,-50%) scale(0.8);
+}
+.output-console-container:not(:hover) .retry-program
+{
+    opacity: 0;
+    left: 0;
+    transform: translate(-50%,-50%) scale(0.8);
+}
 .console-output
 {
     max-width: 300px;
@@ -1382,7 +1432,7 @@ pointer-events: none;
 
 
 
-button, #editor-tabs span:not(#active-open-file), #signup, #login
+button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #login
 {
     transition-duration: 0.3s;
     user-select: none;
@@ -1501,7 +1551,7 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
 
     pointer-events: none;
     // -webkit-mask-image: url("../media/mouse-cursor-svgrepo-com.svg");
-    contain: strict;
+    contain: layout;
     background-size: cover;
     opacity: 0.75;
     color: green;
@@ -1538,6 +1588,8 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login
         z-index: 99;
         bottom: -0.25rem;
         right: -1rem;
+        display: inline-block;
+        border-radius: 5px;
         opacity: 0;
         font-family: Poppins;
         color: rgba(255, 255, 255, 0.463);

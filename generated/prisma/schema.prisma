@@ -44,3 +44,26 @@ enum Role {
   USER
   ADMIN
 }
+
+model Code {
+  code  String   @id @unique
+  value String
+  iat   DateTime @default(now())
+  exp   DateTime @default(now())
+}
+
+model RefreshToken {
+  code String   @id @unique
+  hmac String
+  iat  DateTime @default(now())
+  exp  DateTime @default(now())
+}
+
+model Guide {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  createdAt   DateTime @default(now())
+  content     String
+  description String?
+  category    String?
+}

@@ -143,6 +143,29 @@ exports.Prisma.UserScalarFieldEnum = {
   loginMethod: 'loginMethod'
 };
 
+exports.Prisma.CodeScalarFieldEnum = {
+  code: 'code',
+  value: 'value',
+  iat: 'iat',
+  exp: 'exp'
+};
+
+exports.Prisma.RefreshTokenScalarFieldEnum = {
+  code: 'code',
+  hmac: 'hmac',
+  iat: 'iat',
+  exp: 'exp'
+};
+
+exports.Prisma.GuideScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  content: 'content',
+  description: 'description',
+  category: 'category'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -152,6 +175,11 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   ADMIN: 'ADMIN'
@@ -159,7 +187,10 @@ exports.Role = exports.$Enums.Role = {
 
 exports.Prisma.ModelName = {
   Project: 'Project',
-  User: 'User'
+  User: 'User',
+  Code: 'Code',
+  RefreshToken: 'RefreshToken',
+  Guide: 'Guide'
 };
 
 /**

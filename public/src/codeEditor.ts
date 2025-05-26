@@ -71,11 +71,59 @@ let currentFileName: string;
 let wsClientId: UUID;
 let wsSessionId: UUID;
 const outputArea = document.getElementById("output");
+const outputConsoles: Console[] = [];
+let activeConsole: Console;
 // let posX=0;
 // let posY=0;
 let stepint;
 let isColabSession=false;
 let lastEventJson;
+class Console {
+  element: HTMLDivElement;
+  stdin: string[] = []
+  event = new Event("open");
+  constructor () {
+    if(outputConsoles.length>0)
+    outputConsoles[outputConsoles.length-1].callbackCreate(this)
+    const thisConsole = document.createElement('div')
+    outputArea!.appendChild(thisConsole);
+    thisConsole.id =  'active-console'
+    thisConsole.className = 'output-console-container'
+    thisConsole.innerHTML = "<div class='program-output'></div>"
+    const resendButton = document.createElement('button');
+    resendButton.innerText = '↻'
+    resendButton.classList = 'retry-program custom-button'
+    resendButton.onclick = (ev) => {
+      sendDebugCommand("execute")
+      ws.send(
+        JSON.stringify({
+          command: this.stdin.join(" "),
+          // args: ["console"],
+          type: WebSocketMessageType.Console,
+        })
+      );
+      
+
+    //   ws.send(
+    // JSON.stringify({
+    //   command: "execute",
+    //   textMode: this.stdin.join(" "),
+    //   type: WebSocketMessageType.Output,
+    // })
+  // );
+    }
+    thisConsole.appendChild(resendButton);
+    this.element = thisConsole
+
+  }
+  public callbackCreate(callerConsole: Console) {
+    callerConsole.stdin = this.stdin;
+  }
+  public sendCommand(cmd: string) {
+    this.stdin.push(cmd)
+  }
+}
+
 
 class EditorCursor {
         cursor: HTMLDivElement;
@@ -1542,7 +1590,7 @@ export const ws = new WebSocket(WSUrl);
 let variables: any[] = [];
 const variableArrayIndexes: number[] = [];
 
-export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined) {
+export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console) {
   //     const sendText = elem?.value.replace(consoleText, "")
   //     if(sendText == "") return;
   //     console.log(sendText);
@@ -1559,6 +1607,8 @@ export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketM
       type: type || WebSocketMessageType.Chat,
     })
   );
+  if(Console)
+    Console.sendCommand(sendText)
   consoleInput.value = "";
   typingIndicatorDelay = 300;
   onConsoleInput(elem)
@@ -1806,7 +1856,9 @@ class TokenTooltip extends Tooltip {
 
 }
 
-
+ws.onerror = (err) => {
+  displayMessagePopup("WEBSOCKER ERROR: " + err)
+}
 ws.onopen = (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
@@ -1822,7 +1874,11 @@ ws.onopen = (ev) => {
   setTimeout(() => {
     if(wsSessionId==undefined)
       ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-  }, 2000);
+      setTimeout(() => {
+        if(wsSessionId==undefined)
+          ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+      }, 1500); 
+  }, 500); 
 
   const tooltip = new TokenTooltip(editor);
 
@@ -1849,6 +1905,7 @@ ws.onopen = (ev) => {
   editor.on("changeSelection", () => {
 
     if (isRemoteChange) return;
+    if( !isColabSession) return;
     const selection = editor.getSelectionRange();
     // const start = selection.start;
     // const end = selection.end;
@@ -1858,7 +1915,7 @@ ws.onopen = (ev) => {
     if (!currentFileName) console.error("Current file name is invalid");
     ws.send(
       JSON.stringify({
-        range: editor.getSelectionRange(),
+        range: selection,
         fileName: currentFileName,
         type: WebSocketMessageType.CodeSelection,
       })
@@ -2323,8 +2380,6 @@ ws.onmessage = (event) => {
       wsClientId = eventJson.clientId;
       wsSessionId = eventJson.sessionId;
       isColabSession = eventJson.session!=undefined
-      console.log(eventJson.session)
-              displayMessagePopup(wsSessionId)
 
       // if(!document.cookie.includes('session='))
       document.cookie='session='
@@ -2521,7 +2576,7 @@ ws.onmessage = (event) => {
             if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
               e.preventDefault();
 
-              submitConsole(console, WebSocketMessageType.Console)
+              submitConsole(console, WebSocketMessageType.Console, activeConsole)
               console.remove()
             }
            });
@@ -2849,7 +2904,7 @@ export function sendDebugCommand(cmd: string) {
   if (cmd == "-exec-next" || cmd == "-exec-continue")
     sendWebsocketCommand("-stack-list-variables --all-values ", []); // ws.send({command: 'info locals' , args: []});
   const consoleElem = document.getElementById("console") as HTMLTextAreaElement;
-  if (cmd == "-exec-execute" && consoleElem?.value != "") submitConsole(consoleElem, WebSocketMessageType.Console);
+  if (cmd == "-exec-execute" && consoleElem?.value != "") submitConsole(consoleElem, WebSocketMessageType.Console, activeConsole);
 }
 
 let playbackSpeed = 1;
@@ -2907,7 +2962,8 @@ function onRun() {
   if(document.getElementById('active-console'))
     document.getElementById('active-console')!.id = '';
 
-  outputArea!.innerHTML += "<div id='active-console' class='output-console-container'><div class='program-output'></div></div>"
+  activeConsole = new Console()
+  outputConsoles.push(activeConsole)
   //<div class='header'>  <div class='button-container' ><button>close</button> <button>maxi</button> <button>mini</button> </div> program output</div>
 
 

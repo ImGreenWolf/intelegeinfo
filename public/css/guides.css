@@ -1,0 +1,138 @@
+@charset "UTF-8";
+content {
+  font-family: Poppins, Helvetica, sans-serif;
+  width: 50%;
+  margin: auto;
+  display: block;
+  padding: 50px;
+  padding-top: 100px;
+  position: relative;
+  background-color: white;
+}
+
+code.ace_editor {
+  padding: 1px;
+  min-width: 50px;
+  display: inline-block;
+}
+
+code .ace_scroller, code .ace_content {
+  overflow: visible;
+  position: relative;
+}
+
+body {
+  background-image: url("/media/polygon-scatter-haikei.svg");
+  margin: 0;
+}
+
+html {
+  padding: 0;
+}
+
+code .ace_cursor, pre .ace_cursor {
+  display: none !important;
+}
+
+@media screen and (min-height: 700px) {
+  content::after {
+    content: "--- ⯆ ---";
+    left: 0;
+    right: 0;
+    font-size: 2rem;
+    line-height: 30rem;
+    color: rgba(0, 0, 0, 0.151);
+    height: 300px;
+    text-align: center;
+    background-image: linear-gradient(transparent, white);
+    display: block;
+    position: fixed;
+    bottom: 0px;
+    z-index: 10;
+  }
+}
+header {
+  background-color: black;
+  color: white;
+  grid-area: header;
+  font-family: Poppins, Helvetica, sans-serif;
+}
+header::after {
+  --size: 15px;
+  --m: 3;
+  --p: calc(var(--m)*var(--size));
+  --R: calc(var(--size)*sqrt(var(--m)*var(--m) + 1));
+  filter: drop-shadow(0 5px 5px);
+  content: "";
+  display: block;
+  width: calc(100% + 0.5rem + 2px);
+  height: calc(var(--size) * 2);
+  bottom: calc(var(--size) * -0.75);
+  position: relative;
+  background-color: black;
+  margin: -10px;
+  mask: radial-gradient(var(--R) at 50% calc(100% - (var(--size) + var(--p))), #000 99%, rgba(0, 0, 0, 0) 101%) calc(50% - 2 * var(--size)) 0/calc(4 * var(--size)) 100%, radial-gradient(var(--R) at 50% calc(100% + var(--p)), rgba(0, 0, 0, 0) 99%, #000 101%) 50% calc(100% - var(--size))/calc(4 * var(--size)) 100% repeat-x;
+}
+
+header .vertical {
+  display: none;
+  height: 100%;
+  width: 50px;
+}
+
+header .horizontal {
+  display: grid;
+  grid-template-columns: 200px 300px;
+  padding-left: 20px;
+  padding-right: 20px;
+  justify-items: center;
+  align-items: center;
+  min-height: 75px;
+}
+
+header .horizontal {
+  grid-template-columns: 300px 1fr auto;
+}
+
+header h1 {
+  display: inline;
+}
+
+.logo-font, header h1 {
+  font-family: "Playwrite DK Loopet", "Courier New", Courier, monospace;
+  transform: rotate(-5deg);
+  text-decoration: underline;
+  text-align: center;
+  font-weight: 500;
+}
+
+header h1 a:visited, header h1 a:any-link {
+  color: white;
+  text-decoration: none;
+}
+
+header nav {
+  display: inline;
+}
+
+header nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 20px;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+header nav ul li {
+  display: flex;
+  flex-shrink: 1;
+}
+header nav ul li :link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/*# sourceMappingURL=guides.css.map */

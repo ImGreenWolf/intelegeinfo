@@ -58,3 +58,12 @@ model RefreshToken {
   iat DateTime @default(now())
   exp DateTime @default(now())
 }
+
+model Guide {
+  id Int  @id @default(autoincrement())
+  name String @unique
+  createdAt DateTime @default(now())
+  content String
+  description String?
+  category String?
+}

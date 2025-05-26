@@ -1,3 +1,11 @@
+declare class Console {
+    element: HTMLDivElement;
+    stdin: string[];
+    event: Event;
+    constructor();
+    callbackCreate(callerConsole: Console): void;
+    sendCommand(cmd: string): void;
+}
 export declare enum WebSocketMessageType {
     Handshake = "handshake",
     Error = "error",
@@ -34,9 +42,10 @@ export declare function joinsession(): void;
 export declare function copySessionLink(): void;
 export declare function createFile(fileName?: string): void;
 export declare const ws: WebSocket;
-export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined): void;
+export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 export declare function compileCode(this: any, ev: any): void;
 export declare function sendDebugCommand(cmd: string): void;
 export declare function playback(): void;
 export declare function restartPlayback(): void;
 export declare function setPlaybackSpeed(newPlaybackSpeed: number): void;
+export {};

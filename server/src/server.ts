@@ -30,15 +30,15 @@ import jwt from "jsonwebtoken"
 import cookieParser from 'cookie-parser'
 import * as users from './usersManager'
 import { router as usersManager } from './usersManager'
-
-const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
+import GuideCreator from "./guideCreator"
+export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
 
 
 
 app.use(compression())
 app.use(express.json());
 // app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
-app.use(express.static("public"));
+
 app.use('/client/scripts',express.static(path.join('dist', 'public')));
 // app.use('dist',express.static(path.join(rootDirName,'dist')));
 
@@ -62,8 +62,9 @@ app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'))
 })
 
+app.use(express.static("public"));
 
-
+app.use("/guides", GuideCreator);
 
 const codeMap: Map<number, UUID> = new Map()
 
@@ -690,6 +691,7 @@ wss.on("connection", (ws: WebSocket, req) => {
     let checkSyntaxTimeout;
     let dataTimeout;
     let project;
+    let processInputBuffer = '';
     const cookies = req.headers.cookie;
     const jwtCookie = cookies
       ?.split("; ")
@@ -1498,9 +1500,11 @@ wss.on("connection", (ws: WebSocket, req) => {
                      {
                         getProcessFromMap()?.stdin?.write(messageJSON.command + "\n");
                         dataTimeout = setTimeout(() => {
-                                                                clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-                                                            }, 200);
+                            clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                        }, 200);
                      }
+                     else
+                        processInputBuffer += messageJSON.command + "\n";
 
                     replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Output,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
@@ -1542,37 +1546,29 @@ wss.on("connection", (ws: WebSocket, req) => {
                     // save code to file
                 if(shouldSave && type===WebSocketMessageType.CodeChange) // TODO replace true with shouldSave 
                     {
-                           shouldSave=false                 
+                        shouldSave=false 
+                        
+                        //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
+                        fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
+                            if(err) console.log("Failed saving file!")
+                            if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
-                     //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
-                     fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
-                         if(err) console.log("Failed saving file!")
-                            //  console.log("saved file")
-
-                         if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
-
-                          checkSyntaxTimeout = setTimeout(() => {
-                            checkCodeSyntax(messageJSON.body).then(json => {
-                                if(!JSON.parse(json)[0])
-                                    return  replicateFunction((clientWs, localClientId) => {
-                                        if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify(    [   {kind: 'success'} ]     )}))
-                                        })
-    
-                                // console.log(JSON.parse(json))
-    
+                            checkSyntaxTimeout = setTimeout(() => {
+                                checkCodeSyntax(messageJSON.body).then(json => {
+                                    if(!JSON.parse(json)[0])
+                                        return  replicateFunction((clientWs, localClientId) => {
+                                            if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
+                                                clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify(    [   {kind: 'success'} ]     )}))
+                                            })
                                 replicateFunction((clientWs, localClientId) => {
                                     if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: json}))
                                     })
-    
-                             }).catch(err => {
-                                console.error('error: ' + err)
-                             })
-                         }, 50);
-                         
-
-
+                                }).catch(err => {
+                                    console.error('error: ' + err)
+                                })
+                                
+                            }, 200);
 
                      });
                     }
@@ -1823,6 +1819,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                         async function onClosedProgram(code, message, error?)
                                                 {
                                                     let notes: string = "";
+                                                    processInputBuffer = '';
                                                     const time = ( Date.now() - spawnDate)
                                                     if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
                                                     {
@@ -1876,7 +1873,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     spawnPromise = new Promise<void>((resolve, reject) => {
                                                         program?.on("spawn", () => {
                                                             clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-                                                            
+                                                            program.stdin.write(processInputBuffer) // write buffer
                                                             dataTimeout = 
                                                             setTimeout(() => {
                                                                 clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})

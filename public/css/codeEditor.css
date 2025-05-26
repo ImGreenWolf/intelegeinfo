@@ -308,6 +308,7 @@ header {
   display: flex;
   justify-content: space-between;
   padding: 5px 5px;
+  padding-bottom: 0px;
   font-family: "Poppins", sans-serif;
   border-bottom: 1px solid gray;
   align-items: center;
@@ -336,7 +337,7 @@ header {
   padding: 2px 10px;
   font-size: 0.75rem;
   background-color: black;
-  border-radius: 1lh;
+  border-radius: 0.5lh 0.5lh 0 0;
   height: 100%;
   color: white;
   min-width: 70px;
@@ -347,7 +348,7 @@ header {
   transition-duration: 0.2s;
 }
 #editor-tabs span#active-open-file, .tabs-container span#active-open-file {
-  border: 2px solid white;
+  border: 1px solid white;
   cursor: default;
 }
 #editor-tabs span:not(#active-open-file), .tabs-container span:not(#active-open-file) {
@@ -444,8 +445,8 @@ header {
   background-position: center;
   background-repeat: no-repeat;
   display: block;
-  width: 1em;
-  height: 1em;
+  width: 1rem;
+  height: 1rem;
   position: relative;
 }
 
@@ -455,6 +456,7 @@ header {
   border-left: 1px solid gray;
   padding: 1px 1px 1px 5px;
   align-items: center;
+  margin-bottom: 5px;
 }
 #session-controls .create-file {
   border-radius: 50%;
@@ -521,7 +523,7 @@ header {
   outline: 3px solid rgb(89, 0, 10);
 }
 
-button {
+button:not(.custom-button) {
   background-color: black;
   color: white;
   border-radius: 5px;
@@ -565,7 +567,7 @@ button {
 #output-container > div {
   /* display: inline; */
 }
-#output-container button {
+#output-container button:not(.custom-button) {
   margin: 5px;
   padding: 5px 10px;
   background-color: black;
@@ -588,7 +590,7 @@ button {
   margin: 10px;
   padding: 20px 10px;
   font-size: 13px;
-  gap: 5px;
+  gap: 1lh;
   position: relative;
   font-family: "Poppins", sans-serif;
 }
@@ -836,8 +838,10 @@ value {
 .output-console-container {
   background-color: rgb(37, 37, 37);
   padding: 2em;
+  position: relative;
   max-width: 75%;
   min-width: 50%;
+  z-index: 2;
   transition-duration: 0.2s;
   border-radius: 0.25lh;
   align-self: center;
@@ -901,6 +905,50 @@ value {
   font-size: 0.5rem;
   margin: -1em;
   margin-bottom: 1em;
+}
+
+.retry-program {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid gray;
+  background-color: black;
+  color: white;
+  left: -25px;
+  opacity: 1;
+  z-index: 1;
+  transition-duration: 0.2s;
+  width: 25px;
+  height: 25px;
+  padding: 2px;
+}
+.retry-program:hover {
+  transform: translate(-50%, -50%) rotate(25deg);
+  -webkit-transform: translate(-50%, -50%) rotate(24deg);
+}
+
+.output-console-container::after {
+  content: "";
+  width: 50px;
+  height: 100%;
+  position: absolute;
+  display: block;
+  left: -50px;
+  top: 0;
+  bottom: 0;
+}
+
+.output-console-container::after:not(:hover) {
+  opacity: 0;
+  left: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.output-console-container:not(:hover) .retry-program {
+  opacity: 0;
+  left: 0;
+  transform: translate(-50%, -50%) scale(0.8);
 }
 
 .console-output {
@@ -1155,7 +1203,7 @@ value {
   justify-self: start;
 }
 
-button, #editor-tabs span:not(#active-open-file), #signup, #login {
+button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #login {
   transition-duration: 0.3s;
   user-select: none;
   outline-offset: 0.5px;
@@ -1163,15 +1211,15 @@ button, #editor-tabs span:not(#active-open-file), #signup, #login {
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   cursor: pointer;
 }
-button.inset-button *, #editor-tabs span:not(#active-open-file).inset-button *, #signup.inset-button *, #login.inset-button * {
+button:not(.custom-button).inset-button *, #editor-tabs span:not(#active-open-file).inset-button *, #signup.inset-button *, #login.inset-button * {
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
 }
-button:hover, #editor-tabs span:not(#active-open-file):hover, #signup:hover, #login:hover {
+button:not(.custom-button):hover, #editor-tabs span:not(#active-open-file):hover, #signup:hover, #login:hover {
   outline: 1px solid rgba(255, 255, 255, 0.8) !important;
   transform: translateY(0.5px) scale(95%);
   transition-duration: 0.1s;
 }
-button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #editor-tabs span:not(#active-open-file) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
+button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-tabs span:not(#active-open-file):active, #editor-tabs span:not(#active-open-file) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
   transition-duration: 0.02s;
   transform: translateY(1px) scale(90%);
 }
@@ -1223,7 +1271,7 @@ button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #
   background-image: url("../media/mouse-cursor-svgrepo-com.svg");
   z-index: 100;
   pointer-events: none;
-  contain: strict;
+  contain: layout;
   background-size: cover;
   opacity: 0.75;
   color: green;
@@ -1248,6 +1296,8 @@ button:active, button :focus, #editor-tabs span:not(#active-open-file):active, #
   z-index: 99;
   bottom: -0.25rem;
   right: -1rem;
+  display: inline-block;
+  border-radius: 5px;
   opacity: 0;
   font-family: Poppins;
   color: rgba(255, 255, 255, 0.463);

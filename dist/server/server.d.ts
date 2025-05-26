@@ -2,6 +2,7 @@ import { ChildProcess } from "child_process";
 import WebSocket from "ws";
 import { EditorSession } from "./types";
 import { UUID } from "crypto";
+export declare const rootDirName: string;
 export declare function authMiddleware(req: any, res: any, next: any, role?: string): void;
 export declare abstract class EditorMode {
     abstract name: any;

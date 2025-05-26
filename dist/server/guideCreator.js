@@ -1,0 +1,272 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const path_1 = __importDefault(require("path"));
+const dbClient_1 = __importDefault(require("./dbClient"));
+const server_1 = require("./server");
+// import { rootDirName } from './server';
+// import rootDirName from "./server"
+const rootDirName = path_1.default.resolve("./");
+const router = express_1.default.Router();
+const htmlHead = `<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/guides.css">
+    
+    </head>
+    <header>
+            <div class="horizontal">
+                    
+                <h1><a href="/">ÎnțelegeInfo</a></h1>
+                <div id="colab-container">
+
+                </div>
+            </div>
+
+            <div class="vertical">
+                
+            </div>
+        </header>
+    
+    `;
+router.use('/guideCreator', express_1.default.static(path_1.default.join(rootDirName, "/public", "problems", "guideCreator.html")));
+router.get('/guideCreator/load/', express_1.default.static(path_1.default.join(rootDirName, "/public", "problems", "guideCreator.html")));
+router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
+    dbClient_1.default.guide.findFirst({
+        where: {
+            name: decodeURI(req.params.name)
+        }
+    }).then(guide => {
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+ ${htmlHead}
+ </head>
+    <style>
+        body {
+            display: flex;
+            justify-content: space-between;
+            height: 100vh;
+        }
+        #preview {
+            max-width: 100%;
+            padding: 20px;
+            margin-top: 0;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 30%;
+        }
+        form input[type="text"]
+        {
+            height: 2lh;
+        }
+        form textarea {
+            width: 100%;
+            min-height: 700px;
+        }
+        form button[type="submit"] {
+            height: 2lh;
+        }
+            content::after
+        {
+            content: none;
+        }
+    </style>
+<body>
+    
+    <form action="../../submit" method="post">
+        <input type="text" name="gname" id="gname" value="${guide.name}">
+        <textarea type="text"  name="content" id="content">${guide.content}</textarea>
+        <button type="submit">Submit</button>
+    </form>
+
+    <content id="preview">
+
+    </content>
+
+    <script>
+        const preview = document.getElementById('preview')
+        const content = document.getElementById('content');
+        preview.innerHTML = content.value;
+        content.oninput = (ev) => {
+            preview.innerHTML = ev.target.value;
+        }
+    </script>
+</body>
+</html>`;
+        res.send(html);
+    }).catch(err => {
+        res.status(500).json({ error: 'Failed listing projects: ' + err });
+    });
+});
+router.get('/', server_1.authMiddleware, (req, res) => {
+    dbClient_1.default.guide.findMany({
+        take: 10,
+        orderBy: {
+            createdAt: "desc"
+        }
+    }).then(guides => {
+        let guideEntries = '';
+        for (const guide of guides)
+            guideEntries += `<li><a href="/guides/guideCreator/load/${encodeURI(guide.name)}">Load</a><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`;
+        const html = `<ul>
+    ${guideEntries}
+    </ul>`;
+        res.send(html);
+    }).catch(err => {
+        res.status(500).json({ error: 'Failed listing projects: ' + err });
+    });
+});
+router.get('/posts', server_1.authMiddleware, (req, res) => {
+    dbClient_1.default.guide.findMany({
+        take: 10,
+        orderBy: {
+            createdAt: "desc"
+        }
+    }).then(guides => {
+        let guideEntries = '';
+        for (const guide of guides)
+            guideEntries += `<li><a href="/guides/guideCreator/load/${encodeURI(guide.name)}">Load</a><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`;
+        const html = `<ul>
+    ${guideEntries}
+    </ul>`;
+        res.send({ html });
+    }).catch(err => {
+        res.status(500).json({ error: 'Failed listing projects: ' + err });
+    });
+});
+// POST handler for form submission
+router.post('/submit', (req, res) => {
+    const { gname, content } = req.body;
+    dbClient_1.default.guide.update({
+        where: {
+            name: gname
+        },
+        data: {
+            content
+        }
+    }).then(update => {
+        res.send(`${htmlHead} <h2>Updated ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
+    }).catch(() => {
+        try {
+            dbClient_1.default.guide.create({
+                data: {
+                    name: gname,
+                    content
+                }
+            }).then((value) => {
+                res.send(`${htmlHead} <h2>Uploaded ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
+            }).catch(err => {
+                res.status(500).send('Failed to create problem: ' + err);
+            });
+        }
+        catch (error) {
+            console.error('Error creating problem:', error);
+            res.status(500).send('Failed to upload');
+        }
+    });
+});
+router.get('/post/:name', (req, res) => {
+    dbClient_1.default.guide.findFirst({
+        where: {
+            name: decodeURI(req.params.name)
+        }
+    }).then((value) => {
+        try {
+            // Filter for directories only
+            // editor.on("paste", function(e) {
+            //     e.text = e.text.replace(/[\r\n]+/g, " ");
+            // });
+            res.send(htmlHead +
+                `<content> 
+                ${value.content} 
+                </content>
+                <script src="/ace-builds-master/src-min-noconflict/ace.js"></script>
+                <script>
+                var codeTags = document.getElementsByTagName("code")
+            for(const el of codeTags)
+            {
+                var editor = ace.edit(el);
+            editor.setOptions({
+                maxLines: 1, // make it 1 line
+                autoScrollEditorIntoView: true,
+                highlightActiveLine: false,
+                printMargin: false,
+                showGutter: false,
+                mode: "ace/mode/c_cpp",
+                theme: "ace/theme/editor-theme"
+            });
+            editor.container.style.pointerEvents="none"
+            editor.renderer.setStyle("disabled", true)
+            editor.blur()
+
+            }
+            
+
+
+
+
+            var preTags = document.getElementsByTagName("pre")
+            for(const el of preTags)
+            {
+                var editor = ace.edit(el);
+                editor.setOptions({
+                    // autoScrollEditorIntoView: true,
+                    highlightActiveLine: false,
+                    // printMargin: false,
+                    // showGutter: false,
+                    mode: "ace/mode/c_cpp",
+                    minLines: 3,
+                    maxLines: 15,
+                    theme: "ace/theme/editor-theme"
+                });
+                editor.container.style.pointerEvents="none"
+            editor.renderer.setStyle("disabled", true)
+            editor.blur()
+
+            }
+            
+            
+            
+            
+            </script>`);
+        }
+        catch (error) {
+            console.error('Error processing folders:', error);
+            res.status(500).json({ error: 'Failed to process folders' });
+        }
+    }).catch(err => {
+        res.status(500).send('Error: ' + err);
+    });
+});
+router.get('/', (req, res) => {
+    dbClient_1.default.guide.findMany({
+        take: 10,
+        orderBy: {
+            createdAt: "desc"
+        }
+    }).then(guides => {
+        let guideEntries = '';
+        for (const guide of guides)
+            guideEntries += `<li><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`;
+        const html = `${htmlHead}
+    <content>
+    <ul>
+    ${guideEntries}
+    </ul>
+    </content>`;
+        res.send(html);
+    }).catch(err => {
+        res.status(500).json({ error: 'Failed listing projects: ' + err });
+    });
+});
+exports.default = router;

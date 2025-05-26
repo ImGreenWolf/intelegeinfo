@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.7.0",
+    "@prisma/client": "^6.8.2",
     "ace-builds": "^1.39.1",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>#{username}</title>
+        <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="../css/profile.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +12,18 @@
     
 </head>
 <body>
+    <header>
+            <div class="horizontal">
+                    
+                <h1><a href="/">ÎnțelegeInfo</a></h1>
+        
+            </div>
+
+            <div class="vertical">
+                
+            </div>
+        </header>
+
     <div class="main-container">
         <div class="container" id="profile">
             <div style="height: 100%;">
@@ -18,13 +31,19 @@
                 <div class="content-container">
                     <img src="user/profilePicture/#{id}" class="profile-pic-large">
                     <h1>Hello #{username}</h1>
+                    <ul>
+                        <button>Detalii cont</button>
+                        <button>Preferinte</button>
+                        <button>Despre</button>
+
+                    </ul>
                     <div class="info-container">
                         <div class="email">
                             <p>email: #{email}</p>
-                            #{emailValidated ? <img src="../media/check-mark-svgrepo-com.svg" class="email-verified"> : <a href="user/verifyemail?id=#{id}">Verify Email</a>}
+                            #{emailValidated ? <img title="Emailul este verificat!" src="../media/check-mark-svgrepo-com.svg" class="email-verified"> : <a href="user/verifyemail?id=#{id}">Verify Email</a>}
                         </div>
                         
-                        <p>password: **********</p>
+                        <p><a>schimba parola</a></p>
                         <button onclick="logOut()">Log out</button>
                     </div>
                 </div>
@@ -32,10 +51,10 @@
         </div>
     
         <div class="container">
-            <h1>Projects</h1>
+            <h1>Prieteni</h1>
         </div>
         <div class="container">
-            <h1>Projects</h1>
+            <h1>Proiecte</h1>
             #{projectsList}
         </div>
         

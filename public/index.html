@@ -137,10 +137,19 @@ int main() {
             </div>
         </header>
 
-        
+    <div id="guides">
+        <script type="module">
 
+             fetch('/guides/posts').then(res => {
+    return res.json();
+  })
+  .then(data => {
 
-    <script>var exports = {};</script>
+                document.getElementById('guides').innerHTML += data.html;
+            })
+        </script>
+    </div>
+
     <!-- <script src="js/types.js"  type="module" charset="utf-8"></script> -->
     <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js" crossorigin="anonymous"></script>
     <script src="ace-builds-master/src-noconflict/ext-modelist.js"></script>

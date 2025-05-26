@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sessionMap = exports.runningProcesses = exports.clients = exports.wss = exports.server = exports.EditorMode = void 0;
+exports.sessionMap = exports.runningProcesses = exports.clients = exports.wss = exports.server = exports.EditorMode = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
@@ -63,28 +63,30 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const users = __importStar(require("./usersManager"));
 const usersManager_1 = require("./usersManager");
-const rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
+const guideCreator_1 = __importDefault(require("./guideCreator"));
+exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 app.use(compression());
 app.use(express_1.default.json());
 // app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
-app.use(express_1.default.static("public"));
 app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
 // app.use('dist',express.static(path.join(rootDirName,'dist')));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
-app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(rootDirName, 'dist', 'public', 'codeEditor.js')));
+app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
 // app.get('/editor/codeEditor.js', (req, res) => {
 //     res.sendFile(path.join(rootDirName,'dist', 'public', 'codeEditor.js'))
 // })
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
-    res.sendFile(path_1.default.join(rootDirName, 'dist', 'public', 'mode_cpp_custom.js'));
+    res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'mode_cpp_custom.js'));
 });
 app.get('/editor/cpp_worker.js', (req, res) => {
-    res.sendFile(path_1.default.join(rootDirName, 'dist', 'public', 'cpp_worker.js'));
+    res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'cpp_worker.js'));
 });
 app.get('/editor/worker-base.js', (req, res) => {
-    res.sendFile(path_1.default.join(rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
+    res.sendFile(path_1.default.join(exports.rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
 });
+app.use(express_1.default.static("public"));
+app.use("/guides", guideCreator_1.default);
 const codeMap = new Map();
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id;
@@ -145,18 +147,18 @@ app.post('/editor/startsession/:id', (req, res) => {
     }
 });
 app.get('/editor/tooltipHints', (req, res) => {
-    res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(rootDirName, 'server', 'data', 'tooltips.json')).toString()));
+    res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'server', 'data', 'tooltips.json')).toString()));
 });
 app.get('/editor/tooltipHints/:id', (req, res) => {
     const tooltipid = req.params.id;
     if (!tooltipid)
-        res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(rootDirName, 'server', 'data', 'tooltips.json')).toString()));
+        res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'server', 'data', 'tooltips.json')).toString()));
     else
-        res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(rootDirName, 'server', 'data', 'tooltips.json')).toString())[tooltipid]);
+        res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'server', 'data', 'tooltips.json')).toString())[tooltipid]);
 });
 // app.get('/problem', problemCreator);
 app.get('/editor', (req, res) => {
-    fs_1.default.readFile(path_1.default.join(rootDirName, 'public', 'editor.html'), (err, file) => {
+    fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'public', 'editor.html'), (err, file) => {
         let text;
         const userId = users.getIdFromJWT(req);
         const logged = userId != undefined;
@@ -179,7 +181,7 @@ app.get('/editor', (req, res) => {
     });
 });
 app.use((0, cookie_parser_1.default)());
-const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem'), 'utf8');
+const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'private.pem'), 'utf8');
 function authMiddleware(req, res, next, role) {
     // if() return res.status(403).json({ error: 'failed reading cookies' });
     const token = req.cookies.token;
@@ -199,7 +201,7 @@ function authMiddleware(req, res, next, role) {
 function handle404(req, res, next) {
     res.status(404);
     if (req.accepts('html'))
-        res.sendFile(path_1.default.join(rootDirName, '/public/pages/notfound.html'));
+        res.sendFile(path_1.default.join(exports.rootDirName, '/public/pages/notfound.html'));
     else
         res.json('Oops! Page not found.');
 }
@@ -289,13 +291,13 @@ if (isShared) {
     });
     // clients will be stored locally.
 }
-fs_1.default.readdir(path_1.default.join(rootDirName, "cache"), (err, files) => {
+fs_1.default.readdir(path_1.default.join(exports.rootDirName, "cache"), (err, files) => {
     if (err) {
         console.error("Error reading cache directory:", err);
         return;
     }
     files.forEach((file) => {
-        fs_1.default.rm(path_1.default.join(rootDirName, "cache", file), { recursive: true, force: true }, (err) => {
+        fs_1.default.rm(path_1.default.join(exports.rootDirName, "cache", file), { recursive: true, force: true }, (err) => {
             if (err) {
                 console.error("Error deleting cache folder:", err);
             }
@@ -437,7 +439,7 @@ function compileFile(clientId, sessionId) {
         // const sessionId = req.body.sessionId; 
         const editorSession = isShared ? shared.getSession(sessionId) || exports.sessionMap.get(sessionId) : exports.sessionMap.get(sessionId);
         // const code = req.body.code;
-        const exeFile = path_1.default.join(rootDirName, "cache", sessionId);
+        const exeFile = path_1.default.join(exports.rootDirName, "cache", sessionId);
         const filePath = path_1.default.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
         const codeFile = !["cpp"].includes(path_1.default.extname(editorSession?.clientsActiveFile.get(clientId) || "main.cpp")) ? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
         if (!editorSession)
@@ -515,6 +517,7 @@ exports.wss.on("connection", (ws, req) => {
     let checkSyntaxTimeout;
     let dataTimeout;
     let project;
+    let processInputBuffer = '';
     const cookies = req.headers.cookie;
     const jwtCookie = cookies
         ?.split("; ")
@@ -605,7 +608,7 @@ exports.wss.on("connection", (ws, req) => {
                     }
                 }
                 sessionId = getThisClientSession().sessionId;
-                clientFilesPath = path_1.default.join(rootDirName, "cache", sessionId, "clientFiles");
+                clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
                 // clients.set(clientId, ws);
                 if (clientObj && isShared) {
                     shared.getSession(sessionId)?.clients.set(clientId, clientObj);
@@ -626,7 +629,7 @@ exports.wss.on("connection", (ws, req) => {
                     // getThisClientSession()?.clients.set(clientId); // add client to client list.
                     clientId = getThisClientSession()?.spawnClient(ws, userData);
                     clientObj = getThisClientSession().getClientObjectById(clientId);
-                    clientFilesPath = path_1.default.join(rootDirName, "cache", sessionId, "clientFiles");
+                    clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
                     exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
                 }
                 else
@@ -644,7 +647,7 @@ exports.wss.on("connection", (ws, req) => {
         function checkCodeSyntax(code) {
             return new Promise((resolve, reject) => {
                 const editorSession = isShared ? shared.getSession(sessionId) || exports.sessionMap.get(sessionId) : exports.sessionMap.get(sessionId);
-                const exeFile = path_1.default.join(rootDirName, "cache", sessionId);
+                const exeFile = path_1.default.join(exports.rootDirName, "cache", sessionId);
                 const filePath = path_1.default.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
                 const codeFile = !["cpp"].includes(path_1.default.extname(editorSession?.clientsActiveFile.get(clientId) || "main.cpp")) ? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
                 compileProcess = (0, child_process_1.spawn)("g++", ["-fsyntax-only", "-fdiagnostics-format=json", path_1.default.join(filePath, codeFile || "main.cpp")], {
@@ -826,7 +829,7 @@ exports.wss.on("connection", (ws, req) => {
                     savedProject = (await loadProject(urlParams.get('save')));
                     if (savedProject.userId !== parseInt(id.sub))
                         throw 'not authorized';
-                    fs_1.default.cpSync(path_1.default.join(rootDirName, "saved", savedProject.fileUUID), path_1.default.join(rootDirName, "cache", sessionId), { recursive: true });
+                    fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
                     project = savedProject;
                     // fs.renameSync()
                     // defaultText =  
@@ -839,10 +842,10 @@ exports.wss.on("connection", (ws, req) => {
             }
             else
                 defaultText = fs_1.default.readFileSync("user_code.cpp").toString();
-            const clientFilesPath = path_1.default.join(rootDirName, "cache", sessionId, "clientFiles");
+            const clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
             // printClientConsoleInfo("connected to worker: " + process.pid)
             //create cache folder for session if its a new one
-            if (!fs_1.default.existsSync(path_1.default.join(rootDirName, "cache", sessionId)) || !cooperator && defaultText) {
+            if (!fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId)) || !cooperator && defaultText) {
                 // fs.mkdir(path.join(rootDirName, "cache", sessionId), { recursive: true }, (err) => {
                 //     console.log("created cache folder for sessionId " + sessionId);
                 //     if (err) {
@@ -1185,6 +1188,8 @@ exports.wss.on("connection", (ws, req) => {
                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                             }, 200);
                         }
+                        else
+                            processInputBuffer += messageJSON.command + "\n";
                         replicateFunction((clientWs) => {
                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Output, body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client
                         });
@@ -1225,7 +1230,6 @@ exports.wss.on("connection", (ws, req) => {
                             fs_1.default.writeFile(path_1.default.join(clientFilesPath, fileName), messageJSON.body, (err) => {
                                 if (err)
                                     console.log("Failed saving file!");
-                                //  console.log("saved file")
                                 if (checkSyntaxTimeout)
                                     clearTimeout(checkSyntaxTimeout);
                                 checkSyntaxTimeout = setTimeout(() => {
@@ -1235,7 +1239,6 @@ exports.wss.on("connection", (ws, req) => {
                                                 if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
                                             });
-                                        // console.log(JSON.parse(json))
                                         replicateFunction((clientWs, localClientId) => {
                                             if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
@@ -1243,7 +1246,7 @@ exports.wss.on("connection", (ws, req) => {
                                     }).catch(err => {
                                         console.error('error: ' + err);
                                     });
-                                }, 50);
+                                }, 200);
                             });
                         }
                         // replicate changes to others
@@ -1335,7 +1338,7 @@ exports.wss.on("connection", (ws, req) => {
                             break;
                         handleCommand(command, exports.clients); // pass all the clients in the session
                         async function handleCommand(command, sockets) {
-                            const filePath = path_1.default.join(rootDirName, "cache", sessionId, "main.exe");
+                            const filePath = path_1.default.join(exports.rootDirName, "cache", sessionId, "main.exe");
                             try {
                                 if (command == "execute") {
                                     // fs.accessSync(filePath) // disabled to auto compile
@@ -1373,7 +1376,7 @@ exports.wss.on("connection", (ws, req) => {
                                                     });
                                                 }
                                                 else {
-                                                    fs_1.default.stat(path_1.default.join(rootDirName, "cache", sessionId, "clientFiles", "main.cpp"), (err, codeStats) => {
+                                                    fs_1.default.stat(path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles", "main.cpp"), (err, codeStats) => {
                                                         if (err) {
                                                             console.error('error accessing code file: ' + err);
                                                             clientObj.sendMessage(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'ERROR: ' + err, clientId: clientId })); // Send GDB output to the client
@@ -1439,6 +1442,7 @@ exports.wss.on("connection", (ws, req) => {
                                                         // if(!program) return console.error('invalid program')
                                                         async function onClosedProgram(code, message, error) {
                                                             let notes = "";
+                                                            processInputBuffer = '';
                                                             const time = (Date.now() - spawnDate);
                                                             if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
                                                              {
@@ -1466,7 +1470,7 @@ exports.wss.on("connection", (ws, req) => {
                                                         }
                                                         // buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId))
                                                         program = (0, child_process_1.spawn)(filePath, {
-                                                            cwd: path_1.default.join(rootDirName, "cache", sessionId, "clientFiles"), // we must add this for the program to have the correct directory for input files.
+                                                            cwd: path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         }); // start program
                                                         addProcessToMap(sessionId, program); // add to process map
                                                         mode = "run";
@@ -1483,6 +1487,7 @@ exports.wss.on("connection", (ws, req) => {
                                                         spawnPromise = new Promise((resolve, reject) => {
                                                             program?.on("spawn", () => {
                                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
+                                                                program.stdin.write(processInputBuffer); // write buffer
                                                                 dataTimeout =
                                                                     setTimeout(() => {
                                                                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
@@ -1842,7 +1847,7 @@ exports.wss.on("connection", (ws, req) => {
                 // sessions.delete(sessionId);
                 closeProcess(process)
                     .finally(() => {
-                    const dirPath = path_1.default.join(rootDirName, "cache", sessionId);
+                    const dirPath = path_1.default.join(exports.rootDirName, "cache", sessionId);
                     if (false) // TODO check if its okay to delete the session folder
                         if (dirPath)
                             fs_1.default.rm(dirPath, { recursive: true }, (err) => {
