@@ -55,7 +55,6 @@ const qrcode = __importStar(require("qrcode"));
 const app = (0, express_1.default)();
 const compression = require('compression');
 const sessionStore_1 = __importDefault(require("./sessionStore"));
-const os = require('os');
 const login_js_1 = __importDefault(require("./login.js"));
 const signup_js_1 = __importDefault(require("./signup.js"));
 const profile_js_1 = __importDefault(require("./profile.js"));

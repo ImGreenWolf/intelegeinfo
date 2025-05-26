@@ -17,15 +17,12 @@ const app = express();
 const compression = require('compression')
 import SharedStateManager from "./sessionStore"
 
-import cluster from 'cluster';
-const os = require('os');
 
 import problemCreator from './problemCreator.js'
 import loginManager from './login.js'
 import signupManager from './signup.js'
 import profileManager from './profile.js'
 import { UUID } from "crypto";
-import { Console, error } from "console";
 import jwt from "jsonwebtoken"
 import cookieParser from 'cookie-parser'
 import * as users from './usersManager'
