@@ -1523,8 +1523,7 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
         box-shadow: 
         -5px 20px 5px 5px color.adjust($color: theme.$background-color, $alpha: -0.2%),
         inset 0px -10px 5px -10px color.adjust($color: theme.$main-button-color, $alpha: -0.2%),
-        inset 0px 10px 10px -5px color.adjust($color: theme.$main-button-color, $lightness: 5% * theme.$dark-theme)
-        ;
+        inset 0px 10px 10px -5px color.adjust($color: theme.$main-button-color, $lightness: 5% * theme.$dark-theme);
 
         
         &:hover

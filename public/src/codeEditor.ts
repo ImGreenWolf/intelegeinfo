@@ -1859,6 +1859,20 @@ class TokenTooltip extends Tooltip {
 ws.onerror = (err) => {
   displayMessagePopup("WEBSOCKER ERROR: " + err)
 }
+
+
+  setTimeout(() => {
+    if(wsSessionId==undefined)
+      ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+      setTimeout(() => {
+        if(wsSessionId==undefined)
+          ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+      }, 1500); 
+  }, 500); 
+
+
+
+  
 ws.onopen = (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
