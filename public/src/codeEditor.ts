@@ -1577,7 +1577,7 @@ const saveId = new URLSearchParams(window.location.search).get("save");
 const WSUrl = "ws://" + window.location.hostname  + ":" + window.location.port + (sessionId || saveId ? "?" : "") + (sessionId ? "session="+sessionId+"&" : "")  + (saveId ? "save="+saveId : "")
 
 
-if(document.cookie.split('session=')[1]!='')
+if(document.cookie.includes('session=') && !window.location.search.includes('save') && !window.location.search.includes('session'))
 {
   if(!window.confirm('You have a previous unsaved session, would you like to recover it?'))
       document.cookie = 'session=';
