@@ -195,7 +195,7 @@ function authMiddleware(req, res, next, role) {
             next();
     }
     catch (err) {
-        res.clearCookie('cookiename').status(403).json({ error: 'Invalid token' });
+        res.clearCookie('token').status(403).json({ error: 'Invalid token' });
     }
 }
 function handle404(req, res, next) {
@@ -519,10 +519,13 @@ exports.wss.on("connection", (ws, req) => {
     let project;
     let processInputBuffer = '';
     const cookies = req.headers.cookie;
-    const jwtCookie = cookies
-        ?.split("; ")
-        .find((c) => c.startsWith("token="))
-        ?.split("=")[1];
+    const jwtCookie = getJWTCookie(cookies);
+    function getJWTCookie(cookies) {
+        return cookies
+            ?.split("; ")
+            .find((c) => c.startsWith("token="))
+            ?.split("=")[1];
+    }
     const recoveredSession = cookies
         ?.split("; ")
         .find((c) => c.startsWith("session="))
@@ -823,9 +826,9 @@ exports.wss.on("connection", (ws, req) => {
             let savedProject;
             if (urlParams.has("save")) {
                 try {
-                    if (!req.headers.cookie.split('token')[1])
+                    if (!getJWTCookie(req.headers.cookie))
                         throw 'not logged in';
-                    const id = jsonwebtoken_1.default.verify(req.headers.cookie.split('token=')[1], privateKeyPem);
+                    const id = jsonwebtoken_1.default.verify(getJWTCookie(req.headers.cookie), privateKeyPem);
                     savedProject = (await loadProject(urlParams.get('save')));
                     if (savedProject.userId !== parseInt(id.sub))
                         throw 'not authorized';
@@ -1050,7 +1053,7 @@ exports.wss.on("connection", (ws, req) => {
                         //console.log("Received heartbeat from client " + clientId);
                         break;
                     case types_1.WebSocketMessageType.Handshake:
-                        sendConnectionMessage();
+                        sendConnectionMessage(); // TODO Implement this on client side, to ensure client received handshake message.
                         /*
                 //handle heartbeat
                 heartbeatInterval = setInterval(() => {

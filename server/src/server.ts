@@ -214,7 +214,7 @@ export function authMiddleware(req, res, next:any, role?:string) {
         // req.user = user;
         next();
     } catch (err) {
-        res.clearCookie('cookiename').status(403).json({ error: 'Invalid token' });
+        res.clearCookie('token').status(403).json({ error: 'Invalid token' });
     }
 }
 function handle404(req:any, res:any, next:NextFunction) 
@@ -693,10 +693,11 @@ wss.on("connection", (ws: WebSocket, req) => {
     let project;
     let processInputBuffer = '';
     const cookies = req.headers.cookie;
-    const jwtCookie = cookies
+    const jwtCookie = getJWTCookie(cookies)
+      function getJWTCookie(cookies) { return cookies
       ?.split("; ")
       .find((c) => c.startsWith("token="))
-      ?.split("=")[1];
+      ?.split("=")[1];}
     const recoveredSession: UUID | undefined = cookies
       ?.split("; ")
       .find((c) => c.startsWith("session="))
@@ -1073,8 +1074,8 @@ wss.on("connection", (ws: WebSocket, req) => {
         if(urlParams.has("save"))
         {
             try{
-                if(!req.headers.cookie.split('token')[1]) throw 'not logged in';
-                const id = jwt.verify(req.headers.cookie.split('token=')[1], privateKeyPem)
+                if(!getJWTCookie(req.headers.cookie)) throw 'not logged in';
+                const id = jwt.verify(getJWTCookie(req.headers.cookie), privateKeyPem)
                 
                 savedProject = (await loadProject(urlParams.get('save'))) as Project
                 if(savedProject.userId !== parseInt(id.sub as string)) throw 'not authorized'
@@ -1362,7 +1363,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                 
                 case WebSocketMessageType.Handshake:
 
-                    sendConnectionMessage()
+                    sendConnectionMessage() // TODO Implement this on client side, to ensure client received handshake message.
                             /*
                     //handle heartbeat
                     heartbeatInterval = setInterval(() => {
