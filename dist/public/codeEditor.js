@@ -42,7 +42,7 @@ let activeConsole;
 // let posX=0;
 // let posY=0;
 let stepint;
-let isColabSession = false;
+let isColabSession = true;
 let lastEventJson;
 class Console {
     element;
