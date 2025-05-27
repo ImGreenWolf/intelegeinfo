@@ -1489,7 +1489,9 @@ exports.wss.on("connection", (ws, req) => {
                                                         spawnPromise = new Promise((resolve, reject) => {
                                                             program?.on("spawn", () => {
                                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
-                                                                program.stdin.write(processInputBuffer); // write buffer
+                                                                if (program.stdin && processInputBuffer)
+                                                                    if (program?.stdin?.writable)
+                                                                        program.stdin.write(processInputBuffer); // write buffer
                                                                 dataTimeout =
                                                                     setTimeout(() => {
                                                                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
@@ -1763,7 +1765,8 @@ exports.wss.on("connection", (ws, req) => {
                                     }
                                     else {
                                         if (program) {
-                                            program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                            if (program?.stdin?.writable)
+                                                program?.stdin?.write(command); //program.stdin.write(message + "\n");
                                             // dataTimeout = setTimeout(() => {
                                             clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                                             // }, 200);

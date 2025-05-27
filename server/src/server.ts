@@ -1871,7 +1871,9 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     spawnPromise = new Promise<void>((resolve, reject) => {
                                                         program?.on("spawn", () => {
                                                             clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-                                                            program.stdin.write(processInputBuffer) // write buffer
+                                                            if( program.stdin && processInputBuffer)
+                                                                if(program?.stdin?.writable)
+                                                                program.stdin.write(processInputBuffer) // write buffer
                                                             dataTimeout = 
                                                             setTimeout(() => {
                                                                 clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
@@ -2223,7 +2225,8 @@ wss.on("connection", (ws: WebSocket, req) => {
                             {
                                 if(program)
                                 {
-                                    program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                    if(program?.stdin?.writable)
+                                        program?.stdin?.write(command); //program.stdin.write(message + "\n");
                                     // dataTimeout = setTimeout(() => {
                                                                 clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
                                                             // }, 200);
