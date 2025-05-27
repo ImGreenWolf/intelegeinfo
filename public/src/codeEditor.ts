@@ -76,7 +76,7 @@ let activeConsole: Console;
 // let posX=0;
 // let posY=0;
 let stepint;
-let isColabSession=false;
+let isColabSession=true;
 let lastEventJson;
 class Console {
   element: HTMLDivElement;
@@ -1361,6 +1361,7 @@ export function joinsession()
                
               
         }).catch(err => {
+          window.alert(err)
           document.getElementById('code-error')!.innerText=err;
         })
     }
@@ -2653,10 +2654,8 @@ ws.onmessage = (event) => {
   column: (end.column > start.column) as boolean ? end.column : start.column,
         });
 
-        console.log(range.toString())
       }
 
-      console.log("selection ", selection);
       break;
 
     case WebSocketMessageType.ConsoleTyping:

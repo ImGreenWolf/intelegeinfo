@@ -1013,6 +1013,7 @@ export function joinsession() {
                 location.href = res.redirect;
             console.log('redirecting..');
         }).catch(err => {
+            window.alert(err);
             document.getElementById('code-error').innerText = err;
         });
     }
@@ -1966,9 +1967,7 @@ ws.onmessage = (event) => {
                     row: (end.row > start.row) ? end.row : start.row,
                     column: (end.column > start.column) ? end.column : start.column,
                 });
-                console.log(range.toString());
             }
-            console.log("selection ", selection);
             break;
         case WebSocketMessageType.ConsoleTyping:
             const indicatorStatus = eventJson.status;
