@@ -1,267 +1,503 @@
+
 {
-    "vector": {
-        "description": "A dynamic array container from the C++ Standard Library.",
-        "category": "container",
-        "example": "vector<int> numbers;"
-    },
-    "string": {
-        "description": "A standard string class for handling sequences of characters.",
-        "category": "string",
-        "example": "string name = \"Alice\";"
-    },
-    "map": {
-        "description": "Associative container that stores key-value pairs with unique keys.",
-        "category": "container",
-        "example": "map<int, string> idToName;"
-    },
-    "unordered_map": {
-        "description": "Hash table-based associative container for key-value pairs.",
-        "category": "container",
-        "example": "unordered_map<string, int> wordCount;"
-    },
-    "set": {
-        "description": "Associative container that contains unique sorted elements.",
-        "category": "container",
-        "example": "set<int> uniqueNumbers;"
-    },
-    "pair": {
-        "description": "A container to store a pair of values.",
-        "category": "utility",
-        "example": "pair<int, string> idName;"
-    },
-    "unique_ptr": {
-        "description": "Smart pointer that owns and manages another object exclusively.",
-        "category": "memory",
-        "example": "unique_ptr<MyClass> ptr(new MyClass);"
-    },
-    "shared_ptr": {
-        "description": "Smart pointer that retains shared ownership of an object.",
-        "category": "memory",
-        "example": "shared_ptr<MyClass> ptr = make_shared<MyClass>();"
-    },
-    "cout": {
-        "description": "Standard output stream for printing to the console.",
-        "category": "io",
-        "example": "cout << \"Hello, World!\" << endl;"
-    },
-    "cin": {
-        "description": "Standard input stream for reading from the console.",
-        "category": "io",
-        "example": "cin >> value;"
-    },
-    "endl": {
-        "description": "Manipulator to insert a newline and flush the output stream.",
-        "category": "io",
-        "example": "cout << endl;"
-    },
-    "move": {
-        "description": "Utility to enable move semantics for objects.",
-        "category": "utility",
-        "example": "auto moved = move(obj);"
-    },
-    "swap": {
-        "description": "Exchanges the values of two objects.",
-        "category": "utility",
-        "example": "swap(a, b);"
-    },
-    "sort": {
-        "description": "Sorts the elements in a range.",
-        "category": "algorithm",
-        "example": "sort(vec.begin(), vec.end());"
-    },
-    "find": {
-        "description": "Finds the first occurrence of a value in a range.",
-        "category": "algorithm",
-        "example": "auto it = find(vec.begin(), vec.end(), value);"
-    },
-    "function": {
-        "description": "General-purpose polymorphic function wrapper.",
-        "category": "utility",
-        "example": "function<void()> func = [](){};"
-    },
-    "thread": {
-        "description": "Represents a single thread of execution.",
-        "category": "threading",
-        "example": "thread t(myFunction);"
-    },
-    "mutex": {
-        "description": "Provides mutual exclusion for thread synchronization.",
-        "category": "threading",
-        "example": "mutex mtx;"
-    },
-    "lock_guard": {
-        "description": "RAII wrapper for acquiring a mutex.",
-        "category": "threading",
-        "example": "lock_guard<mutex> lock(mtx);"
-    },
-    "array": {
-        "description": "Fixed-size array container.",
-        "category": "container",
-        "example": "array<int, 5> arr;"
-    },
-    "deque": {
-        "description": "Double-ended queue container.",
-        "category": "container",
-        "example": "deque<int> dq;"
-    },
-    "stack": {
-        "description": "Container adapter that gives stack functionality.",
-        "category": "container",
-        "example": "stack<int> s;"
-    },
-    "queue": {
-        "description": "Container adapter that gives queue functionality.",
-        "category": "container",
-        "example": "queue<int> q;"
-    },
-    "priority_queue": {
-        "description": "Container adapter that provides constant time lookup of the largest element.",
-        "category": "container",
-        "example": "priority_queue<int> pq;"
-    },
-    "optional": {
-        "description": "Represents optional (nullable) values.",
-        "category": "utility",
-        "example": "optional<int> maybeInt;"
-    },
-    "variant": {
-        "description": "Type-safe union for holding one of several types.",
-        "category": "utility",
-        "example": "variant<int, string> v;"
-    },
-    "any": {
-        "description": "Type-safe container for single values of any type.",
-        "category": "utility",
-        "example": "any a = 42;"
-    },
-    "exception": {
-        "description": "Base class for all standard exceptions.",
-        "category": "exception",
-        "example": "throw exception();"
-    },
-    "runtime_error": {
-        "description": "Exception class for runtime errors.",
-        "category": "exception",
-        "example": "throw runtime_error(\"Error\");"
-    },
-    "unique_lock": {
-        "description": "Flexible mutex ownership wrapper.",
-        "category": "threading",
-        "example": "unique_lock<mutex> lock(mtx);"
-    },
-    "future": {
-        "description": "Represents a value to be computed asynchronously.",
-        "category": "threading",
-        "example": "future<int> fut = async(func);"
-    },
-    "promise": {
-        "description": "Provides a mechanism to store a value or exception for future retrieval.",
-        "category": "threading",
-        "example": "promise<int> prom;"
-    },
-    "chrono": {
-        "description": "Time utilities for durations, clocks, and time points.",
-        "category": "time",
-        "example": "chrono::seconds s(1);"
-    },
-    "this_thread::sleep_for": {
-        "description": "Puts the current thread to sleep for a specified duration.",
-        "category": "threading",
-        "example": "this_thread::sleep_for(chrono::seconds(1));"
-    },
-    "ifstream": {
-        "description": "Input file stream for reading from files.",
-        "category": "io",
-        "example": "ifstream file(\"data.txt\");"
-    },
-    "ofstream": {
-        "description": "Output file stream for writing to files.",
-        "category": "io",
-        "example": "ofstream file(\"data.txt\");"
-    },
-    "stringstream": {
-        "description": "String stream for input and output operations on strings.",
-        "category": "io",
-        "example": "stringstream ss;"
-    },
-    "istringstream": {
-        "description": "Input string stream for reading from strings.",
-        "category": "io",
-        "example": "istringstream iss(\"123\");"
-    },
-    "ostringstream": {
-        "description": "Output string stream for writing to strings.",
-        "category": "io",
-        "example": "ostringstream oss;"
-    },
-    "getline": {
-        "description": "Reads a line from an input stream into a string.",
-        "category": "io",
-        "example": "getline(cin, line);"
-    },
-    "to_string": {
-        "description": "Converts a numeric value to a string.",
-        "category": "utility",
-        "example": "to_string(42);"
-    },
-    "stoi": {
-        "description": "Converts a string to an integer.",
-        "category": "utility",
-        "example": "int n = stoi(\"42\");"
-    },
-    "abs": {
-        "description": "Returns the absolute value of a number.",
-        "category": "math",
-        "example": "abs(-5);"
-    },
-    "max": {
-        "description": "Returns the larger of two values.",
-        "category": "utility",
-        "example": "max(a, b);"
-    },
-    "min": {
-        "description": "Returns the smaller of two values.",
-        "category": "utility",
-        "example": "min(a, b);"
-    },
-    "accumulate": {
-        "description": "Computes the sum of a range of elements.",
-        "category": "algorithm",
-        "example": "accumulate(vec.begin(), vec.end(), 0);"
-    },
-    "distance": {
-        "description": "Calculates the number of elements between two iterators.",
-        "category": "utility",
-        "example": "distance(begin, end);"
-    },
-    "advance": {
-        "description": "Advances an iterator by a given distance.",
-        "category": "utility",
-        "example": "advance(it, n);"
-    },
-    "reverse": {
-        "description": "Reverses the order of elements in a range.",
-        "category": "algorithm",
-        "example": "reverse(vec.begin(), vec.end());"
-    },
-    "fill": {
-        "description": "Assigns the given value to a range of elements.",
-        "category": "algorithm",
-        "example": "fill(vec.begin(), vec.end(), 0);"
-    },
-    "main": {
-        "description": "The main function of your program.",
-        "category": "exection",
-        "example": "int main() {\ncout<<\"intelege info\";\nreturn 0;\n}"
-    },
-    "std": {
-        "description": "Import the standard data types.",
-        "category": "library",
-        "example": "using namespace std;\nstd::cin>>x;"
-    },
-    "int": {
-        "description": "A whole number value.",
-        "category": "data",
-        "example": "int x = 5;"
+    "libraries":
+    [
+        [
+            {
+                "name": "iostream",
+                "description": "Provides standard input/output stream objects.",
+                "score": 100
+            },
+            {
+                "name": "vector",
+                "description": "Implements dynamic array container.",
+                "score": 98
+            },
+            {
+                "name": "string",
+                "description": "Implements string classes and related functions.",
+                "score": 96
+            },
+            {
+                "name": "algorithm",
+                "description": "Provides a collection of functions especially designed to be used on ranges of elements.",
+                "score": 94
+            },
+            {
+                "name": "map",
+                "description": "Implements associative containers that store elements formed by a combination of a key value and a mapped value.",
+                "score": 92
+            },
+            {
+                "name": "set",
+                "description": "Implements associative containers containing unique elements.",
+                "score": 90
+            },
+            {
+                "name": "memory",
+                "description": "Defines memory management utilities including smart pointers.",
+                "score": 88
+            },
+            {
+                "name": "queue",
+                "description": "Implements queue and priority queue containers.",
+                "score": 86
+            },
+            {
+                "name": "stack",
+                "description": "Implements stack container adapter.",
+                "score": 84
+            },
+            {
+                "name": "deque",
+                "description": "Implements double-ended queue container.",
+                "score": 82
+            },
+            {
+                "name": "unordered_map",
+                "description": "Implements unordered associative containers that use hash tables.",
+                "score": 80
+            },
+            {
+                "name": "unordered_set",
+                "description": "Implements unordered associative containers containing unique elements.",
+                "score": 78
+            },
+            {
+                "name": "fstream",
+                "description": "Provides file stream classes for file input and output.",
+                "score": 97
+            },
+            {
+                "name": "sstream",
+                "description": "Provides string stream classes for input and output operations on strings.",
+                "score": 74
+            },
+            {
+                "name": "array",
+                "description": "Provides a container that encapsulates fixed size arrays.",
+                "score": 72
+            },
+            {
+                "name": "list",
+                "description": "Implements doubly linked list container.",
+                "score": 70
+            },
+            {
+                "name": "utility",
+                "description": "Defines utility components such as pairs and move semantics.",
+                "score": 68
+            },
+            {
+                "name": "functional",
+                "description": "Defines function objects, function wrappers, and utilities.",
+                "score": 66
+            },
+            {
+                "name": "thread",
+                "description": "Provides classes and functions for multithreading.",
+                "score": 64
+            },
+            {
+                "name": "mutex",
+                "description": "Provides mutual exclusion primitives for multithreading.",
+                "score": 62
+            },
+            {
+                "name": "chrono",
+                "description": "Provides types and functions for dealing with time.",
+                "score": 60
+            },
+            {
+                "name": "cmath",
+                "description": "Declares a set of functions to compute common mathematical operations and transformations.",
+                "score": 58
+            },
+            {
+                "name": "random",
+                "description": "Provides random number generation facilities.",
+                "score": 56
+            },
+            {
+                "name": "bitset",
+                "description": "Implements a fixed-size sequence of bits.",
+                "score": 54
+            },
+            {
+                "name": "exception",
+                "description": "Defines exception handling classes and functions.",
+                "score": 52
+            },
+            {
+                "name": "stdexcept",
+                "description": "Defines standard exception classes.",
+                "score": 50
+            },
+            {
+                "name": "initializer_list",
+                "description": "Supports list initialization of objects.",
+                "score": 48
+            },
+            {
+                "name": "type_traits",
+                "description": "Provides compile-time type information.",
+                "score": 46
+            },
+            {
+                "name": "typeinfo",
+                "description": "Provides runtime type information.",
+                "score": 44
+            },
+            {
+                "name": "tuple",
+                "description": "Implements fixed-size collections of heterogeneous values.",
+                "score": 42
+            },
+            {
+                "name": "future",
+                "description": "Provides facilities for asynchronous computation.",
+                "score": 40
+            },
+            {
+                "name": "condition_variable",
+                "description": "Provides condition variable synchronization primitives.",
+                "score": 38
+            },
+            {
+                "name": "atomic",
+                "description": "Provides atomic operations for multithreading.",
+                "score": 36
+            },
+            {
+                "name": "numeric",
+                "description": "Provides numeric operations on containers.",
+                "score": 34
+            },
+            {
+                "name": "limits",
+                "description": "Defines characteristics of fundamental types.",
+                "score": 32
+            },
+            {
+                "name": "ostream",
+                "description": "Provides output stream classes.",
+                "score": 30
+            },
+            {
+                "name": "istream",
+                "description": "Provides input stream classes.",
+                "score": 28
+            },
+            {
+                "name": "ios",
+                "description": "Base classes for input/output stream classes.",
+                "score": 26
+            },
+            {
+                "name": "iosfwd",
+                "description": "Forward declarations of all classes in the input/output library.",
+                "score": 24
+            },
+            {
+                "name": "iomanip",
+                "description": "Provides facilities to manipulate input/output formats.",
+                "score": 22
+            },
+            {
+                "name": "iterator",
+                "description": "Defines iterator types and utilities.",
+                "score": 20
+            },
+            {
+                "name": "regex",
+                "description": "Provides regular expression matching.",
+                "score": 18
+            },
+            {
+                "name": "complex",
+                "description": "Provides complex number type and operations.",
+                "score": 16
+            },
+            {
+                "name": "valarray",
+                "description": "Implements classes and functions for numeric arrays.",
+                "score": 14
+            },
+            {
+                "name": "new",
+                "description": "Defines low-level memory management utilities.",
+                "score": 12
+            }
+        ]
+    ],
+
+    "tooltips":
+    {
+        "vector": {
+            "description": "A dynamic array container from the C++ Standard Library.",
+            "category": "container",
+            "example": "vector<int> numbers;"
+        },
+        "string": {
+            "description": "A standard string class for handling sequences of characters.",
+            "category": "string",
+            "example": "string name = \"Alice\";"
+        },
+        "map": {
+            "description": "Associative container that stores key-value pairs with unique keys.",
+            "category": "container",
+            "example": "map<int, string> idToName;"
+        },
+        "unordered_map": {
+            "description": "Hash table-based associative container for key-value pairs.",
+            "category": "container",
+            "example": "unordered_map<string, int> wordCount;"
+        },
+        "set": {
+            "description": "Associative container that contains unique sorted elements.",
+            "category": "container",
+            "example": "set<int> uniqueNumbers;"
+        },
+        "pair": {
+            "description": "A container to store a pair of values.",
+            "category": "utility",
+            "example": "pair<int, string> idName;"
+        },
+        "unique_ptr": {
+            "description": "Smart pointer that owns and manages another object exclusively.",
+            "category": "memory",
+            "example": "unique_ptr<MyClass> ptr(new MyClass);"
+        },
+        "shared_ptr": {
+            "description": "Smart pointer that retains shared ownership of an object.",
+            "category": "memory",
+            "example": "shared_ptr<MyClass> ptr = make_shared<MyClass>();"
+        },
+        "cout": {
+            "description": "Standard output stream for printing to the console.",
+            "category": "io",
+            "example": "cout << \"Hello, World!\" << endl;"
+        },
+        "cin": {
+            "description": "Standard input stream for reading from the console.",
+            "category": "io",
+            "example": "cin >> value;"
+        },
+        "endl": {
+            "description": "Manipulator to insert a newline and flush the output stream.",
+            "category": "io",
+            "example": "cout << endl;"
+        },
+        "move": {
+            "description": "Utility to enable move semantics for objects.",
+            "category": "utility",
+            "example": "auto moved = move(obj);"
+        },
+        "swap": {
+            "description": "Exchanges the values of two objects.",
+            "category": "utility",
+            "example": "swap(a, b);"
+        },
+        "sort": {
+            "description": "Sorts the elements in a range.",
+            "category": "algorithm",
+            "example": "sort(vec.begin(), vec.end());"
+        },
+        "find": {
+            "description": "Finds the first occurrence of a value in a range.",
+            "category": "algorithm",
+            "example": "auto it = find(vec.begin(), vec.end(), value);"
+        },
+        "function": {
+            "description": "General-purpose polymorphic function wrapper.",
+            "category": "utility",
+            "example": "function<void()> func = [](){};"
+        },
+        "thread": {
+            "description": "Represents a single thread of execution.",
+            "category": "threading",
+            "example": "thread t(myFunction);"
+        },
+        "mutex": {
+            "description": "Provides mutual exclusion for thread synchronization.",
+            "category": "threading",
+            "example": "mutex mtx;"
+        },
+        "lock_guard": {
+            "description": "RAII wrapper for acquiring a mutex.",
+            "category": "threading",
+            "example": "lock_guard<mutex> lock(mtx);"
+        },
+        "array": {
+            "description": "Fixed-size array container.",
+            "category": "container",
+            "example": "array<int, 5> arr;"
+        },
+        "deque": {
+            "description": "Double-ended queue container.",
+            "category": "container",
+            "example": "deque<int> dq;"
+        },
+        "stack": {
+            "description": "Container adapter that gives stack functionality.",
+            "category": "container",
+            "example": "stack<int> s;"
+        },
+        "queue": {
+            "description": "Container adapter that gives queue functionality.",
+            "category": "container",
+            "example": "queue<int> q;"
+        },
+        "priority_queue": {
+            "description": "Container adapter that provides constant time lookup of the largest element.",
+            "category": "container",
+            "example": "priority_queue<int> pq;"
+        },
+        "optional": {
+            "description": "Represents optional (nullable) values.",
+            "category": "utility",
+            "example": "optional<int> maybeInt;"
+        },
+        "variant": {
+            "description": "Type-safe union for holding one of several types.",
+            "category": "utility",
+            "example": "variant<int, string> v;"
+        },
+        "any": {
+            "description": "Type-safe container for single values of any type.",
+            "category": "utility",
+            "example": "any a = 42;"
+        },
+        "exception": {
+            "description": "Base class for all standard exceptions.",
+            "category": "exception",
+            "example": "throw exception();"
+        },
+        "runtime_error": {
+            "description": "Exception class for runtime errors.",
+            "category": "exception",
+            "example": "throw runtime_error(\"Error\");"
+        },
+        "unique_lock": {
+            "description": "Flexible mutex ownership wrapper.",
+            "category": "threading",
+            "example": "unique_lock<mutex> lock(mtx);"
+        },
+        "future": {
+            "description": "Represents a value to be computed asynchronously.",
+            "category": "threading",
+            "example": "future<int> fut = async(func);"
+        },
+        "promise": {
+            "description": "Provides a mechanism to store a value or exception for future retrieval.",
+            "category": "threading",
+            "example": "promise<int> prom;"
+        },
+        "chrono": {
+            "description": "Time utilities for durations, clocks, and time points.",
+            "category": "time",
+            "example": "chrono::seconds s(1);"
+        },
+        "this_thread::sleep_for": {
+            "description": "Puts the current thread to sleep for a specified duration.",
+            "category": "threading",
+            "example": "this_thread::sleep_for(chrono::seconds(1));"
+        },
+        "ifstream": {
+            "description": "Input file stream for reading from files.",
+            "category": "io",
+            "example": "ifstream file(\"data.txt\");"
+        },
+        "ofstream": {
+            "description": "Output file stream for writing to files.",
+            "category": "io",
+            "example": "ofstream file(\"data.txt\");"
+        },
+        "stringstream": {
+            "description": "String stream for input and output operations on strings.",
+            "category": "io",
+            "example": "stringstream ss;"
+        },
+        "istringstream": {
+            "description": "Input string stream for reading from strings.",
+            "category": "io",
+            "example": "istringstream iss(\"123\");"
+        },
+        "ostringstream": {
+            "description": "Output string stream for writing to strings.",
+            "category": "io",
+            "example": "ostringstream oss;"
+        },
+        "getline": {
+            "description": "Reads a line from an input stream into a string.",
+            "category": "io",
+            "example": "getline(cin, line);"
+        },
+        "to_string": {
+            "description": "Converts a numeric value to a string.",
+            "category": "utility",
+            "example": "to_string(42);"
+        },
+        "stoi": {
+            "description": "Converts a string to an integer.",
+            "category": "utility",
+            "example": "int n = stoi(\"42\");"
+        },
+        "abs": {
+            "description": "Returns the absolute value of a number.",
+            "category": "math",
+            "example": "abs(-5);"
+        },
+        "max": {
+            "description": "Returns the larger of two values.",
+            "category": "utility",
+            "example": "max(a, b);"
+        },
+        "min": {
+            "description": "Returns the smaller of two values.",
+            "category": "utility",
+            "example": "min(a, b);"
+        },
+        "accumulate": {
+            "description": "Computes the sum of a range of elements.",
+            "category": "algorithm",
+            "example": "accumulate(vec.begin(), vec.end(), 0);"
+        },
+        "distance": {
+            "description": "Calculates the number of elements between two iterators.",
+            "category": "utility",
+            "example": "distance(begin, end);"
+        },
+        "advance": {
+            "description": "Advances an iterator by a given distance.",
+            "category": "utility",
+            "example": "advance(it, n);"
+        },
+        "reverse": {
+            "description": "Reverses the order of elements in a range.",
+            "category": "algorithm",
+            "example": "reverse(vec.begin(), vec.end());"
+        },
+        "fill": {
+            "description": "Assigns the given value to a range of elements.",
+            "category": "algorithm",
+            "example": "fill(vec.begin(), vec.end(), 0);"
+        },
+        "main": {
+            "description": "The main function of your program.",
+            "category": "exection",
+            "example": "int main() {\ncout<<\"intelege info\";\nreturn 0;\n}"
+        },
+        "std": {
+            "description": "Import the standard data types.",
+            "category": "library",
+            "example": "using namespace std;\nstd::cin>>x;"
+        },
+        "int": {
+            "description": "A whole number value.",
+            "category": "data",
+            "example": "int x = 5;"
+        }
     }
+
 }

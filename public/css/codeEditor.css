@@ -174,7 +174,7 @@ header {
   grid-template-rows: max-content auto;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
   border: 1px solid gray;
-  border-radius: 1lh;
+  border-radius: 0.5lh;
   overflow: hidden;
 }
 
@@ -302,16 +302,14 @@ header {
 
 #editor-tabs, .tabs-container {
   height: 1.75em;
-  min-height: 30px;
+  min-height: 40px;
   background-color: black;
   text-align: center;
   display: flex;
   justify-content: space-between;
-  padding: 5px 5px;
-  padding-bottom: 0px;
   font-family: "Poppins", sans-serif;
   border-bottom: 1px solid gray;
-  align-items: center;
+  align-items: stretch;
 }
 #editor-tabs .editor-tabs-container, .tabs-container .editor-tabs-container {
   display: flex;
@@ -320,6 +318,8 @@ header {
   gap: 5px;
   width: 100%;
   height: 100%;
+  padding: 2px;
+  box-sizing: border-box;
 }
 #editor-tabs button, .tabs-container button {
   border: 1px solid gray;
@@ -404,13 +404,16 @@ header {
 }
 
 .project-list-container {
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2509803922), rgba(255, 255, 255, 0));
+  background: linear-gradient(45deg, rgba(61, 61, 61, 0.2), rgba(43, 43, 43, 0.2509803922), rgba(34, 34, 34, 0));
   border-radius: 1lh;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  width: 200px;
+  min-width: 300px;
+  min-height: 500px;
+  padding: 30px;
+  justify-content: space-between;
 }
 
 .project-list-container ul {
@@ -418,18 +421,20 @@ header {
 }
 
 .project-list-container ul li {
-  width: 100px;
-  margin: 3px;
-  display: block;
+  width: 200px;
+  margin: 0.25em;
+  display: flex;
 }
 .project-list-container ul li button:first-child {
-  width: 80px;
+  width: 100%;
+  margin: 0 5px;
 }
 
 .project-list-container > button:last-child {
   width: 150px;
   height: 2lh;
   border-radius: 2lh;
+  justify-self: flex-end;
 }
 
 #createFile {
@@ -452,11 +457,11 @@ header {
 
 #session-controls {
   display: flex;
+  transition-duration: 0.2s;
+  box-sizing: content-box;
   gap: 5px;
-  border-left: 1px solid gray;
-  padding: 1px 1px 1px 5px;
+  padding: 1px 5px 1px 5px;
   align-items: center;
-  margin-bottom: 5px;
 }
 #session-controls .create-file {
   border-radius: 50%;
@@ -464,6 +469,11 @@ header {
 }
 #session-controls #saveProject.saved {
   opacity: 0.5;
+}
+
+vl {
+  width: 1px;
+  background-color: gray;
 }
 
 #name-prompt {
@@ -549,7 +559,7 @@ button:not(.custom-button) {
 #output-container {
   /* max-height: 500px;
   min-height: 200px; */
-  border-radius: 1lh 1lh;
+  border-radius: 0.5lh 0.5lh;
   overflow: hidden;
   min-width: 200px;
   grid-row: 2;
@@ -1308,6 +1318,44 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   transition-duration: 0.1s;
 }
 
+#session-controls {
+  transition-duration: 0.2s;
+  width: fit-content;
+}
+
+.slide-out-display {
+  width: fit-content;
+  display: flex;
+  flex-direction: row-reverse;
+  transition-duration: 0.1s;
+  gap: 0.5em;
+}
+.slide-out-display:has(.slide-out-container.enabled) {
+  gap: 1em;
+}
+
+.slide-out-container {
+  overflow: hidden;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-out;
+  width: 100%;
+  display: flex;
+  gap: 0.5em;
+}
+.slide-out-container:not(.enabled) {
+  width: 0;
+  opacity: 0.3;
+  transition-duration: 0.65s;
+  transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+.slide-out-container button.enable {
+  opacity: 0.5;
+}
+
+.slide-out-display > button {
+  order: -1;
+}
+
 /* media queries */
 @media screen and (max-width: 1300px) {
   .container {
@@ -1327,6 +1375,25 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
     padding: 5px 10px;
   }
 }
+#context-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  gap: 0.5em;
+  background-color: rgba(37, 37, 37, 0.397);
+  backdrop-filter: blur(3px);
+}
+
+.ace_codeLens {
+  font-size: 0.7rem;
+}
+.ace_codeLens a {
+  opacity: 0.5;
+}
+.ace_codeLens a:hover {
+  opacity: 1;
+}
+
 @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
   .container {
     grid-template-columns: 1fr;

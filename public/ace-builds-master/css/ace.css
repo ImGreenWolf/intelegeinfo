@@ -798,7 +798,7 @@ top: -5px;
 .ace_codeLens {
 position: absolute;
 color: #aaa;
-font-size: 88%;
+font-size: 0.1rem;
 background: inherit;
 width: 100%;
 display: flex;

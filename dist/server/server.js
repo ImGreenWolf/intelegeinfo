@@ -47,6 +47,7 @@ const types_1 = require("../../dist/shared/types");
 const stream_1 = require("stream");
 const types_2 = require("./types");
 const qrcode = __importStar(require("qrcode"));
+const archiver_1 = __importDefault(require("archiver"));
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -154,6 +155,29 @@ app.get('/editor/tooltipHints/:id', (req, res) => {
         res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'server', 'data', 'tooltips.json')).toString()));
     else
         res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'server', 'data', 'tooltips.json')).toString())[tooltipid]);
+});
+app.get('/editor/:session/file/:name', (req, res) => {
+    const name = req.params.name;
+    const session = req.params.session;
+    if (name && session) {
+        const file = fs_1.default.readFileSync(path_1.default.join(getClientFilesPath(session), name)).toString();
+        if (file.length > 50)
+            res.send(file.substring(0, 50) + "...");
+        else
+            res.send(file);
+    }
+});
+app.get('/editor/:session/downloadFiles', (req, res) => {
+    const session = req.params.session;
+    if (!session || !exports.sessionMap.has(session))
+        res.status(401).send('Didnt find session.');
+    const folderPath = getClientFilesPath(session); // Path to folder to download
+    res.setHeader('Content-Disposition', 'attachment; filename=folder.zip');
+    res.setHeader('Content-Type', 'application/zip');
+    const archive = (0, archiver_1.default)('zip', { zlib: { level: 9 } });
+    archive.directory(folderPath, false);
+    archive.pipe(res);
+    archive.finalize();
 });
 // app.get('/problem', problemCreator);
 app.get('/editor', (req, res) => {
@@ -431,6 +455,9 @@ var commandType;
 //             console.log("Unrecognized command: " + command)
 //             break;
 //     }
+function getClientFilesPath(sessionId) {
+    return path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
+}
 // })
 function compileFile(clientId, sessionId) {
     return new Promise((resolve, reject) => {
@@ -1314,21 +1341,35 @@ exports.wss.on("connection", (ws, req) => {
                                     printClientConsoleError("File already exists!");
                                 break;
                             case FileManagementCommands.Delete:
-                                fs_1.default.unlink(path_1.default.join(clientFilesPath, messageJSON.body), (err) => {
-                                    if (err) {
-                                        printClientConsoleError("Error deleting file: " + err.message);
-                                    }
-                                    else {
-                                        console.log("File deleted successfully");
-                                        replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.FileManagement, body: ({ command: commandType, content: messageJSON.fileName, }) });
-                                    }
-                                });
+                                if (!clientObj.canEdit)
+                                    break;
+                                try {
+                                    fs_1.default.unlink(path_1.default.join(clientFilesPath, messageJSON.name), (err) => {
+                                        if (err) {
+                                            printClientConsoleError("Error deleting file: " + err.message);
+                                        }
+                                        else {
+                                            console.log("File deleted successfully");
+                                            replicateFunction((cws) => {
+                                                cws.send(JSON.stringify({ ...messageJSON }));
+                                            }, clientObj);
+                                        }
+                                    });
+                                }
+                                catch (err) {
+                                    printClientConsoleError(err);
+                                }
                                 break;
                             //  TODO Make this so it just return name and make seperate function for fle content, which will be called only when opening the file on the client. STORE IT IN CACHE, ADD A DIRTY VERIFICATION TO NOT SEND THE SAME SHI MULTIPLE TIMES DONT OPEN THE EDITOR UNTIL THE FILE HAS LOADED ON THE CLIENT SEND THE FILES ON  HANDSHAKE MAKE SURE IT IS ALL REPLICATED
                             case FileManagementCommands.List:
                                 listFiles(clientFilesPath);
                                 break;
                             case FileManagementCommands.Rename:
+                                if (!clientObj.canEdit)
+                                    break;
+                                replicateFunction((cws) => {
+                                    cws.send(JSON.stringify({ ...messageJSON }));
+                                }, clientObj);
                                 break;
                             case FileManagementCommands.Open:
                                 openFile(messageJSON.body);

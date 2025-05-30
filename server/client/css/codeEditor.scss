@@ -125,7 +125,7 @@ header
     grid-template-rows: max-content auto; 
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
     border: 1px solid opacify($color: theme.$border-color, $amount: 0.2);
-    border-radius: 1lh;
+    border-radius: 0.5lh;
     overflow: hidden;
 }
 
@@ -264,16 +264,16 @@ header
 #editor-tabs, .tabs-container
 {
     height: 1.75em;
-    min-height: 30px;
+    min-height: 40px;
     background-color: theme.$foreground-color;
     text-align: center;
     display: flex;
     justify-content: space-between;
-    padding: 5px 5px;
-    padding-bottom: 0px;
+    // padding: 0px 5px;
+    // padding-bottom: 0px;
     font-family: "Poppins", sans-serif;
     border-bottom: 1px solid theme.$border-color;
-    align-items: center;
+    align-items: stretch;
     // border-radius: 1lh 1lh 0 0;
     & .editor-tabs-container
     {
@@ -283,7 +283,8 @@ header
         gap: 5px;
         width: 100%;
         height: 100%;
-
+        padding: 2px;
+        box-sizing: border-box;
     }
     & button
     {
@@ -389,14 +390,17 @@ header
 .project-list-container
 {
     @extend .pop-up;
-    background: linear-gradient(45deg, #ffffff33, #ffffff40, #ffffff00);
+    background: linear-gradient(45deg, #3d3d3d33, #2b2b2b40, #22222200);
     // box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;    padding: 30px;
     border-radius: 1lh;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    width: 200px;
+    min-width: 300px;
+    min-height: 500px;
+    padding: 30px;
+    justify-content: space-between;
 }
 
 .project-list-container ul
@@ -405,11 +409,13 @@ header
 }
 .project-list-container ul li
 {
-    width: 100px;
-    margin: 3px;
-    display: block;
+    width: 200px;
+    margin: 0.25em;
+    display: flex;
+    
     & button:first-child {
-        width: 80px;
+        width: 100%;
+        margin: 0 5px;
     }
 }
 
@@ -418,6 +424,7 @@ header
     width: 150px;
     height: 2lh;
     border-radius: 2lh;
+    justify-self: flex-end;
 }
 
 #createFile
@@ -445,11 +452,13 @@ header
 #session-controls
 {
     display: flex;
+    transition-duration: 0.2s;
+    box-sizing: content-box;
+
     gap: 5px;
-    border-left: 1px solid theme.$border-color;
-    padding:  1px 1px 1px 5px;
+    // border-left: 1px solid theme.$border-color;
+    padding:  1px 5px 1px 5px;
     align-items: center;
-    margin-bottom: 5px;
 
     .create-file
     {
@@ -462,6 +471,12 @@ header
         opacity: 0.5;
     }
 
+
+}
+vl
+{
+    width: 1px;
+    background-color: theme.$border-color;
 }
 
 
@@ -567,7 +582,7 @@ button:not(.custom-button)
 {
     /* max-height: 500px;
     min-height: 200px; */
-    border-radius: 1lh 1lh;
+    border-radius: 0.5lh 0.5lh;
     overflow: hidden;
     min-width: 200px;
     // border-radius: 10px 10px 24px 24px;
@@ -1403,7 +1418,6 @@ pointer-events: none;
         margin: 10px;
     }
 
-    
     #connect-data-container:not(.created)::after
     {
         content: "<- Create session";
@@ -1600,11 +1614,51 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
     }
 
 }
+#session-controls
+{
+    transition-duration: 0.2s;
+    width: fit-content;
 
+}
 
+.slide-out-display
+{
+    width: fit-content;
+    display: flex;
+    flex-direction: row-reverse;
+    transition-duration: 0.1s;
+    &:has(.slide-out-container.enabled)
+    {
+        gap: 1em;
+    }
+    gap: 0.5em;
+}
 
-
-
+.slide-out-container
+{
+    overflow: hidden;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+    width: 100%;
+    display: flex;
+    gap: 0.5em;
+    &:not(.enabled)
+    {
+        width: 0;
+        opacity: 0.3;
+        transition-duration: 0.65s;
+        transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    }
+    & button.enable
+    {
+        opacity: 0.5;
+    }
+}
+.slide-out-display>button
+{
+    order: -1;
+    
+}
 /* media queries */
 
 
@@ -1636,6 +1690,31 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
     }
 }
 
+#context-menu
+{
+    display: flex;
+    flex-direction: column;
+    padding: 10px 20px;
+    gap: 0.5em;
+    background-color: rgba(37, 37, 37, 0.397);
+    backdrop-filter: blur(3px);;
+}
+
+
+.ace_codeLens 
+{
+
+    font-size: 0.7rem;
+    & a
+    {
+        opacity: 0.5;
+    }
+    
+    & a:hover
+    {
+        opacity: 1;
+    }
+}
  @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
     .container {
         grid-template-columns: 1fr;

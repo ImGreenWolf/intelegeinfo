@@ -16881,7 +16881,7 @@ var Marker = /** @class */ (function () {
     };
     Marker.prototype.drawTextMarker = function (stringBuilder, range, clazz, layerConfig, extraStyle, id) {
         var session = this.session;
-        console.log(id)
+        // console.log(id)
         var start = range.start.row;
         var end = range.end.row;
         var row = start;
@@ -16902,7 +16902,7 @@ var Marker = /** @class */ (function () {
     };
     Marker.prototype.drawMultiLineMarker = function (stringBuilder, range, clazz, config, extraStyle, id) {
         var padding = this.$padding;
-        console.log(id)
+        // console.log(id)
         var height = config.lineHeight;
         var top = this.$getTop(range.start.row, config);
         var left = padding + range.start.column * config.characterWidth;
@@ -16944,7 +16944,7 @@ var Marker = /** @class */ (function () {
         if (this.session.$bidiHandler.isBidiRow(range.start.row))
             return this.drawBidiSingleLineMarker(stringBuilder, range, clazz, config, extraLength, extraStyle);
         var height = config.lineHeight;
-        console.log(id)
+        // console.log(id)
         var width = (range.end.column + (extraLength || 0) - range.start.column) * config.characterWidth;
         var top = this.$getTop(range.start.row, config);
         var left = this.$padding + range.start.column * config.characterWidth;
@@ -16965,7 +16965,7 @@ var Marker = /** @class */ (function () {
     };
     Marker.prototype.drawFullLineMarker = function (stringBuilder, range, clazz, config, extraStyle, id) {
         var top = this.$getTop(range.start.row, config);
-        console.log(id)
+        // console.log(id)
         var height = config.lineHeight;
         if (range.start.row != range.end.row)
             height += this.$getTop(range.end.row, config) - top;
@@ -16975,7 +16975,7 @@ var Marker = /** @class */ (function () {
     };
     Marker.prototype.drawScreenLineMarker = function (stringBuilder, range, clazz, config, extraStyle, id) {
         var top = this.$getTop(range.start.row, config);
-        console.log(id)
+        // console.log(id)
         var height = config.lineHeight;
         this.elt(clazz, "height:" + height + "px;" +
             "top:" + top + "px;" +

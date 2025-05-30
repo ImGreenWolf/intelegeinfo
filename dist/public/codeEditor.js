@@ -39,6 +39,8 @@ let wsSessionId;
 const outputArea = document.getElementById("output");
 const outputConsoles = [];
 let activeConsole;
+let contextMenu;
+let parsedCode;
 // let posX=0;
 // let posY=0;
 let stepint;
@@ -390,6 +392,7 @@ var editor = ace.edit("editor", {
     //maxLines: 30,
     wrap: true,
     autoScrollEditorIntoView: true,
+    enableCodeLens: true,
 });
 // window.onload = function() {
 //   //  document.querySelector('#editor textarea')?.setAttribute('inputmode', 'none')
@@ -495,11 +498,23 @@ if (new URLSearchParams(window.location.search).has('save'))
 // export function onMarkerUpdate(marker:any, elem: HTMLDivElement)
 // {
 // }
+var beautify = ace.require("ace/ext/beautify"); // get reference to extension
+export function beautifyEditor() {
+    beautify.beautify(editor.session);
+}
+export function undo() {
+    editor.session.getUndoManager().redo(editor.session);
+}
+export function redo() {
+    editor.session.getUndoManager().undo(editor.session);
+}
 editor.on('changeSession', (e) => {
     //TODO Check if i can imrove the changedCss check, so it
     // doesnt create new listener for each update.
     let errorDisplay;
     let errorDisplayTimeout;
+    !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
+    !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
     editor.session.on('changeBreakpoint', e => {
     });
     editor.session.on('changeScrollTop', scrollTop => {
@@ -622,6 +637,60 @@ function addMouseListener(session) {
 const FileContainer = document.getElementById("editor-tabs-container");
 if (!FileContainer)
     console.error("Couldn't find file container!");
+function deleteFile(fileName, remote) {
+    if (!editorSessions.has(fileName))
+        return false;
+    editorSessions.get(fileName)?.fileElement?.remove();
+    if (!remote)
+        ws.send(JSON.stringify({
+            type: WebSocketMessageType.FileManagement,
+            command: FileManagementCommands.Delete,
+            name: fileName,
+        }));
+    if (currentFileName == fileName)
+        displayBlankEditor();
+    editorSessions.delete(fileName);
+    return true;
+}
+function getFileValue(fileName) {
+    return new Promise((resolve, reject) => {
+        fetch('editor/' + wsSessionId + '/file/' + fileName).then(res => {
+            res.text().then(text => {
+                resolve(text);
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    });
+}
+function displayBlankEditor() {
+    currentFileName = '';
+    editor.session.setValue('Create a new file!');
+    editor.session.setMode('txt');
+}
+function renameFile(fileName, newName) {
+    if (!editorSessions.has(fileName))
+        return false;
+    if (newName) {
+        editor.session.setMode(aceModes.getModeForPath(newName).mode);
+        editorSessions.get(fileName).fileElement.innerText = newName;
+    }
+    else {
+        editorSessions.get(fileName).fileElement.style.display = 'none';
+        awaitFileNamePrompt().then(name => {
+            editorSessions.get(fileName).fileElement.style.display = 'block';
+            editorSessions.get(fileName).fileElement.innerText = name;
+            editor.session.setMode(aceModes.getModeForPath(name).mode);
+            ws.send(JSON.stringify({
+                type: WebSocketMessageType.FileManagement,
+                command: FileManagementCommands.Rename,
+                name: fileName,
+                newName: name
+            }));
+        });
+    }
+    return true;
+}
 function onFileCreate(fileName) {
     // const command = JSON.parse(messageBodyJson);
     // const fileName = command.content;
@@ -630,6 +699,31 @@ function onFileCreate(fileName) {
     fileElem.innerText = fileName;
     fileElem.onclick = () => {
         openFile(fileElem.innerHTML);
+    };
+    fileElem.oncontextmenu = (ev) => {
+        ev.preventDefault();
+        if (contextMenu)
+            contextMenu.remove();
+        contextMenu = document.createElement('div');
+        const deleteButton = document.createElement('button');
+        deleteButton.innerText = "Delete";
+        deleteButton.onclick = () => {
+            deleteFile(fileName);
+            contextMenu.remove();
+        };
+        contextMenu.appendChild(deleteButton);
+        const renameButton = document.createElement('button');
+        renameButton.onclick = () => {
+            renameFile(fileName);
+            contextMenu.remove();
+        };
+        renameButton.innerText = "Rename";
+        contextMenu.appendChild(renameButton);
+        contextMenu.id = 'context-menu';
+        contextMenu.style.position = 'absolute';
+        contextMenu.style.top = ev.y + "px";
+        contextMenu.style.left = ev.x + "px";
+        document.body.appendChild(contextMenu);
     };
     FileContainer.appendChild(fileElem);
     if (editorSessions.has(fileName)) {
@@ -670,6 +764,25 @@ export function createFileNamePrompt() {
         }
     }
     const enterListener = namePrompt.addEventListener("keypress", handleEnterKey);
+}
+export function awaitFileNamePrompt() {
+    return new Promise((resolve, reject) => {
+        if (!namePrompt)
+            return;
+        namePrompt.style.display = "initial";
+        namePrompt.innerText = "";
+        namePrompt.focus();
+        function handleEnterKey(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                resolve(this.innerText);
+                this.style.display = "none";
+                this.innerText = "";
+                this.removeEventListener("keypress", handleEnterKey);
+            }
+        }
+        const enterListener = namePrompt.addEventListener("keypress", handleEnterKey);
+    });
 }
 if (consoleInput)
     consoleInput.addEventListener("keypress", (e) => {
@@ -1186,7 +1299,7 @@ if (document.cookie.includes('session=') && !window.location.search.includes('sa
     if (!window.confirm('You have a previous unsaved session, would you like to recover it?'))
         document.cookie = 'session=';
 }
-export const ws = new WebSocket(WSUrl);
+const ws = new WebSocket(WSUrl);
 let variables = [];
 const variableArrayIndexes = [];
 export function submitConsole(elem, type, Console) {
@@ -1341,13 +1454,21 @@ class TokenTooltip extends Tooltip {
                 state: session.bgTokenizer.getState(0)
             };
         }
-        if (!token || !tooltip[token.value]) {
+        var tokenText = '';
+        if (editorSessions.has(token.value)) {
+            //  this.hide();
+            const fileText = await getFileValue(token.value);
+            tokenText = `<b>${token.value}</b>: <pre style="opacity: 0.75; max-height: 20lh; overflow: hidden;">${fileText}</pre>`;
+        }
+        else if (!token || !tooltip.tooltips[token.value]) {
             session.removeMarker(this.marker);
             this.hide();
             return;
         }
-        const tooltipValue = tooltip[token.value] || undefined; //(await (await fetch('/editor/tooltipHints/'+token.value)).json()).description;
-        var tokenText = tooltipValue.description + "\n<span>" + tooltipValue.example + "</span>";
+        else {
+            const tooltipValue = tooltip.tooltips[token.value] || undefined; //(await (await fetch('/editor/tooltipHints/'+token.value)).json()).description;
+            tokenText = tooltipValue.description + "\n<span>" + tooltipValue.example + "</span>";
+        }
         if (token.state)
             tokenText += "|" + token.state;
         if (token.merge)
@@ -1435,6 +1556,10 @@ ws.onopen = (ev) => {
     }, 500);
     const tooltip = new TokenTooltip(editor);
     editor.on("change", (delta) => {
+        !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
+        !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
+        editor.renderer.updateFull();
+        parsedCode = parseCode();
         if (isRemoteChange)
             return;
         const code = editor.getValue();
@@ -2040,12 +2165,13 @@ ws.onmessage = (event) => {
             break;
         case WebSocketMessageType.FileManagement:
             //   data.command should work too but it doesnt TODO
-            const commandType = JSON.parse(event.data).body.command;
+            const commandType = JSON.parse(event.data).body ? JSON.parse(event.data).body.command : eventJson.command;
             switch (commandType) {
                 case FileManagementCommands.Create:
                     onFileCreate(data.content);
                     break;
                 case FileManagementCommands.Delete:
+                    deleteFile(eventJson.name, true);
                     break;
                 case FileManagementCommands.List:
                     JSON.parse(event.data).body.content.forEach((file) => {
@@ -2053,6 +2179,7 @@ ws.onmessage = (event) => {
                     });
                     break;
                 case FileManagementCommands.Rename:
+                    renameFile(eventJson.name, eventJson.newName);
                     break;
                 case FileManagementCommands.Open:
                     const fileName = eventJson.body.fileName;
@@ -2333,4 +2460,217 @@ function getDistanceFromPosition(checkCursor, posX, posY) {
     const elemX = checkCursor.offsetLeft;
     const elemY = checkCursor.offsetTop;
     return Math.sqrt(Math.pow(elemX - posX, 2) + Math.pow(elemY - posY, 2));
+}
+const commandId = "createFileCommand";
+editor.commands.addCommand({
+    name: commandId,
+    exec: function (editor, args) {
+        const filename = args?.filename || "unnamed.txt";
+        createFile(filename);
+        openFile(filename);
+        editor.renderer.updateFull(true);
+        codeLens.clear(editor.session);
+    }
+});
+editor.commands.addCommand({
+    name: "include<fstream>",
+    exec: function (editor, args) {
+        const index = editor.getValue().lastIndexOf("#include");
+        if (index == -1)
+            editor.session.insert({ row: 0, column: 0 }, "#include <fstream>\n");
+        else {
+            const point = editor.session.doc.indexToPosition(index);
+            editor.session.insert({ row: point.row + 1, column: 0 }, "#include <fstream>\n");
+        }
+    }
+});
+editor.commands.addCommand({
+    name: "usingnamespacestd",
+    exec: function (editor, args) {
+        const index = editor.getValue().lastIndexOf("#include");
+        if (index == -1)
+            editor.session.insert({ row: 0, column: 0 }, "\nusing namespace std;\n");
+        else {
+            const point = editor.session.doc.indexToPosition(index);
+            editor.session.insert({ row: point.row + 1, column: 0 }, "\nusing namespace std;\n");
+        }
+    }
+});
+// Register CodeLens provider
+codeLens.registerCodeLensProvider(editor, {
+    provideCodeLenses: function (session, callback) {
+        const lines = session.getDocument().getAllLines();
+        const lenses = [];
+        const regex = /[i o]fstream\s+\w+\s*\(\s*["'](.+?)["']\s*\);/;
+        lines.forEach((line, row) => {
+            const match = line.match(regex);
+            if (match) {
+                const filename = match[1];
+                if (!editorSessions.has(filename))
+                    lenses.push({
+                        start: { row },
+                        command: {
+                            id: commandId,
+                            title: `Create file "${filename}"`,
+                            arguments: { filename }
+                        }
+                    });
+                if (!editor.getValue().includes("#include <fstream>"))
+                    lenses.push({
+                        start: { row },
+                        command: {
+                            id: "include<fstream>",
+                            title: `Add #include <fstream>"`,
+                            arguments: {}
+                        }
+                    });
+            }
+            if (line.includes("#include <iostream>"))
+                if (!editor.getValue().includes("using namespace std;"))
+                    lenses.push({
+                        start: { row },
+                        command: {
+                            id: "usingnamespacestd",
+                            title: `Add using namespace std;`,
+                            arguments: {}
+                        }
+                    });
+        });
+        callback(null, lenses);
+    }
+});
+const customCompleter = {
+    getCompletions: function (editor, session, pos, prefix, callback) {
+        // if (prefix.length === 0) {
+        //   callback(null, []);
+        //   return;
+        // }
+        const line = session.getLine(pos.row).trim();
+        let completions = [];
+        if (line.includes("#include")) {
+            const libraries = tooltip.libraries[0];
+            const completions = libraries.map(lib => ({
+                caption: prefix.length > 0 ? `${lib.name}>` : `<${lib.name}>`,
+                value: prefix.length > 0 ? `${lib.name}>` : `<${lib.name}>`,
+                meta: "library",
+                score: lib.score,
+                docHTML: `<b>&lt;${lib.name}&gt;</b><br>${lib.description}`
+            }));
+            // callback(null, completions);
+        }
+        else {
+            completions = parsedCode.functions
+                //  .filter(c => {return c.name == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.name == undefined})
+                .map(c => ({
+                caption: c.name, value: c.name, meta: "function", score: 100,
+                docHTML: `${c.type} <b>${c.name}</b><pre>${c.content}</pre>`
+            })).concat(parsedCode.variables
+                .filter(c => { return c.functionName == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.functionName == undefined; })
+                .map(c => ({
+                caption: c.name, value: c.name, meta: `${c.type} variable : ${c.functionName ? c.functionName : "Global"}`, score: 100,
+                docHTML: `${c.type} <b>${c.name}</b>`
+            })));
+        }
+        console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start));
+        console.log(indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name);
+        callback(null, completions);
+    }
+};
+// Register it
+ace.require("ace/ext/language_tools").addCompleter(customCompleter);
+function parseCode() {
+    const code = editor.session.getValue();
+    let depth = 0;
+    const functions = [];
+    const variables = [];
+    let buffer = '';
+    let tokenIndex = 0;
+    const tokens = [];
+    const storageType = ("asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|" +
+        "_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|" +
+        "class|wchar_t|template|char16_t|char32_t");
+    const types = storageType.split("|");
+    for (let i = 0; i < code.length; i++) {
+        const char = code[i];
+        if (((char == " " || char == "\n" || char == "\\n") && buffer != '' && buffer.trim() != '') || i + 1 == code.length) {
+            tokens.push({ body: buffer + char, name: buffer.trim(), depth, tokenIndex });
+            buffer = '';
+            continue;
+        }
+        else {
+            switch (char) {
+                case "{":
+                    depth++;
+                    break;
+                case "}":
+                    // if(depth-1==0)
+                    tokenIndex++;
+                    depth--;
+                case ";":
+                    continue;
+                    break;
+            }
+            buffer += char;
+        }
+    }
+    tokens.forEach((token, index) => {
+        if (index > 0)
+            if (types.includes(tokens[index - 1].name)) {
+                if (token.name.includes("(") && token.name.includes(")")) {
+                    if (tokens[index + 1] == undefined)
+                        return;
+                    let content = tokens[index + 1].body;
+                    let j = index + 1;
+                    if (j < tokens.length && tokens[j].depth != undefined)
+                        while (tokens[j].depth > token.depth && j <= tokens.length && tokens[j + 1] != undefined)
+                            content += tokens[++j].body;
+                    functions.push({ name: token.name, type: tokens[index - 1].name, depth: token.depth, content, tokenIndex: token.tokenIndex });
+                }
+                else {
+                    const functionName = functions.find(value => {
+                        return value.tokenIndex == token.tokenIndex;
+                    })?.name;
+                    token.name.split(',').map(v => {
+                        if (isNaN(parseInt(v)))
+                            variables.push({ name: v, type: tokens[index - 1].name, depth: token.depth, functionName, tokenIndex: token.tokenIndex });
+                    });
+                }
+            }
+    });
+    console.log(variables);
+    return { functions, variables };
+}
+function indexToFunctionName(index) {
+    const code = editor.session.getValue();
+    let depth = 0;
+    let tokenIndex = 0;
+    for (let i = 0; i < Math.min(index, code.length); i++) {
+        const char = code[i];
+        switch (char) {
+            case "}":
+                // if(depth-1==0)
+                tokenIndex++;
+                break;
+        }
+    }
+    return parsedCode.functions.find(value => {
+        return value.tokenIndex == tokenIndex;
+    });
+}
+export async function downloadEditorFiles() {
+    fetch(`/editor/${wsSessionId}/downloadFiles`)
+        .then(response => {
+        if (!response.ok)
+            throw new Error('Network error');
+        return response.blob();
+    })
+        .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'intelegeinfo-project.zip'; // You can name the zip whatever you like
+        a.click(); // Triggers the download
+        URL.revokeObjectURL(url); // Cleanup
+    })
+        .catch(err => displayMessagePopup('Download failed:' + err));
 }

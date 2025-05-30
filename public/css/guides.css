@@ -1,11 +1,12 @@
-@charset "UTF-8";
 content {
   font-family: Poppins, Helvetica, sans-serif;
   width: 50%;
   margin: auto;
   display: block;
   padding: 50px;
+  top: 60px;
   padding-top: 100px;
+  margin-bottom: 50px;
   position: relative;
   background-color: white;
 }
@@ -34,23 +35,6 @@ code .ace_cursor, pre .ace_cursor {
   display: none !important;
 }
 
-@media screen and (min-height: 700px) {
-  content::after {
-    content: "--- ⯆ ---";
-    left: 0;
-    right: 0;
-    font-size: 2rem;
-    line-height: 30rem;
-    color: rgba(0, 0, 0, 0.151);
-    height: 300px;
-    text-align: center;
-    background-image: linear-gradient(transparent, white);
-    display: block;
-    position: fixed;
-    bottom: 0px;
-    z-index: 10;
-  }
-}
 header {
   background-color: black;
   color: white;

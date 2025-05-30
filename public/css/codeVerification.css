@@ -30,6 +30,8 @@
                 outline: none !important;
                 background-color: transparent;
                 color: rgba(255, 255, 255, 0);
+
+                
         }
         form#codeForm .display
         {
@@ -44,6 +46,20 @@
             pointer-events: none;
             gap: 1.5ch;
             justify-content: center;
+            
+        }
+
+        form#codeForm .display div.selected
+        {
+            border: 3px ridge white;
+        }
+
+        form#codeForm:has(input[type=number]:not(:focus)) .display div:not(.filled)
+        {
+
+                box-shadow: none;
+                transform: translateY(2px);
+                /* border: 2px inset rgba(0, 0, 0, 0.079); */
         }
         form#codeForm .display div
         {
@@ -56,10 +72,18 @@
             box-sizing: border-box;
             text-align: center;
             display: flex;
+            background-color: rgba(35, 35, 35, 0.25) ;
             box-shadow: rgba(35, 35, 35, 1) -4px 6px 3px 3px, rgba(0, 0, 0, 0.16) -7px 13px 7px 3px, rgba(0, 0, 0, 0.23) -14px 14px 4px 7px, inset rgb(240 240 240) 0px 0px 1px 2px;
             align-items: center;
             justify-content: center;
-
+            /* &:not(.filled):first-of-type
+            {
+                border: 3px ridge white;
+            }
+            &.filled:first-of-type
+            {
+                border: 3px ridge white;
+            } */
             &.filled
             {
                 box-shadow: none;

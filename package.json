@@ -15,6 +15,7 @@
   "dependencies": {
     "@prisma/client": "^6.8.2",
     "ace-builds": "^1.39.1",
+    "archiver": "^7.0.1",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "child_process": "^1.0.2",
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "@types/ace": "^0.0.52",
+    "@types/archiver": "^6.0.3",
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",

@@ -92,6 +92,17 @@ int main() {
                         <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
                     </div>
                     <div id="session-controls">
+                        
+                        <div class="slide-out-display">
+                            <button onclick="document.getElementById('slide-out').classList.toggle('enabled')">&ltri;</button>
+                            <div class="slide-out-container" id="slide-out">
+                                <button onclick="window.editor.beautifyEditor()">Beautify</button>
+                                <button onclick="window.editor.redo()" id="editor-undo">&circlearrowright;</button>
+                                <button onclick="window.editor.undo()" id="editor-redo">&circlearrowleft;</button>
+                                <button onclick="window.editor.downloadEditorFiles()" id="editor-download">&DownArrowBar;</button>
+                            </div>
+                            <vl></vl>
+                        </div>
                         <div class="ridge-gradient inset-button black">
                             <button class="share-session" id="share" onclick="window.editor.copySessionLink()">share</button>
                         </div>
@@ -133,9 +144,11 @@ int main() {
         <div id="vector-container"></div>
         <div id="output-container">
             <div class="tabs-container"> 
+                <div class="editor-tabs-container"> 
                 <!-- <h2>Output</h2> -->
                 <!-- <button onclick="this.parentElement.parentElement.style.display = 'None'">x</button> -->
                  <span class="file-tab">Chat</span>
+                 </div>
             </div>
 
             <samp id="output"  translate="no">
@@ -162,8 +175,8 @@ int main() {
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script> -->
     <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js" crossorigin="anonymous"></script>
     <script src="/ace-builds-master/src-noconflict/ext-modelist.js"></script>
-   
-    
+    <script src="/ace-builds-master/src-noconflict/ext-beautify.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/ace-builds-master/src-noconflict/ext-code_lens.js"></script>
 </body>
 </html>
 

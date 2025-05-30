@@ -8,6 +8,7 @@ import { Readable, Writable } from "stream";
 import {ClientObject, EditorPermission, EditorSession} from "./types"
 import { QRCode } from "qrcode";
 import * as qrcode from "qrcode";
+import archiver from 'archiver';
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -147,19 +148,53 @@ app.post('/editor/startsession/:id', (req, res) => {
     
 })
 
-    app.get('/editor/tooltipHints', (req, res) => {
+app.get('/editor/tooltipHints', (req, res) => {
 
-            res.send(JSON.parse(fs.readFileSync(path.join(rootDirName, 'server', 'data','tooltips.json')).toString()))
-    
-    })
+        res.send(JSON.parse(fs.readFileSync(path.join(rootDirName, 'server', 'data','tooltips.json')).toString()))
 
-    app.get('/editor/tooltipHints/:id', (req, res) => {
-        const tooltipid = req.params.id;
-        if(!tooltipid)
-            res.send(JSON.parse(fs.readFileSync(path.join(rootDirName, 'server', 'data','tooltips.json')).toString()))
-        else
+})
+
+app.get('/editor/tooltipHints/:id', (req, res) => {
+    const tooltipid = req.params.id;
+    if(!tooltipid)
+        res.send(JSON.parse(fs.readFileSync(path.join(rootDirName, 'server', 'data','tooltips.json')).toString()))
+    else
         res.send(JSON.parse(fs.readFileSync(path.join(rootDirName, 'server', 'data','tooltips.json')).toString())[tooltipid])
+})
+
+
+app.get('/editor/:session/file/:name', (req, res) => {
+        const name = req.params.name;
+        const session = req.params.session;
+        if(name && session)
+        {
+            const file = fs.readFileSync(path.join(getClientFilesPath(session), name)).toString()
+            if(file.length>50)
+                res.send(file.substring(0, 50)+"...")
+            else
+                res.send(file)
+        }
+            
+
     })
+
+    app.get('/editor/:session/downloadFiles', (req, res) => {
+        const session = req.params.session;
+        
+    if(!session || !sessionMap.has(session as UUID)) res.status(401).send('Didnt find session.')
+  const folderPath = getClientFilesPath(session); // Path to folder to download
+
+  res.setHeader('Content-Disposition', 'attachment; filename=folder.zip');
+  res.setHeader('Content-Type', 'application/zip');
+
+  const archive = archiver('zip', { zlib: { level: 9 } });
+
+  archive.directory(folderPath, false);
+  archive.pipe(res);
+
+  archive.finalize();
+});
+
 
   // app.get('/problem', problemCreator);
     app.get('/editor', (req, res) => {
@@ -570,7 +605,11 @@ fs.readdir(path.join(rootDirName, "cache"), (err, files) => {
     
 
 
+function getClientFilesPath(sessionId)
+{
+    return path.join(rootDirName, "cache", sessionId,"clientFiles");
 
+}
     
 // })
 
@@ -709,26 +748,33 @@ wss.on("connection", (ws: WebSocket, req) => {
         userData = undefined;
         userLoggedIn = false;
     }).finally(() => {
+        
+        function loadProject(fileUUID)
+        {
+            return new Promise<Project|string>((resolve, reject) => {
+                if(!fileUUID) throw 'cant load project: no id was supplied, or is invalid';
+                users.default.project.findUnique({
+                where:
+                {
+                    fileUUID
+                }
+                }).then(project => {
+                    resolve(project)
+                            
+            }).catch(err => {
+                reject(err)
+            })
+            })
+        
 
-    function loadProject(fileUUID)
-    {
-        return new Promise<Project|string>((resolve, reject) => {
-            if(!fileUUID) throw 'cant load project: no id was supplied, or is invalid';
-            users.default.project.findUnique({
-            where:
-            {
-                fileUUID
-            }
-            }).then(project => {
-                resolve(project)
-                        
-        }).catch(err => {
-            reject(err)
-        })
-        })
-       
+        }
 
-    }
+
+
+
+    
+
+
 
     function handshake(req: IncomingMessage) {
         const urlParams = new URL("http://intelegeinfo.go.ro/editor"+ req.url).searchParams
@@ -1643,14 +1689,24 @@ wss.on("connection", (ws: WebSocket, req) => {
 
                     break;
                     case FileManagementCommands.Delete:
-                        fs.unlink(path.join(clientFilesPath, messageJSON.body), (err) => {
+                        if(!clientObj.canEdit) break;
+                        try {
+                             fs.unlink(path.join(clientFilesPath, messageJSON.name), (err) => {
                             if (err) {
                                 printClientConsoleError("Error deleting file: " + err.message);
                             } else {
                                 console.log("File deleted successfully");
-                                replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.FileManagement, body: ({command: commandType, content: messageJSON.fileName, })});
+                                replicateFunction((cws) => {
+                                    cws.send(JSON.stringify({...messageJSON}))
+                                }, clientObj)
                             }
                         });
+                        }
+                        catch(err)
+                        {
+                            printClientConsoleError(err)
+                        }
+                       
                     break;
 
                     //  TODO Make this so it just return name and make seperate function for fle content, which will be called only when opening the file on the client. STORE IT IN CACHE, ADD A DIRTY VERIFICATION TO NOT SEND THE SAME SHI MULTIPLE TIMES DONT OPEN THE EDITOR UNTIL THE FILE HAS LOADED ON THE CLIENT SEND THE FILES ON  HANDSHAKE MAKE SURE IT IS ALL REPLICATED
@@ -1658,7 +1714,11 @@ wss.on("connection", (ws: WebSocket, req) => {
                         listFiles(clientFilesPath);
                     break;
                     case FileManagementCommands.Rename:
-
+                        if(!clientObj.canEdit) break;
+                         
+                        replicateFunction((cws) => {
+                            cws.send(JSON.stringify({...messageJSON}))
+                        }, clientObj)
                     break;
 
                     case FileManagementCommands.Open:
