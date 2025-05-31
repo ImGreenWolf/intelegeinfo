@@ -1507,7 +1507,7 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
             color.adjust($color: theme.$foreground-color, $lightness: -5% * theme.$dark-theme),
             color.adjust($color: theme.$foreground-color, $lightness: 15% * theme.$dark-theme));
         }
-        &:has(#createFile)
+        &.circle
         {
             border-radius: 50%;
         }
@@ -1659,6 +1659,97 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
     order: -1;
     
 }
+
+
+form input[type=checkbox]
+{
+    
+    position: relative;
+    background: theme.$background-color;
+    width: 3em;
+    height: 1.5em;
+    appearance: initial;
+    border-radius: 1lh;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    outline: none;
+    font-size: 14px;
+    font-family: Trebuchet, Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px ridge #ddd;
+    margin: 0;
+    box-sizing: content-box;
+    padding: 0;
+    box-shadow: inset 2px 2px 5px 5px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    &::before
+    {
+        width: 3em;
+        height: 1.5em;
+        content: "";
+        position: absolute;
+        display: block;
+        background: theme.$accent-color;
+        transition-duration: 0.2s;
+        border-radius: 1lh;
+        box-shadow: 
+         2px 2px 3px 3px rgba(0, 0, 0, 0.25),
+        inset 2px 2px 3px 3px rgba(0, 0, 0, 0.25);
+    }
+    &:not(:checked)::before
+    {
+        right: 0em;
+        left: -1.25em;
+    }
+    &:checked::before
+    {
+        left: 0em;
+        right: 0em;
+    }
+
+
+    &::after
+    {
+        content: "";
+        position: absolute;
+        transition-duration: 0.2s;
+        display: block;
+        width: 1.25em;
+        height: 1.25em;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        background: theme.$text-color;
+        border: 2px solid color.adjust($color: theme.$text-color, $lightness: -20%);
+        border-radius: 50%;
+        box-sizing: border-box;
+        box-shadow: 
+        -3px 0px 5px 1px rgba(0, 0, 0, 0.5);
+    }
+    &:not(:checked)::after
+    {
+        left: 0.25em;
+        right: 1.25em;
+    }
+    &:checked::after
+    {
+        right: 0.25em;
+        left: 1.5em;
+    }
+}
+
+form label
+{
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+
+
+
+
+
 /* media queries */
 
 

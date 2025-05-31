@@ -94,7 +94,9 @@ int main() {
                     <div id="session-controls">
                         
                         <div class="slide-out-display">
-                            <button onclick="document.getElementById('slide-out').classList.toggle('enabled')">&ltri;</button>
+                            <div class="ridge-gradient inset-button black circle">
+                                <button onclick="document.getElementById('slide-out').classList.toggle('enabled')" style="border-radius: 50%;">&ltri;</button>
+                            </div>
                             <div class="slide-out-container" id="slide-out">
                                 <button onclick="window.editor.beautifyEditor()">Beautify</button>
                                 <button onclick="window.editor.redo()" id="editor-undo">&circlearrowright;</button>

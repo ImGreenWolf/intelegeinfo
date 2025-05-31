@@ -2088,7 +2088,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                         });
                                 })
                         
-                            } else executeProgram();
+                            } else buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles")) //executeProgram();
                     
                             
                         }
@@ -2532,7 +2532,7 @@ function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: strin
   // 1. Copy the executable to the temporary folder
   // 2. Write the Dockerfile to the temp directory
   const dockerfileContents = `
-FROM mcr.microsoft.com/windows/servercore:ltsc2022
+FROM gcc:latest
 WORKDIR .
 COPY ${exeName} .
 COPY . .
