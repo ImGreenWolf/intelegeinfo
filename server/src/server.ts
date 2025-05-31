@@ -2078,7 +2078,7 @@ if(imageTag=="")
   // 2. Write the Dockerfile to the temp directory
   const dockerfileContents = `
 FROM gcc:latest\n
-WORKDIR .\n
+WORKDIR /app \n
 COPY . .\n
 RUN g++ -g -O0 "main.cpp" -o main\n
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
