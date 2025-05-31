@@ -2006,7 +2006,7 @@ function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, ses
 FROM gcc:latest
 WORKDIR .
 COPY ${cppExecutablePath} .
-COPY . .
+RUN "g++ -g -O0 "main.cpp" -o main.exe}
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]
 
 ENTRYPOINT CMD ["./main.exe"]

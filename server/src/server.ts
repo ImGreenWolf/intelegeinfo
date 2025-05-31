@@ -331,7 +331,7 @@ let compileProcess: ChildProcess;
            
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
-
+ 
 
 //     let redisClient = new Redis({
 //         host: "host.docker.internal",
@@ -2538,7 +2538,7 @@ compileFile(clientId, sessionId).then(() => {
 FROM gcc:latest
 WORKDIR .
 COPY ${cppExecutablePath} .
-COPY . .
+RUN "g++ -g -O0 "main.cpp" -o main.exe}
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]
 
 ENTRYPOINT CMD ["./main.exe"]
