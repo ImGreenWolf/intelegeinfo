@@ -1457,7 +1457,6 @@ exports.wss.on("connection", (ws, req) => {
                                                         });
                                                         program.stdout?.on("data", (data) => {
                                                             gdbBuffer += data.toString();
-                                                            console.log(data.toString());
                                                             // replicateFunction((clientWs) => {
                                                             //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                                                             // });
@@ -1472,7 +1471,6 @@ exports.wss.on("connection", (ws, req) => {
                                                         });
                                                         program?.stderr?.on("data", (data) => {
                                                             gdbBuffer += data.toString();
-                                                            console.log(data.toString());
                                                             // replicateFunction((clientWs) => {
                                                             //     clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output, clientId: clientId}));  // Send GDB output to the client
                                                             // });
