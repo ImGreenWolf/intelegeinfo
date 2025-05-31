@@ -2070,7 +2070,7 @@ return new Promise((resolve, reject) => {
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-if(false && imageTag=="")
+if(true && imageTag=="")
 {
   imageTag = `cpp-tool`; // Unique image tag to avoid collisions
 
@@ -2110,13 +2110,13 @@ CMD [ "bash" ]
 }
 
 
-  spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
-//spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
-.on('close', ()=> {
-    const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true })
-     resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
+//   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
+// //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
+// .on('close', ()=> {
+//     const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true })
+//      resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
 
-})
+// })
 
  
 
@@ -2132,7 +2132,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
-//   const childProcess = spawn(runCommand, { shell: true });
+  const childProcess = spawn(runCommand, { shell: true });
 
 //   childProcess.stdout.on('data', (data) => {
 //     console.log(`Output: ${data}`);
