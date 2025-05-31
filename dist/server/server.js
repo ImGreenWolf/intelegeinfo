@@ -2008,7 +2008,7 @@ COPY . .\n
 RUN g++ -g -O0 "main.cpp" -o main.exe\n
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
 \n
-ENTRYPOINT CMD ["main.exe"]
+CMD ["main.exe"]
   `.trim();
     fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
     // 3. Build the Docker image
