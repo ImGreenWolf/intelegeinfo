@@ -1630,8 +1630,8 @@ exports.wss.on("connection", (ws, req) => {
                                                 // 2. Write the Dockerfile to the temp directory
                                                 const dockerfileContents = `
 FROM gcc:latest\n
-WORKDIR /app \n
-COPY . .\n
+COPY . /usr/src/
+WORKDIR /usr/src/
 RUN g++ -g -O0 "main.cpp" -o main\n
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
 \n
@@ -1650,7 +1650,7 @@ CMD ["./main"]
                                             }
                                             const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
                                             // 4. Run the Docker container with access to the sandbox folder
-                                            const runCommand = `docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}`; //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+                                            const runCommand = `docker run --rm  -v "${cacheFolderPath}":"/usr/src/clientFiles" -w "/usr/src/" ${imageTag}`; //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
