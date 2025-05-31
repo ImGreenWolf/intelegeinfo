@@ -1624,7 +1624,7 @@ exports.wss.on("connection", (ws, req) => {
                                             //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                                             const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
                                             const containerExePath = `${exeName}`;
-                                            if (false && imageTag == "") {
+                                            if (true && imageTag == "") {
                                                 imageTag = `cpp-tool`; // Unique image tag to avoid collisions
                                                 // 1. Copy the executable to the temporary folder
                                                 // 2. Write the Dockerfile to the temp directory
@@ -1658,12 +1658,12 @@ CMD [ "bash" ]
                                                     return;
                                                 }
                                             }
-                                            (0, child_process_1.spawn)("g++", ["-g", "-O0", path_1.default.join(cacheFolderPath, "main.cpp"), "-o", path_1.default.join(cacheFolderPath, "main")])
-                                                //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
-                                                .on('close', () => {
-                                                const childProcess = (0, child_process_1.spawn)(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true });
-                                                resolve(childProcess); // Return the child process so it can be handled externally
-                                            });
+                                            //   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
+                                            // //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
+                                            // .on('close', ()=> {
+                                            //     const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true })
+                                            //      resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
+                                            // })
                                             const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
                                             // 4. Run the Docker container with access to the sandbox folder
                                             const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
@@ -1674,7 +1674,8 @@ CMD [ "bash" ]
   bash -c "g++ -g -O0 main.cpp -o main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
-                                            //   const childProcess = spawn(runCommand, { shell: true });
+                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
+                                            resolve(childProcess); // Return the child process so it can be handled externally
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
                                             //   });

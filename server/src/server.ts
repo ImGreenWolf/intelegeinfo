@@ -2133,7 +2133,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   
   // Return the child process for external handling
   const childProcess = spawn(runCommand, { shell: true });
-
+resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
 //   childProcess.stdout.on('data', (data) => {
 //     console.log(`Output: ${data}`);
 //   });
