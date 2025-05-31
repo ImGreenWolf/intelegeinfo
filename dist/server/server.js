@@ -1661,7 +1661,7 @@ CMD [ "bash" ]
                                             (0, child_process_1.spawn)("g++", ["-g", "-O0", path_1.default.join(cacheFolderPath, "main.cpp"), "-o", path_1.default.join(cacheFolderPath, "main")])
                                                 //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
                                                 .on('close', () => {
-                                                const childProcess = (0, child_process_1.spawn)(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`, { shell: true });
+                                                const childProcess = (0, child_process_1.spawn)(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim app/main`, { shell: true });
                                                 resolve(childProcess); // Return the child process so it can be handled externally
                                             });
                                             const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
