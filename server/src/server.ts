@@ -2512,7 +2512,10 @@ import { parseGDBString } from "./gdbUtilities";
  * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
  * @returns The child process running the Docker container
  */
-function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: string){
+function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: string, clientId, sessionId){
+compileFile(clientId, sessionId).then(() => {
+
+
   const exeFolder = path.dirname(cppExecutablePath); // Folder containing .exe
   const exeName = path.basename(cppExecutablePath);  // .exe filename
   const sandboxFolder = path.join(exeFolder, 'clientFiles'); // The folder the exe will access
@@ -2589,6 +2592,9 @@ const runCommand = `docker run --rm -v "${dockerSandboxPath}":"${dockerSandboxPa
   });
 
   return childProcess as ChildProcess; // Return the child process so it can be handled externally
+
+})
+
 }
 
 

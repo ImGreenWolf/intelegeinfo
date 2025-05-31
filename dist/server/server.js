@@ -1985,23 +1985,24 @@ const gdbUtilities_1 = require("./gdbUtilities");
  * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
  * @returns The child process running the Docker container
  */
-function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath) {
-    const exeFolder = path_1.default.dirname(cppExecutablePath); // Folder containing .exe
-    const exeName = path_1.default.basename(cppExecutablePath); // .exe filename
-    const sandboxFolder = path_1.default.join(exeFolder, 'clientFiles'); // The folder the exe will access
-    // Ensure that the sandbox folder exists
-    if (!fs_1.default.existsSync(sandboxFolder)) {
-        console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
-        return;
-    }
-    // Create a temporary directory for building the Docker image
-    //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
-    const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
-    const containerExePath = `${exeName}`;
-    const imageTag = `cpp-tool-${(0, crypto_1.randomUUID)()}`; // Unique image tag to avoid collisions
-    // 1. Copy the executable to the temporary folder
-    // 2. Write the Dockerfile to the temp directory
-    const dockerfileContents = `
+function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, sessionId) {
+    compileFile(clientId, sessionId).then(() => {
+        const exeFolder = path_1.default.dirname(cppExecutablePath); // Folder containing .exe
+        const exeName = path_1.default.basename(cppExecutablePath); // .exe filename
+        const sandboxFolder = path_1.default.join(exeFolder, 'clientFiles'); // The folder the exe will access
+        // Ensure that the sandbox folder exists
+        if (!fs_1.default.existsSync(sandboxFolder)) {
+            console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
+            return;
+        }
+        // Create a temporary directory for building the Docker image
+        //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
+        const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
+        const containerExePath = `${exeName}`;
+        const imageTag = `cpp-tool-${(0, crypto_1.randomUUID)()}`; // Unique image tag to avoid collisions
+        // 1. Copy the executable to the temporary folder
+        // 2. Write the Dockerfile to the temp directory
+        const dockerfileContents = `
 FROM gcc:latest
 WORKDIR .
 COPY ${cppExecutablePath} .
@@ -2010,41 +2011,42 @@ COPY . .
 
 ENTRYPOINT CMD ["./main.exe"]
   `.trim();
-    fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
-    // 3. Build the Docker image
-    console.log(`Building Docker image: ${imageTag}`);
-    try {
-        (0, child_process_2.execSync)(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
-    }
-    catch (error) {
-        console.error('Error building Docker image:', error);
-        return;
-    }
-    const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
-    // 4. Run the Docker container with access to the sandbox folder
-    const runCommand = `docker run --rm -v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
-    console.log(`Running Docker container with access to ${sandboxFolder}`);
-    // Return the child process for external handling
-    const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
-    // const childProcess = spawn('docker', ['run', '--rm', ])
-    childProcess.stdout.on('data', (data) => {
-        console.log(`Output: ${data}`);
-    });
-    childProcess.stderr.on('data', (data) => {
-        console.error(`Error: ${data}`);
-    });
-    childProcess.on('close', (code) => {
-        console.log(`Child process exited with code ${code}`);
-        // Cleanup the Docker image after the process finishes
-        console.log(`Cleaning up image: ${imageTag}`);
+        fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
+        // 3. Build the Docker image
+        console.log(`Building Docker image: ${imageTag}`);
         try {
-            (0, child_process_2.execSync)(`docker rmi ${imageTag}`, { stdio: 'ignore' });
+            (0, child_process_2.execSync)(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
         }
         catch (error) {
-            console.error('Error cleaning up Docker image:', error);
+            console.error('Error building Docker image:', error);
+            return;
         }
+        const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
+        // 4. Run the Docker container with access to the sandbox folder
+        const runCommand = `docker run --rm -v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+        console.log(`Running Docker container with access to ${sandboxFolder}`);
+        // Return the child process for external handling
+        const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
+        // const childProcess = spawn('docker', ['run', '--rm', ])
+        childProcess.stdout.on('data', (data) => {
+            console.log(`Output: ${data}`);
+        });
+        childProcess.stderr.on('data', (data) => {
+            console.error(`Error: ${data}`);
+        });
+        childProcess.on('close', (code) => {
+            console.log(`Child process exited with code ${code}`);
+            // Cleanup the Docker image after the process finishes
+            console.log(`Cleaning up image: ${imageTag}`);
+            try {
+                (0, child_process_2.execSync)(`docker rmi ${imageTag}`, { stdio: 'ignore' });
+            }
+            catch (error) {
+                console.error('Error cleaning up Docker image:', error);
+            }
+        });
+        return childProcess; // Return the child process so it can be handled externally
     });
-    return childProcess; // Return the child process so it can be handled externally
 }
 // server.on("connection", (socket) => {
 //             server.getConnections(function(error, count) {
