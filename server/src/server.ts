@@ -2072,7 +2072,7 @@ return new Promise((resolve, reject) => {
  
 if(imageTag!="")
 {
-    const copyFiles = spawn(`docker cp ${imageTag}:${cacheFolderPath} .`)
+    const copyFiles = spawn(`docker cp ${imageTag}:. ${cacheFolderPath}`)
     copyFiles.on('close', code => {
         const runCommand = `docker run --rm ${imageTag}`
           const childProcess = spawn(runCommand, { shell: true });
