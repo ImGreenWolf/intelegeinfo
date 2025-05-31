@@ -2069,8 +2069,8 @@ return new Promise((resolve, reject) => {
 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
-   imageTag = `cpp-tool-${sessionId || randomUUID()}`; // Unique image tag to avoid collisions
-if(imageTag)
+ 
+if(imageTag!="")
 {
     const copyFiles = spawn(`docker cp ${imageTag}:${cacheFolderPath} .`)
     copyFiles.on('close', code => {
@@ -2086,7 +2086,7 @@ if(imageTag)
 }
 else
 {
-
+  imageTag = `cpp-tool-${sessionId || randomUUID()}`; // Unique image tag to avoid collisions
 
   // 1. Copy the executable to the temporary folder
   // 2. Write the Dockerfile to the temp directory
