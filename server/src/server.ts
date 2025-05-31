@@ -2129,7 +2129,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
-  const childProcess = spawn(runCommand, { shell: true });
+//   const childProcess = spawn(runCommand, { shell: true });
 // const childProcess = spawn('docker', ['run', '--rm', ])
 
 //   childProcess.stdout.on('data', (data) => {
