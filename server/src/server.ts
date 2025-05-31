@@ -1874,7 +1874,13 @@ wss.on("connection", (ws: WebSocket, req) => {
                                          //program = buildAndRunCppSandbox(cppExe, cacheFolder);
                                         // if(!program) return console.error('invalid program')
 
-                                        async function onClosedProgram(code, message, error?)
+                                        
+                                                buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(program => {
+                                                           //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
+                                                        
+                                                    // }); // start program
+
+                                                    async function onClosedProgram(code, message, error?)
                                                 {
                                                     let notes: string = "";
                                                     processInputBuffer = '';
@@ -1907,11 +1913,8 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                         });
                                                     
                                                 }
-                                                // buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId))
-                                                    program = spawn(filePath, {
-                                                        cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
-                                                        
-                                                    }); // start program
+
+                                                
                                                     addProcessToMap(sessionId, program); // add to process map
                                                     mode = "run";
                                                     let spawnDate = Date.now()
@@ -1947,43 +1950,6 @@ wss.on("connection", (ws: WebSocket, req) => {
                
 
                                                
-                                                    // program.stdin?.on('finish', function () {
-                                                    // console.log("await input")
-                                                    // });
-
-                                                    // const onProgramOut = new Writable({
-                                                    //     write(chunk, encoding, callback) {
-                                                    //       ws.send(JSON.stringify({error: false, input: false, type: WebSocketMessageType.Output, body: chunk.toString()})); // Send GDB output to the client
-                                                    //     //  console.log("stdout: " + chunk.toString());
-                                                    //       callback(); // Tell Node you're done processing this chunk
-                                                    //     }
-                                                    //   });
-
-                                                    // const onProgramOut = new Readable({
-                                                    //     read(size: 0) {
-                                                    //         ws.send(JSON.stringify({error: false, input: false, type: WebSocketMessageType.Chat, body: "$: Awaiting input: \n"})); // Send GDB output to the client
-
-                                                    //     }
-                                                    // });
-                                                    // onProgramOut.on("data", (data) => {
-                                                    //     printClientConsoleError("Awaiting input: " + data.toString())
-                                                    //      ws.send(JSON.stringify({error: false, input: false, type: WebSocketMessageType.Chat, body: "$: Awaiting input: \n"})); // Send GDB output to the client
-
-                                                    // })
-                                                    //   program.stdout?.pipe(onProgramOut) //TODO Try and figure out a way to pipe input from the program to the client
-                                                    // if(program.stdin)
-                                                    //     onProgramOut.pipe(program.stdin); // pipe stdin to program stdin
-                                                    // const clientFilesPath = path.join(rootDirName, "cache", sessionId,"clientFiles");
-                                                    // fs.readdir(clientFilesPath,  (err, files) => {
-                                                    //     if (err) {
-                                                    //         console.error("Error reading client files directory:", err);
-                                                    //         return;
-                                                    //     }
-                                                    //     files.forEach((file) => {
-                                                            
-
-                                                    // })
-                                       
 
                                         
                                         
@@ -2048,6 +2014,9 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                 //     console.log('finished program')
                                                 // })
                                                 // resolve(); // Resolve the promise when the process closes
+                                                })
+                                                    // program = spawn(filePath, {
+                                             
                                             });
                                             //await queueCommand(program,message);
                                        })
@@ -2065,6 +2034,98 @@ wss.on("connection", (ws: WebSocket, req) => {
                                     
                             }
 
+
+/**
+ * Build and run the C++ executable in a Docker container with sandbox folder access.
+ * 
+ * @param cppExecutablePath - The absolute path to the C++ executable.
+ * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
+ * @returns The child process running the Docker container
+ */
+function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: string, clientId, sessionId): Promise<ChildProcess>{
+
+return new Promise((resolve, reject) => {
+    const exeFolder = path.dirname(cppExecutablePath); // Folder containing .exe
+  const exeName = path.basename(cppExecutablePath);  // .exe filename
+  const sandboxFolder = path.join(exeFolder, 'clientFiles'); // The folder the exe will access
+  
+  // Ensure that the sandbox folder exists
+  if (!fs.existsSync(sandboxFolder)) {
+    console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
+    reject()
+  }
+
+  // Create a temporary directory for building the Docker image
+//   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
+  const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
+  const containerExePath = `${exeName}`;
+  const imageTag = `cpp-tool-${randomUUID()}`; // Unique image tag to avoid collisions
+
+  // 1. Copy the executable to the temporary folder
+  // 2. Write the Dockerfile to the temp directory
+  const dockerfileContents = `
+FROM gcc:latest\n
+WORKDIR .\n
+COPY . .\n
+RUN g++ -g -O0 "main.cpp" -o main\n
+#CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+\n
+CMD ["./main"]
+  `.trim();
+
+  fs.writeFileSync(dockerfilePath, dockerfileContents);
+
+
+
+
+
+  
+  // 3. Build the Docker image
+  console.log(`Building Docker image: ${imageTag}`);
+  try {
+    execSync(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+  } catch (error) {
+    console.error('Error building Docker image:', error);
+    return;
+  }
+ 
+
+
+  const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
+  // 4. Run the Docker container with access to the sandbox folder
+const runCommand = `docker run --rm ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+
+  console.log(`Running Docker container with access to ${sandboxFolder}`);
+  
+  // Return the child process for external handling
+  const childProcess = spawn(runCommand, { shell: true });
+// const childProcess = spawn('docker', ['run', '--rm', ])
+
+//   childProcess.stdout.on('data', (data) => {
+//     console.log(`Output: ${data}`);
+//   });
+
+//   childProcess.stderr.on('data', (data) => {
+//     console.error(`Error: ${data}`);
+//   });
+
+//   childProcess.on('close', (code) => {
+//     console.log(`Child process exited with code ${code}`);
+//     // Cleanup the Docker image after the process finishes
+//     console.log(`Cleaning up image: ${imageTag}`);
+//     try {
+//       execSync(`docker rmi ${imageTag}`, { stdio: 'ignore' });
+//     } catch (error) {
+//       console.error('Error cleaning up Docker image:', error);
+//     }
+//   });
+
+  resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
+
+})
+  
+
+}
 
                             // execute code normally.
                             if(getProcessFromMap()) // check if program is running
@@ -2505,94 +2566,6 @@ import { IncomingMessage } from "http";
 import { cwd, stdin } from "process";
 import { parseGDBString } from "./gdbUtilities";
 
-/**
- * Build and run the C++ executable in a Docker container with sandbox folder access.
- * 
- * @param cppExecutablePath - The absolute path to the C++ executable.
- * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
- * @returns The child process running the Docker container
- */
-function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: string, clientId, sessionId){
-
-  const exeFolder = path.dirname(cppExecutablePath); // Folder containing .exe
-  const exeName = path.basename(cppExecutablePath);  // .exe filename
-  const sandboxFolder = path.join(exeFolder, 'clientFiles'); // The folder the exe will access
-  
-  // Ensure that the sandbox folder exists
-  if (!fs.existsSync(sandboxFolder)) {
-    console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
-    return;
-  }
-
-  // Create a temporary directory for building the Docker image
-//   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
-  const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
-  const containerExePath = `${exeName}`;
-  const imageTag = `cpp-tool-${randomUUID()}`; // Unique image tag to avoid collisions
-
-  // 1. Copy the executable to the temporary folder
-  // 2. Write the Dockerfile to the temp directory
-  const dockerfileContents = `
-FROM gcc:latest\n
-WORKDIR .\n
-COPY . .\n
-RUN g++ -g -O0 "main.cpp" -o main\n
-#CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-\n
-CMD ["./main"]
-  `.trim();
-
-  fs.writeFileSync(dockerfilePath, dockerfileContents);
-
-
-
-
-
-  
-  // 3. Build the Docker image
-  console.log(`Building Docker image: ${imageTag}`);
-  try {
-    execSync(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
-  } catch (error) {
-    console.error('Error building Docker image:', error);
-    return;
-  }
- 
-
-
-  const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
-  // 4. Run the Docker container with access to the sandbox folder
-const runCommand = `docker run --rm ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
-
-  console.log(`Running Docker container with access to ${sandboxFolder}`);
-  
-  // Return the child process for external handling
-  const childProcess = spawn(runCommand, { shell: true });
-// const childProcess = spawn('docker', ['run', '--rm', ])
-
-  childProcess.stdout.on('data', (data) => {
-    console.log(`Output: ${data}`);
-  });
-
-  childProcess.stderr.on('data', (data) => {
-    console.error(`Error: ${data}`);
-  });
-
-  childProcess.on('close', (code) => {
-    console.log(`Child process exited with code ${code}`);
-    // Cleanup the Docker image after the process finishes
-    console.log(`Cleaning up image: ${imageTag}`);
-    try {
-      execSync(`docker rmi ${imageTag}`, { stdio: 'ignore' });
-    } catch (error) {
-      console.error('Error cleaning up Docker image:', error);
-    }
-  });
-
-  return childProcess as ChildProcess; // Return the child process so it can be handled externally
-
-
-}
 
 
 
