@@ -2113,7 +2113,7 @@ CMD [ "bash" ]
   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
 //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
 .on('close', ()=> {
-    const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`)
+    const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`, { shell: true })
      resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
 
 })
