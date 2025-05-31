@@ -2089,11 +2089,7 @@ CMD ["./main"]
   fs.writeFileSync(dockerfilePath, dockerfileContents);
 
 
-}
-
-
-  
-  // 3. Build the Docker image
+    // 3. Build the Docker image
   console.log(`Building Docker image: ${imageTag}`);
   try {
     execSync(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
@@ -2101,12 +2097,18 @@ CMD ["./main"]
     console.error('Error building Docker image:', error);
     return;
   }
+
+}
+
+
+  
+
  
 
 
   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
   // 4. Run the Docker container with access to the sandbox folder
-const runCommand = `docker run --rm ${imageTag} -v "${dockerSandboxPath}":"${dockerSandboxPath}"` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+const runCommand = `docker run --rm  -v "${dockerSandboxPath}":"${dockerSandboxPath}" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
 
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
