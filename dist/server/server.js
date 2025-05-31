@@ -2005,10 +2005,10 @@ function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, ses
 FROM gcc:latest\n
 WORKDIR .\n
 COPY . .\n
-RUN g++ -g -O0 "main.cpp" -o main.exe\n
+RUN g++ -g -O0 "main.cpp" -o main\n
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
 \n
-CMD ["main.exe"]
+CMD ["./main"]
   `.trim();
     fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
     // 3. Build the Docker image

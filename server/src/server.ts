@@ -2536,10 +2536,10 @@ function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: strin
 FROM gcc:latest\n
 WORKDIR .\n
 COPY . .\n
-RUN g++ -g -O0 "main.cpp" -o main.exe\n
+RUN g++ -g -O0 "main.cpp" -o main\n
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
 \n
-CMD ["main.exe"]
+CMD ["./main"]
   `.trim();
 
   fs.writeFileSync(dockerfilePath, dockerfileContents);
