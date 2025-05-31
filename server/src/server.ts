@@ -728,6 +728,7 @@ wss.on("connection", (ws: WebSocket, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
+    let imageTag = '';
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies)
       function getJWTCookie(cookies) { return cookies
@@ -1765,48 +1766,46 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     // }); // start program
                                                     console.log('Running program and listening')
                                                     async function onClosedProgram(code, message, error?)
-                                                {
-                                                    let notes: string = "";
-                                                    processInputBuffer = '';
-                                                    const time = ( Date.now() - spawnDate)
-                                                    if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
                                                     {
-                                                        await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
-                                                            notes = "buffer exceeded 64kb, output was truncated."
-                                                                replicateFunction((clientWs) => {
-                                                                    clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: str.toString(), clientId: clientId}));  // Send GDB output to the client
-                                                                });
-                                                        })
-                                                    }
-                                                    // else
-                                                    //     replicateFunction((clientWs) => {
-                                                    //         clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
-                                                    //     });
+                                                        let notes: string = "";
+                                                        processInputBuffer = '';
+                                                        const time = ( Date.now() - spawnDate)
+                                                        if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
+                                                        {
+                                                            await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
+                                                                notes = "buffer exceeded 64kb, output was truncated."
+                                                                    replicateFunction((clientWs) => {
+                                                                        clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: str.toString(), clientId: clientId}));  // Send GDB output to the client
+                                                                    });
+                                                            })
+                                                        }
+                                                        // else
+                                                        //     replicateFunction((clientWs) => {
+                                                        //         clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
+                                                        //     });
 
-                                                    // if(code === null) return ws.send("Program exited with invalid code");
-                                                    clearTimeout(programTimeout)
-                                                    // gdbBuffer = message//"Program exited with code: " + code?.toString();
-                                                    if(program)
-                                                    {
-                                                        program.stdout.removeAllListeners()
-                                                        program.stderr.removeAllListeners()
-                                                    }
-                                                    
-                                                    replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body: message, clientId: clientId}));  // Send GDB output to the client
+                                                        // if(code === null) return ws.send("Program exited with invalid code");
+                                                        clearTimeout(programTimeout)
+                                                        // gdbBuffer = message//"Program exited with code: " + code?.toString();
+                                                        if(program)
+                                                        {
+                                                            program.stdout.removeAllListeners()
+                                                            program.stderr.removeAllListeners()
+                                                        }
+                                                        
+                                                        replicateFunction((clientWs) => {
+                                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body: message, clientId: clientId}));  // Send GDB output to the client
                                                         });
-                                                    
-                                                }
+                                                        
+                                                    }
 
 
                                                     addProcessToMap(sessionId, program); // add to process map
                                                     mode = "run";
                                                     let spawnDate = Date.now()
-
                                                     let programTimeout;
-
-
                                                     gdbBuffer = "";
+
                                                     if(messageJSON.textMode)
                                                      programTimeout = setTimeout(() => {
                                                         onClosedProgram(-1, "<span style='color: red'>Program timed out!</span>")
@@ -2070,7 +2069,24 @@ return new Promise((resolve, reject) => {
 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
-  const imageTag = `cpp-tool-${randomUUID()}`; // Unique image tag to avoid collisions
+   imageTag = `cpp-tool-${sessionId || randomUUID()}`; // Unique image tag to avoid collisions
+if(imageTag)
+{
+    const copyFiles = spawn(`docker cp ${imageTag}:${cacheFolderPath} .`)
+    copyFiles.on('close', code => {
+        const runCommand = `docker run --rm ${imageTag}`
+          const childProcess = spawn(runCommand, { shell: true });
+         resolve(childProcess as ChildProcess); 
+    })
+    copyFiles.stderr.on('data', data => {
+        console.error(data.toString());
+        reject(data.toString())
+    })
+
+}
+else
+{
+
 
   // 1. Copy the executable to the temporary folder
   // 2. Write the Dockerfile to the temp directory
@@ -2132,7 +2148,7 @@ const runCommand = `docker run --rm ${imageTag}` //-v "${dockerSandboxPath}":"${
 //   });
 
   resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
-
+}
 })
   
 
