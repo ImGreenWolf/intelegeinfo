@@ -1624,7 +1624,7 @@ exports.wss.on("connection", (ws, req) => {
                                             //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                                             const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
                                             const containerExePath = `${exeName}`;
-                                            if (imageTag == "") {
+                                            if (false && imageTag == "") {
                                                 imageTag = `cpp-tool`; // Unique image tag to avoid collisions
                                                 // 1. Copy the executable to the temporary folder
                                                 // 2. Write the Dockerfile to the temp directory
@@ -1658,6 +1658,9 @@ CMD [ "bash" ]
                                                     return;
                                                 }
                                             }
+                                            (0, child_process_1.spawn)(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`).on('close', () => {
+                                                (0, child_process_1.spawn)(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`);
+                                            });
                                             const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
                                             // 4. Run the Docker container with access to the sandbox folder
                                             const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
@@ -1665,7 +1668,7 @@ CMD [ "bash" ]
   -v "${cacheFolderPath}:/app" \
   -w /app \
   ${imageTag} \
-  bash -c "g++ main.cpp -o main && ./main"`;
+  bash -c "g++ -g -O0 main.cpp -o main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });

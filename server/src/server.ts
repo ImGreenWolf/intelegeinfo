@@ -2070,7 +2070,7 @@ return new Promise((resolve, reject) => {
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-if(imageTag=="")
+if(false && imageTag=="")
 {
   imageTag = `cpp-tool`; // Unique image tag to avoid collisions
 
@@ -2111,6 +2111,9 @@ CMD [ "bash" ]
 
 
   
+spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`).on('close', ()=> {
+    spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`)
+})
 
  
 
@@ -2122,7 +2125,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   -v "${cacheFolderPath}:/app" \
   -w /app \
   ${imageTag} \
-  bash -c "g++ main.cpp -o main && ./main"`
+  bash -c "g++ -g -O0 main.cpp -o main && ./main"`
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
