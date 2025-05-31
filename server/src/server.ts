@@ -2070,21 +2070,7 @@ return new Promise((resolve, reject) => {
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-if(imageTag!="")
-{
-    const copyFiles = spawn(`docker cp ${imageTag}:. ${cacheFolderPath}`)
-    copyFiles.on('close', code => {
-        const runCommand = `docker run --rm ${imageTag}`
-          const childProcess = spawn(runCommand, { shell: true });
-         resolve(childProcess as ChildProcess); 
-    })
-    copyFiles.stderr.on('data', data => {
-        console.error(data.toString());
-        reject(data.toString())
-    })
-
-}
-else
+if(imageTag=="")
 {
   imageTag = `cpp-tool-${sessionId || randomUUID()}`; // Unique image tag to avoid collisions
 
@@ -2103,7 +2089,7 @@ CMD ["./main"]
   fs.writeFileSync(dockerfilePath, dockerfileContents);
 
 
-
+}
 
 
   
@@ -2120,7 +2106,7 @@ CMD ["./main"]
 
   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
   // 4. Run the Docker container with access to the sandbox folder
-const runCommand = `docker run --rm ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+const runCommand = `docker run --rm ${imageTag} -v "${dockerSandboxPath}":"${dockerSandboxPath}"` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
 
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
@@ -2148,7 +2134,7 @@ const runCommand = `docker run --rm ${imageTag}` //-v "${dockerSandboxPath}":"${
 //   });
 
   resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
-}
+
 })
   
 

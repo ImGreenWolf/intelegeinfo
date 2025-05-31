@@ -1624,19 +1624,7 @@ exports.wss.on("connection", (ws, req) => {
                                             //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                                             const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
                                             const containerExePath = `${exeName}`;
-                                            if (imageTag != "") {
-                                                const copyFiles = (0, child_process_1.spawn)(`docker cp ${imageTag}:. ${cacheFolderPath}`);
-                                                copyFiles.on('close', code => {
-                                                    const runCommand = `docker run --rm ${imageTag}`;
-                                                    const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
-                                                    resolve(childProcess);
-                                                });
-                                                copyFiles.stderr.on('data', data => {
-                                                    console.error(data.toString());
-                                                    reject(data.toString());
-                                                });
-                                            }
-                                            else {
+                                            if (imageTag == "") {
                                                 imageTag = `cpp-tool-${sessionId || (0, crypto_1.randomUUID)()}`; // Unique image tag to avoid collisions
                                                 // 1. Copy the executable to the temporary folder
                                                 // 2. Write the Dockerfile to the temp directory
@@ -1650,40 +1638,40 @@ RUN g++ -g -O0 "main.cpp" -o main\n
 CMD ["./main"]
   `.trim();
                                                 fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
-                                                // 3. Build the Docker image
-                                                console.log(`Building Docker image: ${imageTag}`);
-                                                try {
-                                                    (0, child_process_2.execSync)(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
-                                                }
-                                                catch (error) {
-                                                    console.error('Error building Docker image:', error);
-                                                    return;
-                                                }
-                                                const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
-                                                // 4. Run the Docker container with access to the sandbox folder
-                                                const runCommand = `docker run --rm ${imageTag}`; //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
-                                                console.log(`Running Docker container with access to ${sandboxFolder}`);
-                                                // Return the child process for external handling
-                                                const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
-                                                // const childProcess = spawn('docker', ['run', '--rm', ])
-                                                //   childProcess.stdout.on('data', (data) => {
-                                                //     console.log(`Output: ${data}`);
-                                                //   });
-                                                //   childProcess.stderr.on('data', (data) => {
-                                                //     console.error(`Error: ${data}`);
-                                                //   });
-                                                //   childProcess.on('close', (code) => {
-                                                //     console.log(`Child process exited with code ${code}`);
-                                                //     // Cleanup the Docker image after the process finishes
-                                                //     console.log(`Cleaning up image: ${imageTag}`);
-                                                //     try {
-                                                //       execSync(`docker rmi ${imageTag}`, { stdio: 'ignore' });
-                                                //     } catch (error) {
-                                                //       console.error('Error cleaning up Docker image:', error);
-                                                //     }
-                                                //   });
-                                                resolve(childProcess); // Return the child process so it can be handled externally
                                             }
+                                            // 3. Build the Docker image
+                                            console.log(`Building Docker image: ${imageTag}`);
+                                            try {
+                                                (0, child_process_2.execSync)(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+                                            }
+                                            catch (error) {
+                                                console.error('Error building Docker image:', error);
+                                                return;
+                                            }
+                                            const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
+                                            // 4. Run the Docker container with access to the sandbox folder
+                                            const runCommand = `docker run --rm ${imageTag} -v "${dockerSandboxPath}":"${dockerSandboxPath}"`; //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+                                            console.log(`Running Docker container with access to ${sandboxFolder}`);
+                                            // Return the child process for external handling
+                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
+                                            // const childProcess = spawn('docker', ['run', '--rm', ])
+                                            //   childProcess.stdout.on('data', (data) => {
+                                            //     console.log(`Output: ${data}`);
+                                            //   });
+                                            //   childProcess.stderr.on('data', (data) => {
+                                            //     console.error(`Error: ${data}`);
+                                            //   });
+                                            //   childProcess.on('close', (code) => {
+                                            //     console.log(`Child process exited with code ${code}`);
+                                            //     // Cleanup the Docker image after the process finishes
+                                            //     console.log(`Cleaning up image: ${imageTag}`);
+                                            //     try {
+                                            //       execSync(`docker rmi ${imageTag}`, { stdio: 'ignore' });
+                                            //     } catch (error) {
+                                            //       console.error('Error cleaning up Docker image:', error);
+                                            //     }
+                                            //   });
+                                            resolve(childProcess); // Return the child process so it can be handled externally
                                         });
                                     }
                                     // execute code normally.
