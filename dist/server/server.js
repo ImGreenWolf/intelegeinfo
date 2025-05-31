@@ -2005,8 +2005,8 @@ function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, ses
         const dockerfileContents = `
 FROM gcc:latest
 WORKDIR .
-COPY ${cppExecutablePath} .
-RUN "g++ -g -O0 "main.cpp" -o main.exe}
+COPY ${exeFolder} .
+RUN g++ -g -O0 "main.cpp" -o main.exe
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]
 
 ENTRYPOINT CMD ["./main.exe"]
