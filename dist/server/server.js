@@ -2003,13 +2003,13 @@ function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, ses
         // 1. Copy the executable to the temporary folder
         // 2. Write the Dockerfile to the temp directory
         const dockerfileContents = `
-FROM gcc:latest
-WORKDIR .
-COPY . .
-RUN g++ -g -O0 "main.cpp" -o main.exe
-#CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]
-
-ENTRYPOINT CMD ["./main.exe"]
+FROM gcc:latest\n
+WORKDIR .\n
+COPY . .\n
+RUN g++ -g -O0 "main.cpp" -o main.exe\n
+#CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+\n
+ENTRYPOINT CMD ["main.exe"]
   `.trim();
         fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
         // 3. Build the Docker image
