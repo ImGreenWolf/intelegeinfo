@@ -1661,7 +1661,8 @@ CMD [ "bash" ]
                                             (0, child_process_1.spawn)("g++", ["-g", "-O0", path_1.default.join(cacheFolderPath, "main.cpp"), "-o", path_1.default.join(cacheFolderPath, "main")])
                                                 //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
                                                 .on('close', () => {
-                                                (0, child_process_1.spawn)(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`);
+                                                var childProcess = (0, child_process_1.spawn)(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`);
+                                                resolve(childProcess); // Return the child process so it can be handled externally
                                             });
                                             const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
                                             // 4. Run the Docker container with access to the sandbox folder
@@ -1674,7 +1675,6 @@ CMD [ "bash" ]
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             //   const childProcess = spawn(runCommand, { shell: true });
-                                            // const childProcess = spawn('docker', ['run', '--rm', ])
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
                                             //   });
@@ -1691,7 +1691,6 @@ CMD [ "bash" ]
                                             //       console.error('Error cleaning up Docker image:', error);
                                             //     }
                                             //   });
-                                            resolve(childProcess); // Return the child process so it can be handled externally
                                         });
                                     }
                                     // execute code normally.
