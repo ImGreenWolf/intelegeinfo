@@ -1624,18 +1624,28 @@ exports.wss.on("connection", (ws, req) => {
                                             //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                                             const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
                                             const containerExePath = `${exeName}`;
-                                            if (true || imageTag == "") {
-                                                imageTag = `cpp-tool-${sessionId || (0, crypto_1.randomUUID)()}`; // Unique image tag to avoid collisions
+                                            if (imageTag == "") {
+                                                imageTag = `cpp-tool`; // Unique image tag to avoid collisions
                                                 // 1. Copy the executable to the temporary folder
                                                 // 2. Write the Dockerfile to the temp directory
-                                                const dockerfileContents = `
-FROM gcc:latest\n
-COPY . /usr/src/
-WORKDIR /usr/src/
-RUN g++ -g -O0 "main.cpp" -o main\n
-#CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-\n
-CMD ["./main"]
+                                                const dockerfileContents = // `
+                                                 
+                                                // FROM gcc:latest\n
+                                                // COPY . /usr/src/
+                                                // WORKDIR /usr/src/
+                                                // RUN g++ -g -O0 "main.cpp" -o main\n
+                                                // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+                                                // \n
+                                                // CMD ["./main"]
+                                                `
+# Base image with GCC
+FROM gcc:bookworm
+
+# Set working directory inside container
+WORKDIR /app
+
+# Default command can be overridden
+CMD [ "bash" ]
   `.trim();
                                                 fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
                                                 // 3. Build the Docker image
@@ -1650,7 +1660,12 @@ CMD ["./main"]
                                             }
                                             const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
                                             // 4. Run the Docker container with access to the sandbox folder
-                                            const runCommand = `docker run --rm  -v "${cacheFolderPath}":"/usr/src/clientFiles" -w "/usr/src/" ${imageTag}`; //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+                                            const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+                                             `docker run --rm \
+  -v "${cacheFolderPath}:/app" \
+  -w /app \
+  ${imageTag} \
+  bash -c "g++ main.cpp -o main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
@@ -2027,7 +2042,6 @@ function windowsPathToDocker(path) {
     return `/${drive}${path.slice(2).replace(/\\/g, '/')}`;
 }
 const child_process_2 = require("child_process");
-const crypto_1 = require("crypto");
 const gdbUtilities_1 = require("./gdbUtilities");
 // server.on("connection", (socket) => {
 //             server.getConnections(function(error, count) {
