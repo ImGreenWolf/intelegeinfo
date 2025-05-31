@@ -1486,6 +1486,7 @@ exports.wss.on("connection", (ws, req) => {
                                                         buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(program => {
                                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                             // }); // start program
+                                                            console.log('Running program and listening');
                                                             async function onClosedProgram(code, message, error) {
                                                                 let notes = "";
                                                                 processInputBuffer = '';
@@ -1541,6 +1542,7 @@ exports.wss.on("connection", (ws, req) => {
                                                             });
                                                             program.stdout?.on("data", (data) => {
                                                                 gdbBuffer += data.toString();
+                                                                console.log(data.toString());
                                                                 // replicateFunction((clientWs) => {
                                                                 //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                                                                 // });
@@ -1555,6 +1557,7 @@ exports.wss.on("connection", (ws, req) => {
                                                             });
                                                             program?.stderr?.on("data", (data) => {
                                                                 gdbBuffer += data.toString();
+                                                                console.log(data.toString());
                                                                 // replicateFunction((clientWs) => {
                                                                 //     clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output, clientId: clientId}));  // Send GDB output to the client
                                                                 // });
@@ -1565,7 +1568,7 @@ exports.wss.on("connection", (ws, req) => {
                                                                 switch (code) {
                                                                     case 0:
                                                                     default:
-                                                                        onClosedProgram(code, "Program exited with code: " + code?.toString());
+                                                                        onClosedProgram(code, "Program exited with code: " + code?.toString() || 0);
                                                                         break;
                                                                     case 3221225477:
                                                                         onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
@@ -1683,7 +1686,7 @@ CMD ["./main"]
                                         });
                                     }
                                     else
-                                        buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId); //executeProgram();
+                                        executeProgram(); //buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId) //
                                 }
                                 else if (command == "-exec-run") {
                                     if (!getProcessFromMap()) {

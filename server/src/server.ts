@@ -1879,7 +1879,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         
                                                     // }); // start program
-
+                                                    console.log('Running program and listening')
                                                     async function onClosedProgram(code, message, error?)
                                                 {
                                                     let notes: string = "";
@@ -1914,7 +1914,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     
                                                 }
 
-                                                
+
                                                     addProcessToMap(sessionId, program); // add to process map
                                                     mode = "run";
                                                     let spawnDate = Date.now()
@@ -1956,7 +1956,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 
                                         program.stdout?.on("data", (data) => {
                                             gdbBuffer += data.toString();
-
+                                            console.log(data.toString())
                                                 // replicateFunction((clientWs) => {
                                                 //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                                                 // });
@@ -1978,6 +1978,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                             
                                             program?.stderr?.on("data", (data) => {
                                                 gdbBuffer += data.toString();
+                                                console.log(data.toString())
                                                 // replicateFunction((clientWs) => {
                                                 //     clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output, clientId: clientId}));  // Send GDB output to the client
                                                 // });
@@ -1992,7 +1993,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                 {
                                                     case 0:
                                                     default:
-                                                        onClosedProgram(code, "Program exited with code: " + code?.toString())
+                                                        onClosedProgram(code, "Program exited with code: " + code?.toString() || 0)
 
                                                     break;
 
@@ -2149,7 +2150,7 @@ const runCommand = `docker run --rm ${imageTag}` //-v "${dockerSandboxPath}":"${
                                         });
                                 })
                         
-                            } else buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId) //executeProgram();
+                            } else executeProgram(); //buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId) //
                     
                             
                         }
