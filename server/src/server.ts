@@ -2070,7 +2070,7 @@ return new Promise((resolve, reject) => {
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-if(imageTag=="")
+if(true || imageTag=="")
 {
   imageTag = `cpp-tool-${sessionId || randomUUID()}`; // Unique image tag to avoid collisions
 
