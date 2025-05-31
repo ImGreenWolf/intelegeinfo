@@ -2564,7 +2564,7 @@ ENTRYPOINT CMD ["./main.exe"]
 
   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
   // 4. Run the Docker container with access to the sandbox folder
-const runCommand = `docker run --rm ` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+const runCommand = `docker run --rm ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
 
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
