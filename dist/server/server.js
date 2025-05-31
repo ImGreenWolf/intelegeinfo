@@ -1658,7 +1658,9 @@ CMD [ "bash" ]
                                                     return;
                                                 }
                                             }
-                                            (0, child_process_1.spawn)(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`).on('close', () => {
+                                            (0, child_process_1.spawn)("g++", ["-g", "-O0", path_1.default.join(cacheFolderPath, "main.cpp"), "-o", path_1.default.join(cacheFolderPath, "main")])
+                                                //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
+                                                .on('close', () => {
                                                 (0, child_process_1.spawn)(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`);
                                             });
                                             const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);

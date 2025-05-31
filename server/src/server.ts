@@ -2110,8 +2110,9 @@ CMD [ "bash" ]
 }
 
 
-  
-spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`).on('close', ()=> {
+  spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
+//spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
+.on('close', ()=> {
     spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app debian:bookworm-slim ./main`)
 })
 
