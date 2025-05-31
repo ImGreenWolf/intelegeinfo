@@ -1442,6 +1442,7 @@ exports.wss.on("connection", (ws, req) => {
                                                         // if(programTimeout) clearTimeout(programTimeout)
                                                         spawnPromise = new Promise((resolve, reject) => {
                                                             program?.on("spawn", () => {
+                                                                spawnDate = Date.now();
                                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
                                                                 if (program.stdin && processInputBuffer)
                                                                     if (program?.stdin?.writable)
@@ -1449,7 +1450,7 @@ exports.wss.on("connection", (ws, req) => {
                                                                 dataTimeout =
                                                                     setTimeout(() => {
                                                                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
-                                                                    }, 200);
+                                                                    }, 400);
                                                                 resolve();
                                                             });
                                                         });
@@ -1466,7 +1467,7 @@ exports.wss.on("connection", (ws, req) => {
                                                             clearTimeout(dataTimeout);
                                                             dataTimeout = setTimeout(() => {
                                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
-                                                            }, 200);
+                                                            }, 100);
                                                         });
                                                         program?.stderr?.on("data", (data) => {
                                                             gdbBuffer += data.toString();

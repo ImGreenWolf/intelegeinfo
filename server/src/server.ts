@@ -1817,6 +1817,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 
                                                     spawnPromise = new Promise<void>((resolve, reject) => {
                                                         program?.on("spawn", () => {
+                                                             spawnDate = Date.now()
                                                             clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
                                                             if( program.stdin && processInputBuffer)
                                                                 if(program?.stdin?.writable)
@@ -1824,7 +1825,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                             dataTimeout = 
                                                             setTimeout(() => {
                                                                 clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-                                                            }, 200);
+                                                            }, 400);
                                                             resolve()
                                                             
                                                         })
@@ -1846,13 +1847,13 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                 // });
                                                 // gdbBuffer = "";
                                                 replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
-                                                        });
+                                                    clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+                                                });
 
                                                 clearTimeout(dataTimeout)
                                                 dataTimeout = setTimeout(() => {
-                                                                clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-                                                            }, 200);
+                                                    clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                                }, 100);
                                                         
                                             });
 
