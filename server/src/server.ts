@@ -2513,8 +2513,6 @@ import { parseGDBString } from "./gdbUtilities";
  * @returns The child process running the Docker container
  */
 function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: string, clientId, sessionId){
-compileFile(clientId, sessionId).then(() => {
-
 
   const exeFolder = path.dirname(cppExecutablePath); // Folder containing .exe
   const exeName = path.basename(cppExecutablePath);  // .exe filename
@@ -2541,7 +2539,7 @@ COPY . .\n
 RUN g++ -g -O0 "main.cpp" -o main.exe\n
 #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
 \n
-ENTRYPOINT CMD ["main.exe"]
+CMD ["main.exe"]
   `.trim();
 
   fs.writeFileSync(dockerfilePath, dockerfileContents);
@@ -2593,7 +2591,6 @@ const runCommand = `docker run --rm ${imageTag}` //-v "${dockerSandboxPath}":"${
 
   return childProcess as ChildProcess; // Return the child process so it can be handled externally
 
-})
 
 }
 
