@@ -1643,7 +1643,7 @@ exports.wss.on("connection", (ws, req) => {
                                         });
                                     }
                                     else
-                                        buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles")); //executeProgram();
+                                        buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId); //executeProgram();
                                 }
                                 else if (command == "-exec-run") {
                                     if (!getProcessFromMap()) {

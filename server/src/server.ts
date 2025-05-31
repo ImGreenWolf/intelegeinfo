@@ -2088,7 +2088,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                         });
                                 })
                         
-                            } else buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles")) //executeProgram();
+                            } else buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId) //executeProgram();
                     
                             
                         }
