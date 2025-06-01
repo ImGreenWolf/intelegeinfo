@@ -2559,6 +2559,8 @@ const customCompleter = {
             // callback(null, completions);
         }
         else {
+            if (!parsedCode)
+                return;
             if (!parsedCode.functions)
                 return;
             completions = parsedCode.functions
