@@ -35,10 +35,15 @@
 
     <div class="input-container">
       <input type="text" name="username" required placeholder="username.." autocomplete="username">
-      <input type="text" name="firstName" required placeholder="first name.." autocomplete="given-name" autocapitalize="on">
-      <input type="text" name="lastName"required  placeholder="last name.." autocomplete="family-name" autocapitalize="on">
+      <div class="inline">
+        <input type="text" name="firstName" required placeholder="first name.." autocomplete="given-name" autocapitalize="on">
+        <input type="text" name="lastName"required  placeholder="last name.." autocomplete="family-name" autocapitalize="on">
+      </div>
       <input type="email" name="email" required id="email" placeholder="email.." autocomplete="email" autocapitalize="on">
-      <input type="password" name="password" required id="password" placeholder="password.." autocomplete="new-password">
+      <div class="inline">
+        <input type="password" name="password" required id="password" placeholder="password.." autocomplete="new-password" minlength="4">
+        <input type="password" required id="confirm-password" placeholder="confirm password.." autocomplete="new-password" minlength="4">
+      </div>
       <input type="hidden" name='loginMethod' value="local">
     </div>
 
@@ -67,7 +72,11 @@
       e.preventDefault();
       const formData = new FormData(e.target);
       
-      
+      if(document.getElementById('confirm-password').innerText == document.getElementById('confirm-password').innerText)
+      {
+        document.getElementById('message').innerText = "Parolele nu sunt la fel"
+        return;
+      }
       const pubKeyPem = await fetch('/signup/public-key').then(res => res.text());
       const publicKey = forge.pki.publicKeyFromPem(pubKeyPem);
 

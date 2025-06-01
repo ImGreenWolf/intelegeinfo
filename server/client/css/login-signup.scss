@@ -8,9 +8,8 @@ body
     'body';
     &>div
     {
-    
-    display: flex;
-    grid-area: 'body';
+        display: flex;
+        grid-area: 'body';
     }
 
 
@@ -19,18 +18,21 @@ body
 
 form
 {
-    
+    h2
+    {
+        margin: 0;
+    }
 
     margin: auto;
-    max-width: 500px;
+    max-width: 400px;
     // min-width: 400px;
     // margin: 100px;
     display: flex;
     flex-flow: column;
     border: 1px solid white;
     border-radius: 10px;
-    padding: 0 50px;
-    gap: 50px;
+    padding: 0 100px;
+    gap: 1em;
     align-items: center;
     height: 75vh;
     justify-content: center;
@@ -42,13 +44,13 @@ form
     // transform: translate(-50%, -50%);
     // margin: auto;
 }
-input 
+input:not([type=checkbox])
 {
-    height: 2lh;
+    height: 2.5lh;
     border-radius: 2lh;
     padding: 0.2lh 1lh;
     font-size: 1rem;
-    max-width: 100%;
+    width: 100%;
     // margin: 20px;
         box-sizing: border-box;
     border: 0;
@@ -58,6 +60,7 @@ input
     background-position: calc(100% - 1lh) center;
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 }
+
 
 form h2
 {
@@ -135,8 +138,7 @@ button.login-method
 
 .button-container
 {
-    height: 300px;
-    gap: 50px;
+    // gap: 50px;
     a 
     {
         font-size: 0.75rem;
@@ -155,6 +157,20 @@ button.login-method
     color: rgb(193, 0, 0);
     font-size: 1rem;
 }
+form div.inline
+{
+    display: flex;
+    gap: 1em;
+    box-sizing: content-box;
+    input
+    {
+        display: inline;
+        width: 100%;
+    }
+
+}
+
+
 
  @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
     form
