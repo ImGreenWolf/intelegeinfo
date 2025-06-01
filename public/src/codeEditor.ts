@@ -3413,6 +3413,7 @@ interface Lens {
       }
       else
       {
+        if(!parsedCode.functions) return;
          completions = parsedCode.functions
         //  .filter(c => {return c.name == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.name == undefined})
          .map(c => ({
