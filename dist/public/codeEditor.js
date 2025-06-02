@@ -1557,44 +1557,6 @@ setTimeout(() => {
                 }, 3000);
             }, 500);
             const tooltip = new TokenTooltip(editor);
-            editor.on("change", (delta) => {
-                !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
-                !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
-                editor.renderer.updateFull();
-                parsedCode = parseCode();
-                if (isRemoteChange)
-                    return;
-                const code = editor.getValue();
-                if (!currentFileName)
-                    console.error("Current file name is invalid");
-                dirtyFile(currentFileName);
-                ws.send(JSON.stringify({
-                    body: code,
-                    delta: delta,
-                    type: WebSocketMessageType.CodeChange,
-                    fileName: currentFileName,
-                    saveFile: true,
-                })); // Send code to server on change // TODO Remove code from body.
-            });
-            editor.on("changeSelection", () => {
-                if (isRemoteChange)
-                    return;
-                if (!isColabSession)
-                    return;
-                const selection = editor.getSelectionRange();
-                // const start = selection.start;
-                // const end = selection.end;
-                // const range = new AceRange(start.row, start.column, end.row, end.column);
-                // const selectedText = editor.session.getTextRange(range);
-                // console.log(selectedText);
-                if (!currentFileName)
-                    console.error("Current file name is invalid");
-                ws.send(JSON.stringify({
-                    range: selection,
-                    fileName: currentFileName,
-                    type: WebSocketMessageType.CodeSelection,
-                })); // Send code to server on change
-            });
             // Add the dynamic marker
             // setInterval(() => {
             //     const code = editor.getValue();
@@ -1607,6 +1569,44 @@ setTimeout(() => {
             // }, 500);
         };
 }, 100);
+editor.on("change", (delta) => {
+    !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
+    !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
+    editor.renderer.updateFull();
+    parsedCode = parseCode();
+    if (isRemoteChange)
+        return;
+    const code = editor.getValue();
+    if (!currentFileName)
+        console.error("Current file name is invalid");
+    dirtyFile(currentFileName);
+    ws.send(JSON.stringify({
+        body: code,
+        delta: delta,
+        type: WebSocketMessageType.CodeChange,
+        fileName: currentFileName,
+        saveFile: true,
+    })); // Send code to server on change // TODO Remove code from body.
+});
+editor.on("changeSelection", () => {
+    if (isRemoteChange)
+        return;
+    if (!isColabSession)
+        return;
+    const selection = editor.getSelectionRange();
+    // const start = selection.start;
+    // const end = selection.end;
+    // const range = new AceRange(start.row, start.column, end.row, end.column);
+    // const selectedText = editor.session.getTextRange(range);
+    // console.log(selectedText);
+    if (!currentFileName)
+        console.error("Current file name is invalid");
+    ws.send(JSON.stringify({
+        range: selection,
+        fileName: currentFileName,
+        type: WebSocketMessageType.CodeSelection,
+    })); // Send code to server on change
+});
 var FileManagementCommands;
 (function (FileManagementCommands) {
     FileManagementCommands["Create"] = "create";

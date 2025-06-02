@@ -2045,14 +2045,30 @@ setTimeout(() => {
   const tooltip = new TokenTooltip(editor);
 
 
-  editor.on("change", (delta: any) => {
+ 
+
+  // Add the dynamic marker
+
+  // setInterval(() => {
+  //     const code = editor.getValue();
+  //     //console.log(delta);
+  //     // if(blockChange) blockChange = false;
+  //     // else {
+  //     // blockChange = true;
+  //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
+  //  //   }
+  // }, 500);
+};
+}, 100);
+
+ editor.on("change", (delta: any) => {
 
      !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable')
     !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable')
     
       
       editor.renderer.updateFull();
-      parsedCode = parseCode()
+      parsedCode = parseCode();
 
     if (isRemoteChange) return;
       const code = editor.getValue();
@@ -2092,22 +2108,6 @@ setTimeout(() => {
       })
     ); // Send code to server on change
   });
-
-  // Add the dynamic marker
-
-  // setInterval(() => {
-  //     const code = editor.getValue();
-  //     //console.log(delta);
-  //     // if(blockChange) blockChange = false;
-  //     // else {
-  //     // blockChange = true;
-  //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
-  //  //   }
-  // }, 500);
-};
-}, 100);
-
-
 
 enum FileManagementCommands {
   Create = "create",
