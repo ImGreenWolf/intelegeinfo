@@ -2019,9 +2019,9 @@ ws.onerror = (err) => {
   // }, 500); 
 
 
-
-
-ws.onopen = (ev) => {
+setTimeout(() => {
+  while(!ws.OPEN)
+    ws.onopen = (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
 
@@ -2105,6 +2105,9 @@ ws.onopen = (ev) => {
   //  //   }
   // }, 500);
 };
+}, 100);
+
+
 
 enum FileManagementCommands {
   Create = "create",
@@ -3413,8 +3416,8 @@ interface Lens {
       }
       else
       {
-        if(!parsedCode) return;
-        if(!parsedCode.functions) return;
+        if(!parsedCode) return callback(null, []);
+        if(!parsedCode.functions)  return callback(null, []);
          completions = parsedCode.functions
         //  .filter(c => {return c.name == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.name == undefined})
          .map(c => ({
