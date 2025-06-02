@@ -2146,9 +2146,9 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
      childProcess?.on("spawn", () => {
         console.log("Program spawned")
         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-        if( program.stdin && processInputBuffer)
-            if(program?.stdin?.writable)
-            program.stdin.write(processInputBuffer) // write buffer
+        if( childProcess.stdin && processInputBuffer)
+            if(childProcess?.stdin?.writable)
+            childProcess.stdin.write(processInputBuffer) // write buffer
         dataTimeout = 
         setTimeout(() => {
             clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
