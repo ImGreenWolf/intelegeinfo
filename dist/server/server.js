@@ -1475,6 +1475,7 @@ exports.wss.on("connection", (ws, req) => {
                                                         });
                                                         program?.stderr?.on("data", (data) => {
                                                             gdbBuffer += data.toString();
+                                                            console.error(gdbBuffer);
                                                             // replicateFunction((clientWs) => {
                                                             //     clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output, clientId: clientId}));  // Send GDB output to the client
                                                             // });
@@ -1678,13 +1679,8 @@ CMD [ "bash" ]
   bash -c "g++ -g -O0 main.cpp main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
-                                            try {
-                                                const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, timeout: 15000 });
-                                                resolve(childProcess); // Return the child process so it can be handled externally
-                                            }
-                                            catch (err) {
-                                                reject(err);
-                                            }
+                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, timeout: 15000 });
+                                            resolve(childProcess); // Return the child process so it can be handled externally
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
                                             //   });

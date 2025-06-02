@@ -1864,6 +1864,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                             
                                             program?.stderr?.on("data", (data) => {
                                                 gdbBuffer += data.toString();
+                                                console.error(gdbBuffer)
                                                 // replicateFunction((clientWs) => {
                                                 //     clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output, clientId: clientId}));  // Send GDB output to the client
                                                 // });
@@ -2134,15 +2135,9 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
-  try
-  { 
     const childProcess = spawn(runCommand, { shell: true, timeout: 15000});
     resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
-  }
-  catch(err)
-  {
-    reject(err)
-  }
+
 
 //   childProcess.stdout.on('data', (data) => {
 //     console.log(`Output: ${data}`);
