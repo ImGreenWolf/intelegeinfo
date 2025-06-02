@@ -1818,6 +1818,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 
                                                     spawnPromise = new Promise<void>((resolve, reject) => {
                                                         program?.on("spawn", () => {
+                                                            console.log("Program spawned")
                                                              spawnDate = Date.now()
                                                             clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
                                                             if( program.stdin && processInputBuffer)
@@ -2072,30 +2073,30 @@ return new Promise((resolve, reject) => {
  
 if(true && imageTag=="")
 {
-  imageTag = `cpp-tool-${sessionId}`; // Unique image tag to avoid collisions
+  imageTag = `cpp-tool`; // Unique image tag to avoid collisions
 
   // 1. Copy the executable to the temporary folder
   // 2. Write the Dockerfile to the temp directory
-//   const dockerfileContents =// `
-// // FROM gcc:latest\n
-// // COPY . /usr/src/
-// // WORKDIR /usr/src/
-// // RUN g++ -g -O0 "main.cpp" -o main\n
-// // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-// // \n
-// // CMD ["./main"]
-// `
-// # Base image with GCC
-// FROM gcc:bookworm
+  const dockerfileContents =// `
+// FROM gcc:latest\n
+// COPY . /usr/src/
+// WORKDIR /usr/src/
+// RUN g++ -g -O0 "main.cpp" -o main\n
+// #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+// \n
+// CMD ["./main"]
+`
+# Base image with GCC
+FROM gcc:bookworm
 
-// # Set working directory inside container
-// WORKDIR /app
+# Set working directory inside container
+WORKDIR /app
 
-// # Default command can be overridden
-// CMD [ "bash" ]
-//   `.trim();
+# Default command can be overridden
+CMD [ "bash" ]
+  `.trim();
 
-//   fs.writeFileSync(dockerfilePath, dockerfileContents);
+  fs.writeFileSync(dockerfilePath, dockerfileContents);
 
 
     // 3. Build the Docker image
@@ -2108,7 +2109,8 @@ if(true && imageTag=="")
   }
 
 }
-
+else
+console.log('Skipping build stage.')
 
 //   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
 // //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
@@ -2121,7 +2123,7 @@ if(true && imageTag=="")
  
 
 
-  const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
+//   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
   // 4. Run the Docker container with access to the sandbox folder
 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
 `docker run --rm \
@@ -2132,8 +2134,16 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
-  const childProcess = spawn(runCommand, { shell: true, timeout: 15000});
-resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
+  try
+  { 
+    const childProcess = spawn(runCommand, { shell: true, timeout: 15000});
+    resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
+  }
+  catch(err)
+  {
+    reject(err)
+  }
+
 //   childProcess.stdout.on('data', (data) => {
 //     console.log(`Output: ${data}`);
 //   });
