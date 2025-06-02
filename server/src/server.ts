@@ -2132,9 +2132,9 @@ console.log('Skipping build stage.')
 
 
 //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
-  // 4. Run the Docker container with access to the sandbox folder
+  // 4. Run the Docker container with access to the sandbox folder // arg --tty
 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
-`docker run -t -i --rm \
+`docker run -i --rm \
   -v "${cacheFolderPath}:/app" \
   -w /app \
   ${imageTag} \
