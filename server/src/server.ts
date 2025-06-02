@@ -2403,9 +2403,14 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
                                 if(program)
                                 {
                                     if(program?.stdin?.writable)
-                                        program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                    {
+                                         program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                    }
+                                    else
+                                        console.error("stdin isnt writeable")
                                     // dataTimeout = setTimeout(() => {
-                                                                clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                                                
                                                             // }, 200);
                                     // console.log("sent to program")
                                 }

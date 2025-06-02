@@ -1897,10 +1897,13 @@ CMD [ "bash" ]
                                     }
                                     else {
                                         if (program) {
-                                            if (program?.stdin?.writable)
+                                            if (program?.stdin?.writable) {
                                                 program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                                            }
+                                            else
+                                                console.error("stdin isnt writeable");
                                             // dataTimeout = setTimeout(() => {
-                                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                                             // }, 200);
                                             // console.log("sent to program")
                                         }
