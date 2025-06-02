@@ -1684,6 +1684,17 @@ CMD [ "bash" ]
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "pipe" });
+                                            childProcess?.on("spawn", () => {
+                                                console.log("Program spawned");
+                                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
+                                                if (program.stdin && processInputBuffer)
+                                                    if (program?.stdin?.writable)
+                                                        program.stdin.write(processInputBuffer); // write buffer
+                                                dataTimeout =
+                                                    setTimeout(() => {
+                                                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                                                    }, 400);
+                                            });
                                             resolve(childProcess); // Return the child process so it can be handled externally
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);

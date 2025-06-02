@@ -1769,9 +1769,9 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     console.log('Running program and listening')
 
                                                     dataTimeout = 
-                                                            setTimeout(() => {
-                                                                clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-                                                            }, 400);
+                                                    setTimeout(() => {
+                                                        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                                    }, 400);
 
 
                                                     async function onClosedProgram(code, message, error?)
@@ -2143,6 +2143,18 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   
   // Return the child process for external handling
     const childProcess = spawn(runCommand, { shell: true, stdio: "pipe"});
+     childProcess?.on("spawn", () => {
+        console.log("Program spawned")
+        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
+        if( program.stdin && processInputBuffer)
+            if(program?.stdin?.writable)
+            program.stdin.write(processInputBuffer) // write buffer
+        dataTimeout = 
+        setTimeout(() => {
+            clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+        }, 400);
+        
+    })
     resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
 
 
