@@ -1404,6 +1404,10 @@ exports.wss.on("connection", (ws, req) => {
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         // }); // start program
                                                         console.log('Running program and listening');
+                                                        dataTimeout =
+                                                            setTimeout(() => {
+                                                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                                                            }, 400);
                                                         async function onClosedProgram(code, message, error) {
                                                             let notes = "";
                                                             processInputBuffer = '';
@@ -1679,7 +1683,7 @@ CMD [ "bash" ]
   bash -c "g++ -g -O0 main.cpp -o main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
-                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, timeout: 15000 });
+                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "pipe" });
                                             resolve(childProcess); // Return the child process so it can be handled externally
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
