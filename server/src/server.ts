@@ -2072,30 +2072,30 @@ return new Promise((resolve, reject) => {
  
 if(true && imageTag=="")
 {
-  imageTag = `cpp-tool`; // Unique image tag to avoid collisions
+  imageTag = `cpp-tool-${sessionId}`; // Unique image tag to avoid collisions
 
   // 1. Copy the executable to the temporary folder
   // 2. Write the Dockerfile to the temp directory
-  const dockerfileContents =// `
-// FROM gcc:latest\n
-// COPY . /usr/src/
-// WORKDIR /usr/src/
-// RUN g++ -g -O0 "main.cpp" -o main\n
-// #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-// \n
-// CMD ["./main"]
-`
-# Base image with GCC
-FROM gcc:bookworm
+//   const dockerfileContents =// `
+// // FROM gcc:latest\n
+// // COPY . /usr/src/
+// // WORKDIR /usr/src/
+// // RUN g++ -g -O0 "main.cpp" -o main\n
+// // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+// // \n
+// // CMD ["./main"]
+// `
+// # Base image with GCC
+// FROM gcc:bookworm
 
-# Set working directory inside container
-WORKDIR /app
+// # Set working directory inside container
+// WORKDIR /app
 
-# Default command can be overridden
-CMD [ "bash" ]
-  `.trim();
+// # Default command can be overridden
+// CMD [ "bash" ]
+//   `.trim();
 
-  fs.writeFileSync(dockerfilePath, dockerfileContents);
+//   fs.writeFileSync(dockerfilePath, dockerfileContents);
 
 
     // 3. Build the Docker image
@@ -2128,11 +2128,11 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   -v "${cacheFolderPath}:/app" \
   -w /app \
   ${imageTag} \
-  bash -c "g++ -g -O0 main.cpp -o main && ./main"`
+  bash -c "g++ -g -O0 main.cpp main && ./main"`
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
-  const childProcess = spawn(runCommand);
+  const childProcess = spawn(runCommand, { shell: true, timeout: 15000});
 resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
 //   childProcess.stdout.on('data', (data) => {
 //     console.log(`Output: ${data}`);
