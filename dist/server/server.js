@@ -1681,7 +1681,7 @@ CMD [ "bash" ]
   -w /app \
   -i \
   ${imageTag} \
-  bash -c "g++ -g -O0 main.cpp -o main && ./main"`;
+  bash -c "ls -la && g++ -g -O0 main.cpp -o main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "pipe" });
