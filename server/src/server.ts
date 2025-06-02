@@ -2137,7 +2137,6 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 `docker run --rm \
   -v "${cacheFolderPath}:/app" \
   -w /app \
-  -i \
   ${imageTag} \
   bash -c "ls -la && g++ -g -O0 main.cpp -o main && ./main"`
   console.log(`Running Docker container with access to ${sandboxFolder}`);
