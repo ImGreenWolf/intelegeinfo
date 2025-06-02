@@ -1675,7 +1675,7 @@ CMD [ "bash" ]
   bash -c "g++ -g -O0 main.cpp -o main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
-                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
+                                            const childProcess = (0, child_process_1.spawn)(runCommand);
                                             resolve(childProcess); // Return the child process so it can be handled externally
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
