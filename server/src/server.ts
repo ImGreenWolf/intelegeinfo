@@ -1005,49 +1005,49 @@ wss.on("connection", (ws: WebSocket, req) => {
     }
     
 
-        function printClientConsoleError(message: string, cause?:any, client?:ClientObject) {
-            const targetClientId = client?.clientId || clientId;
-            const clientSocket = clients.get(targetClientId);
-            if (clientSocket) {
-                console.error(new Error(message, {cause: cause}))
-                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Error, body: message, messageType: ConsoleMessageType.Error }));
-            } else {
-                console.error("Client not found:", clientId);
-            }
+    function printClientConsoleError(message: string, cause?:any, client?:ClientObject) {
+        const targetClientId = client?.clientId || clientId;
+        const clientSocket = clients.get(targetClientId);
+        if (clientSocket) {
+            console.error(new Error(message, {cause: cause}))
+            clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Error, body: message, messageType: ConsoleMessageType.Error }));
+        } else {
+            console.error("Client not found:", clientId);
         }
+    }
 
-        function printClientConsoleInfo(message: string, client?:ClientObject) {
-            const targetClientId = client?.clientId || clientId;
-            const clientSocket = clients.get(targetClientId);
-            console.log(message)
-            if (clientSocket) {
-                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.Info }));
-            } else {
-                console.error("Client not found:", targetClientId);
-            }
+    function printClientConsoleInfo(message: string, client?:ClientObject) {
+        const targetClientId = client?.clientId || clientId;
+        const clientSocket = clients.get(targetClientId);
+        console.log(message)
+        if (clientSocket) {
+            clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.Info }));
+        } else {
+            console.error("Client not found:", targetClientId);
         }
+    }
 
-        function printClientConsoleDebug(message: string, client?:ClientObject) {
-            const targetClientId = client?.clientId || clientId;
-            const clientSocket = clients.get(targetClientId);
-            if (clientSocket) {
-                console.debug("DEBUG: " + message)
-                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.Debug }));
-            } else {
-                console.error("Client not found:", targetClientId);
-            }
+    function printClientConsoleDebug(message: string, client?:ClientObject) {
+        const targetClientId = client?.clientId || clientId;
+        const clientSocket = clients.get(targetClientId);
+        if (clientSocket) {
+            console.debug("DEBUG: " + message)
+            clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.Debug }));
+        } else {
+            console.error("Client not found:", targetClientId);
         }
+    }
 
-        function printClientConsoleSessionInfo(message: string, client?:ClientObject) {
-            const targetClientId = client?.clientId || clientId;
-            const clientSocket = clients.get(targetClientId);
-            if (clientSocket) {
-                clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.SessionInfo }));
-            } else {
-                console.error("Client not found:", targetClientId);
-            }
+    function printClientConsoleSessionInfo(message: string, client?:ClientObject) {
+        const targetClientId = client?.clientId || clientId;
+        const clientSocket = clients.get(targetClientId);
+        if (clientSocket) {
+            clientSocket.send(JSON.stringify({ error: true, type: WebSocketMessageType.Chat, body: message, messageType: ConsoleMessageType.SessionInfo }));
+        } else {
+            console.error("Client not found:", targetClientId);
         }
-        
+    }
+    
     
         
 
@@ -1207,9 +1207,11 @@ wss.on("connection", (ws: WebSocket, req) => {
             
    }
 
-        
+    //  while(ws.OPEN)   
+   setTimeout(() => {
+       handshake(req)
+   }, 100);
 
-   handshake(req)
        
 
     // debug mode only for now

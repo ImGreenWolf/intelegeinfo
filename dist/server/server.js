@@ -924,7 +924,10 @@ exports.wss.on("connection", (ws, req) => {
                 }, 100);
             }
         }
-        handshake(req);
+        //  while(ws.OPEN)   
+        setTimeout(() => {
+            handshake(req);
+        }, 100);
         // debug mode only for now
         async function executeCommand(childProcess, command, sessionId) {
             return new Promise((resolve, reject) => {

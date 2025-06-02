@@ -22,30 +22,26 @@ function parseArray(str) {
         return [];
     }
 }
-// VARIABLES //
-const cursors = new Map();
-const typingIndicators = new Map();
-let debounceTimer;
-let typingIndicatorDelay = 1000;
-let activeElem;
-const variableStore = new Map();
-let code;
-let debugLine = 1; // debug row
-let lastDebugId;
-let lastViewedMessage;
-let currentFileName;
-let wsClientId;
-let wsSessionId;
-const outputArea = document.getElementById("output");
-const outputConsoles = [];
-let activeConsole;
-let contextMenu;
-let parsedCode;
-// let posX=0;
-// let posY=0;
-let stepint;
-let isColabSession = true;
-let lastEventJson;
+// Class to render one visual cursor
+class VisualCursor {
+    cursorId;
+    getPosition;
+    constructor(cursorId, getPosition) {
+        this.cursorId = cursorId;
+        this.getPosition = getPosition;
+    }
+    type = "line";
+    clazz = "ace_remote_cursor";
+    markerRef = undefined;
+    update(html, markerLayer, session, config) {
+        const pos = this.getPosition();
+        const screenPos = session.documentToScreenPosition(pos.row, pos.column);
+        const top = markerLayer.$getTop(screenPos.row, config);
+        const left = markerLayer.$padding + screenPos.column * config.characterWidth;
+        markerLayer.elt("ace_remote_cursor", `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px; --color: green`);
+        // FOR FUTURE REFERENCE, HTML DOESNT WORK ANYMORE, USE ELT
+    }
+}
 class Console {
     element;
     stdin = [];
@@ -84,6 +80,44 @@ class Console {
     }
     sendCommand(cmd) {
         this.stdin.push(cmd);
+    }
+}
+// Manager class for multiple visual cursors
+class MultiCursorManager {
+    editor;
+    cursorsPos = new Map();
+    cursors = new Map();
+    constructor(editor) {
+        this.editor = editor;
+    }
+    addCursor(cursorId, position) {
+        this.cursorsPos.set(cursorId, position);
+        const marker = new VisualCursor(cursorId, () => this.cursorsPos.get(cursorId));
+        const markerDyn = this.editor.session.addDynamicMarker(marker, true);
+        marker.markerRef = markerDyn;
+        this.cursors.set(cursorId, marker);
+        return marker;
+    }
+    updateCursor(cursorId, position) {
+        if (this.cursorsPos.has(cursorId)) {
+            this.cursorsPos.set(cursorId, position);
+            this.editor.renderer.updateFull(); // Triggers redraw
+        }
+    }
+    removeCursor(cursorId) {
+        this.editor.session.removeMarker((this.cursors.get(cursorId)?.markerRef).id || 0);
+        const success = this.cursors.delete(cursorId);
+        this.cursors.delete(cursorId);
+        this.editor.renderer.updateFrontMarkers();
+        return success;
+    }
+    replicateCursor(cursorId, position) {
+        if (this.cursors.has(cursorId)) {
+            this.updateCursor(cursorId, position);
+            return this.cursorsPos.get(cursorId);
+        }
+        else
+            return this.addCursor(cursorId, position);
     }
 }
 class EditorCursor {
@@ -231,6 +265,57 @@ export var ConsoleMessageType;
     ConsoleMessageType["Output"] = "output";
     ConsoleMessageType["DebugProgram"] = "debugProgram";
 })(ConsoleMessageType || (ConsoleMessageType = {}));
+// VARIABLES //
+const cursors = new Map();
+const typingIndicators = new Map();
+let debounceTimer;
+let typingIndicatorDelay = 1000;
+let activeElem;
+const variableStore = new Map();
+let code;
+let debugLine = 1; // debug row
+let lastDebugId;
+let lastViewedMessage;
+let currentFileName;
+let wsClientId;
+let wsSessionId;
+const outputArea = document.getElementById("output");
+const outputConsoles = [];
+let activeConsole;
+let contextMenu;
+let parsedCode;
+let stepint;
+let isColabSession = true;
+let lastEventJson;
+let session;
+let cmdId = 0;
+let variables = [];
+const variableArrayIndexes = [];
+const editorSessions = new Map();
+const editor = ace.edit("editor", {
+    mode: "ace/mode/c_cpp",
+    enableLiveAutocompletion: true,
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    placeholder: "incepe sa scrii niste cod...",
+    tooltipFollowsMouse: true,
+    animatedScroll: true,
+    useWorker: true,
+    //   fontSize: "18px",
+    //maxLines: 30,
+    wrap: true,
+    autoScrollEditorIntoView: true,
+    enableCodeLens: true,
+});
+var event = ace.require("ace/lib/event");
+var Range = ace.require("ace/range").Range;
+var Tooltip = ace.require("ace/tooltip").Tooltip;
+const sessionId = new URLSearchParams(window.location.search).get("session");
+const saveId = new URLSearchParams(window.location.search).get("save");
+const WSUrl = "ws://" + window.location.hostname + ":" + window.location.port + (sessionId || saveId ? "?" : "") + (sessionId ? "session=" + sessionId + "&" : "") + (saveId ? "save=" + saveId : "");
+// Initialize the manager
+const cursorManager = new MultiCursorManager(editor);
+let msgId = 0;
 function parseDebuggerOutput(input, { onNewVariable = (newVar) => { }, onArrayIndexChange = (name, change, changed) => { }, } = {}) {
     const cleanedInput = input
         .replace(/\(gdb\)/g, "")
@@ -378,22 +463,6 @@ function arraysEqual(a, b) {
 }
 // ace.config.setModuleUrl('ace/mode/c_cpp_worker', 'cpp_worker.js');
 // ace.config.setModuleUrl('ace/mode/c_cpp_custom', 'mode_cpp_custom.js');
-const editorSessions = new Map();
-var editor = ace.edit("editor", {
-    mode: "ace/mode/c_cpp",
-    enableLiveAutocompletion: true,
-    enableBasicAutocompletion: true,
-    enableSnippets: true,
-    placeholder: "incepe sa scrii niste cod...",
-    tooltipFollowsMouse: true,
-    animatedScroll: true,
-    useWorker: true,
-    //   fontSize: "18px",
-    //maxLines: 30,
-    wrap: true,
-    autoScrollEditorIntoView: true,
-    enableCodeLens: true,
-});
 // window.onload = function() {
 //   //  document.querySelector('#editor textarea')?.setAttribute('inputmode', 'none')
 //   const ddd = document.querySelector('.ace_text-input');
@@ -1138,7 +1207,6 @@ export function joinsession() {
     //   displayMessagePopup(data.link)
     // }
 }
-let session;
 export function copySessionLink() {
     const clientId = wsSessionId;
     let sessionLink;
@@ -1290,18 +1358,63 @@ function openFile(fileName = "main.cpp") {
     });
     ws.send(command);
 }
-let cmdId = 0;
-const sessionId = new URLSearchParams(window.location.search).get("session");
-const saveId = new URLSearchParams(window.location.search).get("save");
 // websocket //
-const WSUrl = "ws://" + window.location.hostname + ":" + window.location.port + (sessionId || saveId ? "?" : "") + (sessionId ? "session=" + sessionId + "&" : "") + (saveId ? "save=" + saveId : "");
-if (document.cookie.includes('session=') && !window.location.search.includes('save') && !window.location.search.includes('session')) {
-    if (!window.confirm('You have a previous unsaved session, would you like to recover it?'))
-        document.cookie = 'session=';
-}
+// if(document.cookie.includes('session=') && !window.location.search.includes('save') && !window.location.search.includes('session'))
+// {
+//   if(!window.confirm('You have a previous unsaved session, would you like to recover it?'))
+//       document.cookie = 'session=';
+// }
 const ws = new WebSocket(WSUrl);
-let variables = [];
-const variableArrayIndexes = [];
+addEventListener('DOMContentLoaded', () => {
+    ws.onclose = (ev) => {
+        const serviceRestart = ev.code == 1006;
+        console.log(ev.code + " " + ev.reason);
+        const socketStopped = document.createElement('div');
+        socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error');
+        const socketText = document.createElement('p');
+        socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
+        socketStopped.appendChild(socketText);
+        document.getElementById('editor')?.appendChild(socketStopped);
+        if (serviceRestart)
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+    };
+    ws.onerror = (err) => {
+        displayMessagePopup("WEBSOCKER ERROR: " + err);
+    };
+    setTimeout(() => {
+        while (!ws.OPEN)
+            ws.onopen = (ev) => {
+                const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
+                //writeOutput(sessionId || "No session ID found in URL.");
+                window.onbeforeunload = (ev => {
+                    if (modifiedFile)
+                        ev.preventDefault();
+                });
+                let hoverTooltip = 0;
+                setTimeout(() => {
+                    if (wsSessionId == undefined)
+                        ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+                    setTimeout(() => {
+                        if (wsSessionId == undefined)
+                            ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+                    }, 3000);
+                }, 500);
+                const tooltip = new TokenTooltip(editor);
+                // Add the dynamic marker
+                // setInterval(() => {
+                //     const code = editor.getValue();
+                //     //console.log(delta);
+                //     // if(blockChange) blockChange = false;
+                //     // else {
+                //     // blockChange = true;
+                //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
+                //  //   }
+                // }, 500);
+            };
+    }, 100);
+});
 export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;
@@ -1325,26 +1438,6 @@ export function submitConsole(elem, type, Console) {
     onConsoleInput(elem);
     ws.send(JSON.stringify({ type: WebSocketMessageType.ConsoleTyping, status: "end" }));
 }
-// Class to render one visual cursor
-class VisualCursor {
-    cursorId;
-    getPosition;
-    constructor(cursorId, getPosition) {
-        this.cursorId = cursorId;
-        this.getPosition = getPosition;
-    }
-    type = "line";
-    clazz = "ace_remote_cursor";
-    markerRef = undefined;
-    update(html, markerLayer, session, config) {
-        const pos = this.getPosition();
-        const screenPos = session.documentToScreenPosition(pos.row, pos.column);
-        const top = markerLayer.$getTop(screenPos.row, config);
-        const left = markerLayer.$padding + screenPos.column * config.characterWidth;
-        markerLayer.elt("ace_remote_cursor", `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px; --color: green`);
-        // FOR FUTURE REFERENCE, HTML DOESNT WORK ANYMORE, USE ELT
-    }
-}
 outputArea.onscroll = ev => {
     const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
     console.log(outputArea.scrollTop + outputArea.scrollHeight);
@@ -1354,64 +1447,6 @@ outputArea.onscroll = ev => {
         document.getElementById('message-indicator')?.remove();
     }
 };
-// Manager class for multiple visual cursors
-class MultiCursorManager {
-    editor;
-    cursorsPos = new Map();
-    cursors = new Map();
-    constructor(editor) {
-        this.editor = editor;
-    }
-    addCursor(cursorId, position) {
-        this.cursorsPos.set(cursorId, position);
-        const marker = new VisualCursor(cursorId, () => this.cursorsPos.get(cursorId));
-        const markerDyn = this.editor.session.addDynamicMarker(marker, true);
-        marker.markerRef = markerDyn;
-        this.cursors.set(cursorId, marker);
-        return marker;
-    }
-    updateCursor(cursorId, position) {
-        if (this.cursorsPos.has(cursorId)) {
-            this.cursorsPos.set(cursorId, position);
-            this.editor.renderer.updateFull(); // Triggers redraw
-        }
-    }
-    removeCursor(cursorId) {
-        this.editor.session.removeMarker((this.cursors.get(cursorId)?.markerRef).id || 0);
-        const success = this.cursors.delete(cursorId);
-        this.cursors.delete(cursorId);
-        this.editor.renderer.updateFrontMarkers();
-        return success;
-    }
-    replicateCursor(cursorId, position) {
-        if (this.cursors.has(cursorId)) {
-            this.updateCursor(cursorId, position);
-            return this.cursorsPos.get(cursorId);
-        }
-        else
-            return this.addCursor(cursorId, position);
-    }
-}
-// Initialize the manager
-const cursorManager = new MultiCursorManager(editor);
-let msgId = 0;
-ws.onclose = (ev) => {
-    const serviceRestart = ev.code == 1006;
-    console.log(ev.code + " " + ev.reason);
-    const socketStopped = document.createElement('div');
-    socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error');
-    const socketText = document.createElement('p');
-    socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
-    socketStopped.appendChild(socketText);
-    document.getElementById('editor')?.appendChild(socketStopped);
-    if (serviceRestart)
-        setTimeout(() => {
-            window.location.reload();
-        }, 2000);
-};
-var event = ace.require("ace/lib/event");
-var Range = ace.require("ace/range").Range;
-var Tooltip = ace.require("ace/tooltip").Tooltip;
 // const tooltips: Map<string, string> = new Map()
 // tooltips.set('cout', 'scrie cod')
 const tooltip = (await (await fetch('/editor/tooltipHints')).json());
@@ -1527,9 +1562,6 @@ class TokenTooltip extends Tooltip {
     }
     ;
 }
-ws.onerror = (err) => {
-    displayMessagePopup("WEBSOCKER ERROR: " + err);
-};
 // setTimeout(() => {
 //   if(wsSessionId==undefined)
 //     ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
@@ -1538,37 +1570,6 @@ ws.onerror = (err) => {
 //         ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
 //     }, 1500); 
 // }, 500); 
-setTimeout(() => {
-    while (!ws.OPEN)
-        ws.onopen = (ev) => {
-            const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
-            //writeOutput(sessionId || "No session ID found in URL.");
-            window.onbeforeunload = (ev => {
-                if (modifiedFile)
-                    ev.preventDefault();
-            });
-            let hoverTooltip = 0;
-            setTimeout(() => {
-                if (wsSessionId == undefined)
-                    ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
-                setTimeout(() => {
-                    if (wsSessionId == undefined)
-                        ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
-                }, 3000);
-            }, 500);
-            const tooltip = new TokenTooltip(editor);
-            // Add the dynamic marker
-            // setInterval(() => {
-            //     const code = editor.getValue();
-            //     //console.log(delta);
-            //     // if(blockChange) blockChange = false;
-            //     // else {
-            //     // blockChange = true;
-            //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
-            //  //   }
-            // }, 500);
-        };
-}, 100);
 editor.on("change", (delta) => {
     !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
     !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
