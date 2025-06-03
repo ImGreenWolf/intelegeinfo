@@ -2139,13 +2139,13 @@ console.log('Skipping build stage.')
 //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
   // 4. Run the Docker container with access to the sandbox folder
 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
-`docker run --rm \
+`docker run \
 --name ${imageName} \
 -v "${cacheFolderPath}:/app" \
 -w /app \
 
 ${buildTag} \
-  ` // bash -c "g++ -g -v -O0 main.cpp -o main && ./main"
+  ` // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
@@ -2163,8 +2163,10 @@ ${buildTag} \
             clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
         }, 400);
         
-
-        resolve(sessionContainer); // Return the child process so it can be handled externally
+        setTimeout(() => {
+            resolve(sessionContainer); // Return the child process so it can be handled externally
+        }, 1000);
+        
     })
 
     
