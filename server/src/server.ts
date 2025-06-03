@@ -2141,13 +2141,14 @@ if(sessionContainer)
   // 4. Run the Docker container with access to the sandbox folder
 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
 `docker run \
---name ${imageName}\
+--name ${imageName} \
 --attach \
 -v "${cacheFolderPath}:/app" \
 -w /app \
-bash -c "echo hey"
 ${buildTag} \
-  ` // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
+bash -c "echo hey"
+  `.trim()
+   // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
