@@ -527,6 +527,7 @@ app.post("/compile", (req, res) => {
         res.json(err);
     });
 });
+let buildTag = '';
 exports.wss.on("connection", (ws, req) => {
     let gdbProcess;
     let program;
@@ -544,7 +545,7 @@ exports.wss.on("connection", (ws, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
-    let imageTag = '';
+    let imageName = '';
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies);
     function getJWTCookie(cookies) {
@@ -1400,9 +1401,10 @@ exports.wss.on("connection", (ws, req) => {
                                                     // Run and capture the child process
                                                     //program = buildAndRunCppSandbox(cppExe, cacheFolder);
                                                     // if(!program) return console.error('invalid program')
-                                                    buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(program => {
+                                                    buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         // }); // start program
+                                                        program = (0, child_process_1.spawn)('docker', ['exec', res.imageName, "bash -c", `bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`]);
                                                         console.log('Running program and listening');
                                                         dataTimeout =
                                                             setTimeout(() => {
@@ -1631,8 +1633,8 @@ exports.wss.on("connection", (ws, req) => {
                                             //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                                             const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
                                             const containerExePath = `${exeName}`;
-                                            if (true && imageTag == "") {
-                                                imageTag = `cpp-tool`; // Unique image tag to avoid collisions
+                                            if (true && buildTag == "") {
+                                                buildTag = `cpp-tool`; // Unique image tag to avoid collisions
                                                 // 1. Copy the executable to the temporary folder
                                                 // 2. Write the Dockerfile to the temp directory
                                                 const dockerfileContents = // `
@@ -1656,9 +1658,9 @@ CMD [ "bash" ]
   `.trim();
                                                 fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
                                                 // 3. Build the Docker image
-                                                console.log(`Building Docker image: ${imageTag}`);
+                                                console.log(`Building Docker image: ${buildTag}`);
                                                 try {
-                                                    (0, child_process_2.execSync)(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+                                                    (0, child_process_2.execSync)(`docker build -t ${buildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
                                                 }
                                                 catch (error) {
                                                     console.error('Error building Docker image:', error);
@@ -1673,13 +1675,15 @@ CMD [ "bash" ]
                                             //     const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true })
                                             //      resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
                                             // })
+                                            imageName = `session-container-${sessionId}`;
                                             //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
                                             // 4. Run the Docker container with access to the sandbox folder
                                             const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
                                              `docker run --rm \
   -v "${cacheFolderPath}:/app" \
   -w /app \
-  ${imageTag} \
+  --name ${imageName}
+  ${buildTag} \
   bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
@@ -1695,7 +1699,7 @@ CMD [ "bash" ]
                                                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                                                     }, 400);
                                             });
-                                            resolve(childProcess); // Return the child process so it can be handled externally
+                                            resolve({ process: childProcess, imageName: imageName }); // Return the child process so it can be handled externally
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
                                             //   });

@@ -709,7 +709,7 @@ app.post("/compile", (req: express.Request<{}, {}, CompileRequestBody>, res: exp
 });
 
 
-
+    let buildTag = '';
 
 wss.on("connection", (ws: WebSocket, req) => {
     let gdbProcess: ChildProcess | undefined;
@@ -728,7 +728,7 @@ wss.on("connection", (ws: WebSocket, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
-    let imageTag = '';
+    let imageName = ''
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies)
       function getJWTCookie(cookies) { return cookies
@@ -1762,10 +1762,11 @@ wss.on("connection", (ws: WebSocket, req) => {
                                         // if(!program) return console.error('invalid program')
 
                                         
-                                                buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(program => {
+                                                buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         
                                                     // }); // start program
+                                                    program = spawn('docker', ['exec', res.imageName, "bash -c", `bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`])
                                                     console.log('Running program and listening')
 
                                                     dataTimeout = 
@@ -2061,7 +2062,7 @@ wss.on("connection", (ws: WebSocket, req) => {
  * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
  * @returns The child process running the Docker container
  */
-function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: string, clientId, sessionId): Promise<ChildProcess>{
+function buildAndRunCppSandbox(cppExecutablePath: string, cacheFolderPath: string, clientId, sessionId): Promise<{process: ChildProcess, imageName: string}>{
 
 return new Promise((resolve, reject) => {
     const exeFolder = path.dirname(cppExecutablePath); // Folder containing .exe
@@ -2079,9 +2080,9 @@ return new Promise((resolve, reject) => {
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-if(true && imageTag=="")
+if(true && buildTag=="")
 {
-  imageTag = `cpp-tool`; // Unique image tag to avoid collisions
+  buildTag = `cpp-tool`; // Unique image tag to avoid collisions
 
   // 1. Copy the executable to the temporary folder
   // 2. Write the Dockerfile to the temp directory
@@ -2108,9 +2109,9 @@ CMD [ "bash" ]
 
 
     // 3. Build the Docker image
-  console.log(`Building Docker image: ${imageTag}`);
+  console.log(`Building Docker image: ${buildTag}`);
   try {
-    execSync(`docker build -t ${imageTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+    execSync(`docker build -t ${buildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
   } catch (error) {
     console.error('Error building Docker image:', error);
     return;
@@ -2128,7 +2129,7 @@ console.log('Skipping build stage.')
 
 // })
 
- 
+  imageName = `session-container-${sessionId}`
 
 
 //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
@@ -2137,7 +2138,8 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 `docker run --rm \
   -v "${cacheFolderPath}:/app" \
   -w /app \
-  ${imageTag} \
+  --name ${imageName}
+  ${buildTag} \
   bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
@@ -2155,7 +2157,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
         }, 400);
         
     })
-    resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
+    resolve({process: childProcess as ChildProcess, imageName: imageName}); // Return the child process so it can be handled externally
 
 
 //   childProcess.stdout.on('data', (data) => {
