@@ -624,8 +624,8 @@ function compileFile(clientId, sessionId, imageName): Promise<any>
     const editorSession = isShared ? shared.getSession(sessionId) || sessionMap.get(sessionId): sessionMap.get(sessionId);
     
     // const code = req.body.code;
-    const exeFile = path.join(rootDirName, "cache", sessionId);
-    const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
+    const exeFile = path.resolve('main.cpp');//path.join(rootDirName, "cache", sessionId);
+    const filePath = path.resolve('./');//path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
     const codeFile = !["cpp"].includes(path.extname(editorSession?.clientsActiveFile.get(clientId)|| "main.cpp"))? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
     if(!editorSession)
         console.log(new Error("Couldnt retrieve editorSession from memory database"))
@@ -638,7 +638,7 @@ function compileFile(clientId, sessionId, imageName): Promise<any>
     // });
 
 
-    compileProcess = spawn('docker', ['exec', "-i", imageName, "bash","-c", "g++ -g -v -O0 main.cpp -o main && ./main"], {
+    compileProcess = spawn('docker', ['exec', "-i", imageName, "bash", "-c", "g++ -g -v -O0 main.cpp -o main"], {
     stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
     });
     let errorData = "";
@@ -1918,6 +1918,8 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                 })
                                                     // program = spawn(filePath, {
                                              
+                                            }).catch(err => {
+                                                console.error(err)
                                             });
                                             //await queueCommand(program,message);
                                                     })

@@ -465,8 +465,8 @@ function compileFile(clientId, sessionId, imageName) {
         // const sessionId = req.body.sessionId; 
         const editorSession = isShared ? shared.getSession(sessionId) || exports.sessionMap.get(sessionId) : exports.sessionMap.get(sessionId);
         // const code = req.body.code;
-        const exeFile = path_1.default.join(exports.rootDirName, "cache", sessionId);
-        const filePath = path_1.default.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
+        const exeFile = path_1.default.resolve('main.cpp'); //path.join(rootDirName, "cache", sessionId);
+        const filePath = path_1.default.resolve('./'); //path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
         const codeFile = !["cpp"].includes(path_1.default.extname(editorSession?.clientsActiveFile.get(clientId) || "main.cpp")) ? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
         if (!editorSession)
             console.log(new Error("Couldnt retrieve editorSession from memory database"));
@@ -476,7 +476,7 @@ function compileFile(clientId, sessionId, imageName) {
         //     windowsHide: true,
         //     detached: true,
         // });
-        compileProcess = (0, child_process_1.spawn)('docker', ['exec', "-i", imageName, "bash", "-c", "g++ -g -v -O0 main.cpp -o main && ./main"], {
+        compileProcess = (0, child_process_1.spawn)('docker', ['exec', "-i", imageName, "bash", "-c", "g++ -g -v -O0 main.cpp -o main"], {
             stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
         });
         let errorData = "";
@@ -1517,6 +1517,8 @@ exports.wss.on("connection", (ws, req) => {
                                                                 // resolve(); // Resolve the promise when the process closes
                                                             });
                                                             // program = spawn(filePath, {
+                                                        }).catch(err => {
+                                                            console.error(err);
                                                         });
                                                         //await queueCommand(program,message);
                                                     });
