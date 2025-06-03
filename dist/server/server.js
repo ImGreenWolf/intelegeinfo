@@ -1704,7 +1704,7 @@ bash
                                             console.log(runCommand);
                                             (0, child_process_1.spawn)("docker", ["ps", "-a"], { stdio: "inherit" });
                                             // Return the child process for external handling
-                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "inherit" });
+                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
                                             sessionContainer = { process: childProcess, imageName };
                                             childProcess?.on("spawn", () => {
                                                 console.log("Docker container spawned");
