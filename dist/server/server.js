@@ -1404,7 +1404,9 @@ exports.wss.on("connection", (ws, req) => {
                                                     buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         // }); // start program
-                                                        program = (0, child_process_1.spawn)('docker', ['exec', "-it", res.imageName, "bash", "-c", "echo compiling && g++ -g -v -O0 main.cpp -o main && ./main"]);
+                                                        program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "echo compiling && g++ -g -v -O0 main.cpp -o main && ./main"], {
+                                                            stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
+                                                        });
                                                         console.log('Running program and listening: ' + res.imageName);
                                                         dataTimeout =
                                                             setTimeout(() => {
