@@ -2085,46 +2085,46 @@ if(sessionContainer)
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-// if(true && buildTag=="")
-// {
-//   buildTag = `cpp-tool`; // Unique image tag to avoid collisions
+if(true && buildTag=="")
+{
+  buildTag = `cpp-tool`; // Unique image tag to avoid collisions
 
-//   // 1. Copy the executable to the temporary folder
-//   // 2. Write the Dockerfile to the temp directory
-//   const dockerfileContents =// `
-// // FROM gcc:latest\n
-// // COPY . /usr/src/
-// // WORKDIR /usr/src/
-// // RUN g++ -g -O0 "main.cpp" -o main\n
-// // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-// // \n
-// // CMD ["./main"]
-// `
-// # Base image with GCC
-// FROM gcc:bookworm
+  // 1. Copy the executable to the temporary folder
+  // 2. Write the Dockerfile to the temp directory
+  const dockerfileContents =// `
+// FROM gcc:latest\n
+// COPY . /usr/src/
+// WORKDIR /usr/src/
+// RUN g++ -g -O0 "main.cpp" -o main\n
+// #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+// \n
+// CMD ["./main"]
+`
+# Base image with GCC
+FROM gcc:bookworm
 
-// # Set working directory inside container
-// WORKDIR /app
+# Set working directory inside container
+WORKDIR /app
 
-// # Default command can be overridden
-// CMD [ "bash" ]
-//   `.trim();
+# Default command can be overridden
+CMD [ "bash" ]
+  `.trim();
 
-//   fs.writeFileSync(dockerfilePath, dockerfileContents);
+  fs.writeFileSync(dockerfilePath, dockerfileContents);
 
 
-//     // 3. Build the Docker image
-//   console.log(`Building Docker image: ${buildTag}`);
-//   try {
-//     execSync(`docker build -t ${buildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
-//   } catch (error) {
-//     console.error('Error building Docker image:', error);
-//     return;
-//   }
+    // 3. Build the Docker image
+  console.log(`Building Docker image: ${buildTag}`);
+  try {
+    execSync(`docker build -t ${buildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+  } catch (error) {
+    console.error('Error building Docker image:', error);
+    return;
+  }
 
-// }
-// else
-// console.log('Skipping build stage.')
+}
+else
+console.log('Skipping build stage.')
 
 //   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
 // //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
