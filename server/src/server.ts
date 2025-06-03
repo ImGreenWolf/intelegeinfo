@@ -613,7 +613,7 @@ function getClientFilesPath(sessionId)
     
 // })
 
-function compileFile(clientId, sessionId): Promise<any>
+function compileFile(clientId, sessionId, imageName): Promise<any>
 {
 
     return new Promise<any>((resolve, reject) => {
@@ -632,9 +632,14 @@ function compileFile(clientId, sessionId): Promise<any>
     //fs.writeFileSync(path.join(filePath,"main.cpp"), code);
     // console.log(path.extname(getThisClientSession()?.clientsActiveFile.get(clientId)||"aaa"));
    
-    compileProcess = spawn("g++", ["-g", "-O0", path.join(filePath, codeFile || "main.cpp"), "-o", path.join(exeFile,"main.exe")], {
-        windowsHide: true,
-        detached: true,
+    // compileProcess = spawn("g++", ["-g", "-O0", path.join(filePath, codeFile || "main.cpp"), "-o", path.join(exeFile,"main.exe")], {
+    //     windowsHide: true,
+    //     detached: true,
+    // });
+
+
+    compileProcess = spawn('docker', ['exec', "-i", imageName, "bash","-c", "g++ -g -v -O0 main.cpp -o main && ./main"], {
+    stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
     });
     let errorData = "";
     
@@ -699,7 +704,7 @@ app.post("/compile", (req: express.Request<{}, {}, CompileRequestBody>, res: exp
     // if(!fs.existsSync(path.join(rootDirName, "cache", sessionId))) return;
     
     const { clientId, sessionId } = req.body
-    compileFile(clientId, sessionId).then(data => {
+    compileFile(clientId, sessionId, '').then(data => {
         res.json(data)
     }).catch(err => {
         res.json(err)
@@ -728,6 +733,7 @@ wss.on("connection", (ws: WebSocket, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
+    let imageName = '';
     let sessionContainer: {process: ChildProcess, imageName: string};
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies)
@@ -1766,15 +1772,13 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         
                                                     // }); // start program
-                                                    program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "echo compiling && g++ -g -v -O0 main.cpp -o main && ./main"], {
+                                                    imageName = res.imageName;
+                                                    compileFile(clientId,sessionId,res.imageName).then((val) => {
+                                                        program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
                                                         stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                         });
                                                     console.log('Running program and listening: ' +  res.imageName)
 
-                                                    dataTimeout = 
-                                                    setTimeout(() => {
-                                                        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-                                                    }, 400);
 
 
                                                     async function onClosedProgram(code, message, error?)
@@ -1916,6 +1920,9 @@ wss.on("connection", (ws: WebSocket, req) => {
                                              
                                             });
                                             //await queueCommand(program,message);
+                                                    })
+
+                                                    
                                        })
                                        
                                        return [spawnPromise, mainPromise]
@@ -1934,7 +1941,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling...', clientId: clientId}));  // Send GDB output to the client
                                                     });
 
-                                                compileFile(clientId, sessionId).then(res => {
+                                                compileFile(clientId, sessionId, '').then(res => {
 
                                                             replicateFunction((clientWs) => {
                                                                     clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
@@ -1975,7 +1982,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     }
                                                     console.log(stats.mtimeMs < codeStats.mtimeMs - 500)
                                                     if(stats.mtimeMs < codeStats.mtimeMs - 500) // check if file was edited after compile.
-                                                        compileFile(clientId, sessionId).then(res => {
+                                                        compileFile(clientId, sessionId, '').then(res => {
                                                                 replicateFunction((clientWs) => {
                                                                     clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Recompiled.', clientId: clientId}));  // Send GDB output to the client
                                                                 });
@@ -2158,19 +2165,11 @@ bash
     sessionContainer = {process: childProcess as ChildProcess, imageName} 
 
      childProcess?.on("spawn", () => {
-        console.log("Program spawned")
+        console.log("Docker container spawned")
         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-        if( childProcess.stdin && processInputBuffer)
-            if(childProcess?.stdin?.writable)
-            childProcess.stdin.write(processInputBuffer) // write buffer
-        dataTimeout = 
-        setTimeout(() => {
-            clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-        }, 400);
-        
         setTimeout(() => {
             resolve(sessionContainer); // Return the child process so it can be handled externally
-        }, 5000);
+        }, 100);
         
     })
 
