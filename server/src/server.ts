@@ -1899,8 +1899,10 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     case 136:
                                                     case 138:
                                                         onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Arithmetic devided by 0</a>", true)
+                                                        break;
                                                     case 139:
                                                         onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Segmentation Fault</a>", true)
+                                                        break;
                                                     case 3221225477:
                                                         onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
                                                     break;
@@ -2539,7 +2541,8 @@ bash
                    // sessions.delete(sessionId);
                 closeProcess(process)
                 .finally(() => {
-                    execSync(`docker rm ${sessionContainer.imageName} -f -v`)
+                    if(sessionContainer)
+                        exec(`docker rm ${sessionContainer.imageName} -f -v`)
                     const dirPath = path.join(rootDirName, "cache", sessionId); 
                     if(false) // TODO check if its okay to delete the session folder
                         if(dirPath) 
