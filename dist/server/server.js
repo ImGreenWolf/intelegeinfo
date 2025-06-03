@@ -1499,8 +1499,11 @@ exports.wss.on("connection", (ws, req) => {
                                                                 default:
                                                                     onClosedProgram(code, "Program exited with code: " + code?.toString() || 0);
                                                                     break;
-                                                                case 8:
+                                                                case 136:
+                                                                case 138:
                                                                     onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Arithmetic devided by 0</a>", true);
+                                                                case 139:
+                                                                    onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Segmentation Fault</a>", true);
                                                                 case 3221225477:
                                                                     onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
                                                                     break;
@@ -2011,7 +2014,7 @@ bash
                 // sessions.delete(sessionId);
                 closeProcess(process)
                     .finally(() => {
-                    (0, child_process_2.execSync)(`docker rm ${sessionContainer.imageName} -f`);
+                    (0, child_process_2.execSync)(`docker rm ${sessionContainer.imageName} -f -v`);
                     const dirPath = path_1.default.join(exports.rootDirName, "cache", sessionId);
                     if (false) // TODO check if its okay to delete the session folder
                         if (dirPath)

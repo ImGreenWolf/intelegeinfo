@@ -1896,8 +1896,11 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     default:
                                                         onClosedProgram(code, "Program exited with code: " + code?.toString() || 0)
                                                     break;
-                                                    case 8:
+                                                    case 136:
+                                                    case 138:
                                                         onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Arithmetic devided by 0</a>", true)
+                                                    case 139:
+                                                        onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Segmentation Fault</a>", true)
                                                     case 3221225477:
                                                         onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
                                                     break;
