@@ -2165,7 +2165,7 @@ bash
         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         setTimeout(() => {
             resolve(sessionContainer); // Return the child process so it can be handled externally
-        }, 100);
+        }, 1000);
         
     })
 

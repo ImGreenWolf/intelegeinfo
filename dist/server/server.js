@@ -1708,7 +1708,7 @@ bash
                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
                                                 setTimeout(() => {
                                                     resolve(sessionContainer); // Return the child process so it can be handled externally
-                                                }, 100);
+                                                }, 1000);
                                             });
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
