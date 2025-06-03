@@ -1407,14 +1407,14 @@ exports.wss.on("connection", (ws, req) => {
                                                         replicateFunction((clientWs) => {
                                                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                         });
-                                                        (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -v -O0 main.cpp -o main"`);
+                                                        (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`);
                                                         replicateFunction((clientWs) => {
                                                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                         });
                                                         program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "./main"], {
                                                             stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
                                                         });
-                                                        console.log('Running program and listening: ' + res.imageName);
+                                                        // console.log('Running program and listening: ' +  res.imageName)
                                                         async function onClosedProgram(code, message, error) {
                                                             let notes = "";
                                                             processInputBuffer = '';
@@ -1499,6 +1499,8 @@ exports.wss.on("connection", (ws, req) => {
                                                                 default:
                                                                     onClosedProgram(code, "Program exited with code: " + code?.toString() || 0);
                                                                     break;
+                                                                case 8:
+                                                                    onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Arithmetic devided by 0</a>", true);
                                                                 case 3221225477:
                                                                     onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
                                                                     break;
@@ -1693,7 +1695,8 @@ CMD [ "bash" ]
 --name ${imageName} \
 -v "${cacheFolderPath}:/app" \
 -w /app \
--dit \
+-di \
+-m 256Mb \
 ${buildTag} \
 bash
   `.trim(); // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
@@ -1708,7 +1711,7 @@ bash
                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
                                                 setTimeout(() => {
                                                     resolve(sessionContainer); // Return the child process so it can be handled externally
-                                                }, 5000);
+                                                }, 3000);
                                             });
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);

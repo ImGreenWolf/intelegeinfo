@@ -1769,14 +1769,14 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                     });
-                                                    execSync(`docker exec ${res.imageName} bash -c "g++ -g -v -O0 main.cpp -o main"`)
+                                                    execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`)
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                                     });
                                                     program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
                                                         stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                         });
-                                                    console.log('Running program and listening: ' +  res.imageName)
+                                                    // console.log('Running program and listening: ' +  res.imageName)
 
 
 
@@ -1832,7 +1832,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     spawnPromise = new Promise<void>((resolve, reject) => {
                                                         program?.on("spawn", () => {
                                                             console.log("Program spawned")
-                                                             spawnDate = Date.now()
+                                                            spawnDate = Date.now()
                                                             clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
                                                             if( program.stdin && processInputBuffer)
                                                                 if(program?.stdin?.writable)
@@ -1893,9 +1893,9 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     case 0:
                                                     default:
                                                         onClosedProgram(code, "Program exited with code: " + code?.toString() || 0)
-
                                                     break;
-
+                                                    case 8:
+                                                        onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Arithmetic devided by 0</a>", true)
                                                     case 3221225477:
                                                         onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
                                                     break;
@@ -2149,7 +2149,8 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 --name ${imageName} \
 -v "${cacheFolderPath}:/app" \
 -w /app \
--dit \
+-di \
+-m 256Mb \
 ${buildTag} \
 bash
   `.trim() // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
@@ -2165,7 +2166,7 @@ bash
         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         setTimeout(() => {
             resolve(sessionContainer); // Return the child process so it can be handled externally
-        }, 5000);
+        }, 3000);
         
     })
 
