@@ -1689,7 +1689,7 @@ CMD [ "bash" ]
 -v "${cacheFolderPath}:/app" \
 -w /app \
 ${buildTag} \
-bash -c "echo hey"
+bash
   `.trim(); // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
                                             console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                                             console.log(runCommand);
