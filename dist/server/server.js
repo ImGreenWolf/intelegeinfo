@@ -1715,10 +1715,10 @@ bash
                                             });
                                             childProcess.stdout.on('data', data => {
                                                 console.log(data.toString());
-                                                resolve(sessionContainer);
-                                                // setTimeout(() => {
-                                                //     resolve(sessionContainer); // Return the child process so it can be handled externally
-                                                // }, 5000);
+                                                //  resolve(sessionContainer);
+                                                setTimeout(() => {
+                                                    resolve(sessionContainer); // Return the child process so it can be handled externally
+                                                }, 5000);
                                             });
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
@@ -2011,6 +2011,7 @@ bash
                 // sessions.delete(sessionId);
                 closeProcess(process)
                     .finally(() => {
+                    (0, child_process_2.execSync)(`docker rm ${sessionContainer.imageName} -f`);
                     const dirPath = path_1.default.join(exports.rootDirName, "cache", sessionId);
                     if (false) // TODO check if its okay to delete the session folder
                         if (dirPath)

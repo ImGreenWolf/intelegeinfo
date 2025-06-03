@@ -1,6 +1,6 @@
 import express, { NextFunction } from "express";
 import fs from "fs";
-import { ChildProcess, spawn } from "child_process";
+import { ChildProcess, exec, spawn } from "child_process";
 import WebSocket from "ws";
 import path from 'path';
 import { ConsoleMessageType, WebSocketMessageType } from '../../dist/shared/types'
@@ -1769,7 +1769,9 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                     });
+
                                                     execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`)
+
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                                     });
@@ -2534,7 +2536,7 @@ bash
                    // sessions.delete(sessionId);
                 closeProcess(process)
                 .finally(() => {
-
+                    execSync(`docker rm ${sessionContainer.imageName} -f -v`)
                     const dirPath = path.join(rootDirName, "cache", sessionId); 
                     if(false) // TODO check if its okay to delete the session folder
                         if(dirPath) 
