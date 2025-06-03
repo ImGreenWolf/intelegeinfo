@@ -2163,13 +2163,16 @@ bash
 
      childProcess?.on("spawn", () => {
         console.log("Docker container spawned")
-        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-        setTimeout(() => {
-            resolve(sessionContainer); // Return the child process so it can be handled externally
-        }, 3000);
+        // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
+        // setTimeout(() => {
+        //     resolve(sessionContainer); // Return the child process so it can be handled externally
+        // }, 5000);
         
     })
-
+    childProcess.stdout.on('data', data => {
+        console.log('dkdkdkdkd')
+         resolve(sessionContainer);
+    })
     
     
 
