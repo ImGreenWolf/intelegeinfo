@@ -1714,8 +1714,11 @@ bash
                                                 // }, 5000);
                                             });
                                             childProcess.stdout.on('data', data => {
-                                                console.log('dkdkdkdkd');
+                                                console.log(data.toString());
                                                 resolve(sessionContainer);
+                                                // setTimeout(() => {
+                                                //     resolve(sessionContainer); // Return the child process so it can be handled externally
+                                                // }, 5000);
                                             });
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);

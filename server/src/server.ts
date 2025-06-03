@@ -2170,8 +2170,12 @@ bash
         
     })
     childProcess.stdout.on('data', data => {
-        console.log('dkdkdkdkd')
-         resolve(sessionContainer);
+        console.log(data.toString())
+        
+        //  resolve(sessionContainer);
+                setTimeout(() => {
+        resolve(sessionContainer); // Return the child process so it can be handled externally
+    }, 5000);
     })
     
     
