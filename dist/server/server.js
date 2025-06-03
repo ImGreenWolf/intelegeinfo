@@ -1688,7 +1688,7 @@ CMD [ "bash" ]
 --name ${imageName} --attach \
 -v "${cacheFolderPath}:/app" \
 -w /app \
-
+bash -c "echo hey" \
 ${buildTag} \
   `; // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
                                             console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
