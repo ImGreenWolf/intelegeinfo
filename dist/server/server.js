@@ -1680,7 +1680,7 @@ CMD [ "bash" ]
   -v "${cacheFolderPath}:/app" \
   -w /app \
   ${imageTag} \
-  bash -c "g++ -g -O0 main.cpp -o main && ./main"`;
+  bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`;
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "pipe" });
