@@ -1803,12 +1803,12 @@ function openFile(fileName: string = "main.cpp") {
 // websocket //
 
 
-// if(document.cookie.includes('session=') && !window.location.search.includes('save') && !window.location.search.includes('session'))
-// {
-//   if(!window.confirm('You have a previous unsaved session, would you like to recover it?'))
-//       document.cookie = 'session=';
+if(document.cookie.includes('session=') && !window.location.search.includes('save') && !window.location.search.includes('session'))
+{
+  if(!window.confirm('You have a previous unsaved session, would you like to recover it?'))
+      document.cookie = 'session=';
 
-// }
+}
 const ws = new WebSocket(WSUrl);
 
 addEventListener('DOMContentLoaded', () => {

@@ -1404,8 +1404,8 @@ exports.wss.on("connection", (ws, req) => {
                                                     buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         // }); // start program
-                                                        program = (0, child_process_1.spawn)('docker', ['exec', res.imageName, "bash -c", `bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`]);
-                                                        console.log('Running program and listening');
+                                                        program = (0, child_process_1.spawn)('docker', ['exec', res.imageName, `bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`]);
+                                                        console.log('Running program and listening: ' + res.imageName);
                                                         dataTimeout =
                                                             setTimeout(() => {
                                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });

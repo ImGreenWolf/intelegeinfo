@@ -1766,8 +1766,8 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         
                                                     // }); // start program
-                                                    program = spawn('docker', ['exec', res.imageName, "bash -c", `bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`])
-                                                    console.log('Running program and listening')
+                                                    program = spawn('docker', ['exec', res.imageName, `bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`])
+                                                    console.log('Running program and listening: ' +  res.imageName)
 
                                                     dataTimeout = 
                                                     setTimeout(() => {
