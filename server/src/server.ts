@@ -2140,11 +2140,12 @@ console.log('Skipping build stage.')
   // 4. Run the Docker container with access to the sandbox folder
 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
 `docker run --rm \
-  -v "${cacheFolderPath}:/app" \
-  -w /app \
-  --name ${imageName}
-  ${buildTag} \
-  bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`
+--name ${imageName} \
+-v "${cacheFolderPath}:/app" \
+-w /app \
+
+${buildTag} \
+  ` // bash -c "g++ -g -v -O0 main.cpp -o main && ./main"
   console.log(`Running Docker container with access to ${sandboxFolder}`);
   
   // Return the child process for external handling
@@ -2162,10 +2163,12 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
             clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
         }, 400);
         
+
+        resolve(sessionContainer); // Return the child process so it can be handled externally
     })
 
     
-    resolve(sessionContainer); // Return the child process so it can be handled externally
+    
 
 
 //   childProcess.stdout.on('data', (data) => {

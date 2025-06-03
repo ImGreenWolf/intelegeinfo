@@ -1631,6 +1631,7 @@ exports.wss.on("connection", (ws, req) => {
                                             }
                                             if (sessionContainer != undefined) {
                                                 resolve(sessionContainer);
+                                                return;
                                             }
                                             // Create a temporary directory for building the Docker image
                                             //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
@@ -1683,11 +1684,12 @@ CMD [ "bash" ]
                                             // 4. Run the Docker container with access to the sandbox folder
                                             const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
                                              `docker run --rm \
-  -v "${cacheFolderPath}:/app" \
-  -w /app \
-  --name ${imageName}
-  ${buildTag} \
-  bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`;
+--name ${imageName} \
+-v "${cacheFolderPath}:/app" \
+-w /app \
+
+${buildTag} \
+  `; // bash -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "pipe" });
@@ -1702,8 +1704,8 @@ CMD [ "bash" ]
                                                     setTimeout(() => {
                                                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                                                     }, 400);
+                                                resolve(sessionContainer); // Return the child process so it can be handled externally
                                             });
-                                            resolve(sessionContainer); // Return the child process so it can be handled externally
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
                                             //   });
