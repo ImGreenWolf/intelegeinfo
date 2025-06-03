@@ -1769,7 +1769,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                     });
-                                                    execSync('docker exec g++ -g -v -O0 main.cpp -o main')
+                                                    execSync(`docker exec ${res.imageName} g++ -g -v -O0 main.cpp -o main`)
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                                     });
