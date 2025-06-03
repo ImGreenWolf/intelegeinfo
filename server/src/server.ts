@@ -2141,14 +2141,14 @@ console.log('Skipping build stage.')
   // 4. Run the Docker container with access to the sandbox folder
 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
 `docker run \
---name ${imageName} --attach \
+--name ${imageName} \
 -v "${cacheFolderPath}:/app" \
 -w /app \
 ${buildTag} \
-bash -c "echo hey" \
-  ` // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
+bash -c "echo hey"
+  `.trim() // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
-  
+  console.log(runCommand)
   // Return the child process for external handling
     const childProcess = spawn(runCommand, { shell: true, stdio: "pipe"});
     sessionContainer = {process: childProcess as ChildProcess, imageName} 
@@ -2642,6 +2642,7 @@ import { Project, User } from "../../generated/prisma";
 import { IncomingMessage } from "http";
 import { cwd, stdin } from "process";
 import { parseGDBString } from "./gdbUtilities";
+import { run } from "googleapis/build/src/apis/run";
 
 
 
