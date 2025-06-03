@@ -2144,8 +2144,8 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 --name ${imageName} --attach \
 -v "${cacheFolderPath}:/app" \
 -w /app \
-bash -c "echo hey" \
 ${buildTag} \
+bash -c "echo hey" \
   ` // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
   
@@ -2166,7 +2166,7 @@ ${buildTag} \
         
         setTimeout(() => {
             resolve(sessionContainer); // Return the child process so it can be handled externally
-        }, 1000);
+        }, 5000);
         
     })
 

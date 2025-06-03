@@ -1688,8 +1688,8 @@ CMD [ "bash" ]
 --name ${imageName} --attach \
 -v "${cacheFolderPath}:/app" \
 -w /app \
-bash -c "echo hey" \
 ${buildTag} \
+bash -c "echo hey" \
   `; // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
                                             console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
@@ -1707,7 +1707,7 @@ ${buildTag} \
                                                     }, 400);
                                                 setTimeout(() => {
                                                     resolve(sessionContainer); // Return the child process so it can be handled externally
-                                                }, 1000);
+                                                }, 5000);
                                             });
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
