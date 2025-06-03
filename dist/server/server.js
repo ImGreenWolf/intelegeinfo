@@ -1685,7 +1685,6 @@ CMD [ "bash" ]
                                             // 4. Run the Docker container with access to the sandbox folder
                                             const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
                                              `docker run \
--d \
 --name ${imageName} \
 -v "${cacheFolderPath}:/app" \
 -w /app \
@@ -1695,8 +1694,9 @@ bash
   `.trim(); // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
                                             console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                                             console.log(runCommand);
+                                            (0, child_process_1.spawn)("docker", ["ps", "-a"], { stdio: "inherit" });
                                             // Return the child process for external handling
-                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "pipe" });
+                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "inherit" });
                                             sessionContainer = { process: childProcess, imageName };
                                             childProcess?.on("spawn", () => {
                                                 console.log("Program spawned");
