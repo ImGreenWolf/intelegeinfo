@@ -545,7 +545,7 @@ exports.wss.on("connection", (ws, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
-    let imageName = '';
+    let sessionContainer;
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies);
     function getJWTCookie(cookies) {
@@ -1629,6 +1629,9 @@ exports.wss.on("connection", (ws, req) => {
                                                 console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
                                                 reject();
                                             }
+                                            if (sessionContainer != undefined) {
+                                                resolve(sessionContainer);
+                                            }
                                             // Create a temporary directory for building the Docker image
                                             //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                                             const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
@@ -1675,7 +1678,7 @@ CMD [ "bash" ]
                                             //     const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true })
                                             //      resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
                                             // })
-                                            imageName = `session-container-${sessionId}`;
+                                            const imageName = `session-container-${sessionId}`;
                                             //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
                                             // 4. Run the Docker container with access to the sandbox folder
                                             const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
@@ -1688,6 +1691,7 @@ CMD [ "bash" ]
                                             console.log(`Running Docker container with access to ${sandboxFolder}`);
                                             // Return the child process for external handling
                                             const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: "pipe" });
+                                            sessionContainer = { process: childProcess, imageName };
                                             childProcess?.on("spawn", () => {
                                                 console.log("Program spawned");
                                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
@@ -1699,7 +1703,7 @@ CMD [ "bash" ]
                                                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                                                     }, 400);
                                             });
-                                            resolve({ process: childProcess, imageName: imageName }); // Return the child process so it can be handled externally
+                                            resolve(sessionContainer); // Return the child process so it can be handled externally
                                             //   childProcess.stdout.on('data', (data) => {
                                             //     console.log(`Output: ${data}`);
                                             //   });

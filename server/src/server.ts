@@ -728,7 +728,7 @@ wss.on("connection", (ws: WebSocket, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
-    let imageName = ''
+    let sessionContainer: {process: ChildProcess, imageName: string};
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies)
       function getJWTCookie(cookies) { return cookies
@@ -2074,7 +2074,11 @@ return new Promise((resolve, reject) => {
     console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
     reject()
   }
-
+if(sessionContainer != undefined)
+{
+    resolve(sessionContainer)
+    return;
+}
   // Create a temporary directory for building the Docker image
 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
@@ -2129,7 +2133,7 @@ console.log('Skipping build stage.')
 
 // })
 
-  imageName = `session-container-${sessionId}`
+  const imageName = `session-container-${sessionId}`;
 
 
 //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
@@ -2145,6 +2149,8 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
   
   // Return the child process for external handling
     const childProcess = spawn(runCommand, { shell: true, stdio: "pipe"});
+    sessionContainer = {process: childProcess as ChildProcess, imageName} 
+
      childProcess?.on("spawn", () => {
         console.log("Program spawned")
         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
@@ -2157,7 +2163,9 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
         }, 400);
         
     })
-    resolve({process: childProcess as ChildProcess, imageName: imageName}); // Return the child process so it can be handled externally
+
+    
+    resolve(sessionContainer); // Return the child process so it can be handled externally
 
 
 //   childProcess.stdout.on('data', (data) => {
