@@ -459,25 +459,22 @@ function getClientFilesPath(sessionId) {
     return path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
 }
 // })
-function compileFile(clientId, sessionId, imageName) {
+function compileFile(clientId, sessionId) {
     return new Promise((resolve, reject) => {
         // const clientId = req.body.clientId;
         // const sessionId = req.body.sessionId; 
         const editorSession = isShared ? shared.getSession(sessionId) || exports.sessionMap.get(sessionId) : exports.sessionMap.get(sessionId);
         // const code = req.body.code;
-        const exeFile = path_1.default.resolve('main.cpp'); //path.join(rootDirName, "cache", sessionId);
-        const filePath = path_1.default.resolve('./'); //path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
+        const exeFile = path_1.default.join(exports.rootDirName, "cache", sessionId);
+        const filePath = path_1.default.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
         const codeFile = !["cpp"].includes(path_1.default.extname(editorSession?.clientsActiveFile.get(clientId) || "main.cpp")) ? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
         if (!editorSession)
             console.log(new Error("Couldnt retrieve editorSession from memory database"));
         //fs.writeFileSync(path.join(filePath,"main.cpp"), code);
         // console.log(path.extname(getThisClientSession()?.clientsActiveFile.get(clientId)||"aaa"));
-        // compileProcess = spawn("g++", ["-g", "-O0", path.join(filePath, codeFile || "main.cpp"), "-o", path.join(exeFile,"main.exe")], {
-        //     windowsHide: true,
-        //     detached: true,
-        // });
-        compileProcess = (0, child_process_1.spawn)('docker', ['exec', "-i", imageName, "bash", "-c", "g++ -g -v -O0 main.cpp -o main"], {
-            stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
+        compileProcess = (0, child_process_1.spawn)("g++", ["-g", "-O0", path_1.default.join(filePath, codeFile || "main.cpp"), "-o", path_1.default.join(exeFile, "main.exe")], {
+            windowsHide: true,
+            detached: true,
         });
         let errorData = "";
         const errors = [];
@@ -524,7 +521,7 @@ app.post("/compile", (req, res) => {
     // if(!sessionId) return;
     // if(!fs.existsSync(path.join(rootDirName, "cache", sessionId))) return;
     const { clientId, sessionId } = req.body;
-    compileFile(clientId, sessionId, '').then(data => {
+    compileFile(clientId, sessionId).then(data => {
         res.json(data);
     }).catch(err => {
         res.json(err);
@@ -548,7 +545,6 @@ exports.wss.on("connection", (ws, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
-    let imageName = '';
     let sessionContainer;
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies);
@@ -1408,120 +1404,122 @@ exports.wss.on("connection", (ws, req) => {
                                                     buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         // }); // start program
-                                                        imageName = res.imageName;
-                                                        compileFile(clientId, sessionId, res.imageName).then((val) => {
-                                                            program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "./main"], {
-                                                                stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
-                                                            });
-                                                            console.log('Running program and listening: ' + res.imageName);
-                                                            async function onClosedProgram(code, message, error) {
-                                                                let notes = "";
-                                                                processInputBuffer = '';
-                                                                const time = (Date.now() - spawnDate);
-                                                                if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
-                                                                 {
-                                                                    await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
-                                                                        notes = "buffer exceeded 64kb, output was truncated.";
-                                                                        replicateFunction((clientWs) => {
-                                                                            clientWs.send(JSON.stringify({ messageType: types_1.ConsoleMessageType.Output, type: types_1.WebSocketMessageType.Output, body: str.toString(), clientId: clientId })); // Send GDB output to the client
-                                                                        });
+                                                        replicateFunction((clientWs) => {
+                                                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
+                                                        });
+                                                        (0, child_process_2.execSync)('docker exec g++ -g -v -O0 main.cpp -o main');
+                                                        replicateFunction((clientWs) => {
+                                                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
+                                                        });
+                                                        program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "./main"], {
+                                                            stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
+                                                        });
+                                                        console.log('Running program and listening: ' + res.imageName);
+                                                        async function onClosedProgram(code, message, error) {
+                                                            let notes = "";
+                                                            processInputBuffer = '';
+                                                            const time = (Date.now() - spawnDate);
+                                                            if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
+                                                             {
+                                                                await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
+                                                                    notes = "buffer exceeded 64kb, output was truncated.";
+                                                                    replicateFunction((clientWs) => {
+                                                                        clientWs.send(JSON.stringify({ messageType: types_1.ConsoleMessageType.Output, type: types_1.WebSocketMessageType.Output, body: str.toString(), clientId: clientId })); // Send GDB output to the client
                                                                     });
-                                                                }
-                                                                // else
-                                                                //     replicateFunction((clientWs) => {
-                                                                //         clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
-                                                                //     });
-                                                                // if(code === null) return ws.send("Program exited with invalid code");
-                                                                clearTimeout(programTimeout);
-                                                                // gdbBuffer = message//"Program exited with code: " + code?.toString();
-                                                                if (program) {
-                                                                    program.stdout.removeAllListeners();
-                                                                    program.stderr.removeAllListeners();
-                                                                }
-                                                                replicateFunction((clientWs) => {
-                                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
                                                                 });
                                                             }
-                                                            addProcessToMap(sessionId, program); // add to process map
-                                                            mode = "run";
-                                                            let spawnDate = Date.now();
-                                                            let programTimeout;
-                                                            gdbBuffer = "";
-                                                            if (messageJSON.textMode)
-                                                                programTimeout = setTimeout(() => {
-                                                                    onClosedProgram(-1, "<span style='color: red'>Program timed out!</span>");
-                                                                    closeProcess(program);
-                                                                    resolve();
-                                                                }, 1000);
-                                                            // if(programTimeout) clearTimeout(programTimeout)
-                                                            spawnPromise = new Promise((resolve, reject) => {
-                                                                program?.on("spawn", () => {
-                                                                    console.log("Program spawned");
-                                                                    spawnDate = Date.now();
-                                                                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
-                                                                    if (program.stdin && processInputBuffer)
-                                                                        if (program?.stdin?.writable)
-                                                                            program.stdin.write(processInputBuffer); // write buffer
-                                                                    dataTimeout =
-                                                                        setTimeout(() => {
-                                                                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
-                                                                        }, 400);
-                                                                    resolve();
-                                                                });
+                                                            // else
+                                                            //     replicateFunction((clientWs) => {
+                                                            //         clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
+                                                            //     });
+                                                            // if(code === null) return ws.send("Program exited with invalid code");
+                                                            clearTimeout(programTimeout);
+                                                            // gdbBuffer = message//"Program exited with code: " + code?.toString();
+                                                            if (program) {
+                                                                program.stdout.removeAllListeners();
+                                                                program.stderr.removeAllListeners();
+                                                            }
+                                                            replicateFunction((clientWs) => {
+                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
                                                             });
-                                                            program.stdout?.on("data", (data) => {
-                                                                gdbBuffer += data.toString();
-                                                                // replicateFunction((clientWs) => {
-                                                                //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
-                                                                // });
-                                                                // gdbBuffer = "";
-                                                                replicateFunction((clientWs) => {
-                                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
-                                                                });
-                                                                clearTimeout(dataTimeout);
-                                                                dataTimeout = setTimeout(() => {
-                                                                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
-                                                                }, 100);
-                                                            });
-                                                            program?.stderr?.on("data", (data) => {
-                                                                gdbBuffer += data.toString();
-                                                                console.error(gdbBuffer);
-                                                                // replicateFunction((clientWs) => {
-                                                                //     clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output, clientId: clientId}));  // Send GDB output to the client
-                                                                // });
-                                                                //     gdbBuffer = "";
-                                                            });
-                                                            program?.on("close", (code) => {
-                                                                clearTimeout(dataTimeout);
-                                                                switch (code) {
-                                                                    case 0:
-                                                                    default:
-                                                                        onClosedProgram(code, "Program exited with code: " + code?.toString() || 0);
-                                                                        break;
-                                                                    case 3221225477:
-                                                                        onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
-                                                                        break;
-                                                                }
-                                                                gdbBuffer = "";
-                                                                // removeProcessFromMap(sessionId);
-                                                                onClosedProcess();
+                                                        }
+                                                        addProcessToMap(sessionId, program); // add to process map
+                                                        mode = "run";
+                                                        let spawnDate = Date.now();
+                                                        let programTimeout;
+                                                        gdbBuffer = "";
+                                                        if (messageJSON.textMode)
+                                                            programTimeout = setTimeout(() => {
+                                                                onClosedProgram(-1, "<span style='color: red'>Program timed out!</span>");
+                                                                closeProcess(program);
                                                                 resolve();
-                                                                resolveExectute();
-                                                                // closeProcess(program,sessionId).then(() => {
-                                                                //     replicateFunction((clientWs) => {
-                                                                //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
-                                                                //         });
-                                                                //     resolve()
-                                                                //     console.log('finished program')
-                                                                // })
-                                                                // resolve(); // Resolve the promise when the process closes
+                                                            }, 1000);
+                                                        // if(programTimeout) clearTimeout(programTimeout)
+                                                        spawnPromise = new Promise((resolve, reject) => {
+                                                            program?.on("spawn", () => {
+                                                                console.log("Program spawned");
+                                                                spawnDate = Date.now();
+                                                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
+                                                                if (program.stdin && processInputBuffer)
+                                                                    if (program?.stdin?.writable)
+                                                                        program.stdin.write(processInputBuffer); // write buffer
+                                                                dataTimeout =
+                                                                    setTimeout(() => {
+                                                                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                                                                    }, 400);
+                                                                resolve();
                                                             });
-                                                            // program = spawn(filePath, {
-                                                        }).catch(err => {
-                                                            console.error(err);
                                                         });
-                                                        //await queueCommand(program,message);
+                                                        program.stdout?.on("data", (data) => {
+                                                            gdbBuffer += data.toString();
+                                                            // replicateFunction((clientWs) => {
+                                                            //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
+                                                            // });
+                                                            // gdbBuffer = "";
+                                                            replicateFunction((clientWs) => {
+                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
+                                                            });
+                                                            clearTimeout(dataTimeout);
+                                                            dataTimeout = setTimeout(() => {
+                                                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                                                            }, 100);
+                                                        });
+                                                        program?.stderr?.on("data", (data) => {
+                                                            gdbBuffer += data.toString();
+                                                            console.error(gdbBuffer);
+                                                            // replicateFunction((clientWs) => {
+                                                            //     clientWs.send(JSON.stringify({error: true, input: false, type: WebSocketMessageType.Error,body: gdbBuffer.toString(), messageType: ConsoleMessageType.Output, clientId: clientId}));  // Send GDB output to the client
+                                                            // });
+                                                            //     gdbBuffer = "";
+                                                        });
+                                                        program?.on("close", (code) => {
+                                                            clearTimeout(dataTimeout);
+                                                            switch (code) {
+                                                                case 0:
+                                                                default:
+                                                                    onClosedProgram(code, "Program exited with code: " + code?.toString() || 0);
+                                                                    break;
+                                                                case 3221225477:
+                                                                    onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
+                                                                    break;
+                                                            }
+                                                            gdbBuffer = "";
+                                                            // removeProcessFromMap(sessionId);
+                                                            onClosedProcess();
+                                                            resolve();
+                                                            resolveExectute();
+                                                            // closeProcess(program,sessionId).then(() => {
+                                                            //     replicateFunction((clientWs) => {
+                                                            //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
+                                                            //         });
+                                                            //     resolve()
+                                                            //     console.log('finished program')
+                                                            // })
+                                                            // resolve(); // Resolve the promise when the process closes
+                                                        });
+                                                        // program = spawn(filePath, {
                                                     });
+                                                    //await queueCommand(program,message);
                                                 });
                                                 return [spawnPromise, mainPromise];
                                             }
@@ -1533,7 +1531,7 @@ exports.wss.on("connection", (ws, req) => {
                                                         replicateFunction((clientWs) => {
                                                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling...', clientId: clientId })); // Send GDB output to the client
                                                         });
-                                                        compileFile(clientId, sessionId, '').then(res => {
+                                                        compileFile(clientId, sessionId).then(res => {
                                                             replicateFunction((clientWs) => {
                                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                             });
@@ -1564,7 +1562,7 @@ exports.wss.on("connection", (ws, req) => {
                                                             }
                                                             console.log(stats.mtimeMs < codeStats.mtimeMs - 500);
                                                             if (stats.mtimeMs < codeStats.mtimeMs - 500) // check if file was edited after compile.
-                                                                compileFile(clientId, sessionId, '').then(res => {
+                                                                compileFile(clientId, sessionId).then(res => {
                                                                     replicateFunction((clientWs) => {
                                                                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Recompiled.', clientId: clientId })); // Send GDB output to the client
                                                                     });

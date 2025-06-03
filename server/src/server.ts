@@ -613,7 +613,7 @@ function getClientFilesPath(sessionId)
     
 // })
 
-function compileFile(clientId, sessionId, imageName): Promise<any>
+function compileFile(clientId, sessionId): Promise<any>
 {
 
     return new Promise<any>((resolve, reject) => {
@@ -624,22 +624,17 @@ function compileFile(clientId, sessionId, imageName): Promise<any>
     const editorSession = isShared ? shared.getSession(sessionId) || sessionMap.get(sessionId): sessionMap.get(sessionId);
     
     // const code = req.body.code;
-    const exeFile = path.resolve('main.cpp');//path.join(rootDirName, "cache", sessionId);
-    const filePath = path.resolve('./');//path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
+    const exeFile = path.join(rootDirName, "cache", sessionId);
+    const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
     const codeFile = !["cpp"].includes(path.extname(editorSession?.clientsActiveFile.get(clientId)|| "main.cpp"))? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
     if(!editorSession)
         console.log(new Error("Couldnt retrieve editorSession from memory database"))
     //fs.writeFileSync(path.join(filePath,"main.cpp"), code);
     // console.log(path.extname(getThisClientSession()?.clientsActiveFile.get(clientId)||"aaa"));
    
-    // compileProcess = spawn("g++", ["-g", "-O0", path.join(filePath, codeFile || "main.cpp"), "-o", path.join(exeFile,"main.exe")], {
-    //     windowsHide: true,
-    //     detached: true,
-    // });
-
-
-    compileProcess = spawn('docker', ['exec', "-i", imageName, "bash", "-c", "g++ -g -v -O0 main.cpp -o main"], {
-    stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
+    compileProcess = spawn("g++", ["-g", "-O0", path.join(filePath, codeFile || "main.cpp"), "-o", path.join(exeFile,"main.exe")], {
+        windowsHide: true,
+        detached: true,
     });
     let errorData = "";
     
@@ -704,7 +699,7 @@ app.post("/compile", (req: express.Request<{}, {}, CompileRequestBody>, res: exp
     // if(!fs.existsSync(path.join(rootDirName, "cache", sessionId))) return;
     
     const { clientId, sessionId } = req.body
-    compileFile(clientId, sessionId, '').then(data => {
+    compileFile(clientId, sessionId).then(data => {
         res.json(data)
     }).catch(err => {
         res.json(err)
@@ -733,7 +728,6 @@ wss.on("connection", (ws: WebSocket, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
-    let imageName = '';
     let sessionContainer: {process: ChildProcess, imageName: string};
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies)
@@ -1772,9 +1766,14 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         
                                                     // }); // start program
-                                                    imageName = res.imageName;
-                                                    compileFile(clientId,sessionId,res.imageName).then((val) => {
-                                                        program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
+                                                    replicateFunction((clientWs) => {
+                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
+                                                    });
+                                                    execSync('docker exec g++ -g -v -O0 main.cpp -o main')
+                                                    replicateFunction((clientWs) => {
+                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
+                                                    });
+                                                    program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
                                                         stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                         });
                                                     console.log('Running program and listening: ' +  res.imageName)
@@ -1918,13 +1917,8 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                 })
                                                     // program = spawn(filePath, {
                                              
-                                            }).catch(err => {
-                                                console.error(err)
                                             });
                                             //await queueCommand(program,message);
-                                                    })
-
-                                                    
                                        })
                                        
                                        return [spawnPromise, mainPromise]
@@ -1943,7 +1937,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling...', clientId: clientId}));  // Send GDB output to the client
                                                     });
 
-                                                compileFile(clientId, sessionId, '').then(res => {
+                                                compileFile(clientId, sessionId).then(res => {
 
                                                             replicateFunction((clientWs) => {
                                                                     clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
@@ -1984,7 +1978,7 @@ wss.on("connection", (ws: WebSocket, req) => {
                                                     }
                                                     console.log(stats.mtimeMs < codeStats.mtimeMs - 500)
                                                     if(stats.mtimeMs < codeStats.mtimeMs - 500) // check if file was edited after compile.
-                                                        compileFile(clientId, sessionId, '').then(res => {
+                                                        compileFile(clientId, sessionId).then(res => {
                                                                 replicateFunction((clientWs) => {
                                                                     clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Recompiled.', clientId: clientId}));  // Send GDB output to the client
                                                                 });
