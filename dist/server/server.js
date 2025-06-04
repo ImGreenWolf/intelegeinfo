@@ -691,6 +691,10 @@ exports.wss.on("connection", (ws, req) => {
                 compileProcess.stderr.on('data', data => {
                     resolve(data.toString());
                 });
+                compileProcess.on('close', (code) => {
+                    if (code != 0)
+                        reject(code);
+                });
             });
         }
         // TODO add session map 
@@ -1397,7 +1401,7 @@ bash
                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
                                         });
                                     }).catch(err => {
-                                        console.error('error: ' + err);
+                                        console.error('syntax checker error: ' + err);
                                     });
                                 }, 200);
                             });
@@ -1779,7 +1783,7 @@ bash
                                             //     onClosedProcess();
                                             //     gdbProcess = undefined;
                                             // })
-                                            // process.stdin.pipe(gdbProcess.stdin)
+                                            // process.stdin.pipe(gdbProcess.stdin) 
                                             // gdbProcess.stdin.write('-file-exec-and-symbols'+filePath+'\n');
                                             // gdbProcess.stdin.write();
                                             queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);

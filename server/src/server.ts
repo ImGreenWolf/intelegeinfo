@@ -920,6 +920,11 @@ wss.on("connection", (ws: WebSocket, req) => {
                 
                 resolve(data.toString())
             })
+
+            compileProcess.on('close', (code)=> {
+                if(code!=0)
+                    reject(code)
+            })
         })
 
         
@@ -1758,7 +1763,7 @@ bash
                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: json}))
                                     })
                                 }).catch(err => {
-                                    console.error('error: ' + err)
+                                    console.error('syntax checker error: ' + err)
                                 })
                                 
                             }, 200);
@@ -2257,7 +2262,7 @@ bash
                                 //     onClosedProcess();
                                 //     gdbProcess = undefined;
                                 // })
-                                // process.stdin.pipe(gdbProcess.stdin)
+                                // process.stdin.pipe(gdbProcess.stdin) 
                                 
                                     // gdbProcess.stdin.write('-file-exec-and-symbols'+filePath+'\n');
                                     // gdbProcess.stdin.write();
