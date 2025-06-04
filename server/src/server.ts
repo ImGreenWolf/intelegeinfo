@@ -918,7 +918,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 
             compileProcess.stderr.on('data', data => {
                 
-                resolve(data.toString())
+                reject(data.toString())
             })
 
             compileProcess.on('close', (code)=> {

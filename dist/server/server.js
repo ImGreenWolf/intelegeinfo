@@ -689,7 +689,7 @@ exports.wss.on("connection", (ws, req) => {
                     resolve(data.toString());
                 });
                 compileProcess.stderr.on('data', data => {
-                    resolve(data.toString());
+                    reject(data.toString());
                 });
                 compileProcess.on('close', (code) => {
                     if (code != 0)
