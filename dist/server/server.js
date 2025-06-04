@@ -1058,6 +1058,125 @@ exports.wss.on("connection", (ws, req) => {
                 }
             });
         }
+        /**
+         * Build and run the C++ executable in a Docker container with sandbox folder access.
+         *
+         * @param cppExecutablePath - The absolute path to the C++ executable.
+         * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
+         * @returns The child process running the Docker container
+         */
+        function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, sessionId) {
+            return new Promise((resolve, reject) => {
+                const exeFolder = path_1.default.dirname(cppExecutablePath); // Folder containing .exe
+                const exeName = path_1.default.basename(cppExecutablePath); // .exe filename
+                const sandboxFolder = path_1.default.join(exeFolder, 'clientFiles'); // The folder the exe will access
+                // Ensure that the sandbox folder exists
+                if (!fs_1.default.existsSync(sandboxFolder)) {
+                    console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
+                    reject();
+                }
+                if (sessionContainer) {
+                    console.log('Container already running, executing command...');
+                    resolve(sessionContainer);
+                    return;
+                }
+                // Create a temporary directory for building the Docker image
+                //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
+                const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
+                const containerExePath = `${exeName}`;
+                if (true && buildTag == "") {
+                    buildTag = `cpp-image`; // Unique image tag to avoid collisions
+                    // 1. Copy the executable to the temporary folder
+                    // 2. Write the Dockerfile to the temp directory
+                    const dockerfileContents = // `
+                     
+                    // FROM gcc:latest\n
+                    // COPY . /usr/src/
+                    // WORKDIR /usr/src/
+                    // RUN g++ -g -O0 "main.cpp" -o main\n
+                    // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+                    // \n
+                    // CMD ["./main"]
+                    `
+# Base image with GCC
+FROM gcc:bookworm
+
+# Set working directory inside container
+WORKDIR /app
+RUN apk add --no-cache musl-dev gdb
+# Default command can be overridden
+CMD [ "bash" ]
+  `.trim();
+                    fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
+                    // 3. Build the Docker image
+                    console.log(`Building Docker image: ${buildTag}`);
+                    try {
+                        (0, child_process_2.execSync)(`docker build -t ${buildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+                    }
+                    catch (error) {
+                        console.error('Error building Docker image:', error);
+                        return;
+                    }
+                }
+                else
+                    console.log('Skipping build stage.');
+                //   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
+                // //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
+                // .on('close', ()=> {
+                //     const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true })
+                //      resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
+                // })
+                const imageName = `session-container-${sessionId}`;
+                //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
+                // 4. Run the Docker container with access to the sandbox folder
+                const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+                 `docker run \
+--name ${imageName} \
+-v "${cacheFolderPath}:/app" \
+-w /app \
+-di \
+-m 256Mb \
+${buildTag} \
+bash
+  `.trim(); // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
+                console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
+                console.log(runCommand);
+                (0, child_process_1.spawn)("docker", ["ps", "-a"], { stdio: "inherit" });
+                // Return the child process for external handling
+                const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
+                sessionContainer = { process: childProcess, imageName };
+                childProcess?.on("spawn", () => {
+                    console.log("Docker container spawned");
+                    // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
+                    // setTimeout(() => {
+                    //     resolve(sessionContainer); // Return the child process so it can be handled externally
+                    // }, 5000);
+                });
+                childProcess.stdout.on('data', data => {
+                    console.log(data.toString());
+                    //  resolve(sessionContainer);
+                    setTimeout(() => {
+                        resolve(sessionContainer); // Return the child process so it can be handled externally
+                    }, 5000);
+                });
+                //   childProcess.stdout.on('data', (data) => {
+                //     console.log(`Output: ${data}`);
+                //   });
+                //   childProcess.stderr.on('data', (data) => {
+                //     console.error(`Error: ${data}`);
+                //   });
+                //   childProcess.on('close', (code) => {
+                //     console.log(`Child process exited with code ${code}`);
+                //     // Cleanup the Docker image after the process finishes
+                //     console.log(`Cleaning up image: ${imageTag}`);
+                //     try {
+                //       execSync(`docker rmi ${imageTag}`, { stdio: 'ignore' });
+                //     } catch (error) {
+                //       console.error('Error cleaning up Docker image:', error);
+                //     }
+                //   });
+            });
+        }
         // Handle GDB session commands from client
         ws.on("message", async (message, isBinary) => {
             try {
@@ -1624,125 +1743,6 @@ exports.wss.on("connection", (ws, req) => {
                                                 runProgram();
                                         });
                                     }
-                                    /**
-                                     * Build and run the C++ executable in a Docker container with sandbox folder access.
-                                     *
-                                     * @param cppExecutablePath - The absolute path to the C++ executable.
-                                     * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
-                                     * @returns The child process running the Docker container
-                                     */
-                                    function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, sessionId) {
-                                        return new Promise((resolve, reject) => {
-                                            const exeFolder = path_1.default.dirname(cppExecutablePath); // Folder containing .exe
-                                            const exeName = path_1.default.basename(cppExecutablePath); // .exe filename
-                                            const sandboxFolder = path_1.default.join(exeFolder, 'clientFiles'); // The folder the exe will access
-                                            // Ensure that the sandbox folder exists
-                                            if (!fs_1.default.existsSync(sandboxFolder)) {
-                                                console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
-                                                reject();
-                                            }
-                                            if (sessionContainer) {
-                                                console.log('Container already running, executing command...');
-                                                resolve(sessionContainer);
-                                                return;
-                                            }
-                                            // Create a temporary directory for building the Docker image
-                                            //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
-                                            const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
-                                            const containerExePath = `${exeName}`;
-                                            if (true && buildTag == "") {
-                                                buildTag = `cpp-tool`; // Unique image tag to avoid collisions
-                                                // 1. Copy the executable to the temporary folder
-                                                // 2. Write the Dockerfile to the temp directory
-                                                const dockerfileContents = // `
-                                                 
-                                                // FROM gcc:latest\n
-                                                // COPY . /usr/src/
-                                                // WORKDIR /usr/src/
-                                                // RUN g++ -g -O0 "main.cpp" -o main\n
-                                                // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-                                                // \n
-                                                // CMD ["./main"]
-                                                `
-# Base image with GCC
-FROM gcc:bookworm
-
-# Set working directory inside container
-WORKDIR /app
-
-# Default command can be overridden
-CMD [ "bash" ]
-  `.trim();
-                                                fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
-                                                // 3. Build the Docker image
-                                                console.log(`Building Docker image: ${buildTag}`);
-                                                try {
-                                                    (0, child_process_2.execSync)(`docker build -t ${buildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
-                                                }
-                                                catch (error) {
-                                                    console.error('Error building Docker image:', error);
-                                                    return;
-                                                }
-                                            }
-                                            else
-                                                console.log('Skipping build stage.');
-                                            //   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
-                                            // //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
-                                            // .on('close', ()=> {
-                                            //     const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true })
-                                            //      resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
-                                            // })
-                                            const imageName = `session-container-${sessionId}`;
-                                            //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
-                                            // 4. Run the Docker container with access to the sandbox folder
-                                            const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
-                                             `docker run \
---name ${imageName} \
--v "${cacheFolderPath}:/app" \
--w /app \
--di \
--m 256Mb \
-${buildTag} \
-bash
-  `.trim(); // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
-                                            console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
-                                            console.log(runCommand);
-                                            (0, child_process_1.spawn)("docker", ["ps", "-a"], { stdio: "inherit" });
-                                            // Return the child process for external handling
-                                            const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
-                                            sessionContainer = { process: childProcess, imageName };
-                                            childProcess?.on("spawn", () => {
-                                                console.log("Docker container spawned");
-                                                // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-                                                // setTimeout(() => {
-                                                //     resolve(sessionContainer); // Return the child process so it can be handled externally
-                                                // }, 5000);
-                                            });
-                                            childProcess.stdout.on('data', data => {
-                                                console.log(data.toString());
-                                                //  resolve(sessionContainer);
-                                                setTimeout(() => {
-                                                    resolve(sessionContainer); // Return the child process so it can be handled externally
-                                                }, 5000);
-                                            });
-                                            //   childProcess.stdout.on('data', (data) => {
-                                            //     console.log(`Output: ${data}`);
-                                            //   });
-                                            //   childProcess.stderr.on('data', (data) => {
-                                            //     console.error(`Error: ${data}`);
-                                            //   });
-                                            //   childProcess.on('close', (code) => {
-                                            //     console.log(`Child process exited with code ${code}`);
-                                            //     // Cleanup the Docker image after the process finishes
-                                            //     console.log(`Cleaning up image: ${imageTag}`);
-                                            //     try {
-                                            //       execSync(`docker rmi ${imageTag}`, { stdio: 'ignore' });
-                                            //     } catch (error) {
-                                            //       console.error('Error cleaning up Docker image:', error);
-                                            //     }
-                                            //   });
-                                        });
-                                    }
                                     // execute code normally.
                                     if (getProcessFromMap()) // check if program is running
                                      {
@@ -1767,6 +1767,30 @@ bash
                                 }
                                 else if (command == "-exec-run") {
                                     if (!getProcessFromMap()) {
+                                        buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
+                                            mode = "debug"; //set mode to debug
+                                            gdbProcess = (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", filePath]); //"-ex", "set pagination off", 
+                                            addProcessToMap(sessionId, gdbProcess);
+                                            if (!getThisClientSession().process)
+                                                console.error('Invalid session while starting debug process');
+                                            printClientConsoleDebug("started debugging process.");
+                                            // gdbProcess.on('close', (code) => {
+                                            //     console.log('CLOSED DEBUG PROCESS')
+                                            //     onClosedProcess();
+                                            //     gdbProcess = undefined;
+                                            // })
+                                            // process.stdin.pipe(gdbProcess.stdin)
+                                            // gdbProcess.stdin.write('-file-exec-and-symbols'+filePath+'\n');
+                                            // gdbProcess.stdin.write();
+                                            queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
+                                            // gdbProcess.stdin.write('-exec-run\n');
+                                            gdbProcess.stdout.on('data', (derr) => {
+                                                console.log(derr.toString());
+                                            });
+                                            gdbProcess.stderr.on('data', (derr) => {
+                                                console.error(derr.toString());
+                                            });
+                                        });
                                         fs_1.default.accessSync(filePath);
                                         mode = "debug"; //set mode to debug
                                         gdbProcess = (0, child_process_1.spawn)("gdb", ["-q", "-interpreter=mi", filePath]); //"-ex", "set pagination off", 
