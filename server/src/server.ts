@@ -1431,7 +1431,7 @@ FROM gcc:bookworm
 
 # Set working directory inside container
 WORKDIR /app
-RUN apk add --no-cache musl-dev gdb
+
 # Default command can be overridden
 CMD [ "bash" ]
   `.trim();
