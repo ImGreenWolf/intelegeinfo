@@ -1660,6 +1660,11 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
     
 }
 
+#slide-out-button
+{
+    border-radius: 50%;
+    aspect-ratio: 1;
+}
 
 form input[type=checkbox]
 {

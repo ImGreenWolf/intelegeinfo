@@ -1357,6 +1357,11 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   order: -1;
 }
 
+#slide-out-button {
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
 form input[type=checkbox] {
   position: relative;
   background: rgb(37, 37, 37);
