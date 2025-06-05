@@ -1147,12 +1147,12 @@ ${buildTag} \
 bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim(); //  --rm
                 console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                 console.log(runCommand);
-                (0, child_process_1.spawn)("docker", ["ps", "-a"], { stdio: "inherit" });
                 // Return the child process for external handling
                 const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
                 sessionContainer = { process: childProcess, imageName };
                 childProcess?.on("spawn", () => {
                     console.log("Docker container spawned");
+                    (0, child_process_1.spawn)("docker", ["ps", "-a"], { stdio: "inherit" });
                     // try {
                     //     readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: '+err))
                     //     resolve(null)
@@ -1168,7 +1168,7 @@ bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim(); //  --rm
                 });
                 childProcess.stdout.on('data', data => {
                     console.log(data.toString());
-                    resolve(sessionContainer);
+                    // resolve(sessionContainer)
                     //  resolve(sessionContainer);
                     setTimeout(() => {
                         resolve(sessionContainer); // Return the child process so it can be handled externally
@@ -1630,7 +1630,7 @@ bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim(); //  --rm
                                                     buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         if (res == null)
-                                                            resolve();
+                                                            return resolve();
                                                         // }); // start program
                                                         try {
                                                             replicateFunction((clientWs) => {
