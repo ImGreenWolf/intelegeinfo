@@ -1473,7 +1473,8 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 -v "${cacheFolderPath}:/app" \
 -w /app \
 -di \
-
+-m 256MB \
+--cpus="0.25" \
 ${buildTag} \
 bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim() //  --rm
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
@@ -1485,14 +1486,14 @@ bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim() //  --rm
 
      childProcess?.on("spawn", () => {
         console.log("Docker container spawned")
-        try {
-            readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: '+err))
-            resolve(null)
-        }
-        catch(err)
-        {
-            console.error("Failed to run docker commands: " + err)
-        }
+        // try {
+        //     readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: '+err))
+        //     resolve(null)
+        // }
+        // catch(err)
+        // {
+        //     console.error("Failed to run docker commands: " + err)
+        // }
         // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         // setTimeout(() => {
         //     resolve(sessionContainer); // Return the child process so it can be handled externally
@@ -1501,11 +1502,11 @@ bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim() //  --rm
     })
     childProcess.stdout.on('data', data => {
         console.log(data.toString())
-        
+        resolve(sessionContainer)
         //  resolve(sessionContainer);
-    //             setTimeout(() => {
-    //     resolve(sessionContainer); // Return the child process so it can be handled externally
-    // }, 5000);
+                setTimeout(() => {
+        resolve(sessionContainer); // Return the child process so it can be handled externally
+    }, 5000);
     })
     
     
