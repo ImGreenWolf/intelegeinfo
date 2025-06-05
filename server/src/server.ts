@@ -1412,7 +1412,7 @@ if(sessionContainer)
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-if(true && buildTag=="")
+if(!buildTag)
 {
   buildTag = `cpp-image`; // Unique image tag to avoid collisions
 

@@ -1089,7 +1089,7 @@ exports.wss.on("connection", (ws, req) => {
                 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                 const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
                 const containerExePath = `${exeName}`;
-                if (true && buildTag == "") {
+                if (!buildTag) {
                     buildTag = `cpp-image`; // Unique image tag to avoid collisions
                     // 1. Copy the executable to the temporary folder
                     // 2. Write the Dockerfile to the temp directory
