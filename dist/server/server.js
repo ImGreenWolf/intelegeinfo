@@ -1153,7 +1153,13 @@ bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim(); //  --rm
                 sessionContainer = { process: childProcess, imageName };
                 childProcess?.on("spawn", () => {
                     console.log("Docker container spawned");
-                    readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: ' + err));
+                    try {
+                        readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: ' + err));
+                        resolve(null);
+                    }
+                    catch (err) {
+                        console.error("Failed to run docker commands: " + err);
+                    }
                     // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
                     // setTimeout(() => {
                     //     resolve(sessionContainer); // Return the child process so it can be handled externally
@@ -1621,19 +1627,26 @@ bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim(); //  --rm
                                                     // if(!program) return console.error('invalid program')
                                                     buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
+                                                        if (res == null)
+                                                            resolve();
                                                         // }); // start program
-                                                        replicateFunction((clientWs) => {
-                                                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
-                                                        });
-                                                        (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`);
-                                                        replicateFunction((clientWs) => {
-                                                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
-                                                        });
-                                                        program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "./main"], {
-                                                            stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
-                                                        });
-                                                        // console.log('Running program and listening: ' +  res.imageName)
-                                                        readStdio(program, messageJSON).then(() => resolveExectute());
+                                                        try {
+                                                            replicateFunction((clientWs) => {
+                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
+                                                            });
+                                                            (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`);
+                                                            replicateFunction((clientWs) => {
+                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
+                                                            });
+                                                            program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "./main"], {
+                                                                stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
+                                                            });
+                                                            // console.log('Running program and listening: ' +  res.imageName)
+                                                            readStdio(program, messageJSON).then(() => resolve());
+                                                        }
+                                                        catch (err) {
+                                                            console.error("Failed to run docker commands: " + err);
+                                                        }
                                                     });
                                                     //await queueCommand(program,message);
                                                 });
@@ -1730,7 +1743,7 @@ bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim(); //  --rm
                                                 });
                                             }
                                             else
-                                                runProgram();
+                                                runProgram()[1].then(resolveExectute);
                                         });
                                     }
                                     // execute code normally.

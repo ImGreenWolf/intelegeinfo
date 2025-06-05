@@ -1486,7 +1486,14 @@ bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim() //  --rm
 
      childProcess?.on("spawn", () => {
         console.log("Docker container spawned")
-        readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: '+err))
+        try {
+            readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: '+err))
+            resolve(null)
+        }
+        catch(err)
+        {
+            console.error("Failed to run docker commands: " + err)
+        }
         // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         // setTimeout(() => {
         //     resolve(sessionContainer); // Return the child process so it can be handled externally
@@ -2037,8 +2044,10 @@ function readStdio(program, messageJSON)
                                         
                                                 buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
-                                                        
+                                                        if(res == null) resolve()
                                                     // }); // start program
+                                                    try {
+                                                        
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                     });
@@ -2053,7 +2062,13 @@ function readStdio(program, messageJSON)
                                                         });
                                                     // console.log('Running program and listening: ' +  res.imageName)
 
-                                                    readStdio(program, messageJSON).then(()=> resolveExectute())
+                                                    readStdio(program, messageJSON).then(()=> resolve())
+                                                    
+                                                    }
+                                                    catch(err)
+                                                    {
+                                                        console.error("Failed to run docker commands: " + err)
+                                                    }
                                             });
                                             //await queueCommand(program,message);
                                        })
@@ -2189,7 +2204,7 @@ function readStdio(program, messageJSON)
                                      });
                                         }
                                         else
-                                        runProgram()
+                                        runProgram()[1].then(resolveExectute)
                                         
                                 })
                                 

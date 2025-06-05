@@ -91,8 +91,7 @@ int main() {
                         </div>              
                         <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
                     </div>
-                    <div id="session-controls">
-                        
+                    <div id="session-controls">                   
                         <div class="slide-out-display">
                             <div class="ridge-gradient inset-button black circle">
                                 <button onclick="document.getElementById('slide-out').classList.toggle('enabled')" id="slide-out-button">&ltri;</button>
@@ -124,7 +123,7 @@ int main() {
                     <p id="compile-status"></p>
                     <button onclick="window.editor.sendDebugCommand('execute')" class="execute-control" id="execute-control">Execute Code</button>
                     <button onclick="window.editor.sendDebugCommand('-exec-run')" id="run">Run in Debugger</button> 
-                    <button onclick="window.editor.compileCode()" class="compile" id="compile">Compile</button>
+                    <!-- <button onclick="window.editor.compileCode()" class="compile" id="compile">Compile</button> -->
                     <!-- <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button> -->
                     <button onclick="window.editor.playback()" class="debug-control" id="playback">Playback</button>
                     <div class="speed-control debug-control" id="speed-control"> 
