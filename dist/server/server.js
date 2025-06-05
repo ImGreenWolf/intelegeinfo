@@ -1135,11 +1135,14 @@ CMD [ "bash" ]
                 // 4. Run the Docker container with access to the sandbox folder
                 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
                  `docker run \
+--rm \
+-b \
 --name ${imageName} \
 -v "${cacheFolderPath}:/app" \
 -w /app \
 -di \
--m 256Mb \
+-m 256MB \
+--cpus="0.25" \
 ${buildTag} \
 bash
   `.trim(); // bash -c "g++ -g -v -O0 main.cpp -o main && ./main" --rm
