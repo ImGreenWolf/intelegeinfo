@@ -29,7 +29,9 @@ import cookieParser from 'cookie-parser'
 import * as users from './usersManager'
 import { router as usersManager } from './usersManager'
 import GuideCreator from "./guideCreator"
+import { privateKey } from "./login.js";
 export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
+const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 
 
 
@@ -39,7 +41,12 @@ app.use(express.json());
 
 app.use('/client/scripts',express.static(path.join('dist', 'public')));
 // app.use('dist',express.static(path.join(rootDirName,'dist')));
-
+app.post('/github/onpull', (req, res) => {
+    console.log(privateKey)
+    console.log(publicKeyPem)
+    if(req.headers['X-Hub-Signature-256'] == publicKeyPem)
+        exec('git pull')
+})
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'public', 'codeEditor.js')))

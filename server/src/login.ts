@@ -19,7 +19,7 @@ const salt = bcrypt.genSaltSync(10);
 const validPassword = bcrypt.hashSync("123", salt);
 const rootDirName = path.resolve("./")
 const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem'), 'utf8') || "supersecretprivatekey" ;
-const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+export const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
 const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 
 

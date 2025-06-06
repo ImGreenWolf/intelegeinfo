@@ -64,12 +64,21 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const users = __importStar(require("./usersManager"));
 const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
+const login_js_2 = require("./login.js");
 exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
+const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
+;
 app.use(compression());
 app.use(express_1.default.json());
 // app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
 app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
 // app.use('dist',express.static(path.join(rootDirName,'dist')));
+app.post('/github/onpull', (req, res) => {
+    console.log(login_js_2.privateKey);
+    console.log(publicKeyPem);
+    if (req.headers['X-Hub-Signature-256'] == publicKeyPem)
+        (0, child_process_1.exec)('git pull');
+});
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
