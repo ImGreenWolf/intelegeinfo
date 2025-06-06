@@ -149,19 +149,28 @@ app.post('/editor/startsession/:id', (req, res) => {
         
     
 })
-app.post('/github/onpull', (req, res) => {
+app.post('/github/onpull', express.raw({ type: '*/*' }), (req, res) => {
     try {
-        let sig = "sha1=" + crypto.createHmac('sha1', publicKeyPem)
-    const { commits  } = req.body
-    console.log(sig.toString())
-    console.log(commits.message)
-    console.log(commits)
-    if(req.headers['X-Hub-Signature-256'] == sig)
-        exec('cd ' +rootDirName + ' && git pull')
+        const signature = req.headers['x-hub-signature'] as string;
+        if (!signature) {
+            res.status(400).send('No signature');
+            return;
+        }
+        const hmac = crypto.createHmac('sha1', publicKeyPem);
+        hmac.update(req.body);
+        const digest = 'sha1=' + hmac.digest('hex');
+        const { commits } = JSON.parse(req.body.toString());
+        console.log(digest);
+        console.log(commits?.message);
+        console.log(commits);
+        if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
+            exec('cd ' + rootDirName + ' && git pull');
+        }
+    } catch (err) {
+        console.error('pull error: ' + err);
     }
-    catch (err) {console.error('pull error: ' + err)}
-    res.status(200).send('ok')
-})
+    res.status(200).send('ok');
+});
 
 app.get('/editor/tooltipHints', (req, res) => {
 
