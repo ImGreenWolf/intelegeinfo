@@ -1053,7 +1053,7 @@ CMD [ "bash" ]
 -m 256MB \
 --cpus="0.25" \
 ${buildTag} \
-bash -c "g++ -g -v -O0 main.cpp -o main && ./main"`.trim(); //  --rm
+bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                 console.log(runCommand);
                 // Return the child process for external handling
