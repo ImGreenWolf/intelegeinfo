@@ -1694,8 +1694,20 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                     if (!getProcessFromMap()) {
                                         buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                             mode = "debug"; //set mode to debug
-                                            gdbProcess = (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", 'main'], { stdio: 'pipe' }); //"-ex", "set pagination off", 
-                                            addProcessToMap(sessionId, gdbProcess);
+                                            try {
+                                                replicateFunction((clientWs) => {
+                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
+                                                });
+                                                (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`);
+                                                replicateFunction((clientWs) => {
+                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
+                                                });
+                                                gdbProcess = (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", 'main'], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+                                                addProcessToMap(sessionId, gdbProcess);
+                                            }
+                                            catch (err) {
+                                                printClientConsoleDebug("docker error: " + err);
+                                            }
                                             if (!getThisClientSession().process)
                                                 console.error('Invalid session while starting debug process');
                                             printClientConsoleDebug("started debugging process.");
