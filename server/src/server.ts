@@ -2119,7 +2119,7 @@ async function readStdio(program, messageJSON)
                                 buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                
                                 mode="debug"; //set mode to debug
-                                gdbProcess = spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main.exe'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+                                gdbProcess = spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
                                 addProcessToMap(sessionId, gdbProcess);
                                 
                                 if(!getThisClientSession().process) console.error('Invalid session while starting debug process')
