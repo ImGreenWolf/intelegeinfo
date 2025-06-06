@@ -1381,68 +1381,6 @@ ws.onclose = (ev) => {
 ws.onerror = (err) => {
     displayMessagePopup("WEBSOCKER ERROR: " + err);
 };
-ws.onopen = (ev) => {
-    const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
-    //writeOutput(sessionId || "No session ID found in URL.");
-    window.onbeforeunload = (ev => {
-        if (modifiedFile)
-            ev.preventDefault();
-    });
-    let hoverTooltip = 0;
-    setTimeout(() => {
-        if (wsSessionId == undefined)
-            ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
-        setTimeout(() => {
-            if (wsSessionId == undefined)
-                ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
-        }, 3000);
-    }, 500);
-    const tooltip = new TokenTooltip(editor);
-    // Add the dynamic marker
-    // setInterval(() => {
-    //     const code = editor.getValue();
-    //     //console.log(delta);
-    //     // if(blockChange) blockChange = false;
-    //     // else {
-    //     // blockChange = true;
-    //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
-    //  //   }
-    // }, 500);
-};
-export function submitConsole(elem, type, Console) {
-    //     const sendText = elem?.value.replace(consoleText, "")
-    //     if(sendText == "") return;
-    //     console.log(sendText);
-    //    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
-    //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Chat }));
-    //    consoleText = elem?.value || "Error: invalid element";
-    //    consoleInput.value = "";
-    const sendText = elem?.value;
-    if (!sendText)
-        return;
-    ws.send(JSON.stringify({
-        command: sendText,
-        // args: ["console"],
-        type: type || WebSocketMessageType.Chat,
-    }));
-    if (Console)
-        Console.sendCommand(sendText);
-    consoleInput.value = "";
-    typingIndicatorDelay = 300;
-    onConsoleInput(elem);
-    ws.send(JSON.stringify({ type: WebSocketMessageType.ConsoleTyping, status: "end" }));
-}
-outputArea.onscroll = ev => {
-    const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
-    console.log(outputArea.scrollTop + outputArea.scrollHeight);
-    console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight);
-    const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; //*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
-    if (!blockScroll) {
-        document.getElementById('message-indicator')?.remove();
-    }
-};
-// const tooltips: Map<string, string> = new Map()
-// tooltips.set('cout', 'scrie cod')
 const tooltip = (await (await fetch('/editor/tooltipHints')).json());
 class TokenTooltip extends Tooltip {
     constructor(editor) {
@@ -1556,14 +1494,66 @@ class TokenTooltip extends Tooltip {
     }
     ;
 }
-// setTimeout(() => {
-//   if(wsSessionId==undefined)
-//     ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-//     setTimeout(() => {
-//       if(wsSessionId==undefined)
-//         ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-//     }, 1500); 
-// }, 500); 
+ws.onopen = (ev) => {
+    const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
+    //writeOutput(sessionId || "No session ID found in URL.");
+    window.onbeforeunload = (ev => {
+        if (modifiedFile)
+            ev.preventDefault();
+    });
+    let hoverTooltip = 0;
+    setTimeout(() => {
+        if (wsSessionId == undefined)
+            ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+        setTimeout(() => {
+            if (wsSessionId == undefined)
+                ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+        }, 3000);
+    }, 500);
+    const tooltip = new TokenTooltip(editor);
+    // Add the dynamic marker
+    // setInterval(() => {
+    //     const code = editor.getValue();
+    //     //console.log(delta);
+    //     // if(blockChange) blockChange = false;
+    //     // else {
+    //     // blockChange = true;
+    //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
+    //  //   }
+    // }, 500);
+};
+export function submitConsole(elem, type, Console) {
+    //     const sendText = elem?.value.replace(consoleText, "")
+    //     if(sendText == "") return;
+    //     console.log(sendText);
+    //    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
+    //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Chat }));
+    //    consoleText = elem?.value || "Error: invalid element";
+    //    consoleInput.value = "";
+    const sendText = elem?.value;
+    if (!sendText)
+        return;
+    ws.send(JSON.stringify({
+        command: sendText,
+        // args: ["console"],
+        type: type || WebSocketMessageType.Chat,
+    }));
+    if (Console)
+        Console.sendCommand(sendText);
+    consoleInput.value = "";
+    typingIndicatorDelay = 300;
+    onConsoleInput(elem);
+    ws.send(JSON.stringify({ type: WebSocketMessageType.ConsoleTyping, status: "end" }));
+}
+outputArea.onscroll = ev => {
+    const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
+    console.log(outputArea.scrollTop + outputArea.scrollHeight);
+    console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight);
+    const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; //*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
+    if (!blockScroll) {
+        document.getElementById('message-indicator')?.remove();
+    }
+};
 editor.on("change", (delta) => {
     !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
     !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
