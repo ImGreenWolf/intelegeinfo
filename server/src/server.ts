@@ -51,7 +51,7 @@ app.post('/github/onpull', urlencodedParser, (req, res) => {
             res.status(400).send('No signature');
             return;
         }
-        const hmac = crypto.createHmac('sha1', publicKeyPem);
+        const hmac = crypto.createHmac('sha1', 'info');
         hmac.update(req.body.toString());
         const digest = 'sha1=' + hmac.digest('hex');
         const { commits } = req.body
@@ -60,7 +60,7 @@ app.post('/github/onpull', urlencodedParser, (req, res) => {
         if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
             const output = execSync('cd ' + rootDirName + ' && git pull');
             res.status(200).send('pull succesful! data: ' + output.toString());
-        }
+        } else res.status(401).send('access forbidden...');
     } catch (err) {
         console.error('pull error: ' + err);
          res.status(500).send(err);
