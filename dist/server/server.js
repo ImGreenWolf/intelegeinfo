@@ -88,6 +88,29 @@ app.get('/editor/cpp_worker.js', (req, res) => {
 app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path_1.default.join(exports.rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
 });
+app.post('/github/onpull', express_1.default.raw({ type: '*/*' }), (req, res) => {
+    try {
+        const signature = req.headers['x-hub-signature'];
+        if (!signature) {
+            res.status(400).send('No signature');
+            return;
+        }
+        const hmac = crypto_1.default.createHmac('sha1', publicKeyPem);
+        hmac.update(req.body);
+        const digest = 'sha1=' + hmac.digest('hex');
+        const { commits } = JSON.parse(req.body.toString());
+        console.log(digest);
+        console.log(commits?.message);
+        console.log(commits);
+        if (crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
+            (0, child_process_1.exec)('cd ' + exports.rootDirName + ' && git pull');
+        }
+    }
+    catch (err) {
+        console.error('pull error: ' + err);
+    }
+    res.status(200).send('ok');
+});
 app.use(express_1.default.static("public"));
 app.use("/guides", guideCreator_1.default);
 const codeMap = new Map();
@@ -148,29 +171,6 @@ app.post('/editor/startsession/:id', (req, res) => {
         res.status(500);
         return;
     }
-});
-app.post('/github/onpull', express_1.default.raw({ type: '*/*' }), (req, res) => {
-    try {
-        const signature = req.headers['x-hub-signature'];
-        if (!signature) {
-            res.status(400).send('No signature');
-            return;
-        }
-        const hmac = crypto_1.default.createHmac('sha1', publicKeyPem);
-        hmac.update(req.body);
-        const digest = 'sha1=' + hmac.digest('hex');
-        const { commits } = JSON.parse(req.body.toString());
-        console.log(digest);
-        console.log(commits?.message);
-        console.log(commits);
-        if (crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            (0, child_process_1.exec)('cd ' + exports.rootDirName + ' && git pull');
-        }
-    }
-    catch (err) {
-        console.error('pull error: ' + err);
-    }
-    res.status(200).send('ok');
 });
 app.get('/editor/tooltipHints', (req, res) => {
     res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'server', 'data', 'tooltips.json')).toString()));
