@@ -373,7 +373,7 @@ function cleanUp() {
                 }
             });
         });
-        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps --filter ancestor=${buildTag} -q |  xargs --no-run-if-empty  docker rm `, { timeout: 5000 }));
+        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps --filter ancestor=${buildTag} -q |  xargs --no-run-if-empty docker rm --force `, { timeout: 5000 }));
     });
 }
 function getClientFilesPath(sessionId) {
