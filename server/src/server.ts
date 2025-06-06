@@ -73,7 +73,6 @@ app.post('/github/onpull',  (req, res) => {
         hmac.update(req.body);
         const digest = 'sha1=' + hmac.digest('hex');
         const { commits } = JSON.parse(req.body.toString());
-        console.log(digest);
         console.log(commits?.message);
         console.log(commits);
         if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {

@@ -88,7 +88,7 @@ app.get('/editor/cpp_worker.js', (req, res) => {
 app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path_1.default.join(exports.rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
 });
-app.use('/github/onpull', (req, res) => {
+app.post('/github/onpull', (req, res) => {
     try {
         const signature = req.headers['x-hub-signature'];
         if (!signature) {
@@ -99,7 +99,6 @@ app.use('/github/onpull', (req, res) => {
         hmac.update(req.body);
         const digest = 'sha1=' + hmac.digest('hex');
         const { commits } = JSON.parse(req.body.toString());
-        console.log(digest);
         console.log(commits?.message);
         console.log(commits);
         if (crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
