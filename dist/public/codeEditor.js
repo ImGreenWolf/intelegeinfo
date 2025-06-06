@@ -1496,7 +1496,7 @@ ws.addEventListener('open', (ev) => {
     }, 500);
     const tooltip = new TokenTooltip(editor);
 });
-ws.onclose = (ev) => {
+ws.addEventListener('close', (ev) => {
     const serviceRestart = ev.code == 1006;
     console.log(ev.code + " " + ev.reason);
     const socketStopped = document.createElement('div');
@@ -1509,7 +1509,7 @@ ws.onclose = (ev) => {
         setTimeout(() => {
             window.location.reload();
         }, 2000);
-};
+});
 ws.onerror = (err) => {
     displayMessagePopup("WEBSOCKER ERROR: " + err);
 };

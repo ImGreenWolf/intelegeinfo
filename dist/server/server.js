@@ -449,7 +449,7 @@ app.post("/compile", (req, res) => {
     });
 });
 let currentbuildTag = '';
-exports.wss.on("connection", async (ws, req) => {
+exports.wss.addListener('connection', async (ws, req) => {
     let gdbProcess;
     let program;
     let sessionId;

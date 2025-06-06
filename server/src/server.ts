@@ -589,7 +589,7 @@ app.post("/compile", (req: express.Request<{}, {}, CompileRequestBody>, res: exp
 
     let currentbuildTag = '';
 
-wss.on("connection", async (ws: WebSocket, req) => {
+wss.addListener('connection', async (ws: WebSocket, req) => {
     let gdbProcess: ChildProcess | undefined;
     let program: ChildProcess | undefined;
     let sessionId: UUID;
