@@ -933,8 +933,8 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         let CommandQueue = Promise.resolve();
         function queueCommand(process, command, sessionId) {
-            CommandQueue = CommandQueue.then(() => executeCommand(process, command, sessionId)).catch(() => {
-                printClientConsoleError("failed to queue debugger command");
+            CommandQueue = CommandQueue.then(() => executeCommand(process, command, sessionId)).catch((err) => {
+                printClientConsoleError("failed to queue debugger command: " + err);
             });
             return CommandQueue;
         }
@@ -1706,21 +1706,12 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                 addProcessToMap(sessionId, gdbProcess);
                                             }
                                             catch (err) {
-                                                printClientConsoleDebug("docker error: " + err);
+                                                printClientConsoleError("docker error: " + err);
                                             }
                                             if (!getThisClientSession().process)
                                                 console.error('Invalid session while starting debug process');
                                             printClientConsoleDebug("started debugging process.");
-                                            // gdbProcess.on('close', (code) => {
-                                            //     console.log('CLOSED DEBUG PROCESS')
-                                            //     onClosedProcess();
-                                            //     gdbProcess = undefined;
-                                            // })
-                                            // process.stdin.pipe(gdbProcess.stdin) 
-                                            // gdbProcess.stdin.write('-file-exec-and-symbols'+filePath+'\n');
-                                            // gdbProcess.stdin.write();
                                             queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
-                                            // gdbProcess.stdin.write('-exec-run\n');
                                             gdbProcess.stdout.on('data', (derr) => {
                                                 console.log(derr.toString());
                                             });
@@ -1811,7 +1802,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                         // queueCommand(getProcessFromMap(sessionId) as ChildProcess,"break main", sessionId);// gdbProcess.stdin.write(message + "\n");
                                         // queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);
                                         //  queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);
-                                        queueCommand(getProcessFromMap(), command, sessionId);
+                                        // queueCommand(getProcessFromMap() as ChildProcess,command, sessionId);
                                         // gdbProcess.stdout.on("data", (data) => {
                                         //     gdbBuffer += data.toString();
                                         //     ws.send(JSON.stringify({error: false,  input: false, body: gdbBuffer.toString()}));  // Send GDB output to the client

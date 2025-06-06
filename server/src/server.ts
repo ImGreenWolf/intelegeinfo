@@ -1206,9 +1206,9 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     let CommandQueue = Promise.resolve();
 
     function queueCommand(process: ChildProcess,command: string, sessionId: UUID): Promise<void> {
-        CommandQueue = CommandQueue.then(() => executeCommand(process, command, sessionId)).catch(() =>
+        CommandQueue = CommandQueue.then(() => executeCommand(process, command, sessionId)).catch((err) =>
         {
-            printClientConsoleError("failed to queue debugger command")
+            printClientConsoleError("failed to queue debugger command: " + err)
         })
         return CommandQueue;
     }
@@ -2118,45 +2118,37 @@ async function readStdio(program, messageJSON)
                             if(!getProcessFromMap()) {
                                 buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                
-                                mode="debug"; //set mode to debug
-                                try {
-                                                            
-                                    replicateFunction((clientWs) => {
-                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
-                                    });
+                                    mode="debug"; //set mode to debug
+                                    try {
+                                                                
+                                        replicateFunction((clientWs) => {
+                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
+                                        });
 
-                                    execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`)
+                                        execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`)
 
-                                    replicateFunction((clientWs) => {
-                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
-                                    });
+                                        replicateFunction((clientWs) => {
+                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
+                                        });
 
-                                gdbProcess = spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
-                                addProcessToMap(sessionId, gdbProcess);
-                                } catch (err){
-                                     printClientConsoleDebug("docker error: " + err)
-                                }
-                                if(!getThisClientSession().process) console.error('Invalid session while starting debug process')
-                                printClientConsoleDebug("started debugging process.")
-                                // gdbProcess.on('close', (code) => {
-                                //     console.log('CLOSED DEBUG PROCESS')
-                                //     onClosedProcess();
-                                //     gdbProcess = undefined;
-                                // })
-                                // process.stdin.pipe(gdbProcess.stdin) 
-                                
-                                    // gdbProcess.stdin.write('-file-exec-and-symbols'+filePath+'\n');
-                                    // gdbProcess.stdin.write();
-                                    
+                                        gdbProcess = spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+                                        addProcessToMap(sessionId, gdbProcess);
+                                    } catch (err){
+                                        printClientConsoleError("docker error: " + err)
+                                    }
+
+                                    if(!getThisClientSession().process) console.error('Invalid session while starting debug process')
+                                    printClientConsoleDebug("started debugging process.")
+                               
                                     queueCommand(getProcessFromMap() as ChildProcess,'-break-insert 1\n', sessionId);
-                                    // gdbProcess.stdin.write('-exec-run\n');
-                                gdbProcess.stdout.on('data', (derr) => {
-                                    console.log(derr.toString())
-                                })
+                                       
+                                    gdbProcess.stdout.on('data', (derr) => {
+                                        console.log(derr.toString())
+                                    })
 
-                            gdbProcess.stderr.on('data', (derr) => {
-                                    console.error(derr.toString())
-                                }) 
+                                    gdbProcess.stderr.on('data', (derr) => {
+                                        console.error(derr.toString())
+                                    }) 
 
                                 })
 
@@ -2241,22 +2233,22 @@ async function readStdio(program, messageJSON)
                                     });
                     
                                 });
-                                try {
-                                    // gdbProcess.stdout?.on("data", (data) => {
-                                    //     console.log(data.toString())
-                                    // });
-                                    // getThisClientSession().process?.stdin?.write("-break-insert main\n-exec-run\n")
+                                // try {
+                                //     // gdbProcess.stdout?.on("data", (data) => {
+                                //     //     console.log(data.toString())
+                                //     // });
+                                //     // getThisClientSession().process?.stdin?.write("-break-insert main\n-exec-run\n")
                                     
 
-                                } catch 
-                                {
-                                    console.error(new Error('failed executing starting commands'))
-                                }
+                                // } catch 
+                                // {
+                                //     console.error(new Error('failed executing starting commands'))
+                                // }
                                 // queueCommand(getProcessFromMap(sessionId) as ChildProcess,command, sessionId);// gdbProcess.stdin.write(message + "\n");
                                 // queueCommand(getProcessFromMap(sessionId) as ChildProcess,"break main", sessionId);// gdbProcess.stdin.write(message + "\n");
                                 // queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);
                                 //  queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);
-                                queueCommand(getProcessFromMap() as ChildProcess,command, sessionId);
+                                // queueCommand(getProcessFromMap() as ChildProcess,command, sessionId);
                                 // gdbProcess.stdout.on("data", (data) => {
                                 //     gdbBuffer += data.toString();
                                 //     ws.send(JSON.stringify({error: false,  input: false, body: gdbBuffer.toString()}));  // Send GDB output to the client
