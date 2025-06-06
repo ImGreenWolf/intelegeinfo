@@ -76,6 +76,8 @@ app.use(compression());
 app.use(express_1.default.json());
 app.post('/github/onpull', (req, res) => {
     try {
+        if (!req.body)
+            throw "Empty request body..";
         const signature = req.headers['x-hub-signature'];
         if (!signature) {
             res.status(400).send('No signature');
@@ -102,9 +104,6 @@ app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
-// app.get('/editor/codeEditor.js', (req, res) => {
-//     res.sendFile(path.join(rootDirName,'dist', 'public', 'codeEditor.js'))
-// })
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'mode_cpp_custom.js'));
 });
