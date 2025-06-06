@@ -1835,8 +1835,7 @@ ws.onerror = (err) => {
   displayMessagePopup("WEBSOCKER ERROR: " + err)
 }
 
-setTimeout(() => {
-  while(!ws.OPEN)
+
     ws.onopen = (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
@@ -1875,9 +1874,7 @@ setTimeout(() => {
   //  //   }
   // }, 500);
 };
-}, 100);
 
-})
 
 
 

@@ -1382,649 +1382,888 @@ addEventListener('DOMContentLoaded', () => {
     ws.onerror = (err) => {
         displayMessagePopup("WEBSOCKER ERROR: " + err);
     };
-    setTimeout(() => {
-        while (!ws.OPEN)
-            ws.onopen = (ev) => {
-                const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
-                //writeOutput(sessionId || "No session ID found in URL.");
-                window.onbeforeunload = (ev => {
-                    if (modifiedFile)
-                        ev.preventDefault();
-                });
-                let hoverTooltip = 0;
-                setTimeout(() => {
-                    if (wsSessionId == undefined)
-                        ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
-                    setTimeout(() => {
-                        if (wsSessionId == undefined)
-                            ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
-                    }, 3000);
-                }, 500);
-                const tooltip = new TokenTooltip(editor);
-                // Add the dynamic marker
-                // setInterval(() => {
-                //     const code = editor.getValue();
-                //     //console.log(delta);
-                //     // if(blockChange) blockChange = false;
-                //     // else {
-                //     // blockChange = true;
-                //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
-                //  //   }
-                // }, 500);
-            };
-    }, 100);
-});
-export function submitConsole(elem, type, Console) {
-    //     const sendText = elem?.value.replace(consoleText, "")
-    //     if(sendText == "") return;
-    //     console.log(sendText);
-    //    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
-    //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Chat }));
-    //    consoleText = elem?.value || "Error: invalid element";
-    //    consoleInput.value = "";
-    const sendText = elem?.value;
-    if (!sendText)
-        return;
-    ws.send(JSON.stringify({
-        command: sendText,
-        // args: ["console"],
-        type: type || WebSocketMessageType.Chat,
-    }));
-    if (Console)
-        Console.sendCommand(sendText);
-    consoleInput.value = "";
-    typingIndicatorDelay = 300;
-    onConsoleInput(elem);
-    ws.send(JSON.stringify({ type: WebSocketMessageType.ConsoleTyping, status: "end" }));
-}
-outputArea.onscroll = ev => {
-    const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
-    console.log(outputArea.scrollTop + outputArea.scrollHeight);
-    console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight);
-    const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; //*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
-    if (!blockScroll) {
-        document.getElementById('message-indicator')?.remove();
-    }
-};
-// const tooltips: Map<string, string> = new Map()
-// tooltips.set('cout', 'scrie cod')
-const tooltip = (await (await fetch('/editor/tooltipHints')).json());
-class TokenTooltip extends Tooltip {
-    constructor(editor) {
-        if (editor.tokenTooltip)
+    ws.onopen = (ev) => {
+        const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
+        //writeOutput(sessionId || "No session ID found in URL.");
+        window.onbeforeunload = (ev => {
+            if (modifiedFile)
+                ev.preventDefault();
+        });
+        let hoverTooltip = 0;
+        setTimeout(() => {
+            if (wsSessionId == undefined)
+                ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+            setTimeout(() => {
+                if (wsSessionId == undefined)
+                    ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+            }, 3000);
+        }, 500);
+        const tooltip = new TokenTooltip(editor);
+        // Add the dynamic marker
+        // setInterval(() => {
+        //     const code = editor.getValue();
+        //     //console.log(delta);
+        //     // if(blockChange) blockChange = false;
+        //     // else {
+        //     // blockChange = true;
+        //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
+        //  //   }
+        // }, 500);
+    };
+    export function submitConsole(elem, type, Console) {
+        //     const sendText = elem?.value.replace(consoleText, "")
+        //     if(sendText == "") return;
+        //     console.log(sendText);
+        //    //sendWebsocketCommand(sendText, ["console"]); //ws.send({command: sendText, args: ['console']});
+        //    ws.send(JSON.stringify({ command: sendText, args: ['console'], type: WebSocketMessageType.Chat }));
+        //    consoleText = elem?.value || "Error: invalid element";
+        //    consoleInput.value = "";
+        const sendText = elem?.value;
+        if (!sendText)
             return;
-        super(editor.container);
-        editor.tokenTooltip = this;
-        this.editor = editor;
-        this.update = this.update.bind(this);
-        this.onMouseMove = this.onMouseMove.bind(this);
-        this.onMouseOut = this.onMouseOut.bind(this);
-        event.addListener(editor.renderer.scroller, "mousemove", this.onMouseMove);
-        event.addListener(editor.renderer.content, "mouseout", this.onMouseOut);
+        ws.send(JSON.stringify({
+            command: sendText,
+            // args: ["console"],
+            type: type || WebSocketMessageType.Chat,
+        }));
+        if (Console)
+            Console.sendCommand(sendText);
+        consoleInput.value = "";
+        typingIndicatorDelay = 300;
+        onConsoleInput(elem);
+        ws.send(JSON.stringify({ type: WebSocketMessageType.ConsoleTyping, status: "end" }));
     }
-    token = {};
-    range = new Range();
-    async update() {
-        this.$timer = null;
-        var r = this.editor.renderer;
-        if (this.lastT - (r.timeStamp || 0) > 5000) {
-            r.rect = null;
-            r.timeStamp = this.lastT;
-            this.maxHeight = window.innerHeight;
-            this.maxWidth = window.innerWidth;
+    outputArea.onscroll = ev => {
+        const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
+        console.log(outputArea.scrollTop + outputArea.scrollHeight);
+        console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight);
+        const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; //*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
+        if (!blockScroll) {
+            document.getElementById('message-indicator')?.remove();
         }
-        var canvasPos = r.rect || (r.rect = r.scroller.getBoundingClientRect());
-        var offset = (this.x + r.scrollLeft - canvasPos.left - r.$padding) / r.characterWidth;
-        var row = Math.floor((this.y + r.scrollTop - canvasPos.top) / r.lineHeight);
-        var col = Math.round(offset);
-        var screenPos = { row: row, column: col, side: offset - col > 0 ? 1 : -1 };
-        var session = this.editor.session;
-        var docPos = session.screenToDocumentPosition(screenPos.row, screenPos.column);
-        var token = session.getTokenAt(docPos.row, docPos.column);
-        if (!token && !session.getLine(docPos.row)) {
-            token = {
-                type: "",
-                value: "",
-                state: session.bgTokenizer.getState(0)
-            };
+    };
+    // const tooltips: Map<string, string> = new Map()
+    // tooltips.set('cout', 'scrie cod')
+    const tooltip = (await(await fetch('/editor/tooltipHints')).json());
+    class TokenTooltip extends Tooltip {
+        constructor(editor) {
+            if (editor.tokenTooltip)
+                return;
+            super(editor.container);
+            editor.tokenTooltip = this;
+            this.editor = editor;
+            this.update = this.update.bind(this);
+            this.onMouseMove = this.onMouseMove.bind(this);
+            this.onMouseOut = this.onMouseOut.bind(this);
+            event.addListener(editor.renderer.scroller, "mousemove", this.onMouseMove);
+            event.addListener(editor.renderer.content, "mouseout", this.onMouseOut);
         }
-        var tokenText = '';
-        if (editorSessions.has(token.value)) {
-            //  this.hide();
-            const fileText = await getFileValue(token.value);
-            tokenText = `<b>${token.value}</b>: <pre style="opacity: 0.75; max-height: 20lh; overflow: hidden;">${fileText}</pre>`;
-        }
-        else if (!token || !tooltip.tooltips[token.value]) {
-            session.removeMarker(this.marker);
-            this.hide();
-            return;
-        }
-        else {
-            const tooltipValue = tooltip.tooltips[token.value] || undefined; //(await (await fetch('/editor/tooltipHints/'+token.value)).json()).description;
-            tokenText = tooltipValue.description + "\n<span>" + tooltipValue.example + "</span>";
-        }
-        if (token.state)
-            tokenText += "|" + token.state;
-        if (token.merge)
-            tokenText += "\n  merge";
-        if (token.stateTransitions)
-            tokenText += "\n  " + token.stateTransitions.join("\n  ");
-        if (this.tokenText != tokenText) {
-            this.setHtml(tokenText);
-            this.width = this.getWidth();
-            this.height = this.getHeight();
-            this.tokenText = tokenText;
-        }
-        if (!this.isOpen) {
-            this.setTheme(r.theme);
-            this.setClassName('ii-hoverHints');
-        }
-        this.show(null, this.x, this.y);
-        this.token = token;
-        session.removeMarker(this.marker);
-        this.range = new Range(docPos.row, token.start, docPos.row, token.start + token.value.length);
-        this.marker = session.addMarker(this.range, "ace_bracket", "text");
-    }
-    ;
-    onMouseMove(e) {
-        this.x = e.clientX;
-        this.y = e.clientY;
-        if (this.isOpen) {
-            this.lastT = e.timeStamp;
-            this.setPosition(this.x, this.y);
-        }
-        if (!this.$timer)
-            this.$timer = setTimeout(this.update, this.isOpen ? 100 : 1500);
-    }
-    ;
-    onMouseOut(e) {
-        if (e && e.currentTarget.contains(e.relatedTarget))
-            return;
-        this.hide();
-        this.editor.session.removeMarker(this.marker);
-        this.$timer = clearTimeout(this.$timer);
-    }
-    ;
-    setPosition(x, y) {
-        if (x + 10 + this.width > this.maxWidth)
-            x = window.innerWidth - this.width - 10;
-        if (y > window.innerHeight * 0.75 || y + 20 + this.height > this.maxHeight)
-            y = y - this.height - 30;
-        Tooltip.prototype.setPosition.call(this, x + 10, y + 20);
-    }
-    ;
-    destroy() {
-        this.onMouseOut(undefined);
-        event.removeListener(this.editor.renderer.scroller, "mousemove", this.onMouseMove);
-        event.removeListener(this.editor.renderer.content, "mouseout", this.onMouseOut);
-        delete this.editor.tokenTooltip;
-    }
-    ;
-}
-// setTimeout(() => {
-//   if(wsSessionId==undefined)
-//     ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-//     setTimeout(() => {
-//       if(wsSessionId==undefined)
-//         ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-//     }, 1500); 
-// }, 500); 
-editor.on("change", (delta) => {
-    !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
-    !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
-    editor.renderer.updateFull();
-    parsedCode = parseCode();
-    if (isRemoteChange)
-        return;
-    const code = editor.getValue();
-    if (!currentFileName)
-        console.error("Current file name is invalid");
-    dirtyFile(currentFileName);
-    ws.send(JSON.stringify({
-        body: code,
-        delta: delta,
-        type: WebSocketMessageType.CodeChange,
-        fileName: currentFileName,
-        saveFile: true,
-    })); // Send code to server on change // TODO Remove code from body.
-});
-editor.on("changeSelection", () => {
-    if (isRemoteChange)
-        return;
-    if (!isColabSession)
-        return;
-    const selection = editor.getSelectionRange();
-    // const start = selection.start;
-    // const end = selection.end;
-    // const range = new AceRange(start.row, start.column, end.row, end.column);
-    // const selectedText = editor.session.getTextRange(range);
-    // console.log(selectedText);
-    if (!currentFileName)
-        console.error("Current file name is invalid");
-    ws.send(JSON.stringify({
-        range: selection,
-        fileName: currentFileName,
-        type: WebSocketMessageType.CodeSelection,
-    })); // Send code to server on change
-});
-var FileManagementCommands;
-(function (FileManagementCommands) {
-    FileManagementCommands["Create"] = "create";
-    FileManagementCommands["Delete"] = "delete";
-    FileManagementCommands["List"] = "list";
-    FileManagementCommands["Rename"] = "rename";
-    FileManagementCommands["Open"] = "open";
-})(FileManagementCommands || (FileManagementCommands = {}));
-class CompileError {
-    range;
-    annotation;
-    markerId;
-    text;
-    display;
-    constructor(range, text) {
-        this.text = text;
-        this.range = range;
-        this.annotation = {
-            row: range.start.row,
-            column: range.start.column,
-            text: text,
-            type: "error",
-        };
-        this.markerId = editor.session.addMarker(range, "ace_carret_error", "text", true);
-    }
-}
-let modifiedFile = false;
-let ping = -1;
-function cleanDebug() {
-    renderer.removeGhostText();
-    document.getElementById('vector-container').innerHTML = '';
-    clearTimeout(playbackId);
-    onExit();
-}
-function dirtyFile(fileName) {
-    modifiedFile = true;
-    const saveFile = fileName ? !["c", "exe"].includes(fileName.split(".").pop() || "") : true;
-    if (saveFile) {
-        document.getElementById('buttons')?.classList.remove('compiled');
-        document.getElementById('saveProject')?.classList.remove('saved');
-        document.getElementById('active-project-name')?.classList.add('dirty');
-    }
-}
-// STATE VARIABLES //
-const markers = [];
-const errorAnnotations = [];
-const compileErrorObjs = new Map();
-//    END   //
-ws.onmessage = (event) => {
-    let eventJson = JSON.parse(event.data);
-    lastEventJson = eventJson;
-    let command = eventJson.message;
-    let data = eventJson.body;
-    const type = eventJson.type;
-    // if(type!=WebSocketMessageType.Handshake && !wsSessionId)
-    //   return displayMessagePopup('editor was not initialised. Session id is invalid.')
-    //console.log(type);
-    //console.log(eventJson)
-    // try{
-    //     msgMap.get(eventJson.msgId)?.onReceive(eventJson)
-    // } catch
-    // {
-    //     console.log("failed to get websocket msg")
-    // }
-    // console.log(msgMap)
-    // console.log(eventJson)
-    function handleOutput(eventJson) {
-        if (eventJson.message != 'info locals' && eventJson.messageType != ConsoleMessageType.DebugProgram)
-            writeOutput(data, eventJson);
-        const session = editor.getSession();
-        const doc = session.getDocument();
-        const text = doc.getValue();
-        async function asyncExecuteCommand(command, cmdId) {
-            return await fetch("/requestValue?value=" + command + "&cmdId=" + cmdId, {
-                cache: "no-store",
-            });
-        }
-        // handle variables
-        if (eventJson.variables != undefined) {
-            const variablesSection = document.getElementById("variables");
-            let unprocVariables;
-            const variablesString = JSON.stringify(eventJson.variables);
-            // const textToVar = data
-            //   .split("(gdb)")
-            //   .pop()
-            //   ?.replace(/\n/g, ";")
-            //   .match(/(?<!\w\S)(\b\w+)\s*=.*/g);
-            if (eventJson.variables != undefined) {
-                //if we have variables in the chunk
-                variables = parseMIDebuggerOutput(eventJson, {
-                    onNewVariable: (variable) => {
-                        if (variable.type != "array")
-                            return;
-                        createDisplayVector(variable);
-                        //console.log("created display vector")
-                    },
-                    onArrayIndexChange: (variableName, changes, changed) => {
-                        updateDisplayVectorElement(new Variable(variableName, changes.new, "array"), changes.index, changed);
-                        // console.log(changes.updatedIndices)
-                    },
-                });
-                console.log(variables);
+        token = {};
+        range = new Range();
+        async update() {
+            this.$timer = null;
+            var r = this.editor.renderer;
+            if (this.lastT - (r.timeStamp || 0) > 5000) {
+                r.rect = null;
+                r.timeStamp = this.lastT;
+                this.maxHeight = window.innerHeight;
+                this.maxWidth = window.innerWidth;
             }
-            // set variables
-            maxValue = 0;
-            for (let index = 0; index < variables.length; index++) {
-                const element = variables[index];
-                if (variables.length == 0)
-                    break;
-                //array type
-                if (element.type == "array") {
-                    element.value.forEach((value) => {
-                        if (maxValue < value)
-                            maxValue = value;
-                        updateDisplayVector(element);
-                    });
-                }
+            var canvasPos = r.rect || (r.rect = r.scroller.getBoundingClientRect());
+            var offset = (this.x + r.scrollLeft - canvasPos.left - r.$padding) / r.characterWidth;
+            var row = Math.floor((this.y + r.scrollTop - canvasPos.top) / r.lineHeight);
+            var col = Math.round(offset);
+            var screenPos = { row: row, column: col, side: offset - col > 0 ? 1 : -1 };
+            var session = this.editor.session;
+            var docPos = session.screenToDocumentPosition(screenPos.row, screenPos.column);
+            var token = session.getTokenAt(docPos.row, docPos.column);
+            if (!token && !session.getLine(docPos.row)) {
+                token = {
+                    type: "",
+                    value: "",
+                    state: session.bgTokenizer.getState(0)
+                };
             }
-            vectDisplays.forEach((element) => {
-                const vectElems = document
-                    .getElementById(element)
-                    ?.getElementsByClassName("item-container")[0]
-                    .children;
-                for (let i = 0; i < vectElems.length; i++) {
-                    const value = parseInt(vectElems[i].innerText.split("\n")[1]);
-                    const colorV = Math.min(Math.max(value / maxValue, value / maxValue / 2) * 200 + 50, 255);
-                    vectElems[i].style.backgroundColor = `rgb(${colorV},${colorV},${colorV})`;
-                }
-            });
-        }
-        else {
-            //TODO DMDMDMDM Check if line number string contains (gdb) to prevent standard output from being parsed as line number
-            if (eventJson.body.frame && eventJson.body.frame.line) {
-                //check if its a chunk with line number
-                debugLine = eventJson.body.frame.line; //parseInt(data.match(/^(\d)+(?=\s)?/gm)); // update debug row
-                setDebugLineStyle(debugLine);
-                const conditionRegex = /(?:if|while)\s*\(([^(){};]+?)\)/g;
-                const forRegex = /for\s*\(([^;]*);([^;]*);[^)]*\)/g;
-                let conditions = [];
-                let buffer = "";
-                const debugLineText = session.getLine(debugLine - 1);
-                const pos = { row: debugLine - 1, column: debugLineText.length };
-                // Match `if` and `while`
-                for (const match of data.matchAll(conditionRegex)) {
-                    conditions.push(match[1].trim());
-                }
-                // Match `for` loops (only the 2nd part — the condition)
-                for (const match of data.matchAll(forRegex)) {
-                    conditions.push(match[2].trim());
-                }
-                // setTimeout(() => {
-                let i = 1;
-                if (playbackSpeed < 4)
-                    // dont bother if speed is too high.
-                    for (const condition of conditions) {
-                        asyncExecuteCommand(condition, cmdId++)
-                            .then(function (response) {
-                            return response.json();
-                        })
-                            .then(function (data) {
-                            const exprValue = data.body.toString();
-                            if (parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]) === cmdId &&
-                                !Number.isNaN(parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]))) {
-                                buffer += (exprValue.replace(exprValue.match(/\$\d*/), condition) +
-                                    "; ")
-                                    .replace("(gdb)", "")
-                                    .replace("\n", "");
-                                console.log(buffer);
-                                if (i++ == conditions.length) {
-                                    // wait to buffer all values
-                                    renderer.setGhostText("   " + buffer, pos);
-                                    console.log(buffer);
-                                    buffer = "";
-                                }
-                            }
-                            else
-                                renderer.setGhostText("   " + buffer, pos);
-                        });
-                    }
-                // }, 50);
-                const regex = /(\b(?<=^(\d)+(?=\s)?\s*)(\w*)(\[(\w|\d)\]))|(?<=[(-/])(\w*)(\[(\w|\d)\])/g;
-                if (data.match(regex) != null)
-                    data.match(regex).forEach((variable) => {
-                        const vararr = regex.exec(data);
-                        if (!vararr)
-                            return;
-                        let varName = vararr[3];
-                        if (!varName)
-                            varName = vararr[6];
-                        let varIndex = vararr[5];
-                        if (!varIndex)
-                            varIndex = vararr[8];
-                        console.log(variables);
-                        const indexCode = varIndex.charCodeAt(0);
-                        if (variables.find((vari) => vari.varname === varIndex)) {
-                            const index = variables.find((vari) => vari.varname === varIndex).value;
-                            if (variable.indexes.length > indexCode)
-                                return;
-                            variable.indexes[indexCode] = index;
-                            //console.log(index)
-                            //document.getElementById(varName).children[index].classList.add("active-vector-element");
-                            removePrevActiveElem(index, varName, varIndex); // TODO remove +1
-                            const vectorElem = document.getElementById(varName);
-                            vectorElem.children[index].style.outlineColor =
-                                "#" +
-                                    Math.floor((16777215 % (varIndex.charCodeAt(0) / 100)) * 16777215).toString(16);
-                            //document.getElementById(varName).setAttribute("activeIndex", index);
-                            //getDisplayVectorElement(makeVariableRefByName(varName), index).parentElement.setAttribute("activeIndex", index);
-                        }
-                    });
+            var tokenText = '';
+            if (editorSessions.has(token.value)) {
+                //  this.hide();
+                const fileText = await getFileValue(token.value);
+                tokenText = `<b>${token.value}</b>: <pre style="opacity: 0.75; max-height: 20lh; overflow: hidden;">${fileText}</pre>`;
             }
-        }
-        if (data[0] == data.match(/^(\d)(?=\s)?/gm)) {
-            setDebugLineStyle(debugLine);
-        }
-    }
-    switch (type) {
-        case WebSocketMessageType.Error:
-            writeOutput(data, eventJson);
-            break;
-        case WebSocketMessageType.Console:
-        case WebSocketMessageType.Output:
-            if (byteSize(eventJson.body) > 64000) // 1000000 is 1Mb
-             {
-                writeOutput('error! output exceeded 64kb');
-                break;
-            }
-            else
-                // writeOutput(data, eventJson)
-                handleOutput(eventJson);
-            if (eventJson.message === 'end')
-                cleanDebug();
-            break;
-        case WebSocketMessageType.End:
-            if (eventJson.body === "gdb") {
-                cleanDebug();
-                const cmdBut = document.getElementById("buttons");
-                cmdBut?.classList.remove("debug-control");
-                cmdBut?.classList.remove("execute-control");
+            else if (!token || !tooltip.tooltips[token.value]) {
+                session.removeMarker(this.marker);
+                this.hide();
+                return;
             }
             else {
-                writeOutput(data + "  |<span>   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time + "</span>ms" + (eventJson.notes != "" && eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>" : "" + "</span>"), eventJson);
+                const tooltipValue = tooltip.tooltips[token.value] || undefined; //(await (await fetch('/editor/tooltipHints/'+token.value)).json()).description;
+                tokenText = tooltipValue.description + "\n<span>" + tooltipValue.example + "</span>";
             }
-            onExit();
-            break;
-        case WebSocketMessageType.MouseUpdate:
-            if (!eventJson.clientId)
+            if (token.state)
+                tokenText += "|" + token.state;
+            if (token.merge)
+                tokenText += "\n  merge";
+            if (token.stateTransitions)
+                tokenText += "\n  " + token.stateTransitions.join("\n  ");
+            if (this.tokenText != tokenText) {
+                this.setHtml(tokenText);
+                this.width = this.getWidth();
+                this.height = this.getHeight();
+                this.tokenText = tokenText;
+            }
+            if (!this.isOpen) {
+                this.setTheme(r.theme);
+                this.setClassName('ii-hoverHints');
+            }
+            this.show(null, this.x, this.y);
+            this.token = token;
+            session.removeMarker(this.marker);
+            this.range = new Range(docPos.row, token.start, docPos.row, token.start + token.value.length);
+            this.marker = session.addMarker(this.range, "ace_bracket", "text");
+        }
+        ;
+        onMouseMove(e) {
+            this.x = e.clientX;
+            this.y = e.clientY;
+            if (this.isOpen) {
+                this.lastT = e.timeStamp;
+                this.setPosition(this.x, this.y);
+            }
+            if (!this.$timer)
+                this.$timer = setTimeout(this.update, this.isOpen ? 100 : 1500);
+        }
+        ;
+        onMouseOut(e) {
+            if (e && e.currentTarget.contains(e.relatedTarget))
+                return;
+            this.hide();
+            this.editor.session.removeMarker(this.marker);
+            this.$timer = clearTimeout(this.$timer);
+        }
+        ;
+        setPosition(x, y) {
+            if (x + 10 + this.width > this.maxWidth)
+                x = window.innerWidth - this.width - 10;
+            if (y > window.innerHeight * 0.75 || y + 20 + this.height > this.maxHeight)
+                y = y - this.height - 30;
+            Tooltip.prototype.setPosition.call(this, x + 10, y + 20);
+        }
+        ;
+        destroy() {
+            this.onMouseOut(undefined);
+            event.removeListener(this.editor.renderer.scroller, "mousemove", this.onMouseMove);
+            event.removeListener(this.editor.renderer.content, "mouseout", this.onMouseOut);
+            delete this.editor.tokenTooltip;
+        }
+        ;
+    }
+    // setTimeout(() => {
+    //   if(wsSessionId==undefined)
+    //     ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+    //     setTimeout(() => {
+    //       if(wsSessionId==undefined)
+    //         ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+    //     }, 1500); 
+    // }, 500); 
+    editor.on("change", (delta) => {
+        !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
+        !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
+        editor.renderer.updateFull();
+        parsedCode = parseCode();
+        if (isRemoteChange)
+            return;
+        const code = editor.getValue();
+        if (!currentFileName)
+            console.error("Current file name is invalid");
+        dirtyFile(currentFileName);
+        ws.send(JSON.stringify({
+            body: code,
+            delta: delta,
+            type: WebSocketMessageType.CodeChange,
+            fileName: currentFileName,
+            saveFile: true,
+        })); // Send code to server on change // TODO Remove code from body.
+    });
+    editor.on("changeSelection", () => {
+        if (isRemoteChange)
+            return;
+        if (!isColabSession)
+            return;
+        const selection = editor.getSelectionRange();
+        // const start = selection.start;
+        // const end = selection.end;
+        // const range = new AceRange(start.row, start.column, end.row, end.column);
+        // const selectedText = editor.session.getTextRange(range);
+        // console.log(selectedText);
+        if (!currentFileName)
+            console.error("Current file name is invalid");
+        ws.send(JSON.stringify({
+            range: selection,
+            fileName: currentFileName,
+            type: WebSocketMessageType.CodeSelection,
+        })); // Send code to server on change
+    });
+    let FileManagementCommands;
+    (function (FileManagementCommands) {
+        FileManagementCommands["Create"] = "create";
+        FileManagementCommands["Delete"] = "delete";
+        FileManagementCommands["List"] = "list";
+        FileManagementCommands["Rename"] = "rename";
+        FileManagementCommands["Open"] = "open";
+    })(FileManagementCommands || (FileManagementCommands = {}));
+    class CompileError {
+        range;
+        annotation;
+        markerId;
+        text;
+        display;
+        constructor(range, text) {
+            this.text = text;
+            this.range = range;
+            this.annotation = {
+                row: range.start.row,
+                column: range.start.column,
+                text: text,
+                type: "error",
+            };
+            this.markerId = editor.session.addMarker(range, "ace_carret_error", "text", true);
+        }
+    }
+    let modifiedFile = false;
+    let ping = -1;
+    function cleanDebug() {
+        renderer.removeGhostText();
+        document.getElementById('vector-container').innerHTML = '';
+        clearTimeout(playbackId);
+        onExit();
+    }
+    function dirtyFile(fileName) {
+        modifiedFile = true;
+        const saveFile = fileName ? !["c", "exe"].includes(fileName.split(".").pop() || "") : true;
+        if (saveFile) {
+            document.getElementById('buttons')?.classList.remove('compiled');
+            document.getElementById('saveProject')?.classList.remove('saved');
+            document.getElementById('active-project-name')?.classList.add('dirty');
+        }
+    }
+    // STATE VARIABLES //
+    const markers = [];
+    const errorAnnotations = [];
+    const compileErrorObjs = new Map();
+    //    END   //
+    ws.onmessage = (event) => {
+        let eventJson = JSON.parse(event.data);
+        lastEventJson = eventJson;
+        let command = eventJson.message;
+        let data = eventJson.body;
+        const type = eventJson.type;
+        // if(type!=WebSocketMessageType.Handshake && !wsSessionId)
+        //   return displayMessagePopup('editor was not initialised. Session id is invalid.')
+        //console.log(type);
+        //console.log(eventJson)
+        // try{
+        //     msgMap.get(eventJson.msgId)?.onReceive(eventJson)
+        // } catch
+        // {
+        //     console.log("failed to get websocket msg")
+        // }
+        // console.log(msgMap)
+        // console.log(eventJson)
+        function handleOutput(eventJson) {
+            if (eventJson.message != 'info locals' && eventJson.messageType != ConsoleMessageType.DebugProgram)
+                writeOutput(data, eventJson);
+            const session = editor.getSession();
+            const doc = session.getDocument();
+            const text = doc.getValue();
+            async function asyncExecuteCommand(command, cmdId) {
+                return await fetch("/requestValue?value=" + command + "&cmdId=" + cmdId, {
+                    cache: "no-store",
+                });
+            }
+            // handle variables
+            if (eventJson.variables != undefined) {
+                const variablesSection = document.getElementById("variables");
+                let unprocVariables;
+                const variablesString = JSON.stringify(eventJson.variables);
+                // const textToVar = data
+                //   .split("(gdb)")
+                //   .pop()
+                //   ?.replace(/\n/g, ";")
+                //   .match(/(?<!\w\S)(\b\w+)\s*=.*/g);
+                if (eventJson.variables != undefined) {
+                    //if we have variables in the chunk
+                    variables = parseMIDebuggerOutput(eventJson, {
+                        onNewVariable: (variable) => {
+                            if (variable.type != "array")
+                                return;
+                            createDisplayVector(variable);
+                            //console.log("created display vector")
+                        },
+                        onArrayIndexChange: (variableName, changes, changed) => {
+                            updateDisplayVectorElement(new Variable(variableName, changes.new, "array"), changes.index, changed);
+                            // console.log(changes.updatedIndices)
+                        },
+                    });
+                    console.log(variables);
+                }
+                // set variables
+                maxValue = 0;
+                for (let index = 0; index < variables.length; index++) {
+                    const element = variables[index];
+                    if (variables.length == 0)
+                        break;
+                    //array type
+                    if (element.type == "array") {
+                        element.value.forEach((value) => {
+                            if (maxValue < value)
+                                maxValue = value;
+                            updateDisplayVector(element);
+                        });
+                    }
+                }
+                vectDisplays.forEach((element) => {
+                    const vectElems = document
+                        .getElementById(element)
+                        ?.getElementsByClassName("item-container")[0]
+                        .children;
+                    for (let i = 0; i < vectElems.length; i++) {
+                        const value = parseInt(vectElems[i].innerText.split("\n")[1]);
+                        const colorV = Math.min(Math.max(value / maxValue, value / maxValue / 2) * 200 + 50, 255);
+                        vectElems[i].style.backgroundColor = `rgb(${colorV},${colorV},${colorV})`;
+                    }
+                });
+            }
+            else {
+                //TODO DMDMDMDM Check if line number string contains (gdb) to prevent standard output from being parsed as line number
+                if (eventJson.body.frame && eventJson.body.frame.line) {
+                    //check if its a chunk with line number
+                    debugLine = eventJson.body.frame.line; //parseInt(data.match(/^(\d)+(?=\s)?/gm)); // update debug row
+                    setDebugLineStyle(debugLine);
+                    const conditionRegex = /(?:if|while)\s*\(([^(){};]+?)\)/g;
+                    const forRegex = /for\s*\(([^;]*);([^;]*);[^)]*\)/g;
+                    let conditions = [];
+                    let buffer = "";
+                    const debugLineText = session.getLine(debugLine - 1);
+                    const pos = { row: debugLine - 1, column: debugLineText.length };
+                    // Match `if` and `while`
+                    for (const match of data.matchAll(conditionRegex)) {
+                        conditions.push(match[1].trim());
+                    }
+                    // Match `for` loops (only the 2nd part — the condition)
+                    for (const match of data.matchAll(forRegex)) {
+                        conditions.push(match[2].trim());
+                    }
+                    // setTimeout(() => {
+                    let i = 1;
+                    if (playbackSpeed < 4)
+                        // dont bother if speed is too high.
+                        for (const condition of conditions) {
+                            asyncExecuteCommand(condition, cmdId++)
+                                .then(function (response) {
+                                return response.json();
+                            })
+                                .then(function (data) {
+                                const exprValue = data.body.toString();
+                                if (parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]) === cmdId &&
+                                    !Number.isNaN(parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]))) {
+                                    buffer += (exprValue.replace(exprValue.match(/\$\d*/), condition) +
+                                        "; ")
+                                        .replace("(gdb)", "")
+                                        .replace("\n", "");
+                                    console.log(buffer);
+                                    if (i++ == conditions.length) {
+                                        // wait to buffer all values
+                                        renderer.setGhostText("   " + buffer, pos);
+                                        console.log(buffer);
+                                        buffer = "";
+                                    }
+                                }
+                                else
+                                    renderer.setGhostText("   " + buffer, pos);
+                            });
+                        }
+                    // }, 50);
+                    const regex = /(\b(?<=^(\d)+(?=\s)?\s*)(\w*)(\[(\w|\d)\]))|(?<=[(-/])(\w*)(\[(\w|\d)\])/g;
+                    if (data.match(regex) != null)
+                        data.match(regex).forEach((variable) => {
+                            const vararr = regex.exec(data);
+                            if (!vararr)
+                                return;
+                            let varName = vararr[3];
+                            if (!varName)
+                                varName = vararr[6];
+                            let varIndex = vararr[5];
+                            if (!varIndex)
+                                varIndex = vararr[8];
+                            console.log(variables);
+                            const indexCode = varIndex.charCodeAt(0);
+                            if (variables.find((vari) => vari.varname === varIndex)) {
+                                const index = variables.find((vari) => vari.varname === varIndex).value;
+                                if (variable.indexes.length > indexCode)
+                                    return;
+                                variable.indexes[indexCode] = index;
+                                //console.log(index)
+                                //document.getElementById(varName).children[index].classList.add("active-vector-element");
+                                removePrevActiveElem(index, varName, varIndex); // TODO remove +1
+                                const vectorElem = document.getElementById(varName);
+                                vectorElem.children[index].style.outlineColor =
+                                    "#" +
+                                        Math.floor((16777215 % (varIndex.charCodeAt(0) / 100)) * 16777215).toString(16);
+                                //document.getElementById(varName).setAttribute("activeIndex", index);
+                                //getDisplayVectorElement(makeVariableRefByName(varName), index).parentElement.setAttribute("activeIndex", index);
+                            }
+                        });
+                }
+            }
+            if (data[0] == data.match(/^(\d)(?=\s)?/gm)) {
+                setDebugLineStyle(debugLine);
+            }
+        }
+        switch (type) {
+            case WebSocketMessageType.Error:
+                writeOutput(data, eventJson);
                 break;
-            // }
-            // let cursor: HTMLDivElement | null = document.getElementById('cursor-'+eventJson.clientId) as HTMLDivElement
-            // if((sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3)) 
-            //   {
-            //     clearInterval(stepint)
-            //     if(cursor)
-            //       cursor!.remove();
-            //     break;
-            //   }
-            // maybe check if the pointer type switched
-            //  TODO Imrpove this
-            // if(sizeX/eventJson.sizeX<1.1 && sizeX/eventJson.sizeX>0.9)
-            //   cursor.style.filter = '';
-            // else
-            //   cursor.style.filter = `blur(${(1-sizeX/eventJson.sizeX)*7}px)` //(Math.max(Math.abs(sizeX/eventJson.sizeX), Math.abs(sizeY/eventJson.sizeY)))
-            if (!cursors.has(eventJson.clientId))
-                new EditorCursor(eventJson);
-            else
-                cursors.get(eventJson.clientId).update(eventJson);
-            // cursorObj.lposX = cursorObj.posX;
-            // cursorObj.lposY = cursorObj.posY;
-            // if(cursorObj)
-            // {
-            // }
-            // cursors.set(eventJson.clientId, {...cursorObj, lposX: posX, lposY: posY})
-            // let lposX = cursorObj.posX;
-            // let lposY = cursorObj.posY;
-            //  cursors.set(eventJson.clientId, {...cursorObj, posX: updatedPos.posX, posY: updatedPos.posY, lposX, lposY})
-            // TODO Add incative class to cursor when user doesnt move it.
-            break;
-        case WebSocketMessageType.Chat:
-            if (eventJson.clientId) {
-                const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
-                const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; // lastMessageGroup? lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight > outputArea!.scrollTop : false//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
-                // if(!document.querySelector('[msgId='+msgId+']')) return;
-                if (blockScroll) {
-                    if (document.getElementById('message-indicator')) {
-                        const existingIndicator = document.getElementById('message-indicator');
-                        if (existingIndicator?.innerText)
-                            existingIndicator.innerText = (parseInt(existingIndicator.innerText) + 1).toString() + "+";
-                    }
-                    else {
-                        outputArea.innerHTML += "<br>";
-                        const messageIndicator = document.createElement('div');
-                        messageIndicator.id = 'message-indicator';
-                        messageIndicator.innerText = "1+";
-                        document.getElementById('output-container')?.appendChild(messageIndicator);
-                        lastViewedMessage = msgId;
-                    }
+            case WebSocketMessageType.Console:
+            case WebSocketMessageType.Output:
+                if (byteSize(eventJson.body) > 64000) // 1000000 is 1Mb
+                 {
+                    writeOutput('error! output exceeded 64kb');
+                    break;
+                }
+                else
+                    // writeOutput(data, eventJson)
+                    handleOutput(eventJson);
+                if (eventJson.message === 'end')
+                    cleanDebug();
+                break;
+            case WebSocketMessageType.End:
+                if (eventJson.body === "gdb") {
+                    cleanDebug();
+                    const cmdBut = document.getElementById("buttons");
+                    cmdBut?.classList.remove("debug-control");
+                    cmdBut?.classList.remove("execute-control");
                 }
                 else {
-                    document.getElementById('message-indicator')?.remove();
+                    writeOutput(data + "  |<span>   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time + "</span>ms" + (eventJson.notes != "" && eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>" : "" + "</span>"), eventJson);
                 }
-                writeOutput(data, eventJson, blockScroll);
-            }
-            else
-                writeOutput(data, eventJson);
-            break;
-        case WebSocketMessageType.Handshake:
-            if ((!wsSessionId && !wsClientId) || eventJson.sessionId) {
-                wsClientId = eventJson.clientId;
-                wsSessionId = eventJson.sessionId;
-                isColabSession = eventJson.session != undefined;
-                // if(!document.cookie.includes('session='))
-                document.cookie = 'session=';
-                setTimeout(() => {
-                    document.cookie = 'session=' + wsSessionId + ';';
-                }, 15000);
-                //console.log(editor.session.toJSON()) // TODO Implement saving the editor session in a file on the server or on the client.
-                addMouseListener(eventJson);
-            }
-            if (eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
-                document.getElementById('share')?.classList.add('host');
-            writeOutput(eventJson.body, eventJson);
-            const projectData = eventJson.project;
-            const sessionData = eventJson.session;
-            if (projectData) {
-                const projNameNode = document.createElement('h1');
-                projNameNode.innerText = eventJson.project.name;
-                projNameNode.id = 'active-project-name';
-                document.getElementById('join-session').parentNode.insertBefore(projNameNode, document.getElementById('join-session'));
-            }
-            if (sessionData) {
-                if (!sessionData.canEdit)
-                    editor.setReadOnly(true);
-                if (!sessionData.canChat)
-                    document.getElementById('console')?.setAttribute('disabled', 'true');
-            }
-            break;
-        case WebSocketMessageType.CodeChange:
-            // editor.session.getDocument().applyDelta(delta);
-            if (editor.getValue() !== data.body &&
-                eventJson.clientId !== wsClientId) {
-                const delta = eventJson.body.delta;
-                console.log(eventJson);
-                isRemoteChange = true;
-                editor.session.getDocument().applyDelta(delta);
-                isRemoteChange = false;
-                document.getElementById('buttons')?.classList.remove('compiled');
-                dirtyFile(eventJson.fileName);
-            }
-            break;
-        case WebSocketMessageType.CompileResult:
-            const compileErrors = JSON.parse(eventJson.body);
-            for (const elem of document.getElementsByClassName('console-error'))
-                elem.remove();
-            editor.session.setAnnotations([]);
-            errorAnnotations.length = 0;
-            for (const marker of markers)
-                editor.session.removeMarker(marker);
-            markers.length = 0;
-            if (!compileErrors.length) {
-                writeOutput('ok');
+                onExit();
+                break;
+            case WebSocketMessageType.MouseUpdate:
+                if (!eventJson.clientId)
+                    break;
+                // }
+                // let cursor: HTMLDivElement | null = document.getElementById('cursor-'+eventJson.clientId) as HTMLDivElement
+                // if((sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3)) 
+                //   {
+                //     clearInterval(stepint)
+                //     if(cursor)
+                //       cursor!.remove();
+                //     break;
+                //   }
+                // maybe check if the pointer type switched
+                //  TODO Imrpove this
+                // if(sizeX/eventJson.sizeX<1.1 && sizeX/eventJson.sizeX>0.9)
+                //   cursor.style.filter = '';
+                // else
+                //   cursor.style.filter = `blur(${(1-sizeX/eventJson.sizeX)*7}px)` //(Math.max(Math.abs(sizeX/eventJson.sizeX), Math.abs(sizeY/eventJson.sizeY)))
+                if (!cursors.has(eventJson.clientId))
+                    new EditorCursor(eventJson);
+                else
+                    cursors.get(eventJson.clientId).update(eventJson);
+                // cursorObj.lposX = cursorObj.posX;
+                // cursorObj.lposY = cursorObj.posY;
+                // if(cursorObj)
+                // {
+                // }
+                // cursors.set(eventJson.clientId, {...cursorObj, lposX: posX, lposY: posY})
+                // let lposX = cursorObj.posX;
+                // let lposY = cursorObj.posY;
+                //  cursors.set(eventJson.clientId, {...cursorObj, posX: updatedPos.posX, posY: updatedPos.posY, lposX, lposY})
+                // TODO Add incative class to cursor when user doesnt move it.
+                break;
+            case WebSocketMessageType.Chat:
+                if (eventJson.clientId) {
+                    const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
+                    const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; // lastMessageGroup? lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight > outputArea!.scrollTop : false//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
+                    // if(!document.querySelector('[msgId='+msgId+']')) return;
+                    if (blockScroll) {
+                        if (document.getElementById('message-indicator')) {
+                            const existingIndicator = document.getElementById('message-indicator');
+                            if (existingIndicator?.innerText)
+                                existingIndicator.innerText = (parseInt(existingIndicator.innerText) + 1).toString() + "+";
+                        }
+                        else {
+                            outputArea.innerHTML += "<br>";
+                            const messageIndicator = document.createElement('div');
+                            messageIndicator.id = 'message-indicator';
+                            messageIndicator.innerText = "1+";
+                            document.getElementById('output-container')?.appendChild(messageIndicator);
+                            lastViewedMessage = msgId;
+                        }
+                    }
+                    else {
+                        document.getElementById('message-indicator')?.remove();
+                    }
+                    writeOutput(data, eventJson, blockScroll);
+                }
+                else
+                    writeOutput(data, eventJson);
+                break;
+            case WebSocketMessageType.Handshake:
+                if ((!wsSessionId && !wsClientId) || eventJson.sessionId) {
+                    wsClientId = eventJson.clientId;
+                    wsSessionId = eventJson.sessionId;
+                    isColabSession = eventJson.session != undefined;
+                    // if(!document.cookie.includes('session='))
+                    document.cookie = 'session=';
+                    setTimeout(() => {
+                        document.cookie = 'session=' + wsSessionId + ';';
+                    }, 15000);
+                    //console.log(editor.session.toJSON()) // TODO Implement saving the editor session in a file on the server or on the client.
+                    addMouseListener(eventJson);
+                }
+                if (eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
+                    document.getElementById('share')?.classList.add('host');
+                writeOutput(eventJson.body, eventJson);
+                const projectData = eventJson.project;
+                const sessionData = eventJson.session;
+                if (projectData) {
+                    const projNameNode = document.createElement('h1');
+                    projNameNode.innerText = eventJson.project.name;
+                    projNameNode.id = 'active-project-name';
+                    document.getElementById('join-session').parentNode.insertBefore(projNameNode, document.getElementById('join-session'));
+                }
+                if (sessionData) {
+                    if (!sessionData.canEdit)
+                        editor.setReadOnly(true);
+                    if (!sessionData.canChat)
+                        document.getElementById('console')?.setAttribute('disabled', 'true');
+                }
+                break;
+            case WebSocketMessageType.CodeChange:
+                // editor.session.getDocument().applyDelta(delta);
+                if (editor.getValue() !== data.body &&
+                    eventJson.clientId !== wsClientId) {
+                    const delta = eventJson.body.delta;
+                    console.log(eventJson);
+                    isRemoteChange = true;
+                    editor.session.getDocument().applyDelta(delta);
+                    isRemoteChange = false;
+                    document.getElementById('buttons')?.classList.remove('compiled');
+                    dirtyFile(eventJson.fileName);
+                }
+                break;
+            case WebSocketMessageType.CompileResult:
+                const compileErrors = JSON.parse(eventJson.body);
+                for (const elem of document.getElementsByClassName('console-error'))
+                    elem.remove();
+                editor.session.setAnnotations([]);
+                errorAnnotations.length = 0;
                 for (const marker of markers)
                     editor.session.removeMarker(marker);
                 markers.length = 0;
-            }
-            else
-                for (const result of compileErrors) {
-                    switch (result.kind) {
-                        case "error":
-                            // const location = result.locations[0];
-                            if (!result.locations || !result) {
-                                writeOutput(result.message, { messageType: 'error' });
-                                break;
-                            }
-                            else
-                                for (const location of result.locations) {
-                                    const range = new AceRange(location.caret.line - 1, location.caret.column - 1, location.finish ? location.finish.line - 1 : location.caret.line - 1, location.finish ? location.finish.column : location.caret.column);
-                                    const compileErrorObj = new CompileError(range, result.message);
-                                    // compileErrorObjs.get(markerId)!.display?.remove()
-                                    compileErrorObjs.set(compileErrorObj.markerId, compileErrorObj);
-                                    errorAnnotations.push(compileErrorObj.annotation);
-                                    markers.push(compileErrorObj.markerId);
-                                    // window.alert((editor.renderer as any).$markerFront);
-                                    //  writeOutput(result.message, {messageType: 'error', params: {range, row: range.start.row+1, column: range.start.column+1, rowend: range.end.row+1, columnemnd: range.end.column+1}})
-                                    editor.session.setAnnotations(errorAnnotations);
-                                    // for(const error of document.getElementsByClassName('ace_carret_error') as HTMLCollectionOf<HTMLDivElement>)
-                                    // {
-                                    //   error.addEventListener('click', ev => {
-                                    //     window.alert('jsdjdjd')
-                                    //   })
-                                    // }
-                                }
-                            break;
-                        default:
-                        case "success":
-                            for (const marker of markers)
-                                editor.session.removeMarker(marker);
-                            errorAnnotations.length = 0;
-                            editor.session.setAnnotations([]);
-                            document.getElementById('compile-error')?.remove();
-                            compileErrorObjs.forEach(element => {
-                                element.display?.remove();
-                            });
-                            // compileErrorObjs.clear()
-                            break;
-                    }
-                    // writeOutput(result.kind)
+                if (!compileErrors.length) {
+                    writeOutput('ok');
+                    for (const marker of markers)
+                        editor.session.removeMarker(marker);
+                    markers.length = 0;
                 }
-            break;
-        case WebSocketMessageType.ExecuteStatus:
+                else
+                    for (const result of compileErrors) {
+                        switch (result.kind) {
+                            case "error":
+                                // const location = result.locations[0];
+                                if (!result.locations || !result) {
+                                    writeOutput(result.message, { messageType: 'error' });
+                                    break;
+                                }
+                                else
+                                    for (const location of result.locations) {
+                                        const range = new AceRange(location.caret.line - 1, location.caret.column - 1, location.finish ? location.finish.line - 1 : location.caret.line - 1, location.finish ? location.finish.column : location.caret.column);
+                                        const compileErrorObj = new CompileError(range, result.message);
+                                        // compileErrorObjs.get(markerId)!.display?.remove()
+                                        compileErrorObjs.set(compileErrorObj.markerId, compileErrorObj);
+                                        errorAnnotations.push(compileErrorObj.annotation);
+                                        markers.push(compileErrorObj.markerId);
+                                        // window.alert((editor.renderer as any).$markerFront);
+                                        //  writeOutput(result.message, {messageType: 'error', params: {range, row: range.start.row+1, column: range.start.column+1, rowend: range.end.row+1, columnemnd: range.end.column+1}})
+                                        editor.session.setAnnotations(errorAnnotations);
+                                        // for(const error of document.getElementsByClassName('ace_carret_error') as HTMLCollectionOf<HTMLDivElement>)
+                                        // {
+                                        //   error.addEventListener('click', ev => {
+                                        //     window.alert('jsdjdjd')
+                                        //   })
+                                        // }
+                                    }
+                                break;
+                            default:
+                            case "success":
+                                for (const marker of markers)
+                                    editor.session.removeMarker(marker);
+                                errorAnnotations.length = 0;
+                                editor.session.setAnnotations([]);
+                                document.getElementById('compile-error')?.remove();
+                                compileErrorObjs.forEach(element => {
+                                    element.display?.remove();
+                                });
+                                // compileErrorObjs.clear()
+                                break;
+                        }
+                        // writeOutput(result.kind)
+                    }
+                break;
+            case WebSocketMessageType.ExecuteStatus:
+                let errorOutputString = "";
+                if (eventJson.error) {
+                    onExit();
+                    // ON ERROR
+                    document.getElementById('buttons')?.classList.remove('compiled');
+                    for (const markerId of markers)
+                        editor.session.removeMarker(markerId);
+                    for (const errorMessage of eventJson.error.errors) {
+                        errorOutputString += errorMessage.error + "\n";
+                        if (errorMessage.row != -1) {
+                            const row = errorMessage.row - 1;
+                            const column = errorMessage.column;
+                            errorAnnotations.push({
+                                row: row,
+                                column: column,
+                                text: errorMessage.error,
+                                type: "error",
+                            });
+                            markers.push(editor.session.addMarker(new AceRange(row, column, row, column + 1), "ace-error-line", "screenLine"));
+                        }
+                    }
+                    editor.session.setAnnotations(errorAnnotations);
+                }
+                else {
+                    if (eventJson.input == 1) {
+                        const console = document.createElement('textarea');
+                        document.querySelector('#active-console')?.appendChild(console);
+                        console.addEventListener("keypress", (e) => {
+                            if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
+                                e.preventDefault();
+                                submitConsole(console, WebSocketMessageType.Console, activeConsole);
+                                console.remove();
+                            }
+                        });
+                        console.focus();
+                    }
+                    editor.session.setAnnotations([]);
+                    document.getElementById('buttons')?.classList.add('compiled');
+                    for (const markerId of markers)
+                        editor.session.removeMarker(markerId);
+                }
+                // writeOutput(
+                //   data.success
+                //     ? "Compilation of " + data.fileName + " successful!\n"
+                //     : errorOutputString ||
+                //         "Compilation error. (couldnt retrieve error message, sorry)"
+                // );
+                document.getElementById('compile-status').innerText = eventJson.body;
+                document.getElementById('compile-status').style.opacity = '1';
+                setTimeout(() => {
+                    document.getElementById('compile-status').style.opacity = '0';
+                }, 500);
+                break;
+            case WebSocketMessageType.CodeSelection:
+                if (!data) {
+                    //clear selection
+                    console.log("removed sleection");
+                    editor.session.removeMarker(marker);
+                    cursorManager.removeCursor(eventJson.clientId);
+                    return;
+                }
+                const selection = eventJson.body.range;
+                const start = selection.start;
+                const end = selection.end;
+                const range = new AceRange(start.row, start.column, end.row, end.column);
+                let cursorRow;
+                let cursorColumn;
+                //if(start.end==end.end || start.row*end.row * start.column * start*end.column==0) return;
+                if (marker)
+                    editor.session.removeMarker(marker);
+                if (start && end) {
+                    if (start !== end)
+                        marker = editor.session.addMarker(range, "ace_remote_selection", "line", false);
+                    // TODO fix this so that the cursor goes to the end of the selection.
+                    cursorManager.replicateCursor(eventJson.clientId, {
+                        row: (end.row > start.row) ? end.row : start.row,
+                        column: (end.column > start.column) ? end.column : start.column,
+                    });
+                }
+                break;
+            case WebSocketMessageType.ConsoleTyping:
+                const indicatorStatus = eventJson.status;
+                const indicatorClientId = eventJson.clientId;
+                const typingIndicatorContainer = document.getElementById('typingIndicatorContainer');
+                switch (indicatorStatus) {
+                    case "start":
+                        if (!typingIndicators.has(indicatorClientId)) {
+                            if ((typingIndicators.has(indicatorClientId)))
+                                typingIndicators.get(indicatorClientId).remove;
+                            // typingIndicators.delete(indicatorClientId);
+                            const typingIndicator = document.createElement('div');
+                            // typingIndicator. = indicatorClientId;
+                            typingIndicators.set(indicatorClientId, typingIndicator);
+                            typingIndicator.textContent = eventJson.displayName + " scrie...";
+                            typingIndicatorContainer?.appendChild(typingIndicator);
+                        }
+                        break;
+                    case "end":
+                        if (typingIndicatorContainer !== undefined && typingIndicators.has(indicatorClientId)) {
+                            const typingIndicator = typingIndicators.get(indicatorClientId);
+                            if (!typingIndicator)
+                                return typingIndicatorContainer?.replaceChildren();
+                            typingIndicator.animate([
+                                { opacity: "100%", bottom: "0px", filter: "blur(0px)" },
+                                { bottom: "-50px", opacity: 0, filter: " blur(10px)" },
+                            ], { duration: 200 }).onfinish = (event) => {
+                                typingIndicatorContainer?.removeChild(typingIndicator);
+                                typingIndicator.remove;
+                                typingIndicators.delete(indicatorClientId);
+                            };
+                        }
+                        break;
+                }
+                break;
+            case WebSocketMessageType.ColabData:
+                const colabClients = eventJson.clients;
+                const colabSessionId = eventJson.thisSessionId;
+                const colabClientId = eventJson.thisClientId;
+                const colabCommand = eventJson.colabCommand;
+                isColabSession = true;
+                switch (colabCommand) {
+                    case "DISCONECT":
+                        const success = cursorManager.removeCursor(colabClientId);
+                        document.getElementById('cursor-' + colabClientId)?.remove();
+                        cursors.delete(colabClientId);
+                        writeOutput(eventJson.body, eventJson);
+                        break;
+                    case "HOST":
+                        writeOutput(eventJson.body, eventJson);
+                    case "JOIN":
+                        addMouseListener(eventJson.session);
+                        break;
+                }
+                const colabContainer = document.getElementById("colab-container") || null;
+                if (!colabContainer)
+                    return;
+                colabContainer.innerHTML = "";
+                colabClients.forEach((client) => {
+                    const clientId = client.split("-")[0];
+                    colabContainer.innerHTML += `<div class="colab-client" id=${clientId}>${clientId}</div>`;
+                });
+                break;
+            case WebSocketMessageType.Heartbeat:
+                ping = Date.now() - ping - eventJson.expectedDelay;
+                ws.send(JSON.stringify({ type: WebSocketMessageType.Heartbeat })); // send heartbeat to server
+                if (ping != -1)
+                    console.log("heartbeat ping: " + ping);
+                ping = Date.now();
+                break;
+            case WebSocketMessageType.FileManagement:
+                //   data.command should work too but it doesnt TODO
+                const commandType = JSON.parse(event.data).body ? JSON.parse(event.data).body.command : eventJson.command;
+                switch (commandType) {
+                    case FileManagementCommands.Create:
+                        onFileCreate(data.content);
+                        break;
+                    case FileManagementCommands.Delete:
+                        deleteFile(eventJson.name, true);
+                        break;
+                    case FileManagementCommands.List:
+                        JSON.parse(event.data).body.content.forEach((file) => {
+                            onFileCreate(file);
+                        });
+                        break;
+                    case FileManagementCommands.Rename:
+                        renameFile(eventJson.name, eventJson.newName);
+                        break;
+                    case FileManagementCommands.Open:
+                        const fileName = eventJson.body.fileName;
+                        const fileContent = eventJson.body.content;
+                        currentFileName = fileName;
+                        console.log(editorSessions.get(fileName));
+                        if (!editorSessions.has(fileName)) {
+                            const newSession = ace.createEditSession(fileContent);
+                            // undo manager?
+                            // if(fileName.split('.')[1] != 'cpp')
+                            newSession.setMode(aceModes.getModeForPath(fileName).mode);
+                            editor.setSession(newSession);
+                            const session = {
+                                editor: newSession,
+                                fileName: fileName,
+                                fileElement: undefined
+                            };
+                            editorSessions.set(fileName, session);
+                        }
+                        else {
+                            if (!editorSessions.get(fileName)?.editor)
+                                editorSessions.get(fileName).editor = ace.createEditSession(fileContent);
+                            console.log("File already opened: ", fileName);
+                            const session = editorSessions.get(fileName);
+                            if (session) {
+                                session.editor.setMode(aceModes.getModeForPath(fileName).mode);
+                                editor.setSession(session.editor);
+                            }
+                            if (fileContent.toString() != session?.editor.getValue().toString()) {
+                                isRemoteChange = true; // must add this to prevent sending on changed event
+                                session.editor.setValue(fileContent);
+                                isRemoteChange = false;
+                            }
+                        }
+                        if (document.getElementById('active-open-file'))
+                            document.getElementById('active-open-file').id = '';
+                        const elem = editorSessions.get(fileName)?.fileElement;
+                        if (elem) {
+                            elem.id = 'active-open-file';
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    };
+    function removePrevActiveElem(index, varName, varIndex) {
+        if (variableArrayIndexes[varIndex.charCodeAt(0)]) {
+            const vectorElem = document.getElementById(varName);
+            if (vectorElem) {
+                const prevElem = vectorElem.children[variableArrayIndexes[varIndex.charCodeAt(0)]];
+                prevElem.classList.remove("active-vector-element");
+                prevElem.style.outlineColor = "initial";
+                prevElem.classList.remove("active-vector-element");
+                prevElem.style.outlineColor = "initial";
+            }
+        }
+        variableArrayIndexes[varIndex.charCodeAt(0)] = index;
+    }
+    export function compileCode(ev) {
+        fetch("/compile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                code: editor.getValue(),
+                clientId: wsClientId,
+                sessionId: wsSessionId,
+            }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+            const output = document.getElementById("output");
+            if (!output)
+                return;
             let errorOutputString = "";
-            if (eventJson.error) {
-                onExit();
+            document.getElementById('compile-error')?.remove();
+            if (!data.success) {
                 // ON ERROR
                 document.getElementById('buttons')?.classList.remove('compiled');
                 for (const markerId of markers)
                     editor.session.removeMarker(markerId);
-                for (const errorMessage of eventJson.error.errors) {
+                for (const errorMessage of data.errors) {
                     errorOutputString += errorMessage.error + "\n";
                     if (errorMessage.row != -1) {
                         const row = errorMessage.row - 1;
@@ -2041,643 +2280,401 @@ ws.onmessage = (event) => {
                 editor.session.setAnnotations(errorAnnotations);
             }
             else {
-                if (eventJson.input == 1) {
-                    const console = document.createElement('textarea');
-                    document.querySelector('#active-console')?.appendChild(console);
-                    console.addEventListener("keypress", (e) => {
-                        if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
-                            e.preventDefault();
-                            submitConsole(console, WebSocketMessageType.Console, activeConsole);
-                            console.remove();
-                        }
-                    });
-                    console.focus();
-                }
                 editor.session.setAnnotations([]);
                 document.getElementById('buttons')?.classList.add('compiled');
                 for (const markerId of markers)
                     editor.session.removeMarker(markerId);
             }
-            // writeOutput(
-            //   data.success
-            //     ? "Compilation of " + data.fileName + " successful!\n"
-            //     : errorOutputString ||
-            //         "Compilation error. (couldnt retrieve error message, sorry)"
-            // );
-            document.getElementById('compile-status').innerText = eventJson.body;
-            document.getElementById('compile-status').style.opacity = '1';
-            setTimeout(() => {
-                document.getElementById('compile-status').style.opacity = '0';
-            }, 500);
-            break;
-        case WebSocketMessageType.CodeSelection:
-            if (!data) {
-                //clear selection
-                console.log("removed sleection");
-                editor.session.removeMarker(marker);
-                cursorManager.removeCursor(eventJson.clientId);
-                return;
+            writeOutput(data.success
+                ? "Compilation of " + data.fileName + " successful!\n"
+                : errorOutputString ||
+                    "Compilation error. (couldnt retrieve error message, sorry)", { messageType: "error" });
+            code = editor.getValue();
+        });
+    }
+    export function sendDebugCommand(cmd) {
+        //editor.setValue(code, -1);
+        const cmdBut = document.getElementById("buttons");
+        if (cmd == "-exec-run") {
+            cmdBut?.classList.add("debug-control");
+            cmdBut?.classList.remove("execute-control");
+            onRun();
+        }
+        else if (cmd == "execute") {
+            cmdBut?.classList.remove("debug-control");
+            cmdBut?.classList.add("execute-control");
+            onRun();
+        }
+        sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
+        if (cmd == "-exec-next" || cmd == "-exec-continue")
+            sendWebsocketCommand("-stack-list-variables --all-values ", []); // ws.send({command: 'info locals' , args: []});
+        const consoleElem = document.getElementById("console");
+        if (cmd == "-exec-execute" && consoleElem?.value != "")
+            submitConsole(consoleElem, WebSocketMessageType.Console, activeConsole);
+    }
+    let playbackSpeed = 1;
+    let playbackId;
+    let processRunning;
+    export function playback() {
+        sendDebugCommand("-stack-list-variables --all-values");
+        onRun();
+        let i = debugLine;
+        updatePlaybackSpeed();
+    }
+    export function restartPlayback() {
+        sendDebugCommand("-exec-run");
+        setPlaybackSpeed(1);
+        playback();
+    }
+    const childIndexOf = 1;
+    export function setPlaybackSpeed(newPlaybackSpeed) {
+        document
+            .getElementById("speed-control")
+            ?.children[playbackSpeed - 1 + childIndexOf].classList.remove("active-speed");
+        playbackSpeed = newPlaybackSpeed;
+        updatePlaybackSpeed();
+    }
+    function updatePlaybackSpeed() {
+        document
+            .getElementById("speed-control")
+            ?.children[playbackSpeed - 1 + childIndexOf].classList.add("active-speed");
+        if (playbackId)
+            clearInterval(playbackId);
+        playbackId = setInterval(() => {
+            if (!ws.OPEN || processRunning)
+                return clearInterval(playbackId);
+            sendDebugCommand("-exec-next");
+            if (debugLine >= editor.session.getLength() + 2) {
+                // add offset to complete exectuin and display result.
+                clearInterval(playbackId);
+                onExit();
             }
-            const selection = eventJson.body.range;
-            const start = selection.start;
-            const end = selection.end;
-            const range = new AceRange(start.row, start.column, end.row, end.column);
-            let cursorRow;
-            let cursorColumn;
-            //if(start.end==end.end || start.row*end.row * start.column * start*end.column==0) return;
-            if (marker)
-                editor.session.removeMarker(marker);
-            if (start && end) {
-                if (start !== end)
-                    marker = editor.session.addMarker(range, "ace_remote_selection", "line", false);
-                // TODO fix this so that the cursor goes to the end of the selection.
-                cursorManager.replicateCursor(eventJson.clientId, {
-                    row: (end.row > start.row) ? end.row : start.row,
-                    column: (end.column > start.column) ? end.column : start.column,
-                });
+        }, 300 / playbackSpeed);
+    }
+    function onRun() {
+        editor.setReadOnly(true);
+        processRunning = true;
+        document.getElementById('buttons')?.classList.add('executing');
+        document.getElementById('compile-status').innerText = 'Communicating with server...';
+        document.getElementById('compile-status').style.opacity = '0.25';
+        if (document.getElementById('active-console'))
+            document.getElementById('active-console').id = '';
+        activeConsole = new Console();
+        outputConsoles.push(activeConsole);
+        //<div class='header'>  <div class='button-container' ><button>close</button> <button>maxi</button> <button>mini</button> </div> program output</div>
+        // TODO Add separate input area for interactive console.
+    }
+    function onExit() {
+        editor.setReadOnly(false);
+        processRunning = false;
+        editor.session.removeMarker(lastDebugId);
+        document.getElementById('buttons')?.classList.remove('executing');
+        if (document.getElementById('active-console'))
+            document.getElementById('active-console').id = '';
+    }
+    function setDebugLineStyle(lineIndex) {
+        // document.querySelectorAll(".ace_debug").forEach(element => {
+        //     element.classList.remove("ace_debug");
+        // });
+        //editor.session.setBreakpoint(lineIndex-1)
+        editor.session.removeMarker(lastDebugId);
+        lastDebugId = editor.session.highlightLines(lineIndex - 1, lineIndex - 1, "").id;
+        //document.querySelectorAll(".ace_text-layer > .ace_line")[lineIndex-1].classList.add("ace_debug");
+    }
+    function displayVector(array, vectCont) {
+        // TODO make vect cont an array based of vector name (aka index of ascii number)
+        //  vectCont.innerHTML ="";c
+        let i = 0;
+        // console.log(array);
+        if (!vectCont)
+            return;
+        array.forEach((element) => {
+            vectCont.innerHTML += `<span style="background-color: rgb(${element * 50 + 50},${element * 50 + 50},${element * 50 + 50})"><index>${i++}</index><value>${element}</value></span>`;
+        });
+    }
+    let vectDisplays = [];
+    function createDisplayVector(variable) {
+        // console.log(variable)
+        if (variable.type != "array")
+            return;
+        // vectDisplays.add(variable)
+        vectDisplays.push(variable.varname);
+        const vectorContainer = document.getElementById("vector-container");
+        if (vectorContainer) {
+            vectorContainer.innerHTML += `<div id=${variable.varname} class='vector-display'><div class='vector-header'><h>${variable.varname}</h><button onclick='resizeVectorContainer(this)'>x</button></div><div class='item-container'></div></div>\n`;
+        }
+        if (Array.isArray(variable.value)) {
+            displayVector(variable.value, document
+                .getElementById(variable.varname)
+                ?.getElementsByClassName("item-container")[0]);
+        }
+    }
+    function resizeVectorContainer(elem) {
+        const itemContainer = elem.parentElement?.parentElement?.getElementsByClassName("item-container")[0];
+        if (itemContainer) {
+            itemContainer.style.height =
+                itemContainer.style.height === "0px" ? "auto" : "0px";
+            itemContainer.style.minHeight =
+                itemContainer.style.minHeight === "0px" ? "100px" : "0px";
+            itemContainer.style.overflow =
+                itemContainer.style.overflow === "hidden" ? "visible" : "hidden";
+            // itemContainer.style.display = itemContainer.style.display === 'none' ? 'flex' : 'none';
+        }
+    }
+    let maxValue = 0;
+    function updateDisplayVector(variable) {
+        // displayVector(variable.value, document.getElementById(variable.varname))
+        //    variable.values.forEach(vari => {
+        //     updateDisplayVectorElement(variable, vari.index)
+        //    });
+    }
+    function updateDisplayVectorElement(variable, index, changed) {
+        const elem = getDisplayVectorElement({ varname: variable.varname }, index); //class="active-vector-element"
+        if (!elem)
+            return;
+        if (elem && typeof variable.value === "number") {
+            const classes = elem.classList.toString();
+            if (changed)
+                elem.innerHTML = `<index>${index}</index><value>${variable.value}</value>`;
+            if (activeElem && activeElem != elem)
+                activeElem.classList.remove("active-vector-element");
+            if (activeElem != elem) {
+                elem.classList.add("active-vector-element");
+                activeElem = elem;
             }
-            break;
-        case WebSocketMessageType.ConsoleTyping:
-            const indicatorStatus = eventJson.status;
-            const indicatorClientId = eventJson.clientId;
-            const typingIndicatorContainer = document.getElementById('typingIndicatorContainer');
-            switch (indicatorStatus) {
-                case "start":
-                    if (!typingIndicators.has(indicatorClientId)) {
-                        if ((typingIndicators.has(indicatorClientId)))
-                            typingIndicators.get(indicatorClientId).remove;
-                        // typingIndicators.delete(indicatorClientId);
-                        const typingIndicator = document.createElement('div');
-                        // typingIndicator. = indicatorClientId;
-                        typingIndicators.set(indicatorClientId, typingIndicator);
-                        typingIndicator.textContent = eventJson.displayName + " scrie...";
-                        typingIndicatorContainer?.appendChild(typingIndicator);
-                    }
-                    break;
-                case "end":
-                    if (typingIndicatorContainer !== undefined && typingIndicators.has(indicatorClientId)) {
-                        const typingIndicator = typingIndicators.get(indicatorClientId);
-                        if (!typingIndicator)
-                            return typingIndicatorContainer?.replaceChildren();
-                        typingIndicator.animate([
-                            { opacity: "100%", bottom: "0px", filter: "blur(0px)" },
-                            { bottom: "-50px", opacity: 0, filter: " blur(10px)" },
-                        ], { duration: 200 }).onfinish = (event) => {
-                            typingIndicatorContainer?.removeChild(typingIndicator);
-                            typingIndicator.remove;
-                            typingIndicators.delete(indicatorClientId);
-                        };
-                    }
-                    break;
+        }
+        // console.log(Number(elem.parentElement.getAttribute("activeIndex"))-index)
+        // if(index===Number(elem.parentElement.getAttribute("activeIndex")))
+        //elem.classList.add('active-vector-element')
+        // if(activeElem) activeElem.classList.remove('active-vector-element')
+        // activeElem = elem;
+        // removePrevActiveElem(index, variable.varname, variable)
+    }
+    function getDisplayVectorElement(variable, index) {
+        return document
+            .getElementById(variable.varname)
+            ?.getElementsByClassName("item-container")[0].children[index]; // offset by the ammount of default children aka the header of the container
+    }
+    function getDistanceFromPosition(checkCursor, posX, posY) {
+        const elemX = checkCursor.offsetLeft;
+        const elemY = checkCursor.offsetTop;
+        return Math.sqrt(Math.pow(elemX - posX, 2) + Math.pow(elemY - posY, 2));
+    }
+    const commandId = "createFileCommand";
+    editor.commands.addCommand({
+        name: commandId,
+        exec: function (editor, args) {
+            const filename = args?.filename || "unnamed.txt";
+            createFile(filename);
+            openFile(filename);
+            editor.renderer.updateFull(true);
+            codeLens.clear(editor.session);
+        }
+    });
+    editor.commands.addCommand({
+        name: "include<fstream>",
+        exec: function (editor, args) {
+            const index = editor.getValue().lastIndexOf("#include");
+            if (index == -1)
+                editor.session.insert({ row: 0, column: 0 }, "#include <fstream>\n");
+            else {
+                const point = editor.session.doc.indexToPosition(index);
+                editor.session.insert({ row: point.row + 1, column: 0 }, "#include <fstream>\n");
             }
-            break;
-        case WebSocketMessageType.ColabData:
-            const colabClients = eventJson.clients;
-            const colabSessionId = eventJson.thisSessionId;
-            const colabClientId = eventJson.thisClientId;
-            const colabCommand = eventJson.colabCommand;
-            isColabSession = true;
-            switch (colabCommand) {
-                case "DISCONECT":
-                    const success = cursorManager.removeCursor(colabClientId);
-                    document.getElementById('cursor-' + colabClientId)?.remove();
-                    cursors.delete(colabClientId);
-                    writeOutput(eventJson.body, eventJson);
-                    break;
-                case "HOST":
-                    writeOutput(eventJson.body, eventJson);
-                case "JOIN":
-                    addMouseListener(eventJson.session);
-                    break;
+        }
+    });
+    editor.commands.addCommand({
+        name: "usingnamespacestd",
+        exec: function (editor, args) {
+            const index = editor.getValue().lastIndexOf("#include");
+            if (index == -1)
+                editor.session.insert({ row: 0, column: 0 }, "\nusing namespace std;\n");
+            else {
+                const point = editor.session.doc.indexToPosition(index);
+                editor.session.insert({ row: point.row + 1, column: 0 }, "\nusing namespace std;\n");
             }
-            const colabContainer = document.getElementById("colab-container") || null;
-            if (!colabContainer)
-                return;
-            colabContainer.innerHTML = "";
-            colabClients.forEach((client) => {
-                const clientId = client.split("-")[0];
-                colabContainer.innerHTML += `<div class="colab-client" id=${clientId}>${clientId}</div>`;
+        }
+    });
+    // Register CodeLens provider
+    codeLens.registerCodeLensProvider(editor, {
+        provideCodeLenses: function (session, callback) {
+            const lines = session.getDocument().getAllLines();
+            const lenses = [];
+            const regex = /[i o]fstream\s+\w+\s*\(\s*["'](.+?)["']\s*\);/;
+            lines.forEach((line, row) => {
+                const match = line.match(regex);
+                if (match) {
+                    const filename = match[1];
+                    if (!editorSessions.has(filename))
+                        lenses.push({
+                            start: { row },
+                            command: {
+                                id: commandId,
+                                title: `Create file "${filename}"`,
+                                arguments: { filename }
+                            }
+                        });
+                    if (!editor.getValue().includes("#include <fstream>"))
+                        lenses.push({
+                            start: { row },
+                            command: {
+                                id: "include<fstream>",
+                                title: `Add #include <fstream>"`,
+                                arguments: {}
+                            }
+                        });
+                }
+                if (line.includes("#include <iostream>"))
+                    if (!editor.getValue().includes("using namespace std;"))
+                        lenses.push({
+                            start: { row },
+                            command: {
+                                id: "usingnamespacestd",
+                                title: `Add using namespace std;`,
+                                arguments: {}
+                            }
+                        });
             });
-            break;
-        case WebSocketMessageType.Heartbeat:
-            ping = Date.now() - ping - eventJson.expectedDelay;
-            ws.send(JSON.stringify({ type: WebSocketMessageType.Heartbeat })); // send heartbeat to server
-            if (ping != -1)
-                console.log("heartbeat ping: " + ping);
-            ping = Date.now();
-            break;
-        case WebSocketMessageType.FileManagement:
-            //   data.command should work too but it doesnt TODO
-            const commandType = JSON.parse(event.data).body ? JSON.parse(event.data).body.command : eventJson.command;
-            switch (commandType) {
-                case FileManagementCommands.Create:
-                    onFileCreate(data.content);
-                    break;
-                case FileManagementCommands.Delete:
-                    deleteFile(eventJson.name, true);
-                    break;
-                case FileManagementCommands.List:
-                    JSON.parse(event.data).body.content.forEach((file) => {
-                        onFileCreate(file);
-                    });
-                    break;
-                case FileManagementCommands.Rename:
-                    renameFile(eventJson.name, eventJson.newName);
-                    break;
-                case FileManagementCommands.Open:
-                    const fileName = eventJson.body.fileName;
-                    const fileContent = eventJson.body.content;
-                    currentFileName = fileName;
-                    console.log(editorSessions.get(fileName));
-                    if (!editorSessions.has(fileName)) {
-                        const newSession = ace.createEditSession(fileContent);
-                        // undo manager?
-                        // if(fileName.split('.')[1] != 'cpp')
-                        newSession.setMode(aceModes.getModeForPath(fileName).mode);
-                        editor.setSession(newSession);
-                        const session = {
-                            editor: newSession,
-                            fileName: fileName,
-                            fileElement: undefined
-                        };
-                        editorSessions.set(fileName, session);
+            callback(null, lenses);
+        }
+    });
+    const customCompleter = {
+        getCompletions: function (editor, session, pos, prefix, callback) {
+            // if (prefix.length === 0) {
+            //   callback(null, []);
+            //   return;
+            // }
+            const line = session.getLine(pos.row).trim();
+            let completions = [];
+            if (line.includes("#include")) {
+                const libraries = tooltip.libraries[0];
+                const completions = libraries.map(lib => ({
+                    caption: prefix.length > 0 ? `${lib.name}>` : `<${lib.name}>`,
+                    value: prefix.length > 0 ? `${lib.name}>` : `<${lib.name}>`,
+                    meta: "library",
+                    score: lib.score,
+                    docHTML: `<b>&lt;${lib.name}&gt;</b><br>${lib.description}`
+                }));
+                // callback(null, completions);
+            }
+            else {
+                if (!parsedCode)
+                    return callback(null, []);
+                if (!parsedCode.functions)
+                    return callback(null, []);
+                completions = parsedCode.functions
+                    //  .filter(c => {return c.name == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.name == undefined})
+                    .map(c => ({
+                    caption: c.name, value: c.name, meta: "function", score: 100,
+                    docHTML: `${c.type} <b>${c.name}</b><pre>${c.content}</pre>`
+                })).concat(parsedCode.variables
+                    .filter(c => { return c.functionName == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.functionName == undefined; })
+                    .map(c => ({
+                    caption: c.name, value: c.name, meta: `${c.type} variable : ${c.functionName ? c.functionName : "Global"}`, score: 100,
+                    docHTML: `${c.type} <b>${c.name}</b>`
+                })));
+            }
+            console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start));
+            console.log(indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name);
+            callback(null, completions);
+        }
+    };
+    // Register it
+    ace.require("ace/ext/language_tools").addCompleter(customCompleter);
+    function parseCode() {
+        const code = editor.session.getValue();
+        let depth = 0;
+        const functions = [];
+        const variables = [];
+        let buffer = '';
+        let tokenIndex = 0;
+        const tokens = [];
+        const storageType = ("asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|" +
+            "_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|" +
+            "class|wchar_t|template|char16_t|char32_t");
+        const types = storageType.split("|");
+        for (let i = 0; i < code.length; i++) {
+            const char = code[i];
+            if (((char == " " || char == "\n" || char == "\\n") && buffer != '' && buffer.trim() != '') || i + 1 == code.length) {
+                tokens.push({ body: buffer + char, name: buffer.trim(), depth, tokenIndex });
+                buffer = '';
+                continue;
+            }
+            else {
+                switch (char) {
+                    case "{":
+                        depth++;
+                        break;
+                    case "}":
+                        // if(depth-1==0)
+                        tokenIndex++;
+                        depth--;
+                    case ";":
+                        continue;
+                        break;
+                }
+                buffer += char;
+            }
+        }
+        tokens.forEach((token, index) => {
+            if (index > 0)
+                if (types.includes(tokens[index - 1].name)) {
+                    if (token.name.includes("(") && token.name.includes(")")) {
+                        if (tokens[index + 1] == undefined)
+                            return;
+                        let content = tokens[index + 1].body;
+                        let j = index + 1;
+                        if (j < tokens.length && tokens[j].depth != undefined)
+                            while (tokens[j].depth > token.depth && j <= tokens.length && tokens[j + 1] != undefined)
+                                content += tokens[++j].body;
+                        functions.push({ name: token.name, type: tokens[index - 1].name, depth: token.depth, content, tokenIndex: token.tokenIndex });
                     }
                     else {
-                        if (!editorSessions.get(fileName)?.editor)
-                            editorSessions.get(fileName).editor = ace.createEditSession(fileContent);
-                        console.log("File already opened: ", fileName);
-                        const session = editorSessions.get(fileName);
-                        if (session) {
-                            session.editor.setMode(aceModes.getModeForPath(fileName).mode);
-                            editor.setSession(session.editor);
-                        }
-                        if (fileContent.toString() != session?.editor.getValue().toString()) {
-                            isRemoteChange = true; // must add this to prevent sending on changed event
-                            session.editor.setValue(fileContent);
-                            isRemoteChange = false;
-                        }
+                        const functionName = functions.find(value => {
+                            return value.tokenIndex == token.tokenIndex;
+                        })?.name;
+                        token.name.split(',').map(v => {
+                            if (isNaN(parseInt(v)))
+                                variables.push({ name: v, type: tokens[index - 1].name, depth: token.depth, functionName, tokenIndex: token.tokenIndex });
+                        });
                     }
-                    if (document.getElementById('active-open-file'))
-                        document.getElementById('active-open-file').id = '';
-                    const elem = editorSessions.get(fileName)?.fileElement;
-                    if (elem) {
-                        elem.id = 'active-open-file';
-                    }
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-};
-function removePrevActiveElem(index, varName, varIndex) {
-    if (variableArrayIndexes[varIndex.charCodeAt(0)]) {
-        const vectorElem = document.getElementById(varName);
-        if (vectorElem) {
-            const prevElem = vectorElem.children[variableArrayIndexes[varIndex.charCodeAt(0)]];
-            prevElem.classList.remove("active-vector-element");
-            prevElem.style.outlineColor = "initial";
-            prevElem.classList.remove("active-vector-element");
-            prevElem.style.outlineColor = "initial";
-        }
-    }
-    variableArrayIndexes[varIndex.charCodeAt(0)] = index;
-}
-export function compileCode(ev) {
-    fetch("/compile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            code: editor.getValue(),
-            clientId: wsClientId,
-            sessionId: wsSessionId,
-        }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-        const output = document.getElementById("output");
-        if (!output)
-            return;
-        let errorOutputString = "";
-        document.getElementById('compile-error')?.remove();
-        if (!data.success) {
-            // ON ERROR
-            document.getElementById('buttons')?.classList.remove('compiled');
-            for (const markerId of markers)
-                editor.session.removeMarker(markerId);
-            for (const errorMessage of data.errors) {
-                errorOutputString += errorMessage.error + "\n";
-                if (errorMessage.row != -1) {
-                    const row = errorMessage.row - 1;
-                    const column = errorMessage.column;
-                    errorAnnotations.push({
-                        row: row,
-                        column: column,
-                        text: errorMessage.error,
-                        type: "error",
-                    });
-                    markers.push(editor.session.addMarker(new AceRange(row, column, row, column + 1), "ace-error-line", "screenLine"));
                 }
-            }
-            editor.session.setAnnotations(errorAnnotations);
-        }
-        else {
-            editor.session.setAnnotations([]);
-            document.getElementById('buttons')?.classList.add('compiled');
-            for (const markerId of markers)
-                editor.session.removeMarker(markerId);
-        }
-        writeOutput(data.success
-            ? "Compilation of " + data.fileName + " successful!\n"
-            : errorOutputString ||
-                "Compilation error. (couldnt retrieve error message, sorry)", { messageType: "error" });
-        code = editor.getValue();
-    });
-}
-export function sendDebugCommand(cmd) {
-    //editor.setValue(code, -1);
-    const cmdBut = document.getElementById("buttons");
-    if (cmd == "-exec-run") {
-        cmdBut?.classList.add("debug-control");
-        cmdBut?.classList.remove("execute-control");
-        onRun();
-    }
-    else if (cmd == "execute") {
-        cmdBut?.classList.remove("debug-control");
-        cmdBut?.classList.add("execute-control");
-        onRun();
-    }
-    sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
-    if (cmd == "-exec-next" || cmd == "-exec-continue")
-        sendWebsocketCommand("-stack-list-variables --all-values ", []); // ws.send({command: 'info locals' , args: []});
-    const consoleElem = document.getElementById("console");
-    if (cmd == "-exec-execute" && consoleElem?.value != "")
-        submitConsole(consoleElem, WebSocketMessageType.Console, activeConsole);
-}
-let playbackSpeed = 1;
-let playbackId;
-let processRunning;
-export function playback() {
-    sendDebugCommand("-stack-list-variables --all-values");
-    onRun();
-    let i = debugLine;
-    updatePlaybackSpeed();
-}
-export function restartPlayback() {
-    sendDebugCommand("-exec-run");
-    setPlaybackSpeed(1);
-    playback();
-}
-const childIndexOf = 1;
-export function setPlaybackSpeed(newPlaybackSpeed) {
-    document
-        .getElementById("speed-control")
-        ?.children[playbackSpeed - 1 + childIndexOf].classList.remove("active-speed");
-    playbackSpeed = newPlaybackSpeed;
-    updatePlaybackSpeed();
-}
-function updatePlaybackSpeed() {
-    document
-        .getElementById("speed-control")
-        ?.children[playbackSpeed - 1 + childIndexOf].classList.add("active-speed");
-    if (playbackId)
-        clearInterval(playbackId);
-    playbackId = setInterval(() => {
-        if (!ws.OPEN || processRunning)
-            return clearInterval(playbackId);
-        sendDebugCommand("-exec-next");
-        if (debugLine >= editor.session.getLength() + 2) {
-            // add offset to complete exectuin and display result.
-            clearInterval(playbackId);
-            onExit();
-        }
-    }, 300 / playbackSpeed);
-}
-function onRun() {
-    editor.setReadOnly(true);
-    processRunning = true;
-    document.getElementById('buttons')?.classList.add('executing');
-    document.getElementById('compile-status').innerText = 'Communicating with server...';
-    document.getElementById('compile-status').style.opacity = '0.25';
-    if (document.getElementById('active-console'))
-        document.getElementById('active-console').id = '';
-    activeConsole = new Console();
-    outputConsoles.push(activeConsole);
-    //<div class='header'>  <div class='button-container' ><button>close</button> <button>maxi</button> <button>mini</button> </div> program output</div>
-    // TODO Add separate input area for interactive console.
-}
-function onExit() {
-    editor.setReadOnly(false);
-    processRunning = false;
-    editor.session.removeMarker(lastDebugId);
-    document.getElementById('buttons')?.classList.remove('executing');
-    if (document.getElementById('active-console'))
-        document.getElementById('active-console').id = '';
-}
-function setDebugLineStyle(lineIndex) {
-    // document.querySelectorAll(".ace_debug").forEach(element => {
-    //     element.classList.remove("ace_debug");
-    // });
-    //editor.session.setBreakpoint(lineIndex-1)
-    editor.session.removeMarker(lastDebugId);
-    lastDebugId = editor.session.highlightLines(lineIndex - 1, lineIndex - 1, "").id;
-    //document.querySelectorAll(".ace_text-layer > .ace_line")[lineIndex-1].classList.add("ace_debug");
-}
-function displayVector(array, vectCont) {
-    // TODO make vect cont an array based of vector name (aka index of ascii number)
-    //  vectCont.innerHTML ="";c
-    let i = 0;
-    // console.log(array);
-    if (!vectCont)
-        return;
-    array.forEach((element) => {
-        vectCont.innerHTML += `<span style="background-color: rgb(${element * 50 + 50},${element * 50 + 50},${element * 50 + 50})"><index>${i++}</index><value>${element}</value></span>`;
-    });
-}
-let vectDisplays = [];
-function createDisplayVector(variable) {
-    // console.log(variable)
-    if (variable.type != "array")
-        return;
-    // vectDisplays.add(variable)
-    vectDisplays.push(variable.varname);
-    const vectorContainer = document.getElementById("vector-container");
-    if (vectorContainer) {
-        vectorContainer.innerHTML += `<div id=${variable.varname} class='vector-display'><div class='vector-header'><h>${variable.varname}</h><button onclick='resizeVectorContainer(this)'>x</button></div><div class='item-container'></div></div>\n`;
-    }
-    if (Array.isArray(variable.value)) {
-        displayVector(variable.value, document
-            .getElementById(variable.varname)
-            ?.getElementsByClassName("item-container")[0]);
-    }
-}
-function resizeVectorContainer(elem) {
-    const itemContainer = elem.parentElement?.parentElement?.getElementsByClassName("item-container")[0];
-    if (itemContainer) {
-        itemContainer.style.height =
-            itemContainer.style.height === "0px" ? "auto" : "0px";
-        itemContainer.style.minHeight =
-            itemContainer.style.minHeight === "0px" ? "100px" : "0px";
-        itemContainer.style.overflow =
-            itemContainer.style.overflow === "hidden" ? "visible" : "hidden";
-        // itemContainer.style.display = itemContainer.style.display === 'none' ? 'flex' : 'none';
-    }
-}
-let maxValue = 0;
-function updateDisplayVector(variable) {
-    // displayVector(variable.value, document.getElementById(variable.varname))
-    //    variable.values.forEach(vari => {
-    //     updateDisplayVectorElement(variable, vari.index)
-    //    });
-}
-function updateDisplayVectorElement(variable, index, changed) {
-    const elem = getDisplayVectorElement({ varname: variable.varname }, index); //class="active-vector-element"
-    if (!elem)
-        return;
-    if (elem && typeof variable.value === "number") {
-        const classes = elem.classList.toString();
-        if (changed)
-            elem.innerHTML = `<index>${index}</index><value>${variable.value}</value>`;
-        if (activeElem && activeElem != elem)
-            activeElem.classList.remove("active-vector-element");
-        if (activeElem != elem) {
-            elem.classList.add("active-vector-element");
-            activeElem = elem;
-        }
-    }
-    // console.log(Number(elem.parentElement.getAttribute("activeIndex"))-index)
-    // if(index===Number(elem.parentElement.getAttribute("activeIndex")))
-    //elem.classList.add('active-vector-element')
-    // if(activeElem) activeElem.classList.remove('active-vector-element')
-    // activeElem = elem;
-    // removePrevActiveElem(index, variable.varname, variable)
-}
-function getDisplayVectorElement(variable, index) {
-    return document
-        .getElementById(variable.varname)
-        ?.getElementsByClassName("item-container")[0].children[index]; // offset by the ammount of default children aka the header of the container
-}
-function getDistanceFromPosition(checkCursor, posX, posY) {
-    const elemX = checkCursor.offsetLeft;
-    const elemY = checkCursor.offsetTop;
-    return Math.sqrt(Math.pow(elemX - posX, 2) + Math.pow(elemY - posY, 2));
-}
-const commandId = "createFileCommand";
-editor.commands.addCommand({
-    name: commandId,
-    exec: function (editor, args) {
-        const filename = args?.filename || "unnamed.txt";
-        createFile(filename);
-        openFile(filename);
-        editor.renderer.updateFull(true);
-        codeLens.clear(editor.session);
-    }
-});
-editor.commands.addCommand({
-    name: "include<fstream>",
-    exec: function (editor, args) {
-        const index = editor.getValue().lastIndexOf("#include");
-        if (index == -1)
-            editor.session.insert({ row: 0, column: 0 }, "#include <fstream>\n");
-        else {
-            const point = editor.session.doc.indexToPosition(index);
-            editor.session.insert({ row: point.row + 1, column: 0 }, "#include <fstream>\n");
-        }
-    }
-});
-editor.commands.addCommand({
-    name: "usingnamespacestd",
-    exec: function (editor, args) {
-        const index = editor.getValue().lastIndexOf("#include");
-        if (index == -1)
-            editor.session.insert({ row: 0, column: 0 }, "\nusing namespace std;\n");
-        else {
-            const point = editor.session.doc.indexToPosition(index);
-            editor.session.insert({ row: point.row + 1, column: 0 }, "\nusing namespace std;\n");
-        }
-    }
-});
-// Register CodeLens provider
-codeLens.registerCodeLensProvider(editor, {
-    provideCodeLenses: function (session, callback) {
-        const lines = session.getDocument().getAllLines();
-        const lenses = [];
-        const regex = /[i o]fstream\s+\w+\s*\(\s*["'](.+?)["']\s*\);/;
-        lines.forEach((line, row) => {
-            const match = line.match(regex);
-            if (match) {
-                const filename = match[1];
-                if (!editorSessions.has(filename))
-                    lenses.push({
-                        start: { row },
-                        command: {
-                            id: commandId,
-                            title: `Create file "${filename}"`,
-                            arguments: { filename }
-                        }
-                    });
-                if (!editor.getValue().includes("#include <fstream>"))
-                    lenses.push({
-                        start: { row },
-                        command: {
-                            id: "include<fstream>",
-                            title: `Add #include <fstream>"`,
-                            arguments: {}
-                        }
-                    });
-            }
-            if (line.includes("#include <iostream>"))
-                if (!editor.getValue().includes("using namespace std;"))
-                    lenses.push({
-                        start: { row },
-                        command: {
-                            id: "usingnamespacestd",
-                            title: `Add using namespace std;`,
-                            arguments: {}
-                        }
-                    });
         });
-        callback(null, lenses);
+        console.log(variables);
+        return { functions, variables };
     }
-});
-const customCompleter = {
-    getCompletions: function (editor, session, pos, prefix, callback) {
-        // if (prefix.length === 0) {
-        //   callback(null, []);
-        //   return;
-        // }
-        const line = session.getLine(pos.row).trim();
-        let completions = [];
-        if (line.includes("#include")) {
-            const libraries = tooltip.libraries[0];
-            const completions = libraries.map(lib => ({
-                caption: prefix.length > 0 ? `${lib.name}>` : `<${lib.name}>`,
-                value: prefix.length > 0 ? `${lib.name}>` : `<${lib.name}>`,
-                meta: "library",
-                score: lib.score,
-                docHTML: `<b>&lt;${lib.name}&gt;</b><br>${lib.description}`
-            }));
-            // callback(null, completions);
-        }
-        else {
-            if (!parsedCode)
-                return callback(null, []);
-            if (!parsedCode.functions)
-                return callback(null, []);
-            completions = parsedCode.functions
-                //  .filter(c => {return c.name == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.name == undefined})
-                .map(c => ({
-                caption: c.name, value: c.name, meta: "function", score: 100,
-                docHTML: `${c.type} <b>${c.name}</b><pre>${c.content}</pre>`
-            })).concat(parsedCode.variables
-                .filter(c => { return c.functionName == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.functionName == undefined; })
-                .map(c => ({
-                caption: c.name, value: c.name, meta: `${c.type} variable : ${c.functionName ? c.functionName : "Global"}`, score: 100,
-                docHTML: `${c.type} <b>${c.name}</b>`
-            })));
-        }
-        console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start));
-        console.log(indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name);
-        callback(null, completions);
-    }
-};
-// Register it
-ace.require("ace/ext/language_tools").addCompleter(customCompleter);
-function parseCode() {
-    const code = editor.session.getValue();
-    let depth = 0;
-    const functions = [];
-    const variables = [];
-    let buffer = '';
-    let tokenIndex = 0;
-    const tokens = [];
-    const storageType = ("asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|" +
-        "_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|" +
-        "class|wchar_t|template|char16_t|char32_t");
-    const types = storageType.split("|");
-    for (let i = 0; i < code.length; i++) {
-        const char = code[i];
-        if (((char == " " || char == "\n" || char == "\\n") && buffer != '' && buffer.trim() != '') || i + 1 == code.length) {
-            tokens.push({ body: buffer + char, name: buffer.trim(), depth, tokenIndex });
-            buffer = '';
-            continue;
-        }
-        else {
+    function indexToFunctionName(index) {
+        const code = editor.session.getValue();
+        let depth = 0;
+        let tokenIndex = 0;
+        for (let i = 0; i < Math.min(index, code.length); i++) {
+            const char = code[i];
             switch (char) {
-                case "{":
-                    depth++;
-                    break;
                 case "}":
                     // if(depth-1==0)
                     tokenIndex++;
-                    depth--;
-                case ";":
-                    continue;
                     break;
             }
-            buffer += char;
         }
+        return parsedCode.functions.find(value => {
+            return value.tokenIndex == tokenIndex;
+        });
     }
-    tokens.forEach((token, index) => {
-        if (index > 0)
-            if (types.includes(tokens[index - 1].name)) {
-                if (token.name.includes("(") && token.name.includes(")")) {
-                    if (tokens[index + 1] == undefined)
-                        return;
-                    let content = tokens[index + 1].body;
-                    let j = index + 1;
-                    if (j < tokens.length && tokens[j].depth != undefined)
-                        while (tokens[j].depth > token.depth && j <= tokens.length && tokens[j + 1] != undefined)
-                            content += tokens[++j].body;
-                    functions.push({ name: token.name, type: tokens[index - 1].name, depth: token.depth, content, tokenIndex: token.tokenIndex });
-                }
-                else {
-                    const functionName = functions.find(value => {
-                        return value.tokenIndex == token.tokenIndex;
-                    })?.name;
-                    token.name.split(',').map(v => {
-                        if (isNaN(parseInt(v)))
-                            variables.push({ name: v, type: tokens[index - 1].name, depth: token.depth, functionName, tokenIndex: token.tokenIndex });
-                    });
-                }
-            }
-    });
-    console.log(variables);
-    return { functions, variables };
-}
-function indexToFunctionName(index) {
-    const code = editor.session.getValue();
-    let depth = 0;
-    let tokenIndex = 0;
-    for (let i = 0; i < Math.min(index, code.length); i++) {
-        const char = code[i];
-        switch (char) {
-            case "}":
-                // if(depth-1==0)
-                tokenIndex++;
-                break;
-        }
+    export async function downloadEditorFiles() {
+        fetch(`/editor/${wsSessionId}/downloadFiles`)
+            .then(response => {
+            if (!response.ok)
+                throw new Error('Network error');
+            return response.blob();
+        })
+            .then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'intelegeinfo-project.zip'; // You can name the zip whatever you like
+            a.click(); // Triggers the download
+            URL.revokeObjectURL(url); // Cleanup
+        })
+            .catch(err => displayMessagePopup('Download failed:' + err));
     }
-    return parsedCode.functions.find(value => {
-        return value.tokenIndex == tokenIndex;
-    });
-}
-export async function downloadEditorFiles() {
-    fetch(`/editor/${wsSessionId}/downloadFiles`)
-        .then(response => {
-        if (!response.ok)
-            throw new Error('Network error');
-        return response.blob();
-    })
-        .then(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'intelegeinfo-project.zip'; // You can name the zip whatever you like
-        a.click(); // Triggers the download
-        URL.revokeObjectURL(url); // Cleanup
-    })
-        .catch(err => displayMessagePopup('Download failed:' + err));
-}
+});
