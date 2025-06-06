@@ -1372,7 +1372,7 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
         //  resolve(sessionContainer);
                 setTimeout(() => {
         resolve(sessionContainer); // Return the child process so it can be handled externally
-    }, 5000);
+    }, 1000);
     })
     
     
