@@ -1290,47 +1290,58 @@ if(sessionContainer)
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-if(!currentbuildTag)
-{
-  currentbuildTag = buildTag // Unique image tag to avoid collisions
-
-  // 1. Copy the executable to the temporary folder
-  // 2. Write the Dockerfile to the temp directory
-  const dockerfileContents =// `
-// FROM gcc:latest\n
-// COPY . /usr/src/
-// WORKDIR /usr/src/
-// RUN g++ -g -O0 "main.cpp" -o main\n
-// #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-// \n
-// CMD ["./main"]
-`
-# Base image with GCC
-FROM gcc:bookworm
-
-# Set working directory inside container
-WORKDIR /app
-
-# Default command can be overridden
-CMD [ "bash" ]
-  `.trim();
-
-  fs.writeFileSync(dockerfilePath, dockerfileContents);
 
 
-    // 3. Build the Docker image
-  console.log(`Building Docker image: ${currentbuildTag}`);
-  try {
-    execSync(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
-  } catch (error) {
-    console.error('Error building Docker image:', error);
-    return;
-  }
 
-}
-else
-console.log('Skipping build stage.')
+  new Promise<void>((resolve,reject) => {
+    if(!currentbuildTag)
+        {
+        try {
+            
+            currentbuildTag = buildTag // Unique image tag to avoid collisions
 
+            // 1. Copy the executable to the temporary folder
+            // 2. Write the Dockerfile to the temp directory
+            const dockerfileContents =// `
+            // FROM gcc:latest\n
+            // COPY . /usr/src/
+            // WORKDIR /usr/src/
+            // RUN g++ -g -O0 "main.cpp" -o main\n
+            // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+            // \n
+            // CMD ["./main"]
+            `
+            # Base image with GCC
+            FROM gcc:bookworm
+
+            # Set working directory inside container
+            WORKDIR /app
+
+            # Default command can be overridden
+            CMD [ "bash" ]
+            `.trim();
+
+            fs.writeFileSync(dockerfilePath, dockerfileContents);
+            
+                // 3. Build the Docker image
+            console.log(`Building Docker image: ${currentbuildTag}`);
+                exec(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, (err, stdout) => {
+                    if(err)
+                        if(err.code!=0)
+                            resolve()
+                        else
+                            reject(err)
+                });
+            } catch (error) {
+                console.error('Error building Docker image:', error);
+                return;
+            }
+        }
+        else
+        console.log('Skipping build stage.')
+
+  }).then(() => {
+    
 //   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
 // //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
 // .on('close', ()=> {
@@ -1386,7 +1397,7 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
         //  resolve(sessionContainer);
                 setTimeout(() => {
         resolve(sessionContainer); // Return the child process so it can be handled externally
-    }, 1000);
+    }, 500);
     })
     
     
@@ -1410,6 +1421,9 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
 //       console.error('Error cleaning up Docker image:', error);
 //     }
 //   });
+
+  })
+  
 
  
 })
@@ -1932,18 +1946,20 @@ async function readStdio(program, messageJSON)
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                     });
 
-                                                    execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`)
-
-                                                    replicateFunction((clientWs) => {
+                                                    exec(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`, () => {
+                                                         replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
-                                                    });
-                                                    program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
-                                                        stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                         });
-                                                    // console.log('Running program and listening: ' +  res.imageName)
+                                                        program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
+                                                            stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
+                                                            });
+                                                        // console.log('Running program and listening: ' +  res.imageName)
 
-                                                    readStdio(program, messageJSON).then(()=> resolve())
-                                                    
+                                                        readStdio(program, messageJSON).then(()=> resolve())
+                                                        
+                                                    })
+
+                                                   
                                                     }
                                                     catch(err)
                                                     {
