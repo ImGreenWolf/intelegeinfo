@@ -150,13 +150,18 @@ app.post('/editor/startsession/:id', (req, res) => {
     }
 });
 app.post('/github/onpull', (req, res) => {
-    let sig = "sha1=" + crypto_1.default.createHmac('sha1', publicKeyPem);
-    const { commits } = req.body;
-    console.log(sig.toString());
-    console.log(commits);
-    if (req.headers['X-Hub-Signature-256'] == sig)
-        (0, child_process_1.exec)('cd ' + exports.rootDirName + ' && git pull');
-    res.status(200);
+    try {
+        let sig = "sha1=" + crypto_1.default.createHmac('sha1', publicKeyPem);
+        const { commits } = req.body;
+        console.log(sig.toString());
+        console.log(commits);
+        if (req.headers['X-Hub-Signature-256'] == sig)
+            (0, child_process_1.exec)('cd ' + exports.rootDirName + ' && git pull');
+    }
+    catch (err) {
+        console.error('pull error: ' + err);
+    }
+    res.status(200).send('ok');
 });
 app.get('/editor/tooltipHints', (req, res) => {
     res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'server', 'data', 'tooltips.json')).toString()));
