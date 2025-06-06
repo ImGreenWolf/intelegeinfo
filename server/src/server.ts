@@ -46,7 +46,7 @@ app.use(express.json());
 app.post('/github/onpull', (req, res) => {
     try {
         if(!req.body) throw "Empty request body.."
-        const signature = req.headers['X-Hub-Signature'] as string;
+        const signature = req.headers['x-hub-signature'] as string;
         if (!signature) {
             res.status(400).send('No signature');
             return;
