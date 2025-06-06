@@ -282,7 +282,7 @@ let compileProcess;
 //                      END                      //  
 //          GLOBAL  SERVER  VARIABLES       //
 const PORT = 3000;
-exports.server = app.listen(PORT, '0.0.0.0', () => );
+exports.server = app.listen(PORT, '0.0.0.0', () => onServerStart);
 exports.wss = new ws_1.default.Server({ server: exports.server, clientTracking: true, });
 exports.clients = new Map();
 // const sessions: Map<UUID, UUID[]> = new Map();
