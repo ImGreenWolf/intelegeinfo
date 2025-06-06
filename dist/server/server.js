@@ -281,13 +281,21 @@ exports.EditorMode = EditorMode;
 let compileProcess;
 //                      END                      //  
 //          GLOBAL  SERVER  VARIABLES       //
-exports.server = app.listen(3000, '0.0.0.0', () => console.log("Server running on port 3000"));
+const PORT = 3000;
+exports.server = app.listen(PORT, '0.0.0.0', () => );
 exports.wss = new ws_1.default.Server({ server: exports.server, clientTracking: true, });
 exports.clients = new Map();
 // const sessions: Map<UUID, UUID[]> = new Map();
 exports.runningProcesses = new Map();
 exports.sessionMap = new Map(); // SESSION ID / EDITOR OBJECT
 //                      END                      //  
+function onServerStart(err) {
+    if (err)
+        console.error("error: " + err);
+    else
+        console.log("Server running on port " + PORT);
+    cleanUp();
+}
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
 //     let redisClient = new Redis({
@@ -348,7 +356,7 @@ if (isShared) {
     });
     // clients will be stored locally.
 }
-async function cleanUp() {
+function cleanUp() {
     fs_1.default.readdir(path_1.default.join(exports.rootDirName, "cache"), (err, files) => {
         if (err) {
             console.error("Error reading cache directory:", err);
@@ -1055,6 +1063,7 @@ CMD [ "bash" ]
 -di \
 -m 256MB \
 --cpus="0.25" \
+--rm \
 ${buildTag} \
 bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);

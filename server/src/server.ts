@@ -357,7 +357,8 @@ let compileProcess: ChildProcess;
 
 
     //          GLOBAL  SERVER  VARIABLES       //
-       export const server = app.listen(3000, '0.0.0.0', () => console.log("Server running on port 3000"));
+              const PORT = 3000;
+       export const server = app.listen(PORT, '0.0.0.0', () => onServerStart);
        export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 
        export let clients: Map<UUID, WebSocket> = new Map();
@@ -368,7 +369,15 @@ let compileProcess: ChildProcess;
 
     //                      END                      //  
 
-           
+           function onServerStart(err)
+           {
+                if(err)
+                    console.error("error: "+err)
+                else
+                console.log("Server running on port " + PORT)
+
+                cleanUp()
+           }
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
  
@@ -445,9 +454,9 @@ if(isShared) {
 
 }
 
-cleanUp()
 
-async function cleanUp() {
+
+function cleanUp() {
     fs.readdir(path.join(rootDirName, "cache"), (err, files) => {
 
     if (err) {
@@ -1345,6 +1354,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 -di \
 -m 256MB \
 --cpus="0.25" \
+--rm \
 ${buildTag} \
 bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
