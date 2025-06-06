@@ -34,6 +34,32 @@ export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo'
 const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 import crypto from 'crypto';
 
+app.use((req, res, next) => {
+    console.log(`[${req.method}] ${req.originalUrl}`);
+    next();
+});
+
+app.post('/github/onpull/',  (req, res) => {
+    // try {
+    //     const signature = req.headers['x-hub-signature'] as string;
+    //     if (!signature) {
+    //         res.status(400).send('No signature');
+    //         return;
+    //     }
+    //     const hmac = crypto.createHmac('sha1', publicKeyPem);
+    //     hmac.update(req.body);
+    //     const digest = 'sha1=' + hmac.digest('hex');
+    //     const { commits } = JSON.parse(req.body.toString());
+    //     console.log(commits?.message);
+    //     console.log(commits);
+    //     if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
+    //         exec('cd ' + rootDirName + ' && git pull');
+    //     }
+    // } catch (err) {
+    //     console.error('pull error: ' + err);
+    // }
+    res.status(200).send('ok');
+});
 
 app.use(compression())
 app.use(express.json());
@@ -62,27 +88,7 @@ app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'))
 })
 
-app.post('/github/onpull',  (req, res) => {
-    // try {
-    //     const signature = req.headers['x-hub-signature'] as string;
-    //     if (!signature) {
-    //         res.status(400).send('No signature');
-    //         return;
-    //     }
-    //     const hmac = crypto.createHmac('sha1', publicKeyPem);
-    //     hmac.update(req.body);
-    //     const digest = 'sha1=' + hmac.digest('hex');
-    //     const { commits } = JSON.parse(req.body.toString());
-    //     console.log(commits?.message);
-    //     console.log(commits);
-    //     if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-    //         exec('cd ' + rootDirName + ' && git pull');
-    //     }
-    // } catch (err) {
-    //     console.error('pull error: ' + err);
-    // }
-    res.status(200).send('ok');
-});
+
 
 app.use(express.static("public"));
 

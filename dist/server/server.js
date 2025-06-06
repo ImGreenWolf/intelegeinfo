@@ -67,27 +67,11 @@ const guideCreator_1 = __importDefault(require("./guideCreator"));
 exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
 ;
-app.use(compression());
-app.use(express_1.default.json());
-// app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
-app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
-// app.use('dist',express.static(path.join(rootDirName,'dist')));
-app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, cookie_parser_1.default)());
-app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
-// app.get('/editor/codeEditor.js', (req, res) => {
-//     res.sendFile(path.join(rootDirName,'dist', 'public', 'codeEditor.js'))
-// })
-app.get('/editor/mode_cpp_custom.js', (req, res) => {
-    res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'mode_cpp_custom.js'));
+app.use((req, res, next) => {
+    console.log(`[${req.method}] ${req.originalUrl}`);
+    next();
 });
-app.get('/editor/cpp_worker.js', (req, res) => {
-    res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'cpp_worker.js'));
-});
-app.get('/editor/worker-base.js', (req, res) => {
-    res.sendFile(path_1.default.join(exports.rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
-});
-app.post('/github/onpull', (req, res) => {
+app.post('/github/onpull/', (req, res) => {
     // try {
     //     const signature = req.headers['x-hub-signature'] as string;
     //     if (!signature) {
@@ -107,6 +91,26 @@ app.post('/github/onpull', (req, res) => {
     //     console.error('pull error: ' + err);
     // }
     res.status(200).send('ok');
+});
+app.use(compression());
+app.use(express_1.default.json());
+// app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
+app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
+// app.use('dist',express.static(path.join(rootDirName,'dist')));
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cookie_parser_1.default)());
+app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
+// app.get('/editor/codeEditor.js', (req, res) => {
+//     res.sendFile(path.join(rootDirName,'dist', 'public', 'codeEditor.js'))
+// })
+app.get('/editor/mode_cpp_custom.js', (req, res) => {
+    res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'mode_cpp_custom.js'));
+});
+app.get('/editor/cpp_worker.js', (req, res) => {
+    res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'cpp_worker.js'));
+});
+app.get('/editor/worker-base.js', (req, res) => {
+    res.sendFile(path_1.default.join(exports.rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
 });
 app.use(express_1.default.static("public"));
 app.use("/guides", guideCreator_1.default);
