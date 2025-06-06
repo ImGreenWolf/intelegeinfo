@@ -596,10 +596,10 @@ exports.wss.on("connection", (ws, req) => {
                     detached: true,
                 });
                 compileProcess.stdout.on('data', data => {
-                    resolve(data.toString());
+                    reject(data.toString());
                 });
                 compileProcess.stderr.on('data', data => {
-                    reject(data.toString());
+                    resolve(data.toString());
                 });
                 compileProcess.on('close', (code) => {
                     if (code != 0)
