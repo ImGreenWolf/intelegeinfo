@@ -154,6 +154,7 @@ app.post('/github/onpull', (req, res) => {
         let sig = "sha1=" + crypto.createHmac('sha1', publicKeyPem)
     const { commits  } = req.body
     console.log(sig.toString())
+    console.log(commits.message)
     console.log(commits)
     if(req.headers['X-Hub-Signature-256'] == sig)
         exec('cd ' +rootDirName + ' && git pull')
