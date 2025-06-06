@@ -1811,8 +1811,7 @@ if(document.cookie.includes('session=') && !window.location.search.includes('sav
 }
 const ws = new WebSocket(WSUrl);
 
-addEventListener('DOMContentLoaded', () => {
-  
+
 
   ws.onclose = (ev) => {
   const serviceRestart = ev.code == 1006;
@@ -1874,6 +1873,7 @@ ws.onerror = (err) => {
   //  //   }
   // }, 500);
 };
+
 
 
 
