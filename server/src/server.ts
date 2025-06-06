@@ -34,12 +34,7 @@ export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo'
 const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
-// app.use((req, res, next) => {
-//     console.log(`[${req.method}] ${req.originalUrl}`);
-//     next();
-// });
 
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
 app.use(compression())
 app.use(express.json());
 
