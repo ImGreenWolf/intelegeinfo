@@ -348,22 +348,25 @@ if (isShared) {
     });
     // clients will be stored locally.
 }
-fs_1.default.readdir(path_1.default.join(exports.rootDirName, "cache"), (err, files) => {
-    if (err) {
-        console.error("Error reading cache directory:", err);
-        return;
-    }
-    files.forEach((file) => {
-        fs_1.default.rm(path_1.default.join(exports.rootDirName, "cache", file), { recursive: true, force: true }, (err) => {
-            if (err) {
-                console.error("Error deleting cache folder:", err);
-            }
-            else {
-                console.log("Deleted cache folder for client " + file);
-            }
+async function cleanUp() {
+    fs_1.default.readdir(path_1.default.join(exports.rootDirName, "cache"), (err, files) => {
+        if (err) {
+            console.error("Error reading cache directory:", err);
+            return;
+        }
+        files.forEach((file) => {
+            fs_1.default.rm(path_1.default.join(exports.rootDirName, "cache", file), { recursive: true, force: true }, (err) => {
+                if (err) {
+                    console.error("Error deleting cache folder:", err);
+                }
+                else {
+                    console.log("Deleted cache folder for client " + file);
+                }
+            });
         });
+        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)('docker rm $(docker ps --filter ancestor=ubuntu -q)'));
     });
-});
+}
 function getClientFilesPath(sessionId) {
     return path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
 }

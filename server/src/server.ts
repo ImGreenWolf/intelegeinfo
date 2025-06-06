@@ -445,11 +445,10 @@ if(isShared) {
 
 }
 
+cleanUp()
 
-
-
-
-fs.readdir(path.join(rootDirName, "cache"), (err, files) => {
+async function cleanUp() {
+    fs.readdir(path.join(rootDirName, "cache"), (err, files) => {
 
     if (err) {
         console.error("Error reading cache directory:", err);
@@ -465,7 +464,13 @@ fs.readdir(path.join(rootDirName, "cache"), (err, files) => {
             }
         });
     });
+
+    console.log("Removing previous sandbox containers: " + execSync('docker rm $(docker ps --filter ancestor=ubuntu -q)'))
 });
+
+}
+
+
 
     
 
