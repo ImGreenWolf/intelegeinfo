@@ -52,7 +52,7 @@ app.post('/github/onpull', urlencodedParser, (req, res) => {
             return;
         }
         const hmac = crypto.createHmac('sha1', publicKeyPem);
-        hmac.update(req.body);
+        hmac.update(req.body.toString());
         const digest = 'sha1=' + hmac.digest('hex');
         const { commits } = JSON.parse(req.body.toString());
         console.log(commits?.message);
