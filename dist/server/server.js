@@ -372,7 +372,7 @@ function cleanUp() {
                 }
             });
         });
-        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)('docker rm $(docker ps --filter ancestor=ubuntu -q)'));
+        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)('docker ps --filter ancestor=ubuntu -q | xargs docker rm ', { timeout: 5000 }));
     });
 }
 function getClientFilesPath(sessionId) {

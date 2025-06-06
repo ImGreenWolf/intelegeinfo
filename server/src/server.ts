@@ -473,7 +473,7 @@ function cleanUp() {
         });
     });
 
-    console.log("Removing previous sandbox containers: " + execSync('docker rm $(docker ps --filter ancestor=ubuntu -q)'))
+    console.log("Removing previous sandbox containers: " + execSync('docker ps --filter ancestor=ubuntu -q | xargs docker rm ', {timeout: 5000}))
 });
 
 }
