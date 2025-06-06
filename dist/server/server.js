@@ -280,15 +280,6 @@ exports.EditorMode = EditorMode;
 //          LOCAL  SERVER  VARIABLES       //
 let compileProcess;
 //                      END                      //  
-//          GLOBAL  SERVER  VARIABLES       //
-const PORT = 3000;
-exports.server = app.listen(PORT, '0.0.0.0', () => onServerStart);
-exports.wss = new ws_1.default.Server({ server: exports.server, clientTracking: true, });
-exports.clients = new Map();
-// const sessions: Map<UUID, UUID[]> = new Map();
-exports.runningProcesses = new Map();
-exports.sessionMap = new Map(); // SESSION ID / EDITOR OBJECT
-//                      END                      //  
 function onServerStart(err) {
     if (err)
         console.error("error: " + err);
@@ -296,6 +287,15 @@ function onServerStart(err) {
         console.log("Server running on port " + PORT);
     cleanUp();
 }
+//          GLOBAL  SERVER  VARIABLES       //
+const PORT = 3000;
+exports.server = app.listen(PORT, '0.0.0.0', onServerStart);
+exports.wss = new ws_1.default.Server({ server: exports.server, clientTracking: true, });
+exports.clients = new Map();
+// const sessions: Map<UUID, UUID[]> = new Map();
+exports.runningProcesses = new Map();
+exports.sessionMap = new Map(); // SESSION ID / EDITOR OBJECT
+//                      END                      //  
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
 //     let redisClient = new Redis({

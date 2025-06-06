@@ -353,31 +353,30 @@ export abstract class EditorMode {
 let compileProcess: ChildProcess;
 
     //                      END                      //  
+function onServerStart(err)
+{
+    if(err)
+        console.error("error: "+err)
+    else
+    console.log("Server running on port " + PORT)
 
+    cleanUp()
+}
 
+//          GLOBAL  SERVER  VARIABLES       //
+            const PORT = 3000;
+    export const server = app.listen(PORT, '0.0.0.0', onServerStart);
+    export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 
-    //          GLOBAL  SERVER  VARIABLES       //
-              const PORT = 3000;
-       export const server = app.listen(PORT, '0.0.0.0', () => onServerStart);
-       export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
+    export let clients: Map<UUID, WebSocket> = new Map();
+    // const sessions: Map<UUID, UUID[]> = new Map();
 
-       export let clients: Map<UUID, WebSocket> = new Map();
-        // const sessions: Map<UUID, UUID[]> = new Map();
+    export let runningProcesses: Map<UUID, ChildProcess> = new Map();
+    export let sessionMap: Map<UUID, EditorSession> = new Map<UUID, EditorSession>(); // SESSION ID / EDITOR OBJECT
 
-       export let runningProcesses: Map<UUID, ChildProcess> = new Map();
-       export let sessionMap: Map<UUID, EditorSession> = new Map<UUID, EditorSession>(); // SESSION ID / EDITOR OBJECT
+//                      END                      //  
 
-    //                      END                      //  
-
-           function onServerStart(err)
-           {
-                if(err)
-                    console.error("error: "+err)
-                else
-                console.log("Server running on port " + PORT)
-
-                cleanUp()
-           }
+           
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
  
