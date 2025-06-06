@@ -589,7 +589,7 @@ app.post("/compile", (req: express.Request<{}, {}, CompileRequestBody>, res: exp
 
     let currentbuildTag = '';
 
-wss.on("connection", (ws: WebSocket, req) => {
+wss.on("connection", async (ws: WebSocket, req) => {
     let gdbProcess: ChildProcess | undefined;
     let program: ChildProcess | undefined;
     let sessionId: UUID;
@@ -1417,7 +1417,7 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
 
 }
 
-function readStdio(program, messageJSON)
+async function readStdio(program, messageJSON)
     {
         return new Promise<void>((resolve, reject) => {
             

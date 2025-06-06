@@ -449,7 +449,7 @@ app.post("/compile", (req, res) => {
     });
 });
 let currentbuildTag = '';
-exports.wss.on("connection", (ws, req) => {
+exports.wss.on("connection", async (ws, req) => {
     let gdbProcess;
     let program;
     let sessionId;
@@ -1114,7 +1114,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 //   });
             });
         }
-        function readStdio(program, messageJSON) {
+        async function readStdio(program, messageJSON) {
             return new Promise((resolve, reject) => {
                 async function onClosedProgram(code, message, error) {
                     let notes = "";
