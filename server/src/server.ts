@@ -35,8 +35,17 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
 
+interface ResponseWRay extends IncomingMessage 
+{
+    rawBody: Buffer
+}
 app.use(compression())
-app.use(express.json());
+app.use(express.json({
+    verify: (req, res, buf) => {
+        (req as ResponseWRay).rawBody = buf; // Save raw body
+    }
+}));
+
 
 app.post('/github/onpull', (req, res) => {
     try {
@@ -47,9 +56,9 @@ app.post('/github/onpull', (req, res) => {
             return;
         }
         const hmac = crypto.createHmac('sha1', 'info');
-        hmac.update(req.body.toString());
+        hmac.update((req as unknown as ResponseWRay).rawBody);
         const digest = 'sha1=' + hmac.digest('hex');
-        const { commits } = req.body
+        const { commits } = req.body;
         console.log(commits[0].message);
         console.log(digest);
         if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {

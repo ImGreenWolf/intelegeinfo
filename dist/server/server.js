@@ -69,7 +69,11 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootD
 ;
 const crypto_1 = __importDefault(require("crypto"));
 app.use(compression());
-app.use(express_1.default.json());
+app.use(express_1.default.json({
+    verify: (req, res, buf) => {
+        req.rawBody = buf; // Save raw body
+    }
+}));
 app.post('/github/onpull', (req, res) => {
     try {
         if (!req.body)
@@ -80,7 +84,7 @@ app.post('/github/onpull', (req, res) => {
             return;
         }
         const hmac = crypto_1.default.createHmac('sha1', 'info');
-        hmac.update(req.body.toString());
+        hmac.update(req.rawBody);
         const digest = 'sha1=' + hmac.digest('hex');
         const { commits } = req.body;
         console.log(commits[0].message);
