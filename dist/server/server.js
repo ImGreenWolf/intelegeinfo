@@ -88,7 +88,7 @@ app.get('/editor/cpp_worker.js', (req, res) => {
 app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path_1.default.join(exports.rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
 });
-app.post('/github/onpull', express_1.default.raw({ type: '*/*' }), (req, res) => {
+app.use('/github/onpull', (req, res) => {
     try {
         const signature = req.headers['x-hub-signature'];
         if (!signature) {

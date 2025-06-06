@@ -62,7 +62,7 @@ app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'))
 })
 
-app.post('/github/onpull', express.raw({ type: '*/*' }), (req, res) => {
+app.post('/github/onpull',  (req, res) => {
     try {
         const signature = req.headers['x-hub-signature'] as string;
         if (!signature) {
