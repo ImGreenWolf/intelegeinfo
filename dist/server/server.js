@@ -1039,7 +1039,7 @@ exports.wss.on("connection", async (ws, req) => {
                             // 3. Build the Docker image
                             console.log(`Building Docker image: ${currentbuildTag}`);
                             (0, child_process_1.exec)(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, (err, stdout) => {
-                                if (err)
+                                if (!err)
                                     if (err.code != 0)
                                         resolve();
                                     else

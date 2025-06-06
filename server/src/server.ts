@@ -1326,7 +1326,7 @@ if(sessionContainer)
                 // 3. Build the Docker image
             console.log(`Building Docker image: ${currentbuildTag}`);
                 exec(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, (err, stdout) => {
-                    if(err)
+                    if(!err)
                         if(err.code!=0)
                             resolve()
                         else
