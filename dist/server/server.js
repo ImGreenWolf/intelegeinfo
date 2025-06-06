@@ -860,13 +860,9 @@ exports.wss.addListener('connection', async (ws, req) => {
         async function executeCommand(childProcess, command, sessionId) {
             return new Promise((resolve, reject) => {
                 let gdbBuffer = "";
-                console.log(command);
+                console.log("GDB Command to execute: " + command);
                 const onData = (data) => {
                     gdbBuffer += data.toString();
-                    // console.log(gdbBuffer);
-                    // if(gdbBuffer.startsWith('=')) {
-                    //     resolve();
-                    // }
                     // Check if the full response has arrived
                     if (gdbBuffer.includes("(gdb)")) {
                         // We have everything, remove listener
@@ -1712,11 +1708,11 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                 console.error('Invalid session while starting debug process');
                                             printClientConsoleDebug("started debugging process.");
                                             queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
-                                            gdbProcess.stdout.on('data', (derr) => {
-                                                console.log(derr.toString());
+                                            gdbProcess.stdout.on('data', (data) => {
+                                                console.log("GDB Data: " + data.toString());
                                             });
                                             gdbProcess.stderr.on('data', (derr) => {
-                                                console.error(derr.toString());
+                                                console.error("GDB Error: " + derr.toString());
                                             });
                                         });
                                         //     fs.accessSync(filePath)
@@ -1789,15 +1785,15 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                     console.error("GDB process not found for session " + sessionId);
                                             });
                                         });
-                                        try {
-                                            // gdbProcess.stdout?.on("data", (data) => {
-                                            //     console.log(data.toString())
-                                            // });
-                                            // getThisClientSession().process?.stdin?.write("-break-insert main\n-exec-run\n")
-                                        }
-                                        catch {
-                                            console.error(new Error('failed executing starting commands'));
-                                        }
+                                        // try {
+                                        //     // gdbProcess.stdout?.on("data", (data) => {
+                                        //     //     console.log(data.toString())
+                                        //     // });
+                                        //     // getThisClientSession().process?.stdin?.write("-break-insert main\n-exec-run\n")
+                                        // } catch 
+                                        // {
+                                        //     console.error(new Error('failed executing starting commands'))
+                                        // }
                                         // queueCommand(getProcessFromMap(sessionId) as ChildProcess,command, sessionId);// gdbProcess.stdin.write(message + "\n");
                                         // queueCommand(getProcessFromMap(sessionId) as ChildProcess,"break main", sessionId);// gdbProcess.stdin.write(message + "\n");
                                         // queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);

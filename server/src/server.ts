@@ -1103,21 +1103,9 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     async function executeCommand( childProcess: ChildProcess, command: string, sessionId: UUID): Promise<void> {
         return new Promise((resolve, reject) => {
             let gdbBuffer = "";
-            console.log(command)
+            console.log("GDB Command to execute: " + command)
             const onData = (data: Buffer) => {
                 gdbBuffer += data.toString();
-                // console.log(gdbBuffer);
-                
-                    
-
-                // if(gdbBuffer.startsWith('=')) {
-                //     resolve();
-                    
-                // }
-
-
-
-
                 // Check if the full response has arrived
                 if (gdbBuffer.includes("(gdb)")) {
                     // We have everything, remove listener
@@ -2142,12 +2130,12 @@ async function readStdio(program, messageJSON)
                                
                                     queueCommand(getProcessFromMap() as ChildProcess,'-break-insert 1\n', sessionId);
                                        
-                                    gdbProcess.stdout.on('data', (derr) => {
-                                        console.log(derr.toString())
+                                    gdbProcess.stdout.on('data', (data) => {
+                                        console.log("GDB Data: " + data.toString())
                                     })
 
                                     gdbProcess.stderr.on('data', (derr) => {
-                                        console.error(derr.toString())
+                                        console.error("GDB Error: " + derr.toString())
                                     }) 
 
                                 })
