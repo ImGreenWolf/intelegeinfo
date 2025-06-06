@@ -867,11 +867,7 @@ value {
   display: inline;
   margin: 0 !important;
 }
-.output-console-container .console-program-output {
-  word-spacing: 1ch;
-}
 .output-console-container .console-program-input {
-  word-spacing: 1ch;
   display: block;
   color: gray;
 }

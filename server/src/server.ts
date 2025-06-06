@@ -2267,83 +2267,81 @@ async function readStdio(program, messageJSON)
                                     });
                            
                             
-                        }
-                        
-                        else {
-                            if(mode=="debug")
-                            {
-                                queueCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId)
+                        } else if(mode=="debug")
+                        {
+                            queueCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId)
+                            
+                            // if(args.includes('console'))
+                            //     {   
+                            //         gdbProcess?.stdin?.write(command + "\n");
+                            //         console.log("executed console command " + command)
+                            //         gdbBuffer="";
                                 
-                                if(args.includes('console'))
-                                    {   
-                                        gdbProcess?.stdin?.write(command + "\n");
-                                        console.log("executed console command " + command)
-                                        gdbBuffer="";
-                                    
-                                        function onData()
-                                        {
-                                            // Use .on instead of .once, because GDB output can be split
-                                            gdbProcess?.stdout?.on("data", (data) => {
-                                                gdbBuffer += data.toString();
-                                                console.log(clientId + " " + gdbBuffer)
-                                                ws.send(JSON.stringify({
-                                                    error: false,
-                                                    input: false,
-                                                    type: WebSocketMessageType.Output,
-                                                    body: gdbBuffer,
-                                                    message: command.toString()
-                                                }));
-                                                if(data.toString().includes('(gdb)'))
-                                                    gdbProcess?.stdout?.off("data", onData)
-                                            });
-                                        }
-                                    
-                                     onData();
-                                        
-                                    } 
-                                else  queueCommand(getProcessFromMap() as ChildProcess,command,sessionId).then(() => {
-
-                                    console.log('COMMAND')
-                                }).catch(() => {
-                                    console.log('jj;jhvbgoujgfhvhg')
-                                })
-                                    
+                            //         function onData()
+                            //         {
+                            //             // Use .on instead of .once, because GDB output can be split
+                            //             gdbProcess?.stdout?.on("data", (data) => {
+                            //                 gdbBuffer += data.toString();
+                            //                 console.log(clientId + " " + gdbBuffer)
+                            //                 ws.send(JSON.stringify({
+                            //                     error: false,
+                            //                     input: false,
+                            //                     type: WebSocketMessageType.Output,
+                            //                     body: gdbBuffer,
+                            //                     message: command.toString()
+                            //                 }));
+                            //                 if(data.toString().includes('(gdb)'))
+                            //                     gdbProcess?.stdout?.off("data", onData)
+                            //             });
+                            //         }
                                 
+                            //      onData();
+                                    
+                            //     } 
+                            // else 
+                                queueCommand(getProcessFromMap() as ChildProcess,command,sessionId).then(() => {
 
-                            /*
+                                console.log('COMMAND')
+                            }).catch(() => {
+                                console.log('jj;jhvbgoujgfhvhg')
+                            })
+                                
+                            
 
-                                if (gdbProcess) {
-                                    gdbProcess.stdin.write(message + "\n");
+                        /*
 
-                                    // After next/continue, fetch local variables
-                                    if ((message.toString() === "next" || message.toString()  === "continue") && false) {
-                                        localsToWrite = true;
-                                        
-                                            gdbProcess.stdin.write("info locals\n");  // Fetch local variables after stepping
+                            if (gdbProcess) {
+                                gdbProcess.stdin.write(message + "\n");
 
-                                            // localsWritten = false;
-                        // Small delay to ensure execution completes
-                                    }
-                                }
-                                    */
-                            } else
-                            {
-                                if(program)
-                                {
-                                    if(program?.stdin?.writable)
-                                    {
-                                         program?.stdin?.write(command); //program.stdin.write(message + "\n");
-                                         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-                                    }
-                                    else
-                                        console.error("stdin isnt writeable")
-                                    // dataTimeout = setTimeout(() => {
-                                                                
-                                                            // }, 200);
-                                    // console.log("sent to program")
+                                // After next/continue, fetch local variables
+                                if ((message.toString() === "next" || message.toString()  === "continue") && false) {
+                                    localsToWrite = true;
+                                    
+                                        gdbProcess.stdin.write("info locals\n");  // Fetch local variables after stepping
+
+                                        // localsWritten = false;
+                    // Small delay to ensure execution completes
                                 }
                             }
+                                */
+                        } else
+                        {
+                            if(program)
+                            {
+                                if(program?.stdin?.writable)
+                                {
+                                        program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                }
+                                else
+                                    console.error("stdin isnt writeable")
+                                // dataTimeout = setTimeout(() => {
+                                                            
+                                                        // }, 200);
+                                // console.log("sent to program")
+                            }
                         }
+                    
                  
                     } catch(err)
                     {

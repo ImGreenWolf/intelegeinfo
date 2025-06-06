@@ -1019,13 +1019,13 @@ value
     .console-program-output
     {
         @extend .console-inline-message;
-        word-spacing: 1ch;
+        // word-spacing: 1ch;
         // text-align: start;
     }
      .console-program-input
     {
         @extend .console-inline-message;
-        word-spacing: 1ch;
+        // word-spacing: 1ch;
         display: block;
         color: gray;
         // text-align: end;
