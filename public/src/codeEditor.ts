@@ -1813,7 +1813,7 @@ const ws = new WebSocket(WSUrl);
 
 
 
-  ws.onclose = (ev) => {
+ws.onclose = (ev) => {
   const serviceRestart = ev.code == 1006;
   console.log(ev.code + " " + ev.reason)
   const socketStopped = document.createElement('div')
@@ -1966,7 +1966,7 @@ class TokenTooltip extends Tooltip {
 }
 
 
-    ws.onopen = (ev) => {
+  ws.addEventListener('open', (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
 
@@ -2003,7 +2003,7 @@ class TokenTooltip extends Tooltip {
   //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
   //  //   }
   // }, 500);
-};
+});
 
 
 

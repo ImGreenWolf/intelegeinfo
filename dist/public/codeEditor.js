@@ -1494,7 +1494,7 @@ class TokenTooltip extends Tooltip {
     }
     ;
 }
-ws.onopen = (ev) => {
+ws.addEventListener('open', (ev) => {
     const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
     //writeOutput(sessionId || "No session ID found in URL.");
     window.onbeforeunload = (ev => {
@@ -1521,7 +1521,7 @@ ws.onopen = (ev) => {
     //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
     //  //   }
     // }, 500);
-};
+});
 export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;
