@@ -62,9 +62,9 @@ app.post('/github/onpull', (req, res) => {
         console.log(commits[0].message);
         console.log(digest);
         if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = execSync('cd ' + rootDirName + ' && git pull https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git', {timeout: 2000, stdio: "ignore"});
-            res.status(200).send('pull succesful! data: ' + output.toString());
-            console.log('pulled! data: ' + output.toString() )
+            const output = execSync('cd ' + rootDirName + ' && git pull https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git', {timeout: 2000});
+            res.status(200).send('pull succesful! data: ' + output.toString() ? output.toString() : '');
+            console.log('pulled! data: ' + output.toString() ? output.toString() : '')
         } else {
             console.log('access forbidden...')
             res.status(401).send('access forbidden...');
