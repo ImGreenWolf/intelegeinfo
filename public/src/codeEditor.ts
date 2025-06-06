@@ -3395,7 +3395,7 @@ interface Lens {
             
           }
           const libraries = (tooltip.libraries[0] as lib[])
-          const completions = libraries.map(lib => ({
+          completions = libraries.map(lib => ({
             caption: prefix.length > 0 ? `${lib.name}>` : `<${lib.name}>`,
             value: prefix.length > 0 ?  `${lib.name}>` : `<${lib.name}>`,
             meta: "library",
