@@ -45,7 +45,7 @@ app.post('/github/onpull', (req, res) => {
     console.log(privateKey)
     console.log(publicKeyPem)
     if(req.headers['X-Hub-Signature-256'] == publicKeyPem)
-        exec('git pull')
+        exec('cd ' +rootDirName + ' && git pull')
 })
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
