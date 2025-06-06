@@ -62,7 +62,7 @@ app.post('/github/onpull', (req, res) => {
         console.log(commits[0].message);
         console.log(digest);
         if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = execSync('cd ' + rootDirName + ' && git stash && git pull https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git', {timeout: 2000});
+            const output = execSync('cd ' + rootDirName + ' && git pull https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git', {timeout: 2000});
             res.status(200).send('pull succesful! data: ' + output.toString() ? output.toString() : '');
             console.log('pulled! data: ' + output.toString() ? output.toString() : '')
         } else {
@@ -1092,9 +1092,10 @@ wss.on("connection", async (ws: WebSocket, req) => {
    }
 
     //  while(ws.OPEN)   
-   setTimeout(() => {
-       handshake(req)
-   }, 100);
+//    setTimeout(() => {
+//        handshake(req)
+//    }, 100);
+   handshake(req)
 
        
 
@@ -1290,58 +1291,47 @@ if(sessionContainer)
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
+if(!currentbuildTag)
+{
+  currentbuildTag = buildTag // Unique image tag to avoid collisions
+
+  // 1. Copy the executable to the temporary folder
+  // 2. Write the Dockerfile to the temp directory
+  const dockerfileContents =// `
+// FROM gcc:latest\n
+// COPY . /usr/src/
+// WORKDIR /usr/src/
+// RUN g++ -g -O0 "main.cpp" -o main\n
+// #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
+// \n
+// CMD ["./main"]
+`
+# Base image with GCC
+FROM gcc:bookworm
+
+# Set working directory inside container
+WORKDIR /app
+
+# Default command can be overridden
+CMD [ "bash" ]
+  `.trim();
+
+  fs.writeFileSync(dockerfilePath, dockerfileContents);
 
 
+    // 3. Build the Docker image
+  console.log(`Building Docker image: ${currentbuildTag}`);
+  try {
+    execSync(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+  } catch (error) {
+    console.error('Error building Docker image:', error);
+    return;
+  }
 
-  new Promise<void>((resolve,reject) => {
-    if(!currentbuildTag)
-        {
-        try {
-            
-            currentbuildTag = buildTag // Unique image tag to avoid collisions
+}
+else
+console.log('Skipping build stage.')
 
-            // 1. Copy the executable to the temporary folder
-            // 2. Write the Dockerfile to the temp directory
-            const dockerfileContents =// `
-            // FROM gcc:latest\n
-            // COPY . /usr/src/
-            // WORKDIR /usr/src/
-            // RUN g++ -g -O0 "main.cpp" -o main\n
-            // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-            // \n
-            // CMD ["./main"]
-            `
-            # Base image with GCC
-            FROM gcc:bookworm
-
-            # Set working directory inside container
-            WORKDIR /app
-
-            # Default command can be overridden
-            CMD [ "bash" ]
-            `.trim();
-
-            fs.writeFileSync(dockerfilePath, dockerfileContents);
-            
-                // 3. Build the Docker image
-            console.log(`Building Docker image: ${currentbuildTag}`);
-                exec(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, (err, stdout) => {
-                    if(!err)
-                        if(err.code!=0)
-                            resolve()
-                        else
-                            reject(err)
-                });
-            } catch (error) {
-                console.error('Error building Docker image:', error);
-                return;
-            }
-        }
-        else
-        console.log('Skipping build stage.')
-
-  }).then(() => {
-    
 //   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
 // //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
 // .on('close', ()=> {
@@ -1376,7 +1366,7 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
 
      childProcess?.on("spawn", () => {
         console.log("Docker container spawned")
-          spawn("docker", ["ps", "-a"], { stdio: "inherit" });
+        //   spawn("docker", ["ps", "-a"], { stdio: "inherit" });
         // try {
         //     readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: '+err))
         //     resolve(null)
@@ -1422,9 +1412,6 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
 //     }
 //   });
 
-  })
-  
-
  
 })
   
@@ -1454,8 +1441,8 @@ async function readStdio(program, messageJSON)
         clearTimeout(programTimeout)
         if(program)
         {
-        program.stdout.removeAllListeners()
-        program.stderr.removeAllListeners()
+            program.stdout.removeAllListeners()
+            program.stderr.removeAllListeners()
         }
 
         replicateFunction((clientWs) => {
@@ -1481,35 +1468,35 @@ async function readStdio(program, messageJSON)
 
     spawnPromise = new Promise<void>((resolve, reject) => {
     program?.on("spawn", () => {
-    console.log("Program spawned")
-    spawnDate = Date.now()
-    clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-    if( program.stdin && processInputBuffer)
-        if(program?.stdin?.writable)
-        program.stdin.write(processInputBuffer) // write buffer
-    dataTimeout = 
-    setTimeout(() => {
-        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-    }, 400);
-    resolve()
+        console.log("Program spawned")
+        spawnDate = Date.now()
+        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
+        if( program.stdin && processInputBuffer)
+            if(program?.stdin?.writable)
+            program.stdin.write(processInputBuffer) // write buffer
+        dataTimeout = 
+        setTimeout(() => {
+            clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+        }, 400);
+        resolve()
 
     })
 
     })
 
     program.stdout?.on("data", (data) => {
-    gdbBuffer += data.toString();
-    // replicateFunction((clientWs) => {
-    //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
-    // });
-    // gdbBuffer = "";
-    replicateFunction((clientWs) => {
-    clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+        gdbBuffer += data.toString();
+        // replicateFunction((clientWs) => {
+        //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
+        // });
+        // gdbBuffer = "";
+        replicateFunction((clientWs) => {
+        clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
     });
 
     clearTimeout(dataTimeout)
-    dataTimeout = setTimeout(() => {
-    clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+        dataTimeout = setTimeout(() => {
+        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
     }, 100);
 
     });
@@ -1522,28 +1509,28 @@ async function readStdio(program, messageJSON)
 
     program?.on("close", (code) => {
 
-    clearTimeout(dataTimeout);
-    switch(code)
-    {
-    case 0:
-    default:
-    onClosedProgram(code, "Program exited with code: " + code?.toString() || 0)
-    break;
-    case 136:
-    case 138:
-    onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Arithmetic devided by 0</a>", true)
-    break;
-    case 139:
-    onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Segmentation Fault</a>", true)
-    break;
-    case 3221225477:
-    onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
-    break;
-    }
+        clearTimeout(dataTimeout);
+        switch(code)
+        {
+            case 0:
+            default:
+            onClosedProgram(code, "Program exited with code: " + code?.toString() || 0)
+            break;
+            case 136:
+            case 138:
+            onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Arithmetic devided by 0</a>", true)
+            break;
+            case 139:
+            onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Segmentation Fault</a>", true)
+            break;
+            case 3221225477:
+            onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
+            break;
+        }
 
-    gdbBuffer = "";
-    onClosedProcess()
-    resolve()
+        gdbBuffer = "";
+        onClosedProcess()
+        resolve()
     
 
         })
@@ -1946,20 +1933,18 @@ async function readStdio(program, messageJSON)
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                     });
 
-                                                    exec(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`, () => {
-                                                         replicateFunction((clientWs) => {
+                                                    execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`)
+
+                                                    replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
+                                                    });
+                                                    program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
+                                                        stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                         });
-                                                        program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
-                                                            stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
-                                                            });
-                                                        // console.log('Running program and listening: ' +  res.imageName)
+                                                    // console.log('Running program and listening: ' +  res.imageName)
 
-                                                        readStdio(program, messageJSON).then(()=> resolve())
-                                                        
-                                                    })
-
-                                                   
+                                                    readStdio(program, messageJSON).then(()=> resolve())
+                                                    
                                                     }
                                                     catch(err)
                                                     {
