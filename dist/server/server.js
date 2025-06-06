@@ -68,13 +68,15 @@ exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\inteleg
 const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
 ;
 const crypto_1 = __importDefault(require("crypto"));
+const body_parser_1 = __importDefault(require("body-parser"));
 // app.use((req, res, next) => {
 //     console.log(`[${req.method}] ${req.originalUrl}`);
 //     next();
 // });
+var urlencodedParser = body_parser_1.default.urlencoded({ extended: false });
 app.use(compression());
 app.use(express_1.default.json());
-app.post('/github/onpull', (req, res) => {
+app.post('/github/onpull', urlencodedParser, (req, res) => {
     try {
         if (!req.body)
             throw "Empty request body..";
