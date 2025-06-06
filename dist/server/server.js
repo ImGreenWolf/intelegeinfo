@@ -76,11 +76,11 @@ const body_parser_1 = __importDefault(require("body-parser"));
 var urlencodedParser = body_parser_1.default.urlencoded({ extended: false });
 app.use(compression());
 app.use(express_1.default.json());
-app.post('/github/onpull', urlencodedParser, (req, res) => {
+app.post('/github/onpull', (req, res) => {
     try {
         if (!req.body)
             throw "Empty request body..";
-        const signature = req.headers['x-hub-signature'];
+        const signature = req.headers['X-Hub-Signature'];
         if (!signature) {
             res.status(400).send('No signature');
             return;
@@ -89,14 +89,17 @@ app.post('/github/onpull', urlencodedParser, (req, res) => {
         hmac.update(req.body.toString());
         const digest = 'sha1=' + hmac.digest('hex');
         const { commits } = req.body;
-        console.log(commits?.message);
-        console.log(commits);
+        console.log(commits[0].message);
+        console.log(digest);
         if (crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
             const output = (0, child_process_2.execSync)('cd ' + exports.rootDirName + ' && git pull');
             res.status(200).send('pull succesful! data: ' + output.toString());
+            console.log('pulled!');
         }
-        else
+        else {
+            console.log('access forbidden...');
             res.status(401).send('access forbidden...');
+        }
     }
     catch (err) {
         console.error('pull error: ' + err);
