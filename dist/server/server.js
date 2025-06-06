@@ -1030,7 +1030,10 @@ FROM gcc:bookworm
 
 # Set working directory inside container
 WORKDIR /app
-RUN sudo apt-get install gdb
+RUN apt-get update && \
+    apt-get install -y gdb && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 # Default command can be overridden
 CMD [ "bash" ]
   `.trim();
