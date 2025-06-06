@@ -1811,29 +1811,6 @@ if(document.cookie.includes('session=') && !window.location.search.includes('sav
 }
 const ws = new WebSocket(WSUrl);
 
-
-
-ws.onclose = (ev) => {
-  const serviceRestart = ev.code == 1006;
-  console.log(ev.code + " " + ev.reason)
-  const socketStopped = document.createElement('div')
-  socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error')
-  const socketText = document.createElement('p')
-  socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
-  socketStopped.appendChild(socketText)
-  document.getElementById('editor')?.appendChild(socketStopped)
-  if(serviceRestart)
-    setTimeout(() => {
-      window.location.reload()
-    }, 2000);
-}
-
-
-
-ws.onerror = (err) => {
-  displayMessagePopup("WEBSOCKER ERROR: " + err)
-}
-
 const tooltip = (await (await fetch('/editor/tooltipHints')).json())
 class TokenTooltip extends Tooltip {
     constructor(editor) {
@@ -1970,7 +1947,7 @@ class TokenTooltip extends Tooltip {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
 
-  
+  displayMessagePopup(sessionId)
   window.onbeforeunload = (ev => {
     
     if(modifiedFile)
@@ -1989,21 +1966,31 @@ class TokenTooltip extends Tooltip {
 
   const tooltip = new TokenTooltip(editor);
 
-
- 
-
-  // Add the dynamic marker
-
-  // setInterval(() => {
-  //     const code = editor.getValue();
-  //     //console.log(delta);
-  //     // if(blockChange) blockChange = false;
-  //     // else {
-  //     // blockChange = true;
-  //     ws.send(JSON.stringify({ body: code, type: WebSocketMessageType.CodeChange })); // Send code to server on change
-  //  //   }
-  // }, 500);
 });
+
+
+ws.onclose = (ev) => {
+  const serviceRestart = ev.code == 1006;
+  console.log(ev.code + " " + ev.reason)
+  const socketStopped = document.createElement('div')
+  socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error')
+  const socketText = document.createElement('p')
+  socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
+  socketStopped.appendChild(socketText)
+  document.getElementById('editor')?.appendChild(socketStopped)
+  if(serviceRestart)
+    setTimeout(() => {
+      window.location.reload()
+    }, 2000);
+}
+
+
+
+ws.onerror = (err) => {
+  displayMessagePopup("WEBSOCKER ERROR: " + err)
+}
+
+
 
 
 
