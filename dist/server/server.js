@@ -295,6 +295,7 @@ exports.clients = new Map();
 // const sessions: Map<UUID, UUID[]> = new Map();
 exports.runningProcesses = new Map();
 exports.sessionMap = new Map(); // SESSION ID / EDITOR OBJECT
+const buildTag = `cpp-image`;
 //                      END                      //  
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
@@ -372,7 +373,7 @@ function cleanUp() {
                 }
             });
         });
-        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)('docker ps --filter ancestor=ubuntu -q | xargs docker rm ', { timeout: 5000 }));
+        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps --filter ancestor=${buildTag} -q |  xargs --no-run-if-empty  docker rm `, { timeout: 5000 }));
     });
 }
 function getClientFilesPath(sessionId) {
@@ -447,7 +448,7 @@ app.post("/compile", (req, res) => {
         res.json(err);
     });
 });
-let buildTag = '';
+let currentbuildTag = '';
 exports.wss.on("connection", (ws, req) => {
     let gdbProcess;
     let program;
@@ -1009,8 +1010,8 @@ exports.wss.on("connection", (ws, req) => {
                 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                 const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
                 const containerExePath = `${exeName}`;
-                if (!buildTag) {
-                    buildTag = `cpp-image`; // Unique image tag to avoid collisions
+                if (!currentbuildTag) {
+                    currentbuildTag = buildTag; // Unique image tag to avoid collisions
                     // 1. Copy the executable to the temporary folder
                     // 2. Write the Dockerfile to the temp directory
                     const dockerfileContents = // `
@@ -1034,9 +1035,9 @@ CMD [ "bash" ]
   `.trim();
                     fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
                     // 3. Build the Docker image
-                    console.log(`Building Docker image: ${buildTag}`);
+                    console.log(`Building Docker image: ${currentbuildTag}`);
                     try {
-                        (0, child_process_2.execSync)(`docker build -t ${buildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+                        (0, child_process_2.execSync)(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
                     }
                     catch (error) {
                         console.error('Error building Docker image:', error);
@@ -1064,7 +1065,7 @@ CMD [ "bash" ]
 -m 256MB \
 --cpus="0.25" \
 --rm \
-${buildTag} \
+${currentbuildTag} \
 bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                 console.log(runCommand);

@@ -373,7 +373,7 @@ function onServerStart(err)
 
     export let runningProcesses: Map<UUID, ChildProcess> = new Map();
     export let sessionMap: Map<UUID, EditorSession> = new Map<UUID, EditorSession>(); // SESSION ID / EDITOR OBJECT
-
+    const buildTag =`cpp-image`;
 //                      END                      //  
 
            
@@ -473,7 +473,7 @@ function cleanUp() {
         });
     });
 
-    console.log("Removing previous sandbox containers: " + execSync('docker ps --filter ancestor=ubuntu -q | xargs docker rm ', {timeout: 5000}))
+    console.log("Removing previous sandbox containers: " + execSync(`docker ps --filter ancestor=${buildTag} -q |  xargs --no-run-if-empty docker rm `, {timeout: 5000}))
 });
 
 }
@@ -587,7 +587,7 @@ app.post("/compile", (req: express.Request<{}, {}, CompileRequestBody>, res: exp
 });
 
 
-    let buildTag = '';
+    let currentbuildTag = '';
 
 wss.on("connection", (ws: WebSocket, req) => {
     let gdbProcess: ChildProcess | undefined;
@@ -1290,9 +1290,9 @@ if(sessionContainer)
   const dockerfilePath = path.join(cacheFolderPath, 'Dockerfile');
   const containerExePath = `${exeName}`;
  
-if(!buildTag)
+if(!currentbuildTag)
 {
-  buildTag = `cpp-image`; // Unique image tag to avoid collisions
+  currentbuildTag = buildTag // Unique image tag to avoid collisions
 
   // 1. Copy the executable to the temporary folder
   // 2. Write the Dockerfile to the temp directory
@@ -1319,9 +1319,9 @@ CMD [ "bash" ]
 
 
     // 3. Build the Docker image
-  console.log(`Building Docker image: ${buildTag}`);
+  console.log(`Building Docker image: ${currentbuildTag}`);
   try {
-    execSync(`docker build -t ${buildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+    execSync(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
   } catch (error) {
     console.error('Error building Docker image:', error);
     return;
@@ -1354,7 +1354,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 -m 256MB \
 --cpus="0.25" \
 --rm \
-${buildTag} \
+${currentbuildTag} \
 bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
   console.log(runCommand)
