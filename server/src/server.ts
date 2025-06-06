@@ -62,7 +62,7 @@ app.post('/github/onpull', (req, res) => {
         console.log(commits[0].message);
         console.log(digest);
         if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = execSync('cd ' + rootDirName + ' && git pull');
+            const output = execSync('cd ' + rootDirName + ' && git pull https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git');
             res.status(200).send('pull succesful! data: ' + output.toString());
             console.log('pulled!')
         } else {
