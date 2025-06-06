@@ -32,7 +32,7 @@ import GuideCreator from "./guideCreator"
 import { privateKey } from "./login.js";
 export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
 const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
-
+import crypto from 'crypto';
 
 
 app.use(compression())
@@ -41,12 +41,7 @@ app.use(express.json());
 
 app.use('/client/scripts',express.static(path.join('dist', 'public')));
 // app.use('dist',express.static(path.join(rootDirName,'dist')));
-app.post('/github/onpull', (req, res) => {
-    console.log(privateKey)
-    console.log(publicKeyPem)
-    if(req.headers['X-Hub-Signature-256'] == publicKeyPem)
-        exec('cd ' +rootDirName + ' && git pull')
-})
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'public', 'codeEditor.js')))
@@ -153,6 +148,13 @@ app.post('/editor/startsession/:id', (req, res) => {
     }
         
     
+})
+app.post('/github/onpull', (req, res) => {
+    let sig = "sha1=" + crypto.createHmac('sha1', publicKeyPem)
+    console.log(sig.toString())
+    if(req.headers['X-Hub-Signature-256'] == sig)
+        exec('cd ' +rootDirName + ' && git pull')
+    res.status(200)
 })
 
 app.get('/editor/tooltipHints', (req, res) => {
