@@ -38,8 +38,8 @@ app.use((req, res, next) => {
     console.log(`[${req.method}] ${req.originalUrl}`);
     next();
 });
-
-app.post('/github/onpull/',  (req, res) => {
+console.log('skibidi')
+app.post('/github/onpull',  (req, res) => {
     // try {
     //     const signature = req.headers['x-hub-signature'] as string;
     //     if (!signature) {
