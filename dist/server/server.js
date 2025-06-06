@@ -1850,7 +1850,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                         }
                                         else
                                             queueCommand(getProcessFromMap(), command, sessionId).then(() => {
-                                                // console.log('jjjjjjjjjjjjjjjjjjjjjj')
+                                                console.log('COMMAND');
                                             }).catch(() => {
                                                 console.log('jj;jhvbgoujgfhvhg');
                                             });

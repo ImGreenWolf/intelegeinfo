@@ -2303,7 +2303,7 @@ async function readStdio(program, messageJSON)
                                     } 
                                 else  queueCommand(getProcessFromMap() as ChildProcess,command,sessionId).then(() => {
 
-                                    // console.log('jjjjjjjjjjjjjjjjjjjjjj')
+                                    console.log('COMMAND')
                                 }).catch(() => {
                                     console.log('jj;jhvbgoujgfhvhg')
                                 })
