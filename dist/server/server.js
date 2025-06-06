@@ -151,7 +151,9 @@ app.post('/editor/startsession/:id', (req, res) => {
 });
 app.post('/github/onpull', (req, res) => {
     let sig = "sha1=" + crypto_1.default.createHmac('sha1', publicKeyPem);
+    const { commits } = req.body;
     console.log(sig.toString());
+    console.log(commits);
     if (req.headers['X-Hub-Signature-256'] == sig)
         (0, child_process_1.exec)('cd ' + exports.rootDirName + ' && git pull');
     res.status(200);
