@@ -67,7 +67,6 @@ const guideCreator_1 = __importDefault(require("./guideCreator"));
 exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
 ;
-const crypto_1 = __importDefault(require("crypto"));
 app.use(compression());
 app.use(express_1.default.json());
 // app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
@@ -89,25 +88,24 @@ app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path_1.default.join(exports.rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
 });
 app.post('/github/onpull', (req, res) => {
-    try {
-        const signature = req.headers['x-hub-signature'];
-        if (!signature) {
-            res.status(400).send('No signature');
-            return;
-        }
-        const hmac = crypto_1.default.createHmac('sha1', publicKeyPem);
-        hmac.update(req.body);
-        const digest = 'sha1=' + hmac.digest('hex');
-        const { commits } = JSON.parse(req.body.toString());
-        console.log(commits?.message);
-        console.log(commits);
-        if (crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            (0, child_process_1.exec)('cd ' + exports.rootDirName + ' && git pull');
-        }
-    }
-    catch (err) {
-        console.error('pull error: ' + err);
-    }
+    // try {
+    //     const signature = req.headers['x-hub-signature'] as string;
+    //     if (!signature) {
+    //         res.status(400).send('No signature');
+    //         return;
+    //     }
+    //     const hmac = crypto.createHmac('sha1', publicKeyPem);
+    //     hmac.update(req.body);
+    //     const digest = 'sha1=' + hmac.digest('hex');
+    //     const { commits } = JSON.parse(req.body.toString());
+    //     console.log(commits?.message);
+    //     console.log(commits);
+    //     if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
+    //         exec('cd ' + rootDirName + ' && git pull');
+    //     }
+    // } catch (err) {
+    //     console.error('pull error: ' + err);
+    // }
     res.status(200).send('ok');
 });
 app.use(express_1.default.static("public"));
