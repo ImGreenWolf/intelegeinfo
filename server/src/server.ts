@@ -2115,7 +2115,7 @@ async function readStdio(program, messageJSON)
                             if(!getProcessFromMap()) {
                                 buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
                                                
-                                                                   mode="debug"; //set mode to debug
+                                mode="debug"; //set mode to debug
                                 gdbProcess = spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main.exe'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
                                 addProcessToMap(sessionId, gdbProcess);
                                 
