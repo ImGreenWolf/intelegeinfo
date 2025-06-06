@@ -991,7 +991,7 @@ exports.wss.on("connection", (ws, req) => {
          * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
          * @returns The child process running the Docker container
          */
-        function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, sessionId) {
+        async function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, sessionId) {
             return new Promise((resolve, reject) => {
                 const exeFolder = path_1.default.dirname(cppExecutablePath); // Folder containing .exe
                 const exeName = path_1.default.basename(cppExecutablePath); // .exe filename
