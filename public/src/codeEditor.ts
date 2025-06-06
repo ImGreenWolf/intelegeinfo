@@ -1809,7 +1809,7 @@ if(document.cookie.includes('session=') && !window.location.search.includes('sav
       document.cookie = 'session=';
 
 }
-const ws = new WebSocket(WSUrl);
+
 
 const tooltip = (await (await fetch('/editor/tooltipHints')).json())
 class TokenTooltip extends Tooltip {
@@ -1942,7 +1942,7 @@ class TokenTooltip extends Tooltip {
 
 }
 
-
+  const ws = new WebSocket(WSUrl);
   ws.addEventListener('open', (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");

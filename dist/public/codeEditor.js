@@ -1363,7 +1363,6 @@ if (document.cookie.includes('session=') && !window.location.search.includes('sa
     if (!window.confirm('You have a previous unsaved session, would you like to recover it?'))
         document.cookie = 'session=';
 }
-const ws = new WebSocket(WSUrl);
 const tooltip = (await (await fetch('/editor/tooltipHints')).json());
 class TokenTooltip extends Tooltip {
     constructor(editor) {
@@ -1477,6 +1476,7 @@ class TokenTooltip extends Tooltip {
     }
     ;
 }
+const ws = new WebSocket(WSUrl);
 ws.addEventListener('open', (ev) => {
     const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
     //writeOutput(sessionId || "No session ID found in URL.");

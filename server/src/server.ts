@@ -1094,7 +1094,7 @@ wss.on("connection", async (ws: WebSocket, req) => {
     //  while(ws.OPEN)   
    setTimeout(() => {
        handshake(req)
-   }, 100);
+   }, 300);
 //    handshake(req)
 
        
