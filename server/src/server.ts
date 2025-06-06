@@ -1092,10 +1092,10 @@ wss.on("connection", async (ws: WebSocket, req) => {
    }
 
     //  while(ws.OPEN)   
-//    setTimeout(() => {
-//        handshake(req)
-//    }, 100);
-   handshake(req)
+   setTimeout(() => {
+       handshake(req)
+   }, 100);
+//    handshake(req)
 
        
 
