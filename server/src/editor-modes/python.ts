@@ -58,10 +58,18 @@ CMD bash `
         '--web', path.join(rootDirName, 'vnc', 'noVNC'),
         '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
         ]);
-        console.log(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`)
         setTimeout(() => {
-            console.log(fs.readFileSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`).toString())
-        }, 1000);
+            try {
+                fs.accessSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`)
+            }catch(err)
+            {
+                        console.log("Cant acesss socket: " + err)
+            }
+        }, 4000);
+
+        // setTimeout(() => {
+        //     console.log(fs.readFileSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`).toString())
+        // }, 1000);
         wsProxy.stdout.on('data', (data) => console.log(data.toString()));
     }
 
