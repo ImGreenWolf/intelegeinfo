@@ -21,8 +21,6 @@ class Python extends EditorMode {
 RUN apt-get update && apt-get install -y \
     xvfb x11vnc fluxbox python3-tk wget && apt-get clean
 
-# Install your Python GUI
-COPY gui_app.py .
 
 CMD bash -c "\
     Xvfb :1 -screen 0 1024x768x16 & \
