@@ -49,6 +49,7 @@ app.use(express.json({
 
 app.post('/github/onpull', (req, res) => {
     try {
+        
         if(!req.body) throw "Empty request body.."
         const signature = req.headers['x-hub-signature'] as string;
         if (!signature) {
@@ -62,7 +63,7 @@ app.post('/github/onpull', (req, res) => {
         console.log(commits[0].message);
         console.log(digest);
         if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = execSync('cd ' + rootDirName + ' && git stash && git pull https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git', {timeout: 2000});
+            const output = execSync('cd ' + rootDirName + ' && git fetch https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git && git reset --hard https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git/main', {timeout: 2000});
             res.status(200).send('pull succesful! data: ' + output.toString() ? output.toString() : '');
             console.log('pulled! data: ' + output.toString() ? output.toString() : '')
         } else {
