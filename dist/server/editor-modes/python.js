@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
 const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
+const path_1 = __importDefault(require("path"));
+const server_1 = require("../server");
 class Python extends BaseEditorMode_1.default {
     name = 'Python';
     dockerSafeTag = 'py';
@@ -44,6 +46,7 @@ CMD bash `;
     onSpawn(sessionObj) {
         // Start websockify
         const wsProxy = (0, child_process_1.spawn)('websockify', [
+            '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
             '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
         ]);
         wsProxy.stdout.on('data', (data) => console.log(data.toString()));

@@ -1,5 +1,7 @@
 import { ChildProcess, execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
+import path from "path";
+import { rootDirName } from "../server";
 
 class Python extends EditorMode {
 
@@ -53,6 +55,7 @@ CMD bash `
 
         // Start websockify
         const wsProxy = spawn('websockify', [
+        '--web', path.join(rootDirName, 'vnc', 'noVNC'),
         '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
         ]);
 
