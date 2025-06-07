@@ -1334,7 +1334,7 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
     childProcess.stdout.on('data', data => {
         console.log(data.toString())
                 setTimeout(() => {
-        clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer)
+            clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
     }, 500);
     })

@@ -2564,7 +2564,7 @@ const customCompleter = {
 ace.require("ace/ext/language_tools").addCompleter(customCompleter);
 export function displaynoVDC() {
     const frame = document.createElement('iframe');
-    frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html';
+    frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html?bell=true&quality=5&path=novnc/websockify?token=' + wsSessionId;
     frame.id = 'noVDC';
     document.body.appendChild(frame);
 }

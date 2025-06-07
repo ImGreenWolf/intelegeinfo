@@ -1,11 +1,12 @@
 import EditorMode from "./BaseEditorMode";
+import { EditorSession } from "../types";
 declare class Python extends EditorMode {
     name: string;
     dockerSafeTag: string;
     extension: string[];
     isInterpreter: boolean;
     dockerFile: string;
-    onBuild(res: any): void;
+    onBuild(res: any, clientSession: EditorSession): void;
     execute(res: any): Promise<import("child_process").ChildProcessWithoutNullStreams>;
     compile(): void;
     onSpawn(sessionObj: any): void;

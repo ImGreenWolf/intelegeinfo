@@ -3,6 +3,7 @@ import EditorMode from "./BaseEditorMode";
 import path from "path";
 import { rootDirName } from "../server";
 import * as fs from 'fs'
+import { EditorSession } from "../types";
 class Python extends EditorMode {
 
     name = 'Python'
@@ -34,7 +35,7 @@ CMD bash `
 
 
 
-onBuild(res) {
+onBuild(res, clientSession: EditorSession) {
 
     const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Use the mounted vnc directory (relative to /app workdir)
@@ -77,6 +78,13 @@ onBuild(res) {
 `], {
     stdio: 'pipe'
 });
+
+proc.stdout.on('data', (data: string) => {
+    console.log("skmskjsjkjsjkjjskjsh: " + data.toString())
+    const port = data.toString().split('PORT=')[1];
+    fs.appendFileSync(path.join('tmp', 'tokens.txt'), `${clientSession.sessionId}: 127.0.0.1:${port}`)
+})
+
 }
 
     async execute(res) {
@@ -101,7 +109,12 @@ onBuild(res) {
             // Start websockify
         const wsProxy = spawn('websockify', [
         '--web', path.join(rootDirName, 'vnc', 'noVNC'),
-        '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
+        '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, 
+        '    --token-plugin=TokenFile',
+        '--token-source=',path.join('tmp', 'tokens.txt'),
+        '8080'
+        
+        
         ], {stdio: 'pipe'});
 
         wsProxy.stdout.on('data', (data) => {

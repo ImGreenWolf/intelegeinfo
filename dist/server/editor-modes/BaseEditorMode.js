@@ -6,7 +6,7 @@ class EditorMode {
     onSpawn(sessionObj) {
         return;
     }
-    onBuild(res) {
+    onBuild(res, clientSession) {
     }
     constructor() {
     }

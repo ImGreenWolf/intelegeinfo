@@ -15,7 +15,7 @@ abstract class EditorMode {
     {
         return;
     }
-    onBuild(res)
+    onBuild(res, clientSession: EditorSession)
     {
 
     }

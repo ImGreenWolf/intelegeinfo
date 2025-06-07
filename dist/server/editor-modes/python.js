@@ -66,7 +66,7 @@ CMD bash `;
     //     export DISPLAY=:1 && fluxbox & \
     //     python3 gui_app.py & \
     //     x11vnc -display :1 -rfbport 5900 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim()
-    onBuild(res) {
+    onBuild(res, clientSession) {
         const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Use the mounted vnc directory (relative to /app workdir)
   VNC_SOCK="vnc/vnc.sock"
@@ -108,6 +108,11 @@ CMD bash `;
 `], {
             stdio: 'pipe'
         });
+        proc.stdout.on('data', (data) => {
+            console.log("skmskjsjkjsjkjjskjsh: " + data.toString());
+            const port = data.toString().split('PORT=')[1];
+            fs.appendFileSync(path_1.default.join('tmp', 'tokens.txt'), `${clientSession.sessionId}: 127.0.0.1:${port}`);
+        });
     }
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
@@ -124,7 +129,10 @@ CMD bash `;
             // Start websockify
             const wsProxy = (0, child_process_1.spawn)('websockify', [
                 '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
-                '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
+                '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`,
+                '    --token-plugin=TokenFile',
+                '--token-source=', path_1.default.join('tmp', 'tokens.txt'),
+                '8080'
             ], { stdio: 'pipe' });
             wsProxy.stdout.on('data', (data) => {
                 console.log('[ws stdout]', data.toString());
