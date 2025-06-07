@@ -1042,7 +1042,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 --cpus="0.25" \
 --rm \
 ${clientSession.currentbuildTag} \
-bash`.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
+bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                 console.log(runCommand);
                 // Return the child process for external handling
@@ -1970,7 +1970,7 @@ bash`.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
     });
 });
 process.on('exit', () => {
-    console.log('exiting');
+    console.log('Server is exiting...');
     exports.wss.clients.forEach(client => {
         client.close(1012, 'server is being shut down');
     });

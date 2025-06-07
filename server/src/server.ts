@@ -1316,7 +1316,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 --cpus="0.25" \
 --rm \
 ${clientSession.currentbuildTag} \
-bash`.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
+bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
   console.log(runCommand)
 
@@ -2448,7 +2448,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 })
 
 process.on('exit', () => {
-    console.log('exiting')
+    console.log('Server is exiting...')
     wss.clients.forEach(client => {
         client.close(1012, 'server is being shut down')
     });
