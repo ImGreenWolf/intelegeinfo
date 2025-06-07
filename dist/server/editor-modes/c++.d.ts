@@ -1,4 +1,4 @@
-import { EditorMode } from './';
+import EditorMode from "./BaseEditorMode";
 declare class CppMode extends EditorMode {
     name: string;
     extension: string[];
