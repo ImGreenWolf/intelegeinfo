@@ -70,7 +70,7 @@ const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, '
   ls -la vnc/
   
   echo "[INFO] Starting x11vnc..."
-  x11vnc -display :1 -rfbunixpath "\$VNC_SOCK" -nopw -forever -shared &
+  x11vnc -display :1 -unixsock "\$VNC_SOCK" -nopw -forever -shared &
   X11VNC_PID=$!
   
   # Wait for socket creation
