@@ -34,19 +34,9 @@ CMD bash `
 
 
 
+onBuild(res) {
 
-
-    async execute(res) {
-        //  Xvfb :1 -screen 0 1024x768x16
-        //   export DISPLAY=:1
-        // return spawn('docker', ['exec', "-i", res.imageName, "sh","-c",
-        //      "Xvfb :1 -screen 0 1024x768x16 && sleep 1 && export DISPLAY=:1 && python clientFiles/" + res.fileName +
-        //       " & x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared && echo 'started'"], {
-        //     stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
-        //     env: {DISPLAY: ':1'}
-        // });
-
-const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
+    const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Use the mounted vnc directory (relative to /app workdir)
   VNC_SOCK="vnc/vnc.sock"
 
@@ -67,7 +57,7 @@ const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, '
   
   # Wait for socket creation
 
-  for i in \$(seq 1 30); do
+  for i in \$(seq 1 15); do
     if [ -S "\$VNC_SOCK" ]; then
 
       break
@@ -83,23 +73,20 @@ const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, '
   
   python clientFiles/${res.fileName} &
   PYTHON_PID=$!
-
+  sleep 60
 `], {
     stdio: 'pipe'
 });
+}
 
-proc.stdout.on('data', (data) => {
-  console.log('[stdout]', data.toString());
-});
+    async execute(res) {
+        //  Xvfb :1 -screen 0 1024x768x16
+        //   export DISPLAY=:1
+        return spawn('docker', ['exec', "-i", res.imageName, "sh","-c","python clientFiles/" + res.fileName], {
+            stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
+        });
 
-proc.stderr.on('data', (data) => {
-  console.error('[stderr]', data.toString());
-});
-
-proc.on('exit', (code) => {
-  console.log(`[exit] Process exited with code ${code}`);
-});
-        return proc;         
+       
     }
     compile() {
         return;

@@ -6,6 +6,8 @@ class EditorMode {
     onSpawn(sessionObj) {
         return;
     }
+    onBuild(res) {
+    }
     constructor() {
     }
 }

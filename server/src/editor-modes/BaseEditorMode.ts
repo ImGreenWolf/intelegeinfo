@@ -15,6 +15,10 @@ abstract class EditorMode {
     {
         return;
     }
+    onBuild(res)
+    {
+
+    }
     constructor()
     {
         

@@ -376,7 +376,7 @@ function cleanUp() {
         EditorModes.modes.forEach(element => {
             filter += `--filter ancestor=${buildTag}_${element.dockerSafeTag} `;
         });
-        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps filter -q |  xargs --no-run-if-empty docker rm --force `, { timeout: 5000 }));
+        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps ${filter} -q |  xargs --no-run-if-empty docker rm --force `, { timeout: 5000 }));
     });
 }
 function getClientFilesPath(sessionId) {
@@ -1057,6 +1057,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 childProcess.stdout.on('data', data => {
                     console.log(data.toString());
                     setTimeout(() => {
+                        clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer);
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
                     }, 500);
                 });
