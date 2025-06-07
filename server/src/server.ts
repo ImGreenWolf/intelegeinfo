@@ -34,6 +34,8 @@ export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo'
 const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
+import * as EditorModes from './editor-modes/'
+
 
 interface ResponseWRay extends IncomingMessage 
 {
@@ -63,7 +65,7 @@ app.post('/github/onpull', (req, res) => {
         console.log(commits[0].message);
         console.log(digest);
         if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = execSync('cd ' + rootDirName + ' && git fetch https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git && git reset --hard https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git/main', {timeout: 2000});
+            const output = execSync('cd ' + rootDirName + ' && git fetch origin && git reset --hard origin/main', {timeout: 2000});
             res.status(200).send('pull succesful! data: ' + output.toString() ? output.toString() : '');
             console.log('pulled! data: ' + output.toString() ? output.toString() : '')
         } else {
@@ -336,14 +338,8 @@ enum FileManagementCommands {
     Open = "open",
 }
 
-export abstract class EditorMode {
 
-    abstract name;
-    abstract dockerFile;
-    abstract HandleClientInput();
-}
 
-import * as EditorModes from './editor-modes/'
 
 
     //          LOCAL  SERVER  VARIABLES       //
@@ -1228,7 +1224,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
  * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
  * @returns The child process running the Docker container
  */
-async function buildAndRunCppSandbox(sessionFolder: string, fileName: string, EditorMode: EditorMode, clientId, sessionId): Promise<typeof clientSession.sessionContainer>{
+async function buildAndRunCppSandbox(sessionFolder: string, fileName: string, EditorMode: EditorModes.EditorMode, clientId, sessionId): Promise<typeof clientSession.sessionContainer>{
 
 return new Promise((resolve, reject) => { // Folder containing .exe
   const sandboxFolder = path.join(sessionFolder, 'clientFiles'); // The folder the exe will access

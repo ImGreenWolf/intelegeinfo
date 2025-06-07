@@ -1,4 +1,4 @@
-import { EditorMode } from '../server';
+import { EditorMode } from './';
 declare class CppMode extends EditorMode {
     name: string;
     dockerFile: string;

@@ -4,3 +4,5 @@ node_modules/
 backups/
 saved/
 .tsbuildinfo
+prisma/migrations/
+generated/

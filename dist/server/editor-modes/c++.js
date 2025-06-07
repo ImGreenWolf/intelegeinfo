@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const server_1 = require("../server");
-class CppMode extends server_1.EditorMode {
+const _1 = require("./");
+class CppMode extends _1.EditorMode {
     name = 'C++';
     dockerFile = `
     # Base image with GCC

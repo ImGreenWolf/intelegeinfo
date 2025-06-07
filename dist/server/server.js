@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sessionMap = exports.runningProcesses = exports.clients = exports.wss = exports.server = exports.EditorMode = exports.rootDirName = void 0;
+exports.sessionMap = exports.runningProcesses = exports.clients = exports.wss = exports.server = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
@@ -90,7 +90,7 @@ app.post('/github/onpull', (req, res) => {
         console.log(commits[0].message);
         console.log(digest);
         if (crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = (0, child_process_2.execSync)('cd ' + exports.rootDirName + ' && git fetch https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git && git reset --hard https://ImGreenWolf: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@github.com/ImGreenWolf/intelegeinfo.git/main', { timeout: 2000 });
+            const output = (0, child_process_2.execSync)('cd ' + exports.rootDirName + ' && git fetch origin && git reset --hard origin/main', { timeout: 2000 });
             res.status(200).send('pull succesful! data: ' + output.toString() ? output.toString() : '');
             console.log('pulled! data: ' + output.toString() ? output.toString() : '');
         }
@@ -274,9 +274,6 @@ var FileManagementCommands;
     FileManagementCommands["Rename"] = "rename";
     FileManagementCommands["Open"] = "open";
 })(FileManagementCommands || (FileManagementCommands = {}));
-class EditorMode {
-}
-exports.EditorMode = EditorMode;
 //          LOCAL  SERVER  VARIABLES       //
 let compileProcess;
 //                      END                      //  
