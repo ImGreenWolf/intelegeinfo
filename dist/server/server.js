@@ -68,6 +68,7 @@ exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\inteleg
 const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
 ;
 const crypto_1 = __importDefault(require("crypto"));
+const EditorModes = __importStar(require("./editor-modes/"));
 app.use(compression());
 app.use(express_1.default.json({
     verify: (req, res, buf) => {
@@ -939,6 +940,15 @@ exports.wss.addListener('connection', async (ws, req) => {
                 printClientConsoleDebug("Failed listing files: " + reason);
             }
         }
+        function getEditorMode(fileName) {
+            const ext = fileName.trim().split('.')[1];
+            if (ext)
+                EditorModes.modes.forEach(mode => {
+                    if (mode.extension.includes(ext))
+                        return mode;
+                });
+            return;
+        }
         function openFile(fileName) {
             // if(fs.existsSync(path.join(clientFilesPath, fileName)))
             // console.log("path: " + path.join(clientFilesPath || path.join(rootDirName, "cache", sessionId,"clientFiles"), fileName))
@@ -949,8 +959,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                 else {
                     // Send the file content to the client
                     const oldFileName = getThisClientSession()?.clientsActiveFile.get(clientId);
-                    replicateSocketMessage(sessionId, clientId, true, { type: types_1.WebSocketMessageType.CodeSelection, body: null }, (client) => { return getThisClientSession()?.clientsActiveFile.get(client) === oldFileName; }); // potential fix for a glitch where markers dont get deleted when switching tabs
+                    replicateSocketMessage(sessionId, clientId, true, { type: types_1.WebSocketMessageType.CodeSelection, body: null }, (client) => { return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName; }); // potential fix for a glitch where markers dont get deleted when switching tabs
+                    clientObj.editorMode = getEditorMode(fileName);
                     getThisClientSession()?.clientsActiveFile.set(clientId, fileName);
+                    console.log(`Opened file ${fileName}, with mode ${clientObj.editorMode}`);
                     if (isShared)
                         shared.updateSession(sessionId, getThisClientSession());
                     ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.Open, content: data.toString(), fileName: fileName } })); // Send the list of files to the client

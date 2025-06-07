@@ -1,6 +1,8 @@
 declare abstract class EditorMode {
-    abstract name: any;
-    abstract dockerFile: any;
+    abstract name: string;
+    abstract dockerFile: string;
+    abstract extension: string[];
     abstract HandleClientInput(): any;
+    constructor();
 }
 export default EditorMode;

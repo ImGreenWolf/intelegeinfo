@@ -1196,7 +1196,17 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             printClientConsoleDebug("Failed listing files: " + reason);
         }
     }
+    function getEditorMode(fileName: string): EditorModes.EditorMode | undefined
+    {
+        const ext = fileName.trim().split('.')[1]
+        if(ext)
+            EditorModes.modes.forEach(mode => {
+                if(mode.extension.includes(ext))
+                    return mode;
+            });
 
+        return;
+    }
     function openFile(fileName: string)
     {
         // if(fs.existsSync(path.join(clientFilesPath, fileName)))
@@ -1207,9 +1217,10 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             } else {
                 // Send the file content to the client
                 const oldFileName = getThisClientSession()?.clientsActiveFile.get(clientId);
-                replicateSocketMessage(sessionId, clientId, true, {type: WebSocketMessageType.CodeSelection, body: null}, (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) === oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
-
+                replicateSocketMessage(sessionId, clientId, true, {type: WebSocketMessageType.CodeSelection, body: null}, (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
+                clientObj.editorMode = getEditorMode(fileName)
                 getThisClientSession()?.clientsActiveFile.set(clientId, fileName)
+                console.log(`Opened file ${fileName}, with mode ${clientObj.editorMode}`);
                 if(isShared) shared.updateSession(sessionId, getThisClientSession())
                 ws.send(JSON.stringify({type: WebSocketMessageType.FileManagement,  body: {command: FileManagementCommands.Open ,content: data.toString(), fileName: fileName}})); // Send the list of files to the client
             }
