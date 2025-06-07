@@ -47,7 +47,7 @@ app.use(express.json({
         (req as ResponseWRay).rawBody = buf; // Save raw body
     }
 }));
-app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVnNC')));
+app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
 
 app.post('/github/onpull', (req, res) => {
     try {

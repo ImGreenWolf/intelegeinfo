@@ -75,7 +75,7 @@ app.use(express_1.default.json({
         req.rawBody = buf; // Save raw body
     }
 }));
-app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVnNC')));
+app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVNC')));
 app.post('/github/onpull', (req, res) => {
     try {
         if (!req.body)
