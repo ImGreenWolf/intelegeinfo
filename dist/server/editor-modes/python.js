@@ -77,10 +77,12 @@ CMD bash `;
         // });
         const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', res.imageName, 'sh', '-c', `
   echo "[INFO] Starting Xvfb..." &&
-  Xvfb :1 -screen 0 1024x768x16 &&
+  Xvfb :1 -screen 0 1024x768x16 &
+  sleep 2 &&
+  ps aux | grep Xvfb &&
   echo "[INFO] Starting x11vnc..." &&
   export DISPLAY=:1 &&
-  python clientFiles/${res.fileName} & 
+  python clientFiles/${res.fileName} &&
   x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -nopw -forever -shared &&
   echo "[INFO] Started successfully"
 `], {
