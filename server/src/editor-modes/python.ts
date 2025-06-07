@@ -48,8 +48,7 @@ CMD bash `
 
 const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Create the vnc directory and socket path
-  mkdir -p /tmp/vnc
-  VNC_SOCK="/tmp/vnc/vnc.sock"
+  VNC_SOCK="/vnc/vnc.sock"
   
   echo "[INFO] Starting Xvfb on display :1..."
   Xvfb :1 -screen 0 1024x768x16 -ac +extension GLX +render -noreset &
