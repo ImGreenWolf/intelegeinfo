@@ -77,7 +77,7 @@ export class EditorSession {
     msgMap: Map<number, WSMessage> = new Map();
     brainrotNames: string[];
     currentbuildTag = '';
-    sessionContainer: {process: ChildProcess, imageName: string, fileName: string};
+    sessionContainer: {process: ChildProcess, imageName: string, fileName: string, editorMode: EditorMode};
     gdbProcess: ChildProcess | undefined;
     program: ChildProcess | undefined;
 

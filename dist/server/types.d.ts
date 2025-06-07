@@ -42,6 +42,7 @@ export declare class EditorSession {
         process: ChildProcess;
         imageName: string;
         fileName: string;
+        editorMode: EditorMode;
     };
     gdbProcess: ChildProcess | undefined;
     program: ChildProcess | undefined;

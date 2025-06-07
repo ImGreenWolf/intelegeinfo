@@ -942,10 +942,8 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         function getEditorMode(fileName) {
             const ext = fileName.trim().split('.')[1];
-            console.log(ext);
             if (ext)
                 for (const mode of EditorModes.modes) {
-                    console.log(mode);
                     if (mode.extension.includes(ext))
                         return mode;
                 }
@@ -964,7 +962,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     replicateSocketMessage(sessionId, clientId, true, { type: types_1.WebSocketMessageType.CodeSelection, body: null }, (client) => { return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName; }); // potential fix for a glitch where markers dont get deleted when switching tabs
                     clientObj.editorMode = getEditorMode(fileName);
                     getThisClientSession()?.clientsActiveFile.set(clientId, fileName);
-                    console.log(`Opened file ${fileName}, with mode ${clientObj.editorMode}`);
+                    console.log(`Opened file ${fileName}, with mode ${clientObj.editorMode.name}`);
                     if (isShared)
                         shared.updateSession(sessionId, getThisClientSession());
                     ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.Open, content: data.toString(), fileName: fileName } })); // Send the list of files to the client
@@ -998,8 +996,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                 // Create a temporary directory for building the Docker image
                 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
                 const dockerfilePath = path_1.default.join(sessionFolder, 'Dockerfile');
-                if (!clientSession.currentbuildTag) {
-                    clientSession.currentbuildTag = buildTag; // Unique image tag to avoid collisions
+                if (!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "-" + editorMode.name) {
+                    clientSession.currentbuildTag = buildTag + "-" + editorMode.name; // Unique image tag to avoid collisions
                     // 1. Copy the executable to the temporary folder
                     // 2. Write the Dockerfile to the temp directory
                     const dockerfileContents = editorMode.dockerFile.trim();
@@ -1046,7 +1044,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 console.log(runCommand);
                 // Return the child process for external handling
                 const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
-                clientSession.sessionContainer = { process: childProcess, imageName, fileName };
+                clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode };
                 childProcess?.on("spawn", () => {
                     console.log("Docker container spawned");
                 });
@@ -1493,16 +1491,20 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                         if (res == null)
                                                             return resolve();
                                                         try {
-                                                            replicateFunction((clientWs) => {
-                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
-                                                            });
-                                                            (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`);
-                                                            replicateFunction((clientWs) => {
-                                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
-                                                            });
-                                                            clientSession.program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "./main"], {
-                                                                stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
-                                                            });
+                                                            if (!clientObj.editorMode.isInterpreter) {
+                                                                replicateFunction((clientWs) => {
+                                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
+                                                                });
+                                                                //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
+                                                                clientObj.editorMode.compile(res);
+                                                                replicateFunction((clientWs) => {
+                                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
+                                                                });
+                                                            }
+                                                            // clientSession.program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
+                                                            //     stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
+                                                            //     });
+                                                            clientSession.program = clientObj.editorMode.execute(res);
                                                             readStdio(clientSession.program, messageJSON).then(() => resolve());
                                                         }
                                                         catch (err) {

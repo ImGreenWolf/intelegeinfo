@@ -1,9 +1,11 @@
+import { spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
 
 class Python extends EditorMode {
 
     name = 'Python'
     extension = ['py']
+    isInterpreter = true;
     dockerFile = 
     `
     # install from python image
@@ -15,8 +17,13 @@ class Python extends EditorMode {
     CMD [ "bash" ]`.trim();
 
 
-        HandleClientInput() {
-        
+    execute(res) {
+        return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "python " + res.fileName], {
+                stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
+            });
+    }
+    compile() {
+        return;
     }
 
 

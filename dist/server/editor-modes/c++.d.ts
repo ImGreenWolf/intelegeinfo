@@ -5,5 +5,7 @@ declare class CppMode extends EditorMode {
     dockerFile: string;
     HandleClientInput(): void;
     constructor();
+    execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
+    compile(res: any): void;
 }
 export default CppMode;

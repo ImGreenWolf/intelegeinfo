@@ -2,7 +2,9 @@ import EditorMode from "./BaseEditorMode";
 declare class Python extends EditorMode {
     name: string;
     extension: string[];
+    isInterpreter: boolean;
     dockerFile: string;
-    HandleClientInput(): void;
+    execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
+    compile(): void;
 }
 export default Python;
