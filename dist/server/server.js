@@ -966,6 +966,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     const oldFileName = getThisClientSession()?.clientsActiveFile.get(clientId);
                     replicateSocketMessage(sessionId, clientId, true, { type: types_1.WebSocketMessageType.CodeSelection, body: null }, (client) => { return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName; }); // potential fix for a glitch where markers dont get deleted when switching tabs
                     clientObj.editorMode = getEditorMode(fileName);
+                    clientObj.openFileName = fileName;
                     getThisClientSession()?.clientsActiveFile.set(clientId, fileName);
                     console.log(`Opened file ${fileName}, with mode ${clientObj.editorMode.name}`);
                     if (isShared)
@@ -1034,7 +1035,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                 const imageName = `session-container-${sessionId}`;
                 fs_1.default.mkdirSync(`/tmp/vnc-${sessionId}/`);
                 // 4. Run the Docker container with access to the sandbox folder
-                const hasGUI = clientSession.clientsActiveFile.get(clientId).toLowerCase().includes("gui");
+                const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
+                console.log(hasGUI ? 'executing with GUI' : "no gui");
                 const runCommand = `docker run \
 -d \
 --name ${imageName} \
@@ -1058,7 +1060,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 childProcess.stdout.on('data', data => {
                     console.log(data.toString());
                     setTimeout(() => {
-                        // TODO Spawn GUI on 
+                        // TODO Spawn GUI on client
                         if (hasGUI)
                             clientSession.sessionContainer.editorMode.spawnGUI(clientSession.sessionContainer, clientSession);
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally

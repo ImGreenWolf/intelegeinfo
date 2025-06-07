@@ -16,6 +16,7 @@ class ClientObject {
     canChat = true;
     color = "#ffffff";
     editorMode = new editor_modes_1.CppMode;
+    openFileName;
     // EditorSessionObject: EditorSession
     constructor(sessionId, EditorSession, WebSocket, displayName, user) {
         this.sessionId = sessionId;

@@ -15,6 +15,7 @@ export declare class ClientObject {
     canChat: boolean;
     color: string;
     editorMode: EditorMode;
+    openFileName: string;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: string | Record<string, any>): void;
 }

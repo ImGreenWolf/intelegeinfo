@@ -20,6 +20,7 @@ export class ClientObject {
     canChat: boolean = true;
     color: string = "#ffffff";
     editorMode: EditorMode = new CppMode;
+    openFileName: string
     // EditorSessionObject: EditorSession
     public constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {
         this.sessionId = sessionId;

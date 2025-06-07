@@ -1222,7 +1222,9 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 // Send the file content to the client
                 const oldFileName = getThisClientSession()?.clientsActiveFile.get(clientId);
                 replicateSocketMessage(sessionId, clientId, true, {type: WebSocketMessageType.CodeSelection, body: null}, (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
+                
                 clientObj.editorMode = getEditorMode(fileName)
+                clientObj.openFileName = fileName
                 getThisClientSession()?.clientsActiveFile.set(clientId, fileName)
                 console.log(`Opened file ${fileName}, with mode ${clientObj.editorMode.name}`);
                 if(isShared) shared.updateSession(sessionId, getThisClientSession())
@@ -1307,7 +1309,8 @@ console.log('Skipping build stage.')
   const imageName = `session-container-${sessionId}`;
 fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
   // 4. Run the Docker container with access to the sandbox folder
-  const hasGUI = clientSession.clientsActiveFile.get(clientId).toLowerCase().includes("gui")
+const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
+console.log(hasGUI ? 'executing with GUI' : "no gui")
 const runCommand =
 `docker run \
 -d \
