@@ -1040,9 +1040,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 const runCommand = `docker run \
 -d \
 --name ${imageName} \
--v "${sessionFolder}:/app" \ ${hasGUI ? `
-    -v "/tmp/vnc-${sessionId}:/app/vnc" \ 
-    ` : ""} -w /app \
+-v "${sessionFolder}:/app" \ ${hasGUI ? `-v "/tmp/vnc-${sessionId}:/app/vnc" \ ` : "\n"} -w /app \
 -di \
 -m 256MB \
 --cpus="0.25" \
@@ -1056,6 +1054,9 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode };
                 childProcess?.on("spawn", () => {
                     console.log("Docker container spawned");
+                });
+                childProcess.stdout.on('data', data => {
+                    console.log("soksjkjskjsjsk:" + data.toString());
                     setTimeout(() => {
                         // TODO Spawn GUI on client
                         //   if(hasGUI == true) 
@@ -1064,9 +1065,6 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                         console.log(hasGUI);
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
                     }, 1000);
-                });
-                childProcess.stdout.on('data', data => {
-                    console.log("soksjkjskjsjsk:" + data.toString());
                 });
             });
         }

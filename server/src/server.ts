@@ -1315,9 +1315,7 @@ const runCommand =
 `docker run \
 -d \
 --name ${imageName} \
--v "${sessionFolder}:/app" \ ${hasGUI ? `
-    -v "/tmp/vnc-${sessionId}:/app/vnc" \ 
-    ` : ""} -w /app \
+-v "${sessionFolder}:/app" \ ${hasGUI ? `-v "/tmp/vnc-${sessionId}:/app/vnc" \ ` : "\n"} -w /app \
 -di \
 -m 256MB \
 --cpus="0.25" \
@@ -1333,18 +1331,18 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
 
      childProcess?.on("spawn", () => {
         console.log("Docker container spawned")
-            setTimeout(() => {
+            
+    })
+    childProcess.stdout.on('data', data => {
+        console.log("soksjkjskjsjsk:" + data.toString())
+         setTimeout(() => {
                     // TODO Spawn GUI on client
         //   if(hasGUI == true) 
             clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
         // else
             console.log(hasGUI)
         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-    }, 1000);
-    })
-    childProcess.stdout.on('data', data => {
-        console.log("soksjkjskjsjsk:" + data.toString())
-             
+    }, 1000);    
     })
     
 
