@@ -1307,7 +1307,7 @@ console.log('Skipping build stage.')
   const imageName = `session-container-${sessionId}`;
 fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
   // 4. Run the Docker container with access to the sandbox folder
-const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
+const runCommand =
 `docker run \
 -d \
 --name ${imageName} \

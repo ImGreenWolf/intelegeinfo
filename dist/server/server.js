@@ -1034,8 +1034,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 const imageName = `session-container-${sessionId}`;
                 fs_1.default.mkdirSync(`/tmp/vnc-${sessionId}/`);
                 // 4. Run the Docker container with access to the sandbox folder
-                const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
-                 `docker run \
+                const runCommand = `docker run \
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \
