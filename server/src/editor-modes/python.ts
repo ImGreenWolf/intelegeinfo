@@ -19,7 +19,7 @@ class Python extends EditorMode {
 
 
     execute(res) {
-        return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "python " + res.fileName], {
+        return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "python clientFiles/" + res.fileName], {
                 stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
             });
     }

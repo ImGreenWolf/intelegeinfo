@@ -19,7 +19,7 @@ class Python extends BaseEditorMode_1.default {
     # Default command can be overridden
     CMD [ "bash" ]`.trim();
     execute(res) {
-        return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "python " + res.fileName], {
+        return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "python clientFiles/" + res.fileName], {
             stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
         });
     }
