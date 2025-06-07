@@ -7,6 +7,7 @@ declare abstract class EditorMode {
     isInterpreter: boolean;
     abstract execute(res: any): ChildProcess;
     abstract compile(res: any): any;
+    onSpawn(): void;
     constructor();
 }
 export default EditorMode;

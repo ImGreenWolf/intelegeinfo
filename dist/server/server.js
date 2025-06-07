@@ -1033,6 +1033,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \
+-v "/tmp/vnc-${sessionId}:/vnc" \
 -w /app \
 -di \
 -m 256MB \
@@ -1056,7 +1057,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 });
             });
         }
-        async function readStdio(program, messageJSON) {
+        async function readStdio(program, messageJSON, res) {
             return new Promise((resolve, reject) => {
                 async function onClosedProgram(code, message, error) {
                     let notes = "";
@@ -1096,6 +1097,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                     clientSession.program?.on("spawn", () => {
                         console.log("Program spawned");
                         spawnDate = Date.now();
+                        res.editorMode.onSpawn();
                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
                         if (clientSession.program.stdin && processInputBuffer)
                             if (clientSession.program?.stdin?.writable)
@@ -1505,7 +1507,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                             //     stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                             //     });
                                                             clientSession.program = clientObj.editorMode.execute(res);
-                                                            readStdio(clientSession.program, messageJSON).then(() => resolve());
+                                                            readStdio(clientSession.program, messageJSON, res).then(() => resolve());
                                                         }
                                                         catch (err) {
                                                             console.error("Failed to run docker commands: " + err);

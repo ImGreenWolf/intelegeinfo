@@ -7,5 +7,6 @@ declare class Python extends EditorMode {
     dockerFile: string;
     execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
     compile(): void;
+    onSpawn(): void;
 }
 export default Python;

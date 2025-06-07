@@ -1309,6 +1309,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \
+-v "/tmp/vnc-${sessionId}:/vnc" \
 -w /app \
 -di \
 -m 256MB \
@@ -1341,7 +1342,7 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
 
 }
 
-async function readStdio(program, messageJSON)
+async function readStdio(program, messageJSON, res: typeof clientSession.sessionContainer)
     {
         return new Promise<void>((resolve, reject) => {
             
@@ -1393,6 +1394,7 @@ async function readStdio(program, messageJSON)
     clientSession.program?.on("spawn", () => {
         console.log("Program spawned")
         spawnDate = Date.now()
+        res.editorMode.onSpawn();
         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         if( clientSession.program.stdin && processInputBuffer)
             if(clientSession.program?.stdin?.writable)
@@ -1860,7 +1862,7 @@ async function readStdio(program, messageJSON)
                                                         //     });
                                                         clientSession.program = clientObj.editorMode.execute(res)
 
-                                                        readStdio(clientSession.program, messageJSON).then(()=> resolve())
+                                                        readStdio(clientSession.program, messageJSON, res).then(()=> resolve())
                                                     }
                                                     catch(err)
                                                     {
