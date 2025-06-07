@@ -569,7 +569,8 @@ if (new URLSearchParams(window.location.search).has('save'))
 // }
 var beautify = ace.require("ace/ext/beautify"); // get reference to extension
 export function beautifyEditor() {
-    beautify.beautify(editor.session);
+    displaynoVDC();
+    // beautify.beautify(editor.session);
 }
 export function undo() {
     editor.session.getUndoManager().redo(editor.session);
@@ -2561,7 +2562,7 @@ const customCompleter = {
 };
 // Register it
 ace.require("ace/ext/language_tools").addCompleter(customCompleter);
-function displaynoVDC() {
+export function displaynoVDC() {
     const frame = document.createElement('iframe');
     frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html';
     frame.id = 'noVDC';
