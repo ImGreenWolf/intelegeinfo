@@ -1246,12 +1246,14 @@ return new Promise((resolve, reject) => { // Folder containing .exe
     console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
     reject()
   }
+
 if(!editorMode)
 {
     printClientConsoleInfo('File cant be executed!')
     reject('File cant be executed! Editor mode is invalid')
 }
-if(clientSession.sessionContainer)
+
+if(clientSession.sessionContainer && clientSession.currentbuildTag == buildTag + "_" + editorMode.dockerSafeTag)
 {
     console.log('Container already running, executing command...')
     resolve(clientSession.sessionContainer)
@@ -1259,7 +1261,7 @@ if(clientSession.sessionContainer)
 }
   // Create a temporary directory for building the Docker image
 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
-  const dockerfilePath = path.join(sessionFolder, 'Dockerfile');
+
 
 if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "_" + editorMode.dockerSafeTag)
 {
@@ -1281,7 +1283,7 @@ if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag +
 // # Default command can be overridden
 // CMD [ "bash" ]
 //   `.trim();
-
+  const dockerfilePath = path.join(sessionFolder, 'Dockerfile');
   fs.writeFileSync(dockerfilePath, dockerfileContents);
 
 

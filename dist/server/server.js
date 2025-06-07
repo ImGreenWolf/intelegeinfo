@@ -988,14 +988,13 @@ exports.wss.addListener('connection', async (ws, req) => {
                     printClientConsoleInfo('File cant be executed!');
                     reject('File cant be executed! Editor mode is invalid');
                 }
-                if (clientSession.sessionContainer) {
+                if (clientSession.sessionContainer && clientSession.currentbuildTag == buildTag + "_" + editorMode.dockerSafeTag) {
                     console.log('Container already running, executing command...');
                     resolve(clientSession.sessionContainer);
                     return;
                 }
                 // Create a temporary directory for building the Docker image
                 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
-                const dockerfilePath = path_1.default.join(sessionFolder, 'Dockerfile');
                 if (!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "_" + editorMode.dockerSafeTag) {
                     clientSession.currentbuildTag = buildTag + "_" + editorMode.dockerSafeTag; // Unique image tag to avoid collisions
                     // 1. Copy the executable to the temporary folder
@@ -1013,6 +1012,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     // # Default command can be overridden
                     // CMD [ "bash" ]
                     //   `.trim();
+                    const dockerfilePath = path_1.default.join(sessionFolder, 'Dockerfile');
                     fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
                     // 3. Build the Docker image
                     console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
