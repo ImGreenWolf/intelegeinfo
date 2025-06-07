@@ -5,7 +5,7 @@ declare class Python extends EditorMode {
     extension: string[];
     isInterpreter: boolean;
     dockerFile: string;
-    execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
+    execute(res: any): Promise<import("child_process").ChildProcessWithoutNullStreams>;
     compile(): void;
     onSpawn(): void;
 }

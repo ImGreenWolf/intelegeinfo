@@ -1839,7 +1839,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     
                                     
                                     const mainPromise = new Promise<void>((resolve, reject) => {   
-                                                buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then(res => {
+                                                buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                                                     //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                     if(res == null) return resolve()
                                                     try {
@@ -1860,7 +1860,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                         // clientSession.program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
                                                         //     stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                         //     });
-                                                        clientSession.program = clientObj.editorMode.execute(res)
+                                                        clientSession.program = await clientObj.editorMode.execute(res)
 
                                                         readStdio(clientSession.program, messageJSON, res).then(()=> resolve())
                                                     }
