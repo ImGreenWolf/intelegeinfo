@@ -1041,7 +1041,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \
-${hasGUI ? `-v "/tmp/vnc-${sessionId}:/app/vnc" \ ` : ""}
+${hasGUI ? `-v "/tmp/vnc-${sessionId}:/app/vnc"` : ""}
 -w /app \
 -di \
 -m 256MB \
@@ -1063,7 +1063,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                         // else
                         console.log(hasGUI);
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-                    }, 2000);
+                    }, 5000);
                 });
                 childProcess.stdout.on('data', data => {
                     console.log(data.toString());
