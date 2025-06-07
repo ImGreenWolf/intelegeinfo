@@ -80,6 +80,7 @@ CMD bash `;
   Xvfb :1 -screen 0 1024x768x16 &&
   echo "[INFO] Starting x11vnc..." &&
   export DISPLAY=:1 &&
+  python clientFiles/${res.fileName} & 
   x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -nopw -forever -shared &&
   echo "[INFO] Started successfully"
 `], {
@@ -101,21 +102,21 @@ CMD bash `;
         return;
     }
     onSpawn(sessionObj) {
-        // Start websockify
-        const wsProxy = (0, child_process_1.spawn)('websockify', [
-            '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
-            '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
-        ], { stdio: 'pipe' });
-        wsProxy.stdout.on('data', (data) => {
-            console.log('[ws stdout]', data.toString());
-        });
-        wsProxy.stderr.on('data', (data) => {
-            console.error('[ws stderr]', data.toString());
-        });
-        wsProxy.on('exit', (code) => {
-            console.log(`[ws exit] Process exited with code ${code}`);
-        });
         setTimeout(() => {
+            // Start websockify
+            const wsProxy = (0, child_process_1.spawn)('websockify', [
+                '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
+                '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
+            ], { stdio: 'pipe' });
+            wsProxy.stdout.on('data', (data) => {
+                console.log('[ws stdout]', data.toString());
+            });
+            wsProxy.stderr.on('data', (data) => {
+                console.error('[ws stderr]', data.toString());
+            });
+            wsProxy.on('exit', (code) => {
+                console.log(`[ws exit] Process exited with code ${code}`);
+            });
             try {
                 fs.accessSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`);
             }
@@ -126,7 +127,7 @@ CMD bash `;
         // setTimeout(() => {
         //     console.log(fs.readFileSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`).toString())
         // }, 1000);
-        wsProxy.stdout.on('data', (data) => console.log(data.toString()));
+        // wsProxy.stdout.on('data', (data) => console.log(data.toString()));
     }
 }
 exports.default = Python;
