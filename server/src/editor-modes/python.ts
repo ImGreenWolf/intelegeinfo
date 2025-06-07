@@ -82,7 +82,7 @@ onBuild(res, clientSession: EditorSession) {
 proc.stdout.on('data', (data: string) => {
     console.log("skmskjsjkjsjkjjskjsh: " + data.toString())
     const port = data.toString().split('PORT=')[1];
-    fs.appendFileSync(path.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: 127.0.0.1:${port}`)
+    fs.appendFileSync(path.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock`)
 })
 
 }
@@ -109,9 +109,9 @@ proc.stdout.on('data', (data: string) => {
             // Start websockify
         const wsProxy = spawn('websockify', [
         '--web', path.join(rootDirName, 'vnc', 'noVNC'),
-        '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, 
-        '    --token-plugin=TokenFile',
+        '--token-plugin=TokenFile',
         '--token-source='+path.resolve('/tmp/tokens.txt'),
+        '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, 
         '8080'
         
         

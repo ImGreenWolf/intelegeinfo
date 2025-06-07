@@ -111,7 +111,7 @@ CMD bash `;
         proc.stdout.on('data', (data) => {
             console.log("skmskjsjkjsjkjjskjsh: " + data.toString());
             const port = data.toString().split('PORT=')[1];
-            fs.appendFileSync(path_1.default.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: 127.0.0.1:${port}`);
+            fs.appendFileSync(path_1.default.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock`);
         });
     }
     async execute(res) {
@@ -129,9 +129,9 @@ CMD bash `;
             // Start websockify
             const wsProxy = (0, child_process_1.spawn)('websockify', [
                 '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
-                '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`,
-                '    --token-plugin=TokenFile',
+                '--token-plugin=TokenFile',
                 '--token-source=' + path_1.default.resolve('/tmp/tokens.txt'),
+                '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`,
                 '8080'
             ], { stdio: 'pipe' });
             wsProxy.stdout.on('data', (data) => {
