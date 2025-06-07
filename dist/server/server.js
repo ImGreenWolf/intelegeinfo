@@ -944,11 +944,11 @@ exports.wss.addListener('connection', async (ws, req) => {
             const ext = fileName.trim().split('.')[1];
             console.log(ext);
             if (ext)
-                EditorModes.modes.forEach(mode => {
+                for (const mode of EditorModes.modes) {
                     console.log(mode);
                     if (mode.extension.includes(ext))
                         return mode;
-                });
+                }
             return;
         }
         function openFile(fileName) {

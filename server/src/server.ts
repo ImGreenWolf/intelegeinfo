@@ -1199,13 +1199,12 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     function getEditorMode(fileName: string): EditorModes.EditorMode | undefined
     {
         const ext = fileName.trim().split('.')[1]
-        console.log(ext)
         if(ext)
-            EditorModes.modes.forEach(mode => {
-                console.log(mode)
+            for(const mode of EditorModes.modes)
+             {
                 if(mode.extension.includes(ext))
                     return mode;
-            });
+            }
 
         return;
     }
