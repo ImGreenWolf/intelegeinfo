@@ -4,6 +4,7 @@ import EditorMode from "./BaseEditorMode";
 class Python extends EditorMode {
 
     name = 'Python'
+    dockerSafeTag: string = 'py'
     extension = ['py']
     isInterpreter = true;
     dockerFile = 

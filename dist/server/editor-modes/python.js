@@ -7,6 +7,7 @@ const child_process_1 = require("child_process");
 const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 class Python extends BaseEditorMode_1.default {
     name = 'Python';
+    dockerSafeTag = 'py';
     extension = ['py'];
     isInterpreter = true;
     dockerFile = `

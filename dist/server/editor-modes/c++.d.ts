@@ -2,6 +2,7 @@ import EditorMode from "./BaseEditorMode";
 declare class CppMode extends EditorMode {
     name: string;
     extension: string[];
+    dockerSafeTag: string;
     dockerFile: string;
     HandleClientInput(): void;
     constructor();

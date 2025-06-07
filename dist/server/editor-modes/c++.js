@@ -8,6 +8,7 @@ const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 class CppMode extends BaseEditorMode_1.default {
     name = 'C++';
     extension = ['cpp', 'c++'];
+    dockerSafeTag = 'cpp';
     dockerFile = `
     # Base image with GCC
     FROM gcc:bookworm

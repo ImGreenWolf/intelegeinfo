@@ -1261,9 +1261,9 @@ if(clientSession.sessionContainer)
 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
   const dockerfilePath = path.join(sessionFolder, 'Dockerfile');
 
-if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "-" + editorMode.name)
+if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "_" + editorMode.dockerSafeTag)
 {
-  clientSession.currentbuildTag = buildTag + "-" + editorMode.name // Unique image tag to avoid collisions
+  clientSession.currentbuildTag = buildTag + "_" + editorMode.dockerSafeTag // Unique image tag to avoid collisions
 
   // 1. Copy the executable to the temporary folder
   // 2. Write the Dockerfile to the temp directory

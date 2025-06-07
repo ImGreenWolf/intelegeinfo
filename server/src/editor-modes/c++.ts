@@ -5,6 +5,7 @@ class CppMode extends EditorMode {
 
     name = 'C++'
     extension: string[] = ['cpp', 'c++'];
+    dockerSafeTag: string = 'cpp'
     dockerFile = 
     `
     # Base image with GCC
