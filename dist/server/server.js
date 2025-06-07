@@ -1041,7 +1041,6 @@ exports.wss.addListener('connection', async (ws, req) => {
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \
-${hasGUI ? `-v "/tmp/vnc-${sessionId}:/app/vnc"` : ""}
 -w /app \
 -di \
 -m 256MB \
