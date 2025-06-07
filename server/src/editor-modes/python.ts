@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
 
 class Python extends EditorMode {
@@ -34,6 +34,11 @@ CMD bash -c "\
 
 
     execute(res) {
+        //  Xvfb :1 -screen 0 1024x768x16
+        //   export DISPLAY=:1
+        execSync(`docker exec -i ${res.imageName} bash -c  "Xvfb :1 -screen 0 1024x768x16`)
+         execSync(`docker exec -i ${res.imageName} bash -c  "export DISPLAY=:1`)
+        
         return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "python clientFiles/" + res.fileName], {
                 stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
             });

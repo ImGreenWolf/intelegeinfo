@@ -30,6 +30,10 @@ CMD bash -c "\
     python3 gui_app.py & \
     x11vnc -display :1 -rfbport 5900 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim();
     execute(res) {
+        //  Xvfb :1 -screen 0 1024x768x16
+        //   export DISPLAY=:1
+        (0, child_process_1.execSync)(`docker exec -i ${res.imageName} bash -c  "Xvfb :1 -screen 0 1024x768x16`);
+        (0, child_process_1.execSync)(`docker exec -i ${res.imageName} bash -c  "export DISPLAY=:1`);
         return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "python clientFiles/" + res.fileName], {
             stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
         });
