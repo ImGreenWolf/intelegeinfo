@@ -39,12 +39,12 @@ CMD bash `
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
-        return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "Xvfb :1 -screen 0 1024x768x16 && sleep 1 && export DISPLAY=:1 && python clientFiles/" + res.fileName + " x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"], {
+        return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "python clientFiles/" + res.fileName], {
             stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
             env: {DISPLAY: ':1'}
         });
                  
-        
+        return;
         
     }
     compile() {
