@@ -1316,11 +1316,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 --cpus="0.25" \
 --rm \
 ${clientSession.currentbuildTag} \
-bash -c "Xvfb :1 -screen 0 1024x768x16 & \
-           sleep 1 && \
-           export DISPLAY=:1 && \
-           python clientFiles/${fileName} & \
-           x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
+bash`.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
   console.log(runCommand)
 

@@ -2,7 +2,7 @@ import { ChildProcess, execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
 import path from "path";
 import { rootDirName } from "../server";
-
+import * as fs from 'fs'
 class Python extends EditorMode {
 
     name = 'Python'
@@ -39,12 +39,14 @@ CMD bash `
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
-        return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "python clientFiles/" + res.fileName], {
+        return spawn('docker', ['exec', "-i", res.imageName, "bash","-c",
+             "Xvfb :1 -screen 0 1024x768x16 && sleep 1 && export DISPLAY=:1 && python clientFiles/" + res.fileName +
+              " x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared && echo 'started'"], {
             stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
             env: {DISPLAY: ':1'}
         });
                  
-        return;
+        
         
     }
     compile() {
@@ -59,7 +61,9 @@ CMD bash `
         '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
         ]);
         console.log(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`)
-
+        setTimeout(() => {
+            console.log(fs.readFileSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`).toString())
+        }, 1000);
         wsProxy.stdout.on('data', (data) => console.log(data.toString()));
     }
 
