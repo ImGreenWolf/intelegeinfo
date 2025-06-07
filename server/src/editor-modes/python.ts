@@ -111,7 +111,7 @@ proc.stdout.on('data', (data: string) => {
         '--web', path.join(rootDirName, 'vnc', 'noVNC'),
         '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, 
         '    --token-plugin=TokenFile',
-        '--token-source=',path.resolve('/tmp/tokens.txt'),
+        '--token-source='+path.resolve('/tmp/tokens.txt'),
         '8080'
         
         

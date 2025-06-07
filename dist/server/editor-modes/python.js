@@ -131,7 +131,7 @@ CMD bash `;
                 '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
                 '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`,
                 '    --token-plugin=TokenFile',
-                '--token-source=', path_1.default.resolve('/tmp/tokens.txt'),
+                '--token-source=' + path_1.default.resolve('/tmp/tokens.txt'),
                 '8080'
             ], { stdio: 'pipe' });
             wsProxy.stdout.on('data', (data) => {
