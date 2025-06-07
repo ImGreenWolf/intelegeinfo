@@ -15,7 +15,7 @@ abstract class EditorMode {
     {
         return;
     }
-    onBuild(res, clientSession: EditorSession)
+    spawnGUI(res, clientSession: EditorSession)
     {
 
     }

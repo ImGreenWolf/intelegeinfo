@@ -35,7 +35,7 @@ CMD bash `
 
 
 
-onBuild(res, clientSession: EditorSession) {
+spawnGUI(res, clientSession: EditorSession) {
 
     const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Use the mounted vnc directory (relative to /app workdir)
@@ -82,7 +82,7 @@ onBuild(res, clientSession: EditorSession) {
 proc.stdout.on('data', (data: string) => {
     console.log("skmskjsjkjsjkjjskjsh: " + data.toString())
     const port = data.toString().split('PORT=')[1];
-    fs.appendFileSync(path.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock\n`)
+    fs.appendFileSync(path.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock \ \n`)
     setTimeout(() => {
             // Start websockify
         const wsProxy = spawn('websockify', [

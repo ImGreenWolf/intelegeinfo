@@ -66,7 +66,7 @@ CMD bash `;
     //     export DISPLAY=:1 && fluxbox & \
     //     python3 gui_app.py & \
     //     x11vnc -display :1 -rfbport 5900 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim()
-    onBuild(res, clientSession) {
+    spawnGUI(res, clientSession) {
         const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Use the mounted vnc directory (relative to /app workdir)
   VNC_SOCK="vnc/vnc.sock"
@@ -111,7 +111,7 @@ CMD bash `;
         proc.stdout.on('data', (data) => {
             console.log("skmskjsjkjsjkjjskjsh: " + data.toString());
             const port = data.toString().split('PORT=')[1];
-            fs.appendFileSync(path_1.default.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock\n`);
+            fs.appendFileSync(path_1.default.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock \ \n`);
             setTimeout(() => {
                 // Start websockify
                 const wsProxy = (0, child_process_1.spawn)('websockify', [

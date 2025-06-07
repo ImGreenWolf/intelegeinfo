@@ -9,7 +9,7 @@ declare abstract class EditorMode {
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>;
     abstract compile(res: any): any;
     onSpawn(sessionObj: EditorSession): void;
-    onBuild(res: any, clientSession: EditorSession): void;
+    spawnGUI(res: any, clientSession: EditorSession): void;
     constructor();
 }
 export default EditorMode;

@@ -569,8 +569,7 @@ if (new URLSearchParams(window.location.search).has('save'))
 // }
 var beautify = ace.require("ace/ext/beautify"); // get reference to extension
 export function beautifyEditor() {
-    displaynoVDC();
-    // beautify.beautify(editor.session);
+    beautify.beautify(editor.session);
 }
 export function undo() {
     editor.session.getUndoManager().redo(editor.session);
@@ -2341,8 +2340,9 @@ function onRun() {
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';
     activeConsole = new Console();
+    if (currentFileName.toLowerCase().includes("gui"))
+        displaynoVDC(activeConsole.element);
     outputConsoles.push(activeConsole);
-    //<div class='header'>  <div class='button-container' ><button>close</button> <button>maxi</button> <button>mini</button> </div> program output</div>
     // TODO Add separate input area for interactive console.
 }
 function onExit() {
@@ -2562,11 +2562,11 @@ const customCompleter = {
 };
 // Register it
 ace.require("ace/ext/language_tools").addCompleter(customCompleter);
-export function displaynoVDC() {
+export function displaynoVDC(container) {
     const frame = document.createElement('iframe');
     frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html?bell=true&quality=5&path=novnc/websockify?token=' + wsSessionId;
     frame.id = 'noVDC';
-    document.body.appendChild(frame);
+    container.appendChild(frame);
 }
 function parseCode() {
     const code = editor.session.getValue();

@@ -1307,12 +1307,13 @@ console.log('Skipping build stage.')
   const imageName = `session-container-${sessionId}`;
 fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
   // 4. Run the Docker container with access to the sandbox folder
+  const hasGUI = clientSession.clientsActiveFile.get(clientId).toLowerCase().includes("gui")
 const runCommand =
 `docker run \
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \
--v "/tmp/vnc-${sessionId}:/app/vnc" \
+${hasGUI ? `-v "/tmp/vnc-${sessionId}:/app/vnc" \ ` : ""}
 -w /app \
 -di \
 -m 256MB \
@@ -1334,7 +1335,8 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
     childProcess.stdout.on('data', data => {
         console.log(data.toString())
                 setTimeout(() => {
-            clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
+                    // TODO Spawn GUI on client
+           if(hasGUI) clientSession.sessionContainer.editorMode.spawnGUI(clientSession.sessionContainer, clientSession)
         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
     }, 500);
     })
