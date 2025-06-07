@@ -83,6 +83,36 @@ proc.stdout.on('data', (data: string) => {
     console.log("skmskjsjkjsjkjjskjsh: " + data.toString())
     const port = data.toString().split('PORT=')[1];
     fs.appendFileSync(path.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock`)
+    setTimeout(() => {
+            // Start websockify
+        const wsProxy = spawn('websockify', [
+        '--web', path.join(rootDirName, 'vnc', 'noVNC'),
+        '--token-plugin=TokenFile',
+        '--token-source='+path.resolve('/tmp/tokens.txt'),
+        '--unix-target', `/tmp/vnc-${clientSession.sessionId}/vnc.sock`, 
+        '8080'
+        
+        
+        ], {stdio: 'pipe'});
+
+        wsProxy.stdout.on('data', (data) => {
+        console.log('[ws stdout]', data.toString());
+        });
+
+        wsProxy.stderr.on('data', (data) => {
+        console.error('[ws stderr]', data.toString());
+        });
+
+        wsProxy.on('exit', (code) => {
+        console.log(`[ws exit] Process exited with code ${code}`);
+        });
+            try {
+                fs.accessSync(`/tmp/vnc-${clientSession.sessionId}/vnc.sock`)
+            }catch(err)
+            {
+                        console.log("Cant acesss socket: " + err)
+            }
+        }, 1000);
 })
 
 }
@@ -102,44 +132,7 @@ proc.stdout.on('data', (data: string) => {
 
     onSpawn(sessionObj) {
 
-        
-
-
-        setTimeout(() => {
-            // Start websockify
-        const wsProxy = spawn('websockify', [
-        '--web', path.join(rootDirName, 'vnc', 'noVNC'),
-        '--token-plugin=TokenFile',
-        '--token-source='+path.resolve('/tmp/tokens.txt'),
-        '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, 
-        '8080'
-        
-        
-        ], {stdio: 'pipe'});
-
-        wsProxy.stdout.on('data', (data) => {
-        console.log('[ws stdout]', data.toString());
-        });
-
-        wsProxy.stderr.on('data', (data) => {
-        console.error('[ws stderr]', data.toString());
-        });
-
-        wsProxy.on('exit', (code) => {
-        console.log(`[ws exit] Process exited with code ${code}`);
-        });
-            try {
-                fs.accessSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`)
-            }catch(err)
-            {
-                        console.log("Cant acesss socket: " + err)
-            }
-        }, 4000);
-
-        // setTimeout(() => {
-        //     console.log(fs.readFileSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`).toString())
-        // }, 1000);
-        // wsProxy.stdout.on('data', (data) => console.log(data.toString()));
+    
     }
 
 
