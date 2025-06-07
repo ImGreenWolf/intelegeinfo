@@ -71,8 +71,8 @@ onBuild(res) {
   
 
   
-  python clientFiles/${res.fileName} &
-  PYTHON_PID=$!
+  #python clientFiles/${res.fileName} &
+  #PYTHON_PID=$!
   sleep 60
 `], {
     stdio: 'pipe'
@@ -82,7 +82,7 @@ onBuild(res) {
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
-        return spawn('docker', ['exec', "-i", res.imageName, "sh","-c","python clientFiles/" + res.fileName], {
+        return spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","python clientFiles/" + res.fileName], {
             stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
         });
 

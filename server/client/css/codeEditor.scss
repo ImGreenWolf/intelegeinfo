@@ -62,7 +62,13 @@
     100% {transform: translateX(-50%); opacity: 0; filter: blur(10px);}
 }
 
-
+#noVDC 
+{
+    position: absolute;
+    width: 1000px;
+    height: 1000px;
+    display: block;
+}
 #active-project-name.dirty::after
 {
     content: "*";

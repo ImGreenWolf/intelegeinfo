@@ -3433,7 +3433,13 @@ console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start
   ace.require("ace/ext/language_tools").addCompleter(customCompleter);
 
 
-
+function displaynoVDC()
+{
+  const frame = document.createElement('iframe')
+  frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html'
+  frame.id = 'noVDC'
+  document.body.appendChild(frame)
+}
 
 
 
