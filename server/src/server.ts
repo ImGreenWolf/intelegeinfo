@@ -1394,7 +1394,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     clientSession.program?.on("spawn", () => {
         console.log("Program spawned")
         spawnDate = Date.now()
-        res.editorMode.onSpawn();
+        res.editorMode.onSpawn(clientSession);
         clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         if( clientSession.program.stdin && processInputBuffer)
             if(clientSession.program?.stdin?.writable)

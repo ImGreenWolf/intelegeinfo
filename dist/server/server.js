@@ -1097,7 +1097,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                     clientSession.program?.on("spawn", () => {
                         console.log("Program spawned");
                         spawnDate = Date.now();
-                        res.editorMode.onSpawn();
+                        res.editorMode.onSpawn(clientSession);
                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
                         if (clientSession.program.stdin && processInputBuffer)
                             if (clientSession.program?.stdin?.writable)

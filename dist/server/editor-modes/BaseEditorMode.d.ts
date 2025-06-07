@@ -1,4 +1,5 @@
 import { ChildProcess } from "child_process";
+import { EditorSession } from "../types";
 declare abstract class EditorMode {
     abstract name: string;
     abstract dockerFile: string;
@@ -7,7 +8,7 @@ declare abstract class EditorMode {
     isInterpreter: boolean;
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>;
     abstract compile(res: any): any;
-    onSpawn(): void;
+    onSpawn(sessionObj: EditorSession): void;
     constructor();
 }
 export default EditorMode;

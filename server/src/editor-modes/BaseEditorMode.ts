@@ -1,4 +1,5 @@
 import { ChildProcess } from "child_process";
+import { EditorSession } from "../types";
 
 // maybe change from class to interface
 abstract class EditorMode {
@@ -10,7 +11,7 @@ abstract class EditorMode {
     isInterpreter: boolean = false; // used for JIT languages like python or js
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>
     abstract compile(res: any)
-    onSpawn()
+    onSpawn(sessionObj: EditorSession)
     {
         return;
     }
