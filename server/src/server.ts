@@ -1315,8 +1315,8 @@ const runCommand =
 `docker run \
 -d \
 --name ${imageName} \
--v "${sessionFolder}:/app" \
-${hasGUI ? `-v "/tmp/vnc-${sessionId}:/app/vnc"` : " \ "}
+-v "${sessionFolder}:/app" \ ${hasGUI ? `
+    -v "/tmp/vnc-${sessionId}:/app/vnc" \ ` : ""}
 -w /app \
 -di \
 -m 256MB \
