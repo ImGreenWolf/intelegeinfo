@@ -1062,7 +1062,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                     setTimeout(() => {
                         // TODO Spawn GUI on client
                         //   if(hasGUI == true) 
-                        clientSession.sessionContainer.editorMode.spawnGUI(clientSession.sessionContainer, clientSession);
+                        clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
                         // else
                         console.log(hasGUI);
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally

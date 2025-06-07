@@ -66,7 +66,7 @@ CMD bash `;
     //     export DISPLAY=:1 && fluxbox & \
     //     python3 gui_app.py & \
     //     x11vnc -display :1 -rfbport 5900 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim()
-    spawnGUI(res, clientSession) {
+    onBuild(res, clientSession) {
         console.log('spawn gui');
         const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Use the mounted vnc directory (relative to /app workdir)
