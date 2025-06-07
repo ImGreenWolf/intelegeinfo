@@ -48,13 +48,14 @@ CMD bash `
 
 const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Create the vnc directory and socket path
-  VNC_SOCK="/vnc/vnc.sock"
+  mkdir -p /tmp/vnc
+  VNC_SOCK="/tmp/vnc/vnc.sock"
   
   echo "[INFO] Starting Xvfb on display :1..."
   Xvfb :1 -screen 0 1024x768x16 -ac +extension GLX +render -noreset &
   XVFB_PID=$!
   
-  # Wait for Xvfb to be ready (up to 10 seconds)
+  # Wait for Xvfb to be ready
   echo "[INFO] Waiting for Xvfb to be ready..."
   for i in \$(seq 1 10); do
     if xdpyinfo -display :1 >/dev/null 2>&1; then
@@ -65,40 +66,58 @@ const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, '
     sleep 1
   done
   
-  # Final check
+  # Check if Xvfb is actually working
   if ! xdpyinfo -display :1 >/dev/null 2>&1; then
     echo "[ERROR] Xvfb failed to start properly"
     exit 1
   fi
   
-  echo "[INFO] Starting x11vnc..."
-  x11vnc -display :1 -rfbunixpath "\$VNC_SOCK" -nopw -forever -shared -bg
+  echo "[DEBUG] Directory permissions:"
+  ls -la /tmp/vnc/
   
-  # Wait for VNC socket to be created
-  echo "[INFO] Waiting for VNC socket..."
-  for i in \$(seq 1 10); do
-    if [ -S "\$VNC_SOCK" ]; then
-      echo "[INFO] VNC socket created at \$VNC_SOCK"
-      break
-    fi
-    echo "[INFO] Waiting for VNC socket... (\$i/10)"
-    sleep 1
-  done
+  echo "[INFO] Starting x11vnc with verbose output..."
+  echo "[DEBUG] VNC Socket path: \$VNC_SOCK"
   
-  if [ ! -S "\$VNC_SOCK" ]; then
-    echo "[ERROR] VNC socket was not created"
-    exit 1
+  # Start x11vnc with more verbose output and without -bg to see errors
+  x11vnc -display :1 -rfbunixpath "\$VNC_SOCK" -nopw -forever -shared -verbose &
+  X11VNC_PID=$!
+  
+  # Give x11vnc time to start
+  sleep 3
+  
+  echo "[DEBUG] Checking if x11vnc process is running:"
+  ps aux | grep x11vnc | grep -v grep
+  
+  echo "[DEBUG] Checking socket creation:"
+  ls -la /tmp/vnc/
+  
+  # Check if socket exists with different approach
+  if [ -e "\$VNC_SOCK" ]; then
+    echo "[INFO] Socket file exists: \$VNC_SOCK"
+    file "\$VNC_SOCK"
+  else
+    echo "[ERROR] Socket file does not exist: \$VNC_SOCK"
   fi
   
-  echo "[INFO] Starting Python application..."
+  # Try alternative socket path (maybe x11vnc creates it elsewhere)
+  echo "[DEBUG] Searching for any vnc sockets:"
+  find /tmp -name "*.sock" -type s 2>/dev/null || echo "No .sock files found"
+  find /tmp -name "*vnc*" 2>/dev/null || echo "No vnc files found"
+  
+  # Check x11vnc logs/errors
+  echo "[DEBUG] Checking if x11vnc is still running:"
+  if kill -0 \$X11VNC_PID 2>/dev/null; then
+    echo "[INFO] x11vnc process is running (PID: \$X11VNC_PID)"
+  else
+    echo "[ERROR] x11vnc process died"
+  fi
+  
+  echo "[INFO] Starting Python application anyway..."
   python clientFiles/${res.fileName} &
   PYTHON_PID=$!
   
-  echo "[INFO] All services started successfully"
-  echo "[INFO] VNC Socket: \$VNC_SOCK"
-  
-  # Keep the container running
-  wait \$PYTHON_PID
+  echo "[INFO] Keeping container alive for debugging..."
+  sleep 30
 `], {
     stdio: 'pipe'
 });
