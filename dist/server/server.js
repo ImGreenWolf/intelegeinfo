@@ -1033,7 +1033,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 else
                     console.log('Skipping build stage.');
                 const imageName = `session-container-${sessionId}`;
-                fs_1.default.mkdirSync(`/tmp/vnc-${sessionId}/`);
+                // fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
                 // 4. Run the Docker container with access to the sandbox folder
                 const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
                 console.log(hasGUI ? 'executing with GUI' : "no gui");
@@ -1052,7 +1052,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                 console.log(runCommand);
                 // Return the child process for external handling
-                const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
+                const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: 'pipe' });
                 clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode };
                 childProcess?.on("spawn", () => {
                     console.log("Docker container spawned");
