@@ -69,12 +69,33 @@ CMD bash `;
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
-        return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "sh", "-c",
-            "Xvfb :1 -screen 0 1024x768x16 && sleep 1 && export DISPLAY=:1 && python clientFiles/" + res.fileName +
-                " & x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared && echo 'started'"], {
+        // return spawn('docker', ['exec', "-i", res.imageName, "sh","-c",
+        //      "Xvfb :1 -screen 0 1024x768x16 && sleep 1 && export DISPLAY=:1 && python clientFiles/" + res.fileName +
+        //       " & x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared && echo 'started'"], {
+        //     stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
+        //     env: {DISPLAY: ':1'}
+        // });
+        const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', res.imageName, 'sh', '-c', `
+  echo "[INFO] Starting Xvfb..." &&
+  Xvfb :1 -screen 0 1024x768x16 &&
+  echo "[INFO] Starting x11vnc..." &&
+  export DISPLAY=:1 &&
+  x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -nopw -forever -shared &&
+  echo "[INFO] Started successfully"
+`], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
             env: { DISPLAY: ':1' }
         });
+        proc.stdout.on('data', (data) => {
+            console.log('[stdout]', data.toString());
+        });
+        proc.stderr.on('data', (data) => {
+            console.error('[stderr]', data.toString());
+        });
+        proc.on('exit', (code) => {
+            console.log(`[exit] Process exited with code ${code}`);
+        });
+        return proc;
     }
     compile() {
         return;
@@ -84,7 +105,16 @@ CMD bash `;
         const wsProxy = (0, child_process_1.spawn)('websockify', [
             '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
             '--unix-target', `/tmp/vnc-${sessionObj.sessionId}/vnc.sock`, '8080'
-        ]);
+        ], { stdio: 'pipe' });
+        wsProxy.stdout.on('data', (data) => {
+            console.log('[ws stdout]', data.toString());
+        });
+        wsProxy.stderr.on('data', (data) => {
+            console.error('[ws stderr]', data.toString());
+        });
+        wsProxy.on('exit', (code) => {
+            console.log(`[ws exit] Process exited with code ${code}`);
+        });
         setTimeout(() => {
             try {
                 fs.accessSync(`/tmp/vnc-${sessionObj.sessionId}/vnc.sock`);
