@@ -46,21 +46,61 @@ CMD bash `
         //     env: {DISPLAY: ':1'}
         // });
 
-        const proc = spawn('docker', ['exec', '-i', '-e', "DISPLAY=:1", res.imageName, 'sh', '-c', `
-  export DISPLAY=:1 &&
-  echo "[INFO] Starting Xvfb..." &&
-  Xvfb :1 -screen 0 1024x768x16 &
-  sleep 2 &&
-
-  echo "[INFO] Starting x11vnc..." &&
-  x11vnc -display :1 -rfbunixpath ../vnc/vnc.sock -nopw -forever -shared &
-  DISPLAY=:1 xwininfo -root > /dev/null && echo "Display works" || echo "Display failed" &&
+const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
+  # Create the vnc directory and socket path
+  VNC_SOCK="/vnc/vnc.sock"
+  
+  echo "[INFO] Starting Xvfb on display :1..."
+  Xvfb :1 -screen 0 1024x768x16 -ac +extension GLX +render -noreset &
+  XVFB_PID=$!
+  
+  # Wait for Xvfb to be ready (up to 10 seconds)
+  echo "[INFO] Waiting for Xvfb to be ready..."
+  for i in \$(seq 1 10); do
+    if xdpyinfo -display :1 >/dev/null 2>&1; then
+      echo "[INFO] Xvfb is ready on display :1"
+      break
+    fi
+    echo "[INFO] Waiting for Xvfb... (\$i/10)"
+    sleep 1
+  done
+  
+  # Final check
+  if ! xdpyinfo -display :1 >/dev/null 2>&1; then
+    echo "[ERROR] Xvfb failed to start properly"
+    exit 1
+  fi
+  
+  echo "[INFO] Starting x11vnc..."
+  x11vnc -display :1 -rfbunixpath "\$VNC_SOCK" -nopw -forever -shared -bg
+  
+  # Wait for VNC socket to be created
+  echo "[INFO] Waiting for VNC socket..."
+  for i in \$(seq 1 10); do
+    if [ -S "\$VNC_SOCK" ]; then
+      echo "[INFO] VNC socket created at \$VNC_SOCK"
+      break
+    fi
+    echo "[INFO] Waiting for VNC socket... (\$i/10)"
+    sleep 1
+  done
+  
+  if [ ! -S "\$VNC_SOCK" ]; then
+    echo "[ERROR] VNC socket was not created"
+    exit 1
+  fi
+  
+  echo "[INFO] Starting Python application..."
   python clientFiles/${res.fileName} &
-  ps aux | grep Xvfb | grep -v grep &&
-  echo "[INFO] Started successfully on display $DISPLAY"
+  PYTHON_PID=$!
+  
+  echo "[INFO] All services started successfully"
+  echo "[INFO] VNC Socket: \$VNC_SOCK"
+  
+  # Keep the container running
+  wait \$PYTHON_PID
 `], {
-    stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
-    env: {...process.env, DISPLAY: ':1'}
+    stdio: 'pipe'
 });
 
 proc.stdout.on('data', (data) => {

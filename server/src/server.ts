@@ -466,8 +466,11 @@ function cleanUp() {
             }
         });
     });
-
-    console.log("Removing previous sandbox containers: " + execSync(`docker ps --filter ancestor=${buildTag} -q |  xargs --no-run-if-empty docker rm --force `, {timeout: 5000}))
+    let filter = '';
+    EditorModes.modes.forEach(element => {
+        filter += `--filter ancestor=${buildTag}_${element.dockerSafeTag} `
+    });
+    console.log("Removing previous sandbox containers: " + execSync(`docker ps filter -q |  xargs --no-run-if-empty docker rm --force `, {timeout: 5000}))
 });
 
 }
@@ -1309,7 +1312,7 @@ const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \
--v "/tmp/vnc-${sessionId}:/vnc" \
+-v "/tmp/vnc-${sessionId}:/app/vnc" \
 -w /app \
 -di \
 -m 256MB \

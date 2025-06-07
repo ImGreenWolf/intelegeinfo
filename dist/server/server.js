@@ -372,7 +372,11 @@ function cleanUp() {
                 }
             });
         });
-        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps --filter ancestor=${buildTag} -q |  xargs --no-run-if-empty docker rm --force `, { timeout: 5000 }));
+        let filter = '';
+        EditorModes.modes.forEach(element => {
+            filter += `--filter ancestor=${buildTag}_${element.dockerSafeTag} `;
+        });
+        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps filter -q |  xargs --no-run-if-empty docker rm --force `, { timeout: 5000 }));
     });
 }
 function getClientFilesPath(sessionId) {
@@ -1035,7 +1039,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \
--v "/tmp/vnc-${sessionId}:/vnc" \
+-v "/tmp/vnc-${sessionId}:/app/vnc" \
 -w /app \
 -di \
 -m 256MB \
