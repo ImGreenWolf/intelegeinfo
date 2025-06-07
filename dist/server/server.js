@@ -1056,9 +1056,6 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode };
                 childProcess?.on("spawn", () => {
                     console.log("Docker container spawned");
-                });
-                childProcess.stdout.on('data', data => {
-                    console.log(data.toString());
                     setTimeout(() => {
                         // TODO Spawn GUI on client
                         //   if(hasGUI == true) 
@@ -1067,6 +1064,9 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                         console.log(hasGUI);
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
                     }, 500);
+                });
+                childProcess.stdout.on('data', data => {
+                    console.log(data.toString());
                 });
             });
         }
