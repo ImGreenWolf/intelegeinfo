@@ -6,6 +6,7 @@ import {WSMessage } from '../../shared/src/types'
 import { WebSocketMessageType } from '../../dist/shared/types';
 import { User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
+import { EditorMode } from './server';
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
     sessionId: UUID;
@@ -16,7 +17,8 @@ export class ClientObject {
     CWebSocket: WebSocket;
     canEdit: boolean = true;
     canChat: boolean = true;
-    color: string = "#ffffff"
+    color: string = "#ffffff";
+    editorMode: EditorMode;
     // EditorSessionObject: EditorSession
     public constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {
         this.sessionId = sessionId;
@@ -73,6 +75,10 @@ export class EditorSession {
     process: ChildProcess | undefined;
     msgMap: Map<number, WSMessage> = new Map();
     brainrotNames: string[];
+    currentbuildTag = '';
+    sessionContainer: {process: ChildProcess, imageName: string, fileName: string};
+    gdbProcess: ChildProcess | undefined;
+    program: ChildProcess | undefined;
 
     hostClient: ClientObject
     isPublic: boolean

@@ -6,6 +6,7 @@ export declare const rootDirName: string;
 export declare function authMiddleware(req: any, res: any, next: any, role?: string): void;
 export declare abstract class EditorMode {
     abstract name: any;
+    abstract dockerFile: any;
     abstract HandleClientInput(): any;
 }
 export declare const server: import("http").Server<typeof IncomingMessage, typeof import("http").ServerResponse>;

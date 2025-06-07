@@ -379,7 +379,6 @@ function cleanUp() {
 function getClientFilesPath(sessionId) {
     return path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
 }
-// })
 function compileFile(clientId, sessionId) {
     return new Promise((resolve, reject) => {
         // const clientId = req.body.clientId;
@@ -432,26 +431,7 @@ function compileFile(clientId, sessionId) {
         }
     });
 }
-app.post("/compile", (req, res) => {
-    // res.setHeader('Cache-Control', 'no-cache')
-    // if(compileProcess) 
-    //     {
-    //         compileProcess.kill(); // kill the process if it is running
-    //          console.error("Compile process already running for session " + sessionId);
-    //     }
-    // if(!sessionId) return;
-    // if(!fs.existsSync(path.join(rootDirName, "cache", sessionId))) return;
-    const { clientId, sessionId } = req.body;
-    compileFile(clientId, sessionId).then(data => {
-        res.json(data);
-    }).catch(err => {
-        res.json(err);
-    });
-});
-let currentbuildTag = '';
 exports.wss.addListener('connection', async (ws, req) => {
-    let gdbProcess;
-    let program;
     let sessionId;
     let clientId;
     let clientObj;
@@ -466,7 +446,6 @@ exports.wss.addListener('connection', async (ws, req) => {
     let dataTimeout;
     let project;
     let processInputBuffer = '';
-    let sessionContainer;
     let spawnPromise;
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies);
@@ -629,10 +608,10 @@ exports.wss.addListener('connection', async (ws, req) => {
         const customStream = new stream_1.Writable({
             write(chunk, encoding, callback) {
                 console.log(`Received from WebSocket, sending to C++ stdin: ${chunk.toString()}`);
-                program?.stdin?.write(chunk, encoding, callback); // Forward to child stdin
+                clientSession.program?.stdin?.write(chunk, encoding, callback); // Forward to child stdin
             },
             final(callback) {
-                program?.stdin?.end(); // Close stdin when done
+                clientSession.program?.stdin?.end(); // Close stdin when done
                 callback();
             }
         });
@@ -888,7 +867,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                     clientId: clientId,
                                     body: gdbOutput.json ? gdbOutput.json : undefined,
                                     message: 'next', //command.toString(),
-                                    msgId: gdbProcess?.pid || -1,
+                                    msgId: clientSession.gdbProcess?.pid || -1,
                                     line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
                                     variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined
                                 };
@@ -988,56 +967,44 @@ exports.wss.addListener('connection', async (ws, req) => {
          * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
          * @returns The child process running the Docker container
          */
-        async function buildAndRunCppSandbox(cppExecutablePath, cacheFolderPath, clientId, sessionId) {
+        async function buildAndRunCppSandbox(sessionFolder, fileName, EditorMode, clientId, sessionId) {
             return new Promise((resolve, reject) => {
-                const exeFolder = path_1.default.dirname(cppExecutablePath); // Folder containing .exe
-                const exeName = path_1.default.basename(cppExecutablePath); // .exe filename
-                const sandboxFolder = path_1.default.join(exeFolder, 'clientFiles'); // The folder the exe will access
+                const sandboxFolder = path_1.default.join(sessionFolder, 'clientFiles'); // The folder the exe will access
                 // Ensure that the sandbox folder exists
                 if (!fs_1.default.existsSync(sandboxFolder)) {
                     console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
                     reject();
                 }
-                if (sessionContainer) {
+                if (clientSession.sessionContainer) {
                     console.log('Container already running, executing command...');
-                    resolve(sessionContainer);
+                    resolve(clientSession.sessionContainer);
                     return;
                 }
                 // Create a temporary directory for building the Docker image
                 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
-                const dockerfilePath = path_1.default.join(cacheFolderPath, 'Dockerfile');
-                const containerExePath = `${exeName}`;
-                if (!currentbuildTag) {
-                    currentbuildTag = buildTag; // Unique image tag to avoid collisions
+                const dockerfilePath = path_1.default.join(sessionFolder, 'Dockerfile');
+                if (!clientSession.currentbuildTag) {
+                    clientSession.currentbuildTag = buildTag; // Unique image tag to avoid collisions
                     // 1. Copy the executable to the temporary folder
                     // 2. Write the Dockerfile to the temp directory
-                    const dockerfileContents = // `
-                     
-                    // FROM gcc:latest\n
-                    // COPY . /usr/src/
-                    // WORKDIR /usr/src/
-                    // RUN g++ -g -O0 "main.cpp" -o main\n
-                    // #CMD ["${containerExePath.replace(/\\/g, '\\\\')}"]\n
-                    // \n
-                    // CMD ["./main"]
-                    `
-# Base image with GCC
-FROM gcc:bookworm
-
-# Set working directory inside container
-WORKDIR /app
-RUN apt-get update && \
-    apt-get install -y gdb && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-# Default command can be overridden
-CMD [ "bash" ]
-  `.trim();
+                    const dockerfileContents = EditorMode.dockerFile.trim();
+                    // `
+                    // # Base image with GCC
+                    // FROM gcc:bookworm
+                    // # Set working directory inside container
+                    // WORKDIR /app
+                    // RUN apt-get update && \
+                    //     apt-get install -y gdb && \
+                    //     apt-get clean && \
+                    //     rm -rf /var/lib/apt/lists/*
+                    // # Default command can be overridden
+                    // CMD [ "bash" ]
+                    //   `.trim();
                     fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
                     // 3. Build the Docker image
-                    console.log(`Building Docker image: ${currentbuildTag}`);
+                    console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
                     try {
-                        (0, child_process_2.execSync)(`docker build -t ${currentbuildTag} "${cacheFolderPath}"`, { stdio: 'inherit' });
+                        (0, child_process_2.execSync)(`docker build -t ${clientSession.currentbuildTag} "${sessionFolder}"`, { stdio: 'inherit' });
                     }
                     catch (error) {
                         console.error('Error building Docker image:', error);
@@ -1046,72 +1013,34 @@ CMD [ "bash" ]
                 }
                 else
                     console.log('Skipping build stage.');
-                //   spawn("g++", ["-g", "-O0", path.join(cacheFolderPath, "main.cpp"), "-o", path.join(cacheFolderPath,"main")])
-                // //spawn(`g++ ${cacheFolderPath}/main.cpp -o ${cacheFolderPath}/main`)
-                // .on('close', ()=> {
-                //     const childProcess = spawn(`docker run --rm -v "${cacheFolderPath}:/app" -w /app gcc:bookworm ./main`, { shell: true })
-                //      resolve(childProcess as ChildProcess); // Return the child process so it can be handled externally
-                // })
                 const imageName = `session-container-${sessionId}`;
-                //   const dockerSandboxPath = windowsPathToDocker(cacheFolderPath);
                 // 4. Run the Docker container with access to the sandbox folder
                 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
                  `docker run \
 -d \
 --name ${imageName} \
--v "${cacheFolderPath}:/app" \
+-v "${sessionFolder}:/app" \
 -w /app \
 -di \
 -m 256MB \
 --cpus="0.25" \
 --rm \
-${currentbuildTag} \
+${clientSession.currentbuildTag} \
 bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                 console.log(runCommand);
                 // Return the child process for external handling
                 const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true });
-                sessionContainer = { process: childProcess, imageName };
+                clientSession.sessionContainer = { process: childProcess, imageName, fileName };
                 childProcess?.on("spawn", () => {
                     console.log("Docker container spawned");
-                    //   spawn("docker", ["ps", "-a"], { stdio: "inherit" });
-                    // try {
-                    //     readStdio(childProcess, {}).then(() => console.log('Container executed')).catch(err => console.error('Container execution error: '+err))
-                    //     resolve(null)
-                    // }
-                    // catch(err)
-                    // {
-                    //     console.error("Failed to run docker commands: " + err)
-                    // }
-                    // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-                    // setTimeout(() => {
-                    //     resolve(sessionContainer); // Return the child process so it can be handled externally
-                    // }, 5000);
                 });
                 childProcess.stdout.on('data', data => {
                     console.log(data.toString());
-                    // resolve(sessionContainer)
-                    //  resolve(sessionContainer);
                     setTimeout(() => {
-                        resolve(sessionContainer); // Return the child process so it can be handled externally
+                        resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
                     }, 500);
                 });
-                //   childProcess.stdout.on('data', (data) => {
-                //     console.log(`Output: ${data}`);
-                //   });
-                //   childProcess.stderr.on('data', (data) => {
-                //     console.error(`Error: ${data}`);
-                //   });
-                //   childProcess.on('close', (code) => {
-                //     console.log(`Child process exited with code ${code}`);
-                //     // Cleanup the Docker image after the process finishes
-                //     console.log(`Cleaning up image: ${imageTag}`);
-                //     try {
-                //       execSync(`docker rmi ${imageTag}`, { stdio: 'ignore' });
-                //     } catch (error) {
-                //       console.error('Error cleaning up Docker image:', error);
-                //     }
-                //   });
             });
         }
         async function readStdio(program, messageJSON) {
@@ -1130,9 +1059,9 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                         });
                     }
                     clearTimeout(programTimeout);
-                    if (program) {
-                        program.stdout.removeAllListeners();
-                        program.stderr.removeAllListeners();
+                    if (clientSession.program) {
+                        clientSession.program.stdout.removeAllListeners();
+                        clientSession.program.stderr.removeAllListeners();
                     }
                     replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
@@ -1151,13 +1080,13 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                     }, 1000);
                 // if(programTimeout) clearTimeout(programTimeout)
                 spawnPromise = new Promise((resolve, reject) => {
-                    program?.on("spawn", () => {
+                    clientSession.program?.on("spawn", () => {
                         console.log("Program spawned");
                         spawnDate = Date.now();
                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
-                        if (program.stdin && processInputBuffer)
-                            if (program?.stdin?.writable)
-                                program.stdin.write(processInputBuffer); // write buffer
+                        if (clientSession.program.stdin && processInputBuffer)
+                            if (clientSession.program?.stdin?.writable)
+                                clientSession.program.stdin.write(processInputBuffer); // write buffer
                         dataTimeout =
                             setTimeout(() => {
                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
@@ -1165,7 +1094,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                         resolve();
                     });
                 });
-                program.stdout?.on("data", (data) => {
+                clientSession.program.stdout?.on("data", (data) => {
                     gdbBuffer += data.toString();
                     // replicateFunction((clientWs) => {
                     //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
@@ -1179,11 +1108,11 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                     }, 100);
                 });
-                program?.stderr?.on("data", (data) => {
+                clientSession.program?.stderr?.on("data", (data) => {
                     gdbBuffer += data.toString();
                     console.error(gdbBuffer);
                 });
-                program?.on("close", (code) => {
+                clientSession.program?.on("close", (code) => {
                     clearTimeout(dataTimeout);
                     switch (code) {
                         case 0:
@@ -1535,7 +1464,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                             break;
                         handleCommand(command, exports.clients); // pass all the clients in the session
                         async function handleCommand(command, sockets) {
-                            const filePath = path_1.default.join(exports.rootDirName, "cache", sessionId, "main.exe");
+                            const filePath = path_1.default.join(exports.rootDirName, "cache", sessionId);
                             try {
                                 if (command == "execute") {
                                     // fs.accessSync(filePath) // disabled to auto compile
@@ -1544,7 +1473,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                             // const filePath = path.join(rootDirName, "cache", sessionId, "main.exe");
                                             function runProgram() {
                                                 const mainPromise = new Promise((resolve, reject) => {
-                                                    buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
+                                                    buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(res => {
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         if (res == null)
                                                             return resolve();
@@ -1552,14 +1481,14 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                             replicateFunction((clientWs) => {
                                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                             });
-                                                            (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`);
+                                                            (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 ${res.fileName} -o main"`);
                                                             replicateFunction((clientWs) => {
                                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                             });
-                                                            program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "./main"], {
+                                                            clientSession.program = (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "./main"], {
                                                                 stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
                                                             });
-                                                            readStdio(program, messageJSON).then(() => resolve());
+                                                            readStdio(clientSession.program, messageJSON).then(() => resolve());
                                                         }
                                                         catch (err) {
                                                             console.error("Failed to run docker commands: " + err);
@@ -1675,7 +1604,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                         //  })
                                         // onClosedProcess(sessionId);  // TODO Figure out why this was uncommented
                                         // executeProgram();
-                                        closeProcess(program, sessionId).then(() => {
+                                        closeProcess(clientSession.program, sessionId).then(() => {
                                             replicateFunction((clientWs) => {
                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId })); // Send GDB output to the client
                                             });
@@ -1688,7 +1617,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                 }
                                 else if (command == "-exec-run") {
                                     if (!getProcessFromMap()) {
-                                        buildAndRunCppSandbox(filePath, path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId).then(res => {
+                                        buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(res => {
                                             mode = "debug"; //set mode to debug
                                             try {
                                                 replicateFunction((clientWs) => {
@@ -1698,8 +1627,8 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                 replicateFunction((clientWs) => {
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                 });
-                                                gdbProcess = (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", 'main'], { stdio: 'pipe' }); //"-ex", "set pagination off", 
-                                                addProcessToMap(sessionId, gdbProcess);
+                                                clientSession.gdbProcess = (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", 'main'], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+                                                addProcessToMap(sessionId, clientSession.gdbProcess);
                                             }
                                             catch (err) {
                                                 printClientConsoleError("docker error: " + err);
@@ -1708,10 +1637,10 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                 console.error('Invalid session while starting debug process');
                                             printClientConsoleDebug("started debugging process.");
                                             queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
-                                            gdbProcess.stdout.on('data', (data) => {
+                                            clientSession.gdbProcess.stdout.on('data', (data) => {
                                                 console.log("GDB Data: " + data.toString());
                                             });
-                                            gdbProcess.stderr.on('data', (derr) => {
+                                            clientSession.gdbProcess.stderr.on('data', (derr) => {
                                                 console.error("GDB Error: " + derr.toString());
                                             });
                                         });
@@ -1743,12 +1672,12 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                             // console.log(clientId + " " + command)
                                             if (mode != "debug")
                                                 res.status(400).send('Bad Request: GDB process not active');
-                                            if (!gdbProcess)
+                                            if (!clientSession.gdbProcess)
                                                 res.status(400).send('Bad Request: GDB process not active');
                                             if (!command)
                                                 res.status(400).send('Bad Request: invalid command');
                                             //res.send({code: fs.readFileSync("user_code.cpp").toString()});
-                                            if (mode != "debug" || !gdbProcess || !command)
+                                            if (mode != "debug" || !clientSession.gdbProcess || !command)
                                                 return;
                                             new Promise((resolve, reject) => {
                                                 let gdbBuffer = "";
@@ -1758,7 +1687,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                     if (gdbBuffer.includes("(gdb)")) {
                                                         if (parseInt(gdbBuffer.toString().match(/(?<=\$)\d*/)?.[0]) === cmdId + 1) {
                                                             // We have everything, remove listener
-                                                            gdbProcess?.stdout?.removeListener("data", onData);
+                                                            clientSession.gdbProcess?.stdout?.removeListener("data", onData);
                                                             resolve();
                                                             return res.send(({
                                                                 error: false,
@@ -1768,18 +1697,18 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                                 body: gdbBuffer,
                                                                 message: command?.toString(),
                                                                 cmdId: cmdId,
-                                                                msgId: gdbProcess?.pid
+                                                                msgId: clientSession.gdbProcess?.pid
                                                             }));
                                                         }
                                                         else
                                                             gdbBuffer = "";
                                                     }
                                                 };
-                                                if (gdbProcess && gdbProcess.stdin && gdbProcess.stdout) {
+                                                if (clientSession.gdbProcess && clientSession.gdbProcess.stdin && clientSession.gdbProcess.stdout) {
                                                     // Use .on instead of .once, because GDB output can be split
-                                                    gdbProcess?.stdout?.on("data", onData);
+                                                    clientSession.gdbProcess?.stdout?.on("data", onData);
                                                     // Send the command
-                                                    gdbProcess?.stdin?.write("print " + command + "\n");
+                                                    clientSession.gdbProcess?.stdin?.write("print " + command + "\n");
                                                 }
                                                 else
                                                     console.error("GDB process not found for session " + sessionId);
@@ -1873,9 +1802,9 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                             */
                                 }
                                 else {
-                                    if (program) {
-                                        if (program?.stdin?.writable) {
-                                            program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                    if (clientSession.program) {
+                                        if (clientSession.program?.stdin?.writable) {
+                                            clientSession.program?.stdin?.write(command); //program.stdin.write(message + "\n");
                                             clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                                         }
                                         else
@@ -1909,7 +1838,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
             removeRunningProcessFromMap();
             if (isShared)
                 shared.removeProcess(sessionId);
-            program = undefined;
+            clientSession.program = undefined;
             // replicateFunction((thisclientWS, thisclientid) => {
             //     thisclientWS.send(JSON.stringify({type: WebSocketMessageType.Output, message: 'end'}))
             // })
@@ -1963,8 +1892,8 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 // sessions.delete(sessionId);
                 closeProcess(process)
                     .finally(() => {
-                    if (sessionContainer)
-                        (0, child_process_1.exec)(`docker rm ${sessionContainer.imageName} -f -v`);
+                    if (clientSession.sessionContainer)
+                        (0, child_process_1.exec)(`docker rm ${clientSession.sessionContainer.imageName} -f -v`);
                     const dirPath = path_1.default.join(exports.rootDirName, "cache", sessionId);
                     if (false) // TODO check if its okay to delete the session folder
                         if (dirPath)

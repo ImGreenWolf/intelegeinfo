@@ -2,10 +2,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const server_1 = require("../server");
 class CppMode extends server_1.EditorMode {
-    name = 'Cpp Mode';
+    name = 'C++';
+    dockerFile = `
+    # Base image with GCC
+    FROM gcc:bookworm
+
+    # Set working directory inside container
+    WORKDIR /app
+    RUN apt-get update && \
+        apt-get install -y gdb && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/*
+    # Default command can be overridden
+    CMD [ "bash" ]
+    `.trim();
     HandleClientInput() {
     }
 }
+exports.default = CppMode;
 // function windowsPathToDocker(path: string): string {
 //     const drive = path[0].toLowerCase();
 //     return `/${drive}${path.slice(2).replace(/\\/g, '/')}`;

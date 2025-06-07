@@ -14,6 +14,7 @@ class ClientObject {
     canEdit = true;
     canChat = true;
     color = "#ffffff";
+    editorMode;
     // EditorSessionObject: EditorSession
     constructor(sessionId, EditorSession, WebSocket, displayName, user) {
         this.sessionId = sessionId;
@@ -58,6 +59,10 @@ class EditorSession {
     process;
     msgMap = new Map();
     brainrotNames;
+    currentbuildTag = '';
+    sessionContainer;
+    gdbProcess;
+    program;
     hostClient;
     isPublic;
     enableChat;

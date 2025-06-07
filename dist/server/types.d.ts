@@ -3,6 +3,7 @@ import WebSocket from 'ws';
 import { ChildProcess } from 'child_process';
 import { WSMessage } from '../../shared/src/types';
 import { UserNoPassword } from './usersManager';
+import { EditorMode } from './server';
 export declare class ClientObject {
     sessionId: UUID;
     clientId: UUID;
@@ -13,6 +14,7 @@ export declare class ClientObject {
     canEdit: boolean;
     canChat: boolean;
     color: string;
+    editorMode: EditorMode;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: string | Record<string, any>): void;
 }
@@ -35,6 +37,14 @@ export declare class EditorSession {
     process: ChildProcess | undefined;
     msgMap: Map<number, WSMessage>;
     brainrotNames: string[];
+    currentbuildTag: string;
+    sessionContainer: {
+        process: ChildProcess;
+        imageName: string;
+        fileName: string;
+    };
+    gdbProcess: ChildProcess | undefined;
+    program: ChildProcess | undefined;
     hostClient: ClientObject;
     isPublic: boolean;
     enableChat: boolean;
