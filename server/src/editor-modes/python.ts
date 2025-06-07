@@ -36,7 +36,7 @@ CMD bash `
 
 
 spawnGUI(res, clientSession: EditorSession) {
-
+    console.log('spawn gui')
     const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Use the mounted vnc directory (relative to /app workdir)
   VNC_SOCK="vnc/vnc.sock"
