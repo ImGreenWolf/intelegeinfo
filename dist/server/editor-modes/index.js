@@ -4,8 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CppMode = exports.EditorMode = void 0;
+const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
+exports.EditorMode = BaseEditorMode_1.default;
 const c__1 = __importDefault(require("./c++"));
 exports.CppMode = c__1.default;
-class EditorMode {
-}
-exports.EditorMode = EditorMode;

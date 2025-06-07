@@ -6,7 +6,7 @@ import {WSMessage } from '../../shared/src/types'
 import { WebSocketMessageType } from '../../dist/shared/types';
 import { User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
-import { EditorMode } from './server';
+import { EditorMode } from './editor-modes';
 import { CppMode } from './editor-modes';
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {

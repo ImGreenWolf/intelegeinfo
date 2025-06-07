@@ -1,7 +1,3 @@
+import EditorMode from "./BaseEditorMode";
 import CppMode from "./c++";
-export declare abstract class EditorMode {
-    abstract name: any;
-    abstract dockerFile: any;
-    abstract HandleClientInput(): any;
-}
-export { CppMode };
+export { EditorMode, CppMode };

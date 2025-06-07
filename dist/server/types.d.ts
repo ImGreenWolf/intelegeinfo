@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 import { ChildProcess } from 'child_process';
 import { WSMessage } from '../../shared/src/types';
 import { UserNoPassword } from './usersManager';
-import { EditorMode } from './server';
+import { EditorMode } from './editor-modes';
 export declare class ClientObject {
     sessionId: UUID;
     clientId: UUID;
