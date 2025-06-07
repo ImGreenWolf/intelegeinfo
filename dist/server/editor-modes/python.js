@@ -75,16 +75,18 @@ CMD bash `;
         //     stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
         //     env: {DISPLAY: ':1'}
         // });
-        const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', res.imageName, 'sh', '-c', `
+        const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', '-e', "DISPLAY=:1", res.imageName, 'sh', '-c', `
+  export DISPLAY=:1 &&
   echo "[INFO] Starting Xvfb..." &&
   Xvfb :1 -screen 0 1024x768x16 &
   sleep 2 &&
-  ps aux | grep Xvfb &&
+
   echo "[INFO] Starting x11vnc..." &&
-  export DISPLAY=:1 &&
   x11vnc -display :1 -rfbunixpath ../vnc/vnc.sock -nopw -forever -shared &
+  DISPLAY=:1 xwininfo -root > /dev/null && echo "Display works" || echo "Display failed" &&
   python clientFiles/${res.fileName} &
-  echo "[INFO] Started successfully"
+  ps aux | grep Xvfb | grep -v grep &&
+  echo "[INFO] Started successfully on display $DISPLAY"
 `], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
             env: { ...process.env, DISPLAY: ':1' }
