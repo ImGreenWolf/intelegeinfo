@@ -33,7 +33,7 @@ CMD bash `;
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
-        return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "Xvfb :1 -screen 0 1024x768x16 && python clientFiles/" + res.fileName + "x11vnc -display :1 -rfbport 8080 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"], {
+        return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", "Xvfb :1 -screen 0 1024x768x16 && python clientFiles/" + res.fileName + "x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
             env: { DISPLAY: ':1' }
         });
