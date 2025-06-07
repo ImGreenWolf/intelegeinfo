@@ -942,8 +942,10 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         function getEditorMode(fileName) {
             const ext = fileName.trim().split('.')[1];
+            console.log(ext);
             if (ext)
                 EditorModes.modes.forEach(mode => {
+                    console.log(mode);
                     if (mode.extension.includes(ext))
                         return mode;
                 });
@@ -976,13 +978,17 @@ exports.wss.addListener('connection', async (ws, req) => {
          * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
          * @returns The child process running the Docker container
          */
-        async function buildAndRunCppSandbox(sessionFolder, fileName, EditorMode, clientId, sessionId) {
+        async function buildAndRunCppSandbox(sessionFolder, fileName, editorMode, clientId, sessionId) {
             return new Promise((resolve, reject) => {
                 const sandboxFolder = path_1.default.join(sessionFolder, 'clientFiles'); // The folder the exe will access
                 // Ensure that the sandbox folder exists
                 if (!fs_1.default.existsSync(sandboxFolder)) {
                     console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
                     reject();
+                }
+                if (!editorMode) {
+                    printClientConsoleInfo('File cant be executed!');
+                    reject('File cant be executed! Editor mode is invalid');
                 }
                 if (clientSession.sessionContainer) {
                     console.log('Container already running, executing command...');
@@ -996,7 +1002,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     clientSession.currentbuildTag = buildTag; // Unique image tag to avoid collisions
                     // 1. Copy the executable to the temporary folder
                     // 2. Write the Dockerfile to the temp directory
-                    const dockerfileContents = EditorMode.dockerFile.trim();
+                    const dockerfileContents = editorMode.dockerFile.trim();
                     // `
                     // # Base image with GCC
                     // FROM gcc:bookworm
