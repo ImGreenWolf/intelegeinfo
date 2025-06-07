@@ -1478,7 +1478,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                                                             replicateFunction((clientWs) => {
                                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                             });
-                                                            (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 ${res.fileName} -o main"`);
+                                                            (0, child_process_2.execSync)(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`);
                                                             replicateFunction((clientWs) => {
                                                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                             });
