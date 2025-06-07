@@ -7,6 +7,7 @@ import { WebSocketMessageType } from '../../dist/shared/types';
 import { User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './server';
+import { CppMode } from './editor-modes';
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
     sessionId: UUID;
@@ -18,7 +19,7 @@ export class ClientObject {
     canEdit: boolean = true;
     canChat: boolean = true;
     color: string = "#ffffff";
-    editorMode: EditorMode;
+    editorMode: EditorMode = new CppMode;
     // EditorSessionObject: EditorSession
     public constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {
         this.sessionId = sessionId;

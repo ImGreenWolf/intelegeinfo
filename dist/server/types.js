@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EditorSession = exports.EditorPermission = exports.ClientObject = void 0;
 const uuid_1 = require("uuid");
 const types_1 = require("../../dist/shared/types");
+const editor_modes_1 = require("./editor-modes");
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 class ClientObject {
     sessionId;
@@ -14,7 +15,7 @@ class ClientObject {
     canEdit = true;
     canChat = true;
     color = "#ffffff";
-    editorMode;
+    editorMode = new editor_modes_1.CppMode;
     // EditorSessionObject: EditorSession
     constructor(sessionId, EditorSession, WebSocket, displayName, user) {
         this.sessionId = sessionId;
