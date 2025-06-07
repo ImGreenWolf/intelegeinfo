@@ -82,12 +82,12 @@ CMD bash `;
   ps aux | grep Xvfb &&
   echo "[INFO] Starting x11vnc..." &&
   export DISPLAY=:1 &&
-  x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -nopw -forever -shared &
+  x11vnc -display :1 -rfbunixpath ../vnc/vnc.sock -nopw -forever -shared &
   python clientFiles/${res.fileName} &
   echo "[INFO] Started successfully"
 `], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
-            env: { DISPLAY: ':1' }
+            env: { ...process.env, DISPLAY: ':1' }
         });
         proc.stdout.on('data', (data) => {
             console.log('[stdout]', data.toString());
