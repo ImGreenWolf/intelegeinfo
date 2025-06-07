@@ -78,36 +78,27 @@ CMD bash `;
         const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
   # Use the mounted vnc directory (relative to /app workdir)
   VNC_SOCK="vnc/vnc.sock"
-  
-  echo "[INFO] Starting Xvfb on display :1..."
+
   Xvfb :1 -screen 0 1024x768x16 -ac +extension GLX +render -noreset &
   XVFB_PID=$!
   
   # Wait for Xvfb to be ready
-  echo "[INFO] Waiting for Xvfb to be ready..."
   for i in \$(seq 1 10); do
     if xdpyinfo -display :1 >/dev/null 2>&1; then
-      echo "[INFO] Xvfb is ready on display :1"
+
       break
     fi
     sleep 1
   done
-  
-  echo "[INFO] Working directory: \$(pwd)"
-  echo "[INFO] VNC socket will be created at: \$VNC_SOCK"
-  echo "[DEBUG] vnc directory contents:"
-  ls -la vnc/
-  
-  echo "[INFO] Starting x11vnc..."
+
   x11vnc -display :1 -unixsock "\$VNC_SOCK" -nopw -forever -shared &
   X11VNC_PID=$!
   
   # Wait for socket creation
-  echo "[INFO] Waiting for VNC socket creation..."
+
   for i in \$(seq 1 30); do
     if [ -S "\$VNC_SOCK" ]; then
-      echo "[INFO] VNC socket created successfully!"
-      ls -la "\$VNC_SOCK"
+
       break
     fi
     sleep 1
@@ -117,22 +108,11 @@ CMD bash `;
     fi
   done
   
-  if [ -S "\$VNC_SOCK" ]; then
-    echo "[INFO] VNC socket ready at \$VNC_SOCK"
-    echo "[INFO] Full path: \$(pwd)/\$VNC_SOCK"
-  else
-    echo "[ERROR] VNC socket was not created"
-    echo "[DEBUG] Final directory check:"
-    ls -la vnc/ 2>/dev/null || echo "vnc directory not found"
-    exit 1
-  fi
+
   
-  echo "[INFO] Starting Python application..."
   python clientFiles/${res.fileName} &
   PYTHON_PID=$!
-  
-  echo "[INFO] All services started successfully"
-  wait \$PYTHON_PID
+
 `], {
             stdio: 'pipe'
         });
