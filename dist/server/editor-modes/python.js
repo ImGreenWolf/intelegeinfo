@@ -82,8 +82,8 @@ CMD bash `;
   ps aux | grep Xvfb &&
   echo "[INFO] Starting x11vnc..." &&
   export DISPLAY=:1 &&
-  python clientFiles/${res.fileName} &&
-  x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -nopw -forever -shared &&
+  x11vnc -display :1 -rfbunixpath /vnc/vnc.sock -nopw -forever -shared &
+  python clientFiles/${res.fileName} &
   echo "[INFO] Started successfully"
 `], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
