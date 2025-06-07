@@ -1028,6 +1028,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 else
                     console.log('Skipping build stage.');
                 const imageName = `session-container-${sessionId}`;
+                fs_1.default.mkdirSync(`/tmp/vnc-${sessionId}/`);
                 // 4. Run the Docker container with access to the sandbox folder
                 const runCommand = //`docker run --rm  -v "${cacheFolderPath}":"/app/clientFiles" -w "/app" ${imageTag}` //-v "${dockerSandboxPath}":"${dockerSandboxPath}" -w "${dockerSandboxPath}" ${imageTag}`;
                  `docker run \
