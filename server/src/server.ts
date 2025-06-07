@@ -1827,7 +1827,7 @@ async function readStdio(program, messageJSON)
                                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                         });
 
-                                                        execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 ${res.fileName} -o main"`)
+                                                        execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
 
                                                         replicateFunction((clientWs) => {
                                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
