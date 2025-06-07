@@ -1333,16 +1333,16 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
 
      childProcess?.on("spawn", () => {
         console.log("Docker container spawned")
-         if(hasGUI == true) 
-            clientSession.sessionContainer.editorMode.spawnGUI(clientSession.sessionContainer, clientSession)
-        else
-            console.log(hasGUI)
+         
     })
     childProcess.stdout.on('data', data => {
         console.log(data.toString())
                 setTimeout(() => {
                     // TODO Spawn GUI on client
-          
+        //   if(hasGUI == true) 
+            clientSession.sessionContainer.editorMode.spawnGUI(clientSession.sessionContainer, clientSession)
+        // else
+            console.log(hasGUI)
         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
     }, 500);
     })
