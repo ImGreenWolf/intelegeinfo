@@ -154,7 +154,7 @@ CMD bash `;
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
-        return (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "pip install opencv-python && python clientFiles/" + res.fileName], {
+        return (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "python clientFiles/" + res.fileName], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
         });
     }
