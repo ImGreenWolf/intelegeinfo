@@ -860,7 +860,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         gdbBuffer.toString().split('\n').forEach(element => {
                             if (element != '') {
                                 const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
-                                console.log(gdbOutput.json + '\n' + gdbOutput.err);
+                                console.log(JSON.stringify(gdbOutput.json) + '\n' + gdbOutput.err);
                                 // console.log(gdbOutput.json);
                                 const response = {
                                     error: gdbOutput.err ? gdbOutput.err : false,
@@ -1188,6 +1188,7 @@ bash `.trim().replaceAll('\n', "");
                     messageJSON = JSON.parse(message.toString()).data;
                 else
                     messageJSON = JSON.parse(message.toString());
+                console.log(messageJSON);
                 const command = messageJSON.command;
                 const args = messageJSON.args;
                 const type = messageJSON.type;
@@ -1803,8 +1804,8 @@ bash `.trim().replaceAll('\n', "");
                                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, body: "gdb", clientId: clientId })); // Send GDB output to the client
                                     });
                                 }
-                                else if (mode == "debug") {
-                                    queueCommand(getProcessFromMap(), '-stack-list-variables --all-values', sessionId);
+                                else if (clientSession.gdbProcess != undefined) {
+                                    queueCommand(getProcessFromMap(), '-stack-list-variables --all-values', sessionId).catch(err => console.error('queue command err: ' + err));
                                     // if(args.includes('console'))
                                     //     {   
                                     //         gdbProcess?.stdin?.write(command + "\n");
@@ -1832,9 +1833,7 @@ bash `.trim().replaceAll('\n', "");
                                     // else 
                                     queueCommand(getProcessFromMap(), command, sessionId).then(() => {
                                         console.log('COMMAND');
-                                    }).catch(() => {
-                                        console.log('jj;jhvbgoujgfhvhg');
-                                    });
+                                    }).catch(err => console.error('queue command err: ' + err));
                                     /*
             
                                         if (gdbProcess) {
@@ -1852,18 +1851,16 @@ bash `.trim().replaceAll('\n', "");
                                         }
                                             */
                                 }
-                                else {
-                                    if (clientSession.program) {
-                                        if (clientSession.program?.stdin?.writable) {
-                                            clientSession.program?.stdin?.write(command); //program.stdin.write(message + "\n");
-                                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
-                                        }
-                                        else
-                                            console.error("stdin isnt writeable");
-                                        // dataTimeout = setTimeout(() => {
-                                        // }, 200);
-                                        // console.log("sent to program")
+                                else if (clientSession.program != undefined) {
+                                    if (clientSession.program?.stdin?.writable) {
+                                        clientSession.program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
                                     }
+                                    else
+                                        console.error("stdin isnt writeable");
+                                    // dataTimeout = setTimeout(() => {
+                                    // }, 200);
+                                    // console.log("sent to program")
                                 }
                             }
                             catch (err) {

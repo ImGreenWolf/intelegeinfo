@@ -1095,7 +1095,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                         if(element!='')
                         {
                              const gdbOutput = parseGDBString(element);
-                             console.log(gdbOutput.json + '\n' + gdbOutput.err)
+                             console.log(JSON.stringify(gdbOutput.json) + '\n' + gdbOutput.err)
                     // console.log(gdbOutput.json);
                 
                     const response: {
@@ -1499,7 +1499,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             if(JSON.parse(message.toString()).data != undefined)
              messageJSON = JSON.parse(message.toString()).data;
             else messageJSON = JSON.parse(message.toString());
-
+            console.log(messageJSON)
 
             const command = messageJSON.command
             const args = messageJSON.args;
@@ -2239,9 +2239,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     });
                            
                             
-                        } else if(mode=="debug")
+                        } else if(clientSession.gdbProcess!=undefined)
                         {
-                            queueCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId)
+                            queueCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId).catch(err => console.error('queue command err: ' + err))
                             
                             // if(args.includes('console'))
                             //     {   
@@ -2274,9 +2274,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 queueCommand(getProcessFromMap() as ChildProcess,command,sessionId).then(() => {
 
                                 console.log('COMMAND')
-                            }).catch(() => {
-                                console.log('jj;jhvbgoujgfhvhg')
-                            })
+                            }).catch(err => console.error('queue command err: ' + err))
                                 
                             
 
@@ -2296,9 +2294,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 }
                             }
                                 */
-                        } else
-                        {
-                            if(clientSession.program)
+                        } else if(clientSession.program!=undefined)
                             {
                                 if(clientSession.program?.stdin?.writable)
                                 {
@@ -2312,7 +2308,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                         // }, 200);
                                 // console.log("sent to program")
                             }
-                        }
+                        
                     
                  
                     } catch(err)
