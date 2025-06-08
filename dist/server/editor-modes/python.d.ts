@@ -9,7 +9,7 @@ declare class Python extends EditorMode {
     dockerFile: string;
     onBuild(res: any, clientSession: EditorSession): Promise<number>;
     execute(res: any): Promise<import("child_process").ChildProcessWithoutNullStreams>;
-    compile(): void;
+    compile(res: any): void;
     onSpawn(sessionObj: any): void;
 }
 export default Python;

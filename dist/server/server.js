@@ -1531,7 +1531,7 @@ bash `.trim().replaceAll('\n', "");
                                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                                 });
                                                                 //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
-                                                                clientObj.editorMode.compile(res);
+                                                                await clientObj.editorMode.compile(res);
                                                                 replicateFunction((clientWs) => {
                                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                                 });

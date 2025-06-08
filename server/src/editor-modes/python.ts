@@ -1,4 +1,4 @@
-import { ChildProcess, execSync, spawn } from "child_process";
+import { ChildProcess, exec, execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
 import path from "path";
 import { rootDirName } from "../server";
@@ -140,8 +140,12 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
 
        
     }
-    compile() {
-        return;
+    compile(res) {
+       setTimeout(() => {
+         return spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","pip install opencv-python"], {
+             stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
+         });
+       }, 500);
     }
 
     onSpawn(sessionObj) {

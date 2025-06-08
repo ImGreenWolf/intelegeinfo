@@ -158,8 +158,12 @@ CMD bash `;
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
         });
     }
-    compile() {
-        return;
+    compile(res) {
+        setTimeout(() => {
+            return (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "pip install opencv-python"], {
+                stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
+            });
+        }, 500);
     }
     onSpawn(sessionObj) {
     }
