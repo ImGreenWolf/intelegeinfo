@@ -1511,6 +1511,7 @@ bash `.trim().replaceAll('\n', "");
                         async function handleCommand(command, sockets) {
                             const filePath = path_1.default.join(exports.rootDirName, "cache", sessionId);
                             try {
+                                console.log('handle command: ' + command);
                                 if (command == "execute") {
                                     // fs.accessSync(filePath) // disabled to auto compile
                                     async function executeProgram() {
@@ -1805,6 +1806,7 @@ bash `.trim().replaceAll('\n', "");
                                     });
                                 }
                                 else if (clientSession.gdbProcess != undefined) {
+                                    console.log('queue command');
                                     queueCommand(getProcessFromMap(), '-stack-list-variables --all-values', sessionId).catch(err => console.error('queue command err: ' + err));
                                     // if(args.includes('console'))
                                     //     {   
@@ -1862,6 +1864,8 @@ bash `.trim().replaceAll('\n', "");
                                     // }, 200);
                                     // console.log("sent to program")
                                 }
+                                else
+                                    console.error('no process was found');
                             }
                             catch (err) {
                                 printClientConsoleError(err);

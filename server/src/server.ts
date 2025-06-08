@@ -1856,7 +1856,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     async function handleCommand(command: string, sockets: Map<UUID, WebSocket>) {
                         const filePath = path.join(rootDirName, "cache", sessionId);
                     try {
-                        
+                        console.log('handle command: ' + command)
                         if(command == "execute")
                         {
                             // fs.accessSync(filePath) // disabled to auto compile
@@ -2241,6 +2241,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             
                         } else if(clientSession.gdbProcess!=undefined)
                         {
+                            console.log('queue command')
                             queueCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId).catch(err => console.error('queue command err: ' + err))
                             
                             // if(args.includes('console'))
@@ -2308,6 +2309,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                         // }, 200);
                                 // console.log("sent to program")
                             }
+                            else
+                            console.error('no process was found')
                         
                     
                  
