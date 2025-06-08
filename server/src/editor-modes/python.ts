@@ -44,7 +44,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
       # Use the mounted vnc directory (relative to /app workdir)
       VNC_SOCK="vnc/vnc.sock"
-      Xvfb :1 -screen 0 1024x768x16 -ac +extension GLX +render -noreset &
+      Xvfb :1 -screen 0 640x480x16 -ac +extension GLX +render -noreset &
       XVFB_PID=$!
       
       # Wait for Xvfb to be ready

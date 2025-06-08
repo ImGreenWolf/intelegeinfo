@@ -2786,7 +2786,7 @@ ws.onmessage = (event) => {
             {
               if(document.getElementById('console-input'))
                 document.getElementById('console-input')?.remove();
-              
+
               const console = document.createElement('textarea')as HTMLTextAreaElement;
               console.id = 'console-input'
               document.querySelector('#active-console')?.appendChild(console) 
@@ -3493,7 +3493,7 @@ console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start
 export function displaynoVNC(container)
 {
   const frame = document.createElement('iframe')
-  frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html?bell=true&quality=5&path=novnc/websockify?token='+wsSessionId
+  frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html?bell=true&quality=5&path=novnc/websockify?resize=scale?token='+wsSessionId
   frame.id = 'noVDC'
   container.appendChild(frame)
 }
