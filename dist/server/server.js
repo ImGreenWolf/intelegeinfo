@@ -1880,7 +1880,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 return await new Promise((resolve, reject) => {
                     if (process) {
                         if (!process.killed && process) {
-                            process.kill();
+                            process.kill(9);
                             process.on(('close'), (code) => {
                                 onClosedProcess();
                                 resolve();

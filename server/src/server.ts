@@ -2332,7 +2332,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 if (process) {
 
                     if (!process.killed && process) {
-                        process.kill();
+                        process.kill(9);
                         process.on(('close'), (code) => {
 
 

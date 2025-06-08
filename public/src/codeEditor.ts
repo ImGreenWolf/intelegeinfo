@@ -2436,6 +2436,7 @@ ws.onmessage = (event) => {
       }
       else
       {
+        if(!data)
         writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time +"</span>ms" + (eventJson.notes  != "" &&  eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>": "" + "</span>"), eventJson);
       }
 
@@ -3062,11 +3063,13 @@ export function sendDebugCommand(cmd: string) {
   if (cmd == "-exec-run") {
     cmdBut?.classList.add("debug-control");
     cmdBut?.classList.remove("execute-control");
-    onRun()
+    if(!processRunning)
+      onRun()
   } else if (cmd == "execute") {
     cmdBut?.classList.remove("debug-control");
     cmdBut?.classList.add("execute-control");
-    onRun()
+    if(!processRunning)
+      onRun()
   }
 
   sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
@@ -3082,8 +3085,9 @@ let processRunning: boolean;
 
 export function playback() {
   sendDebugCommand("-stack-list-variables --all-values");
-
-  onRun();
+  //  TODO Stop playback
+  if(!processRunning)
+      onRun()
   let i = debugLine;
   updatePlaybackSpeed();
 }
