@@ -84,7 +84,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
       console.log('finally stopped')
       resolve(pid==0 ? pid : proc.pid)
     })
-
+    
     proc.stdout.on('data', (data: string) => {
         console.log("VNC SERVER: " + data.toString())
         if(data.includes('PORT')) {
@@ -125,13 +125,25 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
 
 
 
-               this.vcam = spawn('python3', ['camera.py'])
-
+              
               
             }, 3000);
         } else
         pid = parseInt(data);
-        
+           this.vcam = spawn('python3', ['camera.py'], {stdio: 'pipe'})
+
+
+               this.vcam.stdout.on('data', (data) => {
+            console.log('[this.vcam stdout]', data.toString());
+            });
+
+            this.vcam.stderr.on('data', (data) => {
+            console.error('[this.vcam stderr]', data.toString());
+            });
+
+            this.vcam.on('exit', (code) => {
+            console.log(`[this.vcam exit] Process exited with code ${code}`);
+            });
         })
 
 
