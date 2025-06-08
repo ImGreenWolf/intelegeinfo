@@ -571,6 +571,8 @@ if (new URLSearchParams(window.location.search).has('save'))
 var beautify = ace.require("ace/ext/beautify"); // get reference to extension
 export function beautifyEditor() {
     const video = document.createElement('video');
+    video.width = 640;
+    video.height = 480;
     document.body.appendChild(video);
     // const ws = new WebSocket('ws://localhost:8080');
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {

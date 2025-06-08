@@ -766,6 +766,8 @@ var beautify = ace.require("ace/ext/beautify"); // get reference to extension
 
 export function beautifyEditor() {
    const video = document.createElement('video')
+   video.width= 640;
+   video.height= 480;
    document.body.appendChild(video)
     // const ws = new WebSocket('ws://localhost:8080');
 
@@ -774,6 +776,7 @@ export function beautifyEditor() {
       const canvas = document.createElement('canvas');
       canvas.width = 640;
       canvas.height = 480;
+      
       const ctx = canvas.getContext('2d')!;
 
       setInterval(() => {
