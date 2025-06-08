@@ -2073,7 +2073,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         {
                             
                             if(!getProcessFromMap()) {
-                                buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then(res => {
+                                buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then(async res => {
                                                
                                     mode="debug"; //set mode to debug
                                     try {
@@ -2082,13 +2082,16 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                         });
 
-                                        execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 main.cpp -o main"`)
+                                        // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
+                                        clientObj.editorMode.compile(res)
 
                                         replicateFunction((clientWs) => {
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                         });
 
-                                        clientSession.gdbProcess = spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+                                        clientSession.gdbProcess = clientObj.editorMode.startDebugging(res)
+                                        if(!clientSession.gdbProcess)
+                                            return;
                                         addProcessToMap(sessionId, clientSession.gdbProcess);
                                     } catch (err){
                                         printClientConsoleError("docker error: " + err)

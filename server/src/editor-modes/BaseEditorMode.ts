@@ -19,6 +19,10 @@ abstract class EditorMode {
     {
         return 0;
     }
+    startDebugging(res): ChildProcess
+    {
+        return
+    }
     constructor()
     {
         

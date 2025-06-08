@@ -41,6 +41,9 @@ class CppMode extends EditorMode {
         execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
     }
 
+    startDebugging(res) {
+        return spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+    }
 
 }
 

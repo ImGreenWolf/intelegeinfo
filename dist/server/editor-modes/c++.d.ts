@@ -8,5 +8,6 @@ declare class CppMode extends EditorMode {
     constructor();
     execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
     compile(res: any): void;
+    startDebugging(res: any): import("child_process").ChildProcessWithoutNullStreams;
 }
 export default CppMode;

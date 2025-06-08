@@ -9,6 +9,9 @@ class EditorMode {
     onBuild(res, clientSession) {
         return 0;
     }
+    startDebugging(res) {
+        return;
+    }
     constructor() {
     }
 }
