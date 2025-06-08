@@ -1807,51 +1807,10 @@ bash `.trim().replaceAll('\n', "");
                                 }
                                 else if (clientSession.gdbProcess != undefined) {
                                     console.log('queue command');
-                                    queueCommand(getProcessFromMap(), '-stack-list-variables --all-values', sessionId).catch(err => console.error('queue command err: ' + err));
-                                    // if(args.includes('console'))
-                                    //     {   
-                                    //         gdbProcess?.stdin?.write(command + "\n");
-                                    //         console.log("executed console command " + command)
-                                    //         gdbBuffer="";
-                                    //         function onData()
-                                    //         {
-                                    //             // Use .on instead of .once, because GDB output can be split
-                                    //             gdbProcess?.stdout?.on("data", (data) => {
-                                    //                 gdbBuffer += data.toString();
-                                    //                 console.log(clientId + " " + gdbBuffer)
-                                    //                 ws.send(JSON.stringify({
-                                    //                     error: false,
-                                    //                     input: false,
-                                    //                     type: WebSocketMessageType.Output,
-                                    //                     body: gdbBuffer,
-                                    //                     message: command.toString()
-                                    //                 }));
-                                    //                 if(data.toString().includes('(gdb)'))
-                                    //                     gdbProcess?.stdout?.off("data", onData)
-                                    //             });
-                                    //         }
-                                    //      onData();
-                                    //     } 
-                                    // else 
-                                    queueCommand(getProcessFromMap(), command, sessionId).then(() => {
+                                    // executeCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId).catch(err => console.error('queue command err: ' + err))
+                                    executeCommand(getProcessFromMap(), command, sessionId).then(() => {
                                         console.log('COMMAND');
                                     }).catch(err => console.error('queue command err: ' + err));
-                                    /*
-            
-                                        if (gdbProcess) {
-                                            gdbProcess.stdin.write(message + "\n");
-            
-                                            // After next/continue, fetch local variables
-                                            if ((message.toString() === "next" || message.toString()  === "continue") && false) {
-                                                localsToWrite = true;
-                                                
-                                                    gdbProcess.stdin.write("info locals\n");  // Fetch local variables after stepping
-            
-                                                    // localsWritten = false;
-                                // Small delay to ensure execution completes
-                                            }
-                                        }
-                                            */
                                 }
                                 else if (clientSession.program != undefined) {
                                     if (clientSession.program?.stdin?.writable) {
