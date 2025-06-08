@@ -45,7 +45,7 @@ class Python extends BaseEditorMode_1.default {
     name = 'Python';
     dockerSafeTag = 'py';
     extension = ['py'];
-    isInterpreter = false;
+    isInterpreter = true;
     runParams = '--device=/dev/video10';
     dockerFile = 
     // `
@@ -73,7 +73,7 @@ CMD bash `;
             const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
       # Use the mounted vnc directory (relative to /app workdir)
       VNC_SOCK="vnc/vnc.sock"
-
+      pip install opencv-python &
       Xvfb :1 -screen 0 1024x768x16 -ac +extension GLX +render -noreset &
       XVFB_PID=$!
       
@@ -154,16 +154,16 @@ CMD bash `;
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
-        return (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "python clientFiles/" + res.fileName], {
+        return (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "pip install opencv-python && python clientFiles/" + res.fileName], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
         });
     }
     compile(res) {
-        setTimeout(() => {
-            return (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "pip install opencv-python"], {
-                stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
-            });
-        }, 500);
+        //  setTimeout(() => {
+        //    return spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","pip install opencv-python"], {
+        //        stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
+        //    });
+        //  }, 500);
     }
     onSpawn(sessionObj) {
     }
