@@ -65,6 +65,7 @@ class EditorSession {
     sessionContainer;
     gdbProcess;
     program;
+    displayServer = 0;
     hostClient;
     isPublic;
     enableChat;

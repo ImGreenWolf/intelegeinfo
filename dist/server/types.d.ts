@@ -47,6 +47,7 @@ export declare class EditorSession {
     };
     gdbProcess: ChildProcess | undefined;
     program: ChildProcess | undefined;
+    displayServer: number;
     hostClient: ClientObject;
     isPublic: boolean;
     enableChat: boolean;
