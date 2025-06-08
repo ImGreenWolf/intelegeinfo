@@ -1501,7 +1501,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             if(JSON.parse(message.toString()).data != undefined)
              messageJSON = JSON.parse(message.toString()).data;
             else messageJSON = JSON.parse(message.toString());
-            console.log(messageJSON)
+            // console.log(messageJSON)
 
             const command = messageJSON.command
             const args = messageJSON.args;
@@ -1518,7 +1518,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
             switch (type) {
                 case WebSocketMessageType.WebCam:
-                    console.log(messageJSON.buffer);
+                    // console.log(messageJSON.buffer);
                     (clientObj.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
                 break;
                 case WebSocketMessageType.Heartbeat:

@@ -1202,7 +1202,7 @@ bash `.trim().replaceAll('\n', "");
                 //     }
                 switch (type) {
                     case types_1.WebSocketMessageType.WebCam:
-                        console.log(messageJSON.buffer);
+                        // console.log(messageJSON.buffer);
                         clientObj.editorMode.receiveWebCam(messageJSON.buffer);
                         break;
                     case types_1.WebSocketMessageType.Heartbeat:
