@@ -1318,8 +1318,8 @@ const runCommand = !hasGUI ?
 -v "${sessionFolder}:/app" \ 
 -w /app \
 -di \
--m 256MB \
---cpus="0.25" \
+-m 528MB \
+--cpus="1" \
 --rm \
 ${clientObj.editorMode.runParams} \
 ${clientSession.currentbuildTag} \

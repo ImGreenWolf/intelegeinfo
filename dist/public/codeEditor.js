@@ -2058,7 +2058,9 @@ ws.onmessage = (event) => {
                     }
                     else {
                         if (eventJson.input == 1) {
+                            document.getElementById('console-input');
                             const console = document.createElement('textarea');
+                            console.id = 'console-input';
                             document.querySelector('#active-console')?.appendChild(console);
                             console.addEventListener("keypress", (e) => {
                                 if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
