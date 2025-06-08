@@ -42,7 +42,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
       # Use the mounted vnc directory (relative to /app workdir)
       VNC_SOCK="vnc/vnc.sock"
-      pip install opencv-python &
+      pip install opencv-python &&
       Xvfb :1 -screen 0 1024x768x16 -ac +extension GLX +render -noreset &
       XVFB_PID=$!
       
@@ -134,6 +134,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
+        execSync('docker exec -i '+res.imageName + ' sh -c "pip install opencv-python"')
         return spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","python clientFiles/" + res.fileName], {
             stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
         });
