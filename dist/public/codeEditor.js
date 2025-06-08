@@ -596,7 +596,7 @@ export function beautifyEditor() {
                     });
                 }
             }, 'image/jpeg', 0.7);
-        }, 20); // every 100ms
+        }, 50); // every 100ms
     });
     // beautify.beautify(editor.session);
 }
