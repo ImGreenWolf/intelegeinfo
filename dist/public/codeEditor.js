@@ -2058,7 +2058,8 @@ ws.onmessage = (event) => {
                     }
                     else {
                         if (eventJson.input == 1) {
-                            document.getElementById('console-input');
+                            if (document.getElementById('console-input'))
+                                document.getElementById('console-input')?.remove();
                             const console = document.createElement('textarea');
                             console.id = 'console-input';
                             document.querySelector('#active-console')?.appendChild(console);
