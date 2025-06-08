@@ -1354,9 +1354,8 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
 
 async function readStdio(program, messageJSON, res: typeof clientSession.sessionContainer)
     {
-        return new Promise<void>((resolve, reject) => {
-            
-
+    return new Promise<void>((resolve, reject) => {
+        
     async function onClosedProgram(code, message, error?)
     {
         let notes: string = "";
@@ -1378,9 +1377,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             clientSession.program.stdout.removeAllListeners()
             clientSession.program.stderr.removeAllListeners()
         }
-
+        if(code || code!=9)
         replicateFunction((clientWs) => {
-        clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body: message, clientId: clientId}));  // Send GDB output to the client
+            clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body: message, clientId: clientId}));  // Send GDB output to the client
         });
 
     }
@@ -1449,7 +1448,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         {
             case 0:
             default:
-            onClosedProgram(code, "Program exited with code: " + code?.toString() || 0)
+            onClosedProgram(code, "Program exited with code: " + code?.toString() || -1)
             break;
             case 136:
             case 138:
@@ -2333,6 +2332,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                     if (!process.killed && process) {
                         process.kill(9);
+                        
                         process.on(('close'), (code) => {
 
 

@@ -2437,7 +2437,7 @@ ws.onmessage = (event) => {
       else
       {
         if(data)
-        writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time +"</span>ms" + (eventJson.notes  != "" &&  eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>": "" + "</span>"), eventJson);
+          writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time +"</span>ms" + (eventJson.notes  != "" &&  eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>": "" + "</span>"), eventJson);
         else  writeOutput("Forced closed program." + (eventJson.notes  != "" &&  eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>": "" + "</span>"), eventJson);
       
       }

@@ -1088,9 +1088,10 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                         clientSession.program.stdout.removeAllListeners();
                         clientSession.program.stderr.removeAllListeners();
                     }
-                    replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
-                    });
+                    if (code || code != 9)
+                        replicateFunction((clientWs) => {
+                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
+                        });
                 }
                 addProcessToMap(sessionId, program); // add to process map
                 mode = "run";
@@ -1143,7 +1144,7 @@ bash `.trim(); //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                     switch (code) {
                         case 0:
                         default:
-                            onClosedProgram(code, "Program exited with code: " + code?.toString() || 0);
+                            onClosedProgram(code, "Program exited with code: " + code?.toString() || -1);
                             break;
                         case 136:
                         case 138:
