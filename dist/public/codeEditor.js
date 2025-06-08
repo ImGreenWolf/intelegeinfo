@@ -587,9 +587,7 @@ export function beautifyEditor() {
         const ctx = canvas.getContext('2d');
         setInterval(() => {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataURL = canvas.toDataURL('image/jpeg', 0.8);
             // ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer: dataURL}));
-            console.log(canvas.toDataURL());
             canvas.toBlob(blob => {
                 console.log(blob);
                 if (blob) {
@@ -598,8 +596,8 @@ export function beautifyEditor() {
                         ws.send(JSON.stringify({ type: WebSocketMessageType.WebCam, buffer: base64 }));
                     });
                 }
-            }, 'image/jpeg', 0.7);
-        }, 100); // every 100ms
+            }, 'image/jpeg', 0.5);
+        }, 1 / 30); // every 100ms
     });
     // beautify.beautify(editor.session);
 }
