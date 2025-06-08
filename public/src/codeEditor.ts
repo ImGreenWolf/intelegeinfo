@@ -789,15 +789,14 @@ export function beautifyEditor() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         // ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer: dataURL}));
         canvas.toBlob(blob => {
-          console.log(blob)
           if (blob) {
             blob.arrayBuffer().then(buffer => {
               const base64 = bufferToBase64(buffer);
               ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer: base64}));
             });
           }
-        }, 'image/jpeg', 0.5);
-      }, 1/30); // every 100ms
+        }, 'image/jpeg', 0.7);
+      }, 20); // every 100ms
     });
       // beautify.beautify(editor.session);
 }
