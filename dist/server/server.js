@@ -1037,7 +1037,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 // 4. Run the Docker container with access to the sandbox folder
                 const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
                 console.log(hasGUI ? 'executing with GUI' : "no gui");
-                const runCommand = hasGUI ?
+                const runCommand = !hasGUI ?
                     `docker run \
 -d \
 --name ${imageName} \
@@ -1048,7 +1048,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 --cpus="0.25" \
 --rm \
 ${clientSession.currentbuildTag} \
-bash `.trim()
+bash `.trim().replaceAll('\n', "")
                     :
                         `docker run \
 -d \
@@ -1061,7 +1061,7 @@ bash `.trim()
 --cpus="0.25" \
 --rm \
 ${clientSession.currentbuildTag} \
-bash `.trim();
+bash `.trim().replaceAll('\n', "");
                 //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                 console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                 console.log(runCommand);

@@ -1311,7 +1311,7 @@ console.log('Skipping build stage.')
   // 4. Run the Docker container with access to the sandbox folder
 const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
 console.log(hasGUI ? 'executing with GUI' : "no gui")
-const runCommand = hasGUI ?
+const runCommand = !hasGUI ?
 `docker run \
 -d \
 --name ${imageName} \
@@ -1322,7 +1322,7 @@ const runCommand = hasGUI ?
 --cpus="0.25" \
 --rm \
 ${clientSession.currentbuildTag} \
-bash `.trim()
+bash `.trim().replaceAll('\n', "")
 :
 `docker run \
 -d \
@@ -1335,7 +1335,7 @@ bash `.trim()
 --cpus="0.25" \
 --rm \
 ${clientSession.currentbuildTag} \
-bash `.trim()
+bash `.trim().replaceAll('\n', "")
 
 
 
