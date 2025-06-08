@@ -1319,7 +1319,7 @@ const runCommand = !hasGUI ?
 -w /app \
 -di \
 -m 528MB \
---cpus="1" \
+--cpus="2" \
 --rm \
 ${clientObj.editorMode.runParams} \
 ${clientSession.currentbuildTag} \
