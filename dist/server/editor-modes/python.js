@@ -161,10 +161,11 @@ CMD bash `;
             }, 60000);
         });
     }
-    receiveWebCam(data) {
+    receiveWebCam(rawData) {
         if (!this.vcam)
             console.error('NO VCAM');
         else if (this.vcam.stdin.writable) {
+            const data = Buffer.from(rawData, 'base64');
             const length = Buffer.alloc(4);
             length.writeUInt32BE(data.length, 0);
             this.vcam.stdin.write(length);

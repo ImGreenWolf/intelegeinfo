@@ -569,6 +569,9 @@ if (new URLSearchParams(window.location.search).has('save'))
 // {
 // }
 var beautify = ace.require("ace/ext/beautify"); // get reference to extension
+function bufferToBase64(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)));
+}
 export function beautifyEditor() {
     // const ws = new WebSocket('ws://localhost:8080');
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
@@ -591,7 +594,8 @@ export function beautifyEditor() {
                 console.log(blob);
                 if (blob) {
                     blob.arrayBuffer().then(buffer => {
-                        ws.send(JSON.stringify({ type: WebSocketMessageType.WebCam, buffer }));
+                        const base64 = bufferToBase64(buffer);
+                        ws.send(JSON.stringify({ type: WebSocketMessageType.WebCam, buffer: base64 }));
                     });
                 }
             }, 'image/jpeg', 0.7);
