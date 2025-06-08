@@ -46,8 +46,11 @@ export class ClientObject {
         
       }
 
-    public sendMessage(message:string|Record<string, any>)
+    public sendMessage(message:string|Record<string, any>, type?: WebSocketMessageType)
     {
+        if(type && typeof message != 'string')
+            this.CWebSocket.send(JSON.stringify({type, ...message}))
+        else
         this.CWebSocket.send(JSON.stringify(message))
     }
       
@@ -82,7 +85,7 @@ export class EditorSession {
     gdbProcess: ChildProcess | undefined;
     program: ChildProcess | undefined;
     displayServer: number = 0;
-    
+
     hostClient: ClientObject
     isPublic: boolean
     enableChat: boolean

@@ -2,6 +2,7 @@ import { UUID } from "crypto";
 import WebSocket from 'ws';
 import { ChildProcess } from 'child_process';
 import { WSMessage } from '../../shared/src/types';
+import { WebSocketMessageType } from '../../dist/shared/types';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 export declare class ClientObject {
@@ -17,7 +18,7 @@ export declare class ClientObject {
     editorMode: EditorMode;
     openFileName: string;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
-    sendMessage(message: string | Record<string, any>): void;
+    sendMessage(message: string | Record<string, any>, type?: WebSocketMessageType): void;
 }
 interface CommandBuffer {
     codeSelection: any;

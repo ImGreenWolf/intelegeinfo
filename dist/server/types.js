@@ -39,8 +39,11 @@ class ClientObject {
                 this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
         }
     }
-    sendMessage(message) {
-        this.CWebSocket.send(JSON.stringify(message));
+    sendMessage(message, type) {
+        if (type && typeof message != 'string')
+            this.CWebSocket.send(JSON.stringify({ type, ...message }));
+        else
+            this.CWebSocket.send(JSON.stringify(message));
     }
 }
 exports.ClientObject = ClientObject;

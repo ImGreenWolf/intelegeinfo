@@ -1075,8 +1075,10 @@ bash `.trim().replaceAll('\n', "");
                     console.log("soksjkjskjsjsk:" + data.toString());
                     setTimeout(async () => {
                         // TODO Spawn GUI on client
-                        if (hasGUI == true && clientSession.displayServer == 0)
+                        if (hasGUI == true && clientSession.displayServer == 0) {
                             clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
+                            clientObj.sendMessage({ status: 'spawnGUI' }, types_1.WebSocketMessageType.ExecuteStatus);
+                        }
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
                     }, 1000);
                 });
