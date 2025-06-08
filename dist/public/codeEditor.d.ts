@@ -51,6 +51,6 @@ export declare function sendDebugCommand(cmd: string): void;
 export declare function playback(): void;
 export declare function restartPlayback(): void;
 export declare function setPlaybackSpeed(newPlaybackSpeed: number): void;
-export declare function displaynoVDC(container: any): void;
+export declare function displaynoVNC(container: any): void;
 export declare function downloadEditorFiles(): Promise<void>;
 export {};

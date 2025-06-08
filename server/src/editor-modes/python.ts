@@ -71,12 +71,8 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
           ls -la vnc/ 2>/dev/null || echo "vnc directory not accessible"
         fi
       done
-      
 
-      
-      #python clientFiles/${res.fileName} &
-      #PYTHON_PID=$!
-      sleep 30
+      sleep 2
     `], {
         stdio: 'pipe'
     });
@@ -88,7 +84,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
     })
 
     proc.stdout.on('data', (data: string) => {
-        console.log("skmskjsjkjsjkjjskjsh: " + data.toString())
+        console.log("VNC SERVER: " + data.toString())
         if(data.includes('PORT')) {
           fs.appendFileSync(path.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock \ \n`)
         setTimeout(() => {

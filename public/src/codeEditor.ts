@@ -2707,74 +2707,84 @@ ws.onmessage = (event) => {
 
     case WebSocketMessageType.ExecuteStatus:
       let errorOutputString = "";
-      if(eventJson.error)
+      switch (eventJson.status)
       {
-       onExit()
-        // ON ERROR
-        document.getElementById('buttons')?.classList.remove('compiled')
-        for (const markerId of markers) editor.session.removeMarker(markerId);
+        case 'spawnGUI':
+          displaynoVNC(activeConsole.element)
+        break;
 
-        for (const errorMessage of eventJson.error.errors) {
-          errorOutputString += errorMessage.error + "\n";
+        default:
+          if(eventJson.error)
+          {
+          onExit()
+            // ON ERROR
+            document.getElementById('buttons')?.classList.remove('compiled')
+            for (const markerId of markers) editor.session.removeMarker(markerId);
 
-          if (errorMessage.row != -1) {
-            const row = errorMessage.row - 1;
-            const column = errorMessage.column;
-            errorAnnotations.push({
-              row: row,
-              column: column,
-              text: errorMessage.error,
-              type: "error",
-            });
+            for (const errorMessage of eventJson.error.errors) {
+              errorOutputString += errorMessage.error + "\n";
 
-            markers.push(
-              editor.session.addMarker(
-                new AceRange(row, column, row, column + 1),
-                "ace-error-line",
-                "screenLine"
-              )
-            );
-          }
-        }
-        editor.session.setAnnotations(errorAnnotations);
-      } else {
-        if(eventJson.input == 1)
-        {
-          const console = document.createElement('textarea')as HTMLTextAreaElement;
-          document.querySelector('#active-console')?.appendChild(console) 
+              if (errorMessage.row != -1) {
+                const row = errorMessage.row - 1;
+                const column = errorMessage.column;
+                errorAnnotations.push({
+                  row: row,
+                  column: column,
+                  text: errorMessage.error,
+                  type: "error",
+                });
 
-          console.addEventListener("keypress", (e: KeyboardEvent) => {
-            
-            if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
-              e.preventDefault();
-
-              submitConsole(console, WebSocketMessageType.Console, activeConsole)
-              console.remove()
+                markers.push(
+                  editor.session.addMarker(
+                    new AceRange(row, column, row, column + 1),
+                    "ace-error-line",
+                    "screenLine"
+                  )
+                );
+              }
             }
-           });
+            editor.session.setAnnotations(errorAnnotations);
+          } else {
+            if(eventJson.input == 1)
+            {
+              const console = document.createElement('textarea')as HTMLTextAreaElement;
+              document.querySelector('#active-console')?.appendChild(console) 
 
-           console.focus();
-        }
+              console.addEventListener("keypress", (e: KeyboardEvent) => {
+                
+                if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
+                  e.preventDefault();
+
+                  submitConsole(console, WebSocketMessageType.Console, activeConsole)
+                  console.remove()
+                }
+              });
+
+              console.focus();
+            }
+              
+            editor.session.setAnnotations([]);
+            document.getElementById('buttons')?.classList.add('compiled')
+            for (const markerId of markers) editor.session.removeMarker(markerId);
+          }
+
+          // writeOutput(
+          //   data.success
+          //     ? "Compilation of " + data.fileName + " successful!\n"
+          //     : errorOutputString ||
+          //         "Compilation error. (couldnt retrieve error message, sorry)"
+          // );
           
-        editor.session.setAnnotations([]);
-        document.getElementById('buttons')?.classList.add('compiled')
-        for (const markerId of markers) editor.session.removeMarker(markerId);
+          document.getElementById('compile-status')!.innerText = eventJson.body;
+          document.getElementById('compile-status')!.style.opacity = '1'
+
+          setTimeout(() => {
+            document.getElementById('compile-status')!.style.opacity = '0'
+          }, 500);
+
+          break;
       }
-
-      // writeOutput(
-      //   data.success
-      //     ? "Compilation of " + data.fileName + " successful!\n"
-      //     : errorOutputString ||
-      //         "Compilation error. (couldnt retrieve error message, sorry)"
-      // );
       
-      document.getElementById('compile-status')!.innerText = eventJson.body;
-      document.getElementById('compile-status')!.style.opacity = '1'
-
-      setTimeout(() => {
-        document.getElementById('compile-status')!.style.opacity = '0'
-      }, 500);
-
     break;
 
     case WebSocketMessageType.CodeSelection:
@@ -3138,8 +3148,8 @@ function onRun() {
     document.getElementById('active-console')!.id = '';
 
   activeConsole = new Console()
-  if(currentFileName.toLowerCase().includes("gui"))
-    displaynoVDC(activeConsole.element)
+  // if(currentFileName.toLowerCase().includes("gui"))
+  //   displaynoVNC(activeConsole.element)
   outputConsoles.push(activeConsole)
 
   
@@ -3439,7 +3449,7 @@ console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start
   ace.require("ace/ext/language_tools").addCompleter(customCompleter);
 
 
-export function displaynoVDC(container)
+export function displaynoVNC(container)
 {
   const frame = document.createElement('iframe')
   frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html?bell=true&quality=5&path=novnc/websockify?token='+wsSessionId
