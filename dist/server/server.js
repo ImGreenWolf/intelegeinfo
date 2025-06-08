@@ -1032,6 +1032,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 else
                     console.log('Skipping build stage.');
+                // -m 256MB \
+                // --cpus="0.25" \
                 const imageName = `session-container-${sessionId}`;
                 // fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
                 // 4. Run the Docker container with access to the sandbox folder
@@ -1044,8 +1046,6 @@ exports.wss.addListener('connection', async (ws, req) => {
 -v "${sessionFolder}:/app" \ 
 -w /app \
 -di \
--m 528MB \
---cpus="2" \
 --rm \
 ${clientObj.editorMode.runParams} \
 ${clientSession.currentbuildTag} \
@@ -1058,8 +1058,6 @@ bash `.trim().replaceAll('\n', "")
 -v "/tmp/vnc-${sessionId}:/app/vnc" \
 -w /app \
 -di \
--m 256MB \
---cpus="0.25" \
 --rm \
 ${clientObj.editorMode.runParams} \
 ${clientSession.currentbuildTag} \
