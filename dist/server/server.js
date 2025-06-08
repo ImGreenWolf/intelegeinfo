@@ -983,7 +983,7 @@ exports.wss.addListener('connection', async (ws, req) => {
          * @returns The child process running the Docker container
          */
         async function buildAndRunCppSandbox(sessionFolder, fileName, editorMode, clientId, sessionId) {
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 const sandboxFolder = path_1.default.join(sessionFolder, 'clientFiles'); // The folder the exe will access
                 // Ensure that the sandbox folder exists
                 if (!fs_1.default.existsSync(sandboxFolder)) {
@@ -1073,16 +1073,14 @@ bash `.trim().replaceAll('\n', "");
                 });
                 childProcess.stdout.on('data', data => {
                     console.log("soksjkjskjsjsk:" + data.toString());
-                    setTimeout(() => {
+                    setTimeout(async () => {
                         // TODO Spawn GUI on client
-                        if (hasGUI == true)
-                            clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
-                        else
-                            console.log(hasGUI);
+                        if (hasGUI == true && clientSession.displayServer != 0)
+                            clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
                     }, 1000);
                 });
-                childProcess.stderr.on('data', data => console.log('[Docker Container]' + data.toString()));
+                childProcess.stderr.on('data', data => console.log('[Docker Container Error]' + data.toString()));
             });
         }
         async function readStdio(program, messageJSON, res) {

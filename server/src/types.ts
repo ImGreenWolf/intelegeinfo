@@ -81,7 +81,8 @@ export class EditorSession {
     sessionContainer: {process: ChildProcess, imageName: string, fileName: string, editorMode: EditorMode};
     gdbProcess: ChildProcess | undefined;
     program: ChildProcess | undefined;
-
+    displayServer: number = 0;
+    
     hostClient: ClientObject
     isPublic: boolean
     enableChat: boolean

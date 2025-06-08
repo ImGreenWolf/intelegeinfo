@@ -1243,7 +1243,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
  */
 async function buildAndRunCppSandbox(sessionFolder: string, fileName: string, editorMode: EditorModes.EditorMode, clientId, sessionId): Promise<typeof clientSession.sessionContainer>{
 
-return new Promise((resolve, reject) => { // Folder containing .exe
+return new Promise(async (resolve, reject) => { // Folder containing .exe
   const sandboxFolder = path.join(sessionFolder, 'clientFiles'); // The folder the exe will access
   
   // Ensure that the sandbox folder exists
@@ -1353,17 +1353,15 @@ bash `.trim().replaceAll('\n', "")
     })
     childProcess.stdout.on('data', data => {
         console.log("soksjkjskjsjsk:" + data.toString())
-         setTimeout(() => {
+        setTimeout(async () => {
                     // TODO Spawn GUI on client
-          if(hasGUI == true) 
-            clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
-        else
-            console.log(hasGUI)
-        resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-    }, 1000);    
+            if(hasGUI == true && clientSession.displayServer != 0) 
+                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
+            resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
+        }, 1000);    
     })
     
-    childProcess.stderr.on('data', data => console.log('[Docker Container]' + data.toString()))
+    childProcess.stderr.on('data', data => console.log('[Docker Container Error]' + data.toString()))
 
  
 })

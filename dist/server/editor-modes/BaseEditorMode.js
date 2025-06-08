@@ -7,6 +7,7 @@ class EditorMode {
         return;
     }
     onBuild(res, clientSession) {
+        return 0;
     }
     constructor() {
     }

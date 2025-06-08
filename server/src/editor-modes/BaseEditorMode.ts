@@ -15,9 +15,9 @@ abstract class EditorMode {
     {
         return;
     }
-    onBuild(res, clientSession: EditorSession)
+    onBuild(res, clientSession: EditorSession): Promise<number> | number
     {
-
+        return 0;
     }
     constructor()
     {
