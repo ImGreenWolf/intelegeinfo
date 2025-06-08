@@ -1201,6 +1201,10 @@ bash `.trim().replaceAll('\n', "");
                 //         console.log(getThisClientSession())
                 //     }
                 switch (type) {
+                    case types_1.WebSocketMessageType.WebCam:
+                        console.log(messageJSON.buffer);
+                        clientObj.editorMode.receiveWebCam(messageJSON.buffer);
+                        break;
                     case types_1.WebSocketMessageType.Heartbeat:
                         if (!clientObj)
                             break;

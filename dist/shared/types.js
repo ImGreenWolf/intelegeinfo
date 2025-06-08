@@ -18,6 +18,7 @@ var WebSocketMessageType;
     WebSocketMessageType["CompileResult"] = "CompileResult";
     WebSocketMessageType["ExecuteStatus"] = "executestatus";
     WebSocketMessageType["MouseUpdate"] = "MouseUpdate";
+    WebSocketMessageType["WebCam"] = "webcam";
 })(WebSocketMessageType || (exports.WebSocketMessageType = WebSocketMessageType = {}));
 var ConsoleMessageType;
 (function (ConsoleMessageType) {

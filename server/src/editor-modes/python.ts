@@ -27,6 +27,8 @@ class Python extends EditorMode {
     RUN pip install opencv-python
 
 CMD bash ` 
+
+    vcam: ChildProcess
 // -c "\
 //     Xvfb :1 -screen 0 1024x768x16 & \
 //     export DISPLAY=:1 && fluxbox & \
@@ -116,6 +118,16 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
                 {
                   console.log("Cant acesss socket: " + err)
                 }
+
+
+
+
+
+
+
+               this.vcam = spawn('python3', ['camera.py'])
+
+              
             }, 3000);
         } else
         pid = parseInt(data);
@@ -130,6 +142,18 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
       })
 }
 
+  receiveWebCam(data)
+  {
+    if(!this.vcam)
+      console.error('NO VCAM')
+    else
+      if (this.vcam.stdin.writable) {
+        const length = Buffer.alloc(4);
+        length.writeUInt32BE(data.length, 0);
+        this.vcam.stdin.write(length);
+        this.vcam.stdin.write(data);
+      }
+  }
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1

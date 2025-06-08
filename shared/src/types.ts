@@ -13,7 +13,8 @@ export enum WebSocketMessageType {
     FileManagement = "FileManagement",
     CompileResult = "CompileResult",
     ExecuteStatus =  "executestatus",
-    MouseUpdate = "MouseUpdate"
+    MouseUpdate = "MouseUpdate",
+    WebCam = 'webcam',
 }
 
 export enum ConsoleMessageType {
