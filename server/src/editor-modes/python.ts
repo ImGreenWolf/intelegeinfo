@@ -156,9 +156,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
 
   receiveWebCam(rawData)
   {
-    if(!this.vcam)
-      console.error('NO VCAM')
-    else
+    if(this.vcam)
       if (this.vcam.stdin.writable) {
         const data = Buffer.from(rawData, 'base64');
         const length = Buffer.alloc(4);

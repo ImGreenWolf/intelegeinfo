@@ -1516,7 +1516,13 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             switch (type) {
                 case WebSocketMessageType.WebCam:
                     // console.log(messageJSON.buffer);
-                    (clientObj.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
+                    try {
+                          (clientObj.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
+                    } catch(err)
+                    {
+                        /// ......
+                    }
+                  
                 break;
                 case WebSocketMessageType.Heartbeat:
                     if(!clientObj) break;

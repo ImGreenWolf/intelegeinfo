@@ -162,15 +162,14 @@ CMD bash `;
         });
     }
     receiveWebCam(rawData) {
-        if (!this.vcam)
-            console.error('NO VCAM');
-        else if (this.vcam.stdin.writable) {
-            const data = Buffer.from(rawData, 'base64');
-            const length = Buffer.alloc(4);
-            length.writeUInt32BE(data.length, 0);
-            this.vcam.stdin.write(length);
-            this.vcam.stdin.write(data);
-        }
+        if (this.vcam)
+            if (this.vcam.stdin.writable) {
+                const data = Buffer.from(rawData, 'base64');
+                const length = Buffer.alloc(4);
+                length.writeUInt32BE(data.length, 0);
+                this.vcam.stdin.write(length);
+                this.vcam.stdin.write(data);
+            }
     }
     async execute(res) {
         //  Xvfb :1 -screen 0 1024x768x16
