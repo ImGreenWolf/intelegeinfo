@@ -5,6 +5,7 @@ declare abstract class EditorMode {
     abstract dockerFile: string;
     abstract dockerSafeTag: string;
     abstract extension: string[];
+    runParams: string;
     isInterpreter: boolean;
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>;
     abstract compile(res: any): any;

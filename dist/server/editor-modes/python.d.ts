@@ -5,6 +5,7 @@ declare class Python extends EditorMode {
     dockerSafeTag: string;
     extension: string[];
     isInterpreter: boolean;
+    runParams: string;
     dockerFile: string;
     onBuild(res: any, clientSession: EditorSession): Promise<number>;
     execute(res: any): Promise<import("child_process").ChildProcessWithoutNullStreams>;

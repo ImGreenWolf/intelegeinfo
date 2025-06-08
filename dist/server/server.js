@@ -1047,6 +1047,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 -m 256MB \
 --cpus="0.25" \
 --rm \
+${clientObj.editorMode.runParams} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "")
                     :
@@ -1060,6 +1061,7 @@ bash `.trim().replaceAll('\n', "")
 -m 256MB \
 --cpus="0.25" \
 --rm \
+${clientObj.editorMode.runParams} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "");
                 //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"

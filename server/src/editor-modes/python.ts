@@ -10,6 +10,7 @@ class Python extends EditorMode {
     dockerSafeTag: string = 'py'
     extension = ['py']
     isInterpreter = true;
+    runParams = '--device=/dev/video10'
     dockerFile = 
     // `
     // # install from python image
@@ -21,8 +22,8 @@ class Python extends EditorMode {
     // CMD [ "bash" ]`.trim();
     `FROM python:3.10
     WORKDIR /app
-RUN apt-get update && apt-get install -y \
-    xvfb x11vnc fluxbox python3-tk wget && apt-get clean
+    RUN apt-get update && apt-get install -y \
+    xvfb x11vnc fluxbox python3-tk wget python3-opencv && apt-get clean
 
 
 CMD bash ` 
