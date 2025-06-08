@@ -92,6 +92,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         setTimeout(() => {
                 // Start websockify
             const wsProxy = spawn('websockify', [
+            '-D',
             '--web', path.join(rootDirName, 'vnc', 'noVNC'),
             '--token-plugin=TokenFile',
             '--token-source='+path.resolve('/tmp/tokens.txt'),

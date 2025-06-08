@@ -120,6 +120,7 @@ CMD bash `;
                     setTimeout(() => {
                         // Start websockify
                         const wsProxy = (0, child_process_1.spawn)('websockify', [
+                            '-D',
                             '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
                             '--token-plugin=TokenFile',
                             '--token-source=' + path_1.default.resolve('/tmp/tokens.txt'),
