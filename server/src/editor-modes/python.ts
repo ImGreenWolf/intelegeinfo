@@ -9,7 +9,7 @@ class Python extends EditorMode {
     name = 'Python'
     dockerSafeTag: string = 'py'
     extension = ['py']
-    isInterpreter = true;
+    isInterpreter = false;
     runParams = '--device=/dev/video10'
     dockerFile = 
     // `
