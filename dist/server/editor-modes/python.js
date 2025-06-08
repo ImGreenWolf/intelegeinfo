@@ -59,8 +59,8 @@ class Python extends BaseEditorMode_1.default {
     WORKDIR /app
     RUN apt-get update && apt-get install -y \
     xvfb x11vnc fluxbox python3-tk wget python3-opencv && apt-get clean
-    RUN pip install opencv-python
-
+    RUN pip install opencv-python ultralytics 
+    
 CMD bash `;
     vcam;
     // -c "\

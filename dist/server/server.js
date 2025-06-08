@@ -1190,7 +1190,7 @@ bash `.trim().replaceAll('\n', "");
                     messageJSON = JSON.parse(message.toString()).data;
                 else
                     messageJSON = JSON.parse(message.toString());
-                console.log(messageJSON);
+                // console.log(messageJSON)
                 const command = messageJSON.command;
                 const args = messageJSON.args;
                 const type = messageJSON.type;
