@@ -1311,17 +1311,35 @@ console.log('Skipping build stage.')
   // 4. Run the Docker container with access to the sandbox folder
 const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
 console.log(hasGUI ? 'executing with GUI' : "no gui")
-const runCommand =
+const runCommand = hasGUI ?
 `docker run \
 -d \
 --name ${imageName} \
--v "${sessionFolder}:/app" \ ${hasGUI ? `-v "/tmp/vnc-${sessionId}:/app/vnc" \ ` : ""} -w /app \
+-v "${sessionFolder}:/app" \ 
+-w /app \
 -di \
 -m 256MB \
 --cpus="0.25" \
 --rm \
 ${clientSession.currentbuildTag} \
-bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
+bash `.trim()
+:
+`docker run \
+-d \
+--name ${imageName} \
+-v "${sessionFolder}:/app" \ 
+-v "/tmp/vnc-${sessionId}:/app/vnc" \
+-w /app \
+-di \
+-m 256MB \
+--cpus="0.25" \
+--rm \
+${clientSession.currentbuildTag} \
+bash `.trim()
+
+
+
+//  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
   console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
   console.log(runCommand)
 
@@ -1345,6 +1363,7 @@ bash `.trim() //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
     }, 1000);    
     })
     
+    childProcess.stderr.on('data', data => console.log('[Docker Container]' + data.toString()))
 
  
 })
