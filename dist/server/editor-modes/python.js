@@ -46,7 +46,7 @@ class Python extends BaseEditorMode_1.default {
     dockerSafeTag = 'py';
     extension = ['py'];
     isInterpreter = true;
-    runParams = '--device=/dev/video10';
+    runParams = '--device=/dev/video10:/dev/video0';
     dockerFile = 
     // `
     // # install from python image

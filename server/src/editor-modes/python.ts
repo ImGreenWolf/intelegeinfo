@@ -10,7 +10,7 @@ class Python extends EditorMode {
     dockerSafeTag: string = 'py'
     extension = ['py']
     isInterpreter = true;
-    runParams = '--device=/dev/video10'
+    runParams = '--device=/dev/video10:/dev/video0'
     dockerFile = 
     // `
     // # install from python image
