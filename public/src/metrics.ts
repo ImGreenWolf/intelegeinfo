@@ -134,24 +134,30 @@ ctx = this.canvas.getContext('2d')!;
 time = 0;
 minValue;
 maxValue;
+height = 300;
+points: {value: number, time: number}[] = []
 constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.ctx.moveTo(0,0)
     this.canvas.width = 300
-    this.canvas.height = 300
+    this.canvas.height = this.height
     this.ctx.lineWidth = 10;
     parent.appendChild(this.canvas)
     Graphs.set(name, this)
-
-    this.ctx.beginPath();
+    
+    
 }
 
 
 public updateGraph(value, time)
 {
     this.time = time;
-    this.ctx?.lineTo(time, this.normalizeValue(value, this.minValue, this.maxValue))
+    this.points.push({value, time})
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.beginPath();
+    for(const point of this.points)
+        this.ctx?.lineTo(point.time, this.height-(this.normalizeValue(point.value, this.minValue, this.maxValue))*10)
     this.ctx.stroke();
 }
 

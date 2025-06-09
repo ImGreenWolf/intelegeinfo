@@ -20,6 +20,11 @@ declare class Graph {
     time: number;
     minValue: any;
     maxValue: any;
+    height: number;
+    points: {
+        value: number;
+        time: number;
+    }[];
     constructor(name: string, parent: HTMLElement, minValue: any, maxValue: any);
     updateGraph(value: any, time: any): void;
     private normalizeValue;
