@@ -63,11 +63,23 @@ function init()
                 table.id='table-' + k;
                 document.body.appendChild(table)
 
-                addMonitor('monit.cpu', k, (name, value)=> {
+addMonitor('name', k, (name, value)=> {
 
-                    return `<h1>${name}</h1>
-                    <p>${value}</p>`
-                })
+    return `<h1>${value}</h1>`
+})
+addMonitor('monit.cpu', k, (name, value)=> {
+
+    return `<h1>${name}</h1>
+    <p>${value}%</p>`
+})
+
+addMonitor('pm2_env', k, (name, value)=> {
+
+    return `<h1>${name}</h1>
+    <p>${value.status}</p>
+    <p>${value.restart_time}</p>`
+})
+
 
 
 
