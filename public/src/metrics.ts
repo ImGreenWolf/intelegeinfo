@@ -37,8 +37,14 @@ function addMonitor(value: string, displayName: string, index, callback: (name, 
     setInnerHTML(monitor, 'Updating..', false)
 }
 function setInnerHTML(monitor: Monitor, value: string, isUpdate=true) {
-
-    monitor.container.innerHTML = monitor.update(monitor.displayName, value, isUpdate, monitor.cell)
+    try
+    {
+         monitor.container.innerHTML = monitor.update(monitor.displayName, value, isUpdate, monitor.cell)
+    }
+    catch (err)
+    {
+        console.error(err)
+    }
 }
 function getName(value)
 {
@@ -123,16 +129,16 @@ function init()
 
                     
                     return `<h1>${name}</h1>
-                    <p>${value}%</p>
-                    <p>${value.axm_monitor["Active requests"].value}</p>
-                    <p>${value.axm_monitor.HTTP.value} <span>${value.axm_monitor.HTTP.unit}</span></p>`
+                    <p>${value}%</p>`
                 })
 
                 addMonitor('pm2.pm2_env', "Status", k, (name, value, isUpdate)=> {
 
                     return `<h1>${name}</h1>
                     <p>${value.status}</p>
-                    <p>${value.restart_time}</p>`
+                    <p>${value.restart_time}</p>
+                    <p>${value.axm_monitor["Active requests"].value}</p>
+                    <p>${value.axm_monitor.HTTP.value} <span>${value.axm_monitor.HTTP.unit}</span></p>`
                 })
 
 
