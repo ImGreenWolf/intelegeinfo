@@ -13,7 +13,7 @@ import path from 'path';
 const router = express.Router();
 router.use(bodyParser.json());
 router.use(express.static("public/pages/login.html"))
-
+export default router;
 const validEmail = 'a@c';      
 const salt = bcrypt.genSaltSync(10);
 const validPassword = bcrypt.hashSync("123", salt);
@@ -380,4 +380,3 @@ router.post('/createGoogleAcc',(req, res)=> {
   })
 })
 
-export default router;

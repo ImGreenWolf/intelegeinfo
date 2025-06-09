@@ -51,6 +51,7 @@ const path_1 = __importDefault(require("path"));
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/login.html"));
+exports.default = router;
 const validEmail = 'a@c';
 const salt = bcryptjs_1.default.genSaltSync(10);
 const validPassword = bcryptjs_1.default.hashSync("123", salt);
@@ -327,4 +328,3 @@ router.post('/createGoogleAcc', (req, res) => {
         res.json({ error: err });
     });
 });
-exports.default = router;
