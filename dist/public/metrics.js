@@ -97,7 +97,7 @@ class Graph {
         Graphs.set(name, this);
         this.canvas.onmousemove = ev => {
             // ev.offsetX
-            const pointerTime = ev.offsetY;
+            const pointerTime = ev.offsetX;
             let distance = 10000;
             let closestPoint;
             this.points.forEach(point => {
@@ -106,7 +106,10 @@ class Graph {
                     closestPoint = point;
                 }
             });
-            this.ctx.arc(closestPoint.value, ev.offsetY, 0, 10, 2 * Math.PI);
+            if (!closestPoint)
+                return;
+            this.ctx.beginPath();
+            this.ctx.arc(closestPoint.value, ev.offsetX, 0, 10, 2 * Math.PI);
             this.ctx.fill();
             this.ctx.stroke();
             console.log(closestPoint);
