@@ -156,11 +156,11 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     canvasLayer.appendChild(this.canvas)
     canvasLayer.style.position = 'relative';
     parent.appendChild(canvasLayer)
-    
+    let pointerTimeout: NodeJS.Timeout
     Graphs.set(name, this)
      this.pointer = document.createElement('div')
     this.pointer.innerText = 'dokdkdk'
-    this.pointer.style.cssText = "position: absolute; border-radius: 50%; width: 10px; height: 10px; background-color: black;"
+    this.pointer.style.cssText = "position: absolute; border-radius: 50%; width: 10px; height: 10px; background-color: white; font-size: 8px"
     canvasLayer.appendChild(this.pointer)
     canvasLayer.onmousemove = ev => {
         // ev.offsetX
@@ -177,12 +177,26 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
                 
         });
         if(!this.closestPoint) return
+        clearTimeout(pointerTimeout)
+        this.pointer.style.opacity = 100+"%"
+        this.updatePointer()
+        pointerTimeout = setTimeout(() => {
+            this.pointer.style.opacity = 0+"%"
+        }, 3000);
+
         // const pos = this.calculateXandY(this.closestPoint)
         // this.pointer.style.top = pos.y + "px"
         // this.pointer.style.left = pos.x + "px"
     }
 }
 
+private updatePointer()
+{
+    const pos = this.calculateXandY(this.closestPoint)
+    this.pointer.style.top = pos.y + "px"
+    this.pointer.style.left = pos.x + "px"
+    this.pointer.innerText = this.closestPoint.value + '%'
+}
 
 public updateGraph(newPoint: GraphPoint)
 {
@@ -220,10 +234,7 @@ public updateGraph(newPoint: GraphPoint)
         // this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
     //finish
 
-    const pos = this.calculateXandY(this.closestPoint)
-        this.pointer.style.top = pos.y + "px"
-        this.pointer.style.left = pos.x + "px"
-    this.pointer.innerText = this.closestPoint.value + '%'
+    this.updatePointer();
 
     this.ctx.stroke();
 

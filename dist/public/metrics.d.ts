@@ -33,6 +33,7 @@ declare class Graph {
     closestPoint: GraphPoint;
     pointer: HTMLDivElement;
     constructor(name: string, parent: HTMLElement, minValue: any, maxValue: any);
+    private updatePointer;
     updateGraph(newPoint: GraphPoint): void;
     private calculateXandY;
     private drawBackground;
