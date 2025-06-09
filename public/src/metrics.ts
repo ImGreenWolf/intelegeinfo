@@ -137,8 +137,10 @@ function init()
                     return `<h1>${name}</h1>
                     <p>${value.status}</p>
                     <p>${value.restart_time}</p>
-                    <p>${value.axm_monitor["Active requests"].value}</p>
-                    <p>${value.axm_monitor.HTTP.value} <span>${value.axm_monitor.HTTP.unit}</span></p>`
+                    <p>Active Connections: ${value.axm_monitor["Active requests"].value}</p>
+                    <p>Requests: ${value.axm_monitor.HTTP.value} <span>${value.axm_monitor.HTTP.unit}</span></p>
+                    <p>Ev loop latency: ${value.axm_monitor["Event Loop Latency"].value} <span>${value.axm_monitor["Event Loop Latency"].unit}</span></p>
+                    <p>Ev loop latency 95%: ${value.axm_monitor["Event Loop Latency p95"].value} <span>${value.axm_monitor["Event Loop Latency p95"].unit}</span></p>`
                 })
 
 
