@@ -8,7 +8,7 @@ function UpdateProcessValues(json, index)
             for(const key of monitor.value.split('.'))
                 lastObjValue = lastObjValue[key]
 
-            document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue)
+            document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, monitor.cell)
         }   
         
      

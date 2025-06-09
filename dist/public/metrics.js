@@ -5,7 +5,7 @@ function UpdateProcessValues(json, index) {
         let lastObjValue = json;
         for (const key of monitor.value.split('.'))
             lastObjValue = lastObjValue[key];
-        document.getElementById(monitor.value + '-' + index).innerHTML = monitor.update(monitor.value, lastObjValue);
+        document.getElementById(monitor.value + '-' + index).innerHTML = monitor.update(monitor.value, lastObjValue, monitor.cell);
     }
 }
 function addMonitor(value, index, calback) {
