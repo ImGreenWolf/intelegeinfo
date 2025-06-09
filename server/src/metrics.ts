@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 
 const router = express.Router();
-
+export default router
 router.get('/', (req, res) => {
     pm2.connect(function(err) {
   if (err) {
