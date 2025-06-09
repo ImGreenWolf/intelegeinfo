@@ -14,7 +14,8 @@ function addMonitor(value, index, calback) {
     monitoredValues.push({ value, cell, update: calback });
     cell.id = value;
     cell.innerHTML = calback(name, "Updating...");
-    addMonitorToTable('table-' + index, cell);
+    document.getElementById('table-' + index)?.appendChild(cell);
+    // addMonitorToTable(, cell)
 }
 function getName(value) {
     const tree = value.split('.');
@@ -32,13 +33,14 @@ function init() {
             let k = 0;
             for (const process of res) {
                 const table = document.createElement('table');
-                table.id = 'table-' + k++;
+                table.id = 'table-' + k;
                 document.body.appendChild(table);
                 addMonitor('monit.cpu', k, (name, value) => {
                     return `<h1>${name}</h1>
                     <p>${value}</p>`;
                 });
                 UpdateProcessValues(process);
+                k++;
             }
             resolve();
         }).catch(err => reject(err));

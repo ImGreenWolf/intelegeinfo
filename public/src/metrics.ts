@@ -21,7 +21,8 @@ function addMonitor(value: string, index, calback: (name, value) => string)
     monitoredValues.push({value, cell, update: calback})
     cell.id = value
     cell.innerHTML = calback(name, "Updating...")
-    addMonitorToTable('table-'+index, cell)
+    document.getElementById('table-'+index)?.appendChild(cell)
+    // addMonitorToTable(, cell)
     
 }
 
@@ -59,7 +60,7 @@ function init()
             for (const process of res)
             {
                 const table = document.createElement('table')
-                table.id='table-' + k++;
+                table.id='table-' + k;
                 document.body.appendChild(table)
 
                 addMonitor('monit.cpu', k, (name, value)=> {
@@ -71,6 +72,7 @@ function init()
 
 
                 UpdateProcessValues(process)
+                k++;
             }
 
             resolve()
