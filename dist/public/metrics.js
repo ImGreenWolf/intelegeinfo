@@ -86,6 +86,8 @@ class Graph {
     maxPoint = { value: 0, time: 0 };
     secondMaxPoint = { value: 0, time: 0 };
     points = [];
+    closestPoint = this.maxPoint;
+    pointer;
     constructor(name, parent, minValue, maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -98,27 +100,26 @@ class Graph {
         canvasLayer.style.position = 'relative';
         parent.appendChild(canvasLayer);
         Graphs.set(name, this);
-        const pointer = document.createElement('div');
-        pointer.innerText = 'dokdkdk';
-        pointer.style.cssText = "position: absolute; border-radius: 50%; width: 10px; height: 10px; background-color: black;";
-        canvasLayer.appendChild(pointer);
+        this.pointer = document.createElement('div');
+        this.pointer.innerText = 'dokdkdk';
+        this.pointer.style.cssText = "position: absolute; border-radius: 50%; width: 10px; height: 10px; background-color: black;";
+        canvasLayer.appendChild(this.pointer);
         canvasLayer.onmousemove = ev => {
             // ev.offsetX
             const pointerTime = ev.offsetX;
             let distance = 10000;
-            let closestPoint;
             this.points.forEach(point => {
-                if (Math.abs(point.time - this.width - pointerTime) < distance) {
-                    distance = point.time;
-                    closestPoint = point;
+                const coords = this.calculateXandY(point);
+                if (Math.abs(coords.x - pointerTime) < distance) {
+                    distance = Math.abs(coords.x - pointerTime);
+                    this.closestPoint = point;
                 }
             });
-            if (!closestPoint)
+            if (!this.closestPoint)
                 return;
-            const pos = this.calculateXandY(closestPoint);
-            pointer.style.top = pos.y + "px";
-            pointer.style.left = pos.x + "px";
-            console.log(closestPoint);
+            // const pos = this.calculateXandY(this.closestPoint)
+            // this.pointer.style.top = pos.y + "px"
+            // this.pointer.style.left = pos.x + "px"
         };
     }
     updateGraph(newPoint) {
@@ -145,6 +146,10 @@ class Graph {
         // this.ctx?.lineTo(point.time - this.time + this.width - this.padding,
         // this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
         //finish
+        const pos = this.calculateXandY(this.closestPoint);
+        this.pointer.style.top = pos.y + "px";
+        this.pointer.style.left = pos.x + "px";
+        this.pointer.innerText = this.closestPoint.value + '%';
         this.ctx.stroke();
     }
     calculateXandY(point) {
@@ -155,7 +160,7 @@ class Graph {
         this.ctx.beginPath();
         const segments = 10;
         const segHeight = this.height / segments;
-        for (let index = 0; index < segments; index++) {
+        for (let index = 0; index <= segments; index++) {
             this.ctx.moveTo(0, this.height - index * segHeight);
             this.ctx.lineTo(this.width, this.height - index * segHeight);
             this.ctx.fillText(index * segments + ":", 10, this.height - index * segHeight);

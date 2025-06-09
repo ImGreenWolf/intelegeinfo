@@ -14,6 +14,10 @@ declare let globalTime: number;
 declare function init(): Promise<void>;
 declare function updateLoop(): void;
 declare const Graphs: Map<string, Graph>;
+interface GraphPoint {
+    value: number;
+    time: number;
+}
 declare class Graph {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
@@ -23,23 +27,13 @@ declare class Graph {
     height: number;
     width: number;
     padding: number;
-    maxPoint: {
-        value: 0;
-        time: 0;
-    };
-    secondMaxPoint: {
-        value: 0;
-        time: 0;
-    };
-    points: {
-        value: number;
-        time: number;
-    }[];
+    maxPoint: GraphPoint;
+    secondMaxPoint: GraphPoint;
+    points: GraphPoint[];
+    closestPoint: GraphPoint;
+    pointer: HTMLDivElement;
     constructor(name: string, parent: HTMLElement, minValue: any, maxValue: any);
-    updateGraph(newPoint: {
-        value: any;
-        time: any;
-    }): void;
+    updateGraph(newPoint: GraphPoint): void;
     private calculateXandY;
     private drawBackground;
     private normalizeValue;
