@@ -134,15 +134,18 @@ ctx = this.canvas.getContext('2d')!;
 time = 0;
 minValue;
 maxValue;
-height = 300;
+height = 100;
+width = 300;
+maxPoint: {value: 0, time: 0} = {value: 0, time: 0};
+secondMaxPoint: {value: 0, time: 0} = {value: 0, time: 0};
 points: {value: number, time: number}[] = []
 constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.ctx.moveTo(0,0)
-    this.canvas.width = 300
+    this.canvas.width =  this.width
     this.canvas.height = this.height
-    this.ctx.lineWidth = 10;
+    this.ctx.lineWidth = 5;
     parent.appendChild(this.canvas)
     Graphs.set(name, this)
     
@@ -150,15 +153,27 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
 }
 
 
-public updateGraph(value, time)
+public updateGraph(newPoint: {value, time})
 {
-    this.time = time;
-    this.points.push({value, time})
+    if(newPoint.time+this.width > this.maxPoint.time)
+        this.maxPoint = this.secondMaxPoint
+    else
+    if(this.secondMaxPoint.value > this.maxPoint.value)
+        this.maxPoint =  newPoint
+    else if(newPoint.value > this.secondMaxPoint.value)
+        this.secondMaxPoint = newPoint
+
+
+    this.points.push(newPoint)
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    //draw points
     this.ctx.beginPath();
     for(const point of this.points)
-        this.ctx?.lineTo(point.time, this.height-(this.normalizeValue(point.value, this.minValue, this.maxValue))*10)
+        this.ctx?.lineTo(point.time - this.time + this.width, this.height-(this.normalizeValue(point.value, this.minValue, this.maxValue))*(this.maxValue / this.maxPoint.value))
     this.ctx.stroke();
+
+    this.time = newPoint.time;
 }
 
 private normalizeValue(value, minValue, maxValue)
