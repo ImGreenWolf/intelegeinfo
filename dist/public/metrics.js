@@ -37,9 +37,12 @@ addMonitor('monit.cpu', (name, value) => {
     return `<h1>${name}</h1>
     <p>${value}</p>`;
 });
+updateLoop();
 function updateLoop() {
-    fetch('api').then(res => res.json())
-        .then(res => {
-        UpdateValues(res);
-    });
+    setInterval(() => {
+        fetch('api').then(res => res.json())
+            .then(res => {
+            UpdateValues(res);
+        });
+    }, 300);
 }
