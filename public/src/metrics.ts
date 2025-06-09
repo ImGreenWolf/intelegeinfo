@@ -1,6 +1,6 @@
 const monitoredValues: {value: string, cell: HTMLTableCellElement, update: (name, value) => string}[] = []
 
-function UpdateProcessValues(json)
+function UpdateProcessValues(json, index)
 { 
         for(const monitor of monitoredValues)
         {
@@ -8,7 +8,7 @@ function UpdateProcessValues(json)
             for(const key of monitor.value.split('.'))
                 lastObjValue = lastObjValue[key]
 
-            document.getElementById(monitor.value as string)!.innerHTML = monitor.update(monitor.value,lastObjValue)
+            document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue)
         }   
         
      
@@ -19,7 +19,7 @@ function addMonitor(value: string, index, calback: (name, value) => string)
     const name = getName(value as string)
     const cell = document.createElement('td')
     monitoredValues.push({value, cell, update: calback})
-    cell.id = value
+    cell.id = value+'-'+index;
     cell.innerHTML = calback(name, "Updating...")
     document.getElementById('table-'+index)?.appendChild(cell)
     // addMonitorToTable(, cell)
@@ -71,7 +71,7 @@ function init()
 
 
 
-                UpdateProcessValues(process)
+                UpdateProcessValues(process, k)
                 k++;
             }
 
@@ -92,7 +92,9 @@ function updateLoop()
 
         fetch('metrics/api').then(res => res.json())
         .then(res => {
-            UpdateProcessValues(res)
+            let k=0;
+            for(const table of res)
+                UpdateProcessValues(res, k++)
         }).catch(err => window.alert(err))
         
 }

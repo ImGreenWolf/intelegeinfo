@@ -1,18 +1,18 @@
 "use strict";
 const monitoredValues = [];
-function UpdateProcessValues(json) {
+function UpdateProcessValues(json, index) {
     for (const monitor of monitoredValues) {
         let lastObjValue = json;
         for (const key of monitor.value.split('.'))
             lastObjValue = lastObjValue[key];
-        document.getElementById(monitor.value).innerHTML = monitor.update(monitor.value, lastObjValue);
+        document.getElementById(monitor.value + '-' + index).innerHTML = monitor.update(monitor.value, lastObjValue);
     }
 }
 function addMonitor(value, index, calback) {
     const name = getName(value);
     const cell = document.createElement('td');
     monitoredValues.push({ value, cell, update: calback });
-    cell.id = value;
+    cell.id = value + '-' + index;
     cell.innerHTML = calback(name, "Updating...");
     document.getElementById('table-' + index)?.appendChild(cell);
     // addMonitorToTable(, cell)
@@ -39,7 +39,7 @@ function init() {
                     return `<h1>${name}</h1>
                     <p>${value}</p>`;
                 });
-                UpdateProcessValues(process);
+                UpdateProcessValues(process, k);
                 k++;
             }
             resolve();
@@ -49,6 +49,8 @@ function init() {
 function updateLoop() {
     fetch('metrics/api').then(res => res.json())
         .then(res => {
-        UpdateProcessValues(res);
+        let k = 0;
+        for (const table of res)
+            UpdateProcessValues(res, k++);
     }).catch(err => window.alert(err));
 }
