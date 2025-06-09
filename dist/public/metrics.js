@@ -31,8 +31,13 @@ function getName(value) {
 function addMonitorToTable(table, cell) {
     document.getElementById(table)?.appendChild(cell);
 }
-init()
-    .then(() => setInterval(updateLoop, 300));
+init();
+// .then(
+//     () => 
+// setInterval(
+//     updateLoop
+// ,300)
+// )
 let globalTime = 0;
 function init() {
     return new Promise((resolve, reject) => {
@@ -50,7 +55,7 @@ function init() {
                     if (isUpdate)
                         Graphs.get(name)?.updateGraph({ value, time: globalTime });
                     else
-                        new Graph(value, cell, 0, 100);
+                        new Graph(name, cell, 0, 100);
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
                 });
@@ -68,6 +73,7 @@ function init() {
                 let k = 0;
                 for (const table of res)
                     UpdateProcessValues(table, k++);
+                globalTime = ev.timeStamp;
             };
             resolve();
         }).catch(err => reject(err));

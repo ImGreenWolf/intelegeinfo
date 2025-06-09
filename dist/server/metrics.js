@@ -28,7 +28,7 @@ exports.wssAPI.on('connection', ws => {
                 //   console.log(err, list)
                 ws.send(JSON.stringify(list));
             });
-        }, 100);
+        }, 300);
     });
 });
 router.get('/api', (req, res) => {

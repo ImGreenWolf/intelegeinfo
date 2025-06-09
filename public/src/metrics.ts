@@ -54,12 +54,12 @@ function addMonitorToTable(table, cell)
 
 
 init()
-.then(
-    () => 
-setInterval(
-    updateLoop
-,300)
-)
+// .then(
+//     () => 
+// setInterval(
+//     updateLoop
+// ,300)
+// )
 let globalTime =0;
 
 function init()
@@ -86,7 +86,7 @@ function init()
                     if(isUpdate)
                         Graphs.get(name)?.updateGraph({value, time: globalTime})
                     else
-                        new Graph(value, cell, 0,100)
+                        new Graph(name, cell, 0,100)
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`
                 })
@@ -104,7 +104,7 @@ function init()
                 UpdateProcessValues(process, k)
                 k++;
             }
-            
+
             let ws = new WebSocket('ws://intelegeinfo.go.ro/api')
 
             ws.onmessage = (ev) => {
@@ -112,6 +112,7 @@ function init()
                 let k=0;
                     for(const table of res)
                         UpdateProcessValues(table, k++)
+                globalTime = ev.timeStamp
             }
             resolve()   
         }).catch(err => reject(err))
