@@ -54,8 +54,10 @@ function init() {
                     else {
                         new Graph(name, cell, 0, 100);
                         let median = 0;
-                        graph.points.forEach(point => median += point.value);
-                        graph.addLine(() => { return { value: median / graph.points.length, color: 'yellow', width: 1 }; });
+                        if (graph.points.length > 50) {
+                            graph.points.forEach(point => median += point.value);
+                            graph.addLine(() => { return { value: median / graph.points.length, color: 'yellow', width: 1 }; });
+                        }
                     }
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
