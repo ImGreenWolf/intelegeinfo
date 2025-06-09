@@ -32,6 +32,7 @@ declare class Graph {
     points: GraphPoint[];
     closestPoint: GraphPoint;
     pointer: HTMLDivElement;
+    zoom: GraphPoint;
     constructor(name: string, parent: HTMLElement, minValue: any, maxValue: any);
     private updatePointer;
     updateGraph(newPoint: GraphPoint): void;

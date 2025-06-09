@@ -95,6 +95,7 @@ class Graph {
     points = [];
     closestPoint = this.maxPoint;
     pointer;
+    zoom = { time: 1, value: 2 };
     constructor(name, parent, minValue, maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -159,7 +160,7 @@ class Graph {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawBackground();
         //draw points
-        this.ctx.lineWidth = 5;
+        this.ctx.lineWidth = 2;
         this.ctx.beginPath();
         for (const point of this.points)
             if (this.calculateXandY(point).x > this.padding)
@@ -171,13 +172,14 @@ class Graph {
         this.ctx.stroke();
     }
     calculateXandY(point) {
-        return { x: point.time - this.time + this.width - this.padding, y: this.height - this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value)) * this.height * 2 };
+        return { x: (point.time - this.time) * this.zoom.time + this.width - this.padding,
+            y: this.height - this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value)) * this.height * this.zoom.value };
     }
     drawBackground() {
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
         const segments = 10;
-        const segHeight = this.height / segments;
+        const segHeight = this.height / segments * this.zoom.value;
         for (let index = 0; index <= segments; index++) {
             const start = this.calculateXandY({ time: this.padding, value: index * segHeight });
             if (start.y < 0)
@@ -186,7 +188,7 @@ class Graph {
             this.ctx.lineTo(this.width - this.padding, start.y);
             // this.ctx.moveTo(this.padding,this.height-index*segHeight+1)
             // this.ctx.lineTo(this.width-this.padding, this.height-index*segHeight)
-            this.ctx.fillText(index * segments + ":", 0, this.height - index * segHeight + 5);
+            this.ctx.fillText(index * segHeight + ":", 0, start.y);
         }
         this.ctx.stroke();
     }
