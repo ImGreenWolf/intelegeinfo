@@ -5,18 +5,25 @@ function UpdateProcessValues(json, index) {
         let lastObjValue = json;
         for (const key of monitor.value.split('.'))
             lastObjValue = lastObjValue[key];
-        document.getElementById(monitor.value + '-' + index).innerHTML = monitor.update(monitor.value, lastObjValue, true, monitor.cell);
+        setInnerHTML(monitor, lastObjValue, true);
+        // document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, true, monitor.cell)
     }
 }
-function addMonitor(value, index, calback) {
+function addMonitor(value, index, callback) {
     const name = getName(value);
     const cell = document.createElement('td');
-    monitoredValues.push({ value, cell, update: calback });
     cell.id = value + '-' + index;
     document.getElementById('table-' + index)?.appendChild(cell);
+    const container = document.createElement('div');
+    cell.appendChild(container);
+    const monitor = { value, cell, container, update: callback };
+    monitoredValues.push(monitor);
+    setInnerHTML(monitor, 'Updating..', false);
     new Graph(value, cell, 0, 100);
-    cell.innerHTML = calback(name, "Updating...", false, cell);
     // addMonitorToTable(, cell)
+}
+function setInnerHTML(monitor, value, isUpdate = true) {
+    monitor.container.innerHTML = monitor.update(monitor.value, value, isUpdate, monitor.cell);
 }
 function getName(value) {
     const tree = value.split('.');

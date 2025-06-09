@@ -1,5 +1,7 @@
-const monitoredValues: {value: string, cell: HTMLTableCellElement, update: (name, value, isUpdate, cell) => string}[] = []
-
+const monitoredValues: Monitor[] = []
+interface Monitor {
+    value: string, cell: HTMLTableCellElement, container: HTMLDivElement, update: (name, value, isUpdate, cell) => string
+}
 function UpdateProcessValues(json, index)
 { 
         for(const monitor of monitoredValues)
@@ -7,27 +9,35 @@ function UpdateProcessValues(json, index)
             let lastObjValue = json
             for(const key of monitor.value.split('.'))
                 lastObjValue = lastObjValue[key]
-
-            document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, true, monitor.cell)
+            
+            setInnerHTML(monitor, lastObjValue, true)
+            // document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, true, monitor.cell)
         }   
         
      
 }
 
-function addMonitor(value: string, index, calback: (name, value, isUpdate, cell) => string)
+function addMonitor(value: string, index, callback: (name, value, isUpdate, cell) => string)
 {
     const name = getName(value as string)
     const cell = document.createElement('td')
-    monitoredValues.push({value, cell, update: calback})
     cell.id = value+'-'+index;
     document.getElementById('table-'+index)?.appendChild(cell)
+    const container = document.createElement('div')
+    cell.appendChild(container)
+    const monitor:Monitor = {value, cell, container, update: callback}
+    monitoredValues.push(monitor)
+
+    setInnerHTML(monitor, 'Updating..', false)
     new Graph(value, cell, 0,100)
-    cell.innerHTML = calback(name, "Updating...", false, cell)
     
     // addMonitorToTable(, cell)
     
 }
+function setInnerHTML(monitor: Monitor, value: string, isUpdate=true) {
 
+    monitor.container.innerHTML = monitor.update(monitor.value, value, isUpdate, monitor.cell)
+}
 function getName(value)
 {
     const tree = (value as string).split('.')
