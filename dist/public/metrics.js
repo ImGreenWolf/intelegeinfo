@@ -103,11 +103,18 @@ class Graph {
         else if (newPoint.value > this.secondMaxPoint.value)
             this.secondMaxPoint = newPoint;
         this.points.push(newPoint);
+        if (this.points[0].time + this.width > newPoint.time)
+            this.points.shift();
+        // if(this.points.length > (newPoint.time-this.time)*this.width)
+        //     this.points.shift()
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         //draw points
         this.ctx.beginPath();
-        for (const point of this.points)
+        for (const point of this.points) {
+            // if(point.time - this.time > this.width + 50)
+            //     this.points.splice(this.points.indexOf(point))
             this.ctx?.lineTo(point.time - this.time + this.width, this.height - (this.normalizeValue(point.value, this.minValue, this.maxValue)) * (this.maxValue / this.maxPoint.value));
+        }
         this.ctx.stroke();
         this.time = newPoint.time;
     }
