@@ -26,7 +26,7 @@ wssAPI.on('connection', ws => {
             {
                 if(buffer!='')
                 {
-                    const output = `${new Date().toLocaleTimeString('ro-ro')}: ${buffer}\n`;
+                    const output = `${new Date().toLocaleTimeString('ro-ro')}: ${buffer.split('\n').join('\n'+(' ').repeat(new Date().toLocaleTimeString('ro-ro').length))}`;
                     ws.send(JSON.stringify({output}))
                     buffer = '';
                 }
@@ -55,7 +55,7 @@ const originalStdoutWrite = process.stdout.write.bind(process.stdout)
 //@ts-ignore
 process.stdout.write = (chunk, encoding, callback) => {
     if (typeof chunk === 'string') {
-    buffer += (buffer!='' ? "&#x9" : "") + chunk + "\n";
+    buffer += chunk + "\n ";
   }
 
   return originalStdoutWrite(chunk, encoding, callback);
