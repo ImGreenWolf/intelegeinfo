@@ -162,24 +162,27 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.ctx.lineWidth = 5;
     const canvasLayer = document.createElement('div')
     canvasLayer.appendChild(this.canvas)
+
+    this.createZoomButtons(canvasLayer)
     canvasLayer.style.position = 'relative';
     parent.appendChild(canvasLayer)
     let pointerTimeout: NodeJS.Timeout
     Graphs.set(name, this)
      this.pointer = document.createElement('div')
-    this.pointer.innerText = 'dokdkdk'
+    this.pointer.innerText = '...'
     this.pointer.style.cssText = "position: absolute; border-radius: 50%; width: 15px; height: 15px; background-color: white; font-size: 12px"
     canvasLayer.appendChild(this.pointer)
     canvasLayer.onmousemove = ev => {
         // ev.offsetX
-        const pointerTime = ev.offsetX
+        const curosrPoint: GraphPoint = {time: ev.offsetX, value: ev.offsetY}
+
         let distance = 10000
-        ;
         this.points.forEach(point => {
             const coords = this.calculateXandY(point)
-            if(Math.abs(coords.x - pointerTime) < distance)
+            const dist = Math.sqrt(Math.pow(coords.x - curosrPoint.time, 2) + Math.pow(coords.y - curosrPoint.value, 2))
+            if(dist < distance)
             {
-                distance = Math.abs(coords.x - pointerTime);
+                distance = dist
                 this.closestPoint = point
             }
                 
@@ -197,7 +200,17 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
         // this.pointer.style.left = pos.x + "px"
     }
 }
-
+private createZoomButtons(canvasLayer)
+{
+    const up = document.createElement('button')
+    up.innerText = "+"
+    up.onclick = () => this.zoom = {time: this.zoom.time, value: this.zoom.value++}
+    const down = document.createElement('button')
+    down.innerText = "-"
+    down.onclick = () => this.zoom = {time: this.zoom.time, value: this.zoom.value--}
+    canvasLayer.appendChild(up)
+    canvasLayer.appendChild(down)
+}
 private updatePointer()
 {
     const pos = this.calculateXandY(this.closestPoint)

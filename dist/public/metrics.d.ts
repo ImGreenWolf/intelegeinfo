@@ -34,6 +34,7 @@ declare class Graph {
     pointer: HTMLDivElement;
     zoom: GraphPoint;
     constructor(name: string, parent: HTMLElement, minValue: any, maxValue: any);
+    private createZoomButtons;
     private updatePointer;
     updateGraph(newPoint: GraphPoint): void;
     private calculateXandY;

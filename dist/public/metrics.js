@@ -105,22 +105,24 @@ class Graph {
         this.ctx.lineWidth = 5;
         const canvasLayer = document.createElement('div');
         canvasLayer.appendChild(this.canvas);
+        this.createZoomButtons(canvasLayer);
         canvasLayer.style.position = 'relative';
         parent.appendChild(canvasLayer);
         let pointerTimeout;
         Graphs.set(name, this);
         this.pointer = document.createElement('div');
-        this.pointer.innerText = 'dokdkdk';
+        this.pointer.innerText = '...';
         this.pointer.style.cssText = "position: absolute; border-radius: 50%; width: 15px; height: 15px; background-color: white; font-size: 12px";
         canvasLayer.appendChild(this.pointer);
         canvasLayer.onmousemove = ev => {
             // ev.offsetX
-            const pointerTime = ev.offsetX;
+            const curosrPoint = { time: ev.offsetX, value: ev.offsetY };
             let distance = 10000;
             this.points.forEach(point => {
                 const coords = this.calculateXandY(point);
-                if (Math.abs(coords.x - pointerTime) < distance) {
-                    distance = Math.abs(coords.x - pointerTime);
+                const dist = Math.sqrt(Math.pow(coords.x - curosrPoint.time, 2) + Math.pow(coords.y - curosrPoint.value, 2));
+                if (dist < distance) {
+                    distance = dist;
                     this.closestPoint = point;
                 }
             });
@@ -136,6 +138,16 @@ class Graph {
             // this.pointer.style.top = pos.y + "px"
             // this.pointer.style.left = pos.x + "px"
         };
+    }
+    createZoomButtons(canvasLayer) {
+        const up = document.createElement('button');
+        up.innerText = "+";
+        up.onclick = () => this.zoom = { time: this.zoom.time, value: this.zoom.value++ };
+        const down = document.createElement('button');
+        down.innerText = "-";
+        down.onclick = () => this.zoom = { time: this.zoom.time, value: this.zoom.value-- };
+        canvasLayer.appendChild(up);
+        canvasLayer.appendChild(down);
     }
     updatePointer() {
         const pos = this.calculateXandY(this.closestPoint);
