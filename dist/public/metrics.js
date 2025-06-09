@@ -68,12 +68,13 @@ function init() {
                 k++;
             }
             let ws = new WebSocket('ws://intelegeinfo.go.ro/api');
+            const start = Date.now();
             ws.onmessage = (ev) => {
                 const res = JSON.parse(ev.data);
+                globalTime = Date.now() - start;
                 let k = 0;
                 for (const table of res)
                     UpdateProcessValues(table, k++);
-                globalTime = ev.timeStamp;
             };
             resolve();
         }).catch(err => reject(err));
