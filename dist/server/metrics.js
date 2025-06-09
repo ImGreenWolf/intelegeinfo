@@ -29,7 +29,7 @@ exports.wssAPI.on('connection', ws => {
             k++;
             if (k % 3 == 0) {
                 if (buffer != '') {
-                    const output = `${new Date().toLocaleTimeString('ro-ro')}: ${buffer.includes('\n') ? buffer.split('\n').join('\n' + ('&#32 ').repeat(new Date().toLocaleTimeString('ro-ro').length + 1)) : buffer}\n`;
+                    const output = `${new Date().toLocaleTimeString('ro-ro')}: ${buffer.includes('\n') ? buffer.split('\n').join('\n' + ('&#32 ').repeat(new Date().toLocaleTimeString('ro-ro').length)) : buffer} \n`;
                     ws.send(JSON.stringify({ output }));
                     buffer = '';
                 }
