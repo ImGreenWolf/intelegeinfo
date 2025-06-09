@@ -47,23 +47,24 @@ function init() {
                     return `<h1>${value}</h1>`;
                 });
                 addMonitor('monit.cpu', k, (name, value, isUpdate, cell) => {
+                    const graph = Graphs.get(name);
                     if (isUpdate) {
-                        const graph = Graphs.get(name);
                         graph.updateGraph({ value, time: globalTime });
+                    }
+                    else {
+                        new Graph(name, cell, 0, 100);
                         let median = 0;
                         graph.points.forEach(point => median += point.value);
-                        graph.drawLineAtValue(median / graph.points.length, 'yellow', 1, true);
+                        graph.addLine(() => { return { value: median / graph.points.length, color: 'yellow', width: 1 }; });
                     }
-                    else
-                        new Graph(name, cell, 0, 100);
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
                 });
                 addMonitor('monit.memory', k, (name, value, isUpdate, cell) => {
                     if (isUpdate)
-                        Graphs.get(name)?.updateGraph({ value: value / 1000000, time: globalTime });
+                        Graphs.get(name)?.updateGraph({ value: value / 100000000, time: globalTime });
                     else
-                        new Graph(name, cell, 0, 800);
+                        new Graph(name, cell, 1, 8);
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
                 });
@@ -194,6 +195,9 @@ class Graph {
         //reset canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawBackground();
+        this.lines.forEach(line => {
+            this.drawLineAtValue(line);
+        });
         //draw points
         this.ctx.lineWidth = 2;
         this.ctx.strokeStyle = 'black';
@@ -201,8 +205,6 @@ class Graph {
         for (const point of this.points)
             if (this.calculateXandY(point).x > this.padding)
                 this.ctx?.lineTo(this.calculateXandY(point).x, this.calculateXandY(point).y);
-        // this.ctx?.lineTo(point.time - this.time + this.width - this.padding,
-        // this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
         //finish
         this.updatePointer();
         this.ctx.stroke();
@@ -240,16 +242,16 @@ class Graph {
     normalizeValue(value, minValue, maxValue) {
         return (value - minValue) / (maxValue - minValue);
     }
-    drawLineAtValue(value, color, width, once = false) {
-        const pos = this.calculateXandY(value);
-        if (once) {
-            this.ctx.beginPath();
-            this.ctx.strokeStyle = color;
-            this.ctx.lineWidth = width;
-            this.ctx.moveTo(this.padding, pos.y);
-            this.ctx.lineTo(this.padding, pos.y);
-            this.ctx.stroke();
-        }
-        this.lines.push({ value, color, width });
+    addLine(callback) {
+        this.lines.push(callback());
+    }
+    drawLineAtValue(line) {
+        const pos = this.calculateXandY(line.value);
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = line.color;
+        this.ctx.lineWidth = line.width;
+        this.ctx.moveTo(this.padding, pos.y);
+        this.ctx.lineTo(this.padding, pos.y);
+        this.ctx.stroke();
     }
 }
