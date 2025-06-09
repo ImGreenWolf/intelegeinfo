@@ -76,7 +76,7 @@ function init()
         .then(res => {
             
 
-            addMonitor('os.cpu', -1, (name, value, isUpdate, cell)=> {
+            addMonitor('os.cpu.0.speed', -1, (name, value, isUpdate, cell)=> {
 
                          
                     if(isUpdate)
@@ -107,7 +107,7 @@ function init()
                 table.id='table-' + k;
                 document.body.appendChild(table)
 
-                addMonitor('name', k, (name, value)=> {
+                addMonitor('pm2.name', k, (name, value)=> {
 
                     return `<h1>${value}</h1>`
                 })
@@ -135,7 +135,7 @@ function init()
                     <p>${value}%</p>`
                 })
 
-                addMonitor('monit.memory', k, (name, value, isUpdate, cell)=> {
+                addMonitor('pm2.monit.memory', k, (name, value, isUpdate, cell)=> {
 
                         
                     if(isUpdate)
@@ -146,7 +146,7 @@ function init()
                     <p>${value}%</p>`
                 })
 
-                addMonitor('pm2_env', k, (name, value, isUpdate)=> {
+                addMonitor('pm2.pm2_env', k, (name, value, isUpdate)=> {
 
                     return `<h1>${name}</h1>
                     <p>${value.status}</p>

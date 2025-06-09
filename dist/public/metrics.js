@@ -44,7 +44,7 @@ function init() {
     return new Promise((resolve, reject) => {
         fetch('metrics/api').then(res => res.json())
             .then(res => {
-            addMonitor('os.cpu', -1, (name, value, isUpdate, cell) => {
+            addMonitor('os.cpu.0.speed', -1, (name, value, isUpdate, cell) => {
                 if (isUpdate) {
                     const graph = Graphs.get(name);
                     graph.updateGraph({ value, time: globalTime });
@@ -65,7 +65,7 @@ function init() {
                 const table = document.createElement('table');
                 table.id = 'table-' + k;
                 document.body.appendChild(table);
-                addMonitor('name', k, (name, value) => {
+                addMonitor('pm2.name', k, (name, value) => {
                     return `<h1>${value}</h1>`;
                 });
                 addMonitor('pm2.monit.cpu', k, (name, value, isUpdate, cell) => {
@@ -84,7 +84,7 @@ function init() {
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
                 });
-                addMonitor('monit.memory', k, (name, value, isUpdate, cell) => {
+                addMonitor('pm2.monit.memory', k, (name, value, isUpdate, cell) => {
                     if (isUpdate)
                         Graphs.get(name)?.updateGraph({ value: value / 100000000, time: globalTime });
                     else
@@ -92,7 +92,7 @@ function init() {
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
                 });
-                addMonitor('pm2_env', k, (name, value, isUpdate) => {
+                addMonitor('pm2.pm2_env', k, (name, value, isUpdate) => {
                     return `<h1>${name}</h1>
                     <p>${value.status}</p>
                     <p>${value.restart_time}</p>`;
