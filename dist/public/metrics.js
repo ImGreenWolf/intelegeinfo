@@ -47,8 +47,13 @@ function init() {
                     return `<h1>${value}</h1>`;
                 });
                 addMonitor('monit.cpu', k, (name, value, isUpdate, cell) => {
-                    if (isUpdate)
-                        Graphs.get(name)?.updateGraph({ value, time: globalTime });
+                    if (isUpdate) {
+                        const graph = Graphs.get(name);
+                        graph.updateGraph({ value, time: globalTime });
+                        let median;
+                        graph.points.forEach(point => median += point.value);
+                        graph.drawLineAtValue(median / graph.points.length, 'yellow', 1, true);
+                    }
                     else
                         new Graph(name, cell, 0, 100);
                     return `<h1>${name}</h1>
@@ -56,9 +61,9 @@ function init() {
                 });
                 addMonitor('monit.memory', k, (name, value, isUpdate, cell) => {
                     if (isUpdate)
-                        Graphs.get(name)?.updateGraph({ value, time: globalTime });
+                        Graphs.get(name)?.updateGraph({ value: value / 1000000, time: globalTime });
                     else
-                        new Graph(name, cell, 10000000, 800000000);
+                        new Graph(name, cell, 0, 800);
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
                 });
@@ -110,6 +115,7 @@ class Graph {
     closestPoint = this.maxPoint;
     pointer;
     zoom = { time: 1, value: 2 };
+    lines = [];
     constructor(name, parent, minValue, maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -210,9 +216,8 @@ class Graph {
     }
     drawBackground() {
         const segments = 10;
-        const segHeight = this.height / segments;
+        const segHeight = this.height / segments / 3;
         for (let index = 0; index <= segments; index++) {
-            this.ctx.beginPath();
             if (index % 5 == 0)
                 this.ctx.lineWidth = 2;
             else
@@ -221,6 +226,7 @@ class Graph {
             // start = {x: start.x, y: start.y - this.padding};
             if (start.y < 0)
                 break;
+            this.ctx.beginPath();
             this.ctx.moveTo(this.padding, start.y);
             this.ctx.lineTo(this.width - this.padding, start.y);
             // this.ctx.moveTo(this.padding,this.height-index*segHeight+1)
@@ -231,5 +237,17 @@ class Graph {
     }
     normalizeValue(value, minValue, maxValue) {
         return (value - minValue) / (maxValue - minValue);
+    }
+    drawLineAtValue(value, color, width, once = false) {
+        const pos = this.calculateXandY(value);
+        if (once) {
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = width;
+            this.ctx.moveTo(this.padding, pos.y);
+            this.ctx.lineTo(this.padding, pos.y);
+            this.ctx.stroke();
+        }
+        this.lines.push({ value, color, width });
     }
 }

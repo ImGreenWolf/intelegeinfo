@@ -18,6 +18,11 @@ interface GraphPoint {
     value: number;
     time: number;
 }
+interface GraphLine {
+    value: any;
+    color: any;
+    width: any;
+}
 declare class Graph {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
@@ -33,6 +38,7 @@ declare class Graph {
     closestPoint: GraphPoint;
     pointer: HTMLDivElement;
     zoom: GraphPoint;
+    lines: GraphLine[];
     constructor(name: string, parent: HTMLElement, minValue: any, maxValue: any);
     private createZoomButtons;
     private updatePointer;
@@ -41,4 +47,5 @@ declare class Graph {
     private calculateXandY;
     private drawBackground;
     private normalizeValue;
+    drawLineAtValue(value: any, color: any, width: any, once?: boolean): void;
 }

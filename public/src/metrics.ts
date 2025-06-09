@@ -84,7 +84,13 @@ function init()
 
                         
                     if(isUpdate)
-                        Graphs.get(name)?.updateGraph({value, time: globalTime})
+                    {
+                        const graph =  Graphs.get(name)!;
+                        graph.updateGraph({value, time: globalTime})
+                        let median
+                         graph.points.forEach(point => median += point.value)
+                         graph.drawLineAtValue(median/graph.points.length,'yellow',1, true)
+                    }
                     else
                         new Graph(name, cell, 0,100)
                     return `<h1>${name}</h1>
@@ -95,9 +101,9 @@ function init()
 
                         
                     if(isUpdate)
-                        Graphs.get(name)?.updateGraph({value, time: globalTime})
+                        Graphs.get(name)?.updateGraph({value: value/1000000, time: globalTime})
                     else
-                        new Graph(name, cell, 10000000,800000000)
+                        new Graph(name, cell, 0,800)
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`
                 })
@@ -154,6 +160,7 @@ interface GraphPoint {
     value: number,
      time: number
 }
+interface GraphLine {value, color, width}
 class Graph {
 canvas = document.createElement('canvas');
 ctx = this.canvas.getContext('2d')!;
@@ -169,6 +176,7 @@ points: GraphPoint[] = []
 closestPoint: GraphPoint = this.maxPoint;
 pointer: HTMLDivElement
 zoom: GraphPoint = {time: 1, value: 2}
+lines: GraphLine[] = []
 constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.minValue = minValue;
     this.maxValue = maxValue;
@@ -296,10 +304,10 @@ private drawBackground() {
 
 
     const segments = 10;
-    const segHeight = this.height/segments
+    const segHeight = this.height/segments/3
     for(let index=0; index<=segments;index++)
     {
-        this.ctx.beginPath();
+        
         if(index % 5 == 0)
                 this.ctx.lineWidth = 2;
         else
@@ -308,6 +316,7 @@ private drawBackground() {
         // start = {x: start.x, y: start.y - this.padding};
         if(start.y < 0)
             break;
+        this.ctx.beginPath();
         this.ctx.moveTo(this.padding, start.y)
         this.ctx.lineTo( this.width-this.padding, start.y)
         // this.ctx.moveTo(this.padding,this.height-index*segHeight+1)
@@ -322,6 +331,23 @@ private drawBackground() {
 private normalizeValue(value, minValue, maxValue)
 {
     return (value-minValue)/(maxValue-minValue)
+}
+
+
+public drawLineAtValue(value, color, width, once=false)
+{
+    const pos = this.calculateXandY(value)
+    if(once)
+    {
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = width
+        this.ctx.moveTo(this.padding,pos.y)
+        this.ctx.lineTo(this.padding,pos.y)
+        this.ctx.stroke();
+    }
+        
+    this.lines.push({value, color, width})
 }
 
 }
