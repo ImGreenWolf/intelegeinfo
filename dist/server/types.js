@@ -377,7 +377,7 @@ class EditorFile {
     content;
     session;
     filePath;
-    constructor(session, name, content) {
+    constructor(session, name, content = '') {
         this.name = name;
         this.content = content;
         this.session = session;

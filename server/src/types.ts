@@ -412,7 +412,7 @@ Tralalero Tralala`.split('\n')
     content;
     session: EditorSession;
     filePath 
-    constructor(session: EditorSession, name, content?) {
+    constructor(session: EditorSession, name: string, content='') {
         this.name = name;
         this.content = content;
         this.session = session
