@@ -62,18 +62,25 @@ function init() {
                 UpdateProcessValues(process, k);
                 k++;
             }
+            let ws = new WebSocket('ws://intelegeinfo.go.ro/api');
+            ws.onmessage = (ev) => {
+                const res = JSON.parse(ev.data);
+                let k = 0;
+                for (const table of res)
+                    UpdateProcessValues(table, k++);
+            };
             resolve();
         }).catch(err => reject(err));
     });
 }
 function updateLoop() {
     globalTime += 3;
-    fetch('metrics/api').then(res => res.json())
-        .then(res => {
-        let k = 0;
-        for (const table of res)
-            UpdateProcessValues(table, k++);
-    }).catch(err => window.alert(err));
+    // fetch('metrics/api').then(res => res.json())
+    // .then(res => {
+    //     let k=0;
+    //     for(const table of res)
+    //         UpdateProcessValues(table, k++)
+    // }).catch(err => window.alert(err))
 }
 const Graphs = new Map();
 class Graph {

@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sessionMap = exports.runningProcesses = exports.clients = exports.wss = exports.server = exports.rootDirName = void 0;
+exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
@@ -69,7 +69,7 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootD
 ;
 const crypto_1 = __importDefault(require("crypto"));
 const EditorModes = __importStar(require("./editor-modes/"));
-const metrics_1 = __importDefault(require("./metrics"));
+const metrics_1 = __importStar(require("./metrics"));
 app.use(compression());
 app.use(express_1.default.json({
     verify: (req, res, buf) => {
@@ -291,13 +291,31 @@ function onServerStart(err) {
 //          GLOBAL  SERVER  VARIABLES       //
 const PORT = 3000;
 exports.server = app.listen(PORT, '0.0.0.0', onServerStart);
-exports.wss = new ws_1.default.Server({ server: exports.server, clientTracking: true, });
+// export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 exports.clients = new Map();
 // const sessions: Map<UUID, UUID[]> = new Map();
 exports.runningProcesses = new Map();
 exports.sessionMap = new Map(); // SESSION ID / EDITOR OBJECT
 const buildTag = `cpp-image`;
+exports.wss = new ws_1.default.Server({ noServer: true, clientTracking: true, });
 //                      END                      //  
+exports.server.on('upgrade', function upgrade(request, socket, head) {
+    const { pathname } = new URL(request.url, 'ws://intelegeinfo.go.ro');
+    switch (pathname) {
+        case '/api':
+            metrics_1.wssAPI.handleUpgrade(request, socket, head, function done(ws) {
+                metrics_1.wssAPI.emit('connection', ws, request);
+            });
+            break;
+        case '/editor':
+            exports.wss.handleUpgrade(request, socket, head, function done(ws) {
+                exports.wss.emit('connection', ws, request);
+            });
+            break;
+        default:
+            socket.destroy();
+    }
+});
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
 //     let redisClient = new Redis({

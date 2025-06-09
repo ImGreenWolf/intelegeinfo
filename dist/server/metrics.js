@@ -3,14 +3,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.wssAPI = void 0;
 const pm2_1 = __importDefault(require("pm2"));
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const server_1 = require("./server");
+const ws_1 = __importDefault(require("ws"));
 const router = express_1.default.Router();
 exports.default = router;
 router.get('/', (req, res) => {
     res.sendFile(path_1.default.join(server_1.rootDirName, 'public', 'pages', 'metrics.html'));
+});
+exports.wssAPI = new ws_1.default.Server({ noServer: true, clientTracking: true, });
+exports.wssAPI.on('connection', ws => {
+    pm2_1.default.connect(function (err) {
+        if (err) {
+            console.error(err);
+            ws.send(JSON.stringify({ err }));
+            process.exit(2);
+        }
+        pm2_1.default.list((err, list) => {
+            //   console.log(err, list)
+            ws.send(list);
+        });
+    });
 });
 router.get('/api', (req, res) => {
     pm2_1.default.connect(function (err) {

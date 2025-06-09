@@ -2,12 +2,36 @@ import pm2 from 'pm2'
 import express, { Request, Response } from 'express';
 import path from 'path';
 import { rootDirName } from './server';
+import WebSocket from 'ws';
 
 const router = express.Router();
 export default router
 router.get('/', (req, res) => {
     res.sendFile(path.join(rootDirName, 'public', 'pages', 'metrics.html'))
 })
+
+export const wssAPI = new WebSocket.Server({noServer: true, clientTracking: true,  });
+wssAPI.on('connection', ws => {
+     pm2.connect(function(err) {
+  if (err) {
+    console.error(err)
+    ws.send(JSON.stringify({err}))
+    process.exit(2)
+  }
+
+
+    pm2.list((err, list) => {
+    //   console.log(err, list)
+        ws.send(list)
+      
+    })
+  })
+
+
+})
+
+
+
 router.get('/api', (req, res) => {
     pm2.connect(function(err) {
   if (err) {

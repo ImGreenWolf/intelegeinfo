@@ -35,7 +35,7 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
 import * as EditorModes from './editor-modes/'
-import Metrics from './metrics'
+import Metrics, { wssAPI } from './metrics'
 
 interface ResponseWRay extends IncomingMessage 
 {
@@ -360,7 +360,7 @@ function onServerStart(err)
 //          GLOBAL  SERVER  VARIABLES       //
             const PORT = 3000;
     export const server = app.listen(PORT, '0.0.0.0', onServerStart);
-    export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
+    // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 
     export let clients: Map<UUID, WebSocket> = new Map();
     // const sessions: Map<UUID, UUID[]> = new Map();
@@ -368,9 +368,35 @@ function onServerStart(err)
     export let runningProcesses: Map<UUID, ChildProcess> = new Map();
     export let sessionMap: Map<UUID, EditorSession> = new Map<UUID, EditorSession>(); // SESSION ID / EDITOR OBJECT
     const buildTag =`cpp-image`;
+
+
+
+    export const wss = new WebSocket.Server({noServer: true, clientTracking: true,  });
+    
+
+
 //                      END                      //  
 
-           
+      server.on('upgrade', function upgrade(request, socket, head) {
+  const { pathname } = new URL(request.url, 'ws://intelegeinfo.go.ro');
+    switch(pathname){
+  case '/api': 
+    wssAPI.handleUpgrade(request, socket, head, function done(ws) {
+      wssAPI.emit('connection', ws, request);
+    });
+    break
+   case '/editor':
+    wss.handleUpgrade(request, socket, head, function done(ws) {
+      wss.emit('connection', ws, request);
+    });
+    break;
+  default:
+    socket.destroy();
+  
+}
+});
+
+
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
  
