@@ -27,7 +27,7 @@ init()
     .then(() => setInterval(updateLoop, 300));
 function init() {
     return new Promise((resolve, reject) => {
-        fetch('./api').then(res => res.json())
+        fetch('metrics/api').then(res => res.json())
             .then(res => {
             let k = 0;
             for (const process of res) {
@@ -41,12 +41,12 @@ function init() {
                 UpdateProcessValues(process);
             }
             resolve();
-        });
+        }).catch(err => reject(err));
     });
 }
 function updateLoop() {
-    fetch('./api').then(res => res.json())
+    fetch('metrics/api').then(res => res.json())
         .then(res => {
         UpdateProcessValues(res);
-    });
+    }).catch(err => window.alert(err));
 }

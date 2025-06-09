@@ -52,7 +52,7 @@ setInterval(
 function init()
 {
     return new Promise<void>((resolve, reject) => {
-        fetch('./api').then(res => res.json())
+        fetch('metrics/api').then(res => res.json())
         .then(res => {
 
             let k=0;
@@ -61,7 +61,7 @@ function init()
                 const table = document.createElement('table')
                 table.id='table-' + k++;
                 document.body.appendChild(table)
-                
+
                 addMonitor('monit.cpu', k, (name, value)=> {
 
                     return `<h1>${name}</h1>
@@ -74,7 +74,7 @@ function init()
             }
 
             resolve()
-        })
+        }).catch(err => reject(err))
     })
     
     
@@ -88,9 +88,9 @@ function updateLoop()
 {
     
 
-        fetch('./api').then(res => res.json())
+        fetch('metrics/api').then(res => res.json())
         .then(res => {
             UpdateProcessValues(res)
-        })
-
+        }).catch(err => window.alert(err))
+        
 }
