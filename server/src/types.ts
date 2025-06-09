@@ -423,11 +423,15 @@ Tralalero Tralala`.split('\n')
                 if (err) {
                     throw err;
                 } else   
-                    session.replicateFunction((clientWs) => {
+                {
+                    console.log('Created file ' + this.name)
+                     session.replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
                     });
                     session.files.push(this)
-                });
+                }
+                   
+            });
             else  throw "File already exists!";
         }
         catch (err)

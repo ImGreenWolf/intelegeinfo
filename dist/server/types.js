@@ -388,11 +388,13 @@ class EditorFile {
                     if (err) {
                         throw err;
                     }
-                    else
+                    else {
+                        console.log('Created file ' + this.name);
                         session.replicateFunction((clientWs) => {
                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
                         });
-                    session.files.push(this);
+                        session.files.push(this);
+                    }
                 });
             else
                 throw "File already exists!";

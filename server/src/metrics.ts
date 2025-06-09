@@ -62,7 +62,7 @@ process.stdout.write = (chunk, encoding, callback) => {
 }
 
 
-const originalStderrWrite = process.stdout.write.bind(process.stdout)
+const originalStderrWrite = process.stderr.write.bind(process.stderr)
 //@ts-ignore
 process.stderr.write = (chunk, encoding, callback) => {
     if (typeof chunk === 'string') {
