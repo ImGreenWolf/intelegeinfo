@@ -377,7 +377,7 @@ class EditorFile {
     content;
     session;
     filePath;
-    constructor(session, name, content = '') {
+    constructor(session, name, content = '', onCreate) {
         this.name = name;
         this.content = content;
         this.session = session;
@@ -394,6 +394,8 @@ class EditorFile {
                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
                         });
                         session.files.push(this);
+                        if (onCreate)
+                            onCreate();
                     }
                 });
             else

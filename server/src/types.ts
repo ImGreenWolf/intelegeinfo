@@ -412,7 +412,7 @@ Tralalero Tralala`.split('\n')
     content;
     session: EditorSession;
     filePath 
-    constructor(session: EditorSession, name: string, content='') {
+    constructor(session: EditorSession, name: string, content='', onCreate?: ()=> void) {
         this.name = name;
         this.content = content;
         this.session = session
@@ -429,6 +429,8 @@ Tralalero Tralala`.split('\n')
                         clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
                     });
                     session.files.push(this)
+                    if(onCreate)
+                    onCreate()
                 }
                    
             });
