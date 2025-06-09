@@ -146,6 +146,8 @@ CMD bash `;
                 }
                 else
                     pid = parseInt(data);
+                (0, child_process_1.exec)('modprobe -r v4l2loopback');
+                (0, child_process_1.exec)('modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1');
                 this.vcam = (0, child_process_1.spawn)('python3', ['camera.py'], { stdio: 'pipe' });
                 this.vcam.stdout.on('data', (data) => {
                     console.log('[this.vcam stdout]', data.toString());

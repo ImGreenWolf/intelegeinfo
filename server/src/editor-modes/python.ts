@@ -131,6 +131,9 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
             }, 3000);
         } else
         pid = parseInt(data);
+
+            exec('modprobe -r v4l2loopback')
+            exec('modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1')
            this.vcam = spawn('python3', ['camera.py'], {stdio: 'pipe'})
 
 

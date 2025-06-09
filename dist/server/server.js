@@ -937,28 +937,28 @@ exports.wss.addListener('connection', async (ws, req) => {
             });
             return CommandQueue;
         }
-        async function listFiles(dir) {
+        function listFiles(dir) {
             try {
-                return await new Promise((resolve, reject) => {
-                    fs_1.default.readdir(dir, (err, files) => {
-                        if (err) {
-                            printClientConsoleError("Error listing files: " + err.message);
-                            reject();
-                        }
-                        else {
-                            // const fileContentMap: Map<string, string> = new Map<string, string>();
-                            // files.forEach(element => {
-                            //     fileContentMap.set(element, fs.readFileSync(path.join(clientFilesPath, element)).toString());
-                            // });
-                            if (!files)
-                                return reject();
-                            const targetFiles = files.filter(file => {
-                                return ![".exe", ".o"].includes(path_1.default.extname(file).toLowerCase());
-                            });
-                            resolve();
-                            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_3.FileManagementCommands.List, content: targetFiles } })); // Send the list of files to the client
-                        }
-                    });
+                return new Promise((resolve, reject) => {
+                    ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_3.FileManagementCommands.List, content: clientSession.files.map(file => { return file.name; }) } })); // Send the list of files to the client
+                    resolve();
+                    // fs.readdir(dir, (err, files) => {
+                    //     if (err) {
+                    //         printClientConsoleError("Error listing files: " + err.message);
+                    //         reject();
+                    //     } else {
+                    //         // const fileContentMap: Map<string, string> = new Map<string, string>();
+                    //         // files.forEach(element => {
+                    //         //     fileContentMap.set(element, fs.readFileSync(path.join(clientFilesPath, element)).toString());
+                    //         // });
+                    //         if (!files) return reject();
+                    //         const targetFiles = files.filter(file => {
+                    //             return ![".exe", ".o"].includes(path.extname(file).toLowerCase());
+                    //         });
+                    //         resolve();
+                    //         ws.send(JSON.stringify({ type: WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.List, content: targetFiles } })); // Send the list of files to the client
+                    //     }
+                    // });
                 });
             }
             catch (reason) {
@@ -978,6 +978,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         function openFile(fileName) {
             // if(fs.existsSync(path.join(clientFilesPath, fileName)))
             // console.log("path: " + path.join(clientFilesPath || path.join(rootDirName, "cache", sessionId,"clientFiles"), fileName))
+            console.log(clientSession.files);
             clientSession.files.find(file => file.name == fileName).openFile(clientObj, shared);
         }
         /**

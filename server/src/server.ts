@@ -1180,27 +1180,31 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         return CommandQueue;
     }
    
-    async function listFiles(dir: string): Promise<void> {
+    function listFiles(dir: string): Promise<void> {
         
         try {
-            return await new Promise<void>((resolve, reject) => {
-                fs.readdir(dir, (err, files) => {
-                    if (err) {
-                        printClientConsoleError("Error listing files: " + err.message);
-                        reject();
-                    } else {
-                        // const fileContentMap: Map<string, string> = new Map<string, string>();
-                        // files.forEach(element => {
-                        //     fileContentMap.set(element, fs.readFileSync(path.join(clientFilesPath, element)).toString());
-                        // });
-                        if (!files) return reject();
-                        const targetFiles = files.filter(file => {
-                            return ![".exe", ".o"].includes(path.extname(file).toLowerCase());
-                        });
-                        resolve();
-                        ws.send(JSON.stringify({ type: WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.List, content: targetFiles } })); // Send the list of files to the client
-                    }
-                });
+            return new Promise<void>((resolve, reject) => {
+
+                ws.send(JSON.stringify({ type: WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.List, content: clientSession.files.map(file => {return file.name}) } })); // Send the list of files to the client
+                resolve();
+
+                // fs.readdir(dir, (err, files) => {
+                //     if (err) {
+                //         printClientConsoleError("Error listing files: " + err.message);
+                //         reject();
+                //     } else {
+                //         // const fileContentMap: Map<string, string> = new Map<string, string>();
+                //         // files.forEach(element => {
+                //         //     fileContentMap.set(element, fs.readFileSync(path.join(clientFilesPath, element)).toString());
+                //         // });
+                //         if (!files) return reject();
+                //         const targetFiles = files.filter(file => {
+                //             return ![".exe", ".o"].includes(path.extname(file).toLowerCase());
+                //         });
+                //         resolve();
+                //         ws.send(JSON.stringify({ type: WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.List, content: targetFiles } })); // Send the list of files to the client
+                //     }
+                // });
             });
         } catch (reason) {
             console.log("Failed listing files: " + reason);
@@ -1223,6 +1227,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     {
         // if(fs.existsSync(path.join(clientFilesPath, fileName)))
         // console.log("path: " + path.join(clientFilesPath || path.join(rootDirName, "cache", sessionId,"clientFiles"), fileName))
+        console.log( clientSession.files)
          clientSession.files.find(file => file.name == fileName).openFile(clientObj, shared)
                        
     }
@@ -1514,6 +1519,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     // console.log(messageJSON.buffer);
                     try {
                           (clientObj.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
+                         
                     } catch(err)
                     {
                         /// ......
