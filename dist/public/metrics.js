@@ -19,7 +19,6 @@ function addMonitor(value, index, callback) {
     const monitor = { value, cell, container, update: callback };
     monitoredValues.push(monitor);
     setInnerHTML(monitor, 'Updating..', false);
-    new Graph(value, cell, 0, 100);
     // addMonitorToTable(, cell)
 }
 function setInnerHTML(monitor, value, isUpdate = true) {
@@ -48,21 +47,17 @@ function init() {
                     return `<h1>${value}</h1>`;
                 });
                 addMonitor('monit.cpu', k, (name, value, isUpdate, cell) => {
-                    Graphs.get(name)?.updateGraph({ value, time: globalTime });
+                    if (isUpdate)
+                        Graphs.get(name)?.updateGraph({ value, time: globalTime });
+                    else
+                        new Graph(value, cell, 0, 100);
                     return `<h1>${name}</h1>
-    <p>${value}%</p>`;
+                    <p>${value}%</p>`;
                 });
                 addMonitor('pm2_env', k, (name, value, isUpdate) => {
-                    if (!isUpdate) {
-                        Graphs.get(name)?.updateGraph({ value: 10, time: 0 });
-                        Graphs.get(name)?.updateGraph({ value: 25, time: 50 });
-                        Graphs.get(name)?.updateGraph({ value: 50, time: 100 });
-                        Graphs.get(name)?.updateGraph({ value: 75, time: 150 });
-                        Graphs.get(name)?.updateGraph({ value: 100, time: 200 });
-                    }
                     return `<h1>${name}</h1>
-    <p>${value.status}</p>
-    <p>${value.restart_time}</p>`;
+                    <p>${value.status}</p>
+                    <p>${value.restart_time}</p>`;
                 });
                 UpdateProcessValues(process, k);
                 k++;
@@ -142,10 +137,10 @@ class Graph {
     createZoomButtons(canvasLayer) {
         const up = document.createElement('button');
         up.innerText = "+";
-        up.onclick = () => this.zoom = { time: this.zoom.time, value: this.zoom.value++ };
+        up.onclick = () => { this.zoom = { time: this.zoom.time, value: this.zoom.value + 1 }; this.redrawGraph(); };
         const down = document.createElement('button');
         down.innerText = "-";
-        down.onclick = () => this.zoom = { time: this.zoom.time, value: this.zoom.value-- };
+        down.onclick = () => { this.zoom = { time: this.zoom.time, value: this.zoom.value - 1 }; this.redrawGraph(); };
         canvasLayer.appendChild(up);
         canvasLayer.appendChild(down);
     }
@@ -168,6 +163,9 @@ class Graph {
         this.points.push(newPoint);
         if (this.points[0].time - newPoint.time < this.width * -1)
             this.points.shift();
+        this.redrawGraph();
+    }
+    redrawGraph() {
         //reset canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawBackground();

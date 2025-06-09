@@ -29,7 +29,7 @@ function addMonitor(value: string, index, callback: (name, value, isUpdate, cell
     monitoredValues.push(monitor)
 
     setInnerHTML(monitor, 'Updating..', false)
-    new Graph(value, cell, 0,100)
+
     
     // addMonitorToTable(, cell)
     
@@ -75,33 +75,28 @@ function init()
                 table.id='table-' + k;
                 document.body.appendChild(table)
 
-addMonitor('name', k, (name, value)=> {
+                addMonitor('name', k, (name, value)=> {
 
-    return `<h1>${value}</h1>`
-})
+                    return `<h1>${value}</h1>`
+                })
 
-addMonitor('monit.cpu', k, (name, value, isUpdate, cell)=> {
+                addMonitor('monit.cpu', k, (name, value, isUpdate, cell)=> {
 
-        
+                        
+                    if(isUpdate)
+                        Graphs.get(name)?.updateGraph({value, time: globalTime})
+                    else
+                        new Graph(value, cell, 0,100)
+                    return `<h1>${name}</h1>
+                    <p>${value}%</p>`
+                })
 
-    Graphs.get(name)?.updateGraph({value, time: globalTime})
-    return `<h1>${name}</h1>
-    <p>${value}%</p>`
-})
+                addMonitor('pm2_env', k, (name, value, isUpdate)=> {
 
-addMonitor('pm2_env', k, (name, value, isUpdate)=> {
-    if(!isUpdate)
-    {
-         Graphs.get(name)?.updateGraph({value: 10, time: 0})
-         Graphs.get(name)?.updateGraph({value: 25, time: 50})
-         Graphs.get(name)?.updateGraph({value: 50, time: 100})
-         Graphs.get(name)?.updateGraph({value: 75, time: 150})
-         Graphs.get(name)?.updateGraph({value: 100, time: 200})
-    }
-    return `<h1>${name}</h1>
-    <p>${value.status}</p>
-    <p>${value.restart_time}</p>`
-})
+                    return `<h1>${name}</h1>
+                    <p>${value.status}</p>
+                    <p>${value.restart_time}</p>`
+                })
 
 
 
@@ -204,10 +199,10 @@ private createZoomButtons(canvasLayer)
 {
     const up = document.createElement('button')
     up.innerText = "+"
-    up.onclick = () => this.zoom = {time: this.zoom.time, value: this.zoom.value++}
+    up.onclick = () => {this.zoom = {time: this.zoom.time, value: this.zoom.value+1}; this.redrawGraph()}
     const down = document.createElement('button')
     down.innerText = "-"
-    down.onclick = () => this.zoom = {time: this.zoom.time, value: this.zoom.value--}
+    down.onclick = () => {this.zoom = {time: this.zoom.time, value: this.zoom.value-1}; this.redrawGraph()}
     canvasLayer.appendChild(up)
     canvasLayer.appendChild(down)
 }
@@ -242,7 +237,13 @@ public updateGraph(newPoint: GraphPoint)
     if(this.points[0].time - newPoint.time < this.width * -1)
         this.points.shift()
 
-    //reset canvas
+    this.redrawGraph()
+
+}
+
+private redrawGraph()
+{
+        //reset canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.drawBackground()
 
@@ -259,7 +260,6 @@ public updateGraph(newPoint: GraphPoint)
     this.updatePointer();
 
     this.ctx.stroke();
-
 }
 private calculateXandY(point: GraphPoint)
 {
