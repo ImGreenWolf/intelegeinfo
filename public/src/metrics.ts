@@ -254,10 +254,10 @@ private drawBackground() {
     {
         const start = this.calculateXandY({value: this.padding, time: this.height-index*segHeight+1})
         const end = this.calculateXandY({value: this.width-this.padding, time: this.height-index*segHeight})
-        if(start.y > this.height || end.y > this.height)
+        if(start.y < 0 || end.y < 0)
             break;
         this.ctx.moveTo(this.padding, start.y)
-        this.ctx.lineTo( this.width-this.padding, end.y)
+        this.ctx.lineTo( this.width-this.padding, start.y)
         // this.ctx.moveTo(this.padding,this.height-index*segHeight+1)
         // this.ctx.lineTo(this.width-this.padding, this.height-index*segHeight)
         this.ctx.fillText(index*segments+":", 0, this.height-index*segHeight+5)
