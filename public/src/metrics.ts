@@ -76,7 +76,7 @@ function init()
         .then(res => {
             
 
-            addMonitor('os.cpu.0.speed', -1, (name, value, isUpdate, cell)=> {
+            addMonitor('os.cpu.0.speed', 0, (name, value, isUpdate, cell)=> {
 
                          
                     if(isUpdate)

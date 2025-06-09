@@ -44,7 +44,7 @@ function init() {
     return new Promise((resolve, reject) => {
         fetch('metrics/api').then(res => res.json())
             .then(res => {
-            addMonitor('os.cpu.0.speed', -1, (name, value, isUpdate, cell) => {
+            addMonitor('os.cpu.0.speed', 0, (name, value, isUpdate, cell) => {
                 if (isUpdate) {
                     const graph = Graphs.get(name);
                     graph.updateGraph({ value, time: globalTime });
