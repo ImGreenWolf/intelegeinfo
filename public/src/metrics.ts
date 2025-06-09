@@ -118,7 +118,9 @@ function init()
                     else
                         new Graph(name, cell, 50,500)
                     return `<h1>${name}</h1>
-                    <p>${value}%</p>`
+                    <p>${value}%</p>
+                    <p>${value.axm_monitor["Active requests"].value}</p>
+                    <p>${value.axm_monitor.HTTP.value} <span>${value.axm_monitor.HTTP.unit}</span></p>`
                 })
 
                 addMonitor('pm2.pm2_env', "Status", k, (name, value, isUpdate)=> {
