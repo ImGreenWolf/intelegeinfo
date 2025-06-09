@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import { rootDirName } from './server';
 import WebSocket from 'ws';
-
+import os from "os"
 const router = express.Router();
 export default router
 router.get('/', (req, res) => {
@@ -23,7 +23,7 @@ wssAPI.on('connection', ws => {
         setInterval(() => {
             pm2.list((err, list) => {
             //   console.log(err, list)
-                ws.send(JSON.stringify(list))
+                ws.send(JSON.stringify({...list, os: {cpu: os.cpus(), freememory: os.freemem(), totalMem: os.totalmem()}}))
             
             })
         }, 300);
@@ -46,7 +46,7 @@ router.get('/api', (req, res) => {
 
     pm2.list((err, list) => {
     //   console.log(err, list)
-        res.send(list)
+        res.send({...list, os: {cpu: os.cpus(), freememory: os.freemem(), totalMem: os.totalmem()}})
       
     })
   })

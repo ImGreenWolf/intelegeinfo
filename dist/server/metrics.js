@@ -9,6 +9,7 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const server_1 = require("./server");
 const ws_1 = __importDefault(require("ws"));
+const os_1 = __importDefault(require("os"));
 const router = express_1.default.Router();
 exports.default = router;
 router.get('/', (req, res) => {
@@ -26,9 +27,9 @@ exports.wssAPI.on('connection', ws => {
         setInterval(() => {
             pm2_1.default.list((err, list) => {
                 //   console.log(err, list)
-                ws.send(JSON.stringify(list));
+                ws.send(JSON.stringify({ ...list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } }));
             });
-        }, 200);
+        }, 300);
     });
 });
 router.get('/api', (req, res) => {
@@ -40,7 +41,7 @@ router.get('/api', (req, res) => {
         }
         pm2_1.default.list((err, list) => {
             //   console.log(err, list)
-            res.send(list);
+            res.send({ ...list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } });
         });
     });
 });
