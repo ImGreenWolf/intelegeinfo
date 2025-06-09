@@ -206,7 +206,7 @@ class Graph {
                 y: this.height + this.padding - this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value)) * this.height * this.zoom.value };
         else
             return { x: (point.time - this.time) * this.zoom.time + this.width - this.padding,
-                y: this.height + this.padding - point.value * this.height * this.zoom.value };
+                y: this.height + this.padding - this.normalizeValue(point.value, 0, this.height) * this.height * this.zoom.value };
     }
     drawBackground() {
         const segments = 10;
@@ -217,7 +217,7 @@ class Graph {
                 this.ctx.lineWidth = 2;
             else
                 this.ctx.lineWidth = 1;
-            let start = this.calculateXandY({ time: this.padding, value: index * segHeight }, false);
+            let start = this.calculateXandY({ time: this.padding, value: index * segHeight * 3 }, false);
             // start = {x: start.x, y: start.y - this.padding};
             if (start.y < 0)
                 break;
@@ -225,7 +225,7 @@ class Graph {
             this.ctx.lineTo(this.width - this.padding, start.y);
             // this.ctx.moveTo(this.padding,this.height-index*segHeight+1)
             // this.ctx.lineTo(this.width-this.padding, this.height-index*segHeight)
-            this.ctx.fillText(index * segHeight + ":", 0, start.y);
+            this.ctx.fillText((this.maxValue - this.minValue) * (index * segHeight / 100) + this.minValue + ":", 0, start.y);
             this.ctx.stroke();
         }
     }
