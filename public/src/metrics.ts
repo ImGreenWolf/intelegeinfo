@@ -157,8 +157,8 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.ctx.moveTo(0,0)
-    this.canvas.width =  this.width
-    this.canvas.height = this.height
+    this.canvas.width =  this.width + this.padding
+    this.canvas.height = this.height + this.padding
     this.ctx.lineWidth = 5;
     const canvasLayer = document.createElement('div')
     canvasLayer.appendChild(this.canvas)
@@ -238,7 +238,7 @@ public updateGraph(newPoint: GraphPoint)
     this.ctx.beginPath();
     for(const point of this.points)
         if(this.calculateXandY(point).x > this.padding)
-            this.ctx?.lineTo(this.calculateXandY(point).x,this.calculateXandY(point).y + this.padding)
+            this.ctx?.lineTo(this.calculateXandY(point).x,this.calculateXandY(point).y)
         // this.ctx?.lineTo(point.time - this.time + this.width - this.padding,
         // this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
     //finish
@@ -251,17 +251,22 @@ public updateGraph(newPoint: GraphPoint)
 private calculateXandY(point: GraphPoint)
 {
     return {x: (point.time - this.time)*this.zoom.time + this.width - this.padding,
-     y: this.height-this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value))*this.height*this.zoom.value}
+     y: this.height+this.padding-this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value))*this.height*this.zoom.value}
 }
 
 private drawBackground() {
-    this.ctx.lineWidth = 2;
+
     this.ctx.beginPath();
     const segments = 10;
-    const segHeight = this.height/segments * this.zoom.value
+    const segHeight = this.height/segments / this.zoom.value
     for(let index=0; index<=segments;index++)
     {
-        const start = this.calculateXandY({time: this.padding, value: index * segHeight})
+        if(index % Math.floor(Math.sqrt(segments)) == 0)
+                this.ctx.lineWidth = 2;
+        else
+             this.ctx.lineWidth = 1;
+        let start = this.calculateXandY({time: this.padding, value: index * segHeight})
+        // start = {x: start.x, y: start.y - this.padding};
         if(start.y < 0)
             break;
         this.ctx.moveTo(this.padding, start.y)
