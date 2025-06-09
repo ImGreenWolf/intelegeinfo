@@ -94,7 +94,7 @@ function updateLoop()
         .then(res => {
             let k=0;
             for(const table of res)
-                UpdateProcessValues(res, k++)
+                UpdateProcessValues(table, k++)
         }).catch(err => window.alert(err))
         
 }
