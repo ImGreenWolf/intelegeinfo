@@ -39,5 +39,6 @@ declare class Graph {
         value: any;
         time: any;
     }): void;
+    private drawBackground;
     private normalizeValue;
 }

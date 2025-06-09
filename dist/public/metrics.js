@@ -80,7 +80,7 @@ class Graph {
     time = 0;
     minValue;
     maxValue;
-    height = 100;
+    height = 300;
     width = 300;
     maxPoint = { value: 0, time: 0 };
     secondMaxPoint = { value: 0, time: 0 };
@@ -98,26 +98,38 @@ class Graph {
     updateGraph(newPoint) {
         if (newPoint.time - this.width > this.maxPoint.time)
             this.maxPoint = this.secondMaxPoint;
-        else if (this.secondMaxPoint.value > this.maxPoint.value) {
+        if (this.secondMaxPoint.value > this.maxPoint.value) {
             this.secondMaxPoint = this.maxPoint;
             this.maxPoint = newPoint;
         }
         this.points.push(newPoint);
-        if (newPoint.time - this.width < this.points[0].time)
+        if (this.points[0].time - newPoint.time < this.width * -1)
             this.points.shift();
         console.log(this.points.length);
         // if(this.points.length > (newPoint.time-this.time)*this.width)
         //     this.points.shift()
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawBackground();
         //draw points
         this.ctx.beginPath();
         for (const point of this.points) {
             // if(point.time - this.time > this.width + 50)
             //     this.points.splice(this.points.indexOf(point))
-            this.ctx?.lineTo(point.time - newPoint.time + this.width, this.height - (this.normalizeValue(point.value, this.minValue, this.maxValue)) * (this.maxValue / this.maxPoint.value == 0 ? 10 : this.maxPoint.value));
+            this.ctx?.lineTo(point.time - newPoint.time + this.width, this.height - this.normalizeValue(point.value, this.minValue, this.maxValue) * this.height); //(this.maxValue / this.maxPoint.value)*this.height
         }
         this.ctx.stroke();
         this.time = newPoint.time;
+    }
+    drawBackground() {
+        this.ctx.beginPath();
+        const segments = 10;
+        const segHeight = this.height / segments;
+        for (let index = 0; index < segments; index++) {
+            this.ctx.moveTo(0, this.height - index * segHeight);
+            this.ctx.lineTo(this.width, this.height - index * segHeight);
+            this.ctx.fillText(index + ":", this.width - 50, this.height - index * segHeight);
+        }
+        this.ctx.stroke();
     }
     normalizeValue(value, minValue, maxValue) {
         return (value - minValue) / (maxValue - minValue);
