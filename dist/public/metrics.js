@@ -103,8 +103,9 @@ class Graph {
             this.maxPoint = newPoint;
         }
         this.points.push(newPoint);
-        if (this.points[0].time + this.width > newPoint.time)
+        if (newPoint.time - this.width < this.points[0].time)
             this.points.shift();
+        console.log(this.points.length);
         // if(this.points.length > (newPoint.time-this.time)*this.width)
         //     this.points.shift()
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
