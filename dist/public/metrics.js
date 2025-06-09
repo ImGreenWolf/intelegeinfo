@@ -104,13 +104,17 @@ function init() {
             const start = Date.now();
             ws.onmessage = (ev) => {
                 const res = JSON.parse(ev.data);
-                globalTime = (Date.now() - start) / 100;
-                let k = 0;
-                for (const table of res.pm2)
-                    UpdateProcessValues(table, k++);
-                for (const monitor of monitoredValues)
-                    if (monitor.value.split('.')[0] != 'pm2')
-                        updateMonitor(monitor, res);
+                if (res.output)
+                    document.getElementById('output').innerText = res.output;
+                else {
+                    globalTime = (Date.now() - start) / 100;
+                    let k = 0;
+                    for (const table of res.pm2)
+                        UpdateProcessValues(table, k++);
+                    for (const monitor of monitoredValues)
+                        if (monitor.value.split('.')[0] != 'pm2')
+                            updateMonitor(monitor, res);
+                }
             };
             resolve();
         }).catch(err => reject(err));

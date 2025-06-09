@@ -24,13 +24,36 @@ exports.wssAPI.on('connection', ws => {
             ws.send(JSON.stringify({ err }));
             process.exit(2);
         }
+        let k = 0;
         setInterval(() => {
-            pm2_1.default.list((err, list) => {
-                //   console.log(err, list)
-                ws.send(JSON.stringify({ pm2: list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } }));
-            });
-        }, 300);
+            k++;
+            if (k % 3 == 0) {
+                k = 0;
+                const output = buffer;
+                ws.send(JSON.stringify({ output }));
+            }
+            else {
+                pm2_1.default.list((err, list) => {
+                    //   console.log(err, list)
+                    ws.send(JSON.stringify({ pm2: list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } }));
+                });
+            }
+        }, 150);
     });
+});
+let buffer;
+// const data = new ReadableStream()
+// data.pipeTo(process.stdout)
+// If you want to create a readable stream and pipe to process.stdout in Node.js, use the following example:
+const stream_1 = require("stream");
+const data = new stream_1.Readable({
+    read() { }
+});
+data.pipe(process.stdout);
+// Listen for 'data' events
+data.on('data', (chunk) => {
+    console.log('Data written:', chunk.toString());
+    buffer += chunk.toString() + '\n';
 });
 router.get('/api', (req, res) => {
     pm2_1.default.connect(function (err) {
