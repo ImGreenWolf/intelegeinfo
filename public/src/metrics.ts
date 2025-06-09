@@ -97,7 +97,7 @@ function init()
                             if(graph.points.length > 50)
                             {
                                 graph.points.forEach(point => median += point.value)
-                                graph.addLine(() => { return {value: median/graph.points.length, color: 'yellow', width: 1}})
+                                graph.addLine((graph) => { return {value: median/graph.points.length, color: 'yellow', width: 1}})
                             }
                         
                     }
@@ -348,9 +348,9 @@ private normalizeValue(value, minValue, maxValue)
     return (value-minValue)/(maxValue-minValue)
 }
 
-public addLine(callback: () => GraphLine)
+public addLine(callback: (graph) => GraphLine)
 {
-    this.lines.push(callback())
+    this.lines.push(callback(this))
 }
 public drawLineAtValue(line: GraphLine)
 {

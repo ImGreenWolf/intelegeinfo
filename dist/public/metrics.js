@@ -57,7 +57,7 @@ function init() {
                         if (graph.points != undefined)
                             if (graph.points.length > 50) {
                                 graph.points.forEach(point => median += point.value);
-                                graph.addLine(() => { return { value: median / graph.points.length, color: 'yellow', width: 1 }; });
+                                graph.addLine((graph) => { return { value: median / graph.points.length, color: 'yellow', width: 1 }; });
                             }
                     }
                     return `<h1>${name}</h1>
@@ -246,7 +246,7 @@ class Graph {
         return (value - minValue) / (maxValue - minValue);
     }
     addLine(callback) {
-        this.lines.push(callback());
+        this.lines.push(callback(this));
     }
     drawLineAtValue(line) {
         const pos = this.calculateXandY(line.value);

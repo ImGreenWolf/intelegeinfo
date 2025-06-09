@@ -47,6 +47,6 @@ declare class Graph {
     private calculateXandY;
     private drawBackground;
     private normalizeValue;
-    addLine(callback: () => GraphLine): void;
+    addLine(callback: (graph: any) => GraphLine): void;
     drawLineAtValue(line: GraphLine): void;
 }
