@@ -200,20 +200,24 @@ class Graph {
         this.updatePointer();
         this.ctx.stroke();
     }
-    calculateXandY(point) {
-        return { x: (point.time - this.time) * this.zoom.time + this.width - this.padding,
-            y: this.height + this.padding - this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value)) * this.height * this.zoom.value };
+    calculateXandY(point, normalize = true) {
+        if (normalize)
+            return { x: (point.time - this.time) * this.zoom.time + this.width - this.padding,
+                y: this.height + this.padding - this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value)) * this.height * this.zoom.value };
+        else
+            return { x: (point.time - this.time) * this.zoom.time + this.width - this.padding,
+                y: this.height + this.padding - point.value * this.height * this.zoom.value };
     }
     drawBackground() {
         const segments = 10;
-        const segHeight = this.height / segments / this.zoom.value;
+        const segHeight = this.height / segments;
         for (let index = 0; index <= segments; index++) {
             this.ctx.beginPath();
             if (index % 5 == 0)
                 this.ctx.lineWidth = 2;
             else
                 this.ctx.lineWidth = 1;
-            let start = this.calculateXandY({ time: this.padding, value: index * segHeight });
+            let start = this.calculateXandY({ time: this.padding, value: index * segHeight }, false);
             // start = {x: start.x, y: start.y - this.padding};
             if (start.y < 0)
                 break;
