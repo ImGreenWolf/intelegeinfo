@@ -28,7 +28,6 @@ exports.wssAPI.on('connection', ws => {
         setInterval(() => {
             k++;
             if (k % 3 == 0) {
-                k = 0;
                 const output = buffer;
                 ws.send(JSON.stringify({ output }));
             }
@@ -38,7 +37,7 @@ exports.wssAPI.on('connection', ws => {
                     ws.send(JSON.stringify({ pm2: list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } }));
                 });
             }
-        }, 150);
+        }, 200);
     });
 });
 let buffer;

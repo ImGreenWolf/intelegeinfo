@@ -24,7 +24,7 @@ wssAPI.on('connection', ws => {
             k++;
             if(k%3==0) 
             {
-                k=0;
+                
                 const output = buffer;
                 ws.send(JSON.stringify({output}))
             
@@ -37,7 +37,7 @@ wssAPI.on('connection', ws => {
             })
             }
            
-        }, 150);
+        }, 200);
             
   })
 
