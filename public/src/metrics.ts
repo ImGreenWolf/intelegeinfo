@@ -89,8 +89,15 @@ addMonitor('monit.cpu', k, (name, value, isUpdate, cell)=> {
     <p>${value}%</p>`
 })
 
-addMonitor('pm2_env', k, (name, value)=> {
-
+addMonitor('pm2_env', k, (name, value, isUpdate)=> {
+    if(!isUpdate)
+    {
+         Graphs.get(name)?.updateGraph({value: 10, time: 0})
+         Graphs.get(name)?.updateGraph({value: 25, time: 50})
+         Graphs.get(name)?.updateGraph({value: 50, time: 100})
+         Graphs.get(name)?.updateGraph({value: 75, time: 150})
+         Graphs.get(name)?.updateGraph({value: 100, time: 200})
+    }
     return `<h1>${name}</h1>
     <p>${value.status}</p>
     <p>${value.restart_time}</p>`
@@ -252,9 +259,8 @@ private drawBackground() {
     const segHeight = this.height/segments
     for(let index=0; index<=segments;index++)
     {
-        const start = this.calculateXandY({value: this.padding, time: this.height-index*segHeight+1})
-        const end = this.calculateXandY({value: this.width-this.padding, time: this.height-index*segHeight})
-        if(start.y < 0 || end.y < 0)
+        const start = this.calculateXandY({time: this.padding, value: index * segHeight})
+        if(start.y < 0)
             break;
         this.ctx.moveTo(this.padding, start.y)
         this.ctx.lineTo( this.width-this.padding, start.y)
