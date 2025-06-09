@@ -26,7 +26,7 @@ exports.wssAPI.on('connection', ws => {
         setInterval(() => {
             pm2_1.default.list((err, list) => {
                 //   console.log(err, list)
-                ws.send(list);
+                ws.send(JSON.stringify(list));
             });
         }, 100);
     });
