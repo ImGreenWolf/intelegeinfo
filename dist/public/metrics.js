@@ -82,6 +82,7 @@ class Graph {
     maxValue;
     height = 300;
     width = 300;
+    padding = 20;
     maxPoint = { value: 0, time: 0 };
     secondMaxPoint = { value: 0, time: 0 };
     points = [];
@@ -94,10 +95,28 @@ class Graph {
         this.ctx.lineWidth = 5;
         parent.appendChild(this.canvas);
         Graphs.set(name, this);
+        this.canvas.onmousemove = ev => {
+            // ev.offsetX
+            const pointerTime = ev.offsetY;
+            let distance = 10000;
+            let closestPoint;
+            this.points.forEach(point => {
+                if (Math.abs(point.time - this.width - pointerTime) < distance) {
+                    distance = point.time;
+                    closestPoint = point;
+                }
+            });
+            this.ctx.arc(closestPoint.value, ev.offsetY, 0, 10, 2 * Math.PI);
+            this.ctx.fill();
+            this.ctx.stroke();
+            console.log(closestPoint);
+        };
     }
     updateGraph(newPoint) {
-        if (newPoint.time - this.width > this.maxPoint.time)
+        if (newPoint.time - this.width > this.maxPoint.time) {
             this.maxPoint = this.secondMaxPoint;
+            this.secondMaxPoint = newPoint;
+        }
         if (this.secondMaxPoint.value > this.maxPoint.value) {
             this.secondMaxPoint = this.maxPoint;
             this.maxPoint = newPoint;
@@ -105,19 +124,15 @@ class Graph {
         this.points.push(newPoint);
         if (this.points[0].time - newPoint.time < this.width * -1)
             this.points.shift();
-        console.log(this.points.length);
-        // if(this.points.length > (newPoint.time-this.time)*this.width)
-        //     this.points.shift()
+        //reset canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawBackground();
         //draw points
         this.ctx.lineWidth = 5;
         this.ctx.beginPath();
-        for (const point of this.points) {
-            // if(point.time - this.time > this.width + 50)
-            //     this.points.splice(this.points.indexOf(point))
-            this.ctx?.lineTo(point.time - newPoint.time + this.width, this.height - this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value)) * this.height); //(this.maxValue / this.maxPoint.value)*this.height
-        }
+        for (const point of this.points)
+            this.ctx?.lineTo(point.time - newPoint.time + this.width - this.padding, this.height - this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value)) * this.height); //(this.maxValue / this.maxPoint.value)*this.height
+        //finish
         this.ctx.stroke();
         this.time = newPoint.time;
     }

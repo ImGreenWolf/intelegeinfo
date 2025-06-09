@@ -22,6 +22,7 @@ declare class Graph {
     maxValue: any;
     height: number;
     width: number;
+    padding: number;
     maxPoint: {
         value: 0;
         time: 0;
