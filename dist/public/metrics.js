@@ -46,7 +46,8 @@ function init() {
             .then(res => {
             let k = 0;
             for (const process of res.pm2) {
-                const table = document.createElement('table');
+                const table = document.createElement('div');
+                table.classList = 'grid';
                 table.id = 'table-' + k;
                 document.body.appendChild(table);
                 addMonitor('pm2.name', k, (name, value) => {
@@ -90,7 +91,7 @@ function init() {
                     graph.updateGraph({ value, time: globalTime });
                 }
                 else {
-                    const graph = new Graph(name, cell, 0, 100);
+                    const graph = new Graph(name, cell, 500, 4000);
                     graph.addLine((graph) => {
                         let median = 0;
                         graph.points.forEach(point => median += point.value);
