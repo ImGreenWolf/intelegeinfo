@@ -71,8 +71,10 @@ function init() {
                 addMonitor('pm2.monit.memory', "Memory Usage", k, (name, value, isUpdate, cell) => {
                     if (isUpdate)
                         Graphs.get(name)?.updateGraph({ value: value / 1000000, time: globalTime });
-                    else
+                    else {
                         new Graph(name, cell, 50, 500);
+                        return '';
+                    }
                     return `<h1>${name}</h1>
                     <p>${value}%</p>
                     <p>${value.axm_monitor["Active requests"].value}</p>

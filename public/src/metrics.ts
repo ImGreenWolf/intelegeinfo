@@ -116,7 +116,12 @@ function init()
                     if(isUpdate)
                         Graphs.get(name)?.updateGraph({value: value/1000000, time: globalTime})
                     else
-                        new Graph(name, cell, 50,500)
+                        {
+                            new Graph(name, cell, 50,500)
+                            return ''
+                        }
+
+                    
                     return `<h1>${name}</h1>
                     <p>${value}%</p>
                     <p>${value.axm_monitor["Active requests"].value}</p>
