@@ -1,31 +1,27 @@
-const monitoredValues: {value: string, update: (name, value) => string}[] = []
+const monitoredValues: {value: string, cell: HTMLTableCellElement, update: (name, value) => string}[] = []
 
-function UpdateValues(json)
-{
-    
-    for(const monitor of monitoredValues)
-    {
-        let lastObjValue = json
-        for(const key of monitor.value.split('.'))
-            lastObjValue = lastObjValue[key]
+function UpdateProcessValues(json)
+{ 
+        for(const monitor of monitoredValues)
+        {
+            let lastObjValue = json
+            for(const key of monitor.value.split('.'))
+                lastObjValue = lastObjValue[key]
 
-        document.getElementById(monitor.value as string)!.innerHTML = lastObjValue
-    }   
+            document.getElementById(monitor.value as string)!.innerHTML = monitor.update(monitor.value,lastObjValue)
+        }   
         
      
 }
 
-function addMonitor(value: string, calback: (name, value) => string)
+function addMonitor(value: string, index, calback: (name, value) => string)
 {
     const name = getName(value as string)
-        
-    monitoredValues.push({value, update: calback})
-
     const cell = document.createElement('td')
+    monitoredValues.push({value, cell, update: calback})
     cell.id = value
     cell.innerHTML = calback(name, "Updating...")
-    document.getElementById('table')?.appendChild(cell)
-
+    addMonitorToTable('table-'+index, cell)
     
 }
 
@@ -36,36 +32,65 @@ function getName(value)
         
 }
 
-function search(path, obj, target) {
-    for (var k in obj) {
-        if (obj.hasOwnProperty(k))
-            if (obj[k] === target)
-                return path + "['" + k + "']"
-            else if (typeof obj[k] === "object") {
-                var result = search(path + "['" + k + "']", obj[k], target);
-                if (result)
-                    return result;
-            }
-    }
-    return false;
+function addMonitorToTable(table, cell)
+{
+    document.getElementById(table)?.appendChild(cell)
 }
 
 
-addMonitor('monit.cpu', (name, value)=> {
 
-    return `<h1>${name}</h1>
-    <p>${value}</p>`
-})
 
-updateLoop()
+init()
+.then(
+    () => 
+setInterval(
+    updateLoop
+,300)
+)
+   
+
+function init()
+{
+    return new Promise<void>((resolve, reject) => {
+        fetch('./api').then(res => res.json())
+        .then(res => {
+
+            let k=0;
+            for (const process of res)
+            {
+                const table = document.createElement('table')
+                table.id='table-' + k++;
+                document.body.appendChild(table)
+                
+                addMonitor('monit.cpu', k, (name, value)=> {
+
+                    return `<h1>${name}</h1>
+                    <p>${value}</p>`
+                })
+
+
+
+                UpdateProcessValues(process)
+            }
+
+            resolve()
+        })
+    })
+    
+    
+
+}
+
+
+
 
 function updateLoop()
 {
     
-    setInterval(() => {
+
         fetch('./api').then(res => res.json())
         .then(res => {
-            UpdateValues(res)
+            UpdateProcessValues(res)
         })
-    }, 300);
+
 }
