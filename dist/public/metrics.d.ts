@@ -37,7 +37,7 @@ declare class Graph {
     private createZoomButtons;
     private updatePointer;
     updateGraph(newPoint: GraphPoint): void;
-    private redrawGraph;
+    redrawGraph(): void;
     private calculateXandY;
     private drawBackground;
     private normalizeValue;

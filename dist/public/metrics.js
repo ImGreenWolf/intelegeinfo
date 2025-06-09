@@ -31,13 +31,8 @@ function getName(value) {
 function addMonitorToTable(table, cell) {
     document.getElementById(table)?.appendChild(cell);
 }
-init();
-// .then(
-//     () => 
-// setInterval(
-//     updateLoop
-// ,300)
-// )
+init()
+    .then(() => setInterval(updateLoop, 300));
 let globalTime = 0;
 function init() {
     return new Promise((resolve, reject) => {
@@ -71,7 +66,7 @@ function init() {
             const start = Date.now();
             ws.onmessage = (ev) => {
                 const res = JSON.parse(ev.data);
-                globalTime = Date.now() - start;
+                globalTime = (Date.now() - start) / 100;
                 let k = 0;
                 for (const table of res)
                     UpdateProcessValues(table, k++);
@@ -81,7 +76,9 @@ function init() {
     });
 }
 function updateLoop() {
-    globalTime += 3;
+    // globalTime += 3;
+    for (const graph of Graphs.values())
+        graph.redrawGraph();
     // fetch('metrics/api').then(res => res.json())
     // .then(res => {
     //     let k=0;
@@ -177,7 +174,7 @@ class Graph {
         this.points.push(newPoint);
         if (this.points[0].time - newPoint.time < this.width * -1)
             this.points.shift();
-        this.redrawGraph();
+        // this.redrawGraph()
     }
     redrawGraph() {
         //reset canvas
