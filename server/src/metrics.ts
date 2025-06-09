@@ -64,11 +64,7 @@ process.stdout.write = function(
     }
     console.log('Data written:', stringData);
     buffer = (buffer || '') + stringData + '\n';
-    if (typeof encoding === 'function') {
-        encoding();
-    } else if (typeof cb === 'function') {
-        cb();
-    }
+    
     return true;
 }
 

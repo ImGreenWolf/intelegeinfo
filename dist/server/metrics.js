@@ -52,12 +52,6 @@ process.stdout.write = function (str, encoding, cb) {
     }
     console.log('Data written:', stringData);
     buffer = (buffer || '') + stringData + '\n';
-    if (typeof encoding === 'function') {
-        encoding();
-    }
-    else if (typeof cb === 'function') {
-        cb();
-    }
     return true;
 };
 // Listen for 'data' events
