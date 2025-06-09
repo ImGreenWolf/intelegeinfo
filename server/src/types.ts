@@ -485,7 +485,7 @@ Tralalero Tralala`.split('\n')
 
     public openFile(clientObj: ClientObject, shared?)
     {
-        fs.readFile(path.join(this.filePath, this.name), (err, data) => {
+        fs.readFile(this.filePath, (err, data) => {
             if (err) {
                throw "Error opening file: " + err.message;
             } else {

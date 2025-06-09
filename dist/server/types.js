@@ -440,7 +440,7 @@ class EditorFile {
         });
     }
     openFile(clientObj, shared) {
-        fs_1.default.readFile(path_1.default.join(this.filePath, this.name), (err, data) => {
+        fs_1.default.readFile(this.filePath, (err, data) => {
             if (err) {
                 throw "Error opening file: " + err.message;
             }

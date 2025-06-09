@@ -817,9 +817,9 @@ exports.wss.addListener('connection', async (ws, req) => {
                         console.error("Error creating cache folder:", err);
                         return;
                     }
-                    new types_2.EditorFile(clientSession, 'main.cpp', "", () => {
-                        openFile("main.cpp");
-                    });
+                    new types_2.EditorFile(clientSession, 'main.cpp', defaultText, () => {
+                        // openFile("main.cpp")
+                    }).openFile(clientObj, shared);
                     // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
                     //     listFiles(clientFilesPath).then(() => {
                     //         openFile("main.cpp")
