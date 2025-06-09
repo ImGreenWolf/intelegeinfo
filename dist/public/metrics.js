@@ -50,7 +50,7 @@ function init() {
                     if (isUpdate) {
                         const graph = Graphs.get(name);
                         graph.updateGraph({ value, time: globalTime });
-                        let median;
+                        let median = 0;
                         graph.points.forEach(point => median += point.value);
                         graph.drawLineAtValue(median / graph.points.length, 'yellow', 1, true);
                     }
@@ -196,6 +196,7 @@ class Graph {
         this.drawBackground();
         //draw points
         this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = 'black';
         this.ctx.beginPath();
         for (const point of this.points)
             if (this.calculateXandY(point).x > this.padding)
@@ -217,6 +218,7 @@ class Graph {
     drawBackground() {
         const segments = 10;
         const segHeight = this.height / segments / 3;
+        this.ctx.strokeStyle = 'black';
         for (let index = 0; index <= segments; index++) {
             if (index % 5 == 0)
                 this.ctx.lineWidth = 2;
