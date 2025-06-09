@@ -1753,7 +1753,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         // replicate changes to others
                     replicateFunction((clientWs, localClientId) => {
                         if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                            clientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId, body: clientObj.openFile.content, msgId: JSON.parse(message.toString()).msgId}))
+                            clientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId}))
                         }, clientObj)
                     
                     break;
