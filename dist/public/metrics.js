@@ -96,12 +96,12 @@ class Graph {
         Graphs.set(name, this);
     }
     updateGraph(newPoint) {
-        if (newPoint.time + this.width > this.maxPoint.time)
+        if (newPoint.time - this.width > this.maxPoint.time)
             this.maxPoint = this.secondMaxPoint;
-        else if (this.secondMaxPoint.value > this.maxPoint.value)
+        else if (this.secondMaxPoint.value > this.maxPoint.value) {
+            this.secondMaxPoint = this.maxPoint;
             this.maxPoint = newPoint;
-        else if (newPoint.value > this.secondMaxPoint.value)
-            this.secondMaxPoint = newPoint;
+        }
         this.points.push(newPoint);
         if (this.points[0].time + this.width > newPoint.time)
             this.points.shift();
@@ -113,7 +113,7 @@ class Graph {
         for (const point of this.points) {
             // if(point.time - this.time > this.width + 50)
             //     this.points.splice(this.points.indexOf(point))
-            this.ctx?.lineTo(point.time - this.time + this.width, this.height - (this.normalizeValue(point.value, this.minValue, this.maxValue)) * (this.maxValue / this.maxPoint.value));
+            this.ctx?.lineTo(point.time - newPoint.time + this.width, this.height - (this.normalizeValue(point.value, this.minValue, this.maxValue)) * (this.maxValue / this.maxPoint.value == 0 ? 10 : this.maxPoint.value));
         }
         this.ctx.stroke();
         this.time = newPoint.time;
