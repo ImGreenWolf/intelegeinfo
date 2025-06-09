@@ -5,7 +5,7 @@ function UpdateProcessValues(json, index) {
         let lastObjValue = json;
         for (const key of monitor.value.split('.'))
             lastObjValue = lastObjValue[key];
-        document.getElementById(monitor.value + '-' + index).innerHTML = monitor.update(monitor.value, lastObjValue, monitor.cell);
+        document.getElementById(monitor.value + '-' + index).innerHTML = monitor.update(monitor.value, lastObjValue, true, monitor.cell);
     }
 }
 function addMonitor(value, index, calback) {
@@ -13,7 +13,7 @@ function addMonitor(value, index, calback) {
     const cell = document.createElement('td');
     monitoredValues.push({ value, cell, update: calback });
     cell.id = value + '-' + index;
-    cell.innerHTML = calback(name, "Updating...", cell);
+    cell.innerHTML = calback(name, "Updating...", false, cell);
     document.getElementById('table-' + index)?.appendChild(cell);
     // addMonitorToTable(, cell)
 }
@@ -26,6 +26,7 @@ function addMonitorToTable(table, cell) {
 }
 init()
     .then(() => setInterval(updateLoop, 300));
+let globalTime = 0;
 function init() {
     return new Promise((resolve, reject) => {
         fetch('metrics/api').then(res => res.json())
@@ -38,8 +39,11 @@ function init() {
                 addMonitor('name', k, (name, value) => {
                     return `<h1>${value}</h1>`;
                 });
-                addMonitor('monit.cpu', k, (name, value, cell) => {
-                    new Graph('cpu', cell, 0, 100);
+                addMonitor('monit.cpu', k, (name, value, isUpdate, cell) => {
+                    if (!isUpdate)
+                        new Graph('cpu', cell, 0, 100);
+                    else
+                        Graphs.get('cpu')?.updateGraph(value, globalTime);
                     return `<h1>${name}</h1>
     <p>${value}%</p>`;
                 });
@@ -56,6 +60,7 @@ function init() {
     });
 }
 function updateLoop() {
+    globalTime += 3;
     fetch('metrics/api').then(res => res.json())
         .then(res => {
         let k = 0;
@@ -63,6 +68,7 @@ function updateLoop() {
             UpdateProcessValues(table, k++);
     }).catch(err => window.alert(err));
 }
+const Graphs = new Map();
 class Graph {
     canvas = document.createElement('canvas');
     ctx = this.canvas.getContext('2d');
@@ -73,7 +79,10 @@ class Graph {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.ctx?.moveTo(0, 0);
+        this.canvas.width = 300;
+        this.canvas.height = 300;
         parent.appendChild(this.canvas);
+        Graphs.set(name, this);
     }
     updateGraph(value, time) {
         this.time = time;

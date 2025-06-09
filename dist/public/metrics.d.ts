@@ -1,14 +1,16 @@
 declare const monitoredValues: {
     value: string;
     cell: HTMLTableCellElement;
-    update: (name: any, value: any, cell: any) => string;
+    update: (name: any, value: any, isUpdate: any, cell: any) => string;
 }[];
 declare function UpdateProcessValues(json: any, index: any): void;
-declare function addMonitor(value: string, index: any, calback: (name: any, value: any, cell: any) => string): void;
+declare function addMonitor(value: string, index: any, calback: (name: any, value: any, isUpdate: any, cell: any) => string): void;
 declare function getName(value: any): string;
 declare function addMonitorToTable(table: any, cell: any): void;
+declare let globalTime: number;
 declare function init(): Promise<void>;
 declare function updateLoop(): void;
+declare const Graphs: Map<string, Graph>;
 declare class Graph {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D | null;

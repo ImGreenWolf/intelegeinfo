@@ -1,4 +1,4 @@
-const monitoredValues: {value: string, cell: HTMLTableCellElement, update: (name, value, cell) => string}[] = []
+const monitoredValues: {value: string, cell: HTMLTableCellElement, update: (name, value, isUpdate, cell) => string}[] = []
 
 function UpdateProcessValues(json, index)
 { 
@@ -8,19 +8,19 @@ function UpdateProcessValues(json, index)
             for(const key of monitor.value.split('.'))
                 lastObjValue = lastObjValue[key]
 
-            document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, monitor.cell)
+            document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, true, monitor.cell)
         }   
         
      
 }
 
-function addMonitor(value: string, index, calback: (name, value, cell) => string)
+function addMonitor(value: string, index, calback: (name, value, isUpdate, cell) => string)
 {
     const name = getName(value as string)
     const cell = document.createElement('td')
     monitoredValues.push({value, cell, update: calback})
     cell.id = value+'-'+index;
-    cell.innerHTML = calback(name, "Updating...", cell)
+    cell.innerHTML = calback(name, "Updating...", false, cell)
     document.getElementById('table-'+index)?.appendChild(cell)
     // addMonitorToTable(, cell)
     
@@ -48,7 +48,7 @@ setInterval(
     updateLoop
 ,300)
 )
-   
+let globalTime =0;
 
 function init()
 {
@@ -67,10 +67,13 @@ addMonitor('name', k, (name, value)=> {
 
     return `<h1>${value}</h1>`
 })
-addMonitor('monit.cpu', k, (name, value, cell)=> {
 
-    new Graph('cpu', cell, 0,100)
+addMonitor('monit.cpu', k, (name, value, isUpdate, cell)=> {
 
+    if(!isUpdate)
+        new Graph('cpu', cell, 0,100)
+    else
+        Graphs.get('cpu')?.updateGraph(value, globalTime)
     return `<h1>${name}</h1>
     <p>${value}%</p>`
 })
@@ -103,7 +106,7 @@ addMonitor('pm2_env', k, (name, value)=> {
 function updateLoop()
 {
     
-
+        globalTime += 3;
         fetch('metrics/api').then(res => res.json())
         .then(res => {
             let k=0;
@@ -112,9 +115,10 @@ function updateLoop()
         }).catch(err => window.alert(err))
         
 }
+const Graphs: Map<string, Graph> = new Map()
 
 class Graph {
-canvas: HTMLCanvasElement = document.createElement('canvas');
+canvas = document.createElement('canvas');
 ctx = this.canvas.getContext('2d');
 time = 0;
 minValue;
@@ -123,8 +127,10 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.ctx?.moveTo(0,0)
+    this.canvas.width = 300
+    this.canvas.height = 300
     parent.appendChild(this.canvas)
-
+    Graphs.set(name, this)
 }
 
 
