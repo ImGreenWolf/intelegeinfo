@@ -206,7 +206,7 @@ public updateGraph(newPoint: {value, time})
     this.ctx.lineWidth = 5;
     this.ctx.beginPath();
     for(const point of this.points)
-        this.ctx?.lineTo(this.calculateXandY(newPoint).x,this.calculateXandY(newPoint).y)
+        this.ctx?.lineTo(this.calculateXandY(point).x,this.calculateXandY(point).y)
         // this.ctx?.lineTo(point.time - this.time + this.width - this.padding,
         // this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
     //finish
@@ -215,7 +215,7 @@ public updateGraph(newPoint: {value, time})
 }
 private calculateXandY(point: {value, time})
 {
-    return {x: point.time - this.time + this.width - this.padding, y: this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height}
+    return {x: point.time - this.time + this.width - this.padding, y: this.height-this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value))*this.height}
 }
 
 private drawBackground() {
