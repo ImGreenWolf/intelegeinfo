@@ -82,16 +82,16 @@ function init()
 
                 addMonitor('monit.cpu', k, (name, value, isUpdate, cell)=> {
 
-                         const graph =  Graphs.get(name)!;
+                         
                     if(isUpdate)
                     {
-                       
+                       const graph =  Graphs.get(name)!;
                         graph.updateGraph({value, time: globalTime})
                        
                     }
                     else
                     {
-                        new Graph(name, cell, 0,100)
+                        const graph = new Graph(name, cell, 0,100)
                          let median = 0;
                          if(graph.points !=undefined)
                             if(graph.points.length > 50)
