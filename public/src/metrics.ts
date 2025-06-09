@@ -160,7 +160,7 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     Graphs.set(name, this)
      this.pointer = document.createElement('div')
     this.pointer.innerText = 'dokdkdk'
-    this.pointer.style.cssText = "position: absolute; border-radius: 50%; width: 10px; height: 10px; background-color: white; font-size: 8px"
+    this.pointer.style.cssText = "position: absolute; border-radius: 50%; width: 15px; height: 15px; background-color: white; font-size: 12px"
     canvasLayer.appendChild(this.pointer)
     canvasLayer.onmousemove = ev => {
         // ev.offsetX
@@ -241,7 +241,7 @@ public updateGraph(newPoint: GraphPoint)
 }
 private calculateXandY(point: GraphPoint)
 {
-    return {x: point.time - this.time + this.width - this.padding, y: this.height-this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value))*this.height}
+    return {x: point.time - this.time + this.width - this.padding, y: this.height-this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value))*this.height*2}
 }
 
 private drawBackground() {
