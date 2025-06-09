@@ -6,9 +6,8 @@ function UpdateProcessValues(json, rawJSON)
 { 
         for(const monitor of monitoredValues)
         {
-            
+            if(monitor.value.split('.')[0]=='pm2')
             updateMonitor(monitor, json)
-            // document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, true, monitor.cell)
         }   
         
      
@@ -17,9 +16,6 @@ function updateMonitor(monitor, json)
 {
     let lastObjValue = json
     for(const key of monitor.value.split('.'))
-        if(key=='pm2')
-            lastObjValue = lastObjValue[key][0]
-        else
         lastObjValue = lastObjValue[key]
 
     setInnerHTML(monitor, lastObjValue, true)
@@ -167,9 +163,12 @@ function init()
                 const res = JSON.parse(ev.data)
                 globalTime = (Date.now() - start)/100
                 let k=0;
-                    for(const table of res)
+                    for(const table of res.pm2)
                         UpdateProcessValues(table, k++)
-                
+                    for(const monitor of monitoredValues)
+                        if(monitor.value.split('.')[0]!='pm2')
+                            updateMonitor(monitor, res)
+                    
             }
             resolve()   
         }).catch(err => reject(err))
