@@ -48,7 +48,7 @@ function init() {
                 const table = document.createElement('div');
                 table.classList = 'grid';
                 table.id = 'table-' + k;
-                document.body.appendChild(table);
+                document.getElementById('processes-container').appendChild(table);
                 addMonitor('pm2.name', "Info", k, (name, value) => {
                     return `<h1>${value}</h1>`;
                 });
