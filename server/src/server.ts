@@ -35,7 +35,7 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
 import * as EditorModes from './editor-modes/'
-
+import Metrics from './metrics'
 
 interface ResponseWRay extends IncomingMessage 
 {
@@ -48,7 +48,7 @@ app.use(express.json({
     }
 }));
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
-
+app.use('/metrics', Metrics)
 app.post('/github/onpull', (req, res) => {
     try {
         
