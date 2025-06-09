@@ -21,6 +21,7 @@ function addMonitor(value: string, index, calback: (name, value, isUpdate, cell)
     monitoredValues.push({value, cell, update: calback})
     cell.id = value+'-'+index;
     document.getElementById('table-'+index)?.appendChild(cell)
+    new Graph(value, cell, 0,100)
     cell.innerHTML = calback(name, "Updating...", false, cell)
     
     // addMonitorToTable(, cell)
@@ -71,10 +72,9 @@ addMonitor('name', k, (name, value)=> {
 
 addMonitor('monit.cpu', k, (name, value, isUpdate, cell)=> {
 
-    if(!isUpdate)
-        new Graph('cpu', cell, 0,100)
-    else
-        Graphs.get('cpu')?.updateGraph(value, globalTime)
+        
+
+    Graphs.get(name)?.updateGraph(value, globalTime)
     return `<h1>${name}</h1>
     <p>${value}%</p>`
 })
