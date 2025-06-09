@@ -44,22 +44,6 @@ function init() {
     return new Promise((resolve, reject) => {
         fetch('metrics/api').then(res => res.json())
             .then(res => {
-            addMonitor('os.cpu.0.speed', 0, (name, value, isUpdate, cell) => {
-                if (isUpdate) {
-                    const graph = Graphs.get(name);
-                    graph.updateGraph({ value, time: globalTime });
-                }
-                else {
-                    const graph = new Graph(name, cell, 0, 100);
-                    graph.addLine((graph) => {
-                        let median = 0;
-                        graph.points.forEach(point => median += point.value);
-                        return { value: median / graph.points.length, color: 'yellow', width: 1 };
-                    });
-                }
-                return `<h1>${name}</h1>
-                    <p>${value}%</p>`;
-            });
             let k = 0;
             for (const process of res.pm2) {
                 const table = document.createElement('table');
@@ -100,6 +84,22 @@ function init() {
                 UpdateProcessValues(process, k);
                 k++;
             }
+            addMonitor('os.cpu.0.speed', 0, (name, value, isUpdate, cell) => {
+                if (isUpdate) {
+                    const graph = Graphs.get(name);
+                    graph.updateGraph({ value, time: globalTime });
+                }
+                else {
+                    const graph = new Graph(name, cell, 0, 100);
+                    graph.addLine((graph) => {
+                        let median = 0;
+                        graph.points.forEach(point => median += point.value);
+                        return { value: median / graph.points.length, color: 'yellow', width: 1 };
+                    });
+                }
+                return `<h1>${name}</h1>
+                    <p>${value}%</p>`;
+            });
             let ws = new WebSocket('ws://intelegeinfo.go.ro/api');
             const start = Date.now();
             ws.onmessage = (ev) => {
