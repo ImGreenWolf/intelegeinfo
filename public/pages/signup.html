@@ -72,9 +72,12 @@
       e.preventDefault();
       const formData = new FormData(e.target);
       
-      if(document.getElementById('confirm-password').innerText == document.getElementById('confirm-password').innerText)
+      if(document.getElementById('password').innerText != document.getElementById('confirm-password').innerText)
       {
         document.getElementById('message').innerText = "Parolele nu sunt la fel"
+        setTimeout(() => {
+            document.getElementById('message').innerText = '';
+        }, 5000);
         return;
       }
       const pubKeyPem = await fetch('/signup/public-key').then(res => res.text());

@@ -2,19 +2,27 @@ const monitoredValues: Monitor[] = []
 interface Monitor {
     value: string, cell: HTMLTableCellElement, container: HTMLDivElement, update: (name, value, isUpdate, cell) => string
 }
-function UpdateProcessValues(json, index)
+function UpdateProcessValues(json, rawJSON)
 { 
         for(const monitor of monitoredValues)
         {
-            let lastObjValue = json
-            for(const key of monitor.value.split('.'))
-                lastObjValue = lastObjValue[key]
-
-            setInnerHTML(monitor, lastObjValue, true)
+            
+            updateMonitor(monitor, json)
             // document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, true, monitor.cell)
         }   
         
      
+}
+function updateMonitor(monitor, json)
+{
+    let lastObjValue = json
+    for(const key of monitor.value.split('.'))
+        if(key=='pm2')
+            lastObjValue = lastObjValue[key][0]
+        else
+        lastObjValue = lastObjValue[key]
+
+    setInnerHTML(monitor, lastObjValue, true)
 }
 
 function addMonitor(value: string, index, callback: (name, value, isUpdate, cell) => string)
@@ -67,9 +75,34 @@ function init()
     return new Promise<void>((resolve, reject) => {
         fetch('metrics/api').then(res => res.json())
         .then(res => {
+            
+
+            addMonitor('os.cpu', -1, (name, value, isUpdate, cell)=> {
+
+                         
+                    if(isUpdate)
+                    {
+                       const graph =  Graphs.get(name)!;
+                        graph.updateGraph({value, time: globalTime})
+                       
+                    }
+                    else
+                    {
+                        const graph = new Graph(name, cell, 0,100)
+                        graph.addLine((graph) => {
+                            let median = 0
+                            graph.points.forEach(point => median += point.value)
+                            return {value: median/graph.points.length, color: 'yellow', width: 1}})
+                        
+                    }
+                        
+                    return `<h1>${name}</h1>
+                    <p>${value}%</p>`
+                })
 
             let k=0;
-            for (const process of res)
+            
+            for (const process of res.pm2)
             {
                 const table = document.createElement('table')
                 table.id='table-' + k;
@@ -80,7 +113,7 @@ function init()
                     return `<h1>${value}</h1>`
                 })
 
-                addMonitor('monit.cpu', k, (name, value, isUpdate, cell)=> {
+                addMonitor('pm2.monit.cpu', k, (name, value, isUpdate, cell)=> {
 
                          
                     if(isUpdate)

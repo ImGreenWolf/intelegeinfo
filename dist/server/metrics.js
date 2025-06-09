@@ -27,7 +27,7 @@ exports.wssAPI.on('connection', ws => {
         setInterval(() => {
             pm2_1.default.list((err, list) => {
                 //   console.log(err, list)
-                ws.send(JSON.stringify({ ...list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } }));
+                ws.send(JSON.stringify({ pm2: list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } }));
             });
         }, 300);
     });
@@ -41,7 +41,7 @@ router.get('/api', (req, res) => {
         }
         pm2_1.default.list((err, list) => {
             //   console.log(err, list)
-            res.send({ ...list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } });
+            res.send({ pm2: list, os: { cpu: os_1.default.cpus(), freememory: os_1.default.freemem(), totalMem: os_1.default.totalmem() } });
         });
     });
 });

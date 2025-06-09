@@ -5,7 +5,8 @@ interface Monitor {
     container: HTMLDivElement;
     update: (name: any, value: any, isUpdate: any, cell: any) => string;
 }
-declare function UpdateProcessValues(json: any, index: any): void;
+declare function UpdateProcessValues(json: any, rawJSON: any): void;
+declare function updateMonitor(monitor: any, json: any): void;
 declare function addMonitor(value: string, index: any, callback: (name: any, value: any, isUpdate: any, cell: any) => string): void;
 declare function setInnerHTML(monitor: Monitor, value: string, isUpdate?: boolean): void;
 declare function getName(value: any): string;

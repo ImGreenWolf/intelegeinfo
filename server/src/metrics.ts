@@ -23,7 +23,7 @@ wssAPI.on('connection', ws => {
         setInterval(() => {
             pm2.list((err, list) => {
             //   console.log(err, list)
-                ws.send(JSON.stringify({...list, os: {cpu: os.cpus(), freememory: os.freemem(), totalMem: os.totalmem()}}))
+                ws.send(JSON.stringify({pm2: list, os: {cpu: os.cpus(), freememory: os.freemem(), totalMem: os.totalmem()}}))
             
             })
         }, 300);
@@ -46,7 +46,7 @@ router.get('/api', (req, res) => {
 
     pm2.list((err, list) => {
     //   console.log(err, list)
-        res.send({...list, os: {cpu: os.cpus(), freememory: os.freemem(), totalMem: os.totalmem()}})
+        res.send({pm2: list, os: {cpu: os.cpus(), freememory: os.freemem(), totalMem: os.totalmem()}})
       
     })
   })
