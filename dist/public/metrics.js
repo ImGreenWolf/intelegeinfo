@@ -54,6 +54,14 @@ function init() {
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
                 });
+                addMonitor('monit.memory', k, (name, value, isUpdate, cell) => {
+                    if (isUpdate)
+                        Graphs.get(name)?.updateGraph({ value, time: globalTime });
+                    else
+                        new Graph(name, cell, 10000000, 80000000);
+                    return `<h1>${name}</h1>
+                    <p>${value}%</p>`;
+                });
                 addMonitor('pm2_env', k, (name, value, isUpdate) => {
                     return `<h1>${name}</h1>
                     <p>${value.status}</p>
@@ -148,10 +156,10 @@ class Graph {
     createZoomButtons(canvasLayer) {
         const up = document.createElement('button');
         up.innerText = "+";
-        up.onclick = () => { this.zoom = { time: this.zoom.time, value: this.zoom.value + 1 }; this.redrawGraph(); };
+        up.onclick = () => { this.zoom = { time: this.zoom.time, value: Math.min(30, this.zoom.value + 0.5) }; this.redrawGraph(); };
         const down = document.createElement('button');
         down.innerText = "-";
-        down.onclick = () => { this.zoom = { time: this.zoom.time, value: this.zoom.value - 1 }; this.redrawGraph(); };
+        down.onclick = () => { this.zoom = { time: this.zoom.time, value: Math.max(0.1, this.zoom.value - 0.5) }; this.redrawGraph(); };
         canvasLayer.appendChild(up);
         canvasLayer.appendChild(down);
     }
@@ -197,11 +205,11 @@ class Graph {
             y: this.height + this.padding - this.normalizeValue(point.value, this.minValue, Math.max(this.maxValue, this.maxPoint.value)) * this.height * this.zoom.value };
     }
     drawBackground() {
-        this.ctx.beginPath();
         const segments = 10;
         const segHeight = this.height / segments / this.zoom.value;
         for (let index = 0; index <= segments; index++) {
-            if (index % Math.floor(Math.sqrt(segments)) == 0)
+            this.ctx.beginPath();
+            if (index % 5 == 0)
                 this.ctx.lineWidth = 2;
             else
                 this.ctx.lineWidth = 1;
@@ -214,8 +222,8 @@ class Graph {
             // this.ctx.moveTo(this.padding,this.height-index*segHeight+1)
             // this.ctx.lineTo(this.width-this.padding, this.height-index*segHeight)
             this.ctx.fillText(index * segHeight + ":", 0, start.y);
+            this.ctx.stroke();
         }
-        this.ctx.stroke();
     }
     normalizeValue(value, minValue, maxValue) {
         return (value - minValue) / (maxValue - minValue);

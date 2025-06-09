@@ -26,7 +26,7 @@ wssAPI.on('connection', ws => {
                 ws.send(JSON.stringify(list))
             
             })
-        }, 500);
+        }, 300);
             
   })
 
