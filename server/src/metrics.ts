@@ -1,10 +1,14 @@
 import pm2 from 'pm2'
 import express, { Request, Response } from 'express';
 import path from 'path';
+import { rootDirName } from './server';
 
 const router = express.Router();
 export default router
 router.get('/', (req, res) => {
+    res.sendFile(path.join(rootDirName, 'public', 'pages', 'metrics.html'))
+})
+router.get('/api', (req, res) => {
     pm2.connect(function(err) {
   if (err) {
     console.error(err)
