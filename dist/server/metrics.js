@@ -16,16 +16,19 @@ router.get('/', (req, res) => {
 });
 exports.wssAPI = new ws_1.default.Server({ noServer: true, clientTracking: true, });
 exports.wssAPI.on('connection', ws => {
+    console.log('admin connected to metrics: displaying pm2');
     pm2_1.default.connect(function (err) {
         if (err) {
             console.error(err);
             ws.send(JSON.stringify({ err }));
             process.exit(2);
         }
-        pm2_1.default.list((err, list) => {
-            //   console.log(err, list)
-            ws.send(list);
-        });
+        setInterval(() => {
+            pm2_1.default.list((err, list) => {
+                //   console.log(err, list)
+                ws.send(list);
+            });
+        }, 100);
     });
 });
 router.get('/api', (req, res) => {

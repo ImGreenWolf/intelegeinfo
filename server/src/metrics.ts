@@ -12,19 +12,22 @@ router.get('/', (req, res) => {
 
 export const wssAPI = new WebSocket.Server({noServer: true, clientTracking: true,  });
 wssAPI.on('connection', ws => {
+    console.log('admin connected to metrics: displaying pm2')
      pm2.connect(function(err) {
-  if (err) {
-    console.error(err)
-    ws.send(JSON.stringify({err}))
-    process.exit(2)
-  }
+        if (err) {
+            console.error(err)
+            ws.send(JSON.stringify({err}))
+            process.exit(2)
+        }
 
-
-    pm2.list((err, list) => {
-    //   console.log(err, list)
-        ws.send(list)
-      
-    })
+        setInterval(() => {
+            pm2.list((err, list) => {
+            //   console.log(err, list)
+                ws.send(list)
+            
+            })
+        }, 100);
+            
   })
 
 
