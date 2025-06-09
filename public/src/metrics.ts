@@ -1,6 +1,6 @@
 const monitoredValues: Monitor[] = []
 interface Monitor {
-    value: string, cell: HTMLTableCellElement, container: HTMLDivElement, update: (name, value, isUpdate, cell) => string
+    value: string, cell: HTMLTableCellElement, displayName: string, container: HTMLDivElement, update: (name, value, isUpdate, cell) => string
 }
 function UpdateProcessValues(json, rawJSON)
 { 
@@ -24,7 +24,7 @@ function updateMonitor(monitor, json)
     setInnerHTML(monitor, lastObjValue, true)
 }
 
-function addMonitor(value: string, index, callback: (name, value, isUpdate, cell) => string)
+function addMonitor(value: string, displayName: string, index, callback: (name, value, isUpdate, cell) => string)
 {
     const name = getName(value as string)
     const cell = document.createElement('td')
@@ -32,18 +32,13 @@ function addMonitor(value: string, index, callback: (name, value, isUpdate, cell
     document.getElementById('table-'+index)?.appendChild(cell)
     const container = document.createElement('div')
     cell.appendChild(container)
-    const monitor:Monitor = {value, cell, container, update: callback}
+    const monitor:Monitor = {value, cell, displayName, container, update: callback}
     monitoredValues.push(monitor)
-
     setInnerHTML(monitor, 'Updating..', false)
-
-    
-    // addMonitorToTable(, cell)
-    
 }
 function setInnerHTML(monitor: Monitor, value: string, isUpdate=true) {
 
-    monitor.container.innerHTML = monitor.update(monitor.value, value, isUpdate, monitor.cell)
+    monitor.container.innerHTML = monitor.update(monitor.displayName, value, isUpdate, monitor.cell)
 }
 function getName(value)
 {
@@ -65,7 +60,7 @@ init()
     () => 
 setInterval(
     updateLoop
-,300)
+,100)
 )
 let globalTime =0;
 
@@ -87,12 +82,12 @@ function init()
                 table.id='table-' + k;
                 document.body.appendChild(table)
 
-                addMonitor('pm2.name', k, (name, value)=> {
+                addMonitor('pm2.name', "Info", k, (name, value)=> {
 
                     return `<h1>${value}</h1>`
                 })
 
-                addMonitor('pm2.monit.cpu', k, (name, value, isUpdate, cell)=> {
+                addMonitor('pm2.monit.cpu', "CPU Usage", k, (name, value, isUpdate, cell)=> {
 
                          
                     if(isUpdate)
@@ -115,18 +110,18 @@ function init()
                     <p>${value}%</p>`
                 })
 
-                addMonitor('pm2.monit.memory', k, (name, value, isUpdate, cell)=> {
+                addMonitor('pm2.monit.memory', "Memory Usage", k, (name, value, isUpdate, cell)=> {
 
                         
                     if(isUpdate)
-                        Graphs.get(name)?.updateGraph({value: value/100000000, time: globalTime})
+                        Graphs.get(name)?.updateGraph({value: value/1000000, time: globalTime})
                     else
-                        new Graph(name, cell, 1,8)
+                        new Graph(name, cell, 50,500)
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`
                 })
 
-                addMonitor('pm2.pm2_env', k, (name, value, isUpdate)=> {
+                addMonitor('pm2.pm2_env', "Status", k, (name, value, isUpdate)=> {
 
                     return `<h1>${name}</h1>
                     <p>${value.status}</p>
@@ -140,7 +135,7 @@ function init()
                 k++;
             }
 
-            addMonitor('os.cpu.0.speed', 0, (name, value, isUpdate, cell)=> {
+            addMonitor('os.cpu.0.speed', "CPU Frequency", 0, (name, value, isUpdate, cell)=> {
 
                          
                     if(isUpdate)
@@ -151,7 +146,7 @@ function init()
                     }
                     else
                     {
-                        const graph = new Graph(name, cell, 500,4000)
+                        const graph = new Graph(name, cell, 400,3600)
                         graph.addLine((graph) => {
                             let median = 0
                             graph.points.forEach(point => median += point.value)
@@ -220,7 +215,7 @@ secondMaxPoint: GraphPoint = {value: 0, time: 0};
 points: GraphPoint[] = []
 closestPoint: GraphPoint = this.maxPoint;
 pointer: HTMLDivElement
-zoom: GraphPoint = {time: 1, value: 2}
+zoom: GraphPoint = {time: 1, value: 1}
 lines: GraphLine[] = []
 constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.minValue = minValue;

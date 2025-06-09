@@ -36,7 +36,7 @@ import crypto from 'crypto';
 import bodyParser from 'body-parser';
 import * as EditorModes from './editor-modes/'
 import Metrics, { wssAPI } from './metrics'
-
+import tx2 from 'tx2';
 interface ResponseWRay extends IncomingMessage 
 {
     rawBody: Buffer
@@ -78,33 +78,20 @@ app.post('/github/onpull', (req, res) => {
     }
    
 });
-
-
-// app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
-
 app.use('/client/scripts',express.static(path.join('dist', 'public')));
-// app.use('dist',express.static(path.join(rootDirName,'dist')));
-
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'public', 'codeEditor.js')))
-
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'dist', 'public', 'mode_cpp_custom.js'))
 })
-
 app.get('/editor/cpp_worker.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'dist', 'public', 'cpp_worker.js'))
 })
-
 app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'))
 })
-
-
-
 app.use(express.static("public"));
-
 app.use("/guides", GuideCreator);
 
 const codeMap: Map<number, UUID> = new Map()
@@ -144,8 +131,6 @@ app.get('/editor/sharesession', (req, res) => {
         }, 60000);
     })
 })
-
-
 app.get('/editor/joinsession', (req, res) => {
     const code = parseInt(req.query.code as string);
 
@@ -165,7 +150,6 @@ app.get('/editor/joinsession', (req, res) => {
     }
    
 })
-
 app.post('/editor/startsession/:id', (req, res) => {
     const id: UUID = req.params.id as UUID;
     if(!req.body && !id) res.status(501)
@@ -196,7 +180,6 @@ app.get('/editor/tooltipHints', (req, res) => {
         res.send(JSON.parse(fs.readFileSync(path.join(rootDirName, 'server', 'data','tooltips.json')).toString()))
 
 })
-
 app.get('/editor/tooltipHints/:id', (req, res) => {
     const tooltipid = req.params.id;
     if(!tooltipid)
@@ -204,8 +187,6 @@ app.get('/editor/tooltipHints/:id', (req, res) => {
     else
         res.send(JSON.parse(fs.readFileSync(path.join(rootDirName, 'server', 'data','tooltips.json')).toString())[tooltipid])
 })
-
-
 app.get('/editor/:session/file/:name', (req, res) => {
         const name = req.params.name;
         const session = req.params.session;
@@ -220,10 +201,9 @@ app.get('/editor/:session/file/:name', (req, res) => {
             
 
     })
-
-    app.get('/editor/:session/downloadFiles', (req, res) => {
-        const session = req.params.session;
-        
+app.get('/editor/:session/downloadFiles', (req, res) => {
+    const session = req.params.session;
+    
     if(!session || !sessionMap.has(session as UUID)) res.status(401).send('Didnt find session.')
   const folderPath = getClientFilesPath(session); // Path to folder to download
 
@@ -239,37 +219,37 @@ app.get('/editor/:session/file/:name', (req, res) => {
 });
 
 
-  // app.get('/problem', problemCreator);
-    app.get('/editor', (req, res) => {
-        fs.readFile(path.join(rootDirName, 'public', 'editor.html'), (err,file) => {
-            let text;
-            const userId  = users.getIdFromJWT(req);
-            
-            const logged = userId!=undefined;
-            if(logged) 
-                {
-                        users.getUserData(userId as number).then((userdata) => {
-                        text = file.toString().replace('#{login}',` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`)
-                        text = text.replace(/\*\{(.*)\}/g, '$1')
-                        
-                        
-                        res.send(text.toString());
-                        
-                        // for(const match of text.matchAll(/\*{(.*)}/g))
-                        // {
-                        //     match[1]
-                        // }
-                    })
-                }
-            else 
+// app.get('/problem', problemCreator);
+app.get('/editor', (req, res) => {
+    fs.readFile(path.join(rootDirName, 'public', 'editor.html'), (err,file) => {
+        let text;
+        const userId  = users.getIdFromJWT(req);
+        
+        const logged = userId!=undefined;
+        if(logged) 
             {
-                text = file.toString().replace('#{login}','<li><a id="signup" href="../signup">Sign-up</a><a id="login" href="../login">Login</a></li>')
-                text = text.replace(/\*\{(.*)\}/g, '')
-                res.send(text.toString());
+                    users.getUserData(userId as number).then((userdata) => {
+                    text = file.toString().replace('#{login}',` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`)
+                    text = text.replace(/\*\{(.*)\}/g, '$1')
+                    
+                    
+                    res.send(text.toString());
+                    
+                    // for(const match of text.matchAll(/\*{(.*)}/g))
+                    // {
+                    //     match[1]
+                    // }
+                })
             }
-        })
-
+        else 
+        {
+            text = file.toString().replace('#{login}','<li><a id="signup" href="../signup">Sign-up</a><a id="login" href="../login">Login</a></li>')
+            text = text.replace(/\*\{(.*)\}/g, '')
+            res.send(text.toString());
+        }
     })
+
+})
 
 app.use(cookieParser());
 
@@ -395,8 +375,16 @@ function onServerStart(err)
   
 }
 });
+//@ts-ignore
+let meter = tx2.meter({
+  name      : 'skisjdj/sec',
+  samples   : 1,
+  timeframe : 60
+})
 
-
+    server.on('connection', listener => {
+        meter.mark()
+    })
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
  

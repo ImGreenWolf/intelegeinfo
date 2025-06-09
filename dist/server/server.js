@@ -70,6 +70,7 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootD
 const crypto_1 = __importDefault(require("crypto"));
 const EditorModes = __importStar(require("./editor-modes/"));
 const metrics_1 = __importStar(require("./metrics"));
+const tx2_1 = __importDefault(require("tx2"));
 app.use(compression());
 app.use(express_1.default.json({
     verify: (req, res, buf) => {
@@ -108,9 +109,7 @@ app.post('/github/onpull', (req, res) => {
         res.status(500).send(err);
     }
 });
-// app.use('dist/public/',express.static(path.join(rootDirName,'dist', 'public')));
 app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
-// app.use('dist',express.static(path.join(rootDirName,'dist')));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
@@ -315,6 +314,15 @@ exports.server.on('upgrade', function upgrade(request, socket, head) {
         default:
             socket.destroy();
     }
+});
+//@ts-ignore
+let meter = tx2_1.default.meter({
+    name: 'req/sec',
+    samples: 1,
+    timeframe: 60
+});
+exports.server.on('connection', listener => {
+    meter.mark();
 });
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
