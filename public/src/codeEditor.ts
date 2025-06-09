@@ -1814,7 +1814,7 @@ export function createFile(fileName: string = "untitled.txt") {
   const command = JSON.stringify({
     type: WebSocketMessageType.FileManagement,
     command: FileManagementCommands.Create,
-    body: fileName,
+    name: fileName,
   });
   ws.send(command);
   //ws.send({command: FileManagementCommands.Create, args: []});

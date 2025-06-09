@@ -7,7 +7,8 @@ abstract class EditorMode {
     abstract name: string;
     abstract dockerFile: string;
     abstract dockerSafeTag: string
-    abstract extension: string[]
+    abstract extension: string[];
+     isExecutable: boolean = true
     runParams = '';
     isInterpreter: boolean = false; // used for JIT languages like python or js
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>

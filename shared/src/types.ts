@@ -66,3 +66,13 @@ export class WSMessage {
     // msgMap.set(msgId, this);
   }
 }
+
+
+
+export enum FileManagementCommands {
+    Create = "create",
+    Delete = "delete",
+    List = "list",
+    Rename = "rename",
+    Open = "open",
+}

@@ -1,9 +1,49 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EditorSession = exports.EditorPermission = exports.ClientObject = void 0;
+exports.EditorFile = exports.EditorSession = exports.EditorPermission = exports.ClientObject = void 0;
 const uuid_1 = require("uuid");
 const types_1 = require("../../dist/shared/types");
 const editor_modes_1 = require("./editor-modes");
+const fs_1 = __importDefault(require("fs"));
+const types_2 = require("../../dist/shared/types");
+const path_1 = __importDefault(require("path"));
+const server_1 = require("./server");
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 class ClientObject {
     sessionId;
@@ -17,6 +57,7 @@ class ClientObject {
     color = "#ffffff";
     editorMode = new editor_modes_1.CppMode;
     openFileName;
+    openFile;
     // EditorSessionObject: EditorSession
     constructor(sessionId, EditorSession, WebSocket, displayName, user) {
         this.sessionId = sessionId;
@@ -56,6 +97,7 @@ var EditorPermission;
 class EditorSession {
     sessionId;
     clientsActiveFile = new Map(); // client , file name
+    files = [];
     clients = new Map();
     clientsDisplayNames;
     clientsSockets = new Map();
@@ -322,14 +364,119 @@ Tralalero Tralala`.split('\n');
             if (!thisClientWs)
                 return;
             if (excludeClientId != thisClientId)
-                callback(thisClientWs, thisClientId);
+                callback(thisClientWs, thisClientId, this.clients.get(thisClientId));
         });
+    }
+    getClientFilesPath() {
+        return path_1.default.join(server_1.rootDirName, "cache", this.sessionId, "clientFiles");
     }
 }
 exports.EditorSession = EditorSession;
+class EditorFile {
+    name;
+    content;
+    session;
+    filePath;
+    constructor(session, name, content) {
+        this.name = name;
+        this.content = content;
+        this.session = session;
+        this.filePath = path_1.default.join(this.session.getClientFilesPath(), this.name);
+        try {
+            if (!fs_1.default.existsSync(this.filePath))
+                fs_1.default.writeFile(this.filePath, content, (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                    else
+                        session.replicateFunction((clientWs) => {
+                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
+                        });
+                    session.files.push(this);
+                });
+            else
+                throw "File already exists!";
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+    delete(clientObj) {
+        try {
+            fs_1.default.unlink(this.filePath, (err) => {
+                if (err) {
+                    throw "Error deleting file: " + err.message;
+                }
+                else {
+                    this.session.replicateFunction((cws) => {
+                        cws.send(JSON.stringify({
+                            type: types_1.WebSocketMessageType.FileManagement,
+                            command: types_2.FileManagementCommands.Delete,
+                            name: this.name,
+                        }));
+                    }, clientObj);
+                }
+            });
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+    rename(newName, clientObj) {
+        fs_1.default.rename(this.filePath, path_1.default.join(this.session.getClientFilesPath(), newName), () => {
+            this.session.replicateFunction((cws) => {
+                cws.send(JSON.stringify({
+                    type: types_1.WebSocketMessageType.FileManagement,
+                    command: types_2.FileManagementCommands.Rename,
+                    name: this.name,
+                    newName: newName
+                }));
+            }, clientObj);
+            this.name = newName;
+        });
+    }
+    openFile(clientObj, shared) {
+        fs_1.default.readFile(path_1.default.join(this.filePath, this.name), (err, data) => {
+            if (err) {
+                throw "Error opening file: " + err.message;
+            }
+            else {
+                // Send the file content to the client
+                const oldFileName = clientObj.openFileName;
+                this.session.replicateFunction((cws, id, obj) => {
+                    if (obj.openFileName == oldFileName)
+                        cws.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeSelection, body: null }));
+                }, clientObj);
+                // this.session.replicateSocketMessage(sessionId, clientId, true, , (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
+                clientObj.editorMode = getEditorMode(this.name);
+                clientObj.openFileName = this.name;
+                clientObj.openFile = this;
+                this.session.clientsActiveFile.set(clientObj.clientId, this.name);
+                console.log(`Opened file ${this.name}, with mode ${clientObj.editorMode.name}`);
+                if (shared)
+                    shared.updateSession(this.session.sessionId, this.session);
+                clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_2.FileManagementCommands.Open, content: data.toString(), fileName: this.name } })); // Send the list of files to the client
+            }
+        });
+    }
+    changeContent(content) {
+        this.content = content;
+    }
+}
+exports.EditorFile = EditorFile;
 //   public replicateFunction(callback: Function, ignoreClient?: ClientObject) {
 //     this.clients.forEach(client => {
 //         if(client!=ignoreClient || !ignoreClient)
 //          callback(client as ClientObject);
 //     });
 // }
+const EditorModes = __importStar(require("./editor-modes/"));
+function getEditorMode(fileName) {
+    const ext = fileName.trim().split('.')[1];
+    if (ext)
+        for (const mode of EditorModes.modes) {
+            if (mode.extension.includes(ext))
+                return mode;
+        }
+    return new EditorModes.Text;
+}

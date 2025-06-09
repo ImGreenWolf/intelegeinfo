@@ -71,6 +71,7 @@ const crypto_1 = __importDefault(require("crypto"));
 const EditorModes = __importStar(require("./editor-modes/"));
 const metrics_1 = __importStar(require("./metrics"));
 const tx2_1 = __importDefault(require("tx2"));
+const types_3 = require("../../dist/shared/types");
 app.use(compression());
 app.use(express_1.default.json({
     verify: (req, res, buf) => {
@@ -269,14 +270,6 @@ app.use('/login', login_js_1.default);
 app.use('/signup', signup_js_1.default);
 app.use('/profile', authMiddleware, profile_js_1.default);
 app.use('/user', usersManager_1.router);
-var FileManagementCommands;
-(function (FileManagementCommands) {
-    FileManagementCommands["Create"] = "create";
-    FileManagementCommands["Delete"] = "delete";
-    FileManagementCommands["List"] = "list";
-    FileManagementCommands["Rename"] = "rename";
-    FileManagementCommands["Open"] = "open";
-})(FileManagementCommands || (FileManagementCommands = {}));
 //          LOCAL  SERVER  VARIABLES       //
 let compileProcess;
 //                      END                      //  
@@ -317,7 +310,7 @@ exports.server.on('upgrade', function upgrade(request, socket, head) {
 });
 //@ts-ignore
 let meter = tx2_1.default.meter({
-    name: 'req/sec',
+    name: 'skisjdj/sec',
     samples: 1,
     timeframe: 60
 });
@@ -963,7 +956,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 return ![".exe", ".o"].includes(path_1.default.extname(file).toLowerCase());
                             });
                             resolve();
-                            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.List, content: targetFiles } })); // Send the list of files to the client
+                            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_3.FileManagementCommands.List, content: targetFiles } })); // Send the list of files to the client
                         }
                     });
                 });
@@ -985,23 +978,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         function openFile(fileName) {
             // if(fs.existsSync(path.join(clientFilesPath, fileName)))
             // console.log("path: " + path.join(clientFilesPath || path.join(rootDirName, "cache", sessionId,"clientFiles"), fileName))
-            fs_1.default.readFile(path_1.default.join(clientFilesPath, fileName), (err, data) => {
-                if (err) {
-                    printClientConsoleError("Error opening file: " + err.message);
-                }
-                else {
-                    // Send the file content to the client
-                    const oldFileName = getThisClientSession()?.clientsActiveFile.get(clientId);
-                    replicateSocketMessage(sessionId, clientId, true, { type: types_1.WebSocketMessageType.CodeSelection, body: null }, (client) => { return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName; }); // potential fix for a glitch where markers dont get deleted when switching tabs
-                    clientObj.editorMode = getEditorMode(fileName);
-                    clientObj.openFileName = fileName;
-                    getThisClientSession()?.clientsActiveFile.set(clientId, fileName);
-                    console.log(`Opened file ${fileName}, with mode ${clientObj.editorMode.name}`);
-                    if (isShared)
-                        shared.updateSession(sessionId, getThisClientSession());
-                    ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.Open, content: data.toString(), fileName: fileName } })); // Send the list of files to the client
-                }
-            });
+            clientSession.files.find(file => file.name == fileName).openFile(clientObj, shared);
         }
         /**
          * Build and run the C++ executable in a Docker container with sandbox folder access.
@@ -1426,29 +1403,29 @@ bash `.trim().replaceAll('\n', "");
                             fs_1.default.writeFile(path_1.default.join(clientFilesPath, fileName), messageJSON.body, (err) => {
                                 if (err)
                                     console.log("Failed saving file!");
-                                if (checkSyntaxTimeout)
-                                    clearTimeout(checkSyntaxTimeout);
-                                checkSyntaxTimeout = setTimeout(() => {
-                                    checkCodeSyntax(messageJSON.body).then(json => {
-                                        if (!JSON.parse(json)[0])
-                                            return replicateFunction((clientWs, localClientId) => {
-                                                if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
-                                            });
-                                        replicateFunction((clientWs, localClientId) => {
+                                // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
+                                // checkSyntaxTimeout = setTimeout(() => {
+                                checkCodeSyntax(messageJSON.body).then(json => {
+                                    if (!JSON.parse(json)[0])
+                                        return replicateFunction((clientWs, localClientId) => {
                                             if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
+                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
                                         });
-                                    }).catch(err => {
-                                        console.error('syntax checker error: ' + err);
+                                    replicateFunction((clientWs, localClientId) => {
+                                        if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
+                                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
                                     });
-                                }, 200);
+                                }).catch(err => {
+                                    console.error('syntax checker error: ' + err);
+                                });
+                                // }, 400);
                             });
                         }
+                        clientObj.openFile.changeContent(messageJSON.body);
                         // replicate changes to others
                         replicateFunction((clientWs, localClientId) => {
                             if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, body: messageJSON, msgId: JSON.parse(message.toString()).msgId }));
+                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, body: clientObj.openFile.content, msgId: JSON.parse(message.toString()).msgId }));
                         }, clientObj);
                         break;
                     case types_1.WebSocketMessageType.ConsoleTyping:
@@ -1491,54 +1468,24 @@ bash `.trim().replaceAll('\n', "");
                             break;
                         const commandType = messageJSON.command;
                         switch (commandType) {
-                            case FileManagementCommands.Create:
-                                if (!fs_1.default.existsSync(path_1.default.join(clientFilesPath, messageJSON.body)))
-                                    fs_1.default.writeFile(path_1.default.join(clientFilesPath, messageJSON.body), "", (err) => {
-                                        if (err) {
-                                            printClientConsoleError("Error creating file: " + err.message);
-                                        }
-                                        else {
-                                            const fileName = messageJSON.body.toString();
-                                            ;
-                                            replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.FileManagement, body: { content: fileName, command: commandType || FileManagementCommands.Create } }); // Send the list of files to the client
-                                            console.log("File created successfully");
-                                        }
-                                    });
-                                else
-                                    printClientConsoleError("File already exists!");
+                            case types_3.FileManagementCommands.Create:
+                                new types_2.EditorFile(clientSession, messageJSON.name);
                                 break;
-                            case FileManagementCommands.Delete:
+                            case types_3.FileManagementCommands.Delete:
                                 if (!clientObj.canEdit)
                                     break;
-                                try {
-                                    fs_1.default.unlink(path_1.default.join(clientFilesPath, messageJSON.name), (err) => {
-                                        if (err) {
-                                            printClientConsoleError("Error deleting file: " + err.message);
-                                        }
-                                        else {
-                                            console.log("File deleted successfully");
-                                            replicateFunction((cws) => {
-                                                cws.send(JSON.stringify({ ...messageJSON }));
-                                            }, clientObj);
-                                        }
-                                    });
-                                }
-                                catch (err) {
-                                    printClientConsoleError(err);
-                                }
+                                clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj);
                                 break;
                             //  TODO Make this so it just return name and make seperate function for fle content, which will be called only when opening the file on the client. STORE IT IN CACHE, ADD A DIRTY VERIFICATION TO NOT SEND THE SAME SHI MULTIPLE TIMES DONT OPEN THE EDITOR UNTIL THE FILE HAS LOADED ON THE CLIENT SEND THE FILES ON  HANDSHAKE MAKE SURE IT IS ALL REPLICATED
-                            case FileManagementCommands.List:
+                            case types_3.FileManagementCommands.List:
                                 listFiles(clientFilesPath);
                                 break;
-                            case FileManagementCommands.Rename:
+                            case types_3.FileManagementCommands.Rename:
                                 if (!clientObj.canEdit)
                                     break;
-                                replicateFunction((cws) => {
-                                    cws.send(JSON.stringify({ ...messageJSON }));
-                                }, clientObj);
+                                clientSession.files.find(file => file.name == messageJSON.name).rename(messageJSON.newName, clientObj);
                                 break;
-                            case FileManagementCommands.Open:
+                            case types_3.FileManagementCommands.Open:
                                 openFile(messageJSON.body);
                                 break;
                         }

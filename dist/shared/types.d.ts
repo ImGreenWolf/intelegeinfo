@@ -34,4 +34,11 @@ export declare class WSMessage {
     onReceive(data: Record<string, any>): void;
     sendMessage(data: Record<string, any>, msgId: number, ws: WebSocket): void;
 }
+export declare enum FileManagementCommands {
+    Create = "create",
+    Delete = "delete",
+    List = "list",
+    Rename = "rename",
+    Open = "open"
+}
 //# sourceMappingURL=types.d.ts.map

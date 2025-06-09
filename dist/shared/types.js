@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WSMessage = exports.ConsoleMessageType = exports.WebSocketMessageType = void 0;
+exports.FileManagementCommands = exports.WSMessage = exports.ConsoleMessageType = exports.WebSocketMessageType = void 0;
 var WebSocketMessageType;
 (function (WebSocketMessageType) {
     WebSocketMessageType["Handshake"] = "handshake";
@@ -59,3 +59,11 @@ class WSMessage {
     }
 }
 exports.WSMessage = WSMessage;
+var FileManagementCommands;
+(function (FileManagementCommands) {
+    FileManagementCommands["Create"] = "create";
+    FileManagementCommands["Delete"] = "delete";
+    FileManagementCommands["List"] = "list";
+    FileManagementCommands["Rename"] = "rename";
+    FileManagementCommands["Open"] = "open";
+})(FileManagementCommands || (exports.FileManagementCommands = FileManagementCommands = {}));

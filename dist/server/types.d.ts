@@ -17,6 +17,7 @@ export declare class ClientObject {
     color: string;
     editorMode: EditorMode;
     openFileName: string;
+    openFile: EditorFile;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: string | Record<string, any>, type?: WebSocketMessageType): void;
 }
@@ -31,6 +32,7 @@ export declare enum EditorPermission {
 export declare class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string>;
+    files: EditorFile[];
     clients: Map<UUID, ClientObject>;
     clientsDisplayNames: string[];
     clientsSockets: Map<UUID, WebSocket>;
@@ -65,6 +67,18 @@ export declare class EditorSession {
     getClientObjectById(clientId: UUID): ClientObject | undefined;
     removeClient(clientId: UUID): void;
     spawnClient(ws: WebSocket, userData?: UserNoPassword): UUID;
-    replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID) => void, excludeClientObj?: ClientObject): void;
+    replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID, clientObj: ClientObject) => void, excludeClientObj?: ClientObject): void;
+    getClientFilesPath(): string;
+}
+export declare class EditorFile {
+    name: any;
+    content: any;
+    session: EditorSession;
+    filePath: any;
+    constructor(session: EditorSession, name: any, content?: any);
+    delete(clientObj: any): void;
+    rename(newName: any, clientObj: any): void;
+    openFile(clientObj: ClientObject, shared?: any): void;
+    changeContent(content: any): void;
 }
 export {};

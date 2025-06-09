@@ -8,6 +8,10 @@ import { User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import { CppMode } from './editor-modes';
+import fs from 'fs'
+import { FileManagementCommands } from '../../dist/shared/types'
+import path from 'path';
+import { rootDirName } from './server';
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
     sessionId: UUID;
@@ -21,6 +25,7 @@ export class ClientObject {
     color: string = "#ffffff";
     editorMode: EditorMode = new CppMode;
     openFileName: string
+    openFile: EditorFile;
     // EditorSessionObject: EditorSession
     public constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {
         this.sessionId = sessionId;
@@ -72,6 +77,7 @@ export enum EditorPermission
 export class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string> = new Map<UUID, string>(); // client , file name
+    files: EditorFile[] = []
     clients: Map<UUID,ClientObject> = new Map<UUID,ClientObject>();
     clientsDisplayNames: string[];
     clientsSockets: Map<UUID, WebSocket> = new Map();
@@ -377,7 +383,7 @@ Tralalero Tralala`.split('\n')
         return newClient.clientId;
     }
 
-    public replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID) => void, excludeClientObj?:ClientObject) {
+    public replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID, clientObj: ClientObject) => void, excludeClientObj?:ClientObject) {
         // if(!getThisClientSession() || !getThisClientSession().clientsSockets) return console.error(new Error("invalid session or client sockers"));
         let excludeClientId: UUID | undefined;
         if(excludeClientObj)
@@ -387,15 +393,127 @@ Tralalero Tralala`.split('\n')
     
             if(!thisClientWs) return;
             if(excludeClientId != thisClientId)
-                callback(thisClientWs as WebSocket, thisClientId as UUID);
+                callback(thisClientWs as WebSocket, thisClientId as UUID, this.clients.get(thisClientId));
         });
     }
     
+    public getClientFilesPath()
+    {
+        return path.join(rootDirName, "cache", this.sessionId,"clientFiles");
+        
+    }
 
     
       
   }
 
+  export class EditorFile {
+    name;
+    content;
+    session: EditorSession;
+    filePath 
+    constructor(session: EditorSession, name, content?) {
+        this.name = name;
+        this.content = content;
+        this.session = session
+        this.filePath = path.join(this.session.getClientFilesPath(), this.name)
+        try {
+            if (!fs.existsSync(this.filePath))
+            fs.writeFile(this.filePath, content, (err) => {
+                if (err) {
+                    throw err;
+                } else   
+                    session.replicateFunction((clientWs) => {
+                        clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
+                    });
+                    session.files.push(this)
+                });
+            else  throw "File already exists!";
+        }
+        catch (err)
+        {
+            console.error(err)
+        }
+    }
+
+
+    public delete(clientObj)
+    {
+        try {
+            fs.unlink(this.filePath, (err) => {
+            if (err) {
+               throw "Error deleting file: " + err.message;
+            } else {
+                this.session.replicateFunction((cws) => {
+                    cws.send(JSON.stringify({
+                    type: WebSocketMessageType.FileManagement,
+                    command: FileManagementCommands.Delete,
+                    name: this.name,
+                    }))
+                }, clientObj)
+            }
+        });
+        }
+        catch(err)
+        {
+            console.error(err)
+        }
+    }
+
+    public rename(newName,clientObj)
+    {
+        fs.rename(this.filePath, path.join(this.session.getClientFilesPath(), newName), () => {
+            this.session.replicateFunction((cws) => {
+                cws.send(JSON.stringify({
+                    type: WebSocketMessageType.FileManagement,
+                    command: FileManagementCommands.Rename,
+                    name: this.name,
+                    newName: newName
+                }))
+            }, clientObj)
+
+            this.name = newName
+        })
+        
+    }
+
+    public openFile(clientObj: ClientObject, shared?)
+    {
+        fs.readFile(path.join(this.filePath, this.name), (err, data) => {
+            if (err) {
+               throw "Error opening file: " + err.message;
+            } else {
+                // Send the file content to the client
+                const oldFileName = clientObj.openFileName
+
+
+                this.session.replicateFunction((cws, id, obj) => {
+                    if((obj as ClientObject).openFileName == oldFileName)
+                cws.send(JSON.stringify({type: WebSocketMessageType.CodeSelection, body: null}))
+            }, clientObj)
+
+
+                // this.session.replicateSocketMessage(sessionId, clientId, true, , (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
+                
+                clientObj.editorMode = getEditorMode(this.name)
+                clientObj.openFileName = this.name
+                clientObj.openFile = this
+                this.session.clientsActiveFile.set(clientObj.clientId, this.name)
+                console.log(`Opened file ${this.name}, with mode ${clientObj.editorMode.name}`);
+                if(shared) shared.updateSession(this.session.sessionId, this.session)
+                clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement,  body: {command: FileManagementCommands.Open ,content: data.toString(), fileName: this.name}})); // Send the list of files to the client
+            }
+        });
+    }
+
+    public changeContent(content)
+    {
+        this.content = content
+    }
+
+
+
+  }
 
 //   public replicateFunction(callback: Function, ignoreClient?: ClientObject) {
 //     this.clients.forEach(client => {
@@ -404,3 +522,16 @@ Tralalero Tralala`.split('\n')
 //     });
 
 // }
+import * as EditorModes from './editor-modes/'
+function getEditorMode(fileName: string): EditorModes.EditorMode | undefined
+{
+    const ext = fileName.trim().split('.')[1]
+    if(ext)
+        for(const mode of EditorModes.modes)
+            {
+            if(mode.extension.includes(ext))
+                return mode;
+        }
+
+    return  new EditorModes.Text;
+}
