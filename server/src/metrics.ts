@@ -25,9 +25,9 @@ wssAPI.on('connection', ws => {
             if(k%3==0) 
             {
                 
-                const output = buffer;
+                const output = `${new Date().toISOString()}: ${buffer}`;
                 ws.send(JSON.stringify({output}))
-            
+                buffer = '';
             }else
             {
                 pm2.list((err, list) => {
@@ -50,7 +50,6 @@ let buffer = '';
 // If you want to create a readable stream and pipe to process.stdout in Node.js, use the following example:
 
 const originalStdoutWrite = process.stdout.write.bind(process.stdout)
-const data = new WritableStream();
 //@ts-ignore
 process.stdout.write = (chunk, encoding, callback) => {
     if (typeof chunk === 'string') {
@@ -58,6 +57,17 @@ process.stdout.write = (chunk, encoding, callback) => {
   }
 
   return originalStdoutWrite(chunk, encoding, callback);
+}
+
+
+const originalStderrWrite = process.stdout.write.bind(process.stdout)
+//@ts-ignore
+process.stderr.write = (chunk, encoding, callback) => {
+    if (typeof chunk === 'string') {
+    buffer += `<span class='error'>${chunk}</span>`;
+  }
+
+  return originalStderrWrite(chunk, encoding, callback);
 }
 
 // Listen for 'data' events

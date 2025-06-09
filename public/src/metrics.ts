@@ -164,7 +164,7 @@ function init()
             ws.onmessage = (ev) => {
                 const res = JSON.parse(ev.data)
                 if(res.output)
-                    document.getElementById('output')!.innerText = res.output
+                    document.getElementById('output')!.innerText += res.output
                 else
                 {
                     globalTime = (Date.now() - start)/100
