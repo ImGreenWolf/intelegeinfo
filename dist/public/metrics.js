@@ -58,7 +58,7 @@ function init() {
                     if (isUpdate)
                         Graphs.get(name)?.updateGraph({ value, time: globalTime });
                     else
-                        new Graph(name, cell, 10000000, 80000000);
+                        new Graph(name, cell, 10000000, 800000000);
                     return `<h1>${name}</h1>
                     <p>${value}%</p>`;
                 });
