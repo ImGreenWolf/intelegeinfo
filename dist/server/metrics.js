@@ -41,18 +41,17 @@ exports.wssAPI.on('connection', ws => {
     });
 });
 let buffer = '';
+// const data = new ReadableStream()
+// data.pipeTo(process.stdout)
+// If you want to create a readable stream and pipe to process.stdout in Node.js, use the following example:
+const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 const data = new WritableStream();
-process.stdout.write = function (str, encoding, cb) {
-    let stringData;
-    if (typeof str === 'string') {
-        stringData = str;
+//@ts-ignore
+process.stdout.write = (chunk, encoding, callback) => {
+    if (typeof chunk === 'string') {
+        buffer += chunk;
     }
-    else {
-        stringData = str.toString();
-    }
-    console.log('Data written:', stringData);
-    buffer = (buffer || '') + stringData + '\n';
-    return true;
+    return originalStdoutWrite(chunk, encoding, callback);
 };
 // Listen for 'data' events
 // data.on('data', (chunk) => {

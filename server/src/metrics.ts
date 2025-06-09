@@ -49,23 +49,15 @@ let buffer = '';
 // data.pipeTo(process.stdout)
 // If you want to create a readable stream and pipe to process.stdout in Node.js, use the following example:
 
-import { Readable } from 'stream';
+const originalStdoutWrite = process.stdout.write.bind(process.stdout)
 const data = new WritableStream();
-process.stdout.write = function(
-    str: string | Uint8Array,
-    encoding?: BufferEncoding | ((err?: Error) => void),
-    cb?: (err?: Error) => void
-): boolean {
-    let stringData: string;
-    if (typeof str === 'string') {
-        stringData = str;
-    } else {
-        stringData = str.toString();
-    }
-    console.log('Data written:', stringData);
-    buffer = (buffer || '') + stringData + '\n';
-    
-    return true;
+//@ts-ignore
+process.stdout.write = (chunk, encoding, callback) => {
+    if (typeof chunk === 'string') {
+    buffer += chunk;
+  }
+
+  return originalStdoutWrite(chunk, encoding, callback);
 }
 
 // Listen for 'data' events
