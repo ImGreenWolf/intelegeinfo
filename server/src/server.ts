@@ -1019,13 +1019,14 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                     return;
                 }
                 
+                new EditorFile(clientSession, 'main.cpp')
+                openFile("main.cpp")
+                // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
+                //     listFiles(clientFilesPath).then(() => {
+                //         openFile("main.cpp")
 
-                fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
-                    listFiles(clientFilesPath).then(() => {
-                        openFile("main.cpp")
-
-                    })
-                    });
+                //     })
+                //     });
             })
         } else 
         {
