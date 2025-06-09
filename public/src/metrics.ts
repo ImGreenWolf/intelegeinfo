@@ -164,8 +164,12 @@ function init()
             ws.onmessage = (ev) => {
                 const res = JSON.parse(ev.data)
                 if(res.output)
-                    document.getElementById('output')!.innerText += res.output
-                else
+                {
+                    const output = document.getElementById('output')
+                    output!.innerHTML += res.output;
+                    output!.scrollTop = output!.scrollHeight
+                }
+                else           
                 {
                     globalTime = (Date.now() - start)/100
                     let k=0;

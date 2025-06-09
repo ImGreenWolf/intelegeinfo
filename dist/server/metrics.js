@@ -28,9 +28,11 @@ exports.wssAPI.on('connection', ws => {
         setInterval(() => {
             k++;
             if (k % 3 == 0) {
-                const output = `${new Date().toISOString()}: ${buffer}`;
-                ws.send(JSON.stringify({ output }));
-                buffer = '';
+                if (buffer != '') {
+                    const output = `${new Date().toLocaleTimeString('ro-ro')}: ${buffer}\n`;
+                    ws.send(JSON.stringify({ output }));
+                    buffer = '';
+                }
             }
             else {
                 pm2_1.default.list((err, list) => {
