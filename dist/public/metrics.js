@@ -9,7 +9,10 @@ function UpdateProcessValues(json, rawJSON) {
 function updateMonitor(monitor, json) {
     let lastObjValue = json;
     for (const key of monitor.value.split('.'))
-        lastObjValue = lastObjValue[key];
+        if (key == 'pm2')
+            continue;
+        else
+            lastObjValue = lastObjValue[key];
     setInnerHTML(monitor, lastObjValue, true);
 }
 function addMonitor(value, index, callback) {

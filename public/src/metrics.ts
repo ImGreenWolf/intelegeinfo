@@ -16,6 +16,9 @@ function updateMonitor(monitor, json)
 {
     let lastObjValue = json
     for(const key of monitor.value.split('.'))
+        if(key=='pm2')
+            continue;
+        else
         lastObjValue = lastObjValue[key]
 
     setInnerHTML(monitor, lastObjValue, true)
