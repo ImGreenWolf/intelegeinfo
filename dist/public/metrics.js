@@ -48,7 +48,7 @@ function init() {
                     return `<h1>${value}</h1>`;
                 });
                 addMonitor('monit.cpu', k, (name, value, isUpdate, cell) => {
-                    Graphs.get(name)?.updateGraph(value, globalTime);
+                    Graphs.get(name)?.updateGraph({ value, time: globalTime });
                     return `<h1>${name}</h1>
     <p>${value}%</p>`;
                 });
