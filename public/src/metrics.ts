@@ -176,6 +176,7 @@ public updateGraph(newPoint: {value, time})
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.drawBackground()
     //draw points
+    this.ctx.lineWidth = 5;
     this.ctx.beginPath();
     for(const point of this.points)
     {
@@ -183,7 +184,7 @@ public updateGraph(newPoint: {value, time})
         //     this.points.splice(this.points.indexOf(point))
 
         this.ctx?.lineTo(point.time - newPoint.time + this.width,
-        this.height-this.normalizeValue(point.value, this.minValue, this.maxValue)*this.height) //(this.maxValue / this.maxPoint.value)*this.height
+        this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
 
     }
     this.ctx.stroke();
@@ -192,6 +193,7 @@ public updateGraph(newPoint: {value, time})
 }
 
 private drawBackground() {
+    this.ctx.lineWidth = 2;
     this.ctx.beginPath();
     const segments = 10;
     const segHeight = this.height/segments
@@ -199,7 +201,7 @@ private drawBackground() {
     {
         this.ctx.moveTo(0,this.height-index*segHeight)
         this.ctx.lineTo(this.width, this.height-index*segHeight)
-        this.ctx.fillText(index+":", this.width - 50, this.height-index*segHeight)
+        this.ctx.fillText(index*segments+":", 10, this.height-index*segHeight)
     }
         this.ctx.stroke();
 
