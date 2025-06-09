@@ -55,7 +55,7 @@ const originalStdoutWrite = process.stdout.write.bind(process.stdout)
 //@ts-ignore
 process.stdout.write = (chunk, encoding, callback) => {
     if (typeof chunk === 'string') {
-    buffer += buffer=='' ? "&#x9" : "" + chunk + "\n";
+    buffer += (buffer=='' ? "&#x9" : "") + chunk + "\n";
   }
 
   return originalStdoutWrite(chunk, encoding, callback);
