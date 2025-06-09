@@ -149,7 +149,10 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.ctx.lineWidth = 5;
     parent.appendChild(this.canvas)
     Graphs.set(name, this)
-    
+    const pointer = document.createElement('div')
+    pointer.innerText = 'dokdkdk'
+    pointer.style.cssText = "position: absolute; border-radius: 50%; width: 10px; height: 10px; background-color: black;"
+    this.canvas.appendChild(pointer)
     this.canvas.onmousemove = ev => {
         // ev.offsetX
         const pointerTime = ev.offsetX
@@ -164,10 +167,9 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
                 
         });
         if(!closestPoint) return
-        this.ctx.beginPath();
-        this.ctx.arc(closestPoint.value, ev.offsetX, 0, 10, 2 * Math.PI)
-        this.ctx.fill()
-        this.ctx.stroke();
+        const pos = this.calculateXandY(closestPoint)
+        pointer.style.top = pos.y + "px"
+        pointer.style.left = pos.x + "px"
         console.log(closestPoint)
     }
 }
@@ -175,7 +177,10 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
 
 public updateGraph(newPoint: {value, time})
 {
-    if(newPoint.time-this.width > this.maxPoint.time)
+    this.time = newPoint.time;
+
+
+    if(Math.max(0, newPoint.time-this.width) >= this.maxPoint.time)
     {
         this.maxPoint = this.secondMaxPoint
         this.secondMaxPoint = newPoint
@@ -201,11 +206,16 @@ public updateGraph(newPoint: {value, time})
     this.ctx.lineWidth = 5;
     this.ctx.beginPath();
     for(const point of this.points)
-        this.ctx?.lineTo(point.time - newPoint.time + this.width - this.padding,
-        this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
+        this.ctx?.lineTo(this.calculateXandY(newPoint).x,this.calculateXandY(newPoint).y)
+        // this.ctx?.lineTo(point.time - this.time + this.width - this.padding,
+        // this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
     //finish
     this.ctx.stroke();
-    this.time = newPoint.time;
+
+}
+private calculateXandY(point: {value, time})
+{
+    return {x: point.time - this.time + this.width - this.padding, y: this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height}
 }
 
 private drawBackground() {

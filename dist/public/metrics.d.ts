@@ -40,6 +40,7 @@ declare class Graph {
         value: any;
         time: any;
     }): void;
+    private calculateXandY;
     private drawBackground;
     private normalizeValue;
 }
