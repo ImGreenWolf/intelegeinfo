@@ -155,7 +155,8 @@ class Graph {
         this.ctx.lineWidth = 5;
         this.ctx.beginPath();
         for (const point of this.points)
-            this.ctx?.lineTo(this.calculateXandY(point).x, this.calculateXandY(point).y);
+            if (this.calculateXandY(point).x > this.padding)
+                this.ctx?.lineTo(this.calculateXandY(point).x, this.calculateXandY(point).y + this.padding);
         // this.ctx?.lineTo(point.time - this.time + this.width - this.padding,
         // this.height-this.normalizeValue(point.value, this.minValue, Math.min(this.maxValue, this.maxPoint.value/1.5))*this.height) //(this.maxValue / this.maxPoint.value)*this.height
         //finish
@@ -171,9 +172,15 @@ class Graph {
         const segments = 10;
         const segHeight = this.height / segments;
         for (let index = 0; index <= segments; index++) {
-            this.ctx.moveTo(0, this.height - index * segHeight);
-            this.ctx.lineTo(this.width, this.height - index * segHeight);
-            this.ctx.fillText(index * segments + ":", 10, this.height - index * segHeight);
+            const start = this.calculateXandY({ value: this.padding, time: this.height - index * segHeight + 1 });
+            const end = this.calculateXandY({ value: this.width - this.padding, time: this.height - index * segHeight });
+            if (start.y > this.height || end.y > this.height)
+                break;
+            this.ctx.moveTo(this.padding, start.y);
+            this.ctx.lineTo(this.width - this.padding, end.y);
+            // this.ctx.moveTo(this.padding,this.height-index*segHeight+1)
+            // this.ctx.lineTo(this.width-this.padding, this.height-index*segHeight)
+            this.ctx.fillText(index * segments + ":", 0, this.height - index * segHeight + 5);
         }
         this.ctx.stroke();
     }
