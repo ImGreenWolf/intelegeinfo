@@ -9,7 +9,7 @@ function UpdateProcessValues(json, index)
             let lastObjValue = json
             for(const key of monitor.value.split('.'))
                 lastObjValue = lastObjValue[key]
-            
+
             setInnerHTML(monitor, lastObjValue, true)
             // document.getElementById(monitor.value as string+'-'+index)!.innerHTML = monitor.update(monitor.value,lastObjValue, true, monitor.cell)
         }   
@@ -130,18 +130,21 @@ const Graphs: Map<string, Graph> = new Map()
 
 class Graph {
 canvas = document.createElement('canvas');
-ctx = this.canvas.getContext('2d');
+ctx = this.canvas.getContext('2d')!;
 time = 0;
 minValue;
 maxValue;
 constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.minValue = minValue;
     this.maxValue = maxValue;
-    this.ctx?.moveTo(0,0)
+    this.ctx.moveTo(0,0)
     this.canvas.width = 300
     this.canvas.height = 300
+    this.ctx.lineWidth = 10;
     parent.appendChild(this.canvas)
     Graphs.set(name, this)
+
+    this.ctx.beginPath();
 }
 
 
@@ -149,6 +152,7 @@ public updateGraph(value, time)
 {
     this.time = time;
     this.ctx?.lineTo(time, this.normalizeValue(value, this.minValue, this.maxValue))
+    this.ctx.stroke();
 }
 
 private normalizeValue(value, minValue, maxValue)

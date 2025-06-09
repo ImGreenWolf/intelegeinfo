@@ -16,7 +16,7 @@ declare function updateLoop(): void;
 declare const Graphs: Map<string, Graph>;
 declare class Graph {
     canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D | null;
+    ctx: CanvasRenderingContext2D;
     time: number;
     minValue: any;
     maxValue: any;

@@ -83,15 +83,18 @@ class Graph {
     constructor(name, parent, minValue, maxValue) {
         this.minValue = minValue;
         this.maxValue = maxValue;
-        this.ctx?.moveTo(0, 0);
+        this.ctx.moveTo(0, 0);
         this.canvas.width = 300;
         this.canvas.height = 300;
+        this.ctx.lineWidth = 10;
         parent.appendChild(this.canvas);
         Graphs.set(name, this);
+        this.ctx.beginPath();
     }
     updateGraph(value, time) {
         this.time = time;
         this.ctx?.lineTo(time, this.normalizeValue(value, this.minValue, this.maxValue));
+        this.ctx.stroke();
     }
     normalizeValue(value, minValue, maxValue) {
         return (value - minValue) / (maxValue - minValue);
