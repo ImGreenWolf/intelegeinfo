@@ -13,8 +13,8 @@ function addMonitor(value, index, calback) {
     const cell = document.createElement('td');
     monitoredValues.push({ value, cell, update: calback });
     cell.id = value + '-' + index;
-    cell.innerHTML = calback(name, "Updating...", false, cell);
     document.getElementById('table-' + index)?.appendChild(cell);
+    cell.innerHTML = calback(name, "Updating...", false, cell);
     // addMonitorToTable(, cell)
 }
 function getName(value) {
