@@ -18,7 +18,7 @@ router.get('/api', (req, res) => {
 
 
     pm2.list((err, list) => {
-      console.log(err, list)
+    //   console.log(err, list)
         res.send(list)
       
     })

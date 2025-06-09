@@ -20,7 +20,7 @@ router.get('/api', (req, res) => {
             process.exit(2);
         }
         pm2_1.default.list((err, list) => {
-            console.log(err, list);
+            //   console.log(err, list)
             res.send(list);
         });
     });
