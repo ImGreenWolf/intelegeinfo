@@ -40,7 +40,7 @@ addMonitor('monit.cpu', (name, value) => {
 updateLoop();
 function updateLoop() {
     setInterval(() => {
-        fetch('api').then(res => res.json())
+        fetch('./api').then(res => res.json())
             .then(res => {
             UpdateValues(res);
         });
