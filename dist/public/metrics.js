@@ -13,7 +13,7 @@ function addMonitor(value, index, calback) {
     const cell = document.createElement('td');
     monitoredValues.push({ value, cell, update: calback });
     cell.id = value + '-' + index;
-    cell.innerHTML = calback(name, "Updating...");
+    cell.innerHTML = calback(name, "Updating...", cell);
     document.getElementById('table-' + index)?.appendChild(cell);
     // addMonitorToTable(, cell)
 }
@@ -38,7 +38,8 @@ function init() {
                 addMonitor('name', k, (name, value) => {
                     return `<h1>${value}</h1>`;
                 });
-                addMonitor('monit.cpu', k, (name, value) => {
+                addMonitor('monit.cpu', k, (name, value, cell) => {
+                    new Graph('cpu', cell, 0, 100);
                     return `<h1>${name}</h1>
     <p>${value}%</p>`;
                 });
@@ -61,4 +62,24 @@ function updateLoop() {
         for (const table of res)
             UpdateProcessValues(table, k++);
     }).catch(err => window.alert(err));
+}
+class Graph {
+    canvas = document.createElement('canvas');
+    ctx = this.canvas.getContext('2d');
+    time = 0;
+    minValue;
+    maxValue;
+    constructor(name, parent, minValue, maxValue) {
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.ctx?.moveTo(0, 0);
+        parent.appendChild(this.canvas);
+    }
+    updateGraph(value, time) {
+        this.time = time;
+        this.ctx?.lineTo(time, this.normalizeValue(value, this.minValue, this.maxValue));
+    }
+    normalizeValue(value, minValue, maxValue) {
+        return (value - minValue) / (maxValue - minValue);
+    }
 }
