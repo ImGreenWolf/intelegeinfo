@@ -147,13 +147,17 @@ constructor(name: string, parent: HTMLElement, minValue, maxValue) {
     this.canvas.width =  this.width
     this.canvas.height = this.height
     this.ctx.lineWidth = 5;
-    parent.appendChild(this.canvas)
+    const canvasLayer = document.createElement('div')
+    canvasLayer.appendChild(this.canvas)
+    canvasLayer.style.position = 'relative';
+    parent.appendChild(canvasLayer)
+    
     Graphs.set(name, this)
     const pointer = document.createElement('div')
     pointer.innerText = 'dokdkdk'
     pointer.style.cssText = "position: absolute; border-radius: 50%; width: 10px; height: 10px; background-color: black;"
-    this.canvas.appendChild(pointer)
-    this.canvas.onmousemove = ev => {
+    canvasLayer.appendChild(pointer)
+    canvasLayer.onmousemove = ev => {
         // ev.offsetX
         const pointerTime = ev.offsetX
         let distance = 10000
