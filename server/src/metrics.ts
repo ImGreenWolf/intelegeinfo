@@ -44,22 +44,39 @@ wssAPI.on('connection', ws => {
 
 })
 
-let buffer;
+let buffer = '';
 // const data = new ReadableStream()
 // data.pipeTo(process.stdout)
 // If you want to create a readable stream and pipe to process.stdout in Node.js, use the following example:
 
 import { Readable } from 'stream';
-const data = new Readable({
-    read() {}
-});
-data.pipe(process.stdout);
+const data = new WritableStream();
+process.stdout.write = function(
+    str: string | Uint8Array,
+    encoding?: BufferEncoding | ((err?: Error) => void),
+    cb?: (err?: Error) => void
+): boolean {
+    let stringData: string;
+    if (typeof str === 'string') {
+        stringData = str;
+    } else {
+        stringData = str.toString();
+    }
+    console.log('Data written:', stringData);
+    buffer = (buffer || '') + stringData + '\n';
+    if (typeof encoding === 'function') {
+        encoding();
+    } else if (typeof cb === 'function') {
+        cb();
+    }
+    return true;
+}
 
 // Listen for 'data' events
-data.on('data', (chunk) => {
-    console.log('Data written:', chunk.toString());
-    buffer+=chunk.toString()+'\n';
-});
+// data.on('data', (chunk) => {
+//     console.log('Data written:', chunk.toString());
+//     buffer+=chunk.toString()+'\n';
+// });
 
 
 router.get('/api', (req, res) => {
