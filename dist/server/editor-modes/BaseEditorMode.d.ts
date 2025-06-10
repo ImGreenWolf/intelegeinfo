@@ -1,5 +1,5 @@
 import { ChildProcess } from "child_process";
-import { ClientObject, EditorSession } from "../types";
+import { ClientObject, EditorFile, EditorSession } from "../types";
 declare abstract class EditorMode {
     static name: string;
     static dockerFile: string;
@@ -10,6 +10,7 @@ declare abstract class EditorMode {
     isInterpreter: boolean;
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>;
     abstract compile(res: any): any;
+    abstract checkCodeSyntax(sessionObj: EditorSession, file: EditorFile): any;
     shouldRebuild(sessionObj: EditorSession, clientObj: ClientObject): boolean;
     onSpawn(sessionObj: EditorSession): void;
     onBuild(res: any, clientSession: EditorSession): Promise<number> | number;

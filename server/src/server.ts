@@ -758,41 +758,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         }
     }
     
-    function checkCodeSyntax(code: string): Promise<string>
-    {
-        return new Promise((resolve, reject) => {
-            const editorSession = isShared ? shared.getSession(sessionId) || sessionMap.get(sessionId): sessionMap.get(sessionId);
-            const exeFile = path.join(rootDirName, "cache", sessionId);
-            const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
-            const codeFile = !["cpp"].includes(path.extname(editorSession?.clientsActiveFile.get(clientId)|| "main.cpp"))? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
-            compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
-                windowsHide: true,
-                detached: true,
-            });
-
-            
-            
-            
-
-            compileProcess.stdout.on('data', data => {
-                
-                reject(data.toString())
-            })
-
-            compileProcess.stderr.on('data', data => {
-                
-                resolve(data.toString())
-            })
-
-            compileProcess.on('close', (code)=> {
-                if(code!=0)
-                    reject(code)
-            })
-        })
-
-        
-    
-    }
+   
 
 
 
@@ -1720,7 +1686,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
                             // checkSyntaxTimeout = setTimeout(() => {
-                                checkCodeSyntax(messageJSON.body).then(json => {
+                                clientObj.openFile.editorMode.checkCodeSyntax(messageJSON.body, clientObj.openFile).then(json => {
                                     if(!JSON.parse(json)[0])
                                         return  replicateFunction((clientWs, localClientId) => {
                                             if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))

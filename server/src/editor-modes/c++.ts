@@ -1,6 +1,8 @@
 import { execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
-import { sessionObj } from "../types";
+import { EditorFile, EditorSession } from "../types";
+import path from "path";
+import { rootDirName } from "../server";
 
 class CppMode extends EditorMode {
 
@@ -46,13 +48,13 @@ class CppMode extends EditorMode {
         return spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
     }
 
-      checkCodeSyntax(sessionObj: sessionObj): Promise<string>
+      checkCodeSyntax(sessionObj: EditorSession, file: EditorFile): Promise<string>
         {
             return new Promise((resolve, reject) => {
-                const exeFile = path.join(rootDirName, "cache", sessionId);
+                const exeFile = sessionObj.getClientFilesPath();
                 const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
-                const codeFile = !["cpp"].includes(path.extname(sessionObj?.clientsActiveFile.get(clientId)|| "main.cpp"))? sessionObj?.clientsActiveFile.get(clientId) : "main.cpp";
-                compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
+                const codeFile = !["cpp"].includes(path.extname(file.name|| "main.cpp"))? file.name : "main.cpp";
+                const compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
                     windowsHide: true,
                     detached: true,
                 });

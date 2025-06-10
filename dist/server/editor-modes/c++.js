@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
 const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
+const path_1 = __importDefault(require("path"));
 class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
     static extension = ['cpp', 'c++'];
@@ -38,12 +39,12 @@ class CppMode extends BaseEditorMode_1.default {
     startDebugging(res) {
         return (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", 'main'], { stdio: 'pipe' }); //"-ex", "set pagination off", 
     }
-    checkCodeSyntax(sessionObj) {
+    checkCodeSyntax(sessionObj, file) {
         return new Promise((resolve, reject) => {
-            const exeFile = path.join(rootDirName, "cache", sessionId);
-            const filePath = path.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
-            const codeFile = !["cpp"].includes(path.extname(sessionObj?.clientsActiveFile.get(clientId) || "main.cpp")) ? sessionObj?.clientsActiveFile.get(clientId) : "main.cpp";
-            compileProcess = (0, child_process_1.spawn)("g++", ["-fsyntax-only", "-fdiagnostics-format=json", path.join(filePath, codeFile || "main.cpp")], {
+            const exeFile = sessionObj.getClientFilesPath();
+            const filePath = path_1.default.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
+            const codeFile = !["cpp"].includes(path_1.default.extname(file.name || "main.cpp")) ? file.name : "main.cpp";
+            const compileProcess = (0, child_process_1.spawn)("g++", ["-fsyntax-only", "-fdiagnostics-format=json", path_1.default.join(filePath, codeFile || "main.cpp")], {
                 windowsHide: true,
                 detached: true,
             });

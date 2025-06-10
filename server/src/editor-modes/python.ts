@@ -3,7 +3,7 @@ import EditorMode from "./BaseEditorMode";
 import path from "path";
 import { rootDirName } from "../server";
 import * as fs from 'fs'
-import { ClientObject, EditorSession } from "../types";
+import { ClientObject, EditorFile, EditorSession } from "../types";
 class Python extends EditorMode {
 
     static name = 'Python'
@@ -42,7 +42,9 @@ CMD bash `
 //     x11vnc -display :1 -rfbport 5900 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim()
 
 
-
+checkCodeSyntax(sessionObj: EditorSession, file: EditorFile) {
+  return;
+}
 
 async onBuild(res, clientSession: EditorSession): Promise<number> {
   return new Promise((resolve) => {

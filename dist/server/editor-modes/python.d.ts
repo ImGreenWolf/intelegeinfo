@@ -1,6 +1,6 @@
 import { ChildProcess } from "child_process";
 import EditorMode from "./BaseEditorMode";
-import { ClientObject, EditorSession } from "../types";
+import { ClientObject, EditorFile, EditorSession } from "../types";
 declare class Python extends EditorMode {
     static name: string;
     static dockerSafeTag: string;
@@ -9,6 +9,7 @@ declare class Python extends EditorMode {
     runParams: (clientObj: ClientObject) => string;
     static dockerFile: string;
     vcam: ChildProcess;
+    checkCodeSyntax(sessionObj: EditorSession, file: EditorFile): void;
     onBuild(res: any, clientSession: EditorSession): Promise<number>;
     receiveWebCam(rawData: any): void;
     execute(res: any): Promise<import("child_process").ChildProcessWithoutNullStreams>;
