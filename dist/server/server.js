@@ -1480,10 +1480,10 @@ bash `.trim().replaceAll('\n', "");
                                                             return resolve();
                                                         try {
                                                             clientObj.openFile.editorMode.sendError = (err, fatal) => {
-                                                                printClientConsoleError(err);
+                                                                // printClientConsoleError(err)
                                                                 if (fatal) {
-                                                                    closeProcess(clientSession.process);
-                                                                    onClosedProgram(-1, 0, err);
+                                                                    // closeProcess(clientSession.process)
+                                                                    onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
                                                                     reject(err);
                                                                 }
                                                             };

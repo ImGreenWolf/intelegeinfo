@@ -1816,11 +1816,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                         
                                                     try {
                                                         clientObj.openFile.editorMode.sendError = (err, fatal)  => {
-                                                            printClientConsoleError(err)
+                                                            // printClientConsoleError(err)
                                                             if(fatal)
                                                             {
-                                                                closeProcess(clientSession.process)
-                                                                onClosedProgram(-1, 0, err)
+                                                                // closeProcess(clientSession.process)
+                                                                onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`)
                                                                 reject(err)
                                                             }
                                                                 

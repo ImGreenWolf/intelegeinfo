@@ -7,6 +7,10 @@ declare abstract class IElement {
         id?: string;
         html?: Node[];
         htmlSting?: string;
+        attributes?: {
+            name: string;
+            value: string;
+        }[];
     }): HTMLElementTagNameMap[K];
 }
 export declare class Dock extends IElement {
