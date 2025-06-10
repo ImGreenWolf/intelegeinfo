@@ -1336,8 +1336,8 @@ async function onClosedProgram(code,time, message, error?)
         // const time = 
         if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
         {
-        await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
-            notes = "buffer exceeded 64kb, output was truncated."
+            await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
+                notes = "buffer exceeded 64kb, output was truncated."
                 replicateFunction((clientWs) => {
                     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: str.toString(), clientId: clientId}));  // Send GDB output to the client
                 });
@@ -1818,8 +1818,12 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                         clientObj.openFile.editorMode.sendError = (err, fatal)  => {
                                                             printClientConsoleError(err)
                                                             if(fatal)
+                                                            {
                                                                 closeProcess(clientSession.process)
-                                                            reject(err)
+                                                                onClosedProgram(-1, 0, err)
+                                                                reject(err)
+                                                            }
+                                                                
                                                         } 
 
 
@@ -1983,6 +1987,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         }
                                         else
                                         runProgram()[1].then(resolveExectute)
+                                        .catch(err => {})
                                         
                                 })
                                 

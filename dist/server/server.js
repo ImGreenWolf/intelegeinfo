@@ -1481,9 +1481,11 @@ bash `.trim().replaceAll('\n', "");
                                                         try {
                                                             clientObj.openFile.editorMode.sendError = (err, fatal) => {
                                                                 printClientConsoleError(err);
-                                                                if (fatal)
+                                                                if (fatal) {
                                                                     closeProcess(clientSession.process);
-                                                                reject(err);
+                                                                    onClosedProgram(-1, 0, err);
+                                                                    reject(err);
+                                                                }
                                                             };
                                                             if (!clientObj.openFile.editorMode.isInterpreter) {
                                                                 replicateFunction((clientWs) => {
@@ -1599,7 +1601,8 @@ bash `.trim().replaceAll('\n', "");
                                                 });
                                             }
                                             else
-                                                runProgram()[1].then(resolveExectute);
+                                                runProgram()[1].then(resolveExectute)
+                                                    .catch(err => { });
                                         });
                                     }
                                     // execute code normally.
