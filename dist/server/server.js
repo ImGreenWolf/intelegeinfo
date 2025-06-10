@@ -1432,7 +1432,7 @@ bash `.trim().replaceAll('\n', "");
                         // replicate changes to others
                         replicateFunction((clientWs, localClientId) => {
                             if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId }));
+                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, delta: messageJSON.delta, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId }));
                         }, clientObj);
                         break;
                     case types_1.WebSocketMessageType.ConsoleTyping:

@@ -1962,7 +1962,7 @@ ws.onmessage = (event) => {
             // editor.session.getDocument().applyDelta(delta);
             if (editor.getValue() !== data.body &&
                 eventJson.clientId !== wsClientId) {
-                const delta = eventJson.body.delta;
+                const delta = eventJson.delta;
                 console.log(eventJson);
                 isRemoteChange = true;
                 editor.session.getDocument().applyDelta(delta);
