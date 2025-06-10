@@ -1813,7 +1813,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                 buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                                                     //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                     if(res == null) return resolve()
+                                                        
                                                     try {
+                                                        clientObj.openFile.editorMode.sendError = printClientConsoleError
+
+                                                        
                                                         if(!clientObj.openFile.editorMode.isInterpreter)
                                                         {
                                                             replicateFunction((clientWs) => {
@@ -1821,7 +1825,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                             });
 
                                                             //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
-                                                            await clientObj.openFile.editorMode.compile(res)
+                                                            await clientObj.openFile.editorMode.compile(res, clientObj.openFile, false)
                                                             
                                                             replicateFunction((clientWs) => {
                                                                 clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
@@ -2024,8 +2028,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         });
 
                                         // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
-                                        clientObj.openFile.editorMode.compile(res, true)
-
+                                        clientObj.openFile.editorMode.compile(res, clientObj.openFile, true)
+                                        
                                         replicateFunction((clientWs) => {
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                         });

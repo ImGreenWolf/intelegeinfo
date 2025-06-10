@@ -33,8 +33,24 @@ class CppMode extends BaseEditorMode_1.default {
             stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
         });
     }
-    compile(res, isDebugging = false) {
-        (0, child_process_1.execSync)(`docker exec ${res.imageName} bash -c "g++ ${isDebugging ? '-g' : ""} -O0 clientFiles/${res.fileName} -o main"`);
+    compile(res, file, isDebugging = false) {
+        return new Promise((resolve, reject) => {
+            const compile = (0, child_process_1.spawn)(`docker exec ${res.imageName} bash -c "g++ ${isDebugging ? '-g' : ""} -O0 clientFiles/${res.fileName} -o main"`, { stdio: 'pipe' });
+            compile.stdout.on('data', chunk => {
+                const data = chunk.toString();
+                this.sendError(data);
+            });
+            compile.stderr.on('data', chunk => {
+                const data = chunk.toString();
+                this.sendError(data);
+            });
+            compile.on('close', code => {
+                if (code == 0)
+                    resolve();
+                else
+                    reject(code);
+            });
+        });
     }
     startDebugging(res) {
         return (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", 'main'], { stdio: 'pipe' }); //"-ex", "set pagination off", 

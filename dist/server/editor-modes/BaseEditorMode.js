@@ -23,6 +23,9 @@ class EditorMode {
     startDebugging(res) {
         return;
     }
+    sendError(err) {
+        console.error(err);
+    }
     constructor() {
     }
 }

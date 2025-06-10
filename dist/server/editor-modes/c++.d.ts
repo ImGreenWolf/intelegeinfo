@@ -8,7 +8,7 @@ declare class CppMode extends EditorMode {
     HandleClientInput(): void;
     constructor();
     execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
-    compile(res: any, isDebugging?: boolean): void;
+    compile(res: any, file: EditorFile, isDebugging?: boolean): Promise<void>;
     startDebugging(res: any): import("child_process").ChildProcessWithoutNullStreams;
     checkCodeSyntax(sessionObj: EditorSession, file: EditorFile): Promise<string>;
 }
