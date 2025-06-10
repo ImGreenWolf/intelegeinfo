@@ -42,21 +42,27 @@ class CppMode extends EditorMode {
 
     compile(res, file:EditorFile, isDebugging=false) {
         return new Promise<void>((resolve, reject) => {
-             const compile = spawn(`docker exec ${res.imageName} bash -c "g++ ${isDebugging? '-g' : ""} -O0 clientFiles/${res.fileName} -o main"`, {stdio: 'pipe'})
-            compile.stdout.on('data', chunk => {
-                const data = chunk.toString()
-                this.sendError(data)
-            })
-            compile.stderr.on('data', chunk => {
-                const data = chunk.toString()
-                this.sendError(data)
-            })
-            compile.on('close', code => {
-                if(code==0)
-                    resolve()
-                else 
-                    reject(code)
-            })
+            try {
+                 const compile = spawn(`docker exec ${res.imageName} bash -c "g++ ${isDebugging? '-g' : ""} -O0 clientFiles/${res.fileName} -o main"`, {stdio: 'pipe'})
+                compile.stdout.on('data', chunk => {
+                    const data = chunk.toString()
+                    this.sendError(data)
+                })
+                compile.stderr.on('data', chunk => {
+                    const data = chunk.toString()
+                    this.sendError(data)
+                })
+                compile.on('close', code => {
+                    if(code==0)
+                        resolve()
+                    else 
+                        reject(code)
+                })
+            }
+            catch (err)
+            {
+                this.sendError(err)
+            }
         })
     }
 

@@ -1817,7 +1817,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     try {
                                                         clientObj.openFile.editorMode.sendError = printClientConsoleError
 
-                                                        
+
                                                         if(!clientObj.openFile.editorMode.isInterpreter)
                                                         {
                                                             replicateFunction((clientWs) => {
@@ -2028,7 +2028,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         });
 
                                         // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
-                                        clientObj.openFile.editorMode.compile(res, clientObj.openFile, true)
+                                        await clientObj.openFile.editorMode.compile(res, clientObj.openFile, true)
                                         
                                         replicateFunction((clientWs) => {
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client

@@ -1630,7 +1630,7 @@ bash `.trim().replaceAll('\n', "");
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                 });
                                                 // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
-                                                clientObj.openFile.editorMode.compile(res, clientObj.openFile, true);
+                                                await clientObj.openFile.editorMode.compile(res, clientObj.openFile, true);
                                                 replicateFunction((clientWs) => {
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                 });
