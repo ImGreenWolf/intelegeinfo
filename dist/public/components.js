@@ -1,5 +1,9 @@
 class IElement {
-    //keyof HTMLElementTagNameMap
+    stylesheet(style) {
+        const elem = document.createElement('style');
+        elem.innerText = style;
+        return elem;
+    }
     node(tag, options) {
         const elem = document.createElement(tag);
         if (options) {
@@ -22,11 +26,18 @@ export class Dock extends IElement {
     render() {
         const t = `<div>home</div>,<div>login</div>,<div>profile</div>,<div>proiecte</div>,<div>join</div>`;
         const arr = [];
+        arr.push(this.stylesheet(`
+            .dock-button
+            {
+                flex-grow: 1;
+            }
+            
+            `));
         t.split(',').forEach(element => {
             arr.push(this.node('div', { className: 'dock-button', htmlSting: element }));
         });
         return this.node('div', {
-            css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%); display: flex; width: 200px",
+            css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%); display: flex; width: 300px",
             html: arr
         });
     }

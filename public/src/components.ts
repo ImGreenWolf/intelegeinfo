@@ -4,7 +4,13 @@ abstract class IElement {
 
     abstract render(): Node
 
-//keyof HTMLElementTagNameMap
+    public stylesheet(style: string): HTMLStyleElement
+    {
+        const elem = document.createElement('style')
+        elem.innerText = style;
+        return elem
+    }
+
     protected node<K extends keyof HTMLElementTagNameMap>(tag: K, options?: {css?: string, className?: string, id?: string, html?: Node[], htmlSting?: string}): HTMLElementTagNameMap[K]
     {  
         const elem = document.createElement(tag)
@@ -36,14 +42,22 @@ export class Dock extends IElement {
 
     render() {
         
-const t = `<div>home</div>,<div>login</div>,<div>profile</div>,<div>proiecte</div>,<div>join</div>`
-        const arr: Node[] = []
-t.split(',').forEach(element => {
-    arr.push(this.node('div', {className: 'dock-button', htmlSting: element}))
-});
-        
+        const t = `<div>home</div>,<div>login</div>,<div>profile</div>,<div>proiecte</div>,<div>join</div>`
+                const arr: Node[] = []
+
+        arr.push(this.stylesheet(`
+            .dock-button
+            {
+                flex-grow: 1;
+            }
+            
+            `))
+        t.split(',').forEach(element => {
+            arr.push(this.node('div', {className: 'dock-button', htmlSting: element}))
+        });
+            
         return this.node('div', {
-        css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%); display: flex; width: 200px",
+        css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%); display: flex; width: 300px",
         html: arr})
         
     }

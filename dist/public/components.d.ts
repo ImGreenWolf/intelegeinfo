@@ -1,5 +1,6 @@
 declare abstract class IElement {
     abstract render(): Node;
+    stylesheet(style: string): HTMLStyleElement;
     protected node<K extends keyof HTMLElementTagNameMap>(tag: K, options?: {
         css?: string;
         className?: string;
