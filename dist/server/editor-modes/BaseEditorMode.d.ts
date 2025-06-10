@@ -15,7 +15,7 @@ declare abstract class EditorMode {
     onSpawn(sessionObj: EditorSession): void;
     onBuild(res: any, clientSession: EditorSession): Promise<number> | number;
     startDebugging(res: any): ChildProcess;
-    sendError(err: string): void;
+    sendError(err: string, fatal?: boolean): void;
     constructor();
 }
 export default EditorMode;

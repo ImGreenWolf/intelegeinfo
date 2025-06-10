@@ -35,7 +35,7 @@ abstract class EditorMode {
         return
     }
 
-    public sendError(err: string): void
+    public sendError(err: string, fatal=false): void
     {
         console.error(err)
     }

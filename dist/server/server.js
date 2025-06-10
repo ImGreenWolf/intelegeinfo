@@ -1479,7 +1479,11 @@ bash `.trim().replaceAll('\n', "");
                                                         if (res == null)
                                                             return resolve();
                                                         try {
-                                                            clientObj.openFile.editorMode.sendError = printClientConsoleError;
+                                                            clientObj.openFile.editorMode.sendError = (err, fatal) => {
+                                                                printClientConsoleError(err);
+                                                                if (fatal)
+                                                                    closeProcess(clientSession.process);
+                                                            };
                                                             if (!clientObj.openFile.editorMode.isInterpreter) {
                                                                 replicateFunction((clientWs) => {
                                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client

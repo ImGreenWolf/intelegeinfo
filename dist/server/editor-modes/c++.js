@@ -43,13 +43,15 @@ class CppMode extends BaseEditorMode_1.default {
                 });
                 compile.stderr.on('data', chunk => {
                     const data = chunk.toString();
-                    this.sendError(data);
+                    this.sendError(data, true);
                 });
                 compile.on('close', code => {
                     if (code == 0)
                         resolve();
-                    else
+                    else {
+                        this.sendError(code.toString(), true);
                         reject(code);
+                    }
                 });
             }
             catch (err) {

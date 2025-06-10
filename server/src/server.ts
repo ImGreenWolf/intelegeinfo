@@ -1815,7 +1815,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     if(res == null) return resolve()
                                                         
                                                     try {
-                                                        clientObj.openFile.editorMode.sendError = printClientConsoleError
+                                                        clientObj.openFile.editorMode.sendError = (err, fatal)  => {
+                                                            printClientConsoleError(err)
+                                                            if(fatal)
+                                                                closeProcess(clientSession.process)
+                                                        } 
 
 
                                                         if(!clientObj.openFile.editorMode.isInterpreter)

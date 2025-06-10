@@ -23,7 +23,7 @@ class EditorMode {
     startDebugging(res) {
         return;
     }
-    sendError(err) {
+    sendError(err, fatal = false) {
         console.error(err);
     }
     constructor() {
