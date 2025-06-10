@@ -12,9 +12,11 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-
+import { Dock } from "./components";
 /*END IMPORTS*/
 
+
+document.body.appendChild(new Dock().render())
 //  import * as Ace from "ace-builds";
 declare const ace: typeof Ace;
 import modelist from "ace-builds/src-noconflict/ext-modelist";

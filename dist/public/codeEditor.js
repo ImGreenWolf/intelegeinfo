@@ -1,4 +1,10 @@
 // Ensure Ace Editor is globally available or import it properly
+// import QRCode from 'qrcode'
+// import { WebSocketMessageType } from "../../dist/shared/types";
+// const WebSocketMessageType = require("../../dist/shared/types")
+import { Dock } from "./components";
+/*END IMPORTS*/
+document.body.appendChild(new Dock().render());
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
 var codeLens = ace.require("ace/ext/code_lens");
