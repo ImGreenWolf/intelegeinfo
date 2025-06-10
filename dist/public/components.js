@@ -24,7 +24,7 @@ class IElement {
 }
 export class Dock extends IElement {
     render() {
-        const t = `<div>home</div>,<div>login</div>,<div>profile</div>,<div>proiecte</div>,<div>join</div>`;
+        const t = `home,login,profile,proiecte,join`;
         const arr = [];
         arr.push(this.stylesheet(`
             .dock-button
@@ -32,13 +32,18 @@ export class Dock extends IElement {
                 flex-grow: 1;
             }
             
-            `));
+            `.trim().replaceAll('\n', '  ')));
         t.split(',').forEach(element => {
             arr.push(this.node('div', { className: 'dock-button', htmlSting: element }));
         });
-        return this.node('div', {
+        const base = this.node('div', {
             css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%); display: flex; width: 300px",
             html: arr
         });
+        base.addEventListener('mousemove', function (ev) {
+            for (const child of this.children)
+                child.style.width = child.style.height = Math.sqrt(Math.pow(child.offsetLeft - ev.offsetX, 2) + Math.pow(child.offsetTop - ev.offsetY, 2)) + "px";
+        });
+        return base;
     }
 }
