@@ -1,3 +1,8 @@
+declare global {
+    interface Window {
+        editor: any;
+    }
+}
 declare abstract class IElement {
     abstract render(): Node;
     stylesheet(style: string): HTMLStyleElement;

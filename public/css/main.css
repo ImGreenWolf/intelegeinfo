@@ -35,12 +35,12 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: rgb(37, 37, 37) url("../media/background.svg") repeat-y;
+  background: rgb(20, 20, 20) url("../media/background.svg") repeat-y;
   color: white;
 }
 
 header {
-  background-color: black;
+  background-color: rgb(5, 5, 5);
   color: white;
   grid-area: header;
   font-family: Poppins, Helvetica, sans-serif;
@@ -57,7 +57,7 @@ header::after {
   height: calc(var(--size) * 2);
   bottom: calc(var(--size) * -0.75);
   position: relative;
-  background-color: black;
+  background-color: rgb(5, 5, 5);
   margin: -10px;
   mask: radial-gradient(var(--R) at 50% calc(100% - (var(--size) + var(--p))), #000 99%, rgba(0, 0, 0, 0) 101%) calc(50% - 2 * var(--size)) 0/calc(4 * var(--size)) 100%, radial-gradient(var(--R) at 50% calc(100% + var(--p)), rgba(0, 0, 0, 0) 99%, #000 101%) 50% calc(100% - var(--size))/calc(4 * var(--size)) 100% repeat-x;
 }

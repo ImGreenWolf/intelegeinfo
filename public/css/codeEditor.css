@@ -141,6 +141,7 @@
   /* grid-template-columns: minmax(30%,50%) 2fr; */
   grid-template-columns: 1fr 1fr max-content;
   grid-template-rows: auto 600px 50px 1fr;
+  grid-template-rows: 20px 1fr 50px auto;
   grid-template-areas: "header header header" "main output sidebar" "buttons output sidebar";
   overflow: visible;
   padding: 1rem;
@@ -157,6 +158,7 @@
     } */
 header {
   margin: -1rem -1rem 1rem -1rem;
+  display: none;
 }
 
 .shadow.inset {
@@ -258,7 +260,7 @@ header {
   background-color: rgba(72, 72, 72, 0.2705882353);
   backdrop-filter: blur(2px);
   border-top-width: 4px;
-  border-top-color: rgb(89, 0, 10);
+  border-top-color: rgba(89, 0, 10, 0.308);
   animation: fade-in 0.1s;
   overflow: visible;
 }
@@ -308,7 +310,7 @@ header {
 #editor-tabs, .tabs-container {
   height: 1.75em;
   min-height: 40px;
-  background-color: black;
+  background-color: rgb(5, 5, 5);
   text-align: center;
   display: flex;
   justify-content: space-between;
@@ -341,7 +343,7 @@ header {
   margin: auto 0;
   padding: 2px 10px;
   font-size: 0.75rem;
-  background-color: black;
+  background-color: rgb(24, 24, 24);
   border-radius: 0.5lh 0.5lh 0 0;
   height: 100%;
   color: white;
@@ -375,7 +377,7 @@ header {
   padding: 5px;
   transform: translate(-50%, 0);
   z-index: 20;
-  background-color: rgba(37, 37, 37, 0);
+  background-color: rgba(20, 20, 20, 0);
   backdrop-filter: blur(2px);
   box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
   border-radius: 0.5lh;
@@ -531,15 +533,15 @@ vl {
   align-items: center;
 }
 .buttons .speed-control .active-speed {
-  border: 2px solid rgb(37, 37, 37);
+  border: 2px solid rgb(20, 20, 20);
 }
 
 .buttons:not(.debug-control):not(.execute-control):not(.compiled) button:not(.compile) {
-  outline: 3px solid rgb(89, 0, 10);
+  outline: 3px solid rgba(89, 0, 10, 0.308);
 }
 
 button:not(.custom-button) {
-  background-color: black;
+  background-color: rgb(24, 24, 24);
   color: white;
   border-radius: 5px;
   border: none;
@@ -569,7 +571,7 @@ button:not(.custom-button) {
   min-width: 200px;
   grid-row: 2;
   position: relative;
-  background-color: rgb(37, 37, 37);
+  background-color: rgb(20, 20, 20);
   right: 10px;
   border: 1px solid gray;
   display: grid;
@@ -585,7 +587,7 @@ button:not(.custom-button) {
 #output-container button:not(.custom-button) {
   margin: 5px;
   padding: 5px 10px;
-  background-color: black;
+  background-color: rgb(24, 24, 24);
   color: white;
   border: none;
   border-radius: 5px;
@@ -620,7 +622,7 @@ button:not(.custom-button) {
 }
 #output ::selection {
   background-color: white;
-  color: rgb(37, 37, 37);
+  color: rgb(20, 20, 20);
 }
 
 /* #output>span
@@ -645,7 +647,7 @@ button:not(.custom-button) {
   resize: none;
   font-family: "Poppins", sans-serif;
   font-size: 16px;
-  background-color: rgb(37, 37, 37);
+  background-color: rgb(20, 20, 20);
   color: white;
   min-height: 1lh;
   height: 1lh;
@@ -727,7 +729,7 @@ button:not(.custom-button) {
   display: block;
   text-overflow: ellipsis;
   text-wrap-style: pretty;
-  background-color: black;
+  background-color: rgb(5, 5, 5);
   word-break: break-word;
   transition-duration: 0.5s;
   transition-property: border-radius;
@@ -851,7 +853,7 @@ value {
   }
 }
 .output-console-container {
-  background-color: rgb(37, 37, 37);
+  background-color: rgb(20, 20, 20);
   padding: 2em;
   position: relative;
   max-width: 75%;
@@ -924,7 +926,7 @@ value {
   transform: translate(-50%, -50%);
   border-radius: 50%;
   border: 1px solid gray;
-  background-color: black;
+  background-color: rgb(24, 24, 24);
   color: white;
   left: -25px;
   opacity: 0.5;
@@ -1002,7 +1004,7 @@ value {
   right: 50px;
   padding: 10px;
   user-select: none;
-  background-color: black;
+  background-color: rgb(24, 24, 24);
   border-radius: 50%;
 }
 
@@ -1027,7 +1029,7 @@ value {
 }
 
 .vector-display {
-  background-color: rgb(37, 37, 37);
+  background-color: rgb(20, 20, 20);
   max-width: 800px;
   max-height: 800px;
   min-width: 400px;
@@ -1067,7 +1069,7 @@ value {
   min-width: 30px;
   min-height: 30px;
   transition-duration: 0.1s;
-  background-color: black;
+  background-color: rgb(5, 5, 5);
   text-align: center;
   display: inline-grid;
   align-items: center;
@@ -1079,7 +1081,7 @@ value {
   display: inline-block;
 }
 .vector-display button {
-  background-color: black;
+  background-color: rgb(24, 24, 24);
   color: white;
   border: none;
   border-radius: 5px;
@@ -1178,7 +1180,7 @@ value {
   width: 25px;
   height: 25px;
   font-size: 10px;
-  background-color: rgb(37, 37, 37);
+  background-color: rgb(20, 20, 20);
   border-radius: 1lh;
   margin-left: 5px;
   display: inline;
@@ -1237,7 +1239,7 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
 }
 
 .ridge-gradient.inset-button {
-  background-image: linear-gradient(rgb(46.55, 46.55, 46.55), rgb(38.9, 38.9, 38.9), rgb(49.1, 49.1, 49.1));
+  background-image: linear-gradient(rgb(42.3448275862, 40.2275862069, 51.8724137931), rgb(35.3103448276, 33.5448275862, 43.2551724138), rgb(44.6896551724, 42.4551724138, 54.7448275862));
   box-sizing: content-box;
   padding: 3.5px;
   height: min-content;
@@ -1246,14 +1248,14 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
 }
 .ridge-gradient.inset-button.black {
   border-radius: 5px;
-  background-image: linear-gradient(25deg, rgb(25.5, 25.5, 25.5), hsl(0, 0%, -5%), rgb(38.25, 38.25, 38.25));
+  background-image: linear-gradient(25deg, rgb(30.5, 30.5, 30.5), hsl(0, 0%, -3.0392156863%), rgb(43.25, 43.25, 43.25));
 }
 .ridge-gradient.inset-button.circle {
   border-radius: 50%;
 }
 
 .inset-button a {
-  background-color: rgb(44, 44, 44);
+  background-color: rgb(40, 38, 49);
   color: white;
   padding: 0.5lh;
   font-size: 24px;
@@ -1269,10 +1271,10 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   font-family: Poppins;
   font-weight: 600;
   text-shadow: 2px 2px 5px black;
-  box-shadow: -5px 20px 5px 5px rgba(37, 37, 37, 0.8), inset 0px -10px 5px -10px rgba(44, 44, 44, 0.8), inset 0px 10px 10px -5px rgb(56.75, 56.75, 56.75);
+  box-shadow: -5px 20px 5px 5px rgba(20, 20, 20, 0.8), inset 0px -10px 5px -10px rgba(40, 38, 49, 0.8), inset 0px 10px 10px -5px rgb(51.724137931, 49.1379310345, 63.3620689655);
 }
 .inset-button a:hover {
-  box-shadow: 0px 0px 5px 0px rgba(37, 37, 37, 0.8), inset 0px -10px 5px -10px rgba(44, 44, 44, 0.8), inset 0px 10px 10px -5px rgb(56.75, 56.75, 56.75);
+  box-shadow: 0px 0px 5px 0px rgba(20, 20, 20, 0.8), inset 0px -10px 5px -10px rgba(40, 38, 49, 0.8), inset 0px 10px 10px -5px rgb(51.724137931, 49.1379310345, 63.3620689655);
   transform: scale(97%);
 }
 
@@ -1314,7 +1316,7 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   font-family: Poppins;
   color: rgba(255, 255, 255, 0.463);
   font-size: 0.5rem;
-  background-color: rgba(37, 37, 37, 0.75);
+  background-color: rgba(20, 20, 20, 0.75);
   backdrop-filter: blur(2px);
   padding: 0.1rem 0.5rem;
   transition-duration: 0.1s;
@@ -1365,7 +1367,7 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
 
 form input[type=checkbox] {
   position: relative;
-  background: rgb(37, 37, 37);
+  background: rgb(20, 20, 20);
   width: 3em;
   height: 1.5em;
   appearance: initial;
@@ -1389,7 +1391,7 @@ form input[type=checkbox]::before {
   content: "";
   position: absolute;
   display: block;
-  background: rgb(89, 0, 10);
+  background: rgba(89, 0, 10, 0.308);
   transition-duration: 0.2s;
   border-radius: 1lh;
   box-shadow: 2px 2px 3px 3px rgba(0, 0, 0, 0.25), inset 2px 2px 3px 3px rgba(0, 0, 0, 0.25);

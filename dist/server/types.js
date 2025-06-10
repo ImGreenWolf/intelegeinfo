@@ -395,12 +395,12 @@ class EditorFile {
                     }
                     else {
                         console.log('Created file ' + this.name);
+                        session.files.push(this);
+                        if (onCreate)
+                            onCreate.call(this);
                         session.replicateFunction((clientWs) => {
                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
                         });
-                        session.files.push(this);
-                        if (onCreate)
-                            onCreate();
                     }
                 });
             else
@@ -445,28 +445,33 @@ class EditorFile {
         });
     }
     openFile(clientObj, shared) {
-        fs_1.default.readFile(this.filePath, (err, data) => {
-            if (err) {
-                throw "Error opening file: " + err.message;
-            }
-            else {
-                // Send the file content to the client
-                const oldFileName = clientObj.openFileName;
-                this.session.replicateFunction((cws, id, obj) => {
-                    if (obj.openFileName == oldFileName)
-                        cws.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeSelection, body: null }));
-                }, clientObj);
-                // this.session.replicateSocketMessage(sessionId, clientId, true, , (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
-                clientObj.editorMode = getEditorMode(this.name);
-                clientObj.openFileName = this.name;
-                clientObj.openFile = this;
-                this.session.clientsActiveFile.set(clientObj.clientId, this.name);
-                console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
-                if (shared)
-                    shared.updateSession(this.session.sessionId, this.session);
-                clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_2.FileManagementCommands.Open, content: data.toString(), fileName: this.name } })); // Send the list of files to the client
-            }
-        });
+        try {
+            fs_1.default.readFile(this.filePath, (err, data) => {
+                if (err) {
+                    throw "Error opening file: " + err.message;
+                }
+                else {
+                    // Send the file content to the client
+                    const oldFileName = clientObj.openFileName;
+                    this.session.replicateFunction((cws, id, obj) => {
+                        if (obj.openFileName == oldFileName)
+                            cws.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeSelection, body: null }));
+                    }, clientObj);
+                    // this.session.replicateSocketMessage(sessionId, clientId, true, , (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
+                    clientObj.editorMode = getEditorMode(this.name);
+                    clientObj.openFileName = this.name;
+                    clientObj.openFile = this;
+                    this.session.clientsActiveFile.set(clientObj.clientId, this.name);
+                    console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
+                    if (shared)
+                        shared.updateSession(this.session.sessionId, this.session);
+                    clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_2.FileManagementCommands.Open, content: data.toString(), fileName: this.name } })); // Send the list of files to the client
+                }
+            });
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
     changeContent(content) {
         this.content = content;

@@ -495,6 +495,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         // not logged in
         userData = undefined;
         userLoggedIn = false;
+        req.headers.cookie.replace(jwtCookie, '');
     }).finally(() => {
         function loadProject(fileUUID) {
             return new Promise((resolve, reject) => {
@@ -746,6 +747,8 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         function sendConnectionMessage() {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
+            if (!clientSession)
+                return;
             const session = clientSession.clients.size != 1 ? { isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit } : undefined;
             const welcomeMessage = !userLoggedIn ?
                 `Bine ai venit pe Intelege Info!
@@ -798,9 +801,9 @@ exports.wss.addListener('connection', async (ws, req) => {
                         console.error("Error creating cache folder:", err);
                         return;
                     }
-                    new types_2.EditorFile(clientSession, 'main.cpp', defaultText, () => {
-                        // openFile("main.cpp")
-                    }).openFile(clientObj, shared);
+                    new types_2.EditorFile(clientSession, 'main.cpp', defaultText, function () {
+                        this.openFile(clientObj, shared);
+                    });
                     // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
                     //     listFiles(clientFilesPath).then(() => {
                     //         openFile("main.cpp")
@@ -811,8 +814,8 @@ exports.wss.addListener('connection', async (ws, req) => {
             else {
                 console.error("Cache folder already exists for sessionId " + sessionId);
                 listFiles(clientFilesPath).then(() => {
-                    if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, "main.cpp")))
-                        openFile("main.cpp");
+                    if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
+                        openFile(clientSession.files[0].name);
                     else
                         console.error("No default file was found!"); // TODO replace with async function
                 });
@@ -1863,7 +1866,9 @@ bash `.trim().replaceAll('\n', "");
             // if(sessions.get(sessionId)?.indexOf(clientId) === -1)  console.error("Client not found in session " + sessionId);
             //    else sessions.get(sessionId)?.splice(sessions.get(sessionId)?.indexOf(clientId) || -1, 1);
             // console.log("clients in sessions " + clientSession.clients.size)
-            if (clientSession.clients.size === 0 || clientSession == undefined) {
+            if (!clientSession)
+                return;
+            if (clientSession.clients.size == 0 || clientSession == undefined) {
                 // sessions.delete(sessionId);
                 closeProcess(process)
                     .finally(() => {

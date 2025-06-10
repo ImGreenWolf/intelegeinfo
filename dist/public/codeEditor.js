@@ -4,7 +4,7 @@
 // const WebSocketMessageType = require("../../dist/shared/types")
 import { Dock } from "./components";
 /*END IMPORTS*/
-document.body.appendChild(new Dock().render());
+document.getElementsByClassName('container')[0].appendChild(new Dock().render());
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
 var codeLens = ace.require("ace/ext/code_lens");

@@ -27,7 +27,7 @@
   /* top: 50%; */
 }
 .main-container div#text-container .ridge-gradient.inset-button {
-  background-image: linear-gradient(rgb(46.55, 46.55, 46.55), rgb(38.9, 38.9, 38.9), rgb(49.1, 49.1, 49.1));
+  background-image: linear-gradient(rgb(42.3448275862, 40.2275862069, 51.8724137931), rgb(35.3103448276, 33.5448275862, 43.2551724138), rgb(44.6896551724, 42.4551724138, 54.7448275862));
   height: 100px;
   margin: auto;
   width: 300px;
@@ -40,7 +40,7 @@
   overflow: hidden;
 }
 .main-container div#text-container .inset-button a {
-  background-color: rgb(44, 44, 44);
+  background-color: rgb(40, 38, 49);
   color: white;
   padding: 0.5lh;
   font-size: 24px;
@@ -56,10 +56,10 @@
   font-family: Poppins;
   font-weight: 600;
   text-shadow: 2px 2px 5px black;
-  box-shadow: -5px 20px 5px 5px rgba(37, 37, 37, 0.8), inset 0px -10px 5px -10px rgba(44, 44, 44, 0.8), inset 0px 10px 10px -5px rgb(56.75, 56.75, 56.75);
+  box-shadow: -5px 20px 5px 5px rgba(20, 20, 20, 0.8), inset 0px -10px 5px -10px rgba(40, 38, 49, 0.8), inset 0px 10px 10px -5px rgb(51.724137931, 49.1379310345, 63.3620689655);
 }
 .main-container div#text-container .inset-button a:hover {
-  box-shadow: 0px 0px 5px 0px rgba(37, 37, 37, 0.8), inset 0px -10px 5px -10px rgba(44, 44, 44, 0.8), inset 0px 10px 10px -5px rgb(56.75, 56.75, 56.75);
+  box-shadow: 0px 0px 5px 0px rgba(20, 20, 20, 0.8), inset 0px -10px 5px -10px rgba(40, 38, 49, 0.8), inset 0px 10px 10px -5px rgb(51.724137931, 49.1379310345, 63.3620689655);
   transform: scale(97%);
 }
 .main-container div#text-container .ridge-gradient {

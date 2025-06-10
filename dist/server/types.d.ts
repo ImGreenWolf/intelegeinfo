@@ -76,7 +76,7 @@ export declare class EditorFile {
     session: EditorSession;
     filePath: any;
     editorMode: EditorMode;
-    constructor(session: EditorSession, name: string, content?: string, onCreate?: () => void);
+    constructor(session: EditorSession, name: string, content?: string, onCreate?: (this: EditorFile) => void);
     delete(clientObj: any): void;
     rename(newName: any, clientObj: any): void;
     openFile(clientObj: ClientObject, shared?: any): void;

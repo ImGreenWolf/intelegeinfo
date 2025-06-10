@@ -16,7 +16,7 @@ import { Dock } from "./components";
 /*END IMPORTS*/
 
 
-document.body.appendChild(new Dock().render())
+document.getElementsByClassName('container')[0].appendChild(new Dock().render())
 
 
 

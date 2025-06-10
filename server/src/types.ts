@@ -413,7 +413,7 @@ Tralalero Tralala`.split('\n')
     session: EditorSession;
     filePath 
     editorMode: EditorMode
-    constructor(session: EditorSession, name: string, content='', onCreate?: ()=> void) {
+    constructor(session: EditorSession, name: string, content='', onCreate?: (this: EditorFile)=> void) {
         this.name = name;
         this.content = content;
         this.session = session
@@ -431,12 +431,12 @@ Tralalero Tralala`.split('\n')
                 } else   
                 {
                     console.log('Created file ' + this.name)
-                     session.replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
-                    });
                     session.files.push(this)
                     if(onCreate)
-                    onCreate()
+                    onCreate.call(this)
+                session.replicateFunction((clientWs) => {
+                        clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
+                    });
                 }
                    
             });
@@ -491,6 +491,8 @@ Tralalero Tralala`.split('\n')
 
     public openFile(clientObj: ClientObject, shared?)
     {
+        try{
+            
         fs.readFile(this.filePath, (err, data) => {
             if (err) {
                throw "Error opening file: " + err.message;
@@ -516,6 +518,12 @@ Tralalero Tralala`.split('\n')
                 clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement,  body: {command: FileManagementCommands.Open ,content: data.toString(), fileName: this.name}})); // Send the list of files to the client
             }
         });
+        
+        }
+        catch (err)
+        {
+            console.error(err)
+        }
     }
 
     public changeContent(content)

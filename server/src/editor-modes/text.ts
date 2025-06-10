@@ -1,5 +1,6 @@
 import { execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
+import { EditorSession, EditorFile } from "../types";
 
 class Text extends EditorMode {
 
@@ -8,7 +9,9 @@ class Text extends EditorMode {
     dockerSafeTag: string = 'txt'
     dockerFile = ""
     isExecutable: boolean = false;
-
+    checkCodeSyntax(sessionObj: EditorSession, file: EditorFile) {
+        return;
+    }
     HandleClientInput() {
     
     }

@@ -611,6 +611,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         // not logged in
         userData = undefined;
         userLoggedIn = false;
+        req.headers.cookie.replace(jwtCookie, '')
     }).finally(() => {
         
         function loadProject(fileUUID)
@@ -930,6 +931,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     function sendConnectionMessage() 
     {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
+            if(!clientSession) return;
     const session = clientSession.clients.size!=1 ? {isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit} : undefined;
         const welcomeMessage =  !userLoggedIn ?
     `Bine ai venit pe Intelege Info!
@@ -990,9 +992,9 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                     return;
                 }
                 
-                new EditorFile(clientSession, 'main.cpp', defaultText, () => {
-                                    // openFile("main.cpp")
-                }).openFile(clientObj, shared)
+                new EditorFile(clientSession, 'main.cpp', defaultText, function () {
+                                    this.openFile(clientObj, shared)
+                })
 
                 // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
                 //     listFiles(clientFilesPath).then(() => {
@@ -1005,8 +1007,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         {
             console.error("Cache folder already exists for sessionId " + sessionId);
             listFiles(clientFilesPath).then(()=>{
-                if(fs.existsSync(path.join(clientFilesPath, "main.cpp"))) 
-                    openFile("main.cpp")
+                if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
+                    openFile(clientSession.files[0].name)
                 else 
                     console.error("No default file was found!") // TODO replace with async function
             })
@@ -2312,7 +2314,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         
           
         // console.log("clients in sessions " + clientSession.clients.size)
-        if(clientSession.clients.size === 0 || clientSession==undefined) 
+        if(!clientSession)
+            return;
+        if(clientSession.clients.size == 0 || clientSession==undefined) 
             {
                    // sessions.delete(sessionId);
                 closeProcess(process)

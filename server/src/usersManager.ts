@@ -50,7 +50,11 @@ export function getUserData(id: number): Promise<UserNoPassword>
     return new Promise<UserNoPassword> ((resolve, reject)=>
     {
         if(!id) 
-            return reject( 'User id is invalid');
+        {
+            reject( 'User id is invalid');
+            return;
+        }
+             
 
         prisma.user.findUnique({
             where: 

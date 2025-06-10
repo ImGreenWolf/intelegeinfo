@@ -10,6 +10,9 @@ class Text extends BaseEditorMode_1.default {
     dockerSafeTag = 'txt';
     dockerFile = "";
     isExecutable = false;
+    checkCodeSyntax(sessionObj, file) {
+        return;
+    }
     HandleClientInput() {
     }
     constructor() {
