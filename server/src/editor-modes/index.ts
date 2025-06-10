@@ -3,10 +3,11 @@ import EditorMode from "./BaseEditorMode";
 import CppMode from "./c++";
 import Python from "./python";
 import Text from "./text";
-export const modes: EditorMode[] =
+export const modes: typeof EditorMode[] =
 [
-    new CppMode,
-    new Python
+    CppMode,
+    Python,
+    
 ]
 
 export { EditorMode, Text, CppMode, Python, }

@@ -1219,18 +1219,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             printClientConsoleDebug("Failed listing files: " + reason);
         }
     }
-    function getEditorMode(fileName: string): EditorModes.EditorMode | undefined
-    {
-        const ext = fileName.trim().split('.')[1]
-        if(ext)
-            for(const mode of EditorModes.modes)
-             {
-                if(mode.extension.includes(ext))
-                    return mode;
-            }
-
-        return;
-    }
+    
     function openFile(fileName: string)
     {
         // if(fs.existsSync(path.join(clientFilesPath, fileName)))
@@ -1248,7 +1237,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
  * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
  * @returns The child process running the Docker container
  */
-async function buildAndRunCppSandbox(sessionFolder: string, fileName: string, editorMode: EditorModes.EditorMode, clientId, sessionId): Promise<typeof clientSession.sessionContainer>{
+async function buildAndRunCppSandbox(sessionFolder: string, fileName: string, editorMode: typeof EditorModes.EditorMode, clientId, sessionId): Promise<typeof clientSession.sessionContainer>{
 
 return new Promise(async (resolve, reject) => { // Folder containing .exe
   const sandboxFolder = path.join(sessionFolder, 'clientFiles'); // The folder the exe will access
@@ -1331,7 +1320,7 @@ const runCommand =
 --cpus="0.25" \
 -di \
 --rm \
-${clientObj.editorMode.runParams(clientObj)} \
+${clientObj.openFile.editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "")
 
@@ -1344,7 +1333,7 @@ bash `.trim().replaceAll('\n', "")
 
   // Return the child process for external handling
     const childProcess = spawn(runCommand, { shell: true, stdio: 'pipe'});
-    clientSession.sessionContainer = {process: childProcess as ChildProcess, imageName, fileName, editorMode} 
+    clientSession.sessionContainer = {process: childProcess as ChildProcess, imageName, fileName, editorMode: clientObj.openFile.editorMode} 
 
      childProcess?.on("spawn", () => {
         console.log("Docker container spawned")
@@ -1521,7 +1510,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 case WebSocketMessageType.WebCam:
                     // console.log(messageJSON.buffer);
                     try {
-                          (clientObj.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
+                          (clientObj.openFile.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
                          
                     } catch(err)
                     {
@@ -1859,14 +1848,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                     if(res == null) return resolve()
                                                     try {
-                                                        if(!clientObj.editorMode.isInterpreter)
+                                                        if(!clientObj.openFile.editorMode.isInterpreter)
                                                         {
                                                             replicateFunction((clientWs) => {
                                                                 clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                             });
 
                                                             //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
-                                                            await clientObj.editorMode.compile(res)
+                                                            await clientObj.openFile.editorMode.compile(res)
                                                             
                                                             replicateFunction((clientWs) => {
                                                                 clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
@@ -1876,7 +1865,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                         // clientSession.program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
                                                         //     stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                         //     });
-                                                        clientSession.program = await clientObj.editorMode.execute(res)
+                                                        clientSession.program = await clientObj.openFile.editorMode.execute(res)
 
                                                         readStdio(clientSession.program, messageJSON, res).then(()=> resolve())
                                                     }
@@ -2069,13 +2058,13 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         });
 
                                         // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
-                                        clientObj.editorMode.compile(res)
+                                        clientObj.openFile.editorMode.compile(res)
 
                                         replicateFunction((clientWs) => {
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                         });
 
-                                        clientSession.gdbProcess = clientObj.editorMode.startDebugging(res)
+                                        clientSession.gdbProcess = clientObj.openFile.editorMode.startDebugging(res)
                                         if(!clientSession.gdbProcess)
                                             return;
                                         addProcessToMap(sessionId, clientSession.gdbProcess);

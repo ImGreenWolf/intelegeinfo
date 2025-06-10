@@ -23,7 +23,7 @@ export class ClientObject {
     canEdit: boolean = true;
     canChat: boolean = true;
     color: string = "#ffffff";
-    editorMode: EditorMode = new CppMode;
+    editorMode: typeof EditorMode = CppMode;
     openFileName: string
     openFile: EditorFile;
     // EditorSessionObject: EditorSession
@@ -412,12 +412,18 @@ Tralalero Tralala`.split('\n')
     content;
     session: EditorSession;
     filePath 
+    editorMode: EditorMode
     constructor(session: EditorSession, name: string, content='', onCreate?: ()=> void) {
         this.name = name;
         this.content = content;
         this.session = session
         this.filePath = path.join(this.session.getClientFilesPath(), this.name)
+        // const mode =  getEditorMode(this.name).constructor
+        this.editorMode = new (getEditorMode(this.name) as any)
+        
         try {
+            // Create a new instance of the EditorFile class from the provided type
+            // Example: let newFile = new EditorFile(session, name, content, onCreate);
             if (!fs.existsSync(this.filePath))
             fs.writeFile(this.filePath, content, (err) => {
                 if (err) {
@@ -505,7 +511,7 @@ Tralalero Tralala`.split('\n')
                 clientObj.openFileName = this.name
                 clientObj.openFile = this
                 this.session.clientsActiveFile.set(clientObj.clientId, this.name)
-                console.log(`Opened file ${this.name}, with mode ${clientObj.editorMode.name}`);
+                console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
                 if(shared) shared.updateSession(this.session.sessionId, this.session)
                 clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement,  body: {command: FileManagementCommands.Open ,content: data.toString(), fileName: this.name}})); // Send the list of files to the client
             }
@@ -529,15 +535,18 @@ Tralalero Tralala`.split('\n')
 
 // }
 import * as EditorModes from './editor-modes/'
-function getEditorMode(fileName: string): EditorModes.EditorMode | undefined
+function getEditorMode(fileName: string): typeof EditorModes.EditorMode
 {
     const ext = fileName.trim().split('.')[1]
-    if(ext)
+    
         for(const mode of EditorModes.modes)
-            {
-            if(mode.extension.includes(ext))
+        {
+            console.log(mode.extension)
+             if(mode.extension && mode.extension.includes(ext))
                 return mode;
         }
+           
+        
 
-    return  new EditorModes.Text;
+    return  EditorModes.Text;
 }

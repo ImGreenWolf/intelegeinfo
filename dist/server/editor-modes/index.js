@@ -13,6 +13,6 @@ exports.Python = python_1.default;
 const text_1 = __importDefault(require("./text"));
 exports.Text = text_1.default;
 exports.modes = [
-    new c__1.default,
-    new python_1.default
+    c__1.default,
+    python_1.default,
 ];

@@ -972,15 +972,6 @@ exports.wss.addListener('connection', async (ws, req) => {
                 printClientConsoleDebug("Failed listing files: " + reason);
             }
         }
-        function getEditorMode(fileName) {
-            const ext = fileName.trim().split('.')[1];
-            if (ext)
-                for (const mode of EditorModes.modes) {
-                    if (mode.extension.includes(ext))
-                        return mode;
-                }
-            return;
-        }
         function openFile(fileName) {
             // if(fs.existsSync(path.join(clientFilesPath, fileName)))
             // console.log("path: " + path.join(clientFilesPath || path.join(rootDirName, "cache", sessionId,"clientFiles"), fileName))
@@ -1062,7 +1053,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 --cpus="0.25" \
 -di \
 --rm \
-${clientObj.editorMode.runParams(clientObj)} \
+${clientObj.openFile.editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "");
                 //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
@@ -1070,7 +1061,7 @@ bash `.trim().replaceAll('\n', "");
                 console.log(runCommand);
                 // Return the child process for external handling
                 const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: 'pipe' });
-                clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode };
+                clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode: clientObj.openFile.editorMode };
                 childProcess?.on("spawn", () => {
                     console.log("Docker container spawned");
                 });
@@ -1209,7 +1200,7 @@ bash `.trim().replaceAll('\n', "");
                     case types_1.WebSocketMessageType.WebCam:
                         // console.log(messageJSON.buffer);
                         try {
-                            clientObj.editorMode.receiveWebCam(messageJSON.buffer);
+                            clientObj.openFile.editorMode.receiveWebCam(messageJSON.buffer);
                         }
                         catch (err) {
                             /// ......
@@ -1510,12 +1501,12 @@ bash `.trim().replaceAll('\n', "");
                                                         if (res == null)
                                                             return resolve();
                                                         try {
-                                                            if (!clientObj.editorMode.isInterpreter) {
+                                                            if (!clientObj.openFile.editorMode.isInterpreter) {
                                                                 replicateFunction((clientWs) => {
                                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                                 });
                                                                 //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
-                                                                await clientObj.editorMode.compile(res);
+                                                                await clientObj.openFile.editorMode.compile(res);
                                                                 replicateFunction((clientWs) => {
                                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                                 });
@@ -1523,7 +1514,7 @@ bash `.trim().replaceAll('\n', "");
                                                             // clientSession.program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
                                                             //     stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                             //     });
-                                                            clientSession.program = await clientObj.editorMode.execute(res);
+                                                            clientSession.program = await clientObj.openFile.editorMode.execute(res);
                                                             readStdio(clientSession.program, messageJSON, res).then(() => resolve());
                                                         }
                                                         catch (err) {
@@ -1660,11 +1651,11 @@ bash `.trim().replaceAll('\n', "");
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                 });
                                                 // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
-                                                clientObj.editorMode.compile(res);
+                                                clientObj.openFile.editorMode.compile(res);
                                                 replicateFunction((clientWs) => {
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                 });
-                                                clientSession.gdbProcess = clientObj.editorMode.startDebugging(res);
+                                                clientSession.gdbProcess = clientObj.openFile.editorMode.startDebugging(res);
                                                 if (!clientSession.gdbProcess)
                                                     return;
                                                 addProcessToMap(sessionId, clientSession.gdbProcess);

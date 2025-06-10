@@ -55,7 +55,7 @@ class ClientObject {
     canEdit = true;
     canChat = true;
     color = "#ffffff";
-    editorMode = new editor_modes_1.CppMode;
+    editorMode = editor_modes_1.CppMode;
     openFileName;
     openFile;
     // EditorSessionObject: EditorSession
@@ -377,12 +377,17 @@ class EditorFile {
     content;
     session;
     filePath;
+    editorMode;
     constructor(session, name, content = '', onCreate) {
         this.name = name;
         this.content = content;
         this.session = session;
         this.filePath = path_1.default.join(this.session.getClientFilesPath(), this.name);
+        // const mode =  getEditorMode(this.name).constructor
+        this.editorMode = new (getEditorMode(this.name));
         try {
+            // Create a new instance of the EditorFile class from the provided type
+            // Example: let newFile = new EditorFile(session, name, content, onCreate);
             if (!fs_1.default.existsSync(this.filePath))
                 fs_1.default.writeFile(this.filePath, content, (err) => {
                     if (err) {
@@ -456,7 +461,7 @@ class EditorFile {
                 clientObj.openFileName = this.name;
                 clientObj.openFile = this;
                 this.session.clientsActiveFile.set(clientObj.clientId, this.name);
-                console.log(`Opened file ${this.name}, with mode ${clientObj.editorMode.name}`);
+                console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
                 if (shared)
                     shared.updateSession(this.session.sessionId, this.session);
                 clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_2.FileManagementCommands.Open, content: data.toString(), fileName: this.name } })); // Send the list of files to the client
@@ -477,10 +482,10 @@ exports.EditorFile = EditorFile;
 const EditorModes = __importStar(require("./editor-modes/"));
 function getEditorMode(fileName) {
     const ext = fileName.trim().split('.')[1];
-    if (ext)
-        for (const mode of EditorModes.modes) {
-            if (mode.extension.includes(ext))
-                return mode;
-        }
-    return new EditorModes.Text;
+    for (const mode of EditorModes.modes) {
+        console.log(mode.extension);
+        if (mode.extension && mode.extension.includes(ext))
+            return mode;
+    }
+    return EditorModes.Text;
 }

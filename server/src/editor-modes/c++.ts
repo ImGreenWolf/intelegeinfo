@@ -1,12 +1,13 @@
 import { execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
+import { sessionObj } from "../types";
 
 class CppMode extends EditorMode {
 
-    name = 'C++'
-    extension: string[] = ['cpp', 'c++'];
-    dockerSafeTag: string = 'cpp'
-    dockerFile = 
+    static name = 'C++'
+    static extension: string[] = ['cpp', 'c++'];
+    static dockerSafeTag: string = 'cpp'
+    static dockerFile = 
     `
     # Base image with GCC
     FROM gcc:bookworm
@@ -44,6 +45,41 @@ class CppMode extends EditorMode {
     startDebugging(res) {
         return spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
     }
+
+      checkCodeSyntax(sessionObj: sessionObj): Promise<string>
+        {
+            return new Promise((resolve, reject) => {
+                const exeFile = path.join(rootDirName, "cache", sessionId);
+                const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
+                const codeFile = !["cpp"].includes(path.extname(sessionObj?.clientsActiveFile.get(clientId)|| "main.cpp"))? sessionObj?.clientsActiveFile.get(clientId) : "main.cpp";
+                compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
+                    windowsHide: true,
+                    detached: true,
+                });
+    
+                
+                
+                
+    
+                compileProcess.stdout.on('data', data => {
+                    
+                    reject(data.toString())
+                })
+    
+                compileProcess.stderr.on('data', data => {
+                    
+                    resolve(data.toString())
+                })
+    
+                compileProcess.on('close', (code)=> {
+                    if(code!=0)
+                        reject(code)
+                })
+            })
+    
+            
+        
+        }
 
 }
 

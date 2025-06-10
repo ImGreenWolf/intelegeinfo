@@ -2,12 +2,12 @@ import { ChildProcess } from "child_process";
 import EditorMode from "./BaseEditorMode";
 import { ClientObject, EditorSession } from "../types";
 declare class Python extends EditorMode {
-    name: string;
-    dockerSafeTag: string;
-    extension: string[];
+    static name: string;
+    static dockerSafeTag: string;
+    static extension: string[];
     isInterpreter: boolean;
     runParams: (clientObj: ClientObject) => string;
-    dockerFile: string;
+    static dockerFile: string;
     vcam: ChildProcess;
     onBuild(res: any, clientSession: EditorSession): Promise<number>;
     receiveWebCam(rawData: any): void;

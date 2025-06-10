@@ -4,12 +4,15 @@ import { ClientObject, EditorSession } from "../types";
 // maybe change from class to interface
 abstract class EditorMode {
 
-    abstract name: string;
-    abstract dockerFile: string;
-    abstract dockerSafeTag: string
-    abstract extension: string[];
+    static name: string;
+    static dockerFile: string;
+    static dockerSafeTag: string
+    static extension: string[];
      isExecutable: boolean = true
-    runParams: (clientObj) => void;
+    runParams(clientObj): string
+    {
+        return '';
+    }
     isInterpreter: boolean = false; // used for JIT languages like python or js
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>
     abstract compile(res: any)

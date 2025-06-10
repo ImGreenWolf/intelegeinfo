@@ -1,12 +1,12 @@
 import { ChildProcess } from "child_process";
 import { ClientObject, EditorSession } from "../types";
 declare abstract class EditorMode {
-    abstract name: string;
-    abstract dockerFile: string;
-    abstract dockerSafeTag: string;
-    abstract extension: string[];
+    static name: string;
+    static dockerFile: string;
+    static dockerSafeTag: string;
+    static extension: string[];
     isExecutable: boolean;
-    runParams: (clientObj: any) => void;
+    runParams(clientObj: any): string;
     isInterpreter: boolean;
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>;
     abstract compile(res: any): any;

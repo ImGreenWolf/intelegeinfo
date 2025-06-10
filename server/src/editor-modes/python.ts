@@ -6,9 +6,9 @@ import * as fs from 'fs'
 import { ClientObject, EditorSession } from "../types";
 class Python extends EditorMode {
 
-    name = 'Python'
-    dockerSafeTag: string = 'py'
-    extension = ['py']
+    static name = 'Python'
+    static dockerSafeTag: string = 'py'
+    static extension = ['py']
     isInterpreter = true;
     runParams = (clientObj: ClientObject) => {
       const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
@@ -17,7 +17,7 @@ class Python extends EditorMode {
       else 
       return ""
     }
-    dockerFile = 
+    static dockerFile = 
     // `
     // # install from python image
     // FROM python:3

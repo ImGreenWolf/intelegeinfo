@@ -42,9 +42,9 @@ const path_1 = __importDefault(require("path"));
 const server_1 = require("../server");
 const fs = __importStar(require("fs"));
 class Python extends BaseEditorMode_1.default {
-    name = 'Python';
-    dockerSafeTag = 'py';
-    extension = ['py'];
+    static name = 'Python';
+    static dockerSafeTag = 'py';
+    static extension = ['py'];
     isInterpreter = true;
     runParams = (clientObj) => {
         const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
@@ -53,7 +53,7 @@ class Python extends BaseEditorMode_1.default {
         else
             return "";
     };
-    dockerFile = 
+    static dockerFile = 
     // `
     // # install from python image
     // FROM python:3

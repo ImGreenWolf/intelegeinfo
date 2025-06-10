@@ -15,7 +15,7 @@ export declare class ClientObject {
     canEdit: boolean;
     canChat: boolean;
     color: string;
-    editorMode: EditorMode;
+    editorMode: typeof EditorMode;
     openFileName: string;
     openFile: EditorFile;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
@@ -75,6 +75,7 @@ export declare class EditorFile {
     content: any;
     session: EditorSession;
     filePath: any;
+    editorMode: EditorMode;
     constructor(session: EditorSession, name: string, content?: string, onCreate?: () => void);
     delete(clientObj: any): void;
     rename(newName: any, clientObj: any): void;

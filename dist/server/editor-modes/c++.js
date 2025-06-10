@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
 const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 class CppMode extends BaseEditorMode_1.default {
-    name = 'C++';
-    extension = ['cpp', 'c++'];
-    dockerSafeTag = 'cpp';
-    dockerFile = `
+    static name = 'C++';
+    static extension = ['cpp', 'c++'];
+    static dockerSafeTag = 'cpp';
+    static dockerFile = `
     # Base image with GCC
     FROM gcc:bookworm
 
@@ -37,6 +37,27 @@ class CppMode extends BaseEditorMode_1.default {
     }
     startDebugging(res) {
         return (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", 'main'], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+    }
+    checkCodeSyntax(sessionObj) {
+        return new Promise((resolve, reject) => {
+            const exeFile = path.join(rootDirName, "cache", sessionId);
+            const filePath = path.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
+            const codeFile = !["cpp"].includes(path.extname(sessionObj?.clientsActiveFile.get(clientId) || "main.cpp")) ? sessionObj?.clientsActiveFile.get(clientId) : "main.cpp";
+            compileProcess = (0, child_process_1.spawn)("g++", ["-fsyntax-only", "-fdiagnostics-format=json", path.join(filePath, codeFile || "main.cpp")], {
+                windowsHide: true,
+                detached: true,
+            });
+            compileProcess.stdout.on('data', data => {
+                reject(data.toString());
+            });
+            compileProcess.stderr.on('data', data => {
+                resolve(data.toString());
+            });
+            compileProcess.on('close', (code) => {
+                if (code != 0)
+                    reject(code);
+            });
+        });
     }
 }
 exports.default = CppMode;
