@@ -1483,6 +1483,7 @@ bash `.trim().replaceAll('\n', "");
                                                                 printClientConsoleError(err);
                                                                 if (fatal)
                                                                     closeProcess(clientSession.process);
+                                                                reject(err);
                                                             };
                                                             if (!clientObj.openFile.editorMode.isInterpreter) {
                                                                 replicateFunction((clientWs) => {

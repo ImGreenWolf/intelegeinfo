@@ -1819,6 +1819,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                             printClientConsoleError(err)
                                                             if(fatal)
                                                                 closeProcess(clientSession.process)
+                                                            reject(err)
                                                         } 
 
 
