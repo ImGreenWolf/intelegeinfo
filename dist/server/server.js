@@ -603,28 +603,6 @@ exports.wss.addListener('connection', async (ws, req) => {
                 connectionReady(false, req);
             }
         }
-        function checkCodeSyntax(code) {
-            return new Promise((resolve, reject) => {
-                const editorSession = isShared ? shared.getSession(sessionId) || exports.sessionMap.get(sessionId) : exports.sessionMap.get(sessionId);
-                const exeFile = path_1.default.join(exports.rootDirName, "cache", sessionId);
-                const filePath = path_1.default.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
-                const codeFile = !["cpp"].includes(path_1.default.extname(editorSession?.clientsActiveFile.get(clientId) || "main.cpp")) ? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
-                compileProcess = (0, child_process_1.spawn)("g++", ["-fsyntax-only", "-fdiagnostics-format=json", path_1.default.join(filePath, codeFile || "main.cpp")], {
-                    windowsHide: true,
-                    detached: true,
-                });
-                compileProcess.stdout.on('data', data => {
-                    reject(data.toString());
-                });
-                compileProcess.stderr.on('data', data => {
-                    resolve(data.toString());
-                });
-                compileProcess.on('close', (code) => {
-                    if (code != 0)
-                        reject(code);
-                });
-            });
-        }
         // TODO add session map 
         // if (gdbProcess) {
         //     gdbProcess.kill(); // Ensure only one GDB session runs at a time
@@ -1396,7 +1374,7 @@ bash `.trim().replaceAll('\n', "");
                                     console.log("Failed saving file!");
                                 // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
                                 // checkSyntaxTimeout = setTimeout(() => {
-                                checkCodeSyntax(messageJSON.body).then(json => {
+                                clientObj.openFile.editorMode.checkCodeSyntax(messageJSON.body, clientObj.openFile).then(json => {
                                     if (!JSON.parse(json)[0])
                                         return replicateFunction((clientWs, localClientId) => {
                                             if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
@@ -1651,7 +1629,7 @@ bash `.trim().replaceAll('\n', "");
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                 });
                                                 // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
-                                                clientObj.openFile.editorMode.compile(res);
+                                                clientObj.openFile.editorMode.compile(res, true);
                                                 replicateFunction((clientWs) => {
                                                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
                                                 });

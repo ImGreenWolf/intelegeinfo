@@ -15,9 +15,9 @@ abstract class EditorMode {
     }
     isInterpreter: boolean = false; // used for JIT languages like python or js
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>
-    abstract compile(res: any)
+    abstract compile(res: any, isDebugging?: boolean)
     abstract checkCodeSyntax(sessionObj: EditorSession, file: EditorFile)
-    
+
     shouldRebuild(sessionObj: EditorSession, clientObj: ClientObject)
     {
         return false;

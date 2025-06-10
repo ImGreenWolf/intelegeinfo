@@ -40,8 +40,8 @@ class CppMode extends EditorMode {
         });
     }
 
-    compile(res) {
-        execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
+    compile(res, isDebugging=false) {
+        execSync(`docker exec ${res.imageName} bash -c "g++ ${isDebugging? '-g' : ""} -O0 clientFiles/${res.fileName} -o main"`)
     }
 
     startDebugging(res) {
