@@ -49,6 +49,8 @@ export class Dock extends IElement {
             .dock-button
             {
                 flex-grow: 1;
+                background-color: black;
+                text-align: center;
             }
             
             `.trim().replaceAll('\n', '  ')))
@@ -57,18 +59,27 @@ export class Dock extends IElement {
             arr.push(this.node('div', {className: 'dock-button', htmlSting: element}))
         });
             
-
+        const container = this.node('div', {css: 'position: relative;display: flex; min-width: 300px; justify-content: space-between',html: arr})
         const base = this.node('div', {
-        css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%); display: flex; width: 300px",
-        html: arr})
+        css: "position: absolute; left: 50%; bottom: 20px;  display: flex;",
+        html: [container]})
 
 
         document.addEventListener('mousemove', function(ev) {
 
             
+            const parentX = base.offsetLeft
+            const parentY = base.offsetTop 
+            const perc = (ev.x - parentX) / base.offsetWidth
+            for(const child of container.children as HTMLCollectionOf<HTMLDivElement>)
+            {
 
-            for(const child of base.children as HTMLCollectionOf<HTMLDivElement>)
-                child.style.width = child.style.height = Math.sqrt(Math.pow(child.offsetLeft - ev.offsetX,2) + Math.pow(child.offsetTop-ev.offsetY,2 )) + "px";
+                    const dist = (Math.sqrt(Math.pow(((child.offsetLeft) / base.offsetWidth),2) + Math.pow(perc,2 )))*100
+                    console.log(child.offsetLeft / base.offsetWidth + " - " + perc + " dist: " + dist)
+                    child.style.width = child.style.height = Math.max(50, Math.min(100, dist)) + "px";
+                    // child.style.transform = `scale(${ Math.max(50, Math.min(100, dist))}%)`
+
+            }
         })
         return base
         

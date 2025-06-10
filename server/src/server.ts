@@ -476,6 +476,9 @@ function cleanUp() {
             }
         });
     });
+
+    
+    if(process.env.NODE_ENV == 'development') return;
     let filter = '';
     EditorModes.modes.forEach(element => {
         filter += `--filter ancestor=${buildTag}_${element.dockerSafeTag} `
