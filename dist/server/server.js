@@ -1088,7 +1088,7 @@ bash `.trim().replaceAll('\n', "");
                 });
                 childProcess.stderr.on('data', data => {
                     console.log('[Docker Container Error]' + data.toString());
-                    onClosedProgram(1, 0, "Faile to sandbox program: " + data.toString());
+                    onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'));
                 });
             });
         }
