@@ -36,7 +36,7 @@ class CppMode extends BaseEditorMode_1.default {
     compile(res, file, isDebugging = false) {
         return new Promise((resolve, reject) => {
             try {
-                const compile = (0, child_process_1.spawn)(`docker exec ${res.imageName} bash -c "g++ ${isDebugging ? '-g' : ""} -O0 clientFiles/${res.fileName} -o main"`, { stdio: 'pipe' });
+                const compile = (0, child_process_1.spawn)(`docker`, ['exec', res.imageName, 'bash', '-c', `g++ ${isDebugging ? '-g' : ""} -O0 clientFiles/${res.fileName} -o main`], { stdio: 'pipe' });
                 compile.stdout.on('data', chunk => {
                     const data = chunk.toString();
                     this.sendError(data);
