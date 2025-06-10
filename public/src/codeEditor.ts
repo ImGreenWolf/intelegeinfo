@@ -17,6 +17,9 @@ import { Dock } from "./components";
 
 
 document.body.appendChild(new Dock().render())
+
+
+
 //  import * as Ace from "ace-builds";
 declare const ace: typeof Ace;
 import modelist from "ace-builds/src-noconflict/ext-modelist";

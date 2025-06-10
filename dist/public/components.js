@@ -1,4 +1,21 @@
 class IElement {
+    //keyof HTMLElementTagNameMap
+    node(tag, options) {
+        typeof document.createElement;
+        const elem = document.createElement(tag);
+        if (options.css)
+            elem.style.cssText = options.css;
+        if (options.className)
+            elem.className = options.className;
+        if (options.id)
+            elem.id = options.id;
+        if (options.html)
+            for (const node of options.html)
+                elem.appendChild(node);
+        if (options.htmlSting)
+            elem.innerHTML = options.htmlSting;
+        return elem;
+    }
 }
 export class Dock extends IElement {
     render() {
@@ -7,8 +24,6 @@ export class Dock extends IElement {
             <div>profile</div>
             <div>proiecte</div>
             <div>join</div>`;
-        const cont = document.createElement('div');
-        cont.innerHTML = t;
-        return cont;
+        return this.node('div', { htmlSting: t, css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%);" });
     }
 }
