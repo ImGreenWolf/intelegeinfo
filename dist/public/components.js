@@ -40,8 +40,8 @@ export class Dock extends IElement {
             css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%); display: flex; width: 300px",
             html: arr
         });
-        base.addEventListener('mousemove', function (ev) {
-            for (const child of this.children)
+        document.addEventListener('mousemove', function (ev) {
+            for (const child of base.children)
                 child.style.width = child.style.height = Math.sqrt(Math.pow(child.offsetLeft - ev.offsetX, 2) + Math.pow(child.offsetTop - ev.offsetY, 2)) + "px";
         });
         return base;

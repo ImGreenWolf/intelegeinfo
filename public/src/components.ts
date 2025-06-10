@@ -63,11 +63,11 @@ export class Dock extends IElement {
         html: arr})
 
 
-        base.addEventListener('mousemove', function(ev) {
+        document.addEventListener('mousemove', function(ev) {
 
             
 
-            for(const child of this.children as HTMLCollectionOf<HTMLDivElement>)
+            for(const child of base.children as HTMLCollectionOf<HTMLDivElement>)
                 child.style.width = child.style.height = Math.sqrt(Math.pow(child.offsetLeft - ev.offsetX,2) + Math.pow(child.offsetTop-ev.offsetY,2 )) + "px";
         })
         return base
