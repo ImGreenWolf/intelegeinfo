@@ -1,12 +1,12 @@
 import { ChildProcess } from "child_process";
 import EditorMode from "./BaseEditorMode";
-import { EditorSession } from "../types";
+import { ClientObject, EditorSession } from "../types";
 declare class Python extends EditorMode {
     name: string;
     dockerSafeTag: string;
     extension: string[];
     isInterpreter: boolean;
-    runParams: string;
+    runParams: (clientObj: ClientObject) => string;
     dockerFile: string;
     vcam: ChildProcess;
     onBuild(res: any, clientSession: EditorSession): Promise<number>;

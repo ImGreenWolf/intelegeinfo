@@ -1,5 +1,5 @@
 import { ChildProcess } from "child_process";
-import { EditorSession } from "../types";
+import { ClientObject, EditorSession } from "../types";
 
 // maybe change from class to interface
 abstract class EditorMode {
@@ -9,10 +9,15 @@ abstract class EditorMode {
     abstract dockerSafeTag: string
     abstract extension: string[];
      isExecutable: boolean = true
-    runParams = '';
+    runParams: (clientObj) => void;
     isInterpreter: boolean = false; // used for JIT languages like python or js
     abstract execute(res: any): ChildProcess | Promise<ChildProcess>
     abstract compile(res: any)
+
+    shouldRebuild(sessionObj: EditorSession, clientObj: ClientObject)
+    {
+        return false;
+    }
     onSpawn(sessionObj: EditorSession)
     {
         return;

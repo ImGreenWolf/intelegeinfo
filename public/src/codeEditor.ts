@@ -2093,12 +2093,11 @@ outputArea!.onscroll = ev => {
 
  editor.on("change", (delta: any) => {
 
-     !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable')
+    !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable')
     !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable')
     
-      
-      editor.renderer.updateFull();
-      parsedCode = parseCode();
+    editor.renderer.updateFull();
+    parsedCode = parseCode();
 
     if (isRemoteChange) return;
       const code = editor.getValue();

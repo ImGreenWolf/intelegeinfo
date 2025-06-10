@@ -1053,27 +1053,16 @@ exports.wss.addListener('connection', async (ws, req) => {
                 console.log(hasGUI ? 'executing with GUI' : "no gui");
                 if (clientSession.sessionContainer)
                     (0, child_process_2.execSync)('docker rm -f ' + clientSession.sessionContainer.imageName);
-                const runCommand = !hasGUI ?
-                    `docker run \
+                const runCommand = `docker run \
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
+-m 256MB \
+--cpus="0.25" \
 -di \
 --rm \
-${clientObj.editorMode.runParams} \
-${clientSession.currentbuildTag} \
-bash `.trim().replaceAll('\n', "")
-                    :
-                        `docker run \
--d \
---name ${imageName} \
--v "${sessionFolder}:/app" \ 
--v "/tmp/vnc-${sessionId}:/app/vnc" \
--w /app \
--di \
---rm \
-${clientObj.editorMode.runParams} \
+${clientObj.editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "");
                 //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
@@ -1086,44 +1075,47 @@ bash `.trim().replaceAll('\n', "");
                     console.log("Docker container spawned");
                 });
                 childProcess.stdout.on('data', data => {
-                    console.log("soksjkjskjsjsk:" + data.toString());
+                    console.log("CONTAINER ID:" + data.toString());
                     setTimeout(async () => {
-                        // TODO Spawn GUI on client
-                        if (hasGUI == true && clientSession.displayServer == 0) {
+                        // TODO Spawn GUI on client 
+                        if (hasGUI && clientSession.displayServer == 0) // doesnt have display server
+                         {
                             clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
                             clientObj.sendMessage({ status: 'spawnGUI' }, types_1.WebSocketMessageType.ExecuteStatus);
                         }
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
                     }, 1000);
                 });
-                childProcess.stderr.on('data', data => console.log('[Docker Container Error]' + data.toString()));
+                childProcess.stderr.on('data', data => {
+                    console.log('[Docker Container Error]' + data.toString());
+                    onClosedProgram(1, 0, "Faile to sandbox program: " + data.toString());
+                });
             });
+        }
+        async function onClosedProgram(code, time, message, error) {
+            let notes = "";
+            processInputBuffer = '';
+            // const time = 
+            if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
+             {
+                await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
+                    notes = "buffer exceeded 64kb, output was truncated.";
+                    replicateFunction((clientWs) => {
+                        clientWs.send(JSON.stringify({ messageType: types_1.ConsoleMessageType.Output, type: types_1.WebSocketMessageType.Output, body: str.toString(), clientId: clientId })); // Send GDB output to the client
+                    });
+                });
+            }
+            if (clientSession.program) {
+                clientSession.program.stdout.removeAllListeners();
+                clientSession.program.stderr.removeAllListeners();
+            }
+            if (code || code != 9)
+                replicateFunction((clientWs) => {
+                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
+                });
         }
         async function readStdio(program, messageJSON, res) {
             return new Promise((resolve, reject) => {
-                async function onClosedProgram(code, message, error) {
-                    let notes = "";
-                    processInputBuffer = '';
-                    const time = (Date.now() - spawnDate);
-                    if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
-                     {
-                        await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
-                            notes = "buffer exceeded 64kb, output was truncated.";
-                            replicateFunction((clientWs) => {
-                                clientWs.send(JSON.stringify({ messageType: types_1.ConsoleMessageType.Output, type: types_1.WebSocketMessageType.Output, body: str.toString(), clientId: clientId })); // Send GDB output to the client
-                            });
-                        });
-                    }
-                    clearTimeout(programTimeout);
-                    if (clientSession.program) {
-                        clientSession.program.stdout.removeAllListeners();
-                        clientSession.program.stderr.removeAllListeners();
-                    }
-                    if (code || code != 9)
-                        replicateFunction((clientWs) => {
-                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
-                        });
-                }
                 addProcessToMap(sessionId, program); // add to process map
                 mode = "run";
                 let spawnDate = Date.now();
@@ -1131,7 +1123,7 @@ bash `.trim().replaceAll('\n', "");
                 gdbBuffer = "";
                 if (messageJSON.textMode)
                     programTimeout = setTimeout(() => {
-                        onClosedProgram(-1, "<span style='color: red'>Program timed out!</span>");
+                        onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program timed out!</span>");
                         closeProcess(program);
                         resolve();
                     }, 1000);
@@ -1172,20 +1164,21 @@ bash `.trim().replaceAll('\n', "");
                 });
                 clientSession.program?.on("close", (code) => {
                     clearTimeout(dataTimeout);
+                    clearTimeout(programTimeout);
                     switch (code) {
                         case 0:
                         default:
-                            onClosedProgram(code, "Program exited with code: " + code?.toString() || -1);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Program exited with code: " + code?.toString() || -1);
                             break;
                         case 136:
                         case 138:
-                            onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Arithmetic devided by 0</a>", true);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Arithmetic devided by 0</a>", true);
                             break;
                         case 139:
-                            onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Segmentation Fault</a>", true);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Segmentation Fault</a>", true);
                             break;
                         case 3221225477:
-                            onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Program exited with errror: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
                             break;
                     }
                     gdbBuffer = "";

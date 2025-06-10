@@ -3,8 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // maybe change from class to interface
 class EditorMode {
     isExecutable = true;
-    runParams = '';
+    runParams;
     isInterpreter = false; // used for JIT languages like python or js
+    shouldRebuild(sessionObj, clientObj) {
+        return false;
+    }
     onSpawn(sessionObj) {
         return;
     }

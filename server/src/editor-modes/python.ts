@@ -3,14 +3,20 @@ import EditorMode from "./BaseEditorMode";
 import path from "path";
 import { rootDirName } from "../server";
 import * as fs from 'fs'
-import { EditorSession } from "../types";
+import { ClientObject, EditorSession } from "../types";
 class Python extends EditorMode {
 
     name = 'Python'
     dockerSafeTag: string = 'py'
     extension = ['py']
     isInterpreter = true;
-    runParams = '--device=/dev/video10:/dev/video0'
+    runParams = (clientObj: ClientObject) => {
+      const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
+      if(hasGUI)
+      return `--device=/dev/video10:/dev/video0 -v "/tmp/vnc-${clientObj.sessionId}:/app/vnc"`
+      else 
+      return ""
+    }
     dockerFile = 
     // `
     // # install from python image

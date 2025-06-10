@@ -1321,29 +1321,20 @@ const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
 console.log(hasGUI ? 'executing with GUI' : "no gui")
 if(clientSession.sessionContainer)
     execSync('docker rm -f ' + clientSession.sessionContainer.imageName)
-const runCommand = !hasGUI ?
+const runCommand = 
 `docker run \
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
+-m 256MB \
+--cpus="0.25" \
 -di \
 --rm \
-${clientObj.editorMode.runParams} \
+${clientObj.editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "")
-:
-`docker run \
--d \
---name ${imageName} \
--v "${sessionFolder}:/app" \ 
--v "/tmp/vnc-${sessionId}:/app/vnc" \
--w /app \
--di \
---rm \
-${clientObj.editorMode.runParams} \
-${clientSession.currentbuildTag} \
-bash `.trim().replaceAll('\n', "")
+
 
 
 
@@ -1360,10 +1351,10 @@ bash `.trim().replaceAll('\n', "")
             
     })
     childProcess.stdout.on('data', data => {
-        console.log("soksjkjskjsjsk:" + data.toString())
+        console.log("CONTAINER ID:" + data.toString())
         setTimeout(async () => {
-                    // TODO Spawn GUI on client
-            if(hasGUI == true && clientSession.displayServer == 0) 
+                    // TODO Spawn GUI on client 
+            if(hasGUI && clientSession.displayServer == 0) // doesnt have display server
             {
                 clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
                 clientObj.sendMessage({status: 'spawnGUI'}, WebSocketMessageType.ExecuteStatus)
@@ -1373,23 +1364,21 @@ bash `.trim().replaceAll('\n', "")
         }, 1000);    
     })
     
-    childProcess.stderr.on('data', data => console.log('[Docker Container Error]' + data.toString()))
+    childProcess.stderr.on('data', data => {
+        console.log('[Docker Container Error]' + data.toString())
+        onClosedProgram(1, 0, "Faile to sandbox program: " + data.toString())
+    })
 
  
 })
   
 
 }
-
-async function readStdio(program, messageJSON, res: typeof clientSession.sessionContainer)
-    {
-    return new Promise<void>((resolve, reject) => {
-        
-    async function onClosedProgram(code, message, error?)
+async function onClosedProgram(code,time, message, error?)
     {
         let notes: string = "";
         processInputBuffer = '';
-        const time = ( Date.now() - spawnDate)
+        // const time = 
         if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
         {
         await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
@@ -1400,7 +1389,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         })
         }
 
-        clearTimeout(programTimeout)
+        
         if(clientSession.program)
         {
             clientSession.program.stdout.removeAllListeners()
@@ -1412,6 +1401,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         });
 
     }
+async function readStdio(program, messageJSON, res: typeof clientSession.sessionContainer)
+    {
+    return new Promise<void>((resolve, reject) => {
+        
+    
 
 
     addProcessToMap(sessionId, program); // add to process map
@@ -1422,7 +1416,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     if(messageJSON.textMode)
         programTimeout = setTimeout(() => {
-        onClosedProgram(-1, "<span style='color: red'>Program timed out!</span>")
+        onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program timed out!</span>")
         closeProcess(program)
         resolve()
         }, 1000);
@@ -1473,21 +1467,22 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     clientSession.program?.on("close", (code) => {
 
         clearTimeout(dataTimeout);
+        clearTimeout(programTimeout)
         switch(code)
         {
             case 0:
             default:
-            onClosedProgram(code, "Program exited with code: " + code?.toString() || -1)
+            onClosedProgram(code, ( Date.now() - spawnDate), "Program exited with code: " + code?.toString() || -1)
             break;
             case 136:
             case 138:
-            onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Arithmetic devided by 0</a>", true)
+            onClosedProgram(code, ( Date.now() - spawnDate),"Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Arithmetic devided by 0</a>", true)
             break;
             case 139:
-            onClosedProgram(code, "Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Segmentation Fault</a>", true)
+            onClosedProgram(code, ( Date.now() - spawnDate),"Program exited with errror: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Segmentation Fault</a>", true)
             break;
             case 3221225477:
-            onClosedProgram(code, "Program exited with errror: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
+            onClosedProgram(code, ( Date.now() - spawnDate),"Program exited with errror: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
             break;
         }
 
