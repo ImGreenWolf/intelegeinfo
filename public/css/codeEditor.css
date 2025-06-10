@@ -1477,7 +1477,7 @@ form label {
   .container {
     grid-template-columns: 1fr;
     /* grid-template-rows: auto 600px 100px 600px 100px; */
-    grid-template-rows: auto 1fr auto 1fr;
+    grid-template-rows: auto 1fr auto 1fr auto;
     grid-template-areas: "header header" "main main" "buttons buttons" "output output" "sidebar sidebar";
     font-size: 1rem;
   }

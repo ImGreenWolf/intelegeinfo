@@ -495,7 +495,8 @@ exports.wss.addListener('connection', async (ws, req) => {
         // not logged in
         userData = undefined;
         userLoggedIn = false;
-        req.headers.cookie.replace(jwtCookie, '');
+        if (req.headers.cookie)
+            req.headers.cookie.replace(jwtCookie, '');
     }).finally(() => {
         function loadProject(fileUUID) {
             return new Promise((resolve, reject) => {

@@ -97,7 +97,7 @@ export class Dock extends IElement {
         });
         const container = this.node('div', { css: `border: 1px solid #ffffff61; position: relative;display: flex; gap: 0.5em; height: 50px; padding: 0.5em; align-items: flex-end; justify-content: space-between; background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;`, html: arr });
         const base = this.node('div', {
-            css: " display: flex; justify-content: center; flex-direction: column; grid-row: 4; width: 400px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
+            css: " display: flex; justify-content: center; flex-direction: column; grid-row: 5/6; width: 400px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
             html: [this.node('p', { htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;" }), container]
         });
         updatePositions(0, 0);
@@ -112,7 +112,7 @@ export class Dock extends IElement {
                 const childWidth = child.offsetWidth;
                 const childHeight = child.offsetHeight;
                 const dist = 25 - (Math.sqrt(Math.pow((child.offsetLeft + childWidth / 2 - translateOffsetX) / container.offsetWidth - percX, 2)
-                    + Math.pow((child.offsetTop - translateOffsetY + childHeight / 2) / container.offsetHeight - percY / 2, 2))) * 25;
+                    + Math.pow((child.offsetTop - translateOffsetY + childHeight / 2) / container.offsetHeight - percY, 2))) * 25;
                 child.style.width = child.style.height = Math.max(50, Math.min(100, dist * 2.5)) + "px";
                 child.style.bottom = Math.max(0, Math.min(100, Math.sqrt(dist * 5))) + "px";
                 const shadow = Math.max(0, Math.min(30, Math.sqrt(dist * 1)));

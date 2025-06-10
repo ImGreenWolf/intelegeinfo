@@ -611,6 +611,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         // not logged in
         userData = undefined;
         userLoggedIn = false;
+        if(req.headers.cookie)
         req.headers.cookie.replace(jwtCookie, '')
     }).finally(() => {
         
