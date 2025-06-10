@@ -12,7 +12,7 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { Dock } from "client/files/src/components";
+import { Dock } from "../client/files/src/components";
 /*END IMPORTS*/
 
 
