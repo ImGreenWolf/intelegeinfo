@@ -2,7 +2,7 @@
 // import QRCode from 'qrcode'
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
-import { Dock } from "./components";
+import { Dock } from "client/files/src/components";
 /*END IMPORTS*/
 document.body.appendChild(new Dock().render());
 const AceRange = ace.require("ace/range").Range;
