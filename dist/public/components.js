@@ -23,10 +23,11 @@ export class Dock extends IElement {
         const t = `<div>home</div>,<div>login</div>,<div>profile</div>,<div>proiecte</div>,<div>join</div>`;
         const arr = [];
         t.split(',').forEach(element => {
-            arr.push(this.node('div', { className: 'dock-button', htmlSting: 'element' }));
+            arr.push(this.node('div', { className: 'dock-button', htmlSting: element }));
         });
-        return this.node('div', { htmlSting: t,
+        return this.node('div', {
             css: "position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, -50%); display: flex; width: 200px",
-            html: arr });
+            html: arr
+        });
     }
 }
