@@ -35,7 +35,7 @@ class CppMode extends EditorMode {
     }
 
     execute(res) {
-         return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
+         return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", `./${res.fileName.split('.')[0]}`], {
             stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
         });
     }
@@ -43,7 +43,7 @@ class CppMode extends EditorMode {
     compile(res, file:EditorFile, isDebugging=false) {
         return new Promise<void>((resolve, reject) => {
             try {
-                 const compile = spawn(`docker`, ['exec', res.imageName, 'bash','-c', `g++ ${isDebugging? '-g' : ""} -O0 clientFiles/${res.fileName} -o main`], {stdio: 'pipe'})
+                 const compile = spawn(`docker`, ['exec', res.imageName, 'bash','-c', `g++ ${isDebugging? '-g' : ""} -O0 clientFiles/${res.fileName} -o ${res.fileName.split('.')[0]}`], {stdio: 'pipe'})
                 compile.stdout.on('data', chunk => {
                     const data = chunk.toString()
                     this.sendError(data)
@@ -67,7 +67,7 @@ class CppMode extends EditorMode {
     }
 
     startDebugging(res) {
-        return spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", 'main'], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+        return spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
     }
 
       checkCodeSyntax(sessionObj: EditorSession, file: EditorFile): Promise<string>
