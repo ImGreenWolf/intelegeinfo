@@ -26,7 +26,7 @@ class Python extends EditorMode {
     // WORKDIR /app
     // # Default command can be overridden
     // CMD [ "bash" ]`.trim();
-    `FROM python:3.14
+    `FROM python:3.14.0b2-alpine3.22
     WORKDIR /app
     RUN apt-get update && apt-get install -y \
     xvfb x11vnc fluxbox python3-tk wget python3-opencv && apt-get clean
