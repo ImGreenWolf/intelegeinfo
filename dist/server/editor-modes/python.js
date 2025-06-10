@@ -55,7 +55,7 @@ class Python extends BaseEditorMode_1.default {
     // WORKDIR /app
     // # Default command can be overridden
     // CMD [ "bash" ]`.trim();
-    `FROM python:3.10
+    `FROM python:3.14
     WORKDIR /app
     RUN apt-get update && apt-get install -y \
     xvfb x11vnc fluxbox python3-tk wget python3-opencv && apt-get clean
