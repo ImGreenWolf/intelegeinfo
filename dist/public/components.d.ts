@@ -4,7 +4,7 @@ declare global {
     }
 }
 declare abstract class IElement {
-    abstract render(): Node;
+    abstract render(): Node | Promise<Node>;
     stylesheet(style: string): HTMLStyleElement;
     protected node<K extends keyof HTMLElementTagNameMap>(tag: K, options?: {
         css?: string;
@@ -20,5 +20,8 @@ declare abstract class IElement {
 }
 export declare class Dock extends IElement {
     render(): HTMLDivElement;
+}
+export declare class Pixelated extends IElement {
+    render(): Promise<Node>;
 }
 export {};

@@ -12,12 +12,12 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { Dock } from "./components";
+import { Dock, Pixelated } from "./components";
 /*END IMPORTS*/
 
 
 document.getElementsByClassName('container')[0].appendChild(new Dock().render())
-
+// new Pixelated().render().then(node => document.body.appendChild(node))
 
 
 //  import * as Ace from "ace-builds";

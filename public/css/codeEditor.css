@@ -343,7 +343,7 @@ header {
   margin: auto 0;
   padding: 2px 10px;
   font-size: 0.75rem;
-  background-color: rgb(24, 24, 24);
+  background-color: rgb(0, 0, 0);
   border-radius: 0.5lh 0.5lh 0 0;
   height: 100%;
   color: white;
@@ -541,7 +541,7 @@ vl {
 }
 
 button:not(.custom-button) {
-  background-color: rgb(24, 24, 24);
+  background-color: rgb(0, 0, 0);
   color: white;
   border-radius: 5px;
   border: none;
@@ -587,7 +587,7 @@ button:not(.custom-button) {
 #output-container button:not(.custom-button) {
   margin: 5px;
   padding: 5px 10px;
-  background-color: rgb(24, 24, 24);
+  background-color: rgb(0, 0, 0);
   color: white;
   border: none;
   border-radius: 5px;
@@ -926,7 +926,7 @@ value {
   transform: translate(-50%, -50%);
   border-radius: 50%;
   border: 1px solid gray;
-  background-color: rgb(24, 24, 24);
+  background-color: rgb(0, 0, 0);
   color: white;
   left: -25px;
   opacity: 0.5;
@@ -1004,7 +1004,7 @@ value {
   right: 50px;
   padding: 10px;
   user-select: none;
-  background-color: rgb(24, 24, 24);
+  background-color: rgb(0, 0, 0);
   border-radius: 50%;
 }
 
@@ -1081,7 +1081,7 @@ value {
   display: inline-block;
 }
 .vector-display button {
-  background-color: rgb(24, 24, 24);
+  background-color: rgb(0, 0, 0);
   color: white;
   border: none;
   border-radius: 5px;

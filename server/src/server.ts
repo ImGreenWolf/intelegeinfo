@@ -79,11 +79,27 @@ app.post('/github/onpull', (req, res) => {
     }
    
 });
+
+
 app.use('/client/scripts',express.static(path.join('dist', 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'public', 'codeEditor.js')))
-app.use('/editor/components', express.static(path.join(rootDirName,'dist', 'public', 'components.js')))
+app.use('/editor/components', 
+    (req, res) => {
+
+
+        fs.readFile(path.join(rootDirName,'dist', 'public', 'components.js'), (err, data) => {
+            const renderer = data.toString()
+            let newRender = renderer;
+
+            if(req.cookies.token)
+                newRender.replace(`const loggedIn = false;`, `const loggedIn = true;`)
+            res.contentType('js').send(newRender)
+        })
+
+
+    })
 
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'dist', 'public', 'mode_cpp_custom.js'))
