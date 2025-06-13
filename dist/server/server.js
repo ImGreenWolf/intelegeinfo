@@ -814,7 +814,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             // printClientConsoleInfo("connected to worker: " + process.pid)
             //create cache folder for session if its a new one
             const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
-            if ((!cacheFolderExists || !cooperator && defaultText) || clientSession.files.length == 0) {
+            if ((!cacheFolderExists || !cooperator && defaultText) || (clientSession.files.length == 0 && !urlParams.has("save"))) {
                 // fs.mkdir(path.join(rootDirName, "cache", sessionId), { recursive: true }, (err) => {
                 //     console.log("created cache folder for sessionId " + sessionId);
                 //     if (err) {

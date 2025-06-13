@@ -1015,7 +1015,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
 
         //create cache folder for session if its a new one
         const cacheFolderExists = fs.existsSync(path.join(rootDirName, "cache", sessionId));
-        if((!cacheFolderExists || !cooperator && defaultText) || clientSession.files.length==0)
+        if((!cacheFolderExists || !cooperator && defaultText) || (clientSession.files.length==0 && !urlParams.has("save")))
         {
             // fs.mkdir(path.join(rootDirName, "cache", sessionId), { recursive: true }, (err) => {
             //     console.log("created cache folder for sessionId " + sessionId);
