@@ -788,6 +788,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         async function connectionReady(cooperator = false, req) {
             const urlParams = new URL("ws:/intelegeinfo.go.ro:8080" + req.url).searchParams;
             let defaultText;
+            const clientFilesPath = clientSession.getClientFilesPath();
             let savedProject;
             if (urlParams.has("save")) {
                 try {
@@ -799,6 +800,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         throw 'not authorized';
                     fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
                     project = savedProject;
+                    clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
                     // fs.renameSync()
                     // defaultText =  
                     // console.log(defaultText)
@@ -810,7 +812,6 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
             else
                 defaultText = fs_1.default.readFileSync("user_code.cpp").toString();
-            const clientFilesPath = clientSession.getClientFilesPath();
             // printClientConsoleInfo("connected to worker: " + process.pid)
             //create cache folder for session if its a new one
             const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
@@ -845,7 +846,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                     if (clientSession.files[0] == undefined)
                         if (savedProject)
                             openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
-                    return console.log('no file found in files: ' + clientSession.files);
+                        else
+                            return console.log('no file found in files: ' + clientSession.files);
                     if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
                         openFile(clientSession.files[0].name);
                     else

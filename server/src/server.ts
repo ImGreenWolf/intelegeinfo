@@ -986,7 +986,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
    {
         const urlParams = new URL("ws:/intelegeinfo.go.ro:8080"+req.url).searchParams
         let defaultText: string;
-        
+        const clientFilesPath = clientSession.getClientFilesPath();
         let savedProject: Project;
         if(urlParams.has("save"))
         {
@@ -998,19 +998,21 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 if(savedProject.userId !== parseInt(id.sub as string)) throw 'not authorized'
                 fs.cpSync(path.join(rootDirName,"saved", savedProject.fileUUID), path.join(rootDirName, "cache", sessionId), {recursive: true})
                 project = savedProject;
+                clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
+                
                 // fs.renameSync()
                 // defaultText =  
                 // console.log(defaultText)
                     }catch(err) {
-                    printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId))
-                    defaultText = fs.readFileSync("user_code.cpp").toString();
+                        printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId))
+                        defaultText = fs.readFileSync("user_code.cpp").toString();
                     }
         }
             else defaultText = fs.readFileSync("user_code.cpp").toString();
     
        
 
-        const clientFilesPath = clientSession.getClientFilesPath();
+       
         // printClientConsoleInfo("connected to worker: " + process.pid)
 
         //create cache folder for session if its a new one
