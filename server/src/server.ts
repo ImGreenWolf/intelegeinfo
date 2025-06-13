@@ -94,7 +94,7 @@ app.use('/editor/components',
             let newRender = renderer;
 
             if(req.cookies.token)
-                newRender.replace(`const loggedIn = false;`, `const loggedIn = true;`)
+                newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`)
             res.contentType('js').send(newRender)
         })
 

@@ -6,4 +6,4 @@ saved/
 .tsbuildinfo
 prisma/migrations/
 generated/
-.env
+*.env
