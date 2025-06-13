@@ -810,19 +810,19 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
             else
                 defaultText = fs_1.default.readFileSync("user_code.cpp").toString();
-            const clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
+            const clientFilesPath = clientSession.getClientFilesPath();
             // printClientConsoleInfo("connected to worker: " + process.pid)
             //create cache folder for session if its a new one
             const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
-            if ((!cacheFolderExists || !cooperator && defaultText) || (clientSession.files.length == 0 && !urlParams.has("save"))) {
+            if ((!cacheFolderExists || !cooperator && defaultText) || (clientSession.files.length == 0 && !savedProject)) {
                 // fs.mkdir(path.join(rootDirName, "cache", sessionId), { recursive: true }, (err) => {
                 //     console.log("created cache folder for sessionId " + sessionId);
                 //     if (err) {
                 //         console.error("Error creating cache folder:", err);
                 //     }
                 // });
-                if (clientSession.files.length == 0 && cacheFolderExists && !urlParams.has("save"))
-                    fs_1.default.rmSync(clientSession.getClientFilesPath(), { recursive: true, force: true });
+                if (clientSession.files.length == 0 && cacheFolderExists && !savedProject)
+                    fs_1.default.rmSync(clientFilesPath, { recursive: true, force: true });
                 fs_1.default.mkdir(clientFilesPath, { recursive: true }, (err) => {
                     if (err) {
                         console.error("Error creating cache folder:", err);
@@ -843,7 +843,9 @@ exports.wss.addListener('connection', async (ws, req) => {
                 console.warn("Cache folder already exists for sessionId " + sessionId);
                 sendListFiles(clientFilesPath).then(() => {
                     if (clientSession.files[0] == undefined)
-                        return console.log('no file found in files: ' + clientSession.files);
+                        if (savedProject)
+                            openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
+                    return console.log('no file found in files: ' + clientSession.files);
                     if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
                         openFile(clientSession.files[0].name);
                     else

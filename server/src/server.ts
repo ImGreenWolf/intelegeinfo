@@ -1010,12 +1010,12 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     
        
 
-        const clientFilesPath = path.join(rootDirName, "cache", sessionId,"clientFiles");
+        const clientFilesPath = clientSession.getClientFilesPath();
         // printClientConsoleInfo("connected to worker: " + process.pid)
 
         //create cache folder for session if its a new one
         const cacheFolderExists = fs.existsSync(path.join(rootDirName, "cache", sessionId));
-        if((!cacheFolderExists || !cooperator && defaultText) || (clientSession.files.length==0 && !urlParams.has("save")))
+        if((!cacheFolderExists || !cooperator && defaultText) || (clientSession.files.length==0 && !savedProject))
         {
             // fs.mkdir(path.join(rootDirName, "cache", sessionId), { recursive: true }, (err) => {
             //     console.log("created cache folder for sessionId " + sessionId);
@@ -1023,8 +1023,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             //         console.error("Error creating cache folder:", err);
             //     }
             // });
-            if(clientSession.files.length==0 && cacheFolderExists && !urlParams.has("save"))
-                fs.rmSync(clientSession.getClientFilesPath(), {recursive: true, force: true})
+            if(clientSession.files.length==0 && cacheFolderExists && !savedProject)
+                fs.rmSync(clientFilesPath, {recursive: true, force: true})
             fs.mkdir(clientFilesPath, { recursive: true }, (err) => {
                 if (err) {
                     console.error("Error creating cache folder:", err);
@@ -1048,11 +1048,14 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             console.warn("Cache folder already exists for sessionId " + sessionId);
             sendListFiles(clientFilesPath).then(()=>{
                 if(clientSession.files[0] == undefined)
+                    if(savedProject)
+                        openFile(fs.readdirSync(clientFilesPath)[0])
+                    else
                     return console.log('no file found in files: ' + clientSession.files)
-                    if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
-                        openFile(clientSession.files[0].name)
-                    else 
-                        console.error("No default file was found!") // TODO replace with async function
+                if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
+                    openFile(clientSession.files[0].name)
+                else 
+                    console.error("No default file was found!") // TODO replace with async function
             })
           
         }
