@@ -1023,7 +1023,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             //         console.error("Error creating cache folder:", err);
             //     }
             // });
-            if(clientSession.files.length==0 && cacheFolderExists)
+            if(clientSession.files.length==0 && cacheFolderExists && !urlParams.has("save"))
                 fs.rmSync(clientSession.getClientFilesPath(), {recursive: true, force: true})
             fs.mkdir(clientFilesPath, { recursive: true }, (err) => {
                 if (err) {
