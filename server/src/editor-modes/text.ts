@@ -9,9 +9,7 @@ class Text extends EditorMode {
     dockerSafeTag: string = 'txt'
     dockerFile = ""
     isExecutable: boolean = false;
-    checkCodeSyntax(sessionObj: EditorSession, file: EditorFile) {
-        return;
-    }
+
     HandleClientInput() {
     
     }

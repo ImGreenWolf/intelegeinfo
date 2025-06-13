@@ -54,7 +54,7 @@ class ClientObject {
     CWebSocket;
     canEdit = true;
     canChat = true;
-    color = "#ffffff";
+    color = Math.floor(Math.max(80, Math.random() * 255)).toString(16) + Math.floor(Math.max(80, Math.random() * 255)).toString(16) + Math.floor(Math.max(80, Math.random() * 255)).toString(16);
     editorMode = editor_modes_1.CppMode;
     openFileName;
     openFile;
@@ -395,6 +395,8 @@ class EditorFile {
                     }
                     else {
                         console.log('Created file ' + this.name);
+                        if (!session.files)
+                            throw 'session.files is undifined.';
                         session.files.push(this);
                         if (onCreate)
                             onCreate.call(this);
@@ -444,7 +446,7 @@ class EditorFile {
             this.name = newName;
         });
     }
-    openFile(clientObj, shared) {
+    async openFile(clientObj, shared) {
         try {
             fs_1.default.readFile(this.filePath, (err, data) => {
                 if (err) {
@@ -457,7 +459,6 @@ class EditorFile {
                         if (obj.openFileName == oldFileName)
                             cws.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeSelection, body: null }));
                     }, clientObj);
-                    // this.session.replicateSocketMessage(sessionId, clientId, true, , (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
                     clientObj.editorMode = getEditorMode(this.name);
                     clientObj.openFileName = this.name;
                     clientObj.openFile = this;
@@ -465,7 +466,7 @@ class EditorFile {
                     console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
                     if (shared)
                         shared.updateSession(this.session.sessionId, this.session);
-                    clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_2.FileManagementCommands.Open, content: data.toString(), fileName: this.name } })); // Send the list of files to the client
+                    clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, fileName: this.name, body: { command: types_2.FileManagementCommands.Open, content: data.toString() } })); // Send the list of files to the client
                 }
             });
         }

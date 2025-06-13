@@ -22,7 +22,7 @@ export class ClientObject {
     CWebSocket: WebSocket;
     canEdit: boolean = true;
     canChat: boolean = true;
-    color: string = "#ffffff";
+    color: string = Math.floor(Math.max(80, Math.random() * 255) ).toString(16) + Math.floor(Math.max(80,Math.random() * 255 )).toString(16) + Math.floor(Math.max(80,Math.random() * 255 )).toString(16);
     editorMode: typeof EditorMode = CppMode;
     openFileName: string
     openFile: EditorFile;
@@ -431,10 +431,12 @@ Tralalero Tralala`.split('\n')
                 } else   
                 {
                     console.log('Created file ' + this.name)
+                    if(!session.files)
+                        throw 'session.files is undifined.'
                     session.files.push(this)
                     if(onCreate)
-                    onCreate.call(this)
-                session.replicateFunction((clientWs) => {
+                        onCreate.call(this)
+                    session.replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
                     });
                 }
@@ -489,7 +491,7 @@ Tralalero Tralala`.split('\n')
         
     }
 
-    public openFile(clientObj: ClientObject, shared?)
+    public async openFile(clientObj: ClientObject, shared?)
     {
         try{
             
@@ -503,19 +505,15 @@ Tralalero Tralala`.split('\n')
 
                 this.session.replicateFunction((cws, id, obj) => {
                     if((obj as ClientObject).openFileName == oldFileName)
-                cws.send(JSON.stringify({type: WebSocketMessageType.CodeSelection, body: null}))
-            }, clientObj)
-
-
-                // this.session.replicateSocketMessage(sessionId, clientId, true, , (client) => {  return getThisClientSession()?.clientsActiveFile.get(client) == oldFileName;}); // potential fix for a glitch where markers dont get deleted when switching tabs
-                
+                        cws.send(JSON.stringify({type: WebSocketMessageType.CodeSelection, body: null}))
+                }, clientObj)
                 clientObj.editorMode = getEditorMode(this.name)
                 clientObj.openFileName = this.name
                 clientObj.openFile = this
                 this.session.clientsActiveFile.set(clientObj.clientId, this.name)
                 console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
                 if(shared) shared.updateSession(this.session.sessionId, this.session)
-                clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement,  body: {command: FileManagementCommands.Open ,content: data.toString(), fileName: this.name}})); // Send the list of files to the client
+                clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: this.name, body: {command: FileManagementCommands.Open ,content: data.toString()}})); // Send the list of files to the client
             }
         });
         

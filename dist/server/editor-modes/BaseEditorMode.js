@@ -11,6 +11,7 @@ class EditorMode {
         return '';
     }
     isInterpreter = false; // used for JIT languages like python or js
+    checkCodeSyntax;
     shouldRebuild(sessionObj, clientObj) {
         return false;
     }

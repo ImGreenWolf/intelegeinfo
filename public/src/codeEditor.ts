@@ -12,7 +12,7 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { Dock, Pixelated } from "./components";
+import { createNode, Dock, Pixelated } from "./components";
 /*END IMPORTS*/
 
 
@@ -192,11 +192,12 @@ class EditorCursor {
         pointerType: string = "mouse";
         animated = false;
         animTimeout: NodeJS.Timeout|undefined;
+        id
         constructor(eventJson) {
             
             this.cursor = this.refreshCursor(eventJson)
-            
-            cursors.set(eventJson.clientId, this)
+            this.id = eventJson.clientId
+            cursors.set(this.id, this)
 
 
             this.update(eventJson);
@@ -211,7 +212,7 @@ class EditorCursor {
             const name = document.createElement('span');
             name.innerText = eventJson.displayName;
             cursor.appendChild(name)
-            cursor.id = 'cursor-'+eventJson.clientId;
+            cursor.id = 'cursor-'+this.id;
             cursor.classList.add('cursor')
             // cursor.setAttribute('name', eventJson.displayName) 
             // cursor.style.color
@@ -233,7 +234,30 @@ class EditorCursor {
 
             return cursor;
           }
+          public remove()
+          {
+            const elem = this.cursor
+            let blurAmmount = 0;
+            const maxBlur = 10;
+            const blurDuration = 0.2;
+            const id = this.id
+            function blur(timems)
+            {
 
+              elem.style.filter = `blur: ${blurAmmount}px;`
+              blurAmmount += maxBlur * blurDuration * timems
+              if(maxBlur < 10)
+              requestAnimationFrame(blur)
+              else blurDone()
+            }
+
+            requestAnimationFrame(blur)
+            function blurDone()
+            {
+              elem.remove()
+              cursors.delete(id)
+            }
+          }
 
           public update(eventJson)
           {
@@ -359,7 +383,7 @@ export enum WebSocketMessageType {
   CompileResult = "CompileResult",
   ExecuteStatus =  "executestatus",
   MouseUpdate = "MouseUpdate",
-   WebCam = 'webcam',
+  WebCam = 'webcam',
 }
 
 export enum ConsoleMessageType {
@@ -378,9 +402,24 @@ interface SessionInfo  {
   
 }
 
+class SessionClient {
+  cursor: EditorCursor | undefined;
+  typingIndicator: HTMLDivElement | undefined;
+  editorSession: FileEditorSession | undefined;
+  clientId: UUID;
+  color;
+  displayName;
+  
+  constructor(clientId, displayName, color) {
+    this.clientId = clientId;
+    this.color = color;
+    this.displayName = displayName;
+  }
+}
 
 // VARIABLES //
-
+let client: SessionClient | undefined;
+const clients: SessionClient[] = []
 const cursors: Map<string, EditorCursor> = new Map()
 const typingIndicators: Map<UUID,HTMLDivElement> = new Map();
 let debounceTimer: NodeJS.Timeout;
@@ -1027,16 +1066,16 @@ function renameFile(fileName: string, newName?: string) {
   if(newName)
   {
     editor.session.setMode(aceModes.getModeForPath(newName).mode);
-    editorSessions.get(fileName)!.fileElement!.innerText = newName;
+    editorSessions.get(fileName)!.fileElement!.fileElem.innerText = newName;
   }
     
   else
   { 
-     editorSessions.get(fileName)!.fileElement!.style.display = 'none';
+     editorSessions.get(fileName)!.fileElement!.fileElem.style.display = 'none';
     awaitFileNamePrompt().then(name => {
       
-      editorSessions.get(fileName)!.fileElement!.style.display = 'block';
-      editorSessions.get(fileName)!.fileElement!.innerText = name; 
+      editorSessions.get(fileName)!.fileElement!.fileElem.style.display = 'block';
+      editorSessions.get(fileName)!.fileElement!.fileElem.innerText = name; 
       editor.session.setMode(aceModes.getModeForPath(name).mode);
       ws.send(JSON.stringify({
         type: WebSocketMessageType.FileManagement,
@@ -1050,48 +1089,104 @@ function renameFile(fileName: string, newName?: string) {
   
   return true;
 }
+interface User {
+    name,
+    color,
+    id,
+    elem?
+  }
+
+class FileElement
+{
+  
+  public Users: User[] = [];
+  fileElem: HTMLSpanElement
+  usersContainer: HTMLDivElement
+  animOptions = {duration: 200, easing: "ease-in"}
+  name
+  constructor(fileName) {
+    this.fileElem =  createNode('span', {className: "file-tab", htmlSting: `<p>${fileName}</p>`}) //document.createElement("span"); 
+    this.name = fileName
+    // this.fileElem.className = "file-tab";
+    // this.fileElem.innerText = fileName;
+
+    this.fileElem.onclick = () => {
+      openFile(fileName);
+    };
+    this.fileElem.oncontextmenu = (ev) => {
+      ev.preventDefault()
+      if(contextMenu)
+        contextMenu.remove()
+      contextMenu = document.createElement('div')
+      const deleteButton = document.createElement('button')
+      deleteButton.innerText = "Delete"
+      deleteButton.onclick = () => {
+        deleteFile(fileName)
+        contextMenu.remove();
+      }
+      contextMenu.appendChild(deleteButton);
+      const renameButton = document.createElement('button')
+      renameButton.onclick = () => {
+        renameFile(fileName)
+        contextMenu.remove();
+      }
+      renameButton.innerText = "Rename"
+      contextMenu.appendChild(renameButton);
+
+      contextMenu.id = 'context-menu'
+      contextMenu.style.position = 'absolute'
+      contextMenu.style.top = ev.y + "px";
+      contextMenu.style.left = ev.x + "px";
+      document.body.appendChild(contextMenu)
+      contextMenu.onmouseleave = (ev) => {
+        contextMenu.remove()
+      } 
+    }
+
+    FileContainer.appendChild(this.fileElem);
+    this.usersContainer = this.fileElem.appendChild(createNode('div', {className: "file-users-container"}))
+    this.fileElem.appendChild(this.usersContainer)
+  }
+
+  addUser(user: User, lastFileName)
+  {
+    const existingUser = this.Users.findIndex((value) => user.id == value.id)
+    if(existingUser != -1)
+      return
+    
+    const elem = createNode('div', {css: 'background-color: #'+ user.color});
+    this.Users.push({...user, elem})
+    this.usersContainer.appendChild(elem)
+    if(lastFileName != undefined)
+    elem.animate([{flexGrow: '0'}, {flexGrow: '1'}], this.animOptions)
+    // requestAnimationFrame(() => elem.style.flexGrow = "1")
+  }
+  removeUser (userId)
+  {
+    const user = this.Users.findIndex((value) => userId == value.id)
+    if(user == -1)
+      return
+    const elem: HTMLElement = this.Users[user].elem;
+    elem.animate([{flexGrow: '1'}, {flexGrow: '0'}], this.animOptions).onfinish = 
+    () => {
+      elem.remove()
+      this.Users.splice(user)
+    }
 
 
+  }
+  remove()
+  {
+    this.fileElem.remove()
+  }
+  
+}
 
 function onFileCreate(fileName: string) {
   // const command = JSON.parse(messageBodyJson);
 
   // const fileName = command.content;
-
-  const fileElem: HTMLSpanElement = document.createElement("span");
-  fileElem.className = "file-tab";
-  fileElem.innerText = fileName;
-  fileElem.onclick = () => {
-    openFile(fileElem.innerHTML);
-  };
-  fileElem.oncontextmenu = (ev) => {
-    ev.preventDefault()
-    if(contextMenu)
-      contextMenu.remove()
-
-    contextMenu = document.createElement('div')
-    const deleteButton = document.createElement('button')
-    deleteButton.innerText = "Delete"
-    deleteButton.onclick = () => {
-      deleteFile(fileName)
-      contextMenu.remove();
-    }
-    contextMenu.appendChild(deleteButton);
-        const renameButton = document.createElement('button')
-    renameButton.onclick = () => {
-      renameFile(fileName)
-      contextMenu.remove();
-    }
-    renameButton.innerText = "Rename"
-    contextMenu.appendChild(renameButton);
-    contextMenu.id = 'context-menu'
-    contextMenu.style.position = 'absolute'
-    contextMenu.style.top = ev.y + "px";
-    contextMenu.style.left = ev.x + "px";
-
-    document.body.appendChild(contextMenu)
-  }
-  FileContainer.appendChild(fileElem);
+  const file = new FileElement(fileName)
   
   if(editorSessions.has(fileName))
   {
@@ -1102,9 +1197,12 @@ function onFileCreate(fileName: string) {
         {
           editor: session.editor,
           fileName: session.fileName,
-          fileElement: fileElem
+          fileElement: file
         }
+       
         editorSessions.set(fileName,newSession);
+        if(client)
+          client!.editorSession = newSession
      }
   }
   else
@@ -1113,11 +1211,13 @@ function onFileCreate(fileName: string) {
     {
       editor: undefined,
       fileName: fileName,
-      fileElement: fileElem
+      fileElement: file
     }
 
-
+    
     editorSessions.set(fileName, newSession);
+    if(client)
+      client!.editorSession = newSession
   }
      
           
@@ -2155,7 +2255,7 @@ type errorObject = {
 type FileEditorSession = {
   editor: Ace.EditSession | undefined,
   fileName: string,
-  fileElement: HTMLElement | undefined,
+  fileElement: FileElement | undefined,
    
 }
 
@@ -2487,51 +2587,20 @@ ws.onmessage = (event) => {
     case WebSocketMessageType.MouseUpdate:
        if(!eventJson.clientId) break;
 
+       if(eventJson.fileName)
+       {
+        cursors.get(eventJson.clientId)?.remove()
+        return;
+       }
 
-      
-      // }
 
 
-      // let cursor: HTMLDivElement | null = document.getElementById('cursor-'+eventJson.clientId) as HTMLDivElement
-      
 
-        // if((sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3)) 
-        //   {
-        //     clearInterval(stepint)
-        //     if(cursor)
-        //       cursor!.remove();
-        //     break;
-        //   }
-      // maybe check if the pointer type switched
-      
-
-        //  TODO Imrpove this
-        // if(sizeX/eventJson.sizeX<1.1 && sizeX/eventJson.sizeX>0.9)
-        //   cursor.style.filter = '';
-        // else
-        //   cursor.style.filter = `blur(${(1-sizeX/eventJson.sizeX)*7}px)` //(Math.max(Math.abs(sizeX/eventJson.sizeX), Math.abs(sizeY/eventJson.sizeY)))
-       
         if(!cursors.has(eventJson.clientId))
          new EditorCursor(eventJson)
         else
           cursors.get(eventJson.clientId)!.update(eventJson)
-        // cursorObj.lposX = cursorObj.posX;
-        // cursorObj.lposY = cursorObj.posY;
-          
 
-        // if(cursorObj)
-        // {
-
-        // }
-          // cursors.set(eventJson.clientId, {...cursorObj, lposX: posX, lposY: posY})
-        // let lposX = cursorObj.posX;
-        // let lposY = cursorObj.posY;
-        
-        
-        
-      //  cursors.set(eventJson.clientId, {...cursorObj, posX: updatedPos.posX, posY: updatedPos.posY, lposX, lposY})
-        
-        
       // TODO Add incative class to cursor when user doesnt move it.
 
        
@@ -2590,7 +2659,7 @@ ws.onmessage = (event) => {
       wsClientId = eventJson.clientId;
       wsSessionId = eventJson.sessionId;
       isColabSession = eventJson.session!=undefined
-
+      client = new SessionClient(wsClientId, eventJson.displayName, eventJson.color)
       // if(!document.cookie.includes('session='))
       document.cookie='session='
       setTimeout(() => {
@@ -2601,13 +2670,11 @@ ws.onmessage = (event) => {
         addMouseListener(eventJson)
         }
 
-      
-
-
       if(eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
         document.getElementById('share')?.classList.add('host')
-      
-      writeOutput(eventJson.body, eventJson);
+
+      if(eventJson.body)
+        writeOutput(eventJson.body, eventJson);
 
 
       const projectData = eventJson.project;
@@ -2834,7 +2901,8 @@ ws.onmessage = (event) => {
         //clear selection
         console.log("removed sleection");
         editor.session.removeMarker(marker);
-        cursorManager.removeCursor(eventJson.clientId);
+        if(eventJson.clientId)
+          cursorManager.removeCursor(eventJson.clientId);
         return;
       }
 
@@ -2917,28 +2985,40 @@ ws.onmessage = (event) => {
     break;
     case WebSocketMessageType.ColabData:
       const colabClients: UUID[] = eventJson.clients;
-      const colabSessionId = eventJson.thisSessionId;
-      const colabClientId = eventJson.thisClientId;
+      const colabClientId = eventJson.clientId;
       const colabCommand = eventJson.colabCommand;
+
       isColabSession = true;
       switch(colabCommand) 
       {
         case "DISCONECT":
-                const success = cursorManager.removeCursor(colabClientId);
-                document.getElementById('cursor-'+colabClientId)?.remove()
-                cursors.delete(colabClientId)
-                writeOutput(eventJson.body, eventJson);
+          if(!colabClientId)
+            break;
+            
+            const success = cursorManager.removeCursor(colabClientId);
+            cursors.get(eventJson.clientId)?.remove()
+            // document.getElementById('cursor-'+colabClientId)?.remove()
+            // cursors.delete(colabClientId)
+           
+            writeOutput(eventJson.body, eventJson);
+            const collabClient = clients.find((val) => val!.editorSession!.fileElement?.name == client!.editorSession!.fileElement?.name)!;
+              if(!collabClient) throw 'couldnt find collab client'
+            clients.splice(clients.indexOf(collabClient))
+            collabClient.editorSession?.fileElement?.removeUser(colabClientId)
             break;
         case "HOST":
           writeOutput(eventJson.body, eventJson);
         case "JOIN":
           addMouseListener(eventJson.session)
+          clients.push(new SessionClient(colabClientId, eventJson.displayName, eventJson.color))
         break;
       }
       
       const colabContainer = document.getElementById("colab-container") || null;
       if (!colabContainer) return;
       colabContainer.innerHTML = "";
+      if(colabClients.length == 0)
+        return;
       colabClients.forEach((client) => {
         const clientId = client.split("-")[0];
         colabContainer.innerHTML += `<div class="colab-client" id=${clientId}>${clientId}</div>`;
@@ -2972,53 +3052,70 @@ ws.onmessage = (event) => {
           renameFile(eventJson.name, eventJson.newName)
           break;
         case FileManagementCommands.Open:
-          const fileName: string = eventJson.body.fileName;
-          const fileContent = eventJson.body.content;
-          currentFileName = fileName;
-          console.log(editorSessions.get(fileName));
-
-          if (!editorSessions.has(fileName)) {
-            const newSession = ace.createEditSession(fileContent);
-            // undo manager?
-            // if(fileName.split('.')[1] != 'cpp')
-              newSession.setMode(aceModes.getModeForPath(fileName).mode);
-            editor.setSession(newSession);
-            
-            const session: FileEditorSession =
-            {
-              editor: newSession,
-              fileName: fileName,
-              fileElement: undefined
-            }
-            
-            editorSessions.set(fileName, session);
-          } else {
-
-            if(!editorSessions.get(fileName)?.editor)
-              editorSessions.get(fileName)!.editor =  ace.createEditSession(fileContent);
-
-
-            console.log("File already opened: ", fileName);
-            const session = editorSessions.get(fileName)!;
-
-            if (session)
-              {
-                session.editor!.setMode(aceModes.getModeForPath(fileName).mode);
-                editor.setSession(session.editor);
-              } 
-            if (fileContent.toString() != session?.editor!.getValue().toString()) {
-              isRemoteChange = true;  // must add this to prevent sending on changed event
-              session.editor!.setValue(fileContent);
-              isRemoteChange = false;
-            }
-          }
-          if(document.getElementById('active-open-file'))
-            document.getElementById('active-open-file')!.id = '';
-          const elem = editorSessions.get(fileName)?.fileElement!;
-          if(elem)
+          const fileName: string = eventJson.fileName;
+          
+          if(!eventJson.body)
           {
-            elem.id = 'active-open-file';
+            if(eventJson.oldFileName != eventJson.fileName)
+              if(eventJson.oldFileName !=undefined)
+                editorSessions.get(eventJson.oldFileName)?.fileElement?.removeUser(eventJson.clientId)
+              editorSessions.get(fileName)?.fileElement?.addUser({name: eventJson.displayName, color: eventJson.color, id: eventJson.clientId}, eventJson.oldFileName)
+              const clientIndex = clients.findIndex((val) => val!.clientId == eventJson.clientId)!
+              if(clientIndex == -1)
+                throw 'invalid index'
+              else
+                clients[clientIndex].editorSession = {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor};
           }
+          else
+          {
+            const fileContent = eventJson.body.content;
+            currentFileName = fileName;
+            console.log(editorSessions.get(fileName));
+
+            if (!editorSessions.has(fileName)) {
+              const newSession = ace.createEditSession(fileContent);
+              // undo manager?
+              // if(fileName.split('.')[1] != 'cpp')
+                newSession.setMode(aceModes.getModeForPath(fileName).mode);
+              editor.setSession(newSession);
+              
+              const session: FileEditorSession =
+              {
+                editor: newSession,
+                fileName: fileName,
+                fileElement: undefined
+              }
+              client!.editorSession = session
+              editorSessions.set(fileName, session);
+            } else {
+
+              if(!editorSessions.get(fileName)?.editor)
+                editorSessions.get(fileName)!.editor =  ace.createEditSession(fileContent);
+
+
+              console.log("File already opened: ", fileName);
+              const session = editorSessions.get(fileName)!;
+
+              if (session)
+                {
+                  session.editor!.setMode(aceModes.getModeForPath(fileName).mode);
+                  editor.setSession(session.editor);
+                } 
+              if (fileContent.toString() != session?.editor!.getValue().toString()) {
+                isRemoteChange = true;  // must add this to prevent sending on changed event
+                session.editor!.setValue(fileContent);
+                isRemoteChange = false;
+              }
+            }
+            if(document.getElementById('active-open-file'))
+              document.getElementById('active-open-file')!.id = '';
+            const elem = editorSessions.get(fileName)?.fileElement!;
+            if(elem)
+            {
+              elem.fileElem.id = 'active-open-file';
+            }
+          }
+          
 
           break;
         default:

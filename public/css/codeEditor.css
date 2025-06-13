@@ -147,7 +147,7 @@
   padding: 1rem;
   min-height: 50%;
   gap: 20px;
-  height: 98vh;
+  height: 100dvh;
   box-sizing: border-box;
 }
 
@@ -181,7 +181,7 @@ header {
   grid-template-rows: max-content auto;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
   border: 1px solid gray;
-  border-radius: 0.5lh;
+  border-radius: 0.5em;
   overflow: hidden;
 }
 
@@ -260,7 +260,7 @@ header {
   background-color: rgba(72, 72, 72, 0.2705882353);
   backdrop-filter: blur(2px);
   border-top-width: 4px;
-  border-top-color: rgba(89, 0, 10, 0.308);
+  border-top-color: rgb(89, 0, 10);
   animation: fade-in 0.1s;
   overflow: visible;
 }
@@ -325,7 +325,8 @@ header {
   gap: 5px;
   width: 100%;
   height: 100%;
-  padding: 2px;
+  padding: 3px 3px 0 3px;
+  align-items: flex-end;
   box-sizing: border-box;
 }
 #editor-tabs button, .tabs-container button {
@@ -334,33 +335,53 @@ header {
 #editor-tabs .host, .tabs-container .host {
   border: 1px solid gold;
 }
-#editor-tabs span, .tabs-container span {
-  display: inline-block;
+#editor-tabs .file-tab, .tabs-container .file-tab {
+  display: inline-flex;
+  flex-direction: column-reverse;
   text-align: center;
-  display: flex;
   justify-content: center;
   align-items: center;
-  margin: auto 0;
-  padding: 2px 10px;
   font-size: 0.75rem;
   background-color: rgb(0, 0, 0);
-  border-radius: 0.5lh 0.5lh 0 0;
+  border-radius: 0.25em 0.25em 0 0;
   height: 100%;
   color: white;
   min-width: 70px;
   border: 1px solid gray;
+  border-bottom: none !important;
   cursor: pointer;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px 2px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
   box-sizing: border-box;
-  transition-duration: 0.2s;
+  transition-duration: 0.5s;
 }
-#editor-tabs span#active-open-file, .tabs-container span#active-open-file {
+#editor-tabs .file-tab p, .tabs-container .file-tab p {
+  flex-grow: 1;
+  margin: 0;
+  padding-top: 0.5em;
+}
+#editor-tabs .file-tab#active-open-file, .tabs-container .file-tab#active-open-file {
   border: 1px solid white;
   cursor: default;
+  background-color: rgb(20, 20, 20);
 }
-#editor-tabs span:not(#active-open-file), .tabs-container span:not(#active-open-file) {
-  transform: translateY(-1px);
-  box-shadow: gray 0px 2px 0px 0px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+#editor-tabs .file-tab:has(.file-users-container div), .tabs-container .file-tab:has(.file-users-container div) {
+  border-top: 1px solid transparent !important;
+}
+#editor-tabs .file-tab:not(#active-open-file), .tabs-container .file-tab:not(#active-open-file) {
+  height: 80%;
+  opacity: 0.8;
+}
+#editor-tabs .file-tab .file-users-container, .tabs-container .file-tab .file-users-container {
+  display: flex;
+  height: 2px;
+  width: 100%;
+  padding: 0 5px;
+  gap: 1px;
+}
+#editor-tabs .file-tab .file-users-container div, .tabs-container .file-tab .file-users-container div {
+  flex-grow: 1;
+  flex-shrink: 1;
+  border-radius: 2px;
 }
 
 .remove-proj {
@@ -537,7 +558,7 @@ vl {
 }
 
 .buttons:not(.debug-control):not(.execute-control):not(.compiled) button:not(.compile) {
-  outline: 3px solid rgba(89, 0, 10, 0.308);
+  outline: 3px solid rgb(89, 0, 10);
 }
 
 button:not(.custom-button) {
@@ -566,7 +587,7 @@ button:not(.custom-button) {
 #output-container {
   /* max-height: 500px;
   min-height: 200px; */
-  border-radius: 0.5lh 0.5lh;
+  border-radius: 0.5em;
   overflow: hidden;
   min-width: 200px;
   grid-row: 2;
@@ -580,9 +601,6 @@ button:not(.custom-button) {
 }
 #output-container div h2 {
   display: inline;
-}
-#output-container > div {
-  /* display: inline; */
 }
 #output-container button:not(.custom-button) {
   margin: 5px;
@@ -1230,7 +1248,7 @@ button:not(.custom-button).inset-button *, #editor-tabs span:not(#active-open-fi
 }
 button:not(.custom-button):hover, #editor-tabs span:not(#active-open-file):hover, #signup:hover, #login:hover {
   outline: 1px solid rgba(255, 255, 255, 0.8) !important;
-  transform: translateY(0.5px) scale(95%);
+  transform: translateY(0.5px) scale(0.98);
   transition-duration: 0.1s;
 }
 button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-tabs span:not(#active-open-file):active, #editor-tabs span:not(#active-open-file) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
@@ -1391,7 +1409,7 @@ form input[type=checkbox]::before {
   content: "";
   position: absolute;
   display: block;
-  background: rgba(89, 0, 10, 0.308);
+  background: rgb(89, 0, 10);
   transition-duration: 0.2s;
   border-radius: 1lh;
   box-shadow: 2px 2px 3px 3px rgba(0, 0, 0, 0.25), inset 2px 2px 3px 3px rgba(0, 0, 0, 0.25);
@@ -1458,6 +1476,7 @@ form label {
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
+  transform: translateX(-25%);
   gap: 0.5em;
   background-color: rgba(37, 37, 37, 0.397);
   backdrop-filter: blur(3px);

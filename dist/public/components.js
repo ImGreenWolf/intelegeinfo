@@ -4,26 +4,28 @@ class IElement {
         elem.innerText = style;
         return elem;
     }
-    node(tag, options) {
-        const elem = document.createElement(tag);
-        if (options) {
-            if (options.css)
-                elem.style.cssText = options.css;
-            if (options.className)
-                elem.className = options.className;
-            if (options.id)
-                elem.id = options.id;
-            if (options.html)
-                for (const node of options.html)
-                    elem.appendChild(node);
-            if (options.attributes)
-                for (const attribute of options.attributes)
-                    elem.setAttribute(attribute.name, attribute.value);
-            if (options.htmlSting)
-                elem.innerHTML = options.htmlSting;
-        }
-        return elem;
+}
+export function createNode(tag, options) {
+    const elem = document.createElement(tag);
+    if (options) {
+        if (options.css)
+            elem.style.cssText = options.css;
+        if (options.className)
+            elem.className = options.className;
+        if (options.id)
+            elem.id = options.id;
+        if (options.innerText)
+            elem.innerText = options.innerText;
+        if (options.html)
+            for (const node of options.html)
+                elem.appendChild(node);
+        if (options.attributes)
+            for (const attribute of options.attributes)
+                elem.setAttribute(attribute.name, attribute.value);
+        if (options.htmlSting)
+            elem.innerHTML = options.htmlSting;
     }
+    return elem;
 }
 export class Dock extends IElement {
     render() {
@@ -105,17 +107,17 @@ export class Dock extends IElement {
             ];
         t.split(',').forEach((element, index) => {
             if (typeof func[index] != 'string') {
-                const elem = this.node('button', { className: 'dock-button custom-button', attributes: [{ name: 'href', value: '/' }], htmlSting: element });
+                const elem = createNode('button', { className: 'dock-button custom-button', attributes: [{ name: 'href', value: '/' }], htmlSting: element });
                 elem.onclick = func[index];
                 arr.push(elem);
             }
             else
-                arr.push(this.node('a', { className: 'dock-button', attributes: [{ name: 'href', value: func[index] }], htmlSting: element }));
+                arr.push(createNode('a', { className: 'dock-button', attributes: [{ name: 'href', value: func[index] }], htmlSting: element }));
         });
-        const container = this.node('div', { css: `border: 1px solid #ffffff61; position: relative;display: flex; gap: 0.5em; height: 50px; padding: 0.5em; align-items: flex-end; justify-content: space-between; background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;`, html: arr });
-        const base = this.node('div', {
-            css: " display: flex; justify-content: center; flex-direction: column; grid-row: 5/6; width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
-            html: [this.node('p', { htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;" }), container]
+        const container = createNode('div', { css: `border: 1px solid #ffffff61; position: relative;display: flex; gap: 0.5em; height: 50px; padding: 0.5em; align-items: flex-end; justify-content: space-between; background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;`, html: arr });
+        const base = createNode('div', {
+            css: " display: flex; justify-content: center; flex-direction: column; grid-row: 4/5; width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
+            html: [createNode('p', { htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; margin: 0.25em; font-size: 1.25em;  color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;" }), container]
         });
         updatePositions(0, 0);
         function updatePositions(x, y) {

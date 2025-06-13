@@ -74,9 +74,6 @@ CMD bash `;
     //     export DISPLAY=:1 && fluxbox & \
     //     python3 gui_app.py & \
     //     x11vnc -display :1 -rfbport 5900 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim()
-    checkCodeSyntax(sessionObj, file) {
-        return;
-    }
     async onBuild(res, clientSession) {
         return new Promise((resolve) => {
             console.log('spawn gui');

@@ -10,6 +10,6 @@ declare class CppMode extends EditorMode {
     execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
     compile(res: any, file: EditorFile, isDebugging?: boolean): Promise<void>;
     startDebugging(res: any): import("child_process").ChildProcessWithoutNullStreams;
-    checkCodeSyntax(sessionObj: EditorSession, file: EditorFile): Promise<string>;
+    checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<string>;
 }
 export default CppMode;

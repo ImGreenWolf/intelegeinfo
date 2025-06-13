@@ -51,7 +51,8 @@ export function getUserData(id: number): Promise<UserNoPassword>
     {
         if(!id) 
         {
-            reject( 'User id is invalid');
+            // no id found
+            resolve(undefined);
             return;
         }
              

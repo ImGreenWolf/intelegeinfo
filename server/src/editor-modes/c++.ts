@@ -74,7 +74,7 @@ class CppMode extends EditorMode {
         return spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
     }
 
-      checkCodeSyntax(sessionObj: EditorSession, file: EditorFile): Promise<string>
+      checkCodeSyntax = (sessionObj: EditorSession, file: EditorFile): Promise<string> =>
         {
             return new Promise((resolve, reject) => {
                 const exeFile = sessionObj.getClientFilesPath();

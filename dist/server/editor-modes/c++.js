@@ -62,7 +62,7 @@ class CppMode extends BaseEditorMode_1.default {
     startDebugging(res) {
         return (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
     }
-    checkCodeSyntax(sessionObj, file) {
+    checkCodeSyntax = (sessionObj, file) => {
         return new Promise((resolve, reject) => {
             const exeFile = sessionObj.getClientFilesPath();
             const filePath = path_1.default.join(exeFile, "clientFiles"); //            path.join(rootDirName, "cache", sessionId);
@@ -82,6 +82,6 @@ class CppMode extends BaseEditorMode_1.default {
                     reject(code);
             });
         });
-    }
+    };
 }
 exports.default = CppMode;

@@ -82,7 +82,8 @@ function getJWT(req) {
 function getUserData(id) {
     return new Promise((resolve, reject) => {
         if (!id) {
-            reject('User id is invalid');
+            // no id found
+            resolve(undefined);
             return;
         }
         dbClient_1.default.user.findUnique({

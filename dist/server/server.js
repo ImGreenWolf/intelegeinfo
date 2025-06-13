@@ -497,14 +497,17 @@ exports.wss.addListener('connection', async (ws, req) => {
     let userData;
     let userLoggedIn = false;
     users.getUserData(users.getClientId(jwtCookie)).then((userdata) => {
-        userData = userdata;
-        userLoggedIn = true;
-    }).catch(err => {
-        // not logged in
-        userData = undefined;
-        userLoggedIn = false;
-        if (req.headers.cookie)
-            req.headers.cookie.replace(jwtCookie, '');
+        if (userdata) {
+            userData = userdata;
+            userLoggedIn = true;
+        }
+        else {
+            // not logged in
+            userData = undefined;
+            userLoggedIn = false;
+            if (req.headers.cookie)
+                req.headers.cookie.replace(jwtCookie, '');
+        }
     }).finally(() => {
         function loadProject(fileUUID) {
             return new Promise((resolve, reject) => {
@@ -767,8 +770,20 @@ exports.wss.addListener('connection', async (ws, req) => {
                     `Bine ai revenit ${userData?.username} pe Intelege Info!
         Poti salva codul tau apasand pe butonul save.`;
             // Send initial message to client
-            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Handshake, clientId: clientId, messageType: types_1.ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project, session, canEdit: clientObj.canEdit }));
+            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Handshake, ...clientInfo(), messageType: types_1.ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project, session, canEdit: clientObj.canEdit }));
             return session;
+        }
+        function clientInfo(thisclientObj, prefix = '') {
+            if (!clientObj)
+                return;
+            if (!thisclientObj)
+                thisclientObj = clientObj;
+            if (thisclientObj)
+                return JSON.parse(`{"${prefix}clientId": "${thisclientObj.clientId}", "${prefix}displayName": "${thisclientObj.displayName}", "${prefix}color": "${thisclientObj.color}"}`);
+            else if (prefix)
+                JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`);
+            else
+                return { clientId: clientId, displayName: clientObj.displayName, color: clientObj.color };
         }
         async function connectionReady(cooperator = false, req) {
             const urlParams = new URL("ws:/intelegeinfo.go.ro:8080" + req.url).searchParams;
@@ -798,20 +813,24 @@ exports.wss.addListener('connection', async (ws, req) => {
             const clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
             // printClientConsoleInfo("connected to worker: " + process.pid)
             //create cache folder for session if its a new one
-            if (!fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId)) || !cooperator && defaultText) {
+            const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
+            if ((!cacheFolderExists || !cooperator && defaultText) || clientSession.files.length == 0) {
                 // fs.mkdir(path.join(rootDirName, "cache", sessionId), { recursive: true }, (err) => {
                 //     console.log("created cache folder for sessionId " + sessionId);
                 //     if (err) {
                 //         console.error("Error creating cache folder:", err);
                 //     }
                 // });
+                if (clientSession.files.length == 0 && cacheFolderExists)
+                    fs_1.default.rmSync(clientSession.getClientFilesPath(), { recursive: true, force: true });
                 fs_1.default.mkdir(clientFilesPath, { recursive: true }, (err) => {
                     if (err) {
                         console.error("Error creating cache folder:", err);
                         return;
                     }
-                    new types_2.EditorFile(clientSession, 'main.cpp', defaultText, function () {
-                        this.openFile(clientObj, shared);
+                    const defaultFileName = 'main.cpp';
+                    new types_2.EditorFile(clientSession, defaultFileName, defaultText, function () {
+                        this.openFile(clientObj, shared).then(() => onOpenFile(undefined, defaultFileName));
                     });
                     // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
                     //     listFiles(clientFilesPath).then(() => {
@@ -821,8 +840,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                 });
             }
             else {
-                console.error("Cache folder already exists for sessionId " + sessionId);
-                listFiles(clientFilesPath).then(() => {
+                console.warn("Cache folder already exists for sessionId " + sessionId);
+                sendListFiles(clientFilesPath).then(() => {
+                    if (clientSession.files[0] == undefined)
+                        return console.log('no file found in files: ' + clientSession.files);
                     if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
                         openFile(clientSession.files[0].name);
                     else
@@ -840,7 +861,11 @@ exports.wss.addListener('connection', async (ws, req) => {
                 getThisClientSession()?.clients.forEach((client, id) => {
                     displayNames.push(client.displayName);
                 });
-                replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.ColabData, colabCommand: "JOIN", clients: displayNames, thisClientId: clientId, thisSessionId: sessionId, session });
+                replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.ColabData, colabCommand: "JOIN", clients: displayNames, ...clientInfo(clientObj), session });
+                clientSession.clients.forEach((client) => {
+                    if (client != clientObj)
+                        ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, command: types_3.FileManagementCommands.Open, fileName: client.openFile.name, name: client.displayName, color: client.color, clientId: client.clientId })); // Send GDB output to the client
+                });
                 setTimeout(() => {
                     getThisClientSession().clientCommandBuffer.forEach((cmdBuf, remoteClientid) => {
                         if (clientId != remoteClientid)
@@ -933,7 +958,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             });
             return CommandQueue;
         }
-        function listFiles(dir) {
+        function sendListFiles(dir) {
             try {
                 return new Promise((resolve, reject) => {
                     ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_3.FileManagementCommands.List, content: clientSession.files.map(file => { return file.name; }) } })); // Send the list of files to the client
@@ -965,8 +990,22 @@ exports.wss.addListener('connection', async (ws, req) => {
         function openFile(fileName) {
             // if(fs.existsSync(path.join(clientFilesPath, fileName)))
             // console.log("path: " + path.join(clientFilesPath || path.join(rootDirName, "cache", sessionId,"clientFiles"), fileName))
-            console.log(clientSession.files);
-            clientSession.files.find(file => file.name == fileName).openFile(clientObj, shared);
+            const file = clientSession.files.find(file => file.name == fileName);
+            if (!file) {
+                console.error(new Error('Couldnt find file ' + fileName));
+                return;
+            }
+            const oldFileName = clientObj.openFile ? clientObj.openFile.name : undefined;
+            file.openFile(clientObj, shared);
+            onOpenFile(oldFileName, fileName);
+        }
+        function onOpenFile(oldFileName, fileName) {
+            replicateFunction((clientWs, id, thisClientObj) => {
+                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, command: types_3.FileManagementCommands.Open, fileName, oldFileName, name: clientObj.displayName, color: clientObj.color, clientId: clientId })); // Send GDB output to the client
+                if (thisClientObj.openFile && thisClientObj != clientObj)
+                    if (thisClientObj.openFile.name != fileName || thisClientObj.openFile.name == oldFileName) // TODO choose one
+                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.MouseUpdate, fileName, oldFileName, name: clientObj.displayName, color: clientObj.color, clientId: clientId })); // Send GDB output to the client
+            });
         }
         /**
          * Build and run the C++ executable in a Docker container with sandbox folder access.
@@ -1361,10 +1400,13 @@ bash `.trim().replaceAll('\n', "");
                         // });
                         break;
                     case types_1.WebSocketMessageType.MouseUpdate:
-                        replicateFunction((thisClientWs, thisClientId) => {
-                            if (clientSession.getClientObjectById(thisClientId).canEdit)
-                                thisClientWs.send(JSON.stringify({ ...messageJSON, clientId, displayName: clientObj.displayName, color: clientObj.color })); // TODO Sanitize this
-                        }, clientObj);
+                        if (clientObj.openFile)
+                            replicateFunction((thisClientWs, thisClientId, thisClientObj) => {
+                                if (!thisClientObj.openFile.name)
+                                    return;
+                                if (clientSession.getClientObjectById(thisClientId).canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
+                                    thisClientWs.send(JSON.stringify({ ...messageJSON, clientId, displayName: clientObj.displayName, color: clientObj.color })); // TODO Sanitize this
+                            }, clientObj);
                         break;
                     case types_1.WebSocketMessageType.CodeChange:
                         if (!clientObj.canEdit)
@@ -1386,19 +1428,20 @@ bash `.trim().replaceAll('\n', "");
                                     console.log("Failed saving file!");
                                 // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
                                 // checkSyntaxTimeout = setTimeout(() => {
-                                clientObj.openFile.editorMode.checkCodeSyntax(messageJSON.body, clientObj.openFile).then(json => {
-                                    if (!JSON.parse(json)[0])
-                                        return replicateFunction((clientWs, localClientId) => {
+                                if (clientObj.openFile.editorMode.checkCodeSyntax)
+                                    clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
+                                        if (!JSON.parse(json)[0])
+                                            return replicateFunction((clientWs, localClientId) => {
+                                                if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
+                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
+                                            });
+                                        replicateFunction((clientWs, localClientId) => {
                                             if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
+                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
                                         });
-                                    replicateFunction((clientWs, localClientId) => {
-                                        if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
+                                    }).catch(err => {
+                                        console.error('syntax checker error: ' + err);
                                     });
-                                }).catch(err => {
-                                    console.error('syntax checker error: ' + err);
-                                });
                                 // }, 400);
                             });
                         }
@@ -1459,7 +1502,7 @@ bash `.trim().replaceAll('\n', "");
                                 break;
                             //  TODO Make this so it just return name and make seperate function for fle content, which will be called only when opening the file on the client. STORE IT IN CACHE, ADD A DIRTY VERIFICATION TO NOT SEND THE SAME SHI MULTIPLE TIMES DONT OPEN THE EDITOR UNTIL THE FILE HAS LOADED ON THE CLIENT SEND THE FILES ON  HANDSHAKE MAKE SURE IT IS ALL REPLICATED
                             case types_3.FileManagementCommands.List:
-                                listFiles(clientFilesPath);
+                                sendListFiles(clientFilesPath);
                                 break;
                             case types_3.FileManagementCommands.Rename:
                                 if (!clientObj.canEdit)
@@ -1811,7 +1854,7 @@ bash `.trim().replaceAll('\n', "");
             }
             catch (err) {
                 console.error("Command execution error:", err);
-                ws.send(JSON.stringify({ error: true, type: types_1.WebSocketMessageType.Error, message: "Execution failed." }));
+                ws.send(JSON.stringify({ error: true, type: types_1.WebSocketMessageType.Error, body: "Server execution failed: " + new Error(err) }));
             }
         });
         // First time, setup breakpoints manually and run
@@ -1910,7 +1953,7 @@ bash `.trim().replaceAll('\n', "");
                         newHost.sendMessage({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "HOST", body: "You're now the host of this session." });
                     }
                 replicateFunction((clientWs) => {
-                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "DISCONECT", session, thisClientId: clientId, thisSessionId: sessionId, body: clientObj?.displayName + " has left." }));
+                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ColabData, ...clientInfo(clientObj), colabCommand: "DISCONECT", session, body: clientObj?.displayName + " has left." }));
                 }, clientObj);
                 console.info('session is still active');
                 // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, body: "$: Client " + clientId + " disconnected!"});
@@ -1932,7 +1975,7 @@ bash `.trim().replaceAll('\n', "");
                 if (!thisClientWs)
                     return;
                 if (excludeClientId != thisClientId)
-                    callback(thisClientWs, thisClientId);
+                    callback(thisClientWs, thisClientId, clientSession.clients.get(thisClientId));
             });
         }
     });

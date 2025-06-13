@@ -42,9 +42,7 @@ CMD bash `
 //     x11vnc -display :1 -rfbport 5900 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim()
 
 
-checkCodeSyntax(sessionObj: EditorSession, file: EditorFile) {
-  return;
-}
+
 
 async onBuild(res, clientSession: EditorSession): Promise<number> {
   return new Promise((resolve) => {

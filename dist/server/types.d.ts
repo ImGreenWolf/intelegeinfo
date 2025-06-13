@@ -79,7 +79,7 @@ export declare class EditorFile {
     constructor(session: EditorSession, name: string, content?: string, onCreate?: (this: EditorFile) => void);
     delete(clientObj: any): void;
     rename(newName: any, clientObj: any): void;
-    openFile(clientObj: ClientObject, shared?: any): void;
+    openFile(clientObj: ClientObject, shared?: any): Promise<void>;
     changeContent(content: any): void;
 }
 export {};
