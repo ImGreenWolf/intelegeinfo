@@ -1261,8 +1261,10 @@ bash `.trim().replaceAll('\n', "");
                         // console.log(messageJSON.buffer);
                         try {
                             if (messageJSON.started) {
-                                (0, child_process_1.exec)('sudo  modprobe -r v4l2loopback');
+                                (0, child_process_2.execSync)('sudo modprobe -r v4l2loopback');
                                 const video = (0, child_process_1.exec)('sudo modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1');
+                                video.stdout.pipe(process.stdout);
+                                video.stderr.pipe(process.stdout);
                                 video.on('close', data => console.log('added camera. ' + data.toString()));
                                 console.log('added camera');
                             }

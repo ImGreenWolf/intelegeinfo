@@ -1578,8 +1578,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     try {
                         if(messageJSON.started)
                         {
-                            exec('sudo  modprobe -r v4l2loopback')
+                            execSync('sudo modprobe -r v4l2loopback')
                             const video = exec('sudo modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1')
+                            video.stdout.pipe(process.stdout)
+                            video.stderr.pipe(process.stdout)
+
                             video.on('close', data => console.log('added camera. ' + data.toString()))
                             console.log('added camera')
                         } else
