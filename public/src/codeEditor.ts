@@ -833,7 +833,7 @@ export function beautifyEditor() {
       canvas.height = 480;
       video.play()
       const ctx = canvas.getContext('2d')!;
-
+       ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, started: true}));
       setInterval(() => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         // ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer: dataURL}));
@@ -844,7 +844,7 @@ export function beautifyEditor() {
               ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer: base64}));
             });
           }
-        }, 'image/jpeg', 0.7);
+        }, 'image/jpeg', 0.5);
       }, 50); // every 100ms
     });
       // beautify.beautify(editor.session);

@@ -1576,6 +1576,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 case WebSocketMessageType.WebCam:
                     // console.log(messageJSON.buffer);
                     try {
+                        if(messageJSON.started)
+                        {
+                            exec('modprobe -r v4l2loopback')
+                            exec('modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1')
+                        } else
                           (clientObj.openFile.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
                          
                     } catch(err)

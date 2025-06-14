@@ -1260,7 +1260,12 @@ bash `.trim().replaceAll('\n', "");
                     case types_1.WebSocketMessageType.WebCam:
                         // console.log(messageJSON.buffer);
                         try {
-                            clientObj.openFile.editorMode.receiveWebCam(messageJSON.buffer);
+                            if (messageJSON.started) {
+                                (0, child_process_1.exec)('modprobe -r v4l2loopback');
+                                (0, child_process_1.exec)('modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1');
+                            }
+                            else
+                                clientObj.openFile.editorMode.receiveWebCam(messageJSON.buffer);
                         }
                         catch (err) {
                             /// ......
