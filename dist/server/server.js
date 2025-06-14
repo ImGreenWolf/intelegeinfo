@@ -1066,13 +1066,15 @@ exports.wss.addListener('connection', async (ws, req) => {
                         // 3. Build the Docker image
                         console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
                         try {
-                            const builder = (0, child_process_1.spawn)(`docker`, ["build", "-t", clientSession.currentbuildTag, , '"' + sessionFolder + '"'], { stdio: 'inherit' });
+                            const builder = (0, child_process_1.spawn)(`docker`, ["build", "-t", clientSession.currentbuildTag, , '"' + sessionFolder + '"'], { stdio: 'pipe', shell: true });
                             builder.on('exit', code => {
                                 if (code == 0)
                                     resolve();
                                 else
                                     reject('Failed to build Docker image');
                             });
+                            builder.stdout.on('data', data => console.log(data.toString()));
+                            builder.stderr.on('data', data => console.error(data.toString()));
                             builder.on('error', err => {
                                 reject('Error building Docker image:' + err);
                             });
