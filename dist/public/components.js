@@ -38,6 +38,8 @@ export function createNode(tag, options) {
                 elem.setAttribute(attribute.name, attribute.value);
         if (options.htmlSting)
             elem.innerHTML = options.htmlSting;
+        if (options.onclick)
+            elem.onclick = options.onclick;
     }
     return elem;
 }
@@ -130,10 +132,10 @@ export class Dock extends IElement {
         });
         const container = createNode('div', { css: `border: 1px solid #ffffff61; position: relative;display: flex; gap: 0.5em; height: 50px; padding: 0.5em; align-items: flex-end; justify-content: space-between; background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;`, html: arr });
         const base = createNode('div', {
-            css: "display: flex; justify-content: center; flex-direction: column; grid-row: 4/5; width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
+            css: "display: flex; justify-content: center; flex-direction: column; grid-row: -2/-1; width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
             html: [createNode('p', { htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; margin: 0.25em; font-size: 1.25em;  color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;" }), container]
         });
-        updatePositions(0, 0);
+        requestAnimationFrame(() => updatePositions(10, 10));
         function updatePositions(x, y) {
             const translateOffsetX = 0; // base.offsetWidth/2
             const translateOffsetY = 0; //base.offsetHeight/2

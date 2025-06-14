@@ -35,6 +35,7 @@ export declare enum ConsoleMessageType {
     DebugProgram = "debugProgram"
 }
 export declare function displayMessagePopup(message: any): void;
+export declare function toggleCamera(): void;
 export declare function beautifyEditor(): void;
 export declare function undo(): void;
 export declare function redo(): void;

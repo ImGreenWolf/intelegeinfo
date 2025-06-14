@@ -340,6 +340,8 @@ let session;
 let cmdId = 0;
 let variables = [];
 let canvas;
+let cameraEnabled = false;
+let videoStream;
 const variableArrayIndexes = [];
 const editorSessions = new Map();
 const editor = ace.edit("editor", {
@@ -621,34 +623,51 @@ var beautify = ace.require("ace/ext/beautify"); // get reference to extension
 function bufferToBase64(buf) {
     return btoa(String.fromCharCode(...new Uint8Array(buf)));
 }
+export function toggleCamera() {
+    cameraEnabled = !cameraEnabled;
+    if (!cameraEnabled) {
+        // videoStream.getTracks[0].stop()
+        if (!videoStream)
+            return;
+        const tracks = videoStream.getTracks();
+        tracks.forEach((track) => {
+            track.stop();
+        });
+        document.getElementById('camera-video')?.remove();
+        document.getElementById('camera-canvas')?.remove();
+    }
+    else
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+            videoStream = stream;
+            const video = document.createElement('video');
+            video.width = 640;
+            video.height = 480;
+            document.body.appendChild(video);
+            video.srcObject = stream;
+            const canvas = document.createElement('canvas');
+            video.id = 'camera-video';
+            canvas.id = 'camera-canvas';
+            canvas.width = 640;
+            canvas.height = 480;
+            video.play();
+            const ctx = canvas.getContext('2d');
+            ws.send(JSON.stringify({ type: WebSocketMessageType.WebCam, started: true }));
+            setInterval(() => {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                // ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer: dataURL}));
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        blob.arrayBuffer().then(buffer => {
+                            const base64 = bufferToBase64(buffer);
+                            ws.send(JSON.stringify({ type: WebSocketMessageType.WebCam, buffer: base64 }));
+                        });
+                    }
+                }, 'image/jpeg', 0.7);
+            }, 100); // every 100ms
+        });
+}
 export function beautifyEditor() {
-    // const ws = new WebSocket('ws://localhost:8080');
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-        const video = document.createElement('video');
-        video.width = 640;
-        video.height = 480;
-        document.body.appendChild(video);
-        video.srcObject = stream;
-        const canvas = document.createElement('canvas');
-        canvas.width = 640;
-        canvas.height = 480;
-        video.play();
-        const ctx = canvas.getContext('2d');
-        ws.send(JSON.stringify({ type: WebSocketMessageType.WebCam, started: true }));
-        setInterval(() => {
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            // ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer: dataURL}));
-            canvas.toBlob(blob => {
-                if (blob) {
-                    blob.arrayBuffer().then(buffer => {
-                        const base64 = bufferToBase64(buffer);
-                        ws.send(JSON.stringify({ type: WebSocketMessageType.WebCam, buffer: base64 }));
-                    });
-                }
-            }, 'image/jpeg', 0.7);
-        }, 100); // every 100ms
-    });
-    // beautify.beautify(editor.session);
+    beautify.beautify(editor.session);
 }
 export function undo() {
     editor.session.getUndoManager().redo(editor.session);
@@ -892,8 +911,9 @@ class FileElement {
         const elem = createNode('div', { css: 'background-color: #' + user.color });
         this.Users.push({ ...user, elem });
         this.usersContainer.appendChild(elem);
-        if (lastFileName != undefined)
-            elem.animate([{ flexGrow: '0' }, { flexGrow: '1' }], this.animOptions);
+        // TODO fix this
+        // if(lastFileName != undefined || user.id != wsClientId)
+        elem.animate([{ flexGrow: '0' }, { flexGrow: '1' }], this.animOptions);
         // requestAnimationFrame(() => elem.style.flexGrow = "1")
     }
     removeUser(userId) {
@@ -915,6 +935,11 @@ function onFileCreate(fileName) {
     // const command = JSON.parse(messageBodyJson);
     // const fileName = command.content;
     const file = new FileElement(fileName);
+    //open newly created file
+    if (namePrompt?.innerText == fileName) {
+        openFile(namePrompt.innerText);
+        namePrompt.innerText = "";
+    }
     if (editorSessions.has(fileName)) {
         const session = editorSessions.get(fileName);
         if (!session.fileElement) {
@@ -951,10 +976,8 @@ export function createFileNamePrompt() {
         if (e.key === "Enter") {
             e.preventDefault();
             createFile(this.innerText);
-            setTimeout(() => {
-                openFile(this.innerText);
-                this.innerText = "";
-            }, 300);
+            // setTimeout(() => {
+            // }, 300);
             this.style.display = "none";
             this.removeEventListener("keypress", handleEnterKey);
         }
@@ -1194,7 +1217,7 @@ function clearGhostMarkers(editor) {
         editor._ghostMarkerIds = [];
     }
 }
-function writeOutput(data, messageJson, manuallScroll) {
+function writeOutput(data, messageJson, manuallScroll, manualMessageType) {
     if (outputArea) {
         const msgText = data.replaceAll("<", "&lt").replaceAll(">", "&gt");
         if (messageJson && messageJson.messageType) {
@@ -1202,7 +1225,7 @@ function writeOutput(data, messageJson, manuallScroll) {
             msgId = localmsgId;
             if (messageJson.id === -1)
                 console.error(new Error("invalid message id: " + messageJson));
-            const messageType = messageJson.messageType;
+            const messageType = manualMessageType ? manualMessageType : messageJson.messageType;
             const messageClientId = messageJson.clientId;
             let messageGroup = outputArea;
             switch (messageType) {
@@ -1255,7 +1278,7 @@ function writeOutput(data, messageJson, manuallScroll) {
                     messageGroup.innerHTML += `<pre class="console-program-${messageJson.type == WebSocketMessageType.End ? "return" : messageJson.type == WebSocketMessageType.Console ? "input" : "output"}">${data} </pre>`;
                     break;
                 default:
-                    outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${data}</pre>`;
+                    outputArea.innerHTML += `<span class="console-output" msg-id="${msgId}">${data}</span>`;
                     break;
             }
         }
@@ -1273,8 +1296,9 @@ export function joinsession() {
     shareContainer.innerHTML =
         `
 
-    <script src="../dist/public/emailCodeVerificationClient.js" async type="text/javascript"></script>
+   
     <form id="codeForm" method="get">
+       <script src="../dist/public/emailCodeVerificationClient.js" async type="text/javascript"></script>
         <div class="text-container">
             <h1>Join a session</h1>
         </div>
@@ -1298,6 +1322,9 @@ export function joinsession() {
     
     `;
     document.body.appendChild(shareContainer);
+    shareContainer.appendChild(createNode('button', { css: 'position: absolute; top: 20px; left: 20px;', innerText: 'x', onclick(ev) {
+            shareContainer.remove();
+        }, }));
     const script = document.createElement('script');
     const file = "/client/scripts/emailCodeVerificationClient.js";
     script.setAttribute('src', file);
@@ -1361,7 +1388,7 @@ export function copySessionLink() {
             <option value='1'>Require Permission</option>
           </select>
       </label>
-      <button type="submit" id="submit-create-session">Create Session</button>
+      <button type="submit" id="submit-create-session" style='height: 2lh'>Create Session</button>
       <p id='session-create-error'></p>
     </form>
     <div id='connect-data-container'>
@@ -2249,7 +2276,7 @@ ws.onmessage = (event) => {
                     cursors.get(eventJson.clientId)?.remove();
                     // document.getElementById('cursor-'+colabClientId)?.remove()
                     // cursors.delete(colabClientId)
-                    writeOutput(eventJson.body, eventJson);
+                    writeOutput(eventJson.body, eventJson, false, ConsoleMessageType.SessionInfo);
                     const collabClient = clients.find((val) => { try {
                         return val.editorSession.fileElement?.Users.find(val => val.id == colabClientId) != undefined;
                     }
@@ -2262,7 +2289,7 @@ ws.onmessage = (event) => {
                     collabClient.editorSession?.fileElement?.removeUser(colabClientId);
                     break;
                 case "HOST":
-                    writeOutput(eventJson.body, eventJson);
+                    writeOutput(eventJson.body, eventJson, false, ConsoleMessageType.SessionInfo);
                 case "JOIN":
                     // a new client joined
                     addMouseListener(eventJson.session);

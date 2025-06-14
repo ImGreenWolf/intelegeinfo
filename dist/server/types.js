@@ -386,8 +386,10 @@ class EditorFile {
         // const mode =  getEditorMode(this.name).constructor
         const editorModeClass = getEditorMode(this.name);
         this.editorMode = new editorModeClass;
-        if ((content == undefined || content == '') && editorModeClass.defaultText)
+        if ((content == undefined || content == '') && editorModeClass.defaultText != undefined)
             this.content = editorModeClass.defaultText.toString();
+        else if (content == undefined)
+            this.content = '';
         else
             this.content = content;
         try {

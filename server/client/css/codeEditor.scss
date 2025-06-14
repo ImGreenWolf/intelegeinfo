@@ -328,12 +328,12 @@ header
         p 
         {
             flex-grow: 1;
-            margin: 0;
+            margin: 0 0.5em;
             padding-top: 0.5em;
         }
         &#active-open-file
         {
-            border: 1px solid theme.$text-color;
+            // border: 1px solid theme.$text-color;
             cursor: default;
             background-color: theme.$background-color;
 
@@ -471,7 +471,8 @@ header
     height: 100%;
     padding: 5px;
     box-sizing: content-box;
-    
+    border-radius: 50%;
+    aspect-ratio: 1;
     &::after
     {
         content: '';
@@ -497,11 +498,7 @@ header
     padding:  1px 5px 1px 5px;
     align-items: center;
 
-    .create-file
-    {
-        border-radius: 50%;
-        aspect-ratio: 1;
-    }
+    
 
     #saveProject.saved
     {
@@ -510,6 +507,7 @@ header
 
 
 }
+
 vl
 {
     width: 1px;
@@ -520,6 +518,7 @@ vl
 #name-prompt
 {
     position: relative;
+    height: 80%;
 }
 #name-prompt::after
 {
@@ -1526,6 +1525,7 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
         height: min-content;
         border-radius: 25px;
         display: flex;
+        align-self: center;
         // justify-content: stretch;
         // align-items: stretch;
         // overflow: hidden;

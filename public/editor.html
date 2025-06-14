@@ -90,6 +90,9 @@ int main() {
 
                         </div>              
                         <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
+                        <div class="ridge-gradient inset-button black circle">
+                            <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()"></button>
+                        </div>
                     </div>
                     <div id="session-controls">                   
                         <div class="slide-out-display">
@@ -97,10 +100,11 @@ int main() {
                                 <button onclick="document.getElementById('slide-out').classList.toggle('enabled')" id="slide-out-button">&ltri;</button>
                             </div>
                             <div class="slide-out-container" id="slide-out">
+                                <button onclick="window.editor.toggleCamera()" id="toggle-camera">📷</button>
                                 <button onclick="window.editor.beautifyEditor()">Beautify</button>
                                 <button onclick="window.editor.redo()" id="editor-undo">&circlearrowright;</button>
                                 <button onclick="window.editor.undo()" id="editor-redo">&circlearrowleft;</button>
-                                <button onclick="window.editor.downloadEditorFiles()" id="editor-download">&DownArrowBar;</button>
+                                <button onclick="window.editor.downloadEditorFiles()" id="editor-download">&DownArrowBar;</button> 
                             </div>
                             <vl></vl>
                         </div>
@@ -110,9 +114,7 @@ int main() {
                         <div class="ridge-gradient inset-button black">
                             <button class="share-session" id="saveProject" onclick="window.editor.saveProject()">save</button>
                         </div>
-                        <div class="ridge-gradient inset-button black circle">
-                            <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()"></button>
-                        </div>
+                        
                     </div>
                 </div>
                 <div id="editor" translate="no">   

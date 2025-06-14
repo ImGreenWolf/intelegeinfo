@@ -355,11 +355,10 @@ header {
 }
 #editor-tabs .file-tab p, .tabs-container .file-tab p {
   flex-grow: 1;
-  margin: 0;
+  margin: 0 0.5em;
   padding-top: 0.5em;
 }
 #editor-tabs .file-tab#active-open-file, .tabs-container .file-tab#active-open-file {
-  border: 1px solid white;
   cursor: default;
   background-color: rgb(20, 20, 20);
 }
@@ -469,6 +468,8 @@ header {
   height: 100%;
   padding: 5px;
   box-sizing: content-box;
+  border-radius: 50%;
+  aspect-ratio: 1;
 }
 #createFile::after {
   content: "";
@@ -490,10 +491,6 @@ header {
   padding: 1px 5px 1px 5px;
   align-items: center;
 }
-#session-controls .create-file {
-  border-radius: 50%;
-  aspect-ratio: 1;
-}
 #session-controls #saveProject.saved {
   opacity: 0.5;
 }
@@ -505,6 +502,7 @@ vl {
 
 #name-prompt {
   position: relative;
+  height: 80%;
 }
 
 #name-prompt::after {
@@ -1262,6 +1260,7 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   height: min-content;
   border-radius: 25px;
   display: flex;
+  align-self: center;
 }
 .ridge-gradient.inset-button.black {
   border-radius: 5px;
