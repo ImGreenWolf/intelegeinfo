@@ -2113,6 +2113,9 @@ ws.onmessage = (event) => {
                 case 'spawnGUI':
                     displaynoVNC(activeConsole.element);
                     break;
+                case 'spawn':
+                    onRun();
+                    break;
                 default:
                     if (eventJson.error) {
                         onExit();

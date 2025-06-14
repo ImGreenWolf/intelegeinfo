@@ -1038,6 +1038,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 if (clientSession.sessionContainer && clientSession.currentbuildTag == buildTag + "_" + editorMode.dockerSafeTag) {
                     console.log('Container already running, executing command...');
+                    replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'started' }, types_1.WebSocketMessageType.ExecuteStatus));
                     resolve(clientSession.sessionContainer);
                     return;
                 }
@@ -1101,6 +1102,8 @@ exports.wss.addListener('connection', async (ws, req) => {
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
+-m 256MB \
+--cpus="0.25" \
 -di \
 --rm \
 ${clientObj.openFile.editorMode.runParams(clientObj)} \

@@ -1296,6 +1296,7 @@ if(!editorMode)
 if(clientSession.sessionContainer && clientSession.currentbuildTag == buildTag + "_" + editorMode.dockerSafeTag)
 {
     console.log('Container already running, executing command...')
+    replicateFunction((ws,id, obj) => obj.sendMessage({status: 'started'}, WebSocketMessageType.ExecuteStatus))
     resolve(clientSession.sessionContainer)
     return;
 }
@@ -1370,6 +1371,8 @@ const runCommand =
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
+-m 256MB \
+--cpus="0.25" \
 -di \
 --rm \
 ${clientObj.openFile.editorMode.runParams(clientObj)} \
