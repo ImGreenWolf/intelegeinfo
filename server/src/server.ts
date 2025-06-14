@@ -1331,7 +1331,7 @@ if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag +
   console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
   
     try {
-        const builder = spawn(`docker build -t ${clientSession.currentbuildTag} "${sessionFolder}"`, { stdio: 'inherit' });
+        const builder = spawn(`docker`, ["build" ,"-t", clientSession.currentbuildTag,, '"' +sessionFolder+'"'], { stdio: 'inherit' });
         builder.on('exit', code => {
         if(code == 0)
             resolve()
