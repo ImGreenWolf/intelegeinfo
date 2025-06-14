@@ -2129,7 +2129,6 @@ class TokenTooltip extends Tooltip {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
 
-  displayMessagePopup(sessionId)
   window.onbeforeunload = (ev => {
     
     if(modifiedFile)

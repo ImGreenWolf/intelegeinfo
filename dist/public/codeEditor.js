@@ -1634,7 +1634,6 @@ const ws = new WebSocket(WSUrl);
 ws.addEventListener('open', (ev) => {
     const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
     //writeOutput(sessionId || "No session ID found in URL.");
-    displayMessagePopup(sessionId);
     window.onbeforeunload = (ev => {
         if (modifiedFile)
             ev.preventDefault();
