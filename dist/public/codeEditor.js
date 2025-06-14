@@ -2468,14 +2468,14 @@ export function sendDebugCommand(cmd) {
     if (cmd == "-exec-run") {
         cmdBut?.classList.add("debug-control");
         cmdBut?.classList.remove("execute-control");
-        if (!processRunning)
-            onRun();
+        // if(!processRunning)
+        //   onRun()
     }
     else if (cmd == "execute") {
         cmdBut?.classList.remove("debug-control");
         cmdBut?.classList.add("execute-control");
-        if (!processRunning)
-            onRun();
+        // if(!processRunning)
+        //   onRun()
     }
     sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
     if (cmd == "-exec-next" || cmd == "-exec-continue")
@@ -2490,8 +2490,8 @@ let processRunning;
 export function playback() {
     sendDebugCommand("-stack-list-variables --all-values");
     //  TODO Stop playback
-    if (!processRunning)
-        onRun();
+    // if(!processRunning)
+    //     onRun()
     let i = debugLine;
     updatePlaybackSpeed();
 }

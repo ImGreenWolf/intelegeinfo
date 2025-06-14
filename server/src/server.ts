@@ -1399,7 +1399,7 @@ bash `.trim().replaceAll('\n', "")
         setTimeout(async () => {
                     // TODO Spawn GUI on client 
                     //   TODO maybe remove ignore self client to show when its ready and compiling
-            replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn'}, WebSocketMessageType.ExecuteStatus), clientObj)
+            replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn'}, WebSocketMessageType.ExecuteStatus))
 
             if(hasGUI && clientSession.displayServer == 0) // doesnt have display server
             {

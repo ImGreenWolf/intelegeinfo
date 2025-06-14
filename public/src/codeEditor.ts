@@ -3268,13 +3268,13 @@ export function sendDebugCommand(cmd: string) {
   if (cmd == "-exec-run") {
     cmdBut?.classList.add("debug-control");
     cmdBut?.classList.remove("execute-control");
-    if(!processRunning)
-      onRun()
+    // if(!processRunning)
+    //   onRun()
   } else if (cmd == "execute") {
     cmdBut?.classList.remove("debug-control");
     cmdBut?.classList.add("execute-control");
-    if(!processRunning)
-      onRun()
+    // if(!processRunning)
+    //   onRun()
   }
 
   sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
@@ -3291,8 +3291,8 @@ let processRunning: boolean;
 export function playback() {
   sendDebugCommand("-stack-list-variables --all-values");
   //  TODO Stop playback
-  if(!processRunning)
-      onRun()
+  // if(!processRunning)
+  //     onRun()
   let i = debugLine;
   updatePlaybackSpeed();
 }
