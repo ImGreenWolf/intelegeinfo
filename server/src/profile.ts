@@ -39,6 +39,45 @@ router.use(cookieParser())
 //     if(!userId) throw 'couldnt get id'
 //     return userId;
 // }
+router.post('/update', (req, res) => {
+
+    if (!users.getJWT(req))  
+    {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+     const userId =users.getClientId(users.getJWT(req));
+    const {color} = req.body
+    console.log(req.body)
+    console.log()
+    try {
+        const userColor = (color as string).slice(1)
+        if(userColor.length != 6 && color[0] == '#')
+            throw "invalid color"
+        prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                userColor
+            }
+        }).then(value => {
+            res.send('Updated')
+        })
+
+    }
+    catch (err)
+    {
+        res.status(500).send(err)
+    }
+    
+})
+
+
+router.get('/logout', (req, res) => {
+
+    res.clearCookie('token')
+    res.json({redir: '/', message: "log out sucecsesfull!"})
+})
 
 router.use('/', (req, res) => {
 
@@ -56,7 +95,6 @@ router.use('/', (req, res) => {
             try {
 
                 const userId =users.getClientId(users.getJWT(req));
-                console.log("user id" + userId)
                     
                  users.getUserData(userId as number).then(async user => {
                     interface webParams extends users.UserNoPassword
@@ -101,11 +139,6 @@ router.use('/', (req, res) => {
  
 })
 
-router.get('/logout', (req, res) => {
-
-    res.clearCookie('token')
-    res.json({redir: '/', message: "log out sucecsesfull!"})
-})
 
 export default router;
 

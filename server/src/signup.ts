@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from './dbClient';
 import {onLoggedIn} from "./login"
 import path from 'path';
+import { randomHexColor } from './types';
 
 
 const router = express.Router();
@@ -40,7 +41,8 @@ function onSignedIn(params: any, res:Response, password: string, req)
       email,
       username,
       password,
-      loginMethod
+      loginMethod,
+      userColor: randomHexColor(),
     }
   }).then((user) => {
       if(!user) res.status(400).json({ error: 'Failed to create user' });

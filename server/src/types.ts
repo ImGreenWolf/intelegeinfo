@@ -22,7 +22,7 @@ export class ClientObject {
     CWebSocket: WebSocket;
     canEdit: boolean = true;
     canChat: boolean = true;
-    color: string = Math.floor(Math.max(80, Math.random() * 255) ).toString(16) + Math.floor(Math.max(80,Math.random() * 255 )).toString(16) + Math.floor(Math.max(80,Math.random() * 255 )).toString(16);
+    color: string = randomHexColor();
     editorMode: typeof EditorMode = CppMode;
     openFileName: string
     openFile: EditorFile;
@@ -562,4 +562,10 @@ function getEditorMode(fileName: string): typeof EditorModes.EditorMode
         
 
     return  EditorModes.Text;
+}
+
+
+export function randomHexColor()
+{
+    return Math.floor(Math.max(80, Math.random() * 255) ).toString(16) + Math.floor(Math.max(80,Math.random() * 255 )).toString(16) + Math.floor(Math.max(80,Math.random() * 255 )).toString(16);
 }

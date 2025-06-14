@@ -37,6 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EditorFile = exports.EditorSession = exports.EditorPermission = exports.ClientObject = void 0;
+exports.randomHexColor = randomHexColor;
 const uuid_1 = require("uuid");
 const types_1 = require("../../dist/shared/types");
 const editor_modes_1 = require("./editor-modes");
@@ -54,7 +55,7 @@ class ClientObject {
     CWebSocket;
     canEdit = true;
     canChat = true;
-    color = Math.floor(Math.max(80, Math.random() * 255)).toString(16) + Math.floor(Math.max(80, Math.random() * 255)).toString(16) + Math.floor(Math.max(80, Math.random() * 255)).toString(16);
+    color = randomHexColor();
     editorMode = editor_modes_1.CppMode;
     openFileName;
     openFile;
@@ -501,4 +502,7 @@ function getEditorMode(fileName) {
             return mode;
     }
     return EditorModes.Text;
+}
+function randomHexColor() {
+    return Math.floor(Math.max(80, Math.random() * 255)).toString(16) + Math.floor(Math.max(80, Math.random() * 255)).toString(16) + Math.floor(Math.max(80, Math.random() * 255)).toString(16);
 }

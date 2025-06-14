@@ -82,4 +82,5 @@ export declare class EditorFile {
     openFile(clientObj: ClientObject, shared?: any): Promise<void>;
     changeContent(content: any): void;
 }
+export declare function randomHexColor(): string;
 export {};

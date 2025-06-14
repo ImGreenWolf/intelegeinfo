@@ -12,6 +12,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const login_1 = require("./login");
 const path_1 = __importDefault(require("path"));
+const types_1 = require("./types");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/signup.html"));
@@ -35,7 +36,8 @@ function onSignedIn(params, res, password, req) {
             email,
             username,
             password,
-            loginMethod
+            loginMethod,
+            userColor: (0, types_1.randomHexColor)(),
         }
     }).then((user) => {
         if (!user)

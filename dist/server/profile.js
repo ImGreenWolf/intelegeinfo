@@ -41,6 +41,7 @@ const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const dbClient_1 = __importDefault(require("./dbClient"));
 const users = __importStar(require("./usersManager"));
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
@@ -69,6 +70,37 @@ router.use((0, cookie_parser_1.default)());
 //     if(!userId) throw 'couldnt get id'
 //     return userId;
 // }
+router.post('/update', (req, res) => {
+    if (!users.getJWT(req)) {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+    const userId = users.getClientId(users.getJWT(req));
+    const { color } = req.body;
+    console.log(req.body);
+    console.log();
+    try {
+        const userColor = color.slice(1);
+        if (userColor.length != 6 && color[0] == '#')
+            throw "invalid color";
+        dbClient_1.default.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                userColor
+            }
+        }).then(value => {
+            res.send('Updated');
+        });
+    }
+    catch (err) {
+        res.status(500).send(err);
+    }
+});
+router.get('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.json({ redir: '/', message: "log out sucecsesfull!" });
+});
 router.use('/', (req, res) => {
     // const token = req.cookies.token
     if (!users.getJWT(req)) {
@@ -81,7 +113,6 @@ router.use('/', (req, res) => {
     else
         try {
             const userId = users.getClientId(users.getJWT(req));
-            console.log("user id" + userId);
             users.getUserData(userId).then(async (user) => {
                 const params = user;
                 const projects = await users.listAllProjects(userId);
@@ -106,10 +137,6 @@ router.use('/', (req, res) => {
         catch (err) {
             res.status(403).json({ error: err });
         }
-});
-router.get('/logout', (req, res) => {
-    res.clearCookie('token');
-    res.json({ redir: '/', message: "log out sucecsesfull!" });
 });
 exports.default = router;
 function parseUserInfoInFile(userId, fileSrc, params) {
