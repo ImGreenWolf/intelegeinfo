@@ -1,8 +1,22 @@
+import { WebSocketMessageType } from "./codeEditor.js";
 class IElement {
+    parentElement;
+    constructor(parentElem) {
+        this.appendRender(parentElem);
+    }
     stylesheet(style) {
         const elem = document.createElement('style');
         elem.innerText = style;
         return elem;
+    }
+    appendRender(parentElem) {
+        if (parentElem) {
+            this.parentElement = parentElem;
+            return new Promise(async (resolve, reject) => {
+                parentElem.appendChild(this.render());
+                resolve();
+            });
+        }
     }
 }
 export function createNode(tag, options) {
@@ -80,7 +94,7 @@ export class Dock extends IElement {
             padding: 0.25em;
             background-color: rgba(19, 19, 19, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.13);
-            min-width: 25px;
+            min-width: 50px;
             border-radius: 5px;
             backdrop-filter: blur(5px);
         }
@@ -116,7 +130,7 @@ export class Dock extends IElement {
         });
         const container = createNode('div', { css: `border: 1px solid #ffffff61; position: relative;display: flex; gap: 0.5em; height: 50px; padding: 0.5em; align-items: flex-end; justify-content: space-between; background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;`, html: arr });
         const base = createNode('div', {
-            css: " display: flex; justify-content: center; flex-direction: column; grid-row: 4/5; width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
+            css: "display: flex; justify-content: center; flex-direction: column; grid-row: 4/5; width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
             html: [createNode('p', { htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; margin: 0.25em; font-size: 1.25em;  color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;" }), container]
         });
         updatePositions(0, 0);
@@ -326,4 +340,105 @@ class ImprovedPerlinNoise3D {
         return Math.atan2(gy, gx);
     }
 }
-// Safe usage example:
+var EditorCanvasDrawType;
+(function (EditorCanvasDrawType) {
+    EditorCanvasDrawType["draw"] = "draw";
+    EditorCanvasDrawType["start"] = "start";
+    EditorCanvasDrawType["end"] = "end";
+})(EditorCanvasDrawType || (EditorCanvasDrawType = {}));
+export class EditorCanvas extends IElement {
+    canvas = createNode('canvas');
+    ctx = this.canvas.getContext('2d');
+    h = this.canvas.height;
+    w = this.canvas.width;
+    isDrawing = 0; //0 no, 1 user, 2 remote
+    ws;
+    clientId;
+    strokeIndex = 0;
+    updateSize() {
+        const rect = this.canvas.parentElement.getBoundingClientRect(); // actual size of canvas el. itself
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+        this.h = this.canvas.height;
+        this.w = this.canvas.width;
+        console.log(this.w);
+        this.onUpdate();
+    }
+    render() {
+        if (!this.canvas) {
+            this.canvas = createNode('canvas');
+            this.ctx = this.canvas.getContext('2d');
+        }
+        return this.canvas;
+    }
+    remove() {
+        this.canvas.remove();
+    }
+    async onUpdate() {
+        this.ctx.fillStyle = 'white';
+        this.ctx.strokeStyle = 'black';
+        this.ctx.fillRect(0, 0, this.w, this.h);
+        this.ctx.lineWidth = 1;
+        this.canvas.onmousedown = (ev => {
+            this.isDrawing = 1;
+            this.beginDraw(this.relativeToCanvas({ x: ev.offsetX, y: ev.offsetY }));
+        });
+        this.canvas.onmousemove = (ev => {
+            if (this.isDrawing == 1)
+                this.draw(this.relativeToCanvas({ x: ev.offsetX, y: ev.offsetY }));
+            // setTimeout(() => {
+            //     this.isDrawing = 0 
+            // }, 1000);
+        });
+        this.canvas.onmouseup = (ev => {
+            if (this.isDrawing != 1)
+                return;
+            this.isDrawing = 0;
+            this.endDraw();
+        });
+    }
+    relativeToCanvas(coords) {
+        return { x: coords.x, y: coords.y };
+    }
+    beginDraw(coords) {
+        this.strokeIndex = 0;
+        this.ctx.beginPath();
+        this.ctx.moveTo(coords.x, coords.y);
+        if (this.isDrawing == 1)
+            this.replicateDraw(EditorCanvasDrawType.start, { x: coords.x, y: coords.y, color: 'black', width: 2 });
+    }
+    draw(coords) {
+        this.strokeIndex++;
+        this.ctx.lineTo(coords.x, coords.y);
+        this.ctx.stroke();
+        if (this.strokeIndex % 5 == 0 && this.isDrawing == 1)
+            this.replicateDraw(EditorCanvasDrawType.draw, { x: coords.x, y: coords.y });
+    }
+    endDraw() {
+        this.ctx.stroke();
+        if (this.isDrawing == 1)
+            this.replicateDraw(EditorCanvasDrawType.end, {});
+    }
+    constructor(ws, clientId) {
+        super();
+        this.ws = ws;
+        this.clientId = clientId;
+    }
+    handleReplication(ev) {
+        this.isDrawing = 2;
+        switch (ev.command) {
+            case EditorCanvasDrawType.draw:
+                this.draw({ x: ev.x, y: ev.y });
+                break;
+            case EditorCanvasDrawType.start:
+                this.beginDraw({ x: ev.x, y: ev.y });
+                break;
+            case EditorCanvasDrawType.end:
+                this.endDraw();
+                break;
+        }
+    }
+    replicateDraw(type, args) {
+        this.ws.send(JSON.stringify({ type: WebSocketMessageType.Canvas, command: type, ...args, clientId: this.clientId }));
+    }
+}

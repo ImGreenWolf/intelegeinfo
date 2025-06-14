@@ -10,6 +10,19 @@ class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
     static extension = ['cpp', 'c++'];
     static dockerSafeTag = 'cpp';
+    static defaultText = `//    Compilator C++ online | intelegeinfo.go.ro
+
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    
+    cout<<"Intelege info";
+    
+    return 0;
+}`;
     static dockerFile = `
     # Base image with GCC
     FROM gcc:bookworm

@@ -7,6 +7,7 @@ declare class Python extends EditorMode {
     static extension: string[];
     isInterpreter: boolean;
     runParams: (clientObj: ClientObject) => string;
+    static defaultText: string;
     static dockerFile: string;
     vcam: ChildProcess;
     onBuild(res: any, clientSession: EditorSession): Promise<number>;

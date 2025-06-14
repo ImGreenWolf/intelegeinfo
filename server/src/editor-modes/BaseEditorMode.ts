@@ -8,7 +8,8 @@ abstract class EditorMode {
     static dockerFile: string;
     static dockerSafeTag: string
     static extension: string[];
-     isExecutable: boolean = true
+    static defaultText: string;
+    isExecutable: boolean = true
     runParams(clientObj): string
     {
         return '';

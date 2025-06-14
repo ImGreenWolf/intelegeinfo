@@ -162,7 +162,7 @@ header {
 }
 
 .shadow.inset {
-  box-shadow: rgba(0, 0, 0, 0.18) 17px 10px 11px -7px inset, rgba(0, 0, 0, 0.25) -6px -14px 50px -32px inset;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px -6px 11px 5px inset, rgba(0, 0, 0, 0.25) -1px 6px 18px 4px inset;
   z-index: 13;
   position: absolute;
   top: 0;
@@ -170,7 +170,6 @@ header {
   right: 0;
   bottom: 0;
   overflow: hidden;
-  border-radius: 10px;
   pointer-events: none;
 }
 
@@ -1296,34 +1295,14 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   transform: scale(97%);
 }
 
-.cursor {
-  position: absolute;
-  width: 1rem;
-  height: 1rem;
-  background-image: url("../media/mouse-cursor-svgrepo-com.svg");
+.cursor-container {
+  position: fixed;
   z-index: 100;
   pointer-events: none;
-  contain: layout;
-  background-size: cover;
-  opacity: 0.75;
-  color: green;
+  contain: content;
+  overflow: hidden;
 }
-.cursor.inactive {
-  animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;
-}
-.cursor.touch {
-  background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
-  border: 1px solid white;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-.cursor.pen {
-  background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
-  border: 2px solid white;
-  border-radius: 50%;
-  animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
-}
-.cursor span {
+.cursor-container span {
   position: relative;
   z-index: 99;
   bottom: -0.25rem;
@@ -1338,6 +1317,34 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   backdrop-filter: blur(2px);
   padding: 0.1rem 0.5rem;
   transition-duration: 0.1s;
+}
+.cursor-container .cursor {
+  width: 1rem;
+  height: 1rem;
+  display: inline-block;
+  /* background-image: url(../media/mouse-cursor-svgrepo-com.svg); */
+  position: relative;
+  background-size: cover;
+  backdrop-filter: invert(1);
+  mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+  background-color: #ffffff;
+  mask-size: cover;
+  mix-blend-mode: hue;
+}
+.cursor-container .cursor.inactive {
+  animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;
+}
+.cursor-container .cursor.touch {
+  background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
+  border: 1px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.cursor-container .cursor.pen {
+  background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
+  border: 2px solid white;
+  border-radius: 50%;
+  animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
 }
 
 #session-controls {
@@ -1453,25 +1460,6 @@ form label {
   justify-content: space-between;
 }
 
-/* media queries */
-@media screen and (max-width: 1300px) {
-  .container {
-    grid-template-columns: 2fr 1fr;
-    /* grid-template-rows: auto 500px 0.5fr 300px; */
-    grid-template-areas: "header header" "main output" "buttons output" "sidebar sidebar";
-  }
-  #vector-container {
-    overflow: visible;
-  }
-  #output-container textarea {
-    max-width: 60%;
-    padding: 5px;
-    font-size: 12px;
-  }
-  header #signup, header #login {
-    padding: 5px 10px;
-  }
-}
 #context-menu {
   display: flex;
   flex-direction: column;
@@ -1492,6 +1480,25 @@ form label {
   opacity: 1;
 }
 
+/* media queries */
+@media screen and (max-width: 1300px) {
+  .container {
+    grid-template-columns: 2fr 1fr;
+    /* grid-template-rows: auto 500px 0.5fr 300px; */
+    grid-template-areas: "header header" "main output" "buttons output" "sidebar sidebar";
+  }
+  #vector-container {
+    overflow: visible;
+  }
+  #output-container textarea {
+    max-width: 60%;
+    padding: 5px;
+    font-size: 12px;
+  }
+  header #signup, header #login {
+    padding: 5px 10px;
+  }
+}
 @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
   .container {
     grid-template-columns: 1fr;

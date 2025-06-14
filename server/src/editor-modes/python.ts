@@ -17,6 +17,12 @@ class Python extends EditorMode {
       else 
       return ""
     }
+    static defaultText: string =
+    `#    Compilator Python online | intelegeinfo.go.ro
+
+x = input("Scrie ceva: ")
+
+print("Intelege Info: " + x)`
     static dockerFile = 
     // `
     // # install from python image

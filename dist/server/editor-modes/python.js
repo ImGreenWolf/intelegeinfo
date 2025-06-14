@@ -53,6 +53,11 @@ class Python extends BaseEditorMode_1.default {
         else
             return "";
     };
+    static defaultText = `#    Compilator Python online | intelegeinfo.go.ro
+
+x = input("Scrie ceva: ")
+
+print("Intelege Info: " + x)`;
     static dockerFile = 
     // `
     // # install from python image

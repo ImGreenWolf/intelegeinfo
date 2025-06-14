@@ -668,7 +668,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     function handshake(req: IncomingMessage) {
         const urlParams = new URL("http://intelegeinfo.go.ro/editor"+ req.url).searchParams
         const wssessionId: UUID | undefined = urlParams.get('session') != undefined || urlParams.get('session') as UUID != undefined ? urlParams.get('session') as UUID : recoveredSession ? recoveredSession : undefined;
-
+        let isHost = false;
         //handle heartbeat
         heartbeatInterval = setInterval(() => {
             // server.getConnections(function(error, count) {
@@ -712,7 +712,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
 
                 clientObj = getThisClientSession().getClientObjectById(clientId);
                 clients.set(clientId, ws);
-
+                isHost = false;
                 // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
             }
             else // there is no session, create it.
@@ -728,7 +728,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 if(clientSession && !isShared) {
                     sessionMap.set(clientSession.sessionId, clientSession) // TODO Implement this in EditorSession class & polish it
                 }
-
+                isHost = true
 
                 
             }
@@ -743,24 +743,16 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 shared.updateSession(sessionId, clientSession)
             } 
             
-            connectionReady(true, req)
+            connectionReady(!isHost, req)
         } else
         {
 
             //client connected to new SOLO session
-
-
-            //   clientId = uuidv4(); // Generate a unique ID
-            //   sessionId = clientId; // Use the generated ID as the session ID
-            // sessions.set(clientId, [sessionId]);
-                clientSession = createThisClientSession();
+            clientSession = createThisClientSession();
             
             if(getThisClientSession() != undefined)
             {
                 sessionId = clientSession.sessionId;
-
-                // getThisClientSession().sessionId = sessionId;
-                // getThisClientSession()?.clients.set(clientId); // add client to client list.
                 clientId = getThisClientSession()?.spawnClient(ws, userData)
                 clientObj = getThisClientSession().getClientObjectById(clientId);
 
@@ -770,15 +762,15 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             } else 
             console.error(new Error("Failed to create SOLO session"))
             if(clientObj && shared)
-                {
-                    shared.getSession(sessionId)?.clients.set(clientId, clientObj)
-                    shared.addClient(clientId, sessionId);
-                    shared.updateSession(sessionId, clientSession)
-                }
+            {
+                shared.getSession(sessionId)?.clients.set(clientId, clientObj)
+                shared.addClient(clientId, sessionId);
+                shared.updateSession(sessionId, clientSession)
+            }
             
             clients.set(clientId, ws);
-            // printClientConsoleDebug('solo session: ' + clientSession.sessionId)
-
+            
+                // will always be false
             connectionReady(false, req)
         }
     }
@@ -987,7 +979,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         const urlParams = new URL("ws:/intelegeinfo.go.ro:8080"+req.url).searchParams
         let defaultText: string;
         const clientFilesPath = clientSession.getClientFilesPath();
-        let savedProject: Project;
+        let savedProject: Project | undefined;
         if(urlParams.has("save"))
         {
             try{
@@ -999,7 +991,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 fs.cpSync(path.join(rootDirName,"saved", savedProject.fileUUID), path.join(rootDirName, "cache", sessionId), {recursive: true})
                 project = savedProject;
                 clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
-                
+                console.log(clientSession.files)
                 // fs.renameSync()
                 // defaultText =  
                 // console.log(defaultText)
@@ -1011,31 +1003,34 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             else defaultText = fs.readFileSync("user_code.cpp").toString();
     
        
+        console.log(clientSession.files)
 
-       
         // printClientConsoleInfo("connected to worker: " + process.pid)
 
         //create cache folder for session if its a new one
         const cacheFolderExists = fs.existsSync(path.join(rootDirName, "cache", sessionId));
-        if((!cacheFolderExists || !cooperator && defaultText) || (clientSession.files.length==0 && !savedProject))
+
+                console.log(!cacheFolderExists)
+        console.log(!cooperator)
+        console.log(clientSession.files.length)
+        if((!cacheFolderExists && !cooperator && clientSession.files.length==0) )
         {
-            // fs.mkdir(path.join(rootDirName, "cache", sessionId), { recursive: true }, (err) => {
-            //     console.log("created cache folder for sessionId " + sessionId);
-            //     if (err) {
-            //         console.error("Error creating cache folder:", err);
-            //     }
-            // });
-            if(clientSession.files.length==0 && cacheFolderExists && !savedProject)
+
+            if(clientSession.files.length==0 && cacheFolderExists && !cooperator && savedProject == undefined)
+            {
                 fs.rmSync(clientFilesPath, {recursive: true, force: true})
+                console.log('deteled existing session folde')
+            }
+
             fs.mkdir(clientFilesPath, { recursive: true }, (err) => {
                 if (err) {
                     console.error("Error creating cache folder:", err);
                     return;
                 }
                 const defaultFileName = 'main.cpp'
-                new EditorFile(clientSession, defaultFileName, defaultText, function () {
-                                    this.openFile(clientObj, shared).then(() => onOpenFile(undefined, defaultFileName))
-                                    
+                console.log('created file')
+                new EditorFile(clientSession, defaultFileName, undefined, function () {
+                    this.openFile(clientObj, shared).then(() => onOpenFile(undefined, defaultFileName))                 
                 })
 
                 // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
@@ -1048,35 +1043,45 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         } else 
         {
             console.warn("Cache folder already exists for sessionId " + sessionId);
+            if(cacheFolderExists && !cooperator && clientSession.files.length==0)
+                clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
+
             sendListFiles(clientFilesPath).then(()=>{
                 if(clientSession.files[0] == undefined)
+                {
                     if(savedProject)
                         openFile(fs.readdirSync(clientFilesPath)[0])
                     else
                     return console.log('no file found in files: ' + clientSession.files)
-                if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
+                } else if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
                     openFile(clientSession.files[0].name)
                 else 
                     console.error("No default file was found!") // TODO replace with async function
             })
           
         }
-            // display join message
-            replicateFunction((clientWs, LocalclientId) => {
-                printClientConsoleSessionInfo(clientObj?.displayName + " joined!", getThisClientSession().getClientObjectById(LocalclientId))
-            }, clientObj);
-
+           
            
             const session = sendConnectionMessage()
 
             if(getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
             {
-                let displayNames:string[] = [];
+                 // display join message
+                replicateFunction((clientWs, LocalclientId) => {
+                    printClientConsoleSessionInfo(clientObj?.displayName + " joined!", getThisClientSession().getClientObjectById(LocalclientId))
+                }, clientObj);
+
+                
+                let displayNames:any[] = [];
                 getThisClientSession()?.clients.forEach((client, id) => {
-                    displayNames.push(client.displayName);
+                    if(client != clientObj)
+                    displayNames.push({displayName: client.displayName, fileName: client.openFile.name, clientId: client.clientId, color: client.color});
                })
 
-               replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN",clients:displayNames, ...clientInfo(clientObj), session});
+               replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN",, ...clientInfo(clientObj), session});
+               ws.send(JSON.stringify({type: WebSocketMessageType.ColabData, colabCommand: "LIST", clients:displayNames}));  // Send GDB output to the client
+
+               // send all other client's information
                clientSession.clients.forEach((client) => {
                 if(client != clientObj)
                    ws.send(JSON.stringify({type: WebSocketMessageType.FileManagement, command:  FileManagementCommands.Open, fileName: client.openFile.name,  name: client.displayName, color: client.color, clientId: client.clientId}));  // Send GDB output to the client
@@ -1259,10 +1264,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         replicateFunction((clientWs, id, thisClientObj) => {
             clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, command:  FileManagementCommands.Open, fileName, oldFileName,  name: clientObj.displayName, color: clientObj.color, clientId: clientId}));  // Send GDB output to the client
             if(thisClientObj.openFile && thisClientObj != clientObj)
-            if(thisClientObj.openFile.name != fileName || thisClientObj.openFile.name == oldFileName) // TODO choose one
-                clientWs.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, fileName, oldFileName,  name: clientObj.displayName, color: clientObj.color, clientId: clientId}));  // Send GDB output to the client
-
-            
+                if(thisClientObj.openFile.name != fileName || thisClientObj.openFile.name == oldFileName) // TODO choose one
+                    clientWs.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, fileName, oldFileName,  ...clientInfo(clientObj)}));  // Send GDB output to the client  
         });
     }
     
@@ -1299,7 +1302,7 @@ if(clientSession.sessionContainer && clientSession.currentbuildTag == buildTag +
   // Create a temporary directory for building the Docker image
 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
 
-
+new Promise<void>((resolve,reject) => {
 if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "_" + editorMode.dockerSafeTag)
 {
   clientSession.currentbuildTag = buildTag + "_" + editorMode.dockerSafeTag // Unique image tag to avoid collisions
@@ -1326,18 +1329,32 @@ if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag +
 
     // 3. Build the Docker image
   console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
-  try {
-    execSync(`docker build -t ${clientSession.currentbuildTag} "${sessionFolder}"`, { stdio: 'inherit' });
-  } catch (error) {
-    console.error('Error building Docker image:', error);
-    return;
-  }
+  
+    try {
+        const builder = spawn(`docker build -t ${clientSession.currentbuildTag} "${sessionFolder}"`, { stdio: 'inherit' });
+        builder.on('exit', code => {
+        if(code == 0)
+            resolve()
+        else
+            reject('Failed to build Docker image')
+        })
+    
+        builder.on('error', err => {
+            reject('Error building Docker image:' + err)
+        })
+    } catch (error) {
+        console.error('Error building Docker image:', error);
+        return;
+    }
+  
+
 
 }
 else
 console.log('Skipping build stage.')
+}).then(val => {
 
-// -m 256MB \
+    // -m 256MB \
 // --cpus="0.25" \
   const imageName = `session-container-${sessionId}`;
 // fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
@@ -1393,6 +1410,12 @@ bash `.trim().replaceAll('\n', "")
         console.log('[Docker Container Error]' + data.toString())
         onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
     })
+
+
+}).catch(err => [
+    console.error(err)
+])
+
 
  
 })
@@ -1543,6 +1566,12 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
 
             switch (type) {
+                case WebSocketMessageType.Canvas:
+
+                    replicateFunction((clientWs) => {
+                        clientWs.send(JSON.stringify({...messageJSON}));  // Send GDB output to the client
+                    }, clientObj);
+                break;
                 case WebSocketMessageType.WebCam:
                     // console.log(messageJSON.buffer);
                     try {
@@ -1736,7 +1765,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             if(!thisClientObj.openFile.name)
                                 return;
                             if(clientSession.getClientObjectById(thisClientId).canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
-                                thisClientWs.send(JSON.stringify({ ...messageJSON, clientId, displayName: clientObj.displayName, color: clientObj.color})) // TODO Sanitize this
+                                thisClientWs.send(JSON.stringify({ ...messageJSON, ...clientInfo(clientObj)})) // TODO Sanitize this
                         }, clientObj)
                 break;
                 case WebSocketMessageType.CodeChange:
@@ -2429,6 +2458,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                      
                     newHost.sendMessage({type: WebSocketMessageType.ColabData, colabCommand: "HOST", body: "You're now the host of this session."})
                 }
+
             replicateFunction((clientWs) => {
                 clientWs.send(JSON.stringify({type: WebSocketMessageType.ColabData, ...clientInfo(clientObj), colabCommand: "DISCONECT", session, body: clientObj?.displayName + " has left."}))
             }, clientObj)

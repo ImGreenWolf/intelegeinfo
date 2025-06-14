@@ -113,7 +113,7 @@ header
 }
 .shadow.inset
 {
-    box-shadow: rgb(0 0 0 / 18%) 17px 10px 11px -7px inset, rgb(0 0 0 / 25%) -6px -14px 50px -32px inset;
+    box-shadow: rgba(0, 0, 0, 0.18) 0px -6px 11px 5px inset, rgba(0, 0, 0, 0.25) -1px 6px 18px 4px inset;
     z-index: 13;
     position: absolute;
     top: 0;
@@ -121,7 +121,6 @@ header
     right: 0;
     bottom: 0;
     overflow: hidden;
-    border-radius: 10px;
     pointer-events: none;
 }
 #editor-container
@@ -1585,49 +1584,14 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
 
         }
     }
-
-.cursor
+.cursor-container
 {
-    position: absolute;
-    width: 1rem;
-    height: 1rem;
-    background-image: url("../media/mouse-cursor-svgrepo-com.svg");
-    // clip-path: url("../media/mouse-cursor-svgrepo-com.svg#cursor");
-    // background-color: white;
+    position: fixed;
     z-index: 100;
-
     pointer-events: none;
-    // -webkit-mask-image: url("../media/mouse-cursor-svgrepo-com.svg");
-    contain: layout;
-    background-size: cover;
-    opacity: 0.75;
-    color: green;
-    // mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
-    // mask-size: cover;
-    &.inactive
-    {
-        animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;
-    }
-
-    &.touch
-    {
-        background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
-        border: 1px solid white;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        // animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;;
-    }
-
-    &.pen
-    {
-        background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
-        border: 2px solid white;
-        border-radius: 50%;
-        
-        animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;;
-    }
-
-    & span
+    contain: content;
+    overflow: hidden;
+    span
     {
         // transform: scaleX(-1);
         // content: attr(name);
@@ -1644,7 +1608,46 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
         background-color: color.adjust($color: theme.$background-color, $alpha: -0.25);
         backdrop-filter: blur(2px);
         padding: 0.1rem 0.5rem ;
-        transition-duration: 0.1s   ;
+        transition-duration: 0.1s;
+    }
+    .cursor
+    {
+        width: 1rem;
+        height: 1rem;
+        display: inline-block;
+        /* background-image: url(../media/mouse-cursor-svgrepo-com.svg); */
+        position: relative;
+        background-size: cover;
+        backdrop-filter: invert(1);
+        mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+        background-color: #ffffff;
+        mask-size: cover;
+        mix-blend-mode: hue;
+        &.inactive
+        {
+            animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;
+        }
+
+        &.touch
+        {
+            background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
+            border: 1px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            // animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;;
+        }
+
+        &.pen
+        {
+            background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
+            border: 2px solid white;
+            border-radius: 50%;
+            
+            animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;;
+        }
+
+       
+
     }
 
 }
@@ -1785,7 +1788,32 @@ form label
 }
 
 
+#context-menu
+{
+    display: flex;
+    flex-direction: column;
+    padding: 10px 20px;
+    transform: translateX(-25%);
+    gap: 0.5em;
+    background-color: rgba(37, 37, 37, 0.397);
+    backdrop-filter: blur(3px);;
+}
 
+
+.ace_codeLens 
+{
+
+    font-size: 0.7rem;
+    & a
+    {
+        opacity: 0.5;
+    }
+    
+    & a:hover
+    {
+        opacity: 1;
+    }
+}
 
 
 
@@ -1820,32 +1848,7 @@ form label
     }
 }
 
-#context-menu
-{
-    display: flex;
-    flex-direction: column;
-    padding: 10px 20px;
-    transform: translateX(-25%);
-    gap: 0.5em;
-    background-color: rgba(37, 37, 37, 0.397);
-    backdrop-filter: blur(3px);;
-}
 
-
-.ace_codeLens 
-{
-
-    font-size: 0.7rem;
-    & a
-    {
-        opacity: 0.5;
-    }
-    
-    & a:hover
-    {
-        opacity: 1;
-    }
-}
  @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
     .container {
         grid-template-columns: 1fr;

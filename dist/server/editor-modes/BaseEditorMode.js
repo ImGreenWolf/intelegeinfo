@@ -6,6 +6,7 @@ class EditorMode {
     static dockerFile;
     static dockerSafeTag;
     static extension;
+    static defaultText;
     isExecutable = true;
     runParams(clientObj) {
         return '';

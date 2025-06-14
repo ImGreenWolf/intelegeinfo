@@ -5,6 +5,7 @@ declare abstract class EditorMode {
     static dockerFile: string;
     static dockerSafeTag: string;
     static extension: string[];
+    static defaultText: string;
     isExecutable: boolean;
     runParams(clientObj: any): string;
     isInterpreter: boolean;

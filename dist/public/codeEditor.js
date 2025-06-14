@@ -2,7 +2,7 @@
 // import QRCode from 'qrcode'
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
-import { createNode, Dock } from "./components";
+import { createNode, Dock, EditorCanvas } from "./components";
 /*END IMPORTS*/
 document.getElementsByClassName('container')[0].appendChild(new Dock().render());
 const AceRange = ace.require("ace/range").Range;
@@ -138,40 +138,44 @@ class EditorCursor {
     animated = false;
     animTimeout;
     id;
+    cursorContainer;
+    nameElement;
     constructor(eventJson) {
-        this.cursor = this.refreshCursor(eventJson);
         this.id = eventJson.clientId;
         cursors.set(this.id, this);
+        const cursorObj = this.refreshCursor(eventJson);
         this.update(eventJson);
     }
     refreshCursor(eventJson) {
         if (this.cursor != undefined)
             this.cursor.remove();
-        const cursor = document.createElement('div');
-        const name = document.createElement('span');
-        name.innerText = eventJson.displayName;
-        cursor.appendChild(name);
-        cursor.id = 'cursor-' + this.id;
-        cursor.classList.add('cursor');
+        this.cursor = createNode('div', { className: 'cursor' });
+        this.cursorContainer = createNode('div', { className: 'cursor-container' });
+        this.nameElement = document.createElement('span');
+        this.nameElement.innerText = eventJson.displayName;
+        this.cursorContainer.appendChild(this.nameElement);
+        this.cursorContainer.appendChild(this.cursor);
+        this.cursor.id = 'cursor-' + this.id;
+        this.cursorContainer.classList.add('cursor-container');
         // cursor.setAttribute('name', eventJson.displayName) 
         // cursor.style.color
-        cursor.style.color = eventJson.color;
+        this.cursor.style.backgroundColor = "#" + eventJson.color;
         this.pointerType = eventJson.pointerType || "mouse";
         if (this.pointerType != "mouse") {
-            cursor.classList.add(eventJson.pointerType);
-            cursor.style.width = eventJson.width;
-            cursor.style.height = eventJson.height;
+            this.cursor.classList.add(eventJson.pointerType);
+            this.cursor.style.width = eventJson.width;
+            this.cursor.style.height = eventJson.height;
             // if(eventJson.pointerType=="mouse")
             // setTimeout(() => {
             //   this.cursor?.remove()
             //   cursors.delete(eventJson.clientId)
             // }, 1000);
         }
-        document.body.appendChild(cursor);
-        return cursor;
+        document.body.appendChild(this.cursorContainer);
+        return this.cursor;
     }
     remove() {
-        const elem = this.cursor;
+        const elem = this.cursorContainer;
         let blurAmmount = 0;
         const maxBlur = 10;
         const blurDuration = 0.2;
@@ -218,8 +222,8 @@ class EditorCursor {
             this.updateInterval = setInterval(() => {
                 const cposX = this.lposX * (1 - this.step) + this.posX * this.step;
                 const cposY = this.lposY * (1 - this.step) + this.posY * this.step;
-                this.cursor.style.left = cposX + 'px';
-                this.cursor.style.top = cposY + 'px';
+                this.cursorContainer.style.left = cposX + 'px';
+                this.cursorContainer.style.top = cposY + 'px';
                 this.step += stepSize;
                 if (this.step >= 1) {
                     this.lposX = updatedPos.posX;
@@ -283,6 +287,7 @@ export var WebSocketMessageType;
     WebSocketMessageType["ExecuteStatus"] = "executestatus";
     WebSocketMessageType["MouseUpdate"] = "MouseUpdate";
     WebSocketMessageType["WebCam"] = "webcam";
+    WebSocketMessageType["Canvas"] = "canvas";
 })(WebSocketMessageType || (WebSocketMessageType = {}));
 export var ConsoleMessageType;
 (function (ConsoleMessageType) {
@@ -334,6 +339,7 @@ let lastEventJson;
 let session;
 let cmdId = 0;
 let variables = [];
+let canvas;
 const variableArrayIndexes = [];
 const editorSessions = new Map();
 const editor = ace.edit("editor", {
@@ -717,10 +723,10 @@ function updateLocalCursor(ev, fromPress) {
         const posX = ev.pageX;
         const posY = ev.pageY;
         for (const checkCursor of cursors.values())
-            if (getDistanceFromPosition(checkCursor.cursor, posX, posY) < 100)
-                checkCursor.cursor.children[0].style.opacity = Math.min(100 - getDistanceFromPosition(checkCursor.cursor, posX, posY) / 2, 100) + "%";
+            if (getDistanceFromPosition(checkCursor.cursorContainer, posX, posY) < 100)
+                checkCursor.nameElement.style.opacity = Math.min(100 - getDistanceFromPosition(checkCursor.cursorContainer, posX, posY) / 2, 100) + "%";
             else
-                checkCursor.cursor.children[0].style.opacity = "0%";
+                checkCursor.nameElement.style.opacity = "0%";
         const sizeX = document.body.clientWidth;
         const sizeY = document.body.clientHeight;
         const pos = getPointerRelativePosition(editor, posX, posY);
@@ -936,6 +942,7 @@ function onFileCreate(fileName) {
 export function createFileNamePrompt() {
     if (!namePrompt)
         return;
+    //prep name prompt
     namePrompt.style.display = "initial";
     namePrompt.innerText = "";
     namePrompt.focus();
@@ -943,9 +950,11 @@ export function createFileNamePrompt() {
         if (e.key === "Enter") {
             e.preventDefault();
             createFile(this.innerText);
-            openFile(this.innerText);
+            setTimeout(() => {
+                openFile(this.innerText);
+                this.innerText = "";
+            }, 300);
             this.style.display = "none";
-            this.innerText = "";
             this.removeEventListener("keypress", handleEnterKey);
         }
     }
@@ -1920,6 +1929,9 @@ ws.onmessage = (event) => {
         case WebSocketMessageType.Error:
             writeOutput(data, eventJson);
             break;
+        case WebSocketMessageType.Canvas:
+            if (canvas)
+                canvas.handleReplication(eventJson);
         case WebSocketMessageType.Console:
         case WebSocketMessageType.Output:
             if (byteSize(eventJson.body) > 64000) // 1000000 is 1Mb
@@ -2234,7 +2246,12 @@ ws.onmessage = (event) => {
                     // document.getElementById('cursor-'+colabClientId)?.remove()
                     // cursors.delete(colabClientId)
                     writeOutput(eventJson.body, eventJson);
-                    const collabClient = clients.find((val) => val.editorSession.fileElement?.name == client.editorSession.fileElement?.name);
+                    const collabClient = clients.find((val) => { try {
+                        return val.editorSession.fileElement?.Users.find(val => val.id == colabClientId) != undefined;
+                    }
+                    catch (err) {
+                        return false;
+                    } });
                     if (!collabClient)
                         throw 'couldnt find collab client';
                     clients.splice(clients.indexOf(collabClient));
@@ -2243,20 +2260,24 @@ ws.onmessage = (event) => {
                 case "HOST":
                     writeOutput(eventJson.body, eventJson);
                 case "JOIN":
+                    // a new client joined
                     addMouseListener(eventJson.session);
                     clients.push(new SessionClient(colabClientId, eventJson.displayName, eventJson.color));
                     break;
+                case "LIST":
+                    const colabContainer = document.getElementById("colab-container") || null;
+                    if (!colabContainer)
+                        return;
+                    colabContainer.innerHTML = "";
+                    if (colabClients)
+                        if (colabClients.length != 0)
+                            colabClients.forEach((client) => {
+                                const clientId = client.displayName.split("-")[0];
+                                colabContainer.innerHTML += `<div class="colab-client" id=${clientId}>${clientId}</div>`;
+                                clients.push(new SessionClient(client.clientId, client.displayName, client.color));
+                            });
+                    break;
             }
-            const colabContainer = document.getElementById("colab-container") || null;
-            if (!colabContainer)
-                return;
-            colabContainer.innerHTML = "";
-            if (colabClients.length == 0)
-                return;
-            colabClients.forEach((client) => {
-                const clientId = client.split("-")[0];
-                colabContainer.innerHTML += `<div class="colab-client" id=${clientId}>${clientId}</div>`;
-            });
             break;
         case WebSocketMessageType.Heartbeat:
             ping = Date.now() - ping - eventJson.expectedDelay;
@@ -2285,14 +2306,24 @@ ws.onmessage = (event) => {
                     break;
                 case FileManagementCommands.Open:
                     const fileName = eventJson.fileName;
+                    // remote open meaning another user opened a file
                     if (!eventJson.body) {
+                        // add and remove activity markers, it calls even for own user
                         if (eventJson.oldFileName != eventJson.fileName)
                             if (eventJson.oldFileName != undefined)
                                 editorSessions.get(eventJson.oldFileName)?.fileElement?.removeUser(eventJson.clientId);
                         editorSessions.get(fileName)?.fileElement?.addUser({ name: eventJson.displayName, color: eventJson.color, id: eventJson.clientId }, eventJson.oldFileName);
+                        //obsolete?
+                        if (wsClientId == eventJson.clientId)
+                            break;
+                        // check if we know about this user
                         const clientIndex = clients.findIndex((val) => val.clientId == eventJson.clientId);
-                        if (clientIndex == -1)
-                            throw 'invalid index';
+                        if (clientIndex == -1) {
+                            // create a new user
+                            const client = new SessionClient(colabClientId, eventJson.displayName, eventJson.color);
+                            client.editorSession = { fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor };
+                            clients.push(client);
+                        }
                         else
                             clients[clientIndex].editorSession = { fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor };
                     }
@@ -2319,6 +2350,24 @@ ws.onmessage = (event) => {
                                 editorSessions.get(fileName).editor = ace.createEditSession(fileContent);
                             console.log("File already opened: ", fileName);
                             const session = editorSessions.get(fileName);
+                            switch (fileName.split('.').at(-1)) {
+                                case 'png':
+                                case 'jpeg':
+                                case 'webp':
+                                case 'img':
+                                    editor.container.style.display = 'none';
+                                    canvas = new EditorCanvas(ws, wsClientId);
+                                    editor.container.parentElement?.appendChild(canvas.render());
+                                    canvas.updateSize();
+                                    break;
+                                default:
+                                    editor.container.style.display = 'initial';
+                                    if (canvas) {
+                                        canvas.remove();
+                                        canvas = undefined;
+                                    }
+                                    break;
+                            }
                             if (session) {
                                 session.editor.setMode(aceModes.getModeForPath(fileName).mode);
                                 editor.setSession(session.editor);

@@ -4,6 +4,7 @@ declare class CppMode extends EditorMode {
     static name: string;
     static extension: string[];
     static dockerSafeTag: string;
+    static defaultText: string;
     static dockerFile: string;
     HandleClientInput(): void;
     constructor();

@@ -527,6 +527,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         function handshake(req) {
             const urlParams = new URL("http://intelegeinfo.go.ro/editor" + req.url).searchParams;
             const wssessionId = urlParams.get('session') != undefined || urlParams.get('session') != undefined ? urlParams.get('session') : recoveredSession ? recoveredSession : undefined;
+            let isHost = false;
             //handle heartbeat
             heartbeatInterval = setInterval(() => {
                 // server.getConnections(function(error, count) {
@@ -565,6 +566,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, userData);
                     clientObj = getThisClientSession().getClientObjectById(clientId);
                     exports.clients.set(clientId, ws);
+                    isHost = false;
                     // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
                 }
                 else // there is no session, create it.
@@ -578,6 +580,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     if (clientSession && !isShared) {
                         exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
                     }
+                    isHost = true;
                 }
                 sessionId = getThisClientSession().sessionId;
                 clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
@@ -587,18 +590,13 @@ exports.wss.addListener('connection', async (ws, req) => {
                     shared.addClient(clientId, sessionId);
                     shared.updateSession(sessionId, clientSession);
                 }
-                connectionReady(true, req);
+                connectionReady(!isHost, req);
             }
             else {
                 //client connected to new SOLO session
-                //   clientId = uuidv4(); // Generate a unique ID
-                //   sessionId = clientId; // Use the generated ID as the session ID
-                // sessions.set(clientId, [sessionId]);
                 clientSession = createThisClientSession();
                 if (getThisClientSession() != undefined) {
                     sessionId = clientSession.sessionId;
-                    // getThisClientSession().sessionId = sessionId;
-                    // getThisClientSession()?.clients.set(clientId); // add client to client list.
                     clientId = getThisClientSession()?.spawnClient(ws, userData);
                     clientObj = getThisClientSession().getClientObjectById(clientId);
                     clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
@@ -612,7 +610,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     shared.updateSession(sessionId, clientSession);
                 }
                 exports.clients.set(clientId, ws);
-                // printClientConsoleDebug('solo session: ' + clientSession.sessionId)
+                // will always be false
                 connectionReady(false, req);
             }
         }
@@ -801,6 +799,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
                     project = savedProject;
                     clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
+                    console.log(clientSession.files);
                     // fs.renameSync()
                     // defaultText =  
                     // console.log(defaultText)
@@ -812,25 +811,26 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
             else
                 defaultText = fs_1.default.readFileSync("user_code.cpp").toString();
+            console.log(clientSession.files);
             // printClientConsoleInfo("connected to worker: " + process.pid)
             //create cache folder for session if its a new one
             const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
-            if ((!cacheFolderExists || !cooperator && defaultText) || (clientSession.files.length == 0 && !savedProject)) {
-                // fs.mkdir(path.join(rootDirName, "cache", sessionId), { recursive: true }, (err) => {
-                //     console.log("created cache folder for sessionId " + sessionId);
-                //     if (err) {
-                //         console.error("Error creating cache folder:", err);
-                //     }
-                // });
-                if (clientSession.files.length == 0 && cacheFolderExists && !savedProject)
+            console.log(!cacheFolderExists);
+            console.log(!cooperator);
+            console.log(clientSession.files.length);
+            if ((!cacheFolderExists && !cooperator && clientSession.files.length == 0)) {
+                if (clientSession.files.length == 0 && cacheFolderExists && !cooperator && savedProject == undefined) {
                     fs_1.default.rmSync(clientFilesPath, { recursive: true, force: true });
+                    console.log('deteled existing session folde');
+                }
                 fs_1.default.mkdir(clientFilesPath, { recursive: true }, (err) => {
                     if (err) {
                         console.error("Error creating cache folder:", err);
                         return;
                     }
                     const defaultFileName = 'main.cpp';
-                    new types_2.EditorFile(clientSession, defaultFileName, defaultText, function () {
+                    console.log('created file');
+                    new types_2.EditorFile(clientSession, defaultFileName, undefined, function () {
                         this.openFile(clientObj, shared).then(() => onOpenFile(undefined, defaultFileName));
                     });
                     // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
@@ -842,30 +842,36 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
             else {
                 console.warn("Cache folder already exists for sessionId " + sessionId);
+                if (cacheFolderExists && !cooperator && clientSession.files.length == 0)
+                    clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
                 sendListFiles(clientFilesPath).then(() => {
-                    if (clientSession.files[0] == undefined)
+                    if (clientSession.files[0] == undefined) {
                         if (savedProject)
                             openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
                         else
                             return console.log('no file found in files: ' + clientSession.files);
-                    if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
+                    }
+                    else if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
                         openFile(clientSession.files[0].name);
                     else
                         console.error("No default file was found!"); // TODO replace with async function
                 });
             }
-            // display join message
-            replicateFunction((clientWs, LocalclientId) => {
-                printClientConsoleSessionInfo(clientObj?.displayName + " joined!", getThisClientSession().getClientObjectById(LocalclientId));
-            }, clientObj);
             const session = sendConnectionMessage();
             if (getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
              {
+                // display join message
+                replicateFunction((clientWs, LocalclientId) => {
+                    printClientConsoleSessionInfo(clientObj?.displayName + " joined!", getThisClientSession().getClientObjectById(LocalclientId));
+                }, clientObj);
                 let displayNames = [];
                 getThisClientSession()?.clients.forEach((client, id) => {
-                    displayNames.push(client.displayName);
+                    if (client != clientObj)
+                        displayNames.push({ displayName: client.displayName, fileName: client.openFile.name, clientId: client.clientId, color: client.color });
                 });
-                replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.ColabData, colabCommand: "JOIN", clients: displayNames, ...clientInfo(clientObj), session });
+                replicateSocketMessage(sessionId, clientId, false, { type: types_1.WebSocketMessageType.ColabData, colabCommand: "JOIN", ...clientInfo(clientObj), session });
+                ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "LIST", clients: displayNames })); // Send GDB output to the client
+                // send all other client's information
                 clientSession.clients.forEach((client) => {
                     if (client != clientObj)
                         ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, command: types_3.FileManagementCommands.Open, fileName: client.openFile.name, name: client.displayName, color: client.color, clientId: client.clientId })); // Send GDB output to the client
@@ -1008,7 +1014,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, command: types_3.FileManagementCommands.Open, fileName, oldFileName, name: clientObj.displayName, color: clientObj.color, clientId: clientId })); // Send GDB output to the client
                 if (thisClientObj.openFile && thisClientObj != clientObj)
                     if (thisClientObj.openFile.name != fileName || thisClientObj.openFile.name == oldFileName) // TODO choose one
-                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.MouseUpdate, fileName, oldFileName, name: clientObj.displayName, color: clientObj.color, clientId: clientId })); // Send GDB output to the client
+                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.MouseUpdate, fileName, oldFileName, ...clientInfo(clientObj) })); // Send GDB output to the client  
             });
         }
         /**
@@ -1037,47 +1043,58 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 // Create a temporary directory for building the Docker image
                 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
-                if (!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "_" + editorMode.dockerSafeTag) {
-                    clientSession.currentbuildTag = buildTag + "_" + editorMode.dockerSafeTag; // Unique image tag to avoid collisions
-                    // 1. Copy the executable to the temporary folder
-                    // 2. Write the Dockerfile to the temp directory
-                    const dockerfileContents = editorMode.dockerFile.trim();
-                    // `
-                    // # Base image with GCC
-                    // FROM gcc:bookworm
-                    // # Set working directory inside container
-                    // WORKDIR /app
-                    // RUN apt-get update && \
-                    //     apt-get install -y gdb && \
-                    //     apt-get clean && \
-                    //     rm -rf /var/lib/apt/lists/*
-                    // # Default command can be overridden
-                    // CMD [ "bash" ]
-                    //   `.trim();
-                    const dockerfilePath = path_1.default.join(sessionFolder, 'Dockerfile');
-                    fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
-                    // 3. Build the Docker image
-                    console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
-                    try {
-                        (0, child_process_2.execSync)(`docker build -t ${clientSession.currentbuildTag} "${sessionFolder}"`, { stdio: 'inherit' });
+                new Promise((resolve, reject) => {
+                    if (!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "_" + editorMode.dockerSafeTag) {
+                        clientSession.currentbuildTag = buildTag + "_" + editorMode.dockerSafeTag; // Unique image tag to avoid collisions
+                        // 1. Copy the executable to the temporary folder
+                        // 2. Write the Dockerfile to the temp directory
+                        const dockerfileContents = editorMode.dockerFile.trim();
+                        // `
+                        // # Base image with GCC
+                        // FROM gcc:bookworm
+                        // # Set working directory inside container
+                        // WORKDIR /app
+                        // RUN apt-get update && \
+                        //     apt-get install -y gdb && \
+                        //     apt-get clean && \
+                        //     rm -rf /var/lib/apt/lists/*
+                        // # Default command can be overridden
+                        // CMD [ "bash" ]
+                        //   `.trim();
+                        const dockerfilePath = path_1.default.join(sessionFolder, 'Dockerfile');
+                        fs_1.default.writeFileSync(dockerfilePath, dockerfileContents);
+                        // 3. Build the Docker image
+                        console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
+                        try {
+                            const builder = (0, child_process_1.spawn)(`docker build -t ${clientSession.currentbuildTag} "${sessionFolder}"`, { stdio: 'inherit' });
+                            builder.on('exit', code => {
+                                if (code == 0)
+                                    resolve();
+                                else
+                                    reject('Failed to build Docker image');
+                            });
+                            builder.on('error', err => {
+                                reject('Error building Docker image:' + err);
+                            });
+                        }
+                        catch (error) {
+                            console.error('Error building Docker image:', error);
+                            return;
+                        }
                     }
-                    catch (error) {
-                        console.error('Error building Docker image:', error);
-                        return;
-                    }
-                }
-                else
-                    console.log('Skipping build stage.');
-                // -m 256MB \
-                // --cpus="0.25" \
-                const imageName = `session-container-${sessionId}`;
-                // fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
-                // 4. Run the Docker container with access to the sandbox folder
-                const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
-                console.log(hasGUI ? 'executing with GUI' : "no gui");
-                if (clientSession.sessionContainer)
-                    (0, child_process_2.execSync)('docker rm -f ' + clientSession.sessionContainer.imageName);
-                const runCommand = `docker run \
+                    else
+                        console.log('Skipping build stage.');
+                }).then(val => {
+                    // -m 256MB \
+                    // --cpus="0.25" \
+                    const imageName = `session-container-${sessionId}`;
+                    // fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
+                    // 4. Run the Docker container with access to the sandbox folder
+                    const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
+                    console.log(hasGUI ? 'executing with GUI' : "no gui");
+                    if (clientSession.sessionContainer)
+                        (0, child_process_2.execSync)('docker rm -f ' + clientSession.sessionContainer.imageName);
+                    const runCommand = `docker run \
 -d \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
@@ -1089,31 +1106,34 @@ exports.wss.addListener('connection', async (ws, req) => {
 ${clientObj.openFile.editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "");
-                //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
-                console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
-                console.log(runCommand);
-                // Return the child process for external handling
-                const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: 'pipe' });
-                clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode: clientObj.openFile.editorMode };
-                childProcess?.on("spawn", () => {
-                    console.log("Docker container spawned");
-                });
-                childProcess.stdout.on('data', data => {
-                    console.log("CONTAINER ID:" + data.toString());
-                    setTimeout(async () => {
-                        // TODO Spawn GUI on client 
-                        if (hasGUI && clientSession.displayServer == 0) // doesnt have display server
-                         {
-                            clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
-                            clientObj.sendMessage({ status: 'spawnGUI' }, types_1.WebSocketMessageType.ExecuteStatus);
-                        }
-                        resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-                    }, 1000);
-                });
-                childProcess.stderr.on('data', data => {
-                    console.log('[Docker Container Error]' + data.toString());
-                    onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'));
-                });
+                    //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
+                    console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
+                    console.log(runCommand);
+                    // Return the child process for external handling
+                    const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: 'pipe' });
+                    clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode: clientObj.openFile.editorMode };
+                    childProcess?.on("spawn", () => {
+                        console.log("Docker container spawned");
+                    });
+                    childProcess.stdout.on('data', data => {
+                        console.log("CONTAINER ID:" + data.toString());
+                        setTimeout(async () => {
+                            // TODO Spawn GUI on client 
+                            if (hasGUI && clientSession.displayServer == 0) // doesnt have display server
+                             {
+                                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
+                                clientObj.sendMessage({ status: 'spawnGUI' }, types_1.WebSocketMessageType.ExecuteStatus);
+                            }
+                            resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
+                        }, 1000);
+                    });
+                    childProcess.stderr.on('data', data => {
+                        console.log('[Docker Container Error]' + data.toString());
+                        onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'));
+                    });
+                }).catch(err => [
+                    console.error(err)
+                ]);
             });
         }
         async function onClosedProgram(code, time, message, error) {
@@ -1230,6 +1250,11 @@ bash `.trim().replaceAll('\n', "");
                 //         console.log(getThisClientSession())
                 //     }
                 switch (type) {
+                    case types_1.WebSocketMessageType.Canvas:
+                        replicateFunction((clientWs) => {
+                            clientWs.send(JSON.stringify({ ...messageJSON })); // Send GDB output to the client
+                        }, clientObj);
+                        break;
                     case types_1.WebSocketMessageType.WebCam:
                         // console.log(messageJSON.buffer);
                         try {
@@ -1409,7 +1434,7 @@ bash `.trim().replaceAll('\n', "");
                                 if (!thisClientObj.openFile.name)
                                     return;
                                 if (clientSession.getClientObjectById(thisClientId).canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
-                                    thisClientWs.send(JSON.stringify({ ...messageJSON, clientId, displayName: clientObj.displayName, color: clientObj.color })); // TODO Sanitize this
+                                    thisClientWs.send(JSON.stringify({ ...messageJSON, ...clientInfo(clientObj) })); // TODO Sanitize this
                             }, clientObj);
                         break;
                     case types_1.WebSocketMessageType.CodeChange:
