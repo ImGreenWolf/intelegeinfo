@@ -307,8 +307,7 @@ header {
 }
 
 #editor-tabs, .tabs-container {
-  height: 1.75em;
-  min-height: 40px;
+  min-height: 1.5em;
   background-color: rgb(5, 5, 5);
   text-align: center;
   display: flex;
@@ -316,6 +315,7 @@ header {
   font-family: "Poppins", sans-serif;
   border-bottom: 1px solid gray;
   align-items: stretch;
+  font-size: 0.7rem;
 }
 #editor-tabs .editor-tabs-container, .tabs-container .editor-tabs-container {
   display: flex;
@@ -356,7 +356,8 @@ header {
 #editor-tabs .file-tab p, .tabs-container .file-tab p {
   flex-grow: 1;
   margin: 0 0.5em;
-  padding-top: 0.5em;
+  padding-top: 0.25rem;
+  font-size: 0.75rem;
 }
 #editor-tabs .file-tab#active-open-file, .tabs-container .file-tab#active-open-file {
   cursor: default;
@@ -1356,6 +1357,8 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   display: flex;
   flex-direction: row-reverse;
   transition-duration: 0.1s;
+  max-width: 1.5em;
+  max-height: 1.5em;
   gap: 0.5em;
 }
 .slide-out-display:has(.slide-out-container.enabled) {

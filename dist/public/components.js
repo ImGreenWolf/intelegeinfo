@@ -154,8 +154,11 @@ export class Dock extends IElement {
                 child.style.boxShadow = `${shadow / 4}px ${shadow * 2}px ${shadow * 2}px ${shadow}px rgba(0, 0, 0, 0.5)`;
             }
         }
-        document.addEventListener('mousemove', function (ev) {
-            requestAnimationFrame(() => updatePositions(ev.x, ev.y));
+        document.addEventListener('pointermove', function (ev) {
+            if (ev.pointerType == 'mouse')
+                requestAnimationFrame(() => updatePositions(ev.x, ev.y));
+            else
+                base.classList.add('touch');
         });
         return base;
     }

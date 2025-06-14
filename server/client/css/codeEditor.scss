@@ -98,6 +98,7 @@
     min-height: 50%;
     gap: 20px;
     height: 100dvh;
+    // height: 105dvh;
     box-sizing: border-box;
     
 }
@@ -269,8 +270,7 @@ header
 }
 #editor-tabs, .tabs-container
 {
-    height: 1.75em;
-    min-height: 40px;
+    min-height: 1.5em;
     background-color: theme.$foreground-color;
     text-align: center;
     display: flex;
@@ -280,6 +280,7 @@ header
     font-family: "Poppins", sans-serif;
     border-bottom: 1px solid theme.$border-color;
     align-items: stretch;
+    font-size: 0.7rem;
     // border-radius: 1lh 1lh 0 0;
     & .editor-tabs-container
     {
@@ -329,7 +330,8 @@ header
         {
             flex-grow: 1;
             margin: 0 0.5em;
-            padding-top: 0.5em;
+            padding-top: 0.25rem;
+            font-size: 0.75rem;
         }
         &#active-open-file
         {
@@ -1664,6 +1666,8 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
     display: flex;
     flex-direction: row-reverse;
     transition-duration: 0.1s;
+    max-width: 1.5em;
+    max-height: 1.5em;
     &:has(.slide-out-container.enabled)
     {
         gap: 1em;
