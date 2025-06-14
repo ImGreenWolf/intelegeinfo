@@ -1579,7 +1579,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         if(messageJSON.started)
                         {
                             exec('modprobe -r v4l2loopback')
-                            exec('modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1')
+                            const video = exec('modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1')
+                            video.on('close', data => console.log('added camera. ' + data.toString()))
+                            console.log('added camera')
                         } else
                           (clientObj.openFile.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
                          
