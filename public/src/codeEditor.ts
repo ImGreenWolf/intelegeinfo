@@ -844,8 +844,8 @@ export function beautifyEditor() {
               ws.send(JSON.stringify({type: WebSocketMessageType.WebCam, buffer: base64}));
             });
           }
-        }, 'image/jpeg', 0.5);
-      }, 50); // every 100ms
+        }, 'image/jpeg', 0.7);
+      }, 100); // every 100ms
     });
       // beautify.beautify(editor.session);
 }
