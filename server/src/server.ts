@@ -1370,8 +1370,6 @@ const runCommand =
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
--m 256MB \
---cpus="0.25" \
 -di \
 --rm \
 ${clientObj.openFile.editorMode.runParams(clientObj)} \
