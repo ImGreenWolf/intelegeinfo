@@ -1296,7 +1296,7 @@ if(!editorMode)
 if(clientSession.sessionContainer && clientSession.currentbuildTag == buildTag + "_" + editorMode.dockerSafeTag)
 {
     console.log('Container already running, executing command...')
-    replicateFunction((ws,id, obj) => obj.sendMessage({status: 'started'}, WebSocketMessageType.ExecuteStatus))
+    replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn'}, WebSocketMessageType.ExecuteStatus))
     resolve(clientSession.sessionContainer)
     return;
 }
@@ -1398,10 +1398,14 @@ bash `.trim().replaceAll('\n', "")
         console.log("CONTAINER ID:" + data.toString())
         setTimeout(async () => {
                     // TODO Spawn GUI on client 
+                    //   TODO maybe remove ignore self client to show when its ready and compiling
+            replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn'}, WebSocketMessageType.ExecuteStatus), clientObj)
+
             if(hasGUI && clientSession.displayServer == 0) // doesnt have display server
             {
                 clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
-                clientObj.sendMessage({status: 'spawnGUI'}, WebSocketMessageType.ExecuteStatus)
+                replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawnGUI'}, WebSocketMessageType.ExecuteStatus))
+
             }
                 
             resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
