@@ -270,7 +270,7 @@ header
 }
 #editor-tabs, .tabs-container
 {
-    min-height: 1.5em;
+    min-height: 40px;
     background-color: theme.$foreground-color;
     text-align: center;
     display: flex;
