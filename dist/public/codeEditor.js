@@ -165,6 +165,7 @@ class EditorCursor {
             this.cursor.classList.add(eventJson.pointerType);
             this.cursor.style.width = eventJson.width;
             this.cursor.style.height = eventJson.height;
+            this.cursor.style.maskImage = `radial-gradient(transparent, #${eventJson.color})`;
             // if(eventJson.pointerType=="mouse")
             // setTimeout(() => {
             //   this.cursor?.remove()

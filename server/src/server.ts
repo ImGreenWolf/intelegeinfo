@@ -1515,7 +1515,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     clientSession.program?.stderr?.on("data", (data) => {
     gdbBuffer += data.toString();
-    console.error(gdbBuffer)
+    replicateFunction((clientWs) => {
+        clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Error, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+    });
     });
 
     clientSession.program?.on("close", (code) => {
@@ -1789,18 +1791,18 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 let shouldSave:boolean = messageJSON.saveFile;
                 let shouldSaveTimeout;
                 if(shouldSave==false)
-                shouldSaveTimeout = setTimeout(() => {
-                    shouldSave=true;
-                }, 500);
+                    shouldSaveTimeout = setTimeout(() => {
+                        shouldSave=true;
+                    }, 500);
                 const fileName: string = messageJSON.fileName;
                     // save code to file
-                if(shouldSave && type===WebSocketMessageType.CodeChange) // TODO replace true with shouldSave 
+                if(shouldSave) // TODO replace true with shouldSave 
                     {
                         shouldSave=false 
                         
                         //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
                         fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
-                            if(err) console.log("Failed saving file!")
+                            if(err) console.log("Failed saving file! " + err)
                             // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
                             // checkSyntaxTimeout = setTimeout(() => {

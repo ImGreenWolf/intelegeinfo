@@ -1591,8 +1591,6 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
     position: fixed;
     z-index: 100;
     pointer-events: none;
-    contain: content;
-    overflow: hidden;
     span
     {
         // transform: scaleX(-1);
@@ -1632,7 +1630,7 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
 
         &.touch
         {
-            background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
+            // background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
             border: 1px solid white;
             border-radius: 50%;
             transform: translate(-50%, -50%);
