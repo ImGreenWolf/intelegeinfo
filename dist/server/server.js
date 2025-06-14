@@ -1209,7 +1209,9 @@ bash `.trim().replaceAll('\n', "");
                 });
                 clientSession.program?.stderr?.on("data", (data) => {
                     gdbBuffer += data.toString();
-                    console.error(gdbBuffer);
+                    replicateFunction((clientWs) => {
+                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Error, body: data.toString(), clientId: clientId })); // Send GDB output to the client
+                    });
                 });
                 clientSession.program?.on("close", (code) => {
                     clearTimeout(dataTimeout);
@@ -1462,13 +1464,13 @@ bash `.trim().replaceAll('\n', "");
                             }, 500);
                         const fileName = messageJSON.fileName;
                         // save code to file
-                        if (shouldSave && type === types_1.WebSocketMessageType.CodeChange) // TODO replace true with shouldSave 
+                        if (shouldSave) // TODO replace true with shouldSave 
                          {
                             shouldSave = false;
                             //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
                             fs_1.default.writeFile(path_1.default.join(clientFilesPath, fileName), messageJSON.body, (err) => {
                                 if (err)
-                                    console.log("Failed saving file!");
+                                    console.log("Failed saving file! " + err);
                                 // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
                                 // checkSyntaxTimeout = setTimeout(() => {
                                 if (clientObj.openFile.editorMode.checkCodeSyntax)
