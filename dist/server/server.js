@@ -297,9 +297,8 @@ const PORT = 3000;
 const credentials = { key: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
     cert: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem') };
 var httpServer = http.createServer((req, res) => {
-    const url = req.url.replace('http', 'https');
     res.statusCode = 301;
-    res.setHeader('Location', 'https://intelegeinfo.go.ro');
+    res.setHeader('Location', 'https://intelegeinfo.go.ro' + req.url);
     res.end();
 });
 var httpsServer = https.createServer(credentials, app);
