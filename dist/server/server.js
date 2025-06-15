@@ -299,6 +299,7 @@ const credentials = { key: process.env.NODE_ENV == 'development' ? '' : fs_1.def
 var httpsServer = https.createServer(credentials, app);
 // httpServer.listen(3000);
 exports.server = httpsServer.listen(3000);
+exports.server.on('listening', onServerStart);
 // httpsServer.listen(3443);
 // app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
