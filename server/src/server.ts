@@ -358,11 +358,10 @@ import * as http from 'http'
     const credentials = {key: process.env.NODE_ENV == 'development' ? '' : fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
         cert: process.env.NODE_ENV == 'development' ? '' :  fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem')}
 var httpServer = http.createServer((req,res) => {
-    
-    res.writeHead(302, {
-  'Location': req.url.replace('http','https')
-});
-res.end();
+    const url = req.url.replace('http','https')
+    res.statusCode = 301;
+    res.setHeader('Location', url);
+    res.end();
 });
 var httpsServer = https.createServer(credentials, app);
 
