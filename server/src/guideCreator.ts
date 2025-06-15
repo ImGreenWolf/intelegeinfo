@@ -51,13 +51,14 @@ router.get('/guideCreator/load/:name', authMiddleware, (req: Request, res: Respo
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
- ${htmlHead}
+       
  </head>
     <style>
-        body {
+        #main {
             display: flex;
             justify-content: space-between;
             height: 100vh;
+            margin-top: 20px;
         }
         #preview {
             max-width: 100%;
@@ -85,18 +86,22 @@ router.get('/guideCreator/load/:name', authMiddleware, (req: Request, res: Respo
             content: none;
         }
     </style>
+     
 <body>
-    
-    <form action="../../submit" method="post">
-        <input type="text" name="gname" id="gname" value="${guide.name}">
-        <textarea type="text"  name="content" id="content">${guide.content}</textarea>
-        <button type="submit">Submit</button>
-    </form>
+${htmlHead}
+    <div id='main'>
+        <form action="../../submit" method="post">
+            <input type="text" name="gname" id="gname" value="${guide.name}">
+            <input type="text" name="description" id="description" value="${guide.description}">
+            <input type="text" name="category" id="category" value="${guide.category}">
+            <textarea type="text"  name="content" id="content">${guide.content}</textarea>
+            <button type="submit">Submit</button>
+        </form>
 
-    <content id="preview">
+        <content id="preview">
 
-    </content>
-
+        </content>
+    </div>
     <script>
         const preview = document.getElementById('preview')
         const content = document.getElementById('content');
@@ -116,7 +121,7 @@ router.get('/guideCreator/load/:name', authMiddleware, (req: Request, res: Respo
 
 
 
-router.get('/', authMiddleware, (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
     prisma.guide.findMany({
        take: 10,
        orderBy: {
@@ -140,23 +145,23 @@ router.get('/', authMiddleware, (req: Request, res: Response) => {
 })
 
 
-router.get('/posts', authMiddleware, (req: Request, res: Response) => {
+router.get('/posts', (req: Request, res: Response) => {
     prisma.guide.findMany({
        take: 10,
        orderBy: {
         createdAt: "desc"
        }
     }).then(guides => {
-        let guideEntries = '';
+        let guideEntries = []
         for(const guide of guides)
-            guideEntries += `<li><a href="/guides/guideCreator/load/${encodeURI(guide.name)}">Load</a><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`
+            guideEntries.push({name: guide.name, html:
+        `<a href="guides/post/${encodeURI(guide.name)}"><h2>${guide.name}</h2></a>
+        <div>${guide.description || guide.content.substring(0, 100)}..</div>
+        `
+        })
+        
 
-
-        const html = 
-    `<ul>
-    ${guideEntries}
-    </ul>`
-    res.send({html})
+    res.send(JSON.stringify(guideEntries))
     }).catch(err => {
         res.status(500).json({ error: 'Failed listing projects: ' + err });
     })
@@ -170,7 +175,7 @@ router.get('/posts', authMiddleware, (req: Request, res: Response) => {
 
 // POST handler for form submission
 router.post('/submit', (req: Request, res: Response) => {
-    const { gname, content } = req.body as { gname: string; content: string };
+    const { gname, content, description, category } = req.body as { gname: string; content: string; description: string; category: string}; //  TODO replace category with enum
    
     
         prisma.guide.update({
@@ -180,8 +185,9 @@ router.post('/submit', (req: Request, res: Response) => {
             },
             data:
             {
-                content
-                
+                content,
+                description,
+                category
             }
         }).then(update => {
 

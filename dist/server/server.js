@@ -1134,7 +1134,7 @@ bash `.trim().replaceAll('\n', "");
                     });
                     childProcess.stderr.on('data', data => {
                         console.log('[Docker Container Error]' + data.toString());
-                        onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'));
+                        // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
                     });
                 }).catch(err => [
                     console.error(err)
@@ -1210,7 +1210,7 @@ bash `.trim().replaceAll('\n', "");
                 clientSession.program?.stderr?.on("data", (data) => {
                     gdbBuffer += data.toString();
                     replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Error, body: data.toString(), clientId: clientId })); // Send GDB output to the client
+                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
                     });
                 });
                 clientSession.program?.on("close", (code) => {
@@ -1471,23 +1471,24 @@ bash `.trim().replaceAll('\n', "");
                             fs_1.default.writeFile(path_1.default.join(clientFilesPath, fileName), messageJSON.body, (err) => {
                                 if (err)
                                     console.log("Failed saving file! " + err);
-                                // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
-                                // checkSyntaxTimeout = setTimeout(() => {
-                                if (clientObj.openFile.editorMode.checkCodeSyntax)
-                                    clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
-                                        if (!JSON.parse(json)[0])
-                                            return replicateFunction((clientWs, localClientId) => {
+                                if (checkSyntaxTimeout)
+                                    clearTimeout(checkSyntaxTimeout);
+                                checkSyntaxTimeout = setTimeout(() => {
+                                    if (clientObj.openFile.editorMode.checkCodeSyntax)
+                                        clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
+                                            if (!JSON.parse(json)[0])
+                                                return replicateFunction((clientWs, localClientId) => {
+                                                    if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
+                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
+                                                });
+                                            replicateFunction((clientWs, localClientId) => {
                                                 if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
+                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
                                             });
-                                        replicateFunction((clientWs, localClientId) => {
-                                            if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
+                                        }).catch(err => {
+                                            console.error('syntax checker error: ' + err);
                                         });
-                                    }).catch(err => {
-                                        console.error('syntax checker error: ' + err);
-                                    });
-                                // }, 400);
+                                }, 400);
                             });
                         }
                         clientObj.openFile.changeContent(messageJSON.body);

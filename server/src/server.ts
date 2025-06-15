@@ -1078,7 +1078,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                     displayNames.push({displayName: client.displayName, fileName: client.openFile.name, clientId: client.clientId, color: client.color});
                })
 
-               replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN",, ...clientInfo(clientObj), session});
+               replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN", ...clientInfo(clientObj), session});
                ws.send(JSON.stringify({type: WebSocketMessageType.ColabData, colabCommand: "LIST", clients:displayNames}));  // Send GDB output to the client
 
                // send all other client's information
@@ -1414,7 +1414,7 @@ bash `.trim().replaceAll('\n', "")
     
     childProcess.stderr.on('data', data => {
         console.log('[Docker Container Error]' + data.toString())
-        onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
+        // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
     })
 
 
@@ -1458,10 +1458,6 @@ async function onClosedProgram(code,time, message, error?)
 async function readStdio(program, messageJSON, res: typeof clientSession.sessionContainer)
     {
     return new Promise<void>((resolve, reject) => {
-        
-    
-
-
     addProcessToMap(sessionId, program); // add to process map
     mode = "run";
     let spawnDate = Date.now()
@@ -1470,9 +1466,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     if(messageJSON.textMode)
         programTimeout = setTimeout(() => {
-        onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program timed out!</span>")
-        closeProcess(program)
-        resolve()
+            onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program timed out!</span>")
+            closeProcess(program)
+            resolve()
         }, 1000);
     // if(programTimeout) clearTimeout(programTimeout)
 
@@ -1516,7 +1512,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     clientSession.program?.stderr?.on("data", (data) => {
     gdbBuffer += data.toString();
     replicateFunction((clientWs) => {
-        clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Error, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+        clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
     });
     });
 
@@ -1803,9 +1799,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
                         fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
                             if(err) console.log("Failed saving file! " + err)
-                            // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
+                            if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
-                            // checkSyntaxTimeout = setTimeout(() => {
+                            checkSyntaxTimeout = setTimeout(() => {
                                 if(clientObj.openFile.editorMode.checkCodeSyntax)
                                     clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
                                         if(!JSON.parse(json)[0])
@@ -1821,7 +1817,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         console.error('syntax checker error: ' + err)
                                     })
                                 
-                            // }, 400);
+                            }, 400);
 
                         });
                     }

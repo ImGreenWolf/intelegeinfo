@@ -5,8 +5,8 @@
     <meta name="description" content="Compilator si Debugger C++; Intelege informatica mai usor folosing acest compilator! Vizualizeaza variabilele, vectorii si matricele in timp ce codul tau se excuta si altele!">
     <meta name="keywords" content="C++, info, cpp, clasa a 9 a, clasa a 9-a, scoala, edu, educatie,intelege info, understand programing, programare, prog, vizualizare">
     <meta name="author" content="Radu Bitere">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C++ Debugger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Intelegeinfo</title>
     <link rel="stylesheet" href="/css/codeEditor.css">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,24 +33,68 @@ int main() {
 
 
 <body>
-    
-    <div class="main-container">
-        <div id="editor-container">
-           
-            <div id="editor-tabs">
-                <div  class="editor-tabs-container">  
-                    <div  id="editor-tabs-container" class="editor-tabs-container" style="width: auto;">     
-                        <span class="file-tab">main.cpp</span>
-                    </div>              
-                    <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
+    <div id="body-content">
+        <div id="fill">
+            
+        </div>
+        <header2>
+            <h2>Intelegeinfo</h2>
+            <nav>
+                <ul>
+                    <li><a href="/">Pornire</a></li>
+                    <li><a href="/editor">Editor</a></li>
+                    <li><a href="/guides">Resurse</a></li>
+                </ul>
+            </nav>
+        </header2>
+        <div style="position: relative; width: 100dvw;">
+            
+            <div class="main-container">
+                <div id="text-container">
+                    <h class="logo-font">Intelege Info</h>
+                    <p>Editorul de cod colaborativ online creat de elevi, pentru elevi.</p>
                 </div>
-                
-                <button class="share-session" onclick="copySessionLink()">share</button>
-                 
-                <button class="create-file" onclick="createFileNamePrompt()">+</button>
-            </div>
+                <div id="editor-container">
+                <div class="cursor-container display-cursor path-1"><div class="cursor"></div></div>
+                <div class="cursor-container display-cursor path-2"><div class="cursor"></div></div>
+                        <div class="shadow inset"></div>
+                        <div id="editor-tabs">
+                            <div  class="editor-tabs-container">  
+                                <div  id="editor-tabs-container" class="editor-tabs-container" style="width: auto;">     
+                                    <span class="file-tab" id="active-open-file"><p>main.cpp</p><div class="file-users-container"><div style="background-color: green;"></div><div style="background-color: rgb(0, 110, 255)"></div></div></span>
+                                    <span class="file-tab"><p>python.py</p><div class="file-users-container"><div style="background-color: red;"></div></div></span>
+                                    <span class="file-tab"><p>matrici.png</p><div class="file-users-container"></div></span>
 
-            <div id="display-editor">#include &lt;iostream&gt;
+                                </div>              
+                                <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
+                                <div class="ridge-gradient inset-button black circle">
+                                    <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()"></button>
+                                </div>
+                            </div>
+                            <div id="session-controls">                   
+                                <div class="slide-out-display">
+                                    <div class="ridge-gradient inset-button black circle">
+                                        <button onclick="document.getElementById('slide-out').classList.toggle('enabled')" id="slide-out-button">&ltri;</button>
+                                    </div>
+                                    <div class="slide-out-container" id="slide-out">
+                                        <button onclick="window.editor.toggleCamera()" id="toggle-camera">📷</button>
+                                        <button onclick="window.editor.beautifyEditor()">Beautify</button>
+                                        <button onclick="window.editor.redo()" id="editor-undo">&circlearrowright;</button>
+                                        <button onclick="window.editor.undo()" id="editor-redo">&circlearrowleft;</button>
+                                        <button onclick="window.editor.downloadEditorFiles()" id="editor-download">&DownArrowBar;</button> 
+                                    </div>
+                                    <vl></vl>
+                                </div>
+                                <div class="ridge-gradient inset-button black">
+                                    <button class="share-session" id="share" onclick="window.editor.copySessionLink()">share</button>
+                                </div>
+                                <div class="ridge-gradient inset-button black">
+                                    <button class="share-session" id="saveProject" onclick="window.editor.saveProject()">save</button>
+                                </div>
+                                
+                            </div>
+                        </div>
+ <div id="display-editor">    #include &lt;iostream&gt;
     using namespace std;
 
     int main()
@@ -61,97 +105,97 @@ int main() {
             cout &gt;&gt; "Hello world";
         return 0;
     }</div>
-
-        </div>
-
-
-       
-
-        <div id="text-container">
-            <h class="logo-font">Intelege Info</h>
-            <div class="ridge-gradient">
-                <a href="/editor">Deschide Editorul</a>
-            </div>
-            
-        </div>
-
-        <!-- <div id="vector-container">
-            <div id="display-vector" class="vector-display">
-                <div class="vector-header"></div>
-                <div class="item-container"></div>
-            </div>
-            <div id="display-vector2" class="vector-display">
-                <div class="vector-header"></div>
-                <div class="item-container"></div>
-            </div>
-        </div> -->
-
-
-        <div id="output-container" style="width: 500px;     transform: matrix(0.95, 0.1, 0, 1, 0, 0);">
-           
-           
-            <samp id="output">
-            <pre class="console-output" msg-id="-1">Compilation of main.cpp successful!</pre>
-            <span class="console-chat chat-ownMessage" msg-id="1" clientid="067c15c7-e9c3-4fcb-8d30-f985a1755a1d">
-                <span class="chat-displayName">Hipopotamul cunoscut</span>
-                <div class="chat-content-container">
-                    <span class="chat-content">Bine ai venit!</span>
                 </div>
-            </span>
-            <pre class="console-output" msg-id="-1">
-            Hello world
-            Hello world
-            Hello world
-            </pre>
-<pre class="console-output" msg-id="-1">Program exited with code: 0</pre></samp>
-            <div id="console-container">
-            
-                <textarea id="console" oninput="//submitConsole(this);"></textarea>
-            <button onclick="submitConsole(document.getElementById('console'))">Send</button>
+
+            </div>
+            <div class="display-shadow">
+                <h1 style="grid-column: 1 / -1;">Editeaza cod impreuna de profesori si prieteni!</h1>
+                <div class="ridge-gradient openEditor">
+                    <a href="/editor" class="button">Deschide Editorul</a>
+                </div>
+                <div class="text">
+                    <h1>Colaboreaza</h1>
+                    <p>Creaza programe alaturi de colegi sau profesori. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
+                </div>
+                <div class="text">
+                    <h1>Editeaza</h1>
+                    <p>Editeaza-ti codul de oriunde, oricand, in C++ sau Python. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
+                </div>
+                <div id="graphic" style="grid-column: 1/-1; align-self: flex-end;">
+
+                </div>
             </div>
         </div>
+        <div id="guides" class="content-container">
+            <h1>Resurse</h1>
+            <script type="module">
 
+                fetch('/guides/posts').then(res => {
+                    return res.json();
+                })
+                .then(data => {
+                    if(data.error)
+                        return console.error()
+                    const list = document.createElement('ul')
+                    document.getElementById('guides').appendChild(list)
+                    for(const post of data)
+                        {
+                        list.innerHTML += `<li>${post.html}</li>`
+                        }
+                })
+            </script>
+        </div>
+        <div class="content-container">
+            <h1>Feautres</h1>
+            <ul>
+                <li>
+                    <h2>Colaborare</h2>
+                    <p>Creaze alaturi de colegii sau elevii tai, in timp real. Cu intelegeinfo poti explica mai usor si mai vizual codul tau,
+                    sau sa scrii in chat.
+                    </p>
+                </li>
+                <li>
+                    <h2>Deseneaza</h2>
+                    <p>Daca vrei sa arati scheme colegiilor sau eleviilor tai, creaze un fisier .png, .jpeg, etc si deseneaza,
+                         iar ceilalti vor putea vedea in timp real ce desenezi. Si daca doresti, poti salva desenul pe calculator.</p>
+                </li>
+                <li>
+                    <h2>Aplicatii cu interfata</h2>
+                    <p>Creaza aplicatii cu interfata (GUI) si interactioneaza in timp real.</p>
+                </li>
+                <li>
+                    <h2>Camera video</h2>
+                    <p>Integreaza camera video in programul tau, si foloseste-o ca pe camera de pe dispozitivul tau.</p>
+                </li>
+                <li>
+                    <h2>Debugger</h2>
+                    <p>Afla cum se executa programul tau, valorile variabilelor, adresele de memorie, si multe alte informatii despre acesta.</p>
+                </li>
+            </ul>
+        </div>
+
+        <footer>
+            <h2>Intelegeinfo</h2>
+            <nav>
+                <ul>
+                    <li><a href="/">Pornire</a></li>
+                    <li><a href="/editor">Editor</a></li>
+                    <li><a href="/guides">Resurse</a></li>
+                </ul>
+            </nav>
+        </footer>
     </div>
-
-
-
-    <div class="container">
-        <header>
-            <div class="horizontal">
-                    
-                <!-- <h1>ÎnțelegeInfo</h1> -->
- 
-                <nav>
-                    
-                    <ul>
-                        
-                    </ul>
-                </nav>
-            
-            </div>
-
-            <div class="vertical">
-                
-            </div>
-        </header>
-
-    <div id="guides">
-        <script type="module">
-
-             fetch('/guides/posts').then(res => {
-    return res.json();
-  })
-  .then(data => {
-
-                document.getElementById('guides').innerHTML += data.html;
-            })
-        </script>
-    </div>
-
     <!-- <script src="js/types.js"  type="module" charset="utf-8"></script> -->
     <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js" crossorigin="anonymous"></script>
     <script src="ace-builds-master/src-noconflict/ext-modelist.js"></script>
+    <script type="module">
+            import { Pixelated } from '/editor/components'
+            const node = await new Pixelated().render({x:1920, y:100, spacingX : 15, spacingY: 18, pointSize:1.4,
+                 innerVignette:1,outerVignette:0.3, timeScale:0.08, hover : false, trasnlate : 1,
+                  power: 2, offset: 0, animatedAnglePow: 1,manualAngle: 30, randomness: .2})
 
+            document.getElementById('graphic').appendChild(node)
+        </script>
     <script>
         
 
@@ -181,14 +225,50 @@ int main() {
         editor.on("focus", (change) =>
     {
         clearInterval(introTyping)
-        // openEditor()
+        openEditor()
     })
 
     function openEditor(text)
     {
-        location.href += "/editor"
+        location.href += "editor"
     }
     </script>
+
+    <script>
+                let k=0;
+                const fill = document.getElementById('fill')
+                const cont = document.getElementsByClassName('main-container')[0]
+                    requestAnimationFrame(update)
+                    function htmlEntities(str) {
+                        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                    }
+                    
+                    addEventListener("resize", () => requestAnimationFrame(update))
+                function update()
+                {
+
+                    const chars = `1 2 3 4 5 6 6 7 8 9 0 q w e r t y u i o p a s d f g h j k l z x c v b n m &percnt; &amp; ! @ # $ ^ *`
+                    const colors = ['rgb(2, 82, 32)','rgb(23, 78, 69)','rgb(7, 82, 11)']
+                    const chrs = chars.split(' ')
+                    let text = '';
+                    const w = document.body.clientWidth // window.innerWidth
+                    const h = cont.clientHeight//document.body.clientHeight //window.innerHeight
+                    console.log(h)
+                    const fontSize = parseInt(window.getComputedStyle(fill, null).getPropertyValue('font-size'))
+                    const charsnr = w*h/fontSize/10
+                    const colorRatio = 2
+                    for(let i=0;i<Math.floor(charsnr/colorRatio);i++)
+                        {
+                            text += `<span style="color:${colors[Math.floor(Math.random() * colors.length)]}">`
+                            for(let j=0;j<Math.floor(colorRatio);j++)
+                                text += chrs[Math.floor(Math.random() * chrs.length)]
+                            text += "</span>"
+                        }
+                    
+                    fill.innerHTML = text
+                    
+                }
+            </script>
 </body>
 </html>
 

@@ -1,4 +1,3 @@
-import { WebSocketMessageType } from "./codeEditor.js";
 class IElement {
     parentElement;
     constructor(parentElem) {
@@ -164,38 +163,46 @@ export class Dock extends IElement {
     }
 }
 export class Pixelated extends IElement {
-    async render() {
+    async render({ x = 1000, y = 500, spacingX = 10, spacingY = 10, pointSize = 2, innerVignette = 1, outerVignette = 1, timeScale = 0.5, hover = false, trasnlate = 1, power = 1, offset = 10, manualAngle = 0, animatedAnglePow = 1, useMouseAngle = 0, randomness = 1 }) {
         const canvas = document.createElement('canvas');
-        canvas.width = 300;
-        canvas.height = 500;
+        canvas.width = x;
+        canvas.height = y;
         const ctx = canvas.getContext("2d");
-        const spacing = 10;
-        const pointSize = 2;
+        // const spacing = 10;
+        // const pointSize = 2;
         let time = 0;
         let alpha = 1;
-        const randOffset = Math.random();
         const perlin = new ImprovedPerlinNoise3D(Date.now());
         async function update() {
             const hx = canvas.width;
             const hy = canvas.height;
-            time += 1 / 60 * 30;
+            time += 1 / 60 * 60 * timeScale;
             const z = time;
-            if (alpha == 0)
-                ctx.clearRect(0, 0, hx, hy);
-            const angle = Math.PI / 4;
-            for (let x = 0; x < hx; x += spacing)
-                for (let y = 0; y < hy; y += spacing) {
-                    //@ts-ignore
+            // if(alpha==0)
+            ctx.clearRect(0, 0, hx, hy);
+            const angle = !manualAngle ? Math.PI / 4 * time / 10 / animatedAnglePow : (Math.PI / 2 * manualAngle);
+            for (let x = 0; x < hx; x += spacingX)
+                for (let y = 0; y < hy; y += spacingY) {
+                    const randOffset = (Math.random() - 0.5) * 2 * randomness;
                     const height = perlin.turbulence(x + 0.5, y + 0.5, z, 64);
-                    const dist = Math.max(0, Math.min(1, Math.sqrt(Math.pow(hx / 2 - x, 2) + Math.pow(hy / 2 - y, 2)) / hx)) * 2;
-                    const outdist = 1 - Math.pow(Math.max(0, Math.min(1, Math.sqrt(Math.pow(hx / 2 - x, 2) / hx / 500 * 2 + Math.pow(hy / 2 - y, 2) / hy / 300 * 2))), 2);
+                    const dist = Math.max(Math.max(0, Math.min(1, Math.sqrt(Math.pow(hx / 2 - x, 2) + Math.pow(hy / 2 - y, 2)) / hx)) * 10, innerVignette);
+                    const outdist = Math.max(1 - Math.pow(Math.max(0, Math.min(1, Math.sqrt(Math.pow(hx / 2 - x, 2) / hx / 500 * 2 + Math.pow(hy / 2 - y, 2) / hy / 300 * 2))), 2), outerVignette);
                     const alphadist = 1 - Math.max(0, Math.min(1, Math.sqrt(Math.pow(hx / 2 - x, 2) / hx / 100 + Math.pow(hy / 2 - y, 2)) / hy / 100));
-                    const value = Math.round(Math.abs((Math.max(-1, Math.min(1, height)) + 1 - dist / 5)) * 200 * dist * outdist * 1 + 10) * Math.min(1, z / 10);
+                    const value = Math.round(Math.abs(Math.pow((Math.max(-1, Math.min(1, height)) + 1 - dist / 5), power)) * 200 * dist * outdist + offset); //* Math.min(1,z/10)*(y-y*(1-perspective))/hy
                     // const hex = value.toString(16).repeat(3)
                     // perlin.getDirection(x,y,z)
-                    if (value > 30) {
+                    if (value > 20) {
+                        const cx = x + Math.sin(angle + randomness * value / 255) * value / 50;
+                        const cy = y + Math.cos(angle + randomness * value / 255) * value / 50;
+                        const tx = cx * trasnlate;
+                        const ty = cy * trasnlate;
+                        const valScaledSize = Math.min(Math.abs(pointSize) * value / 255, Math.abs(pointSize));
                         ctx.beginPath();
-                        ctx?.arc(x + Math.sin(angle) * value / 50, y + Math.cos(angle) * value / 50, pointSize, 0, 2 * Math.PI);
+                        ctx.clearRect(tx - valScaledSize / 2, ty - valScaledSize / 2, cx, cy);
+                        if (pointSize < 0)
+                            ctx.rect(tx, ty, valScaledSize, valScaledSize);
+                        else
+                            ctx?.arc(tx, ty, valScaledSize, 0, 2 * Math.PI);
                         ctx.stroke();
                         ctx.fillStyle = `rgb(${value}, ${value}, ${value})`; //'#' + hex
                         ctx.fill();
@@ -213,20 +220,22 @@ export class Pixelated extends IElement {
             else if (alpha > 0 && delta < 0)
                 requestAnimationFrame(() => inc(delta));
         }
-        canvas.onmouseover = (ev) => {
-            //  clearInterval(updateint)
-            requestAnimationFrame(() => inc(0.1));
-            alpha = 1;
-        };
-        canvas.onmouseleave = ev => {
-            //    clearInterval(updateint)
-            requestAnimationFrame(() => inc(-0.01));
-            // requestAnimationFrame(() => {
-            //     alpha = Math.max(0, Math.min(1, alpha - 0.05))
-            //     inc
-            // });
-            alpha = 0;
-        };
+        if (hover) {
+            canvas.onmouseover = (ev) => {
+                //  clearInterval(updateint)
+                requestAnimationFrame(() => inc(0.1));
+                alpha = 1;
+            };
+            canvas.onmouseleave = ev => {
+                //    clearInterval(updateint)
+                requestAnimationFrame(() => inc(-0.01));
+                // requestAnimationFrame(() => {
+                //     alpha = Math.max(0, Math.min(1, alpha - 0.05))
+                //     inc
+                // });
+                alpha = 0;
+            };
+        }
         return canvas;
     }
 }
@@ -444,6 +453,6 @@ export class EditorCanvas extends IElement {
         }
     }
     replicateDraw(type, args) {
-        this.ws.send(JSON.stringify({ type: WebSocketMessageType.Canvas, command: type, ...args, clientId: this.clientId }));
+        this.ws.send(JSON.stringify({ type: 'canvas', command: type, ...args, clientId: this.clientId }));
     }
 }

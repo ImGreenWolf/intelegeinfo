@@ -7,7 +7,7 @@ declare global {
 declare abstract class IElement {
     parentElement: HTMLElement | undefined;
     constructor(parentElem?: HTMLElement);
-    abstract render(): Node | Promise<Node>;
+    abstract render(...args: any[]): Node | Promise<Node>;
     stylesheet(style: string): HTMLStyleElement;
     private appendRender;
 }
@@ -28,7 +28,24 @@ export declare class Dock extends IElement {
     render(): HTMLDivElement;
 }
 export declare class Pixelated extends IElement {
-    render(): Promise<Node>;
+    render({ x, y, spacingX, spacingY, pointSize, innerVignette, outerVignette, timeScale, hover, trasnlate, power, offset, manualAngle, animatedAnglePow, useMouseAngle, randomness }: {
+        x?: number | undefined;
+        y?: number | undefined;
+        spacingX?: number | undefined;
+        spacingY?: number | undefined;
+        pointSize?: number | undefined;
+        innerVignette?: number | undefined;
+        outerVignette?: number | undefined;
+        timeScale?: number | undefined;
+        hover?: boolean | undefined;
+        trasnlate?: number | undefined;
+        power?: number | undefined;
+        offset?: number | undefined;
+        manualAngle?: number | undefined;
+        animatedAnglePow?: number | undefined;
+        useMouseAngle?: number | undefined;
+        randomness?: number | undefined;
+    }): Promise<Node>;
 }
 interface Point {
     x: any;

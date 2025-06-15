@@ -58,12 +58,15 @@ int main()
         return new Promise<void>((resolve, reject) => {
             try {
                  const compile = spawn(`docker`, ['exec', res.imageName, 'bash','-c', `g++ ${isDebugging? '-g' : ""} -O0 clientFiles/${res.fileName} -o ${res.fileName.split('.')[0]}`], {stdio: 'pipe'})
-                compile.stdout.on('data', chunk => {
+                    let buffer = ''
+                 compile.stdout.on('data', chunk => {
                     const data = chunk.toString()
+                    buffer += data
                     this.sendError(data)
                 })
                 compile.stderr.on('data', chunk => {
                     const data = chunk.toString()
+                    buffer += data
                     this.sendError(data, true)
                 })
                 compile.on('close', code => {
@@ -71,8 +74,8 @@ int main()
                         resolve()
                     else 
                     {
-                         this.sendError(code.toString(), true)
-                         reject(code)
+                         this.sendError(buffer, true)
+                         reject(code + ": " + buffer)
                     }
                         
                 })
@@ -91,27 +94,28 @@ int main()
       checkCodeSyntax = (sessionObj: EditorSession, file: EditorFile): Promise<string> =>
         {
             return new Promise((resolve, reject) => {
-                const exeFile = sessionObj.getClientFilesPath();
-                const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
+                const filePath = sessionObj.getClientFilesPath();//            path.join(rootDirName, "cache", sessionId);
                 const codeFile = !["cpp"].includes(path.extname(file.name|| "main.cpp"))? file.name : "main.cpp";
                 const compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
                     windowsHide: true,
                     detached: true,
                 });
-    
+                let buffer = '';
                 compileProcess.stdout.on('data', data => {
                     
-                    reject(data.toString())
+                    buffer += data.toString()
                 })
     
                 compileProcess.stderr.on('data', data => {
                     
-                    resolve(data.toString())
+                    buffer += data.toString()
                 })
     
                 compileProcess.on('close', (code)=> {
-                    if(code!=0)
-                        reject(code)
+                    if(code!=1)
+                        reject(code + "\n" + buffer)
+                    else
+                        resolve(buffer)
                 })
             })
     
