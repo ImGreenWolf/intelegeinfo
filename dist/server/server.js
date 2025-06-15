@@ -282,7 +282,8 @@ app.use('/user', usersManager_1.router);
 //          LOCAL  SERVER  VARIABLES       //
 let compileProcess;
 //                      END                      //  
-function onServerStart(err) {
+function onServerStart() {
+    const err = undefined;
     if (err)
         console.error("error: " + err);
     else
@@ -295,7 +296,7 @@ const PORT = 3000;
 exports.server = https.createServer({
     key: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
     cert: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem'),
-}, app).listen(PORT); // app.listen(PORT, '0.0.0.0', onServerStart);
+}, app).listen(PORT, '0.0.0.0', 511, onServerStart); // app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 exports.clients = new Map();
 // const sessions: Map<UUID, UUID[]> = new Map();

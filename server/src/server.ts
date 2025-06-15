@@ -339,8 +339,9 @@ interface CompileResponse {
 let compileProcess: ChildProcess;
 
     //                      END                      //  
-function onServerStart(err)
+function onServerStart()
 {
+    const err = undefined
     if(err)
         console.error("error: "+err)
     else
@@ -356,7 +357,7 @@ import * as https from 'https'
         key: process.env.NODE_ENV == 'development' ? '' : fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
         cert: process.env.NODE_ENV == 'development' ? '' :  fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem'),
     
-    }, app).listen(PORT);// app.listen(PORT, '0.0.0.0', onServerStart);
+    }, app).listen(PORT, '0.0.0.0', 511, onServerStart);// app.listen(PORT, '0.0.0.0', onServerStart);
     // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 
     export let clients: Map<UUID, WebSocket> = new Map();
