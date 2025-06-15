@@ -402,9 +402,9 @@ server.on('listening', onServerStart)
 });
 //@ts-ignore
 let meter = tx2.meter({
-  name      : 'skisjdj/sec',
+  name      : 'users/hour',
   samples   : 1,
-  timeframe : 60
+  timeframe : 60*60*60
 })
 
     server.on('connection', listener => {
