@@ -357,11 +357,11 @@ import * as http from 'http'
     
     const credentials = {key: process.env.NODE_ENV == 'development' ? '' : fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
         cert: process.env.NODE_ENV == 'development' ? '' :  fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem')}
-// var httpServer = http.createServer(app);
+var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
 
-// httpServer.listen(3000);
-export const server = httpsServer.listen(443);
+httpServer.listen(3000);
+export const server = httpsServer.listen(3443);
 server.on('listening', onServerStart)
 // httpsServer.listen(3443);
     // app.listen(PORT, '0.0.0.0', onServerStart);
