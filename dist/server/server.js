@@ -299,7 +299,7 @@ const credentials = { key: process.env.NODE_ENV == 'development' ? '' : fs_1.def
 var httpServer = http.createServer((req, res) => {
     const url = req.url.replace('http', 'https');
     res.statusCode = 301;
-    res.setHeader('Location', url);
+    res.setHeader('Location', 'https://intelegeinfo.go.ro');
     res.end();
 });
 var httpsServer = https.createServer(credentials, app);

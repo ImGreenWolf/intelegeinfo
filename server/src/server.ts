@@ -360,7 +360,7 @@ import * as http from 'http'
 var httpServer = http.createServer((req,res) => {
     const url = req.url.replace('http','https')
     res.statusCode = 301;
-    res.setHeader('Location', url);
+    res.setHeader('Location', 'https://intelegeinfo.go.ro');
     res.end();
 });
 var httpsServer = https.createServer(credentials, app);
