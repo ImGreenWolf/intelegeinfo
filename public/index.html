@@ -60,7 +60,7 @@ int main() {
                         <div class="shadow inset"></div>
                         <div id="editor-tabs">
                             <div  class="editor-tabs-container">  
-                                <div  id="editor-tabs-container" class="editor-tabs-container" style="width: auto;">     
+                                <div  id="editor-tabs-container" class="editor-tabs-container">     
                                     <span class="file-tab" id="active-open-file"><p>main.cpp</p><div class="file-users-container"><div style="background-color: green;"></div><div style="background-color: rgb(0, 110, 255)"></div></div></span>
                                     <span class="file-tab"><p>python.py</p><div class="file-users-container"><div style="background-color: red;"></div></div></span>
                                     <span class="file-tab"><p>matrici.png</p><div class="file-users-container"></div></span>
@@ -121,6 +121,14 @@ int main() {
                     <h1>Editeaza</h1>
                     <p>Editeaza-ti codul de oriunde, oricand, in C++ sau Python. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
                 </div>
+                <div class="text">
+                    <h1>Resurse</h1>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
+                </div>
+                <div class="text">
+                    <h1>Debugger</h1>
+                    <p>Editeaza-ti codul de oriunde, oricand, in C++ sau Python. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
+                </div>
                 <div id="graphic" style="grid-column: 1/-1; align-self: flex-end;">
 
                 </div>
@@ -171,6 +179,14 @@ int main() {
                     <h2>Debugger</h2>
                     <p>Afla cum se executa programul tau, valorile variabilelor, adresele de memorie, si multe alte informatii despre acesta.</p>
                 </li>
+                <li>
+                    <h2>Limbaje</h2>
+                    <p>Scrie-ti programele in C++ sau in Python. Mai multe limbaje vor aparea in curand!</p>
+                </li>
+                <li>
+                    <h2>Resurse</h2>
+                    <p><a href="/guides">Descopera</a> materialele care iti explica conceptele de baza ale programarii.</p>
+                </li>
             </ul>
         </div>
 
@@ -190,10 +206,13 @@ int main() {
     <script src="ace-builds-master/src-noconflict/ext-modelist.js"></script>
     <script type="module">
             import { Pixelated } from '/editor/components'
-            const node = await new Pixelated().render({x:1920, y:100, spacingX : 15, spacingY: 18, pointSize:1.4,
+            const elem = await new Pixelated()
+            const args = {x:document.body.clientWidth, y:100, spacingX : 15, spacingY: 18, pointSize:1.4,
                  innerVignette:1,outerVignette:0.3, timeScale:0.08, hover : false, trasnlate : 1,
-                  power: 2, offset: 0, animatedAnglePow: 1,manualAngle: 30, randomness: .2})
+                  power: 2, offset: 0, animatedAnglePow: 1,manualAngle: 30, randomness: .2}
+            const node = await elem.render(args)
 
+            document.addEventListener('resize',  elem.render(args))
             document.getElementById('graphic').appendChild(node)
         </script>
     <script>

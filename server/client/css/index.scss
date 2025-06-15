@@ -29,6 +29,7 @@ body
     word-wrap: break-word;
     overflow: hidden;
     width: 100%;
+    contain: content;
     span {
         overflow-wrap: break-word;
     word-wrap: break-word;
@@ -37,7 +38,7 @@ body
 }
 header2
 {
-    width: 50%;
+    min-width: 50%;
         backdrop-filter: blur(1px);
     display: grid;
     align-self: center;
@@ -63,6 +64,12 @@ header2
             display: flex;
             justify-content: space-around;
             width: 100%;
+            list-style-type: none;
+            gap: 1em;
+            li
+            {
+
+            }
             :any-link
         {
             color: rgb(255, 255, 255)
@@ -542,6 +549,13 @@ h1
     .display-shadow {
         column-gap: 10px;
     }
+
+    #editor-tabs-container
+        {
+            flex-shrink: 1;
+            overflow-x: auto !important;
+            width: 100px;
+        }
 
 //     .main-container
 // {

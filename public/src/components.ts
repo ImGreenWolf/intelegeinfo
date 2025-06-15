@@ -204,21 +204,21 @@ export class Dock extends IElement {
 
 export class Pixelated extends IElement {
 
-    
+    canvas: HTMLCanvasElement | undefined
     async render({x=1000, y=500, spacingX = 10,spacingY = 10, pointSize=2, innerVignette=1,outerVignette=1, 
         timeScale=0.5, hover = false, trasnlate = 1, power = 1, offset=10, manualAngle = 0, animatedAnglePow = 1,
         useMouseAngle = 0, randomness = 1}): Promise<Node> {
-        
-        const canvas = document.createElement('canvas')
-        canvas.width = x;
-        canvas.height = y;
-        const ctx = canvas.getContext("2d")!
+        if(!this.canvas)
+            this.canvas = document.createElement('canvas')
+        this.canvas.width = x;
+        this.canvas.height = y;
+        const ctx = this.canvas.getContext("2d")!
         // const spacing = 10;
         // const pointSize = 2;
 
         let time =0
         let alpha = 1;
-        
+        const canvas = this.canvas
         const perlin = new ImprovedPerlinNoise3D(Date.now());
         
             async function update() {
@@ -278,13 +278,13 @@ export class Pixelated extends IElement {
         }
         if(hover)
         {
-            canvas.onmouseover = (ev) => {
+            this.canvas.onmouseover = (ev) => {
                 //  clearInterval(updateint)
              requestAnimationFrame(() => inc(0.1))
              
            alpha = 1
         }      
-        canvas.onmouseleave = ev => {
+        this.canvas.onmouseleave = ev => {
             
                 //    clearInterval(updateint)
                 
@@ -299,7 +299,7 @@ export class Pixelated extends IElement {
         }
         
         
-        return canvas
+        return this.canvas
     }
 }
 

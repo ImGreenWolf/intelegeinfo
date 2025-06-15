@@ -288,8 +288,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.7.0
-   * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
+   * Prisma Client JS version: 6.9.0
+   * Query Engine version: 81e4af48011447c3cc503a190e86995b66d2a28e
    */
   export type PrismaVersion = {
     client: string
@@ -5549,10 +5549,12 @@ export namespace Prisma {
 
   export type GuideAvgAggregateOutputType = {
     id: number | null
+    visits: number | null
   }
 
   export type GuideSumAggregateOutputType = {
     id: number | null
+    visits: number | null
   }
 
   export type GuideMinAggregateOutputType = {
@@ -5562,6 +5564,7 @@ export namespace Prisma {
     content: string | null
     description: string | null
     category: string | null
+    visits: number | null
   }
 
   export type GuideMaxAggregateOutputType = {
@@ -5571,6 +5574,7 @@ export namespace Prisma {
     content: string | null
     description: string | null
     category: string | null
+    visits: number | null
   }
 
   export type GuideCountAggregateOutputType = {
@@ -5580,16 +5584,19 @@ export namespace Prisma {
     content: number
     description: number
     category: number
+    visits: number
     _all: number
   }
 
 
   export type GuideAvgAggregateInputType = {
     id?: true
+    visits?: true
   }
 
   export type GuideSumAggregateInputType = {
     id?: true
+    visits?: true
   }
 
   export type GuideMinAggregateInputType = {
@@ -5599,6 +5606,7 @@ export namespace Prisma {
     content?: true
     description?: true
     category?: true
+    visits?: true
   }
 
   export type GuideMaxAggregateInputType = {
@@ -5608,6 +5616,7 @@ export namespace Prisma {
     content?: true
     description?: true
     category?: true
+    visits?: true
   }
 
   export type GuideCountAggregateInputType = {
@@ -5617,6 +5626,7 @@ export namespace Prisma {
     content?: true
     description?: true
     category?: true
+    visits?: true
     _all?: true
   }
 
@@ -5713,6 +5723,7 @@ export namespace Prisma {
     content: string
     description: string | null
     category: string | null
+    visits: number
     _count: GuideCountAggregateOutputType | null
     _avg: GuideAvgAggregateOutputType | null
     _sum: GuideSumAggregateOutputType | null
@@ -5741,6 +5752,7 @@ export namespace Prisma {
     content?: boolean
     description?: boolean
     category?: boolean
+    visits?: boolean
   }, ExtArgs["result"]["guide"]>
 
   export type GuideSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5750,6 +5762,7 @@ export namespace Prisma {
     content?: boolean
     description?: boolean
     category?: boolean
+    visits?: boolean
   }, ExtArgs["result"]["guide"]>
 
   export type GuideSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5759,6 +5772,7 @@ export namespace Prisma {
     content?: boolean
     description?: boolean
     category?: boolean
+    visits?: boolean
   }, ExtArgs["result"]["guide"]>
 
   export type GuideSelectScalar = {
@@ -5768,9 +5782,10 @@ export namespace Prisma {
     content?: boolean
     description?: boolean
     category?: boolean
+    visits?: boolean
   }
 
-  export type GuideOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "content" | "description" | "category", ExtArgs["result"]["guide"]>
+  export type GuideOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "content" | "description" | "category" | "visits", ExtArgs["result"]["guide"]>
 
   export type $GuidePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Guide"
@@ -5782,6 +5797,7 @@ export namespace Prisma {
       content: string
       description: string | null
       category: string | null
+      visits: number
     }, ExtArgs["result"]["guide"]>
     composites: {}
   }
@@ -6211,6 +6227,7 @@ export namespace Prisma {
     readonly content: FieldRef<"Guide", 'String'>
     readonly description: FieldRef<"Guide", 'String'>
     readonly category: FieldRef<"Guide", 'String'>
+    readonly visits: FieldRef<"Guide", 'Int'>
   }
     
 
@@ -6646,7 +6663,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     content: 'content',
     description: 'description',
-    category: 'category'
+    category: 'category',
+    visits: 'visits'
   };
 
   export type GuideScalarFieldEnum = (typeof GuideScalarFieldEnum)[keyof typeof GuideScalarFieldEnum]
@@ -7014,6 +7032,7 @@ export namespace Prisma {
     content?: StringFilter<"Guide"> | string
     description?: StringNullableFilter<"Guide"> | string | null
     category?: StringNullableFilter<"Guide"> | string | null
+    visits?: IntFilter<"Guide"> | number
   }
 
   export type GuideOrderByWithRelationInput = {
@@ -7023,6 +7042,7 @@ export namespace Prisma {
     content?: SortOrder
     description?: SortOrderInput | SortOrder
     category?: SortOrderInput | SortOrder
+    visits?: SortOrder
   }
 
   export type GuideWhereUniqueInput = Prisma.AtLeast<{
@@ -7035,6 +7055,7 @@ export namespace Prisma {
     content?: StringFilter<"Guide"> | string
     description?: StringNullableFilter<"Guide"> | string | null
     category?: StringNullableFilter<"Guide"> | string | null
+    visits?: IntFilter<"Guide"> | number
   }, "id" | "name">
 
   export type GuideOrderByWithAggregationInput = {
@@ -7044,6 +7065,7 @@ export namespace Prisma {
     content?: SortOrder
     description?: SortOrderInput | SortOrder
     category?: SortOrderInput | SortOrder
+    visits?: SortOrder
     _count?: GuideCountOrderByAggregateInput
     _avg?: GuideAvgOrderByAggregateInput
     _max?: GuideMaxOrderByAggregateInput
@@ -7061,6 +7083,7 @@ export namespace Prisma {
     content?: StringWithAggregatesFilter<"Guide"> | string
     description?: StringNullableWithAggregatesFilter<"Guide"> | string | null
     category?: StringNullableWithAggregatesFilter<"Guide"> | string | null
+    visits?: IntWithAggregatesFilter<"Guide"> | number
   }
 
   export type ProjectCreateInput = {
@@ -7325,6 +7348,7 @@ export namespace Prisma {
     content: string
     description?: string | null
     category?: string | null
+    visits?: number
   }
 
   export type GuideUncheckedCreateInput = {
@@ -7334,6 +7358,7 @@ export namespace Prisma {
     content: string
     description?: string | null
     category?: string | null
+    visits?: number
   }
 
   export type GuideUpdateInput = {
@@ -7342,6 +7367,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
   }
 
   export type GuideUncheckedUpdateInput = {
@@ -7351,6 +7377,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
   }
 
   export type GuideCreateManyInput = {
@@ -7360,6 +7387,7 @@ export namespace Prisma {
     content: string
     description?: string | null
     category?: string | null
+    visits?: number
   }
 
   export type GuideUpdateManyMutationInput = {
@@ -7368,6 +7396,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
   }
 
   export type GuideUncheckedUpdateManyInput = {
@@ -7377,6 +7406,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -7665,10 +7695,12 @@ export namespace Prisma {
     content?: SortOrder
     description?: SortOrder
     category?: SortOrder
+    visits?: SortOrder
   }
 
   export type GuideAvgOrderByAggregateInput = {
     id?: SortOrder
+    visits?: SortOrder
   }
 
   export type GuideMaxOrderByAggregateInput = {
@@ -7678,6 +7710,7 @@ export namespace Prisma {
     content?: SortOrder
     description?: SortOrder
     category?: SortOrder
+    visits?: SortOrder
   }
 
   export type GuideMinOrderByAggregateInput = {
@@ -7687,10 +7720,12 @@ export namespace Prisma {
     content?: SortOrder
     description?: SortOrder
     category?: SortOrder
+    visits?: SortOrder
   }
 
   export type GuideSumOrderByAggregateInput = {
     id?: SortOrder
+    visits?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {

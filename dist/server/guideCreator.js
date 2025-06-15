@@ -114,41 +114,87 @@ ${htmlHead}
     });
 });
 router.get('/', (req, res) => {
-    dbClient_1.default.guide.findMany({
-        take: 10,
-        orderBy: {
-            createdAt: "desc"
-        }
-    }).then(guides => {
-        let guideEntries = '';
-        for (const guide of guides)
-            guideEntries += `<li><a href="/guides/guideCreator/load/${encodeURI(guide.name)}">Load</a><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`;
-        const html = `<ul>
-    ${guideEntries}
-    </ul>`;
-        res.send(html);
-    }).catch(err => {
-        res.status(500).json({ error: 'Failed listing projects: ' + err });
-    });
+    getPosts().then(json => postsRequest(json.guideEntries, req, res, json.err));
 });
 router.get('/posts', (req, res) => {
-    dbClient_1.default.guide.findMany({
-        take: 10,
-        orderBy: {
-            createdAt: "desc"
-        }
-    }).then(guides => {
-        let guideEntries = [];
-        for (const guide of guides)
-            guideEntries.push({ name: guide.name, html: `<a href="guides/post/${encodeURI(guide.name)}"><h2>${guide.name}</h2></a>
-        <div>${guide.description || guide.content.substring(0, 100)}..</div>
-        `
-            });
-        res.send(JSON.stringify(guideEntries));
-    }).catch(err => {
-        res.status(500).json({ error: 'Failed listing projects: ' + err });
-    });
+    getPosts().then(json => res.send(json.guideEntries));
 });
+async function getPosts() {
+    return new Promise((resolve, reject) => {
+        dbClient_1.default.guide.findMany({
+            take: 10,
+            orderBy: {
+                visits: 'desc'
+            }
+        }).then(guides => {
+            let guideEntries = [];
+            for (const guide of guides)
+                guideEntries.push({ name: guide.name, html: `<a href="guides/post/${encodeURI(guide.name)}"><h2>${guide.name}</h2></a>
+            <div>${guide.description || guide.content.substring(0, 100)}..</div>
+            `
+                });
+            resolve({ guideEntries });
+        }).catch(err => reject({ guideEntries: undefined, err }));
+    });
+}
+function postsRequest(guideEntries, req, res, error) {
+    let text = `
+    <style>
+    body
+    {
+        background-color: rgb(20,20,20)
+    }
+    #guides
+{
+
+    ul
+    {
+        display: grid;
+        grid-auto-flow: column;
+        gap: 1.5em;
+        color: rgb(255, 255, 255);
+        justify-content: start;
+        position: relative;
+        // font-size: 0.5rem;
+        padding: 0;
+        li 
+        {
+            max-width: 200px;
+            min-width: 50px;
+            max-height: 200px;
+            min-height: 50px;
+            aspect-ratio: 1;
+            background-color: rgb(26, 28, 31);;
+            padding: 1.5em;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            cursor: pointer;
+            list-style: none;
+            div
+            {
+                font-size: 0.75em
+            }
+            
+        }
+
+        :any-link
+        {
+            color: rgb(255, 255, 255)
+        }
+    }
+}
+    </style>
+    <div id='guides'><ul>
+`;
+    if (!error) {
+        for (const guide of guideEntries)
+            text += "<li>" + guide.html + "</li>\n";
+        text += '</ul></div>';
+        res.send(text);
+    }
+    else
+        res.status(500).json({ error: 'Failed listing projects: ' + error });
+}
 // POST handler for form submission
 router.post('/submit', (req, res) => {
     const { gname, content, description, category } = req.body; //  TODO replace category with enum
@@ -168,7 +214,9 @@ router.post('/submit', (req, res) => {
             dbClient_1.default.guide.create({
                 data: {
                     name: gname,
-                    content
+                    content,
+                    description,
+                    category
                 }
             }).then((value) => {
                 res.send(`${htmlHead} <h2>Uploaded ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
@@ -183,9 +231,12 @@ router.post('/submit', (req, res) => {
     });
 });
 router.get('/post/:name', (req, res) => {
-    dbClient_1.default.guide.findFirst({
+    dbClient_1.default.guide.update({
         where: {
             name: decodeURI(req.params.name)
+        },
+        data: {
+            visits: { increment: 1 }
         }
     }).then((value) => {
         try {
@@ -197,6 +248,9 @@ router.get('/post/:name', (req, res) => {
                 `<content> 
                 ${value.content} 
                 </content>
+                <footer>
+                    <p>${value.visits}</p>
+                </footer>
                 <script src="/ace-builds-master/src-min-noconflict/ace.js"></script>
                 <script>
                 var codeTags = document.getElementsByTagName("code")

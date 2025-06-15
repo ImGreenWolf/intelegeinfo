@@ -66,4 +66,5 @@ model Guide {
   content String
   description String?
   category String?
+  visits Int @default(0)
 }
