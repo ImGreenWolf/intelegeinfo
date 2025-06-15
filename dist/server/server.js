@@ -296,7 +296,12 @@ const http = __importStar(require("http"));
 const PORT = 3000;
 const credentials = { key: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
     cert: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem') };
-var httpServer = http.createServer(app);
+var httpServer = http.createServer((req, res) => {
+    res.writeHead(302, {
+        'Location': req.url.replace('http', 'https')
+    });
+    res.end();
+});
 var httpsServer = https.createServer(credentials, app);
 httpServer.listen(3000);
 exports.server = httpsServer.listen(3443);
@@ -312,7 +317,7 @@ const buildTag = `cpp-image`;
 exports.wss = new ws_1.default.Server({ noServer: true, clientTracking: true, });
 //                      END                      //  
 exports.server.on('upgrade', function upgrade(request, socket, head) {
-    const { pathname } = new URL(request.url, 'ws://intelegeinfo.go.ro');
+    const { pathname } = new URL(request.url, 'wss://intelegeinfo.go.ro');
     switch (pathname) {
         case '/api':
             metrics_1.wssAPI.handleUpgrade(request, socket, head, function done(ws) {
