@@ -291,12 +291,17 @@ function onServerStart() {
     cleanUp();
 }
 const https = __importStar(require("https"));
+const http = __importStar(require("http"));
 //          GLOBAL  SERVER  VARIABLES       //
 const PORT = 3000;
-exports.server = https.createServer({
-    key: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
-    cert: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem'),
-}, app).listen(PORT, '0.0.0.0', 511, onServerStart); // app.listen(PORT, '0.0.0.0', onServerStart);
+const credentials = { key: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
+    cert: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem') };
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
+httpServer.listen(3000);
+exports.server = httpsServer.listen(443);
+httpsServer.listen(3443);
+// app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 exports.clients = new Map();
 // const sessions: Map<UUID, UUID[]> = new Map();
