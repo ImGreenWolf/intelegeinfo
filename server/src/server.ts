@@ -383,7 +383,7 @@ server.on('listening', onServerStart)
 //                      END                      //  
 
       server.on('upgrade', function upgrade(request, socket, head) {
-  const { pathname } = new URL(request.url, 'ws://intelegeinfo.go.ro');
+  const { pathname } = new URL(request.url, 'wss://intelegeinfo.go.ro');
     switch(pathname){
   case '/api': 
     wssAPI.handleUpgrade(request, socket, head, function done(ws) {
@@ -403,8 +403,8 @@ server.on('listening', onServerStart)
 //@ts-ignore
 let meter = tx2.meter({
   name      : 'users/hour',
-  samples   : 1,
-  timeframe : 60*60*60
+  samples   : 60,
+  timeframe : 60*60
 })
 
     server.on('connection', listener => {

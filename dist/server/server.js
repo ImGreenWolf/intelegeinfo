@@ -331,8 +331,8 @@ exports.server.on('upgrade', function upgrade(request, socket, head) {
 //@ts-ignore
 let meter = tx2_1.default.meter({
     name: 'users/hour',
-    samples: 1,
-    timeframe: 60 * 60 * 60
+    samples: 60,
+    timeframe: 60 * 60
 });
 exports.server.on('connection', listener => {
     meter.mark();
