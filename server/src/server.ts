@@ -361,7 +361,7 @@ import * as http from 'http'
 var httpsServer = https.createServer(credentials, app);
 
 // httpServer.listen(3000);
-export const server = httpsServer.listen(443);
+export const server = httpsServer.listen(3000);
 // httpsServer.listen(3443);
     // app.listen(PORT, '0.0.0.0', onServerStart);
     // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
