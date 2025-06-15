@@ -289,9 +289,14 @@ function onServerStart(err) {
         console.log("Server running on port " + PORT);
     cleanUp();
 }
+const https = __importStar(require("https"));
 //          GLOBAL  SERVER  VARIABLES       //
 const PORT = 3000;
-exports.server = app.listen(PORT, '0.0.0.0', onServerStart);
+exports.server = https.createServer({
+    key: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
+    cert: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem'),
+}, app).listen();
+app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 exports.clients = new Map();
 // const sessions: Map<UUID, UUID[]> = new Map();
