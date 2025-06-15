@@ -1193,12 +1193,13 @@ class FileElement
     if(user == -1)
       return
     const elem: HTMLElement = this.Users[user].elem;
+    this.Users.splice(user)
     elem.animate([{flexGrow: '1'}, {flexGrow: '0'}], this.animOptions).onfinish = 
     () => {
       elem.remove()
-      this.Users.splice(user)
+      
     }
-
+    
 
   }
   remove()

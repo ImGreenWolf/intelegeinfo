@@ -1548,7 +1548,7 @@ form label {
   header ul {
     justify-content: flex-end !important;
   }
-  html, * {
+  html {
     font-size: 24px;
   }
   #join-session:not(.tight-screen) {
@@ -1557,11 +1557,12 @@ form label {
   #mobile-dropdown {
     display: block;
   }
-  #editor {
+  #editor,
+  button {
     font-size: 1rem;
   }
   #output {
-    font-size: 1rem;
+    font-size: 0.75rem;
   }
   #console {
     font-size: 1rem;

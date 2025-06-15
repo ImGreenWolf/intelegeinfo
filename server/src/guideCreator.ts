@@ -203,7 +203,7 @@ function postsRequest(guideEntries,req,res, error?)
     <div id='guides'><ul>
 `
      
-    if(!error)
+    if(!error || guideEntries)
     {
         for(const guide of guideEntries)
             text += "<li>"+guide.html + "</li>\n"

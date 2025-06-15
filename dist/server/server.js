@@ -1258,8 +1258,9 @@ bash `.trim().replaceAll('\n', "");
                 //     }
                 switch (type) {
                     case types_1.WebSocketMessageType.Canvas:
-                        replicateFunction((clientWs) => {
-                            clientWs.send(JSON.stringify({ ...messageJSON })); // Send GDB output to the client
+                        replicateFunction((clientWs, clientid, thisClientObj) => {
+                            if (thisClientObj.openFile.name == clientObj.openFile.name)
+                                clientWs.send(JSON.stringify({ ...messageJSON })); // Send GDB output to the client
                         }, clientObj);
                         break;
                     case types_1.WebSocketMessageType.WebCam:

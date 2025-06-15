@@ -1946,7 +1946,7 @@ form label
 
         }
     } 
-    html, *
+    html
     {
         font-size: 24px;
     }
@@ -1961,13 +1961,14 @@ form label
         display: block;
     }
     
-    #editor
+    #editor,
+    button
     {
         font-size: 1rem;
     }
     #output
     {
-        font-size: 1rem;
+        font-size: 0.75rem;
     }
     #console
     {

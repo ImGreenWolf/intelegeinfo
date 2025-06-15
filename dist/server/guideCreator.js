@@ -139,6 +139,7 @@ async function getPosts() {
 }
 function postsRequest(guideEntries, req, res, error) {
     let text = `
+    ${htmlHead}
     <style>
     body
     {
@@ -186,7 +187,7 @@ function postsRequest(guideEntries, req, res, error) {
     </style>
     <div id='guides'><ul>
 `;
-    if (!error) {
+    if (!error || guideEntries) {
         for (const guide of guideEntries)
             text += "<li>" + guide.html + "</li>\n";
         text += '</ul></div>';
