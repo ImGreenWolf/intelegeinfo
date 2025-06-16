@@ -140,7 +140,7 @@ export class Dock extends IElement {
             else
                 arr.push(createNode('a', { className: 'dock-button', attributes: [{ name: 'href', value: func[index] }], htmlSting: element }));
         });
-        const container = createNode('div', { id: 'button-container', css: `grid-column: 2; position: relative;display: flex; gap: 0.75em; height: 50px;   align-items: flex-end; justify-content: space-between; `, html: arr });
+        const container = createNode('div', { id: 'button-container', css: `width: 100%; grid-column: 2; position: relative;display: flex; gap: 0.75em; height: 50px;   align-items: flex-end; justify-content: space-between; `, html: arr });
         const mainContainer = createNode('div', { id: 'content-container', html: username ? [container, createNode('h2', { innerText: `Hey, ${username}!` })] : [container], css: "gap: 0.5em; padding: 0.5em; justify-items: center; transition-duration: 1s; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; position: relative; min-height: 50px; border: 2px solid rgba(255, 255, 255, 0.1); background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;" }); // grid-auto-flow: column;
         const base = createNode('div', {
             css: "display: flex; justify-content: center; flex-direction: column; grid-row: -2/-1; min-width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
