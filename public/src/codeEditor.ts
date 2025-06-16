@@ -480,7 +480,7 @@ var Tooltip = ace.require("ace/tooltip").Tooltip;
 const sessionId = new URLSearchParams(window.location.search).get("session") 
 const saveId = new URLSearchParams(window.location.search).get("save");
 
-const WSUrl = window.isSecureContext && window.location.protocol == "https" ? "wss://" : "ws://" + window.location.hostname  + ":" + window.location.port + "/editor" + (sessionId || saveId ? "?" : "") + (sessionId ? "session="+sessionId+"&" : "")  + (saveId ? "save="+saveId : "")
+const WSUrl = window.isSecureContext && window.location.protocol == "https:" ? "wss://" : "ws://" + window.location.hostname  + ":" + window.location.port + "/editor" + (sessionId || saveId ? "?" : "") + (sessionId ? "session="+sessionId+"&" : "")  + (saveId ? "save="+saveId : "")
 // Initialize the manager
 const cursorManager = new MultiCursorManager(editor);
 
