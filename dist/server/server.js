@@ -70,6 +70,7 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootD
 const crypto_1 = __importDefault(require("crypto"));
 const EditorModes = __importStar(require("./editor-modes/"));
 const metrics_1 = __importStar(require("./metrics"));
+const examSubjects_1 = __importDefault(require("./examSubjects"));
 const tx2_1 = __importDefault(require("tx2"));
 const types_3 = require("../../dist/shared/types");
 app.use(compression());
@@ -80,6 +81,7 @@ app.use(express_1.default.json({
 }));
 app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', metrics_1.default);
+app.use('/subiecte', examSubjects_1.default);
 app.post('/github/onpull', (req, res) => {
     try {
         if (!req.body)

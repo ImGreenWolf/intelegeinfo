@@ -224,7 +224,7 @@ router.post('/submit', (req: Request, res: Response) => {
         prisma.guide.update({
             where:
             {
-                name: gname
+                name: gname,
             },
             data:
             {
@@ -283,8 +283,14 @@ router.get('/post/:name', (req: Request, res: Response) => {
             //     e.text = e.text.replace(/[\r\n]+/g, " ");
             
             // });
-            
-
+            const url = value.content.substring(
+            ("REDIRECT TO PAGE").length,
+            value.content.indexOf(';')
+            ).trim()
+            console.log(url)
+            if(value.content.includes("REDIRECT TO PAGE"))
+                res.redirect("../.."+url)
+            else
             res.send(htmlHead + 
                 `<content> 
                 ${value.content} 

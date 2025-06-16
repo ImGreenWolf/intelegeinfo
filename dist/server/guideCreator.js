@@ -201,7 +201,7 @@ router.post('/submit', (req, res) => {
     const { gname, content, description, category } = req.body; //  TODO replace category with enum
     dbClient_1.default.guide.update({
         where: {
-            name: gname
+            name: gname,
         },
         data: {
             content,
@@ -245,8 +245,13 @@ router.get('/post/:name', (req, res) => {
             // editor.on("paste", function(e) {
             //     e.text = e.text.replace(/[\r\n]+/g, " ");
             // });
-            res.send(htmlHead +
-                `<content> 
+            const url = value.content.substring(("REDIRECT TO PAGE").length, value.content.indexOf(';')).trim();
+            console.log(url);
+            if (value.content.includes("REDIRECT TO PAGE"))
+                res.redirect("../.." + url);
+            else
+                res.send(htmlHead +
+                    `<content> 
                 ${value.content} 
                 </content>
                 <footer>

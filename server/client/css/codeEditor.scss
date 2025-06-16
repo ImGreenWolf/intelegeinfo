@@ -1640,6 +1640,7 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
         background-size: cover;
         backdrop-filter: invert(1);
         mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+        -webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
         background-color: #ffffff;
         mask-size: cover;
         mix-blend-mode: hue;

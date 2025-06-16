@@ -1329,6 +1329,7 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   background-size: cover;
   backdrop-filter: invert(1);
   mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+  -webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
   background-color: #ffffff;
   mask-size: cover;
   mix-blend-mode: hue;

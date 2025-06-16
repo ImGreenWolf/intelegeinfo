@@ -36,6 +36,7 @@ import crypto from 'crypto';
 import bodyParser from 'body-parser';
 import * as EditorModes from './editor-modes/'
 import Metrics, { wssAPI } from './metrics'
+import examSubjects from './examSubjects'
 import tx2 from 'tx2';
 import { FileManagementCommands } from "../../dist/shared/types";
 interface ResponseWRay extends IncomingMessage 
@@ -50,6 +51,7 @@ app.use(express.json({
 }));
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', Metrics)
+app.use('/subiecte', examSubjects)
 app.post('/github/onpull', (req, res) => {
     try {
         

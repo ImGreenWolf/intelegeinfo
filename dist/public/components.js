@@ -71,6 +71,7 @@ export class Dock extends IElement {
             text-decoration: none;
             font-family: Poppins;
             font-size: 0.75em;
+            box-sizing: border-box;
         }
         .dock-button img
         {
