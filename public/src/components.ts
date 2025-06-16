@@ -67,7 +67,7 @@ export function createNode<K extends keyof HTMLElementTagNameMap>(tag: K, option
 
 export class Dock extends IElement {
 
-
+    
 
     render() {
         const loggedIn = false;
@@ -182,9 +182,13 @@ export class Dock extends IElement {
         html: [createNode('p', {htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; margin: 0.25em; font-size: 1.25em;  color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;"}), mainContainer]})
 
         requestAnimationFrame(() => updatePositions(10,10))
-
+        let timeout;
+        let lastX = 0;
+        let lastY = 0;
         function updatePositions(x,y)
         {   
+            lastX = x;
+            lastY = y;
             const parentElem = mainContainer
             const translateOffsetX = 0// base.offsetWidth/2
             const translateOffsetY = 0//base.offsetHeight/2
@@ -201,13 +205,19 @@ export class Dock extends IElement {
                 
                 const childWidth = child.offsetWidth
                 const childHeight = child.offsetHeight
-                const dist = 25 - (Math.sqrt(Math.pow((child.offsetLeft + childWidth/2 - translateOffsetX) / parentElem.offsetWidth - percX,2)
-                + Math.pow(((child.offsetTop - translateOffsetY + childHeight/2) / parentElem.offsetHeight - percY)/2,2 )))*25
+                const dist = Math.max(0, Math.min(25, 25 - (Math.sqrt(Math.pow((child.offsetLeft + childWidth/2 - translateOffsetX) / parentElem.offsetWidth - percX,2)
+                + Math.pow(((child.offsetTop - translateOffsetY + childHeight/1.5) / parentElem.offsetHeight - percY)/2,2 )))*35))
+
                 child.style.width = child.style.height = Math.max(50, Math.min(100, dist*2.5)) + "px";
                 child.style.bottom =Math.max(0, Math.min(100,Math.sqrt(dist*5))) + "px";
                 const shadow = Math.max(0, Math.min(30, Math.sqrt(dist*1)))
                 child.style.boxShadow = `${shadow/4}px ${shadow*2}px ${shadow*2}px ${shadow}px rgba(0, 0, 0, 0.5)`
             }
+            // if(timeout)
+            //     clearTimeout(timeout)
+            // timeout = setTimeout(() => {
+            //     updatePositions(lastX,lastY)
+            // }, 1000);
         }
         document.addEventListener('pointermove', function(ev) {
 

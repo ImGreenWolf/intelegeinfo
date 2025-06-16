@@ -13,6 +13,7 @@ async function update() {
     const firstValidYear = 2010;
     const currentYear = new Date().getFullYear();
     let startYear = firstValidYear;
+    let lastYear = startYear;
     const outputDir = path_1.default.join(__dirname, '../../', 'server', 'data', 'subiecte');
     if (fs_1.default.existsSync(path_1.default.join(outputDir, '.data.json'))) {
         const json = JSON.parse(fs_1.default.readFileSync(path_1.default.join(outputDir, '.data.json')).toString());
@@ -20,7 +21,7 @@ async function update() {
         if (Date.now() - json.lastUpdate < 1000 * 60 * 10 && !json.manual)
             return { code: 1, dir: outputDir };
         startYear = json.lastYear;
-        var lastYear = currentYear;
+        lastYear = currentYear;
     }
     // fs.rmSync(outputDir, {force: true, recursive: true})
     if (!fs_1.default.existsSync(outputDir))

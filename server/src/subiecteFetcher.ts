@@ -12,7 +12,7 @@ export async function update(): Promise<{code: number, dir: string}>
     const firstValidYear=2010;
     const currentYear = new Date().getFullYear()
     let startYear = firstValidYear
-
+    let lastYear = startYear;
     const outputDir = path.join(__dirname, '../../', 'server','data', 'subiecte')
     if(fs.existsSync(path.join(outputDir,'.data.json')))
     {
@@ -21,7 +21,7 @@ export async function update(): Promise<{code: number, dir: string}>
         if(Date.now() - json.lastUpdate < 1000 * 60 * 10 && !json.manual)
             return {code: 1, dir: outputDir}
             startYear = json.lastYear
-            var lastYear = currentYear
+            lastYear = currentYear
 
     }
         
