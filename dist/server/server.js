@@ -124,6 +124,8 @@ app.use('/editor/components', (req, res) => {
                 newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`);
                 res.contentType('js').send(newRender);
             }).catch(err => console.error(err));
+        else
+            res.contentType('js').send(newRender);
     });
 });
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
