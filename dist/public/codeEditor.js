@@ -4,7 +4,9 @@
 // const WebSocketMessageType = require("../../dist/shared/types")
 import { createNode, Dock, EditorCanvas } from "./components";
 /*END IMPORTS*/
-document.getElementsByClassName('container')[0].appendChild(new Dock().render());
+const ClientDock = new Dock();
+const DockElement = ClientDock.render();
+document.getElementsByClassName('container')[0].appendChild(DockElement);
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
 var codeLens = ace.require("ace/ext/code_lens");
@@ -365,7 +367,7 @@ var Range = ace.require("ace/range").Range;
 var Tooltip = ace.require("ace/tooltip").Tooltip;
 const sessionId = new URLSearchParams(window.location.search).get("session");
 const saveId = new URLSearchParams(window.location.search).get("save");
-const WSUrl = "wss://" + window.location.hostname + ":" + window.location.port + "/editor" + (sessionId || saveId ? "?" : "") + (sessionId ? "session=" + sessionId + "&" : "") + (saveId ? "save=" + saveId : "");
+const WSUrl = window.isSecureContext && window.location.protocol == "https" ? "wss://" : "ws://" + window.location.hostname + ":" + window.location.port + "/editor" + (sessionId || saveId ? "?" : "") + (sessionId ? "session=" + sessionId + "&" : "") + (saveId ? "save=" + saveId : "");
 // Initialize the manager
 const cursorManager = new MultiCursorManager(editor);
 let msgId = 0;
@@ -1373,8 +1375,12 @@ export function copySessionLink() {
     // } else displayMessagePopup(sessionLink);
     if (!wsSessionId)
         displayMessagePopup('Invalid session id.');
+    const prevElem = document.getElementById('share-container');
+    if (prevElem)
+        return prevElem.remove();
     const shareContainer = document.createElement('div');
     shareContainer.classList.add('share-container');
+    shareContainer.id = 'share-container';
     shareContainer.innerHTML =
         `
     <form id="createSessionForm">
@@ -1475,6 +1481,7 @@ export function copySessionLink() {
                         const sessionCodeNode = document.createElement('h2');
                         sessionCodeNode.innerText = data.code;
                         sessionCodeNode.classList.add('session-code');
+                        DockElement.getElementsByTagName('div')[0].prepend(createNode('h2', { innerText: data.code, css: "font-size: 1em" }));
                         document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'));
                         // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
                         if (!window.location.search.includes("session=") && startedSessionId != undefined)
@@ -1665,7 +1672,8 @@ ws.addEventListener('close', (ev) => {
         }, 2000);
 });
 ws.onerror = (err) => {
-    displayMessagePopup("WEBSOCKER ERROR: " + err);
+    displayMessagePopup("WEBSOCKET ERROR: " + err.type);
+    console.error(err);
 };
 export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
@@ -1692,6 +1700,8 @@ export function submitConsole(elem, type, Console) {
 }
 outputArea.onscroll = ev => {
     const lastMessageGroup = document.querySelector('[msg-id="' + ((msgId != -1) ? msgId.toString() : '0') + '"]');
+    if (!lastMessageGroup || !outputArea)
+        return;
     console.log(outputArea.scrollTop + outputArea.scrollHeight);
     console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight);
     const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1; //*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true

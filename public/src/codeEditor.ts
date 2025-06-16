@@ -15,8 +15,9 @@ import { UUID } from "crypto";
 import { createNode, Dock, EditorCanvas, Pixelated } from "./components";
 /*END IMPORTS*/
 
-
-document.getElementsByClassName('container')[0].appendChild(new Dock().render())
+const ClientDock = new Dock()
+const DockElement = ClientDock.render()
+document.getElementsByClassName('container')[0].appendChild(DockElement)
 // new Pixelated().render().then(node => document.body.appendChild(node))
 
 
@@ -478,7 +479,8 @@ var Tooltip = ace.require("ace/tooltip").Tooltip;
 
 const sessionId = new URLSearchParams(window.location.search).get("session") 
 const saveId = new URLSearchParams(window.location.search).get("save");
-const WSUrl = "wss://" + window.location.hostname  + ":" + window.location.port + "/editor" + (sessionId || saveId ? "?" : "") + (sessionId ? "session="+sessionId+"&" : "")  + (saveId ? "save="+saveId : "")
+
+const WSUrl = window.isSecureContext && window.location.protocol == "https" ? "wss://" : "ws://" + window.location.hostname  + ":" + window.location.port + "/editor" + (sessionId || saveId ? "?" : "") + (sessionId ? "session="+sessionId+"&" : "")  + (saveId ? "save="+saveId : "")
 // Initialize the manager
 const cursorManager = new MultiCursorManager(editor);
 
@@ -1808,10 +1810,12 @@ export function copySessionLink() {
   // } else displayMessagePopup(sessionLink);
   if(!wsSessionId) displayMessagePopup('Invalid session id.')
 
-
+    const prevElem = document.getElementById('share-container')
+    if(prevElem)
+      return prevElem.remove()
         const shareContainer = document.createElement('div')
     shareContainer.classList.add('share-container');
-  
+    shareContainer.id = 'share-container'
     shareContainer.innerHTML =
     `
     <form id="createSessionForm">
@@ -1868,6 +1872,7 @@ export function copySessionLink() {
     session = {code: data.code, img: data.qrsvg};
     document.getElementById('data.code')!.innerText = data.code;
     (document.getElementById('data.qrurl')! as HTMLImageElement).src = data.qrsvg;
+
     // const shareContainer = document.createElement('div')
     // shareContainer.classList.add('share-container');
   
@@ -1926,6 +1931,7 @@ export function copySessionLink() {
           const sessionCodeNode = document.createElement('h2');
           sessionCodeNode.innerText = data.code;
           sessionCodeNode.classList.add('session-code');
+          DockElement.getElementsByTagName('div')[0].prepend(createNode('h2', {innerText: data.code, css: "font-size: 1em"}))
           document.getElementById('join-session')!.parentNode!.insertBefore(sessionCodeNode, document.getElementById('join-session'))
           // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
           if(!window.location.search.includes("session=") && startedSessionId!=undefined)
@@ -2169,7 +2175,8 @@ ws.addEventListener('close', (ev) => {
 
 
 ws.onerror = (err) => {
-  displayMessagePopup("WEBSOCKER ERROR: " + err)
+  displayMessagePopup("WEBSOCKET ERROR: " + err.type)
+  console.error(err)
 }
 
 
@@ -2211,6 +2218,8 @@ export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketM
 
 outputArea!.onscroll = ev => {
           const lastMessageGroup: HTMLDivElement = document.querySelector('[msg-id="'+ ((msgId!=-1) ? msgId.toString() : '0') +'"]')!;
+          if(!lastMessageGroup || !outputArea)
+            return
           console.log(outputArea!.scrollTop + outputArea!.scrollHeight)
            console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight )
           const blockScroll =  outputArea!.scrollHeight - outputArea!.clientHeight - outputArea!.scrollTop > 1//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true

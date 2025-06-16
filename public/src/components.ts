@@ -71,7 +71,7 @@ export class Dock extends IElement {
 
     render() {
         const loggedIn = false;
-        
+        const username = '';
         const t = loggedIn ? 
         `<img src="../media/home-svgrepo-com.svg"><p>home</p>,
         <img src="../media/profile-round-1346-svgrepo-com.svg"><p>profile</p>,
@@ -89,7 +89,7 @@ export class Dock extends IElement {
         {
             background-color:rgba(32, 32, 32, 0.38);
             backdrop-filter: blur(5px);
-            border: 1px solid #ffffff61;
+            border: 2px solid rgba(255, 255, 255, 0.1);
             text-align: center;
             position: relative;
             z-index: 1;
@@ -133,6 +133,16 @@ export class Dock extends IElement {
             top: -80px;
             opacity: 1;
         }
+
+        #content-container :only-child
+        {
+            grid-column: span 3 !important;
+        }
+        h2 
+        {
+            font-family: Poppins;
+            font-size: 0.75em; margin: 10px;
+        }
         
         `.trim().replaceAll('\n', '  ')))
             const func = loggedIn ?
@@ -149,6 +159,7 @@ export class Dock extends IElement {
             () => window.editor.joinsession(),
         ]
         
+        
 
         t.split(',').forEach((element,index) => {
             if(typeof func[index] != 'string')
@@ -161,28 +172,36 @@ export class Dock extends IElement {
                 arr.push(createNode('a', {className: 'dock-button', attributes: [{name: 'href', value: func[index]}], htmlSting: element}))
            
         });
-            
-        const container = createNode('div', {css: `border: 1px solid #ffffff61; position: relative;display: flex; gap: 0.5em; height: 50px; padding: 0.5em; align-items: flex-end; justify-content: space-between; background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;`,html: arr})
+
+       
+        const container = createNode('div', {id: 'button-container', css: `grid-column: 2; position: relative;display: flex; gap: 0.75em; height: 50px;   align-items: flex-end; justify-content: space-between; `,html: arr})
+         const mainContainer = createNode('div', {id: 'content-container', html: username? [container,  createNode('h2', {innerText: `Hey, ${username}!`})] : [container], css: "gap: 0.5em; padding: 0.5em; justify-items: center; transition-duration: 1s; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; position: relative; min-height: 50px; border: 2px solid rgba(255, 255, 255, 0.1); background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;"}) // grid-auto-flow: column;
         const base = createNode('div', {
-        css: "display: flex; justify-content: center; flex-direction: column; grid-row: -2/-1; width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
-        html: [createNode('p', {htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; margin: 0.25em; font-size: 1.25em;  color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;"}), container]})
+        css: "display: flex; justify-content: center; flex-direction: column; grid-row: -2/-1; min-width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
+        html: [createNode('p', {htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; margin: 0.25em; font-size: 1.25em;  color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;"}), mainContainer]})
 
         requestAnimationFrame(() => updatePositions(10,10))
 
         function updatePositions(x,y)
-        {
+        {   
+            const parentElem = mainContainer
             const translateOffsetX = 0// base.offsetWidth/2
             const translateOffsetY = 0//base.offsetHeight/2
-            const parentX = container.offsetLeft
-            const parentY = container.offsetTop 
-            const percX = (x - parentX) / container.offsetWidth
-            const percY = (y - parentY) / container.offsetHeight
-            for(const child of container.children as HTMLCollectionOf<HTMLDivElement>)
+            const parentX = parentElem.offsetLeft + container.offsetLeft 
+            const parentY = parentElem.offsetTop  + container.offsetTop
+
+            const percX = (x - parentX) / (parentElem.offsetWidth) 
+            const percY = (y - parentY) / (parentElem.offsetHeight)
+            const children = container.querySelectorAll('.dock-button') as NodeListOf<HTMLAnchorElement | HTMLDivElement>
+            
+            base.style.left = children[children.length-1].offsetLeft + "px"
+            for(const child of children)
             {
+                
                 const childWidth = child.offsetWidth
                 const childHeight = child.offsetHeight
-                const dist = 25 - (Math.sqrt(Math.pow((child.offsetLeft + childWidth/2 - translateOffsetX) / container.offsetWidth - percX,2)
-                + Math.pow(((child.offsetTop - translateOffsetY + childHeight/2) / container.offsetHeight - percY)/2,2 )))*25
+                const dist = 25 - (Math.sqrt(Math.pow((child.offsetLeft + childWidth/2 - translateOffsetX) / parentElem.offsetWidth - percX,2)
+                + Math.pow(((child.offsetTop - translateOffsetY + childHeight/2) / parentElem.offsetHeight - percY)/2,2 )))*25
                 child.style.width = child.style.height = Math.max(50, Math.min(100, dist*2.5)) + "px";
                 child.style.bottom =Math.max(0, Math.min(100,Math.sqrt(dist*5))) + "px";
                 const shadow = Math.max(0, Math.min(30, Math.sqrt(dist*1)))

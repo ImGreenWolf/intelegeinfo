@@ -92,10 +92,13 @@ app.use('/editor/components',
         fs.readFile(path.join(rootDirName,'dist', 'public', 'components.js'), (err, data) => {
             const renderer = data.toString()
             let newRender = renderer;
-
+                //  TODO Improve this system
             if(req.cookies.token)
-                newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`)
-            res.contentType('js').send(newRender)
+                users.getUserData(users.getIdFromJWT(req) as number).then((userdata) => {
+                newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`)
+                 res.contentType('js').send(newRender)
+                }).catch(err => console.error(err))
+           
         })
 
 
@@ -357,15 +360,20 @@ import * as http from 'http'
     
     const credentials = {key: process.env.NODE_ENV == 'development' ? '' : fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
         cert: process.env.NODE_ENV == 'development' ? '' :  fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem')}
-var httpServer = http.createServer((req,res) => {
+if(process.env.NODE_ENV == 'development')
+    console.log('SERVER RUNNING IN DEV MODE')
+var httpsServer = https.createServer(credentials, app);
+var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app :(req,res) => {
     res.statusCode = 301;
     res.setHeader('Location', 'https://intelegeinfo.go.ro' + req.url);
     res.end();
-});
-var httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(3000);
-export const server = httpsServer.listen(3443);
+    
+});
+
+
+const unsecureServer = httpServer.listen(3000);
+export const server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(3443);
 server.on('listening', onServerStart)
 // httpsServer.listen(3443);
     // app.listen(PORT, '0.0.0.0', onServerStart);
@@ -1819,7 +1827,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             if(err) console.log("Failed saving file! " + err)
                             if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
-                            checkSyntaxTimeout = setTimeout(() => {
+                            // checkSyntaxTimeout = setTimeout(() => {
                                 if(clientObj.openFile.editorMode.checkCodeSyntax)
                                     clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
                                         if(!JSON.parse(json)[0])
@@ -1835,7 +1843,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         console.error('syntax checker error: ' + err)
                                     })
                                 
-                            }, 400);
+                            // }, 400);
 
                         });
                     }

@@ -118,9 +118,12 @@ app.use('/editor/components', (req, res) => {
     fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'components.js'), (err, data) => {
         const renderer = data.toString();
         let newRender = renderer;
+        //  TODO Improve this system
         if (req.cookies.token)
-            newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`);
-        res.contentType('js').send(newRender);
+            users.getUserData(users.getIdFromJWT(req)).then((userdata) => {
+                newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`);
+                res.contentType('js').send(newRender);
+            }).catch(err => console.error(err));
     });
 });
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
@@ -296,14 +299,16 @@ const http = __importStar(require("http"));
 const PORT = 3000;
 const credentials = { key: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
     cert: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem') };
-var httpServer = http.createServer((req, res) => {
+if (process.env.NODE_ENV == 'development')
+    console.log('SERVER RUNNING IN DEV MODE');
+var httpsServer = https.createServer(credentials, app);
+var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req, res) => {
     res.statusCode = 301;
     res.setHeader('Location', 'https://intelegeinfo.go.ro' + req.url);
     res.end();
 });
-var httpsServer = https.createServer(credentials, app);
-httpServer.listen(3000);
-exports.server = httpsServer.listen(3443);
+const unsecureServer = httpServer.listen(3000);
+exports.server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(3443);
 exports.server.on('listening', onServerStart);
 // httpsServer.listen(3443);
 // app.listen(PORT, '0.0.0.0', onServerStart);
@@ -1489,22 +1494,22 @@ bash `.trim().replaceAll('\n', "");
                                     console.log("Failed saving file! " + err);
                                 if (checkSyntaxTimeout)
                                     clearTimeout(checkSyntaxTimeout);
-                                checkSyntaxTimeout = setTimeout(() => {
-                                    if (clientObj.openFile.editorMode.checkCodeSyntax)
-                                        clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
-                                            if (!JSON.parse(json)[0])
-                                                return replicateFunction((clientWs, localClientId) => {
-                                                    if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
-                                                });
-                                            replicateFunction((clientWs, localClientId) => {
+                                // checkSyntaxTimeout = setTimeout(() => {
+                                if (clientObj.openFile.editorMode.checkCodeSyntax)
+                                    clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
+                                        if (!JSON.parse(json)[0])
+                                            return replicateFunction((clientWs, localClientId) => {
                                                 if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
+                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
                                             });
-                                        }).catch(err => {
-                                            console.error('syntax checker error: ' + err);
+                                        replicateFunction((clientWs, localClientId) => {
+                                            if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
+                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, clientId: clientId, body: json }));
                                         });
-                                }, 400);
+                                    }).catch(err => {
+                                        console.error('syntax checker error: ' + err);
+                                    });
+                                // }, 400);
                             });
                         }
                         clientObj.openFile.changeContent(messageJSON.body);

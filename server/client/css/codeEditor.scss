@@ -437,7 +437,7 @@ header
     top: 150px;
     left: 50%;
     transform: translate(-50%, 0);
-    z-index: 20;
+    z-index: 110;
     background-color: rgb(18 19 20 / 53%);
     backdrop-filter: blur(3px);
     box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px #ffffff0a;
@@ -1067,6 +1067,8 @@ value
         display: inline;
         // margin-inline-end: 1ch
         margin: 0 !important;
+        text-wrap-mode: wrap;
+        text-wrap-style: pretty;
     }
     .console-program-output
     {
