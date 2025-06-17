@@ -227,7 +227,7 @@ class EditorCursor {
         this.posX = updatedPos.posX;
         this.posY = updatedPos.posY;
         this.step = 0;
-        const stepSize = 150;
+        const stepSize = 100;
         let startTime = undefined;
         // if(this.updateInterval)  
         //   {
@@ -277,7 +277,7 @@ class EditorCursor {
                 this.lposY = this.cposY;
             }
             if (startTime == undefined)
-                requestAnimationFrame(animatePosition);
+                this.updateInterval = requestAnimationFrame(animatePosition);
         }
         else {
             this.cursorContainer.style.left = this.posX + 'px';

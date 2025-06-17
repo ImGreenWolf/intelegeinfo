@@ -309,7 +309,7 @@ class EditorCursor {
             this.posX = updatedPos.posX;
             this.posY = updatedPos.posY;
             this.step =0;
-            const stepSize=150
+            const stepSize=100
             let startTime = undefined
             // if(this.updateInterval)  
             //   {
@@ -366,6 +366,7 @@ class EditorCursor {
               this.updateInterval = requestAnimationFrame(animatePosition)
           
               }
+
               if(this.updateInterval && startTime != undefined)
               {
                   cancelAnimationFrame(this.updateInterval)
@@ -375,7 +376,7 @@ class EditorCursor {
               }
 
               if(startTime == undefined)
-                requestAnimationFrame(animatePosition)
+                this.updateInterval = requestAnimationFrame(animatePosition)
             }
             else
             {
