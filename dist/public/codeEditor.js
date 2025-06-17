@@ -746,8 +746,9 @@ function getPixelFromRelativePosition(editor, relX, relY, eventJson) {
     const y = rect.top - editor.renderer.scrollTop + relY * (rectHeight / eventJson.rechHeight); // * eventJson.rect.height
     return { x, y, rect };
 }
+//  TODO Web RTC cursors for better performance
 function updateLocalCursor(ev, fromPress) {
-    const deltaTime = 30;
+    const deltaTime = 60;
     if (fromPress && ev.pointerType != "touch")
         return; // i can remove this and add a few things to show when a user is clicking
     if (ev.timeStamp - lastTime > deltaTime) {
