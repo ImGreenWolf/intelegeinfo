@@ -399,18 +399,18 @@ if(false)
             const stepSize=20
             if(this.updateInterval)  
               {
-                // this.lposX = updatedPos.posX;
-                // this.lposY = updatedPos.posY;
+                this.lposX = this.cposX;
+                this.lposY = this.cposY;
                 clearInterval(this.updateInterval)
               }
 
             if(true) { // interpolate cursor position
              this.updateInterval = setInterval(() => {
               
-              const cposX = this.lposX*(1-this.step) + this.posX*this.step;
-              const cposY = this.lposY*(1-this.step) + this.posY*this.step;
-              this.cursorContainer!.style.left = cposX+'px';
-              this.cursorContainer!.style.top = cposY+'px';
+              this.cposX = this.lposX*(1-this.step) + this.posX*this.step;
+              this.cposY = this.lposY*(1-this.step) + this.posY*this.step;
+              this.cursorContainer!.style.left = this.cposX+'px';
+              this.cursorContainer!.style.top = this.cposY+'px';
               this.step+=1/stepSize;
               if(this.step>=1)
               {
