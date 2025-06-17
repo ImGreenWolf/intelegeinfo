@@ -3374,11 +3374,12 @@ function onRun() {
   document.getElementById('buttons')?.classList.add('executing')
 
   document.getElementById('compile-status')!.innerText = 'Communicating with server...';
-   document.getElementById('compile-status')!.style.opacity = '0.25'
+  document.getElementById('compile-status')!.style.opacity = '0.25'
   
   if(document.getElementById('active-console'))
     document.getElementById('active-console')!.id = '';
 
+  document.getElementById('execute-control')!.innerText = "Opreste Programul"
   activeConsole = new Console()
   // if(currentFileName.toLowerCase().includes("gui"))
   //   displaynoVNC(activeConsole.element)
@@ -3395,6 +3396,7 @@ function onExit() {
   processRunning = false
   editor.session.removeMarker(lastDebugId);
   document.getElementById('buttons')?.classList.remove('executing')
+  document.getElementById('execute-control')!.innerText = "Executa Programul"
 
   if(document.getElementById('active-console'))
     document.getElementById('active-console')!.id = '';

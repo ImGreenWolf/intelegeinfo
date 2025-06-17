@@ -72,6 +72,7 @@ export class Dock extends IElement {
     render() {
         const loggedIn = false;
         const username = '';
+        
         const t = loggedIn ? 
         `<img src="../media/home-svgrepo-com.svg"><p>home</p>,
         <img src="../media/profile-round-1346-svgrepo-com.svg"><p>profile</p>,
@@ -175,9 +176,9 @@ export class Dock extends IElement {
         });
 
        
-        const container = createNode('div', {id: 'button-container', css: `width: 100%; grid-column: 2; position: relative;display: flex; gap: 0.75em; height: 50px;   align-items: flex-end; justify-content: space-between; `,html: arr})
+        const container = createNode('div', {id: 'button-container', css: ` width: 100%; grid-column: 2; position: relative;display: flex; gap: 0.75em; height: 50px;   align-items: flex-end; justify-content: space-between; `,html: arr})
          const mainContainer = createNode('div', {id: 'content-container', html: username? [container,  createNode('h2', {innerText: `Hey, ${username}!`})] : [container], css: "gap: 0.5em; padding: 0.5em; justify-items: center; transition-duration: 1s; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; position: relative; min-height: 50px; border: 2px solid rgba(255, 255, 255, 0.1); background: #00000061; backdrop-filter: blur(5px); border-radius: 0.75em;"}) // grid-auto-flow: column;
-        const base = createNode('div', {
+        const base = createNode('div', {id:'dock',
         css: "display: flex; justify-content: center; flex-direction: column; grid-row: -2/-1; min-width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
         html: [createNode('p', {htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; margin: 0.25em; font-size: 1.25em;  color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;"}), mainContainer]})
 
@@ -187,6 +188,7 @@ export class Dock extends IElement {
         let lastY = 0;
         function updatePositions(x,y)
         {   
+            const bottom = base.clientWidth > 200;
             lastX = x;
             lastY = y;
             const parentElem = mainContainer
@@ -209,15 +211,11 @@ export class Dock extends IElement {
                 + Math.pow(((child.offsetTop - translateOffsetY + childHeight/1.5) / parentElem.offsetHeight - percY)/2,2 )))*35))
 
                 child.style.width = child.style.height = Math.max(50, Math.min(100, dist*2.5)) + "px";
-                child.style.bottom =Math.max(0, Math.min(100,Math.sqrt(dist*5))) + "px";
+                bottom ? child.style.bottom =Math.max(0, Math.min(100,Math.sqrt(dist*5))) + "px" : child.style.left =Math.max(0, Math.min(100,Math.sqrt(dist*5))) + "px";;
                 const shadow = Math.max(0, Math.min(30, Math.sqrt(dist*1)))
                 child.style.boxShadow = `${shadow/4}px ${shadow*2}px ${shadow*2}px ${shadow}px rgba(0, 0, 0, 0.5)`
             }
-            // if(timeout)
-            //     clearTimeout(timeout)
-            // timeout = setTimeout(() => {
-            //     updatePositions(lastX,lastY)
-            // }, 1000);
+
         }
         document.addEventListener('pointermove', function(ev) {
 

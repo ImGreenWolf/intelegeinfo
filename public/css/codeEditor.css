@@ -130,18 +130,9 @@
 }
 
 .container {
-  /* position: relative;
-  height: 100vh; */
-  /* position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0; */
   display: grid;
-  /* grid-template-columns: minmax(30%,50%) 2fr; */
-  grid-template-columns: 1fr 1fr max-content;
-  grid-template-rows: auto 600px 50px 1fr;
-  grid-template-rows: 20px 1fr 50px auto;
+  grid-template-columns: minmax(400px, auto) minmax(400px, 1fr) max-content;
+  grid-template-rows: auto 1fr 50px auto;
   grid-template-areas: "header header header" "main output sidebar" "buttons output sidebar";
   overflow: visible;
   padding: 1rem;
@@ -179,9 +170,13 @@ header {
   display: grid;
   grid-template-rows: max-content auto;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
-  border: 1px solid gray;
+  border: 2px solid rgba(190, 190, 190, 0.1);
   border-radius: 0.5em;
   overflow: hidden;
+  resize: horizontal;
+  min-width: 100%;
+  max-width: 100%;
+  width: 50dvw;
 }
 
 .service-stopped, .service-error {
@@ -276,7 +271,7 @@ header {
 
 .compile-error-tooltip {
   border-radius: 0.2lh;
-  border: 1px solid gray;
+  border: 1px solid rgba(190, 190, 190, 0.1);
   font-size: 0.75rem;
   padding: 10px;
   background-color: rgba(107, 107, 107, 0.2705882353);
@@ -313,7 +308,7 @@ header {
   display: flex;
   justify-content: space-between;
   font-family: "Poppins", sans-serif;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid rgba(190, 190, 190, 0.1);
   align-items: stretch;
   font-size: 0.7rem;
 }
@@ -329,10 +324,10 @@ header {
   overflow: hidden;
 }
 #editor-tabs button, .tabs-container button {
-  border: 1px solid gray;
+  border: 2px solid rgba(190, 190, 190, 0.3);
 }
 #editor-tabs .host, .tabs-container .host {
-  border: 1px solid gold;
+  border: 2px solid rgba(255, 217, 0, 0.582);
 }
 #editor-tabs .file-tab, .tabs-container .file-tab {
   transition-duration: 0.1s;
@@ -347,7 +342,7 @@ header {
   height: 100%;
   color: white;
   min-width: 70px;
-  border: 1px solid gray;
+  border: 1px solid rgba(190, 190, 190, 0.1);
   border-bottom: none !important;
   position: relative;
   cursor: pointer;
@@ -414,7 +409,7 @@ header {
   width: 25px;
   aspect-ratio: 1;
   background-color: transparent;
-  border: 1px solid gray;
+  border: 1px solid rgba(190, 190, 190, 0.1);
 }
 .client-popup div {
   width: 100%;
@@ -500,7 +495,7 @@ header {
 
 vl {
   width: 1px;
-  background-color: gray;
+  background-color: rgba(190, 190, 190, 0.1);
 }
 
 #name-prompt {
@@ -557,10 +552,6 @@ vl {
   border: 2px solid rgb(20, 20, 20);
 }
 
-.buttons:not(.debug-control):not(.execute-control):not(.compiled) button:not(.compile) {
-  outline: 3px solid rgb(89, 0, 10);
-}
-
 button:not(.custom-button) {
   background-color: rgb(0, 0, 0);
   color: white;
@@ -572,7 +563,9 @@ button:not(.custom-button) {
 
 .buttons button {
   min-height: 50px;
+  max-width: 350px;
   flex-grow: 1;
+  flex-shrink: 1;
 }
 
 #buttons.executing .execute-control {
@@ -585,16 +578,13 @@ button:not(.custom-button) {
 }
 
 #output-container {
-  /* max-height: 500px;
-  min-height: 200px; */
   border-radius: 0.5em;
   overflow: hidden;
   min-width: 200px;
   grid-row: 2;
   position: relative;
   background-color: rgb(20, 20, 20);
-  right: 10px;
-  border: 1px solid gray;
+  border: 2px solid rgba(190, 190, 190, 0.1);
   display: grid;
   grid-template-rows: auto 1fr;
   grid-area: output;
@@ -619,7 +609,7 @@ button:not(.custom-button) {
 #output {
   overflow-y: auto;
   overflow-x: visible;
-  border-top: 1px solid gray;
+  border-top: 1px solid rgba(190, 190, 190, 0.1);
   display: flex;
   flex-direction: column;
   margin: 10px;
@@ -659,7 +649,7 @@ button:not(.custom-button) {
 #console-container textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid gray;
+  border: 2px solid rgba(190, 190, 190, 0.1);
   outline: 0;
   border-radius: 1lh;
   resize: none;
@@ -689,7 +679,7 @@ button:not(.custom-button) {
 }
 
 #console-container textarea:not(.filled):focus {
-  outline: 0.2px solid gray;
+  outline: 0.2px solid rgba(190, 190, 190, 0.1);
   outline-offset: 1px;
 }
 
@@ -933,7 +923,7 @@ value {
   content: "program output";
   color: rgba(255, 255, 255, 0.5);
   height: 15px;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid rgba(190, 190, 190, 0.1);
   display: block;
   font-size: 0.5rem;
   margin: -1em;
@@ -945,7 +935,7 @@ value {
   top: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1px solid gray;
+  border: 1px solid rgba(190, 190, 190, 0.1);
   background-color: rgb(0, 0, 0);
   color: white;
   left: -25px;
@@ -1074,7 +1064,7 @@ value {
 }
 .vector-display .vector-header {
   width: 100%;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid rgba(190, 190, 190, 0.1);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   padding: 2px 20px;
   margin: 2px auto;
@@ -1484,25 +1474,6 @@ form label {
   opacity: 1;
 }
 
-/* media queries */
-@media screen and (max-width: 1300px) {
-  .container {
-    grid-template-columns: 2fr 1fr;
-    /* grid-template-rows: auto 500px 0.5fr 300px; */
-    grid-template-areas: "header header" "main output" "buttons output" "sidebar sidebar";
-  }
-  #vector-container {
-    overflow: visible;
-  }
-  #output-container textarea {
-    max-width: 60%;
-    padding: 5px;
-    font-size: 12px;
-  }
-  header #signup, header #login {
-    padding: 5px 10px;
-  }
-}
 @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
   .container {
     grid-template-columns: 1fr;
@@ -1577,23 +1548,40 @@ form label {
 /*
 
 /* landscape phone screen */
-@media screen and (((max-aspect-ratio: 2/1) or (orientation: landscape)) and (max-height: 600px)) {
+@media screen and (((max-aspect-ratio: 2/1) or (orientation: landscape)) and (max-height: 500px)) {
   .container {
-    max-width: 100%;
-    grid-template-columns: auto 1fr auto 1fr;
-    grid-template-rows: 500px 0.5fr;
+    grid-template-columns: auto minmax(20%, auto) auto 1fr;
+    grid-template-rows: 1fr auto;
     grid-template-areas: "header main buttons output" "header sidebar sidebar sidebar";
     gap: 10px;
   }
   .buttons {
     flex-direction: column;
-    width: 100px;
+    width: 50px;
     justify-content: flex-start;
     align-content: stretch;
     align-items: stretch;
   }
+  #dock {
+    min-width: 75px !important;
+    grid-area: header !important;
+  }
+  #dock #content-container {
+    width: 50px;
+  }
+  #dock #content-container #button-container {
+    flex-wrap: wrap;
+    min-height: 50px;
+    height: auto !important;
+  }
+  #dock > p {
+    width: 50px;
+    font-size: 0.75rem !important;
+  }
   .buttons button {
-    min-height: 0px;
+    width: 100%;
+    font-size: 0.75rem;
+    writing-mode: sideways-lr;
   }
   #editor {
     font-size: 12px;
@@ -1606,9 +1594,6 @@ form label {
     max-width: 30%;
     padding: 5px;
     font-size: 8px;
-  }
-  #output-container {
-    max-height: 350px;
   }
   header {
     min-height: calc(100% + 2rem);

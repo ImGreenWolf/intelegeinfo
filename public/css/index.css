@@ -41,7 +41,7 @@ header2 {
   padding: 0.5em 2em;
   margin-top: 20px;
   border-radius: 1lh;
-  border: 2px solid gray;
+  border: 2px solid rgba(190, 190, 190, 0.1);
 }
 header2 nav {
   justify-self: center;
@@ -75,7 +75,7 @@ footer {
   padding: 0.5em 2em;
   margin-top: 20px;
   box-sizing: border-box;
-  border-top: 3px solid gray;
+  border-top: 3px solid rgba(190, 190, 190, 0.1);
   background-color: rgb(20, 20, 20);
 }
 footer nav {

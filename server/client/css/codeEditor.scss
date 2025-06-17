@@ -74,21 +74,12 @@
 }
 .container
 {
-    
-    
-    /* position: relative;
-    height: 100vh; */
-    /* position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0; */
     display: grid;
-    /* grid-template-columns: minmax(30%,50%) 2fr; */
-    grid-template-columns: 1fr 1fr max-content;
-    grid-template-rows: auto 600px 50px 1fr;
 
-    grid-template-rows: 20px 1fr 50px auto;
+    grid-template-columns: minmax(400px, auto) minmax(400px, 1fr) max-content;
+    // grid-template-rows: auto 600px 50px 1fr;
+
+    grid-template-rows: auto 1fr 50px auto;
     grid-template-areas: 
     'header header header'
     'main output sidebar'
@@ -131,9 +122,13 @@ header
     display: grid;
     grid-template-rows: max-content auto; 
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
-    border: 1px solid opacify($color: theme.$border-color, $amount: 0.2);
+    border: 2px solid theme.$border-color;
     border-radius: 0.5em;
     overflow: hidden;
+    resize: horizontal;
+    min-width: 100%;
+    max-width: 100%;
+    width: 50dvw;
 }
 
 .service-stopped, .service-error
@@ -299,12 +294,12 @@ header
 
     & button
     {
-        border: 1px solid theme.$border-color;
+        border: 2px solid opacify($color: theme.$border-color, $amount: 0.2)
         
     }
     .host
     {
-        border: 1px solid gold;
+        border: 2px solid rgba(255, 217, 0, 0.582);
     }
     & .file-tab
     {
@@ -601,13 +596,13 @@ vl
 .buttons:not(.debug-control):not(.execute-control):not(.compiled) button:not(.compile)
 {
     // opacity: 0.5;
-    outline: 3px solid theme.$accent-color;
+    // outline: 3px solid theme.$accent-color;
+
 }
 button:not(.custom-button)
 {
     background-color: theme.$button-color;
     color: theme.$text-color;
-
     border-radius: 5px;
     border: none;
     font-family: "Poppins", sans-serif;
@@ -617,8 +612,10 @@ button:not(.custom-button)
 .buttons button
 {
 
-     min-height: 50px;
+    min-height: 50px;
+    max-width: 350px;
     flex-grow: 1;
+    flex-shrink: 1;
 
 }
 
@@ -629,24 +626,20 @@ button:not(.custom-button)
 }
 
 .buttons:not(.debug-control) .debug-control, .buttons.execute-control .debug-control,   .buttons.debug-control .execute-control
-    {
-        display: none;
-    }
+{
+    display: none;
+}
 
 
 #output-container
 {
-    /* max-height: 500px;
-    min-height: 200px; */
     border-radius: 0.5em;
     overflow: hidden;
     min-width: 200px;
-    // border-radius: 10px 10px 24px 24px;
     grid-row: 2;
     position: relative;
     background-color: theme.$background-color;
-    right: 10px;
-    border: 1px solid theme.$border-color;
+    border: 2px solid theme.$border-color;
     display: grid;
     grid-template-rows: auto 1fr;
     grid-area: output;
@@ -727,7 +720,7 @@ button:not(.custom-button)
 {
     width: 100%;
     padding: 10px;
-    border: 1px solid theme.$border-color;
+    border: 2px solid theme.$border-color;
     outline: 0;
     border-radius: 1lh;
     resize: none;
@@ -1840,36 +1833,36 @@ form label
 
 
 
-/* media queries */
+// /* media queries */
 
 
-@media screen and (max-width: 1300px) {
-    .container {
-        grid-template-columns: 2fr 1fr;
-        /* grid-template-rows: auto 500px 0.5fr 300px; */
-        grid-template-areas:
-            'header header'
-            'main output'
-            'buttons output'
-            'sidebar sidebar';
+// @media screen and (max-width: 1300px) {
+//     .container {
+//         grid-template-columns: 2fr 1fr;
+//         /* grid-template-rows: auto 500px 0.5fr 300px; */
+//         grid-template-areas:
+//             'header header'
+//             'main output'
+//             'buttons output'
+//             'sidebar sidebar';
             
-    }
-    #vector-container
-    {
-        overflow: visible;
-    }
-    #output-container textarea
-    {
-        max-width: 60%;
-        padding: 5px;
-        font-size: 12px;
-    }
+//     }
+//     #vector-container
+//     {
+//         overflow: visible;
+//     }
+//     #output-container textarea
+//     {
+//         max-width: 60%;
+//         padding: 5px;
+//         font-size: 12px;
+//     }
 
-    header #signup, header #login
-    {
-        padding: 5px 10px;
-    }
-}
+//     header #signup, header #login
+//     {
+//         padding: 5px 10px;
+//     }
+// }
 
 
  @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
@@ -1987,11 +1980,11 @@ form label
 
 /* landscape phone screen */
 
-@media screen and (((max-aspect-ratio: 2/1) or (orientation: landscape))  and  (max-height: 600px) ) {
+@media screen and (((max-aspect-ratio: 2/1) or (orientation: landscape))  and  (max-height: 500px) ) {
     .container {
-        max-width: 100%;
-        grid-template-columns: auto 1fr auto 1fr;
-        grid-template-rows:  500px 0.5fr;
+        // max-width: 100%;
+        grid-template-columns: auto minmax(20%, auto) auto 1fr;
+        grid-template-rows:  1fr auto;
         grid-template-areas:
             'header main buttons output'
             'header sidebar sidebar sidebar';
@@ -2000,16 +1993,39 @@ form label
     .buttons
     {
         flex-direction: column;
-        width: 100px;
+        width: 50px;
         justify-content: flex-start;
         align-content: stretch;
         align-items: stretch;
         // gap: 1px;
         
     }
+    #dock
+    {
+        min-width: 75px !important;
+        grid-area: header !important;
+        #content-container
+        {
+            width: 50px;
+
+            #button-container
+            {
+                flex-wrap: wrap;
+                min-height: 50px;
+                height: auto !important;
+            }
+        }
+        &>p
+        {
+            width: 50px;
+            font-size: 0.75rem !important;
+        }
+    }
     .buttons button
     {
-        min-height: 0px;
+        width: 100%;
+        font-size: 0.75rem;
+        writing-mode: sideways-lr;
     }
     
     #editor
@@ -2027,10 +2043,6 @@ form label
         max-width: 30%;
         padding: 5px;
         font-size: 8px;
-    }
-    #output-container
-    {
-        max-height: 350px;
     }
     header
     {
