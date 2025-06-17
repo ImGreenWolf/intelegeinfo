@@ -355,7 +355,7 @@ class EditorCursor {
                         // easing: "ease-out"
                       },
                     );
-                  }, 250);
+                  }, 10*stepSize);
                   
                 }
               }
