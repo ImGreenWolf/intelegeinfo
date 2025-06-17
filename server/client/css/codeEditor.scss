@@ -1633,9 +1633,28 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
     {
         .cursor
         {
-                    background-image: url(../media/mouse-cursor-svgrepo-com.svg); 
+            background-image: url(../media/mouse-cursor-svgrepo-com.svg); 
 
         }
+    }
+
+    @supports (mask-image: url("")) {
+    .cursor {
+        mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+        -webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+        mask-size: cover;
+        mix-blend-mode: hue;
+    }
+    }
+
+    @supports not (mask-image: url("")) {
+    .cursor {
+        background-image: url(../media/mouse-cursor-svgrepo-com.svg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        background-color: initial !important;
+    }
     }
 
 
@@ -1648,11 +1667,11 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
         position: relative;
         background-size: cover;
         backdrop-filter: invert(1);
-        mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
-        -webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+        // mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
+        // -webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
         background-color: #ffffff;
         mask-size: cover;
-        mix-blend-mode: hue;
+
         &.inactive
         {
             animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;
