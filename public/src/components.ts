@@ -221,14 +221,14 @@ export class Dock extends IElement {
 
         }
         if(hasRequestAnimationFrame)
-        document.addEventListener('pointermove', function(ev) {
-
-           if(ev.pointerType == 'mouse')
-            requestAnimationFrame(() => updatePositions(ev.x,ev.y))
-           else
-            base.classList.add('touch')
-            
-        })
+            document.addEventListener('pointermove', function(ev) {
+            if(hasRequestAnimationFrame)
+            if(ev.pointerType == 'mouse' )
+                requestAnimationFrame(() => updatePositions(ev.x,ev.y))
+            else
+                base.classList.add('touch')
+                
+            })
         return base
         
     }
