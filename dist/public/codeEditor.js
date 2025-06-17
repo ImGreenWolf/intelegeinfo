@@ -239,13 +239,18 @@ class EditorCursor {
             const animatePosition = (timestamp) => {
                 if (!startTime)
                     startTime = timestamp;
-                const t = Math.min(timestamp - startTime, stepSize);
-                this.step = t;
-                this.cposX = this.lposX * (stepSize - this.step) / stepSize + this.posX * this.step / stepSize;
-                this.cposY = this.lposY * (stepSize - this.step) / stepSize + this.posY * this.step / stepSize;
+                const t = Math.min((timestamp - startTime) / stepSize, 1);
+                if (this.updateInterval && startTime != undefined) {
+                    cancelAnimationFrame(this.updateInterval);
+                    startTime = undefined;
+                    this.lposX = this.cposX;
+                    this.lposY = this.cposY;
+                }
+                this.cposX = this.lposX * (stepSize - t) + this.posX * t;
+                this.cposY = this.lposY * (stepSize - t) + this.posY * t;
                 this.cursorContainer.style.left = this.cposX + 'px';
                 this.cursorContainer.style.top = this.cposY + 'px';
-                if (t >= stepSize) {
+                if (t >= 1) {
                     startTime = undefined;
                     this.updateInterval = undefined;
                     this.lposX = updatedPos.posX;
@@ -264,18 +269,12 @@ class EditorCursor {
                                 fill: "both",
                                 // easing: "ease-out"
                             });
-                        }, 20 * stepSize);
+                        }, 2 * stepSize);
                     }
                 }
                 else
                     this.updateInterval = requestAnimationFrame(animatePosition);
             };
-            if (this.updateInterval && startTime != undefined) {
-                cancelAnimationFrame(this.updateInterval);
-                startTime = undefined;
-                this.lposX = this.cposX;
-                this.lposY = this.cposY;
-            }
             if (startTime == undefined)
                 this.updateInterval = requestAnimationFrame(animatePosition);
         }
