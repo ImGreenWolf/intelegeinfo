@@ -225,7 +225,7 @@ class EditorCursor {
         this.posX = updatedPos.posX;
         this.posY = updatedPos.posY;
         this.step = 0;
-        const stepSize = 100;
+        const stepSize = 50;
         let startTime = undefined;
         // if(this.updateInterval)  
         //   {
@@ -261,17 +261,14 @@ class EditorCursor {
                                 fill: "both",
                                 // easing: "ease-out"
                             });
-                        }, 2 * stepSize);
+                        }, 20 * stepSize);
                     }
                 }
                 else
                     this.updateInterval = requestAnimationFrame(animatePosition);
             };
-            if (startTime == undefined) {
-                if (this.updateInterval)
-                    cancelAnimationFrame(this.updateInterval);
-                this.updateInterval = requestAnimationFrame(animatePosition);
-            }
+            if (startTime == undefined)
+                requestAnimationFrame(animatePosition);
         }
         else {
             this.cursorContainer.style.left = this.posX + 'px';

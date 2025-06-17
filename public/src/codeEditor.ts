@@ -307,7 +307,7 @@ class EditorCursor {
             this.posX = updatedPos.posX;
             this.posY = updatedPos.posY;
             this.step =0;
-            const stepSize=100
+            const stepSize=50
             let startTime = undefined
             // if(this.updateInterval)  
             //   {
@@ -355,7 +355,7 @@ class EditorCursor {
                         // easing: "ease-out"
                       },
                     );
-                  }, 2*stepSize);
+                  }, 20*stepSize);
                   
                 }
               }
@@ -365,11 +365,7 @@ class EditorCursor {
               }
 
               if(startTime == undefined)
-              {
-                if(this.updateInterval) cancelAnimationFrame(this.updateInterval)
-                this.updateInterval = requestAnimationFrame(animatePosition)
-
-              }
+                requestAnimationFrame(animatePosition)
             }
             else
             {
