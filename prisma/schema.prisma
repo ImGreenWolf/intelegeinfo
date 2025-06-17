@@ -63,6 +63,10 @@ model Guide {
   id Int  @id @default(autoincrement())
   name String @unique
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  author String @default("Anonim")
+  positiveRatings Int @default(0)
+  negativeRatings Int @default(0)
   content String
   description String?
   category String?

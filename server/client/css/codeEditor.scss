@@ -1628,6 +1628,17 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
         padding: 0.1rem 0.5rem ;
         transition-duration: 0.1s;
     }
+
+    @supports not ((mask-image: url(../media/mouse-cursor-svgrepo-com.svg)) or (-webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg)))
+    {
+        .cursor
+        {
+                    background-image: url(../media/mouse-cursor-svgrepo-com.svg); 
+
+        }
+    }
+
+
     .cursor
     {
         width: 1rem;

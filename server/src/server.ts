@@ -90,19 +90,35 @@ app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'p
 app.use('/editor/components', 
     (req, res) => {
 
-
-        fs.readFile(path.join(rootDirName,'dist', 'public', 'components.js'), (err, data) => {
+        try {
+             fs.readFile(path.join(rootDirName,'dist', 'public', 'components.js'), (err, data) => {
             const renderer = data.toString()
             let newRender = renderer;
                 //  TODO Improve this system
-            if(req.cookies.token)
-                users.getUserData(users.getIdFromJWT(req) as number).then((userdata) => {
-                newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`)
-                 res.contentType('js').send(newRender)
-                }).catch(err => console.error(err))
-           else 
-           res.contentType('js').send(newRender)
-        })
+            const userId =users.getIdFromJWT(req)
+            console.log(userId)
+            if(req.cookies.token && userId)
+                users.getUserData(userId).then((userdata) => {
+                    if(!userdata)
+                        throw 'invalid user'
+                    newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`)
+                    res.contentType('js').send(newRender)
+                    }).catch(err =>  res.clearCookie('token').contentType('js').send(newRender))
+            else
+                res.contentType('js').send(newRender)
+
+               
+            
+            
+            })
+        }
+        catch (err)
+        {
+           console.error(err)
+            return;
+        }
+       
+        
 
 
     })

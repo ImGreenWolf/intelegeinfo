@@ -10,6 +10,12 @@ const server_1 = require("./server");
 // import { rootDirName } from './server';
 // import rootDirName from "./server"
 const rootDirName = path_1.default.resolve("./");
+const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+};
 const router = express_1.default.Router();
 const htmlHead = (title = 'intelege info', desc, keywords) => `<head>
     <meta charset="UTF-8">
@@ -212,7 +218,9 @@ router.post('/submit', (req, res) => {
         data: {
             content,
             description,
-            category
+            category,
+            updatedAt: new Date(),
+            author: "Radu" // TODO Replace with user name
         }
     }).then(guide => {
         res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
@@ -223,7 +231,7 @@ router.post('/submit', (req, res) => {
                     name: gname,
                     content,
                     description,
-                    category
+                    category,
                 }
             }).then((guide) => {
                 res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
@@ -251,18 +259,26 @@ router.get('/post/:name', (req, res) => {
             // editor.on("paste", function(e) {
             //     e.text = e.text.replace(/[\r\n]+/g, " ");
             // });
-            const url = value.content.substring(("REDIRECT TO PAGE").length, value.content.indexOf(';')).trim();
-            console.log(url);
             if (value.content.includes("REDIRECT TO PAGE"))
-                res.redirect("../.." + url);
+                res.redirect("../.." + value.content.substring(("REDIRECT TO PAGE").length, value.content.indexOf(';')).trim());
             else
                 res.send(htmlHead(value.name, value.description, value.category) +
-                    `<article> 
+                    `
+              
+
+                <article> 
+                  <div id="article-head">
+                    <h1>${value.name}</h1>
+                    <div style="display: flex; gap: 1em;">
+                        <p>Vizualizari ${value.visits}</p>
+                        <p>Postat ${new Date(value.createdAt).toLocaleString("ro-RO", options)}</p>
+                    </div>
+                </div>
                 ${value.content} 
                 </article>
-                <footer>
-                    <p>${value.visits}</p>
-                </footer>
+                
+                  
+                
                 <script src="/ace-builds-master/src-min-noconflict/ace.js"></script>
                 <script>
                 var codeTags = document.getElementsByTagName("code")

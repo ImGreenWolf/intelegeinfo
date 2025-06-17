@@ -117,18 +117,28 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
 app.use('/editor/components', (req, res) => {
-    fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'components.js'), (err, data) => {
-        const renderer = data.toString();
-        let newRender = renderer;
-        //  TODO Improve this system
-        if (req.cookies.token)
-            users.getUserData(users.getIdFromJWT(req)).then((userdata) => {
-                newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`);
+    try {
+        fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'components.js'), (err, data) => {
+            const renderer = data.toString();
+            let newRender = renderer;
+            //  TODO Improve this system
+            const userId = users.getIdFromJWT(req);
+            console.log(userId);
+            if (req.cookies.token && userId)
+                users.getUserData(userId).then((userdata) => {
+                    if (!userdata)
+                        throw 'invalid user';
+                    newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`);
+                    res.contentType('js').send(newRender);
+                }).catch(err => res.clearCookie('token').contentType('js').send(newRender));
+            else
                 res.contentType('js').send(newRender);
-            }).catch(err => console.error(err));
-        else
-            res.contentType('js').send(newRender);
-    });
+        });
+    }
+    catch (err) {
+        console.error(err);
+        return;
+    }
 });
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'mode_cpp_custom.js'));

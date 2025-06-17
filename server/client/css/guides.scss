@@ -170,11 +170,37 @@ header nav ul li
     }
 }
 
+#article-head
+{
+
+    height: 100px;
+    display: flex;
+    margin: 1em;
+    background-color: rgba(255, 255, 255, 0.233);
+    backdrop-filter: blur(3px);
+    font-family: Poppins;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1em;
+    border-bottom: 3px solid black;
+    margin-bottom: 4em;
+    height: auto;
+    justify-content: space-between;
+    h1
+    {
+        font-size: xx-large;
+        margin: 0;
+        border-bottom: 3px dotted rgba(0, 0, 0, 0.397);
+        padding-block: 0;
+        padding-inline: 0.25em;
+    }
+}
+
 @media screen and (max-width: 700px) {
   article
   {
     font-size: 12px !important;
-    width: 100%;
+    width: auto;
   }
   table
   {

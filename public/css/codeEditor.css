@@ -1312,6 +1312,11 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   padding: 0.1rem 0.5rem;
   transition-duration: 0.1s;
 }
+@supports not ((mask-image: url(../media/mouse-cursor-svgrepo-com.svg)) or (-webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg))) {
+  .cursor-container .cursor {
+    background-image: url(../media/mouse-cursor-svgrepo-com.svg);
+  }
+}
 .cursor-container .cursor {
   width: 1rem;
   height: 1rem;

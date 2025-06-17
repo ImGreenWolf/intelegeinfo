@@ -5549,11 +5549,15 @@ export namespace Prisma {
 
   export type GuideAvgAggregateOutputType = {
     id: number | null
+    positiveRatings: number | null
+    negativeRatings: number | null
     visits: number | null
   }
 
   export type GuideSumAggregateOutputType = {
     id: number | null
+    positiveRatings: number | null
+    negativeRatings: number | null
     visits: number | null
   }
 
@@ -5561,6 +5565,10 @@ export namespace Prisma {
     id: number | null
     name: string | null
     createdAt: Date | null
+    updatedAt: Date | null
+    author: string | null
+    positiveRatings: number | null
+    negativeRatings: number | null
     content: string | null
     description: string | null
     category: string | null
@@ -5571,6 +5579,10 @@ export namespace Prisma {
     id: number | null
     name: string | null
     createdAt: Date | null
+    updatedAt: Date | null
+    author: string | null
+    positiveRatings: number | null
+    negativeRatings: number | null
     content: string | null
     description: string | null
     category: string | null
@@ -5581,6 +5593,10 @@ export namespace Prisma {
     id: number
     name: number
     createdAt: number
+    updatedAt: number
+    author: number
+    positiveRatings: number
+    negativeRatings: number
     content: number
     description: number
     category: number
@@ -5591,11 +5607,15 @@ export namespace Prisma {
 
   export type GuideAvgAggregateInputType = {
     id?: true
+    positiveRatings?: true
+    negativeRatings?: true
     visits?: true
   }
 
   export type GuideSumAggregateInputType = {
     id?: true
+    positiveRatings?: true
+    negativeRatings?: true
     visits?: true
   }
 
@@ -5603,6 +5623,10 @@ export namespace Prisma {
     id?: true
     name?: true
     createdAt?: true
+    updatedAt?: true
+    author?: true
+    positiveRatings?: true
+    negativeRatings?: true
     content?: true
     description?: true
     category?: true
@@ -5613,6 +5637,10 @@ export namespace Prisma {
     id?: true
     name?: true
     createdAt?: true
+    updatedAt?: true
+    author?: true
+    positiveRatings?: true
+    negativeRatings?: true
     content?: true
     description?: true
     category?: true
@@ -5623,6 +5651,10 @@ export namespace Prisma {
     id?: true
     name?: true
     createdAt?: true
+    updatedAt?: true
+    author?: true
+    positiveRatings?: true
+    negativeRatings?: true
     content?: true
     description?: true
     category?: true
@@ -5720,6 +5752,10 @@ export namespace Prisma {
     id: number
     name: string
     createdAt: Date
+    updatedAt: Date
+    author: string
+    positiveRatings: number
+    negativeRatings: number
     content: string
     description: string | null
     category: string | null
@@ -5749,6 +5785,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    author?: boolean
+    positiveRatings?: boolean
+    negativeRatings?: boolean
     content?: boolean
     description?: boolean
     category?: boolean
@@ -5759,6 +5799,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    author?: boolean
+    positiveRatings?: boolean
+    negativeRatings?: boolean
     content?: boolean
     description?: boolean
     category?: boolean
@@ -5769,6 +5813,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    author?: boolean
+    positiveRatings?: boolean
+    negativeRatings?: boolean
     content?: boolean
     description?: boolean
     category?: boolean
@@ -5779,13 +5827,17 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    author?: boolean
+    positiveRatings?: boolean
+    negativeRatings?: boolean
     content?: boolean
     description?: boolean
     category?: boolean
     visits?: boolean
   }
 
-  export type GuideOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "content" | "description" | "category" | "visits", ExtArgs["result"]["guide"]>
+  export type GuideOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "author" | "positiveRatings" | "negativeRatings" | "content" | "description" | "category" | "visits", ExtArgs["result"]["guide"]>
 
   export type $GuidePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Guide"
@@ -5794,6 +5846,10 @@ export namespace Prisma {
       id: number
       name: string
       createdAt: Date
+      updatedAt: Date
+      author: string
+      positiveRatings: number
+      negativeRatings: number
       content: string
       description: string | null
       category: string | null
@@ -6224,6 +6280,10 @@ export namespace Prisma {
     readonly id: FieldRef<"Guide", 'Int'>
     readonly name: FieldRef<"Guide", 'String'>
     readonly createdAt: FieldRef<"Guide", 'DateTime'>
+    readonly updatedAt: FieldRef<"Guide", 'DateTime'>
+    readonly author: FieldRef<"Guide", 'String'>
+    readonly positiveRatings: FieldRef<"Guide", 'Int'>
+    readonly negativeRatings: FieldRef<"Guide", 'Int'>
     readonly content: FieldRef<"Guide", 'String'>
     readonly description: FieldRef<"Guide", 'String'>
     readonly category: FieldRef<"Guide", 'String'>
@@ -6661,6 +6721,10 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    author: 'author',
+    positiveRatings: 'positiveRatings',
+    negativeRatings: 'negativeRatings',
     content: 'content',
     description: 'description',
     category: 'category',
@@ -7029,6 +7093,10 @@ export namespace Prisma {
     id?: IntFilter<"Guide"> | number
     name?: StringFilter<"Guide"> | string
     createdAt?: DateTimeFilter<"Guide"> | Date | string
+    updatedAt?: DateTimeFilter<"Guide"> | Date | string
+    author?: StringFilter<"Guide"> | string
+    positiveRatings?: IntFilter<"Guide"> | number
+    negativeRatings?: IntFilter<"Guide"> | number
     content?: StringFilter<"Guide"> | string
     description?: StringNullableFilter<"Guide"> | string | null
     category?: StringNullableFilter<"Guide"> | string | null
@@ -7039,6 +7107,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+    author?: SortOrder
+    positiveRatings?: SortOrder
+    negativeRatings?: SortOrder
     content?: SortOrder
     description?: SortOrderInput | SortOrder
     category?: SortOrderInput | SortOrder
@@ -7052,6 +7124,10 @@ export namespace Prisma {
     OR?: GuideWhereInput[]
     NOT?: GuideWhereInput | GuideWhereInput[]
     createdAt?: DateTimeFilter<"Guide"> | Date | string
+    updatedAt?: DateTimeFilter<"Guide"> | Date | string
+    author?: StringFilter<"Guide"> | string
+    positiveRatings?: IntFilter<"Guide"> | number
+    negativeRatings?: IntFilter<"Guide"> | number
     content?: StringFilter<"Guide"> | string
     description?: StringNullableFilter<"Guide"> | string | null
     category?: StringNullableFilter<"Guide"> | string | null
@@ -7062,6 +7138,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+    author?: SortOrder
+    positiveRatings?: SortOrder
+    negativeRatings?: SortOrder
     content?: SortOrder
     description?: SortOrderInput | SortOrder
     category?: SortOrderInput | SortOrder
@@ -7080,6 +7160,10 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Guide"> | number
     name?: StringWithAggregatesFilter<"Guide"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Guide"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Guide"> | Date | string
+    author?: StringWithAggregatesFilter<"Guide"> | string
+    positiveRatings?: IntWithAggregatesFilter<"Guide"> | number
+    negativeRatings?: IntWithAggregatesFilter<"Guide"> | number
     content?: StringWithAggregatesFilter<"Guide"> | string
     description?: StringNullableWithAggregatesFilter<"Guide"> | string | null
     category?: StringNullableWithAggregatesFilter<"Guide"> | string | null
@@ -7345,6 +7429,10 @@ export namespace Prisma {
   export type GuideCreateInput = {
     name: string
     createdAt?: Date | string
+    updatedAt?: Date | string
+    author?: string
+    positiveRatings?: number
+    negativeRatings?: number
     content: string
     description?: string | null
     category?: string | null
@@ -7355,6 +7443,10 @@ export namespace Prisma {
     id?: number
     name: string
     createdAt?: Date | string
+    updatedAt?: Date | string
+    author?: string
+    positiveRatings?: number
+    negativeRatings?: number
     content: string
     description?: string | null
     category?: string | null
@@ -7364,6 +7456,10 @@ export namespace Prisma {
   export type GuideUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: StringFieldUpdateOperationsInput | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7374,6 +7470,10 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: StringFieldUpdateOperationsInput | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7384,6 +7484,10 @@ export namespace Prisma {
     id?: number
     name: string
     createdAt?: Date | string
+    updatedAt?: Date | string
+    author?: string
+    positiveRatings?: number
+    negativeRatings?: number
     content: string
     description?: string | null
     category?: string | null
@@ -7393,6 +7497,10 @@ export namespace Prisma {
   export type GuideUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: StringFieldUpdateOperationsInput | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7403,6 +7511,10 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: StringFieldUpdateOperationsInput | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7692,6 +7804,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+    author?: SortOrder
+    positiveRatings?: SortOrder
+    negativeRatings?: SortOrder
     content?: SortOrder
     description?: SortOrder
     category?: SortOrder
@@ -7700,6 +7816,8 @@ export namespace Prisma {
 
   export type GuideAvgOrderByAggregateInput = {
     id?: SortOrder
+    positiveRatings?: SortOrder
+    negativeRatings?: SortOrder
     visits?: SortOrder
   }
 
@@ -7707,6 +7825,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+    author?: SortOrder
+    positiveRatings?: SortOrder
+    negativeRatings?: SortOrder
     content?: SortOrder
     description?: SortOrder
     category?: SortOrder
@@ -7717,6 +7839,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+    author?: SortOrder
+    positiveRatings?: SortOrder
+    negativeRatings?: SortOrder
     content?: SortOrder
     description?: SortOrder
     category?: SortOrder
@@ -7725,6 +7851,8 @@ export namespace Prisma {
 
   export type GuideSumOrderByAggregateInput = {
     id?: SortOrder
+    positiveRatings?: SortOrder
+    negativeRatings?: SortOrder
     visits?: SortOrder
   }
 
