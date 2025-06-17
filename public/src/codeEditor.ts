@@ -304,8 +304,9 @@ class EditorCursor {
                 }
               
 
-
-            const updatedPos = updateCursor(this.cursor, eventJson)
+if(false)
+{
+   const updatedPos = updateCursor(this.cursor, eventJson)
             
             this.posX = updatedPos.posX;
             this.posY = updatedPos.posY;
@@ -387,8 +388,60 @@ class EditorCursor {
               this.cursorContainer!.style.left = this.posX+'px';
               this.cursorContainer!.style.top = this.posY+'px';
             }
+}
+    else
+    {
+      
+                       const updatedPos = updateCursor(this.cursor, eventJson)
+            this.posX = updatedPos.posX;
+            this.posY = updatedPos.posY;
+            this.step =0;
+            const stepSize=1/5
+            if(this.updateInterval)  
+              {
+                // this.lposX = updatedPos.posX;
+                // this.lposY = updatedPos.posY;
+                clearInterval(this.updateInterval)
+              }
 
-            
+            if(true) { // interpolate cursor position
+             this.updateInterval = setInterval(() => {
+              
+              const cposX = this.lposX*(1-this.step) + this.posX*this.step;
+              const cposY = this.lposY*(1-this.step) + this.posY*this.step;
+              this.cursorContainer!.style.left = cposX+'px';
+              this.cursorContainer!.style.top = cposY+'px';
+              this.step+=stepSize;
+              if(this.step>=1)
+              {
+                this.lposX = updatedPos.posX;
+                this.lposY = updatedPos.posY;
+                clearInterval(this.updateInterval)
+                if(eventJson.pointerType == "touch")
+                {
+                  if(this.animTimeout)
+                    clearTimeout(this.animTimeout)
+                  this.animTimeout = setTimeout(() => {
+                    this.animated = false;
+                    this.cursor!.animate(
+                      [
+                        { opacity:"100%", transform: "scale(1) translate(-50%, -50%)" },
+                        { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)"  },
+                      ],
+                      {
+                        duration: 250,
+                        fill: "both",
+                        // easing: "ease-out"
+                      },
+                    );
+                  }, 250);
+                  
+                }
+              }
+                
+            }, 1/stepSize)}
+
+    }       
 
           }
 

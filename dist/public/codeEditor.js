@@ -223,65 +223,108 @@ class EditorCursor {
                 easing: "ease-out"
             });
         }
-        const updatedPos = updateCursor(this.cursor, eventJson);
-        this.posX = updatedPos.posX;
-        this.posY = updatedPos.posY;
-        this.step = 0;
-        const duration = 100;
-        let startTime = undefined;
-        if (this.updateInterval && startTime != undefined) {
-            cancelAnimationFrame(this.updateInterval);
-            startTime = undefined;
-            this.lposX = this.cposX;
-            this.lposY = this.cposY;
-        }
-        // if(this.updateInterval)  
-        //   {
-        //     // this.lposX = updatedPos.posX;
-        //     // this.lposY = updatedPos.posY;
-        //     clearInterval(this.updateInterval)
-        //   }
-        if (true) { // interpolate cursor position
-            const animatePosition = (timestamp) => {
-                if (!startTime)
-                    startTime = timestamp;
-                const elapsed = timestamp - startTime;
-                const t = Math.min(elapsed / duration, 1);
-                this.cposX = this.lposX * (1 - t) + this.posX * t;
-                this.cposY = this.lposY * (1 - t) + this.posY * t;
-                this.cursorContainer.style.left = this.cposX + 'px';
-                this.cursorContainer.style.top = this.cposY + 'px';
-                if (t >= 1) {
-                    startTime = undefined;
-                    this.updateInterval = undefined;
-                    this.lposX = updatedPos.posX;
-                    this.lposY = updatedPos.posY;
-                    // clearInterval(this.updateInterval)
-                    if (eventJson.pointerType == "touch") {
-                        if (this.animTimeout)
-                            clearTimeout(this.animTimeout);
-                        this.animTimeout = setTimeout(() => {
-                            this.animated = false;
-                            this.cursor.animate([
-                                { opacity: "100%", transform: "scale(1) translate(-50%, -50%)" },
-                                { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)" },
-                            ], {
-                                duration: 250,
-                                fill: "both",
-                                // easing: "ease-out"
-                            });
-                        }, 2 * duration);
+        if (false) {
+            const updatedPos = updateCursor(this.cursor, eventJson);
+            this.posX = updatedPos.posX;
+            this.posY = updatedPos.posY;
+            this.step = 0;
+            const duration = 100;
+            let startTime = undefined;
+            if (this.updateInterval && startTime != undefined) {
+                cancelAnimationFrame(this.updateInterval);
+                startTime = undefined;
+                this.lposX = this.cposX;
+                this.lposY = this.cposY;
+            }
+            // if(this.updateInterval)  
+            //   {
+            //     // this.lposX = updatedPos.posX;
+            //     // this.lposY = updatedPos.posY;
+            //     clearInterval(this.updateInterval)
+            //   }
+            if (true) { // interpolate cursor position
+                const animatePosition = (timestamp) => {
+                    if (!startTime)
+                        startTime = timestamp;
+                    const elapsed = timestamp - startTime;
+                    const t = Math.min(elapsed / duration, 1);
+                    this.cposX = this.lposX * (1 - t) + this.posX * t;
+                    this.cposY = this.lposY * (1 - t) + this.posY * t;
+                    this.cursorContainer.style.left = this.cposX + 'px';
+                    this.cursorContainer.style.top = this.cposY + 'px';
+                    if (t >= 1) {
+                        startTime = undefined;
+                        this.updateInterval = undefined;
+                        this.lposX = updatedPos.posX;
+                        this.lposY = updatedPos.posY;
+                        // clearInterval(this.updateInterval)
+                        if (eventJson.pointerType == "touch") {
+                            if (this.animTimeout)
+                                clearTimeout(this.animTimeout);
+                            this.animTimeout = setTimeout(() => {
+                                this.animated = false;
+                                this.cursor.animate([
+                                    { opacity: "100%", transform: "scale(1) translate(-50%, -50%)" },
+                                    { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)" },
+                                ], {
+                                    duration: 250,
+                                    fill: "both",
+                                    // easing: "ease-out"
+                                });
+                            }, 2 * duration);
+                        }
                     }
-                }
-                else
+                    else
+                        this.updateInterval = requestAnimationFrame(animatePosition);
+                };
+                if (startTime == undefined)
                     this.updateInterval = requestAnimationFrame(animatePosition);
-            };
-            if (startTime == undefined)
-                this.updateInterval = requestAnimationFrame(animatePosition);
+            }
+            else {
+                this.cursorContainer.style.left = this.posX + 'px';
+                this.cursorContainer.style.top = this.posY + 'px';
+            }
         }
         else {
-            this.cursorContainer.style.left = this.posX + 'px';
-            this.cursorContainer.style.top = this.posY + 'px';
+            const updatedPos = updateCursor(this.cursor, eventJson);
+            this.posX = updatedPos.posX;
+            this.posY = updatedPos.posY;
+            this.step = 0;
+            const stepSize = 1 / 5;
+            if (this.updateInterval) {
+                // this.lposX = updatedPos.posX;
+                // this.lposY = updatedPos.posY;
+                clearInterval(this.updateInterval);
+            }
+            if (true) { // interpolate cursor position
+                this.updateInterval = setInterval(() => {
+                    const cposX = this.lposX * (1 - this.step) + this.posX * this.step;
+                    const cposY = this.lposY * (1 - this.step) + this.posY * this.step;
+                    this.cursorContainer.style.left = cposX + 'px';
+                    this.cursorContainer.style.top = cposY + 'px';
+                    this.step += stepSize;
+                    if (this.step >= 1) {
+                        this.lposX = updatedPos.posX;
+                        this.lposY = updatedPos.posY;
+                        clearInterval(this.updateInterval);
+                        if (eventJson.pointerType == "touch") {
+                            if (this.animTimeout)
+                                clearTimeout(this.animTimeout);
+                            this.animTimeout = setTimeout(() => {
+                                this.animated = false;
+                                this.cursor.animate([
+                                    { opacity: "100%", transform: "scale(1) translate(-50%, -50%)" },
+                                    { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)" },
+                                ], {
+                                    duration: 250,
+                                    fill: "both",
+                                    // easing: "ease-out"
+                                });
+                            }, 250);
+                        }
+                    }
+                }, 1 / stepSize);
+            }
         }
     }
 }
