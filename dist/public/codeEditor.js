@@ -227,8 +227,14 @@ class EditorCursor {
         this.posX = updatedPos.posX;
         this.posY = updatedPos.posY;
         this.step = 0;
-        const stepSize = 100;
+        const duration = 100;
         let startTime = undefined;
+        if (this.updateInterval && startTime != undefined) {
+            cancelAnimationFrame(this.updateInterval);
+            startTime = undefined;
+            this.lposX = this.cposX;
+            this.lposY = this.cposY;
+        }
         // if(this.updateInterval)  
         //   {
         //     // this.lposX = updatedPos.posX;
@@ -239,13 +245,8 @@ class EditorCursor {
             const animatePosition = (timestamp) => {
                 if (!startTime)
                     startTime = timestamp;
-                const t = Math.min((timestamp - startTime) / stepSize, 1);
-                if (this.updateInterval && startTime != undefined) {
-                    cancelAnimationFrame(this.updateInterval);
-                    startTime = undefined;
-                    this.lposX = this.cposX;
-                    this.lposY = this.cposY;
-                }
+                const elapsed = timestamp - startTime;
+                const t = Math.min(elapsed / duration, 1);
                 this.cposX = this.lposX * (1 - t) + this.posX * t;
                 this.cposY = this.lposY * (1 - t) + this.posY * t;
                 this.cursorContainer.style.left = this.cposX + 'px';
@@ -269,7 +270,7 @@ class EditorCursor {
                                 fill: "both",
                                 // easing: "ease-out"
                             });
-                        }, 2 * stepSize);
+                        }, 2 * duration);
                     }
                 }
                 else
