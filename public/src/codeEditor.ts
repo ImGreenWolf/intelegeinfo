@@ -353,8 +353,8 @@ class EditorCursor {
             }, 1/stepSize)}
             else
             {
-              this.cursor!.style.left = this.posX+'px';
-              this.cursor!.style.top = this.posY+'px';
+              this.cursorContainer!.style.left = this.posX+'px';
+              this.cursorContainer!.style.top = this.posY+'px';
             }
 
             
