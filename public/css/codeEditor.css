@@ -256,7 +256,7 @@ header {
   background-color: rgba(72, 72, 72, 0.2705882353);
   backdrop-filter: blur(2px);
   border-top-width: 4px;
-  border-top-color: rgb(89, 0, 10);
+  border-top-color: rgb(63, 9, 16);
   animation: fade-in 0.1s;
   overflow: visible;
 }
@@ -1412,7 +1412,7 @@ form input[type=checkbox]::before {
   content: "";
   position: absolute;
   display: block;
-  background: rgb(89, 0, 10);
+  background: rgb(63, 9, 16);
   transition-duration: 0.2s;
   border-radius: 1lh;
   box-shadow: 2px 2px 3px 3px rgba(0, 0, 0, 0.25), inset 2px 2px 3px 3px rgba(0, 0, 0, 0.25);

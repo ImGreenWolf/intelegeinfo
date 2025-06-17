@@ -6,5 +6,4 @@ saved/
 .tsbuildinfo
 prisma/migrations/
 generated/
-*.env
 server/data/subiecte

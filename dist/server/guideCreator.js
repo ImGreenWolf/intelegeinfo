@@ -11,7 +11,13 @@ const server_1 = require("./server");
 // import rootDirName from "./server"
 const rootDirName = path_1.default.resolve("./");
 const router = express_1.default.Router();
-const htmlHead = `<head>
+const htmlHead = (title = 'intelege info', desc, keywords) => `<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="${desc}">
+    <meta name="keywords" content="${keywords}">
+    <meta name="author" content="Radu Bitere">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
@@ -84,7 +90,7 @@ router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
     </style>
      
 <body>
-${htmlHead}
+${htmlHead(guide.name, guide.description, guide.category)}
     <div id='main'>
         <form action="../../submit" method="post">
             <input type="text" name="gname" id="gname" value="${guide.name}">
@@ -139,7 +145,7 @@ async function getPosts() {
 }
 function postsRequest(guideEntries, req, res, error) {
     let text = `
-    ${htmlHead}
+    ${htmlHead('Resurse', 'Descopera resursele intelegeinfo!')}
     <style>
     body
     {
@@ -208,8 +214,8 @@ router.post('/submit', (req, res) => {
             description,
             category
         }
-    }).then(update => {
-        res.send(`${htmlHead} <h2>Updated ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
+    }).then(guide => {
+        res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
     }).catch(() => {
         try {
             dbClient_1.default.guide.create({
@@ -219,8 +225,8 @@ router.post('/submit', (req, res) => {
                     description,
                     category
                 }
-            }).then((value) => {
-                res.send(`${htmlHead} <h2>Uploaded ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
+            }).then((guide) => {
+                res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
             }).catch(err => {
                 res.status(500).send('Failed to create problem: ' + err);
             });
@@ -250,10 +256,10 @@ router.get('/post/:name', (req, res) => {
             if (value.content.includes("REDIRECT TO PAGE"))
                 res.redirect("../.." + url);
             else
-                res.send(htmlHead +
-                    `<content> 
+                res.send(htmlHead(value.name, value.description, value.category) +
+                    `<article> 
                 ${value.content} 
-                </content>
+                </article>
                 <footer>
                     <p>${value.visits}</p>
                 </footer>
@@ -325,7 +331,7 @@ router.get('/', (req, res) => {
         let guideEntries = '';
         for (const guide of guides)
             guideEntries += `<li><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`;
-        const html = `${htmlHead}
+        const html = `${htmlHead('Resurse')}
     <content>
     <ul>
     ${guideEntries}

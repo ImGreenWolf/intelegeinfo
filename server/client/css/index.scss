@@ -134,7 +134,10 @@ footer
     
     /* gap: 1s00px; */
 
-    
+    .openEditor
+    {
+
+    }
 }
 .display-shadow {
 
@@ -184,14 +187,15 @@ footer
 }
 .main-container div#text-container
 {
-    margin-top: 100px;
+    margin: 100px 0;
     position: relative;
-    width: 500px;
+    max-width: 500px;
     text-align: center;
+    align-items: stretch;
     display: grid;
     grid-template-rows: auto auto;
-    align-content: space-evenly;
-    height: 500px;
+    align-content: stretch;
+    height: 400px;
     /* left: 50%;
     transform: translate(-50%, -50%); */
     /* top: 50%; */
@@ -261,20 +265,20 @@ footer
     }
 
 
-    .ridge-gradient
-    {
+    // .ridge-gradient
+    // {
 
-        height: 100px;
-        margin: auto;
-        width: 300px;
-        box-sizing: content-box;
-        padding: 5px;
-        border-radius: 25px;
-        display: flex;
-        justify-content: stretch;
-        align-items: stretch;
-        background-color: transparent;
-    }
+    //     height: 100px;
+    //     margin: auto;
+    //     width: 300px;
+    //     box-sizing: content-box;
+    //     padding: 5px;
+    //     border-radius: 25px;
+    //     display: flex;
+    //     justify-content: stretch;
+    //     align-items: stretch;
+    //     background-color: transparent;
+    // }
 
     
     
@@ -284,17 +288,16 @@ a.button
     {
         // background-color: theme.$main-button-color;
         background-color: theme.$highlight-color;
-        backdrop-filter: blur(3px);
+        backdrop-filter: blur(2px);
         color: theme.$text-color;
         padding: 0.5lh;
-        font-size: 24px;
+        font-size: 1.2em;
         // width: 100%;
         display: flex;
         justify-content: center;
         text-decoration: none;
-        padding: auto;
         align-items: center;
-        transition-duration: 0.1s;
+        transition-duration: 0.3s;
         text-rendering: auto;
         border-radius: 15px;
         font-family: Poppins;
@@ -312,6 +315,7 @@ a.button
         &:hover
         {
             border: 3px solid color.adjust($color: theme.$highlight-color, $lightness: 30%);
+            backdrop-filter: blur(1px);
         }
     }
 .main-container h
