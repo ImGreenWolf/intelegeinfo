@@ -246,8 +246,8 @@ class EditorCursor {
                     this.lposX = this.cposX;
                     this.lposY = this.cposY;
                 }
-                this.cposX = this.lposX * (stepSize - t) + this.posX * t;
-                this.cposY = this.lposY * (stepSize - t) + this.posY * t;
+                this.cposX = this.lposX * (1 - t) + this.posX * t;
+                this.cposY = this.lposY * (1 - t) + this.posY * t;
                 this.cursorContainer.style.left = this.cposX + 'px';
                 this.cursorContainer.style.top = this.cposY + 'px';
                 if (t >= 1) {
