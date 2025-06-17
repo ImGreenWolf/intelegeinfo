@@ -48,6 +48,7 @@ export declare class Pixelated extends IElement {
         randomness?: number | undefined;
     }): Promise<Node>;
 }
+export declare const hasRequestAnimationFrame: boolean;
 interface Point {
     x: any;
     y: any;

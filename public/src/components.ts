@@ -181,8 +181,11 @@ export class Dock extends IElement {
         const base = createNode('div', {id:'dock',
         css: "display: flex; justify-content: center; flex-direction: column; grid-row: -2/-1; min-width: 300px;  align-self: center; justify-self: center; grid-column: 1 / -1;",
         html: [createNode('p', {htmlSting: "IntelegeInfo", css: "top: -10px; position: relative; margin: 0.25em; font-size: 1.25em;  color:rgb(228, 228, 228);text-shadow: 3px 4px 3px black; text-align: center; font-family: 'Playwrite DK Loopet', 'Courier New', Courier, monospace;"}), mainContainer]})
-        if(typeof window.requestAnimationFrame != undefined)
-        requestAnimationFrame(() => updatePositions(10,10))
+        
+        
+        if(hasRequestAnimationFrame)
+            requestAnimationFrame(() => updatePositions(10,10))
+
         let timeout;
         let lastX = 0;
         let lastY = 0;
@@ -217,7 +220,7 @@ export class Dock extends IElement {
             }
 
         }
-        if(typeof window.requestAnimationFrame != undefined)
+        if(hasRequestAnimationFrame)
         document.addEventListener('pointermove', function(ev) {
 
            if(ev.pointerType == 'mouse')
@@ -332,7 +335,12 @@ export class Pixelated extends IElement {
     }
 }
 
-
+export const hasRequestAnimationFrame =
+  typeof window.requestAnimationFrame === 'function' ||
+  typeof (window as any).webkitRequestAnimationFrame === 'function' ||
+  typeof (window as any).mozRequestAnimationFrame === 'function' ||
+  typeof (window as any).oRequestAnimationFrame === 'function' ||
+  typeof (window as any).msRequestAnimationFrame === 'function';
 
 class ImprovedPerlinNoise3D {
     private permutation: number[];
