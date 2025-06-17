@@ -309,7 +309,7 @@ class EditorCursor {
             this.posX = updatedPos.posX;
             this.posY = updatedPos.posY;
             this.step =0;
-            const stepSize=200
+            const stepSize=50
             let startTime = undefined
             // if(this.updateInterval)  
             //   {
