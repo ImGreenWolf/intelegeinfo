@@ -267,8 +267,11 @@ class EditorCursor {
                 else
                     this.updateInterval = requestAnimationFrame(animatePosition);
             };
-            if (startTime == undefined)
-                requestAnimationFrame(animatePosition);
+            if (startTime == undefined) {
+                if (this.updateInterval)
+                    cancelAnimationFrame(this.updateInterval);
+                this.updateInterval = requestAnimationFrame(animatePosition);
+            }
         }
         else {
             this.cursorContainer.style.left = this.posX + 'px';

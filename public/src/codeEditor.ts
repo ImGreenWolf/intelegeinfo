@@ -365,7 +365,11 @@ class EditorCursor {
               }
 
               if(startTime == undefined)
-                requestAnimationFrame(animatePosition)
+              {
+                if(this.updateInterval) cancelAnimationFrame(this.updateInterval)
+                this.updateInterval = requestAnimationFrame(animatePosition)
+
+              }
             }
             else
             {
