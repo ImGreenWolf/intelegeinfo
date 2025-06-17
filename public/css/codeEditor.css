@@ -1317,15 +1317,16 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
     background-image: url(../media/mouse-cursor-svgrepo-com.svg);
   }
 }
-@supports (mask-image: url("")) {
+@supports (mask-image: url(../media/mouse-cursor-svgrepo-com.svg)) {
   .cursor-container .cursor {
     mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
     -webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
     mask-size: cover;
     mix-blend-mode: hue;
+    backdrop-filter: invert(1);
   }
 }
-@supports not (mask-image: url("")) {
+@supports not (mask-image: url(../media/mouse-cursor-svgrepo-com.svg)) {
   .cursor-container .cursor {
     background-image: url(../media/mouse-cursor-svgrepo-com.svg);
     background-repeat: no-repeat;
@@ -1340,10 +1341,6 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   display: inline-block;
   /* background-image: url(../media/mouse-cursor-svgrepo-com.svg); */
   position: relative;
-  background-size: cover;
-  backdrop-filter: invert(1);
-  background-color: #ffffff;
-  mask-size: cover;
 }
 .cursor-container .cursor.inactive {
   animation: fade-out 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) 2s forwards;

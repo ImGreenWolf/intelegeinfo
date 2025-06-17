@@ -1638,16 +1638,17 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
         }
     }
 
-    @supports (mask-image: url("")) {
+    @supports (mask-image: url(../media/mouse-cursor-svgrepo-com.svg)) {
     .cursor {
         mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
         -webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
         mask-size: cover;
         mix-blend-mode: hue;
+        backdrop-filter: invert(1);
     }
     }
 
-    @supports not (mask-image: url("")) {
+    @supports not (mask-image: url(../media/mouse-cursor-svgrepo-com.svg)) {
     .cursor {
         background-image: url(../media/mouse-cursor-svgrepo-com.svg);
         background-repeat: no-repeat;
@@ -1665,12 +1666,12 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
         display: inline-block;
         /* background-image: url(../media/mouse-cursor-svgrepo-com.svg); */
         position: relative;
-        background-size: cover;
-        backdrop-filter: invert(1);
+        // background-size: cover;
+
         // mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
         // -webkit-mask-image: url(../media/mouse-cursor-svgrepo-com.svg);
-        background-color: #ffffff;
-        mask-size: cover;
+        // background-color: #ffffff;
+        // mask-size: cover;
 
         &.inactive
         {
