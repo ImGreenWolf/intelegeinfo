@@ -265,7 +265,7 @@ class EditorCursor {
                     }
                 }
                 else
-                    this.animTimeout = requestAnimationFrame(animatePosition);
+                    this.updateInterval = requestAnimationFrame(animatePosition);
             };
             if (startTime == undefined)
                 requestAnimationFrame(animatePosition);

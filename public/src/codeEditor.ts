@@ -205,11 +205,11 @@ class EditorCursor {
         posY: number=0;
         lposX: number=0;
         lposY: number=0;
-        updateInterval: NodeJS.Timeout|undefined;
+        updateInterval;
         step: number=0;
         pointerType: string = "mouse";
         animated = false;
-        animTimeout
+        animTimeout: NodeJS.Timeout|undefined;
         id;
         cursorContainer: HTMLDivElement | undefined
         nameElement: HTMLSpanElement | undefined
@@ -360,7 +360,7 @@ class EditorCursor {
                 }
               }
               else 
-              this.animTimeout = requestAnimationFrame(animatePosition)
+              this.updateInterval = requestAnimationFrame(animatePosition)
           
               }
 
