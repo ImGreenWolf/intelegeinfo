@@ -225,7 +225,8 @@ class EditorCursor {
         this.posX = updatedPos.posX;
         this.posY = updatedPos.posY;
         this.step = 0;
-        const stepSize = 5;
+        const stepSize = 50;
+        let startTime = undefined;
         // if(this.updateInterval)  
         //   {
         //     // this.lposX = updatedPos.posX;
@@ -233,23 +234,26 @@ class EditorCursor {
         //     clearInterval(this.updateInterval)
         //   }
         if (true) { // interpolate cursor position
-            animatePosition(this);
-            function animatePosition(self) {
-                const cposX = self.lposX * (1 - self.step) + self.posX * self.step;
-                const cposY = self.lposY * (1 - self.step) + self.posY * self.step;
-                self.cursorContainer.style.left = cposX + 'px';
-                self.cursorContainer.style.top = cposY + 'px';
-                self.step += 1 / stepSize;
-                if (self.step >= 1) {
-                    self.lposX = updatedPos.posX;
-                    self.lposY = updatedPos.posY;
+            const animatePosition = (timestamp) => {
+                if (!startTime)
+                    startTime = timestamp;
+                const t = Math.min(timestamp - startTime, stepSize);
+                this.step = t;
+                const cposX = this.lposX * (stepSize - this.step) / stepSize + this.posX * this.step / stepSize;
+                const cposY = this.lposY * (stepSize - this.step) / stepSize + this.posY * this.step / stepSize;
+                this.cursorContainer.style.left = cposX + 'px';
+                this.cursorContainer.style.top = cposY + 'px';
+                if (t >= stepSize) {
+                    startTime = undefined;
+                    this.lposX = updatedPos.posX;
+                    this.lposY = updatedPos.posY;
                     // clearInterval(this.updateInterval)
                     if (eventJson.pointerType == "touch") {
-                        if (self.animTimeout)
-                            clearTimeout(self.animTimeout);
-                        self.animTimeout = setTimeout(() => {
-                            self.animated = false;
-                            self.cursor.animate([
+                        if (this.animTimeout)
+                            clearTimeout(this.animTimeout);
+                        this.animTimeout = setTimeout(() => {
+                            this.animated = false;
+                            this.cursor.animate([
                                 { opacity: "100%", transform: "scale(1) translate(-50%, -50%)" },
                                 { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)" },
                             ], {
@@ -261,8 +265,10 @@ class EditorCursor {
                     }
                 }
                 else
-                    requestAnimationFrame(() => animatePosition(self));
-            }
+                    this.animTimeout = requestAnimationFrame(animatePosition);
+            };
+            if (startTime == undefined)
+                requestAnimationFrame(animatePosition);
         }
         else {
             this.cursorContainer.style.left = this.posX + 'px';
