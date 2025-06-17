@@ -261,7 +261,7 @@ class EditorCursor {
                                 fill: "both",
                                 // easing: "ease-out"
                             });
-                        }, 1 * stepSize);
+                        }, 2 * stepSize);
                     }
                 }
                 else
