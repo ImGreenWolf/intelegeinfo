@@ -43,7 +43,7 @@ int main()
     }
     execute(res) {
         (0, child_process_1.execSync)('docker exec -i ' + res.imageName + ' bash -c "ls"', { stdio: 'inherit' });
-        return (0, child_process_1.spawn)('docker', ['exec', "-i", '-w', '/clientFiles', res.imageName, "bash", "-c", `./${res.fileName.split('.')[0]}`], {
+        return (0, child_process_1.spawn)('docker', ['exec', "-i", '-w', '/app/clientFiles', res.imageName, "bash", "-c", `./${res.fileName.split('.')[0]}`], {
             stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
         });
     }
