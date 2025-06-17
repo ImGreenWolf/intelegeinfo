@@ -96,14 +96,17 @@ class Console {
   element: HTMLDivElement;
   stdin: string[] = []
   event = new Event("open");
+  compileMessage: HTMLDivElement | undefined
   constructor () {
     if(outputConsoles.length>0)
-    outputConsoles[outputConsoles.length-1].callbackCreate(this)
+      outputConsoles[outputConsoles.length-1].callbackCreate(this)
+
     const thisConsole = document.createElement('div')
     outputArea!.appendChild(thisConsole);
     thisConsole.id =  'active-console'
     thisConsole.className = 'output-console-container'
     thisConsole.innerHTML = "<div class='program-output'></div>"
+
     const resendButton = document.createElement('button');
     resendButton.innerText = '↻'
     resendButton.classList = 'retry-program custom-button'
@@ -116,7 +119,8 @@ class Console {
           type: WebSocketMessageType.Console,
         })
       );
-      
+    
+    
 
     //   ws.send(
     // JSON.stringify({
@@ -129,6 +133,19 @@ class Console {
     thisConsole.appendChild(resendButton);
     this.element = thisConsole
 
+    this.onCompileStart()
+
+  }
+  public onCompileStart()
+  {
+    this.compileMessage = createNode('div', {innerText: "Programul se compileaza!"})
+    this.element.appendChild(this.compileMessage)
+    
+  }
+  public onProcessStart()
+  {
+    if(this. compileMessage)
+      this.compileMessage.remove()
   }
   public callbackCreate(callerConsole: Console) {
     callerConsole.stdin = this.stdin;
@@ -440,7 +457,7 @@ let wsClientId: UUID;
 let wsSessionId: UUID;
 const outputArea = document.getElementById("output");
 const outputConsoles: Console[] = [];
-let activeConsole: Console;
+let activeConsole: Console|undefined;
 let contextMenu: HTMLDivElement;
 let parsedCode: ReturnType<typeof parseCode>;
 let stepint;
@@ -2869,7 +2886,7 @@ ws.onmessage = (event) => {
       switch (eventJson.status)
       {
         case 'spawnGUI':
-          displaynoVNC(activeConsole.element)
+          displaynoVNC(activeConsole!.element)
         break;
         case 'spawn':
           onRun()
@@ -3305,15 +3322,16 @@ export function sendDebugCommand(cmd: string) {
   //editor.setValue(code, -1);
   const cmdBut = document.getElementById("buttons");
   if (cmd == "-exec-run") {
+    // debugger
     cmdBut?.classList.add("debug-control");
     cmdBut?.classList.remove("execute-control");
-    // if(!processRunning)
-    //   onRun()
+    startProgram()
   } else if (cmd == "execute") {
+
+    //normal execute
     cmdBut?.classList.remove("debug-control");
     cmdBut?.classList.add("execute-control");
-    // if(!processRunning)
-    //   onRun()
+    startProgram()
   }
 
   sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
@@ -3376,12 +3394,14 @@ function onRun() {
   document.getElementById('compile-status')!.innerText = 'Communicating with server...';
   document.getElementById('compile-status')!.style.opacity = '0.25'
   
-  if(document.getElementById('active-console'))
-    document.getElementById('active-console')!.id = '';
 
   document.getElementById('execute-control')!.innerText = "Opreste Programul"
-  activeConsole = new Console()
-  // if(currentFileName.toLowerCase().includes("gui"))
+
+  if(!activeConsole)
+     activeConsole = spawnConsole()
+  
+  activeConsole.onProcessStart()
+    // if(currentFileName.toLowerCase().includes("gui"))
   //   displaynoVNC(activeConsole.element)
   outputConsoles.push(activeConsole)
 
@@ -3389,6 +3409,24 @@ function onRun() {
 
 
   // TODO Add separate input area for interactive console.
+}
+
+function spawnConsole()
+{
+  
+  if(document.getElementById('active-console'))
+  document.getElementById('active-console')!.id = '';
+
+  return new Console()
+    
+}
+
+function startProgram()
+{
+  
+  if(activeConsole || processRunning)
+    return
+  activeConsole = spawnConsole()
 }
 
 function onExit() {
@@ -3400,6 +3438,7 @@ function onExit() {
 
   if(document.getElementById('active-console'))
     document.getElementById('active-console')!.id = '';
+  activeConsole = undefined
 }
 
 function setDebugLineStyle(lineIndex: number) {

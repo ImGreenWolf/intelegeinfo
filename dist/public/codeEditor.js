@@ -54,6 +54,7 @@ class Console {
     element;
     stdin = [];
     event = new Event("open");
+    compileMessage;
     constructor() {
         if (outputConsoles.length > 0)
             outputConsoles[outputConsoles.length - 1].callbackCreate(this);
@@ -82,6 +83,15 @@ class Console {
         };
         thisConsole.appendChild(resendButton);
         this.element = thisConsole;
+        this.onCompileStart();
+    }
+    onCompileStart() {
+        this.compileMessage = createNode('div', { innerText: "Programul se compileaza!" });
+        this.element.appendChild(this.compileMessage);
+    }
+    onProcessStart() {
+        if (this.compileMessage)
+            this.compileMessage.remove();
     }
     callbackCreate(callerConsole) {
         callerConsole.stdin = this.stdin;
@@ -2503,16 +2513,16 @@ export function sendDebugCommand(cmd) {
     //editor.setValue(code, -1);
     const cmdBut = document.getElementById("buttons");
     if (cmd == "-exec-run") {
+        // debugger
         cmdBut?.classList.add("debug-control");
         cmdBut?.classList.remove("execute-control");
-        // if(!processRunning)
-        //   onRun()
+        startProgram();
     }
     else if (cmd == "execute") {
+        //normal execute
         cmdBut?.classList.remove("debug-control");
         cmdBut?.classList.add("execute-control");
-        // if(!processRunning)
-        //   onRun()
+        startProgram();
     }
     sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));
     if (cmd == "-exec-next" || cmd == "-exec-continue")
@@ -2568,14 +2578,24 @@ function onRun() {
     document.getElementById('buttons')?.classList.add('executing');
     document.getElementById('compile-status').innerText = 'Communicating with server...';
     document.getElementById('compile-status').style.opacity = '0.25';
-    if (document.getElementById('active-console'))
-        document.getElementById('active-console').id = '';
     document.getElementById('execute-control').innerText = "Opreste Programul";
-    activeConsole = new Console();
+    if (!activeConsole)
+        activeConsole = spawnConsole();
+    activeConsole.onProcessStart();
     // if(currentFileName.toLowerCase().includes("gui"))
     //   displaynoVNC(activeConsole.element)
     outputConsoles.push(activeConsole);
     // TODO Add separate input area for interactive console.
+}
+function spawnConsole() {
+    if (document.getElementById('active-console'))
+        document.getElementById('active-console').id = '';
+    return new Console();
+}
+function startProgram() {
+    if (activeConsole || processRunning)
+        return;
+    activeConsole = spawnConsole();
 }
 function onExit() {
     editor.setReadOnly(false);
@@ -2585,6 +2605,7 @@ function onExit() {
     document.getElementById('execute-control').innerText = "Executa Programul";
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';
+    activeConsole = undefined;
 }
 function setDebugLineStyle(lineIndex) {
     // document.querySelectorAll(".ace_debug").forEach(element => {

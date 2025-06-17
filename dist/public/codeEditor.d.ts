@@ -2,7 +2,10 @@ declare class Console {
     element: HTMLDivElement;
     stdin: string[];
     event: Event;
+    compileMessage: HTMLDivElement | undefined;
     constructor();
+    onCompileStart(): void;
+    onProcessStart(): void;
     callbackCreate(callerConsole: Console): void;
     sendCommand(cmd: string): void;
 }
