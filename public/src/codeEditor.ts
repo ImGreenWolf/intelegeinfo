@@ -366,9 +366,10 @@ class EditorCursor {
               this.updateInterval = requestAnimationFrame(animatePosition)
           
               }
-              if(this.updateInterval)
+              if(this.updateInterval && startTime != undefined)
               {
                   cancelAnimationFrame(this.updateInterval)
+                  startTime = undefined
                   this.lposX = this.cposX
                   this.lposY = this.cposY
               }
