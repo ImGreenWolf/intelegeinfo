@@ -290,7 +290,7 @@ class EditorCursor {
             this.posX = updatedPos.posX;
             this.posY = updatedPos.posY;
             this.step = 0;
-            const stepSize = 1 / 5;
+            const stepSize = 20;
             if (this.updateInterval) {
                 // this.lposX = updatedPos.posX;
                 // this.lposY = updatedPos.posY;
@@ -302,7 +302,7 @@ class EditorCursor {
                     const cposY = this.lposY * (1 - this.step) + this.posY * this.step;
                     this.cursorContainer.style.left = cposX + 'px';
                     this.cursorContainer.style.top = cposY + 'px';
-                    this.step += stepSize;
+                    this.step += 1 / stepSize;
                     if (this.step >= 1) {
                         this.lposX = updatedPos.posX;
                         this.lposY = updatedPos.posY;
@@ -323,7 +323,7 @@ class EditorCursor {
                             }, 250);
                         }
                     }
-                }, 1 / stepSize);
+                }, stepSize);
             }
         }
     }
