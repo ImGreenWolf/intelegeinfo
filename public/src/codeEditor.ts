@@ -315,7 +315,7 @@ class EditorCursor {
                 clearInterval(this.updateInterval)
               }
 
-            if(process.env.useMouseInterpolation == "true") { // interpolate cursor position
+            if(false) { // interpolate cursor position
              this.updateInterval = setInterval(() => {
               
               const cposX = this.lposX*(1-this.step) + this.posX*this.step;
