@@ -1331,7 +1331,7 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    background-color: initial !important;
+    background-color: transparent !important;
   }
 }
 .cursor-container .cursor {
