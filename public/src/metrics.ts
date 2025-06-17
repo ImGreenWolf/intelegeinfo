@@ -174,7 +174,7 @@ function init()
                 })
 
                 
-            let ws = new WebSocket('ws://intelegeinfo.go.ro/api')
+            let ws = new WebSocket((window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname + '/api')
             const start = Date.now()
             ws.onmessage = (ev) => {
                 const res = JSON.parse(ev.data)
