@@ -203,6 +203,8 @@ class EditorCursor {
         cursor: HTMLDivElement| undefined
         posX: number=0;
         posY: number=0;
+        cposX: number=0;
+        cposY: number=0;
         lposX: number=0;
         lposY: number=0;
         updateInterval;
@@ -324,10 +326,10 @@ class EditorCursor {
               const t = Math.min(timestamp - startTime!, stepSize);
               this.step=t
               
-              const cposX = this.lposX*(stepSize-this.step)/stepSize + this.posX*this.step/stepSize;
-              const cposY = this.lposY*(stepSize-this.step)/stepSize + this.posY*this.step/stepSize;
-              this.cursorContainer!.style.left = cposX+'px';
-              this.cursorContainer!.style.top = cposY+'px';
+              this.cposX = this.lposX*(stepSize-this.step)/stepSize + this.posX*this.step/stepSize;
+              this.cposY = this.lposY*(stepSize-this.step)/stepSize + this.posY*this.step/stepSize;
+              this.cursorContainer!.style.left =  this.cposX+'px';
+              this.cursorContainer!.style.top =  this.cposY+'px';
               
 
 
@@ -335,6 +337,7 @@ class EditorCursor {
               if(t>=stepSize)
               {
                 startTime = undefined
+                this.updateInterval = undefined
                 this.lposX = updatedPos.posX;
                 this.lposY = updatedPos.posY;
                 // clearInterval(this.updateInterval)
@@ -362,6 +365,12 @@ class EditorCursor {
               else 
               this.updateInterval = requestAnimationFrame(animatePosition)
           
+              }
+              if(this.updateInterval)
+              {
+                  cancelAnimationFrame(this.updateInterval)
+                  this.lposX = this.cposX
+                  this.lposY = this.cposY
               }
 
               if(startTime == undefined)
