@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 
     const mainDir = updates.dir
     
-
+    
     let grid = ''
     if(mainDir)
     {

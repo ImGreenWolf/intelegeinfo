@@ -18,7 +18,7 @@ async function update() {
     if (fs_1.default.existsSync(path_1.default.join(outputDir, '.data.json'))) {
         const json = JSON.parse(fs_1.default.readFileSync(path_1.default.join(outputDir, '.data.json')).toString());
         console.log(json);
-        if (Date.now() - json.lastUpdate < 1000 * 60 * 10 && !json.manual)
+        if (Date.now() - json.lastUpdate < 1000 * 60 * 60 * 24 && !json.manual)
             return { code: 1, dir: outputDir };
         startYear = json.lastYear;
         lastYear = currentYear;

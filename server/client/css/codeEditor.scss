@@ -92,6 +92,14 @@
     // height: 105dvh;
     box-sizing: border-box;
     
+
+    #editor-container
+    {
+        resize: horizontal;
+        min-width: 100%;
+        max-width: 100%;
+        width: 50dvw;
+    }
 }
 /* .container>div:not(.header)
     {
@@ -125,10 +133,7 @@ header
     border: 2px solid theme.$border-color;
     border-radius: 0.5em;
     overflow: hidden;
-    resize: horizontal;
-    min-width: 100%;
-    max-width: 100%;
-    width: 50dvw;
+
 }
 
 .service-stopped, .service-error
