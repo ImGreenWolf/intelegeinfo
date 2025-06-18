@@ -39,14 +39,14 @@ import Metrics, { wssAPI } from './metrics'
 import examSubjects from './examSubjects'
 import tx2 from 'tx2';
 import { FileManagementCommands } from "../../dist/shared/types";
-interface ResponseWRay extends IncomingMessage 
+interface ResponseWRaw extends IncomingMessage 
 {
     rawBody: Buffer
 }
 app.use(compression())
 app.use(express.json({
     verify: (req, res, buf) => {
-        (req as ResponseWRay).rawBody = buf; // Save raw body
+        (req as ResponseWRaw).rawBody = buf; // Save raw body
     }
 }));
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
@@ -62,7 +62,7 @@ app.post('/github/onpull', (req, res) => {
             return;
         }
         const hmac = crypto.createHmac('sha1', 'info');
-        hmac.update((req as unknown as ResponseWRay).rawBody);
+        hmac.update((req as unknown as ResponseWRaw).rawBody);
         const digest = 'sha1=' + hmac.digest('hex');
         const { commits } = req.body;
         console.log(commits[0].message);
@@ -135,7 +135,7 @@ app.get('/editor/worker-base.js', (req, res) => {
 app.use(express.static("public"));
 app.use("/guides", GuideCreator);
 
-const codeMap: Map<number, UUID> = new Map()
+
 
 
 app.get('/editor/sharesession', (req, res) => {
@@ -390,15 +390,15 @@ var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app :
     
 });
 
-
+const codeMap: Map<number, UUID> = new Map()
 const unsecureServer = httpServer.listen(3000);
 export const server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(3443);
 server.on('listening', onServerStart)
-// httpsServer.listen(3443);
+
     // app.listen(PORT, '0.0.0.0', onServerStart);
     // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
 
-    export let clients: Map<UUID, WebSocket> = new Map();
+    export let clients: Map<UUID, WebSocket> = new Map(); // should be okay to keep local
     // const sessions: Map<UUID, UUID[]> = new Map();
 
     export let runningProcesses: Map<UUID, ChildProcess> = new Map();
@@ -652,6 +652,11 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     let project;
     let processInputBuffer = '';
     let spawnPromise;
+
+    let shouldSave:boolean = false;
+    let shouldSaveTimeout;
+
+
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies)
       function getJWTCookie(cookies) { return cookies
@@ -1443,7 +1448,7 @@ bash `.trim().replaceAll('\n', "")
         setTimeout(async () => {
                     // TODO Spawn GUI on client 
                     //   TODO maybe remove ignore self client to show when its ready and compiling
-            replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn'}, WebSocketMessageType.ExecuteStatus))
+            replicateFunction((ws,id, obj) => obj.sendMessage({status: 'container-spawn'}, WebSocketMessageType.ExecuteStatus))
 
             if(hasGUI && clientSession.displayServer == 0) // doesnt have display server
             {
@@ -1829,22 +1834,23 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 break;
                 case WebSocketMessageType.CodeChange:
                     if(!clientObj.canEdit) break;
-                let shouldSave:boolean = messageJSON.saveFile;
-                let shouldSaveTimeout;
-                if(shouldSave==false)
-                    shouldSaveTimeout = setTimeout(() => {
-                        shouldSave=true;
-                    }, 500);
-                const fileName: string = messageJSON.fileName;
+                        const fileName: string = messageJSON.fileName;
+
+                // if(shouldSave==false)
+                    // shouldSaveTimeout = setTimeout(() => {
+                    //     shouldSave=true;
+                    // }, 500);
+                
                     // save code to file
-                if(shouldSave) // TODO replace true with shouldSave 
-                    {
+                // if(shouldSave) // TODO replace true with shouldSave 
+                    // {
                         shouldSave=false 
-                        
+                        if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
+                        checkSyntaxTimeout = setTimeout(() => {
                         //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
                         fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
                             if(err) console.log("Failed saving file! " + err)
-                            if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
+                            // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
                             // checkSyntaxTimeout = setTimeout(() => {
                                 if(clientObj.openFile.editorMode.checkCodeSyntax)
@@ -1854,10 +1860,10 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                 if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
                                                     clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify(    [   {kind: 'success'} ]     )}))
                                                 })
-                                    replicateFunction((clientWs, localClientId) => {
-                                        if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: json}))
-                                        })
+                                        replicateFunction((clientWs, localClientId) => {
+                                            if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
+                                                clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: json}))
+                                            })
                                     }).catch(err => {
                                         console.error('syntax checker error: ' + err)
                                     })
@@ -1865,7 +1871,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             // }, 400);
 
                         });
-                    }
+                        }, 200);
+                    // }
+                    
                     clientObj.openFile.changeContent(messageJSON.body)
                         // replicate changes to others
                     replicateFunction((clientWs, localClientId) => {

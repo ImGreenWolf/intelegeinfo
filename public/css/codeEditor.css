@@ -275,13 +275,21 @@ header {
   border-radius: 0.2lh;
   border: 1px solid rgba(190, 190, 190, 0.1);
   font-size: 0.75rem;
-  padding: 10px;
-  background-color: rgba(107, 107, 107, 0.2705882353);
-  backdrop-filter: blur(2px);
+  min-height: 50px;
+  border-top: 6px solid black;
+  padding: 1em;
+  background-color: rgba(34, 34, 34, 0.2705882353);
+  backdrop-filter: blur(4px);
   overflow: visible;
-  transform: translate(0, 1rlh);
-  pointer-events: none;
+  display: flex;
+  transform: translate(0, 0.8rlh);
   font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "Source Code Pro", "source-code-pro", monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.compile-error-tooltip :any-link {
+  color: white;
 }
 
 .ace_cursor {
@@ -838,7 +846,7 @@ value {
 .console-info {
   align-self: center;
   display: block;
-  width: 50%;
+  max-width: 500px;
   text-shadow: 2px 2px 2px black;
 }
 

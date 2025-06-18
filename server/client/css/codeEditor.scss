@@ -240,13 +240,24 @@ header
     border-radius: 0.2lh;
     border: 1px solid theme.$border-color;
     font-size: 0.75rem;
-    padding: 10px;
-    background-color: #6b6b6b45;
-    backdrop-filter: blur(2px);
+    min-height: 50px;
+    border-top: 6px solid black;
+    padding: 1em;
+    background-color: #22222245;
+    backdrop-filter: blur(4px);
     overflow: visible;
-    transform: translate(0,1rlh);
-    pointer-events: none;
+    display: flex;
+    transform: translate(0,0.8rlh);
+    // pointer-events: none;
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', 'source-code-pro', monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    :any-link
+    {
+        color: theme.$text-color;
+
+    }
 }
 
 .ace_cursor
@@ -1020,7 +1031,7 @@ value
 {
     align-self: center;
     display: block;
-    width: 50%;
+    max-width: 500px;
     text-shadow: 2px 2px 2px black;
 }
 .console-error

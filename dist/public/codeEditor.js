@@ -85,8 +85,8 @@ class Console {
         this.element = thisConsole;
         this.onCompileStart();
     }
-    onCompileStart() {
-        this.compileMessage = createNode('div', { innerText: "Programul se compileaza!" });
+    onCompileStart(message = 'Comunicating with server') {
+        this.compileMessage = createNode('div', { innerText: message });
         this.element.appendChild(this.compileMessage);
     }
     onProcessStart() {
@@ -763,9 +763,70 @@ editor.on('changeSession', (e) => {
         // if(lastEv!=undefined)
         //   updateLocalCursor(lastEv)
     });
+    function getContext(line, variable) {
+        return { type: "int" };
+    }
+    function getErrorInfo(compileErrorObj) {
+        const mathces = compileErrorObj.text.match(/'.+?'/g);
+        console.log(mathces[0]);
+        const basicError = compileErrorObj.text.replaceAll(/'.+?'/g, '').trim();
+        console.log(basicError);
+        // TODO Improve this
+        const cases = [
+            { text: 'expected',
+                test: (error) => error.includes('expected'),
+                return: { link: 'expected', fixFunction: () => {
+                        const varName = mathces[0].replaceAll("'", '');
+                        let i = 1;
+                        const searchRow = compileErrorObj.range.end.row;
+                        const cond = () => !(editor.session.getLine(searchRow - i).trim().includes(';') || editor.session.getLine(searchRow - i).trim() != '' && searchRow - i > 0); //(!editor.session.getLine(searchRow-i).trim().includes(';') || editor.session.getLine(searchRow-i).trim() == '') && searchRow-i > 0
+                        while (cond()) {
+                            console.log(cond(), editor.session.getLine(searchRow - i).trim(), editor.session.getLine(searchRow - i).trim().includes(';'));
+                            i++;
+                        }
+                        const insertRange = { column: editor.session.getLine(searchRow - i).length + 1, row: searchRow - i };
+                        editor.session.insert(insertRange, `;`);
+                        editor.session.selection.selectWord();
+                        // editor.selection.setRange(new Range({start: {row: insertRange.row, column: 0}, end: insertRange}))
+                    } }
+            },
+            { text: 'was not declared in this scope',
+                test: (error) => error.includes('was not declared in this scope'),
+                return: { link: 'undeclared', fixFunction: () => {
+                        const varName = mathces[0].replaceAll("'", '');
+                        const context = getContext(editor.session.getLines(compileErrorObj.range.start.row, compileErrorObj.range.end.row), varName);
+                        editor.session.insert({ column: 0, row: compileErrorObj.range.start.row }, `\n`);
+                        editor.session.insert({ column: compileErrorObj.range.start.column, row: compileErrorObj.range.start.row }, `${context.type} ${varName};`);
+                        editor.session.selection.selectWord();
+                    } }
+            },
+        ];
+        for (const elem of cases) {
+            if (elem.test(basicError))
+                return elem.return;
+        }
+        // switch(basicError.includes())
+        // {
+        //   case 'expected  before':
+        //     return 
+        //   break;
+        //   case "was not declared in this scope":
+        //     return {link: 'undeclared', fixFunction: () => {
+        //       const varName = mathces[0].replaceAll("'", '')
+        //       const context = getContext(editor.session.getLines(compileErrorObj.range.start.row, compileErrorObj.range.end.row), varName)
+        //       editor.session.insert({column: 0, row: compileErrorObj.range.start.row},`\n`)
+        //       editor.session.insert({column: compileErrorObj.range.start.column, row: compileErrorObj.range.start.row},`${context.type} ${varName};`)
+        //     }}
+        //     break;
+        //   case "invalid conversion from to":
+        //     break;
+        // }
+        return { link: '', fixFunction: () => { } };
+    }
     editor.session.on('markerUpdate', (marker) => {
         if (!marker.changedCss)
             return;
+        // TODO add marke events only to errored tokens
         marker.elem.addEventListener('mouseover', ev => {
             if (errorDisplay)
                 return;
@@ -778,18 +839,31 @@ editor.on('changeSession', (e) => {
                 errorDisplay.style.cssText = `top: ${top}px; left: ${left}px; position: absolute;`;
                 errorDisplay.innerText = compileErrorObjs.get(marker.marker.id).text;
                 errorDisplay.classList.add('compile-error-tooltip');
+                const errorInfo = getErrorInfo(compileErrorObjs.get(marker.marker.id));
+                const actionsContainer = createNode('div', { css: "display: flex; gap: 10px; margin: 5px;" });
+                actionsContainer.appendChild(createNode('a', { innerText: "Despre eroare", attributes: [{ name: 'href', value: errorInfo.link }] }));
+                actionsContainer.appendChild(createNode('a', { innerText: "Repara", css: "text-decoration: underline; cursor: pointer;", onclick(ev) {
+                        errorInfo.fixFunction();
+                    }, }));
+                errorDisplay.appendChild(actionsContainer);
                 document.body.appendChild(errorDisplay);
                 compileErrorObjs.get(marker.marker.id).display = errorDisplay;
             }, 200);
         });
-        marker.elem.addEventListener('mouseleave', ev => {
-            if (errorDisplayTimeout)
-                clearTimeout(errorDisplayTimeout);
-            if (!errorDisplay)
-                return;
-            errorDisplay.remove();
-            errorDisplay = undefined;
-        });
+        if (errorDisplay)
+            if (!errorDisplay.checkVisibility()) {
+                errorDisplay.remove();
+                errorDisplay = undefined;
+            }
+            else
+                errorDisplay.addEventListener('mouseleave', ev => {
+                    if (errorDisplayTimeout)
+                        clearTimeout(errorDisplayTimeout);
+                    if (!errorDisplay)
+                        return;
+                    errorDisplay.remove();
+                    errorDisplay = undefined;
+                });
     });
 });
 function getPointerRelativePosition(editor, x, y) {
@@ -2168,7 +2242,6 @@ ws.onmessage = (event) => {
                 editor.session.removeMarker(marker);
             markers.length = 0;
             if (!compileErrors.length) {
-                writeOutput('ok');
                 for (const marker of markers)
                     editor.session.removeMarker(marker);
                 markers.length = 0;
@@ -2226,6 +2299,8 @@ ws.onmessage = (event) => {
                 case 'spawn':
                     onRun();
                     break;
+                case 'container-spawn':
+                    break;
                 default:
                     if (eventJson.error) {
                         onExit();
@@ -2276,6 +2351,7 @@ ws.onmessage = (event) => {
                     //     : errorOutputString ||
                     //         "Compilation error. (couldnt retrieve error message, sorry)"
                     // );
+                    activeConsole.compileMessage.innerText = eventJson.body;
                     document.getElementById('compile-status').innerText = eventJson.body;
                     document.getElementById('compile-status').style.opacity = '1';
                     setTimeout(() => {
@@ -2639,18 +2715,17 @@ function onRun() {
     editor.setReadOnly(true);
     processRunning = true;
     document.getElementById('buttons')?.classList.add('executing');
-    document.getElementById('compile-status').innerText = 'Communicating with server...';
-    document.getElementById('compile-status').style.opacity = '0.25';
     document.getElementById('execute-control').innerText = "Opreste Programul";
     if (!activeConsole)
         activeConsole = spawnConsole();
-    activeConsole.onProcessStart();
     // if(currentFileName.toLowerCase().includes("gui"))
     //   displaynoVNC(activeConsole.element)
     outputConsoles.push(activeConsole);
     // TODO Add separate input area for interactive console.
 }
 function spawnConsole() {
+    document.getElementById('compile-status').innerText = 'Communicating with server...';
+    document.getElementById('compile-status').style.opacity = '0.25';
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';
     return new Console();

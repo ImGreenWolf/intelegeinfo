@@ -113,9 +113,6 @@ int main()
                 })
     
                 compileProcess.on('close', (code)=> {
-                    if(code!=1)
-                        reject(code + "\n" + buffer)
-                    else
                         resolve(buffer)
                 })
             })

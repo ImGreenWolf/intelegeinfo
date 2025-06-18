@@ -4,7 +4,7 @@ declare class Console {
     event: Event;
     compileMessage: HTMLDivElement | undefined;
     constructor();
-    onCompileStart(): void;
+    onCompileStart(message?: string): void;
     onProcessStart(): void;
     callbackCreate(callerConsole: Console): void;
     sendCommand(cmd: string): void;

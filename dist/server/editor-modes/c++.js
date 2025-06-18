@@ -95,10 +95,7 @@ int main()
                 buffer += data.toString();
             });
             compileProcess.on('close', (code) => {
-                if (code != 1)
-                    reject(code + "\n" + buffer);
-                else
-                    resolve(buffer);
+                resolve(buffer);
             });
         });
     };

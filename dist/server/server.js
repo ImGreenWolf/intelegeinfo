@@ -151,7 +151,6 @@ app.get('/editor/worker-base.js', (req, res) => {
 });
 app.use(express_1.default.static("public"));
 app.use("/guides", guideCreator_1.default);
-const codeMap = new Map();
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id;
     const session = exports.sessionMap[sessionId];
@@ -321,13 +320,13 @@ var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app :
     res.setHeader('Location', 'https://intelegeinfo.go.ro' + req.url);
     res.end();
 });
+const codeMap = new Map();
 const unsecureServer = httpServer.listen(3000);
 exports.server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(3443);
 exports.server.on('listening', onServerStart);
-// httpsServer.listen(3443);
 // app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
-exports.clients = new Map();
+exports.clients = new Map(); // should be okay to keep local
 // const sessions: Map<UUID, UUID[]> = new Map();
 exports.runningProcesses = new Map();
 exports.sessionMap = new Map(); // SESSION ID / EDITOR OBJECT
@@ -516,6 +515,8 @@ exports.wss.addListener('connection', async (ws, req) => {
     let project;
     let processInputBuffer = '';
     let spawnPromise;
+    let shouldSave = false;
+    let shouldSaveTimeout;
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies);
     function getJWTCookie(cookies) {
@@ -1157,7 +1158,7 @@ bash `.trim().replaceAll('\n', "");
                         setTimeout(async () => {
                             // TODO Spawn GUI on client 
                             //   TODO maybe remove ignore self client to show when its ready and compiling
-                            replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawn' }, types_1.WebSocketMessageType.ExecuteStatus));
+                            replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'container-spawn' }, types_1.WebSocketMessageType.ExecuteStatus));
                             if (hasGUI && clientSession.displayServer == 0) // doesnt have display server
                              {
                                 clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
@@ -1491,23 +1492,23 @@ bash `.trim().replaceAll('\n', "");
                     case types_1.WebSocketMessageType.CodeChange:
                         if (!clientObj.canEdit)
                             break;
-                        let shouldSave = messageJSON.saveFile;
-                        let shouldSaveTimeout;
-                        if (shouldSave == false)
-                            shouldSaveTimeout = setTimeout(() => {
-                                shouldSave = true;
-                            }, 500);
                         const fileName = messageJSON.fileName;
+                        // if(shouldSave==false)
+                        // shouldSaveTimeout = setTimeout(() => {
+                        //     shouldSave=true;
+                        // }, 500);
                         // save code to file
-                        if (shouldSave) // TODO replace true with shouldSave 
-                         {
-                            shouldSave = false;
+                        // if(shouldSave) // TODO replace true with shouldSave 
+                        // {
+                        shouldSave = false;
+                        if (checkSyntaxTimeout)
+                            clearTimeout(checkSyntaxTimeout);
+                        checkSyntaxTimeout = setTimeout(() => {
                             //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
                             fs_1.default.writeFile(path_1.default.join(clientFilesPath, fileName), messageJSON.body, (err) => {
                                 if (err)
                                     console.log("Failed saving file! " + err);
-                                if (checkSyntaxTimeout)
-                                    clearTimeout(checkSyntaxTimeout);
+                                // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
                                 // checkSyntaxTimeout = setTimeout(() => {
                                 if (clientObj.openFile.editorMode.checkCodeSyntax)
                                     clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
@@ -1525,7 +1526,8 @@ bash `.trim().replaceAll('\n', "");
                                     });
                                 // }, 400);
                             });
-                        }
+                        }, 200);
+                        // }
                         clientObj.openFile.changeContent(messageJSON.body);
                         // replicate changes to others
                         replicateFunction((clientWs, localClientId) => {
