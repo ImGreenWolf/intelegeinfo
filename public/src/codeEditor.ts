@@ -14,9 +14,11 @@ import { UUID } from "crypto";
 
 import { createNode, Dock, EditorCanvas, Pixelated } from "./components";
 /*END IMPORTS*/
+const inIframe = window.self !== window.top;
 
-const ClientDock = new Dock()
-const DockElement = ClientDock.render()
+const ClientDock = inIframe ? undefined : new Dock()
+const DockElement = inIframe ? undefined : ClientDock!.render() 
+if(DockElement)
 document.getElementsByClassName('container')[0].appendChild(DockElement)
 // new Pixelated().render().then(node => document.body.appendChild(node))
 
@@ -102,7 +104,8 @@ class Console {
       outputConsoles[outputConsoles.length-1].callbackCreate(this)
 
     const thisConsole = document.createElement('div')
-    outputArea!.appendChild(thisConsole);
+  if(outputArea)
+    outputArea.appendChild(thisConsole);
     thisConsole.id =  'active-console'
     thisConsole.className = 'output-console-container'
     thisConsole.innerHTML = "<div class='program-output'></div>"
@@ -580,8 +583,22 @@ var Tooltip = ace.require("ace/tooltip").Tooltip;
 
 const sessionId = new URLSearchParams(window.location.search).get("session") 
 const saveId = new URLSearchParams(window.location.search).get("save");
-
-const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + (sessionId || saveId ? "?" : "") + (sessionId ? "session="+sessionId+"&" : "")  + (saveId ? "save="+saveId : "")
+const params: (boolean | string | undefined | null)[] = [sessionId, saveId, inIframe]
+const paramNames: (boolean | string | undefined | null)[] = ['session', 'save', 'embeded']
+let paramsURL = ''
+for(const param of params)
+{
+  const paramIndex = params.indexOf(param)
+  if(typeof param == 'string' || typeof param == 'boolean')
+  {
+    if(paramIndex!=0)
+      paramsURL+="&"
+    paramsURL += `${paramNames[paramIndex]}=${param}`
+  }
+    
+    
+}
+const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + (params.find(val => val!=undefined) && params.length !=0 ? "?" : "") + paramsURL
 // Initialize the manager
 const cursorManager = new MultiCursorManager(editor);
 
@@ -876,34 +893,7 @@ export function displayMessagePopup(message)
 // 
 
 
-// //TODO Add playback controls and rest of buttons or figure out a fix.
-// (document.getElementById('compile') as HTMLButtonElement).onclick = compileCode;
-// (document.getElementById('saveProject') as HTMLButtonElement).onclick = saveProject;
-// (document.getElementById('createFile') as HTMLButtonElement).onclick = createFileNamePrompt;
-// (document.getElementById('share') as HTMLButtonElement).onclick = copySessionLink;
-// (document.getElementById('join-session') as HTMLButtonElement).onclick = joinsession;
-// (document.getElementById('console') as HTMLTextAreaElement).oninput = onConsoleInput;
 
-// if((document.getElementById('listProjects') as HTMLButtonElement))
-//   (document.getElementById('listProjects') as HTMLButtonElement).onclick = listProjects;
-
-
-// (document.getElementById('compile') as HTMLButtonElement).onclick = compileCode;
-// (document.getElementById('execute-control') as HTMLButtonElement).onclick = () => {
-//   sendDebugCommand('execute');
-// }
-// (document.getElementById('run') as HTMLButtonElement).onclick = () => {
-//   sendDebugCommand('run');
-// }
-// (document.getElementById('next') as HTMLButtonElement).onclick = () => {
-//   sendDebugCommand('next');
-// }
-// (document.getElementById('quit') as HTMLButtonElement).onclick = () => {
-//   sendDebugCommand('quit');
-// }
-// (document.getElementById('playback') as HTMLButtonElement).onclick = () => {
-//   sendDebugCommand('playback');
-// }
 const namePrompt = document.getElementById("name-prompt");
 const consoleInput = document.getElementById("console") as HTMLTextAreaElement;
 
@@ -1138,7 +1128,7 @@ function getPixelFromRelativePosition(editor: Ace.Editor, relX, relY, eventJson)
 //  TODO Web RTC cursors for better performance
 function updateLocalCursor(ev, fromPress) {
   const deltaTime = 60;
-  if(fromPress && ev.pointerType != "touch") return; // i can remove this and add a few things to show when a user is clicking
+  // if(fromPress && ev.pointerType != "touch") return; // i can remove this and add a few things to show when a user is clicking
   if(ev.timeStamp-lastTime>deltaTime)
     {
      lastEv = ev;
@@ -1964,6 +1954,7 @@ export function joinsession()
                
               
         }).catch(err => {
+          if(!inIframe)
           window.alert(err)
           document.getElementById('code-error')!.innerText=err;
         })
@@ -2116,6 +2107,7 @@ export function copySessionLink() {
           const sessionCodeNode = document.createElement('h2');
           sessionCodeNode.innerText = data.code;
           sessionCodeNode.classList.add('session-code');
+          if(DockElement)
           DockElement.getElementsByTagName('div')[0].prepend(createNode('h2', {innerText: data.code, css: "font-size: 1em"}))
           document.getElementById('join-session')!.parentNode!.insertBefore(sessionCodeNode, document.getElementById('join-session'))
           // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
@@ -2179,6 +2171,7 @@ function openFile(fileName: string = "main.cpp") {
 
 if(document.cookie.includes('session=') && !window.location.search.includes('save') && !window.location.search.includes('session'))
 {
+  if(!inIframe)
   if(!window.confirm('You have a previous unsaved session, would you like to recover it?'))
       document.cookie = 'session=';
 
@@ -2325,7 +2318,7 @@ class TokenTooltip extends Tooltip {
   //writeOutput(sessionId || "No session ID found in URL.");
 
   window.onbeforeunload = (ev => {
-    
+    if(!inIframe)
     if(modifiedFile)
       ev.preventDefault()
   })
@@ -2400,35 +2393,20 @@ export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketM
 
 }
 
-
-
-
-
-outputArea!.onscroll = ev => {
+if(outputArea)
+outputArea.onscroll = ev => {
           const lastMessageGroup: HTMLDivElement = document.querySelector('[msg-id="'+ ((msgId!=-1) ? msgId.toString() : '0') +'"]')!;
           if(!lastMessageGroup || !outputArea)
             return
-          console.log(outputArea!.scrollTop + outputArea!.scrollHeight)
+          console.log(outputArea.scrollTop + outputArea.scrollHeight)
            console.log(lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight + " " + lastMessageGroup.scrollHeight )
-          const blockScroll =  outputArea!.scrollHeight - outputArea!.clientHeight - outputArea!.scrollTop > 1//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
+          const blockScroll =  outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
 
   if(!blockScroll)
         {
           document.getElementById('message-indicator')?.remove()
         }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
  editor.on("change", (delta: any) => {
@@ -2848,11 +2826,13 @@ ws.onmessage = (event) => {
        
     break;
     case WebSocketMessageType.Chat:
+      if(!outputArea)
+        break;
       if(eventJson.clientId)
       {
         
         const lastMessageGroup: HTMLDivElement = document.querySelector('[msg-id="'+ ((msgId!=-1) ? msgId.toString() : '0') +'"]')!;
-        const blockScroll = outputArea!.scrollHeight - outputArea!.clientHeight - outputArea!.scrollTop > 1 // lastMessageGroup? lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight > outputArea!.scrollTop : false//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea!.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
+        const blockScroll = outputArea.scrollHeight - outputArea.clientHeight - outputArea.scrollTop > 1 // lastMessageGroup? lastMessageGroup.offsetTop + lastMessageGroup.offsetHeight > outputArea.scrollTop : false//*eventJson.clientId !== wsClientId && */document.querySelector( `[msg-id="${msgId}"]`) ? (outputArea.scrollTop > document.querySelector( `[msgId="${msgId}"]`)!.clientHeight) : true
 
 
         // if(!document.querySelector('[msgId='+msgId+']')) return;
@@ -2869,7 +2849,7 @@ ws.onmessage = (event) => {
           else
           {
 
-            outputArea!.innerHTML += "<br>"
+            outputArea.innerHTML += "<br>"
             const messageIndicator = document.createElement('div')
             messageIndicator.id = 'message-indicator';
             messageIndicator.innerText = "1+"

@@ -134,10 +134,6 @@ footer
     
     /* gap: 1s00px; */
 
-    .openEditor
-    {
-
-    }
 }
 .display-shadow {
 
@@ -150,7 +146,7 @@ footer
     position: relative;
     z-index: 101;
     display: grid;
-    grid-template-rows: auto auto 1fr 15em;
+    grid-template-rows: auto auto 1fr 1fr 15em;
     grid-template-columns: 1fr 1fr;
     gap: 3em;
     column-gap: 10em;
@@ -534,6 +530,23 @@ h1
   }
 }
 
+#editor-demo
+{
+    display: flex;
+    flex-direction: column;
+   
+    grid-column: 1 / -1;
+
+
+    div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3em;
+        justify-content: space-around;
+    }
+}
+
+
 
 
  @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
@@ -552,6 +565,7 @@ h1
     }
     .display-shadow {
         column-gap: 10px;
+        grid-template-columns: 1fr;
     }
 
     #editor-tabs-container

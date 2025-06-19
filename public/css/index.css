@@ -106,6 +106,7 @@ footer nav ul :any-link {
   justify-items: center;
   /* gap: 1s00px; */
 }
+
 .display-shadow {
   box-shadow: 0px -50px 100px 100px rgb(11, 15, 20), 0px 20px 100px 100px rgb(11, 15, 20);
   background-color: rgb(11, 15, 20);
@@ -113,7 +114,7 @@ footer nav ul :any-link {
   position: relative;
   z-index: 101;
   display: grid;
-  grid-template-rows: auto auto 1fr 15em;
+  grid-template-rows: auto auto 1fr 1fr 15em;
   grid-template-columns: 1fr 1fr;
   gap: 3em;
   column-gap: 10em;
@@ -396,6 +397,18 @@ h1 {
     offset-distance: 100%;
   }
 }
+#editor-demo {
+  display: flex;
+  flex-direction: column;
+  grid-column: 1/-1;
+}
+#editor-demo div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3em;
+  justify-content: space-around;
+}
+
 @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
   html, * {
     font-size: 12px;
@@ -408,6 +421,7 @@ h1 {
   }
   .display-shadow {
     column-gap: 10px;
+    grid-template-columns: 1fr;
   }
   #editor-tabs-container {
     flex-shrink: 1;

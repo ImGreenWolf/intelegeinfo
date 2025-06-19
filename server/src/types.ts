@@ -94,8 +94,8 @@ export class EditorSession {
 
     hostClient: ClientObject
     isPublic: boolean
-    enableChat: boolean
-    editorPermission: EditorPermission
+    enableChat: boolean = true
+    editorPermission: EditorPermission = EditorPermission.Everyone
     joinCode: number;
     qrCode;
     
@@ -500,13 +500,13 @@ Tralalero Tralala`.split('\n')
         
     }
 
-    public openFile(clientObj: ClientObject, shared?)
+    public  async openFile(clientObj: ClientObject, shared?)
     {
         try{
-            return new Promise<void>((resolve, reject) => {
+           
                 fs.readFile(this.filePath, (err, data) => {
                 if (err) {
-                    reject("Error opening file: " + err.message);
+                    throw ("Error opening file: " + err.message);
                 } else {
                     // Send the file content to the client
                     const oldFileName = clientObj.openFileName
@@ -521,10 +521,10 @@ Tralalero Tralala`.split('\n')
                     console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
                     if(shared) shared.updateSession(this.session.sessionId, this.session)
                     clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: this.name, body: {command: FileManagementCommands.Open ,content: data.toString()}})); // Send the list of files to the client
-                    resolve()
+                    
                 }
         });
-            });
+            
        
         
         }

@@ -269,17 +269,10 @@ app.get('/editor', (req, res) => {
         const logged = userId!=undefined;
         if(logged) 
             {
-                    users.getUserData(userId as number).then((userdata) => {
+                users.getUserData(userId as number).then((userdata) => {
                     text = file.toString().replace('#{login}',` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`)
                     text = text.replace(/\*\{(.*)\}/g, '$1')
-                    
-                    
                     res.send(text.toString());
-                    
-                    // for(const match of text.matchAll(/\*{(.*)}/g))
-                    // {
-                    //     match[1]
-                    // }
                 })
             }
         else 
@@ -291,6 +284,17 @@ app.get('/editor', (req, res) => {
     })
 
 })
+
+
+// app.get('/problem', problemCreator);
+app.get('/embed/editor', (req, res) => {
+    fs.readFile(path.join(rootDirName, 'public', 'embedEditor.html'), (err,file) => {
+        res.send(file.toString());
+    })
+
+})
+
+
 
 app.use(cookieParser());
 
@@ -389,7 +393,7 @@ var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app :
 
     
 });
-
+let connectionPromise: Promise<void> | undefined;
 const codeMap: Map<number, UUID> = new Map()
 const unsecureServer = httpServer.listen(3000);
 export const server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(3443);
@@ -635,7 +639,7 @@ function compileFile(clientId, sessionId): Promise<any>
 
 
     
-
+const baseUrl = 'https://intelegeinfo.go.ro'
 wss.addListener('connection', async (ws: WebSocket, req) => {
     let sessionId: UUID;
     let clientId: UUID;
@@ -653,10 +657,11 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     let processInputBuffer = '';
     let spawnPromise;
 
-    let shouldSave:boolean = false;
+    let shouldSave:boolean = false; 
     let shouldSaveTimeout;
-
-
+    console.log(req.headers.referer)
+    const isEmbededEditor = new URL(req.url, baseUrl).searchParams.get('embeded') == 'true' 
+    const sameOrigin = req.headers.referer == 'intelegeinfo.go.ro' || !req.headers.referer
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies)
       function getJWTCookie(cookies) { return cookies
@@ -745,7 +750,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         
             // TODO Check if session exists, otherwise create a new one and make this client the host.
 
-        if(wssessionId) { 
+        connectionPromise = new Promise((resolve, reject) => {
+            if(wssessionId) { 
             //client connected to existing session
 
             const activeSession = sessionMap.has(wssessionId) || (isShared && shared.getSession(wssessionId));
@@ -755,7 +761,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 if(isShared) {if(shared.getSession(wssessionId)) clientSession = shared.getSession(wssessionId) as EditorSession;} // sessionMap.get(wssessionId ||  uuidv4() as UUID) || new EditorSession; 
                     if(!sessionMap.get(wssessionId as UUID)) return console.error(new Error("Didnt find session in sessionMap while joing session"))
                     else clientSession = sessionMap.get(wssessionId as UUID) as EditorSession;
-                if(!clientSession.isPublic) return ws.close(3000,"This session doesn't exist or isn't puiblic. <br> <a href='/editor'>Create a new session</a>")
+                if(!clientSession.isPublic && urlParams.has('isPublic')) return ws.close(3000,"This session doesn't exist or isn't puiblic. <br> <a href='/editor'>Create a new session</a>")
 
                 clientId = (getThisClientSession() || clientSession)?.spawnClient(ws,userData)
 
@@ -792,7 +798,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 shared.updateSession(sessionId, clientSession)
             } 
             
-            connectionReady(!isHost, req)
+            connectionReady(!isHost, req).finally(resolve)
         } else
         {
 
@@ -820,8 +826,12 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             clients.set(clientId, ws);
             
                 // will always be false
-            connectionReady(false, req)
+            connectionReady(false, req).finally(resolve)
         }
+
+            
+        })
+        
     }
     
    
@@ -998,7 +1008,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
             if(!clientSession) return;
     const session = clientSession.clients.size!=1 ? {isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit} : undefined;
-        const welcomeMessage =  !userLoggedIn ?
+        const welcomeMessage =  isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.go.ro'>Intelegeinfo.go.ro</a>" : !userLoggedIn ?
     `Bine ai venit pe Intelege Info!
         Scrie niste cod, apoi apasa compile si execute code, sau ruleaza in debugger.
         Invita-ti prietenii sa editeze codul impreuna cu tine in timp real apasand butonul share`
@@ -1023,6 +1033,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         else return {clientId: clientId, displayName: clientObj.displayName, color: clientObj.color}
     }
 
+    
    async function connectionReady(cooperator: boolean = false, req: IncomingMessage) 
    {
         const urlParams = new URL("ws:/intelegeinfo.go.ro:8080"+req.url).searchParams
@@ -1071,15 +1082,18 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 console.log('deteled existing session folde')
             }
 
-            fs.mkdir(clientFilesPath, { recursive: true }, (err) => {
+             fs.mkdir(clientFilesPath, { recursive: true }, async (err) => {
                 if (err) {
                     console.error("Error creating cache folder:", err);
                     return;
                 }
                 const defaultFileName = 'main.cpp'
                 console.log('created file')
-                new EditorFile(clientSession, defaultFileName, undefined, function () {
-                    this.openFile(clientObj, shared).then(() => onOpenFile(undefined, defaultFileName))                 
+                 new EditorFile(clientSession, defaultFileName, undefined, async function () {
+                    await this.openFile(clientObj, shared)
+                        onOpenFile(undefined, defaultFileName)
+                       
+                         
                 })
 
                 // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
@@ -1095,18 +1109,18 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             if(cacheFolderExists && !cooperator && clientSession.files.length==0)
                 clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
 
-            sendListFiles(clientFilesPath).then(()=>{
-                if(clientSession.files[0] == undefined)
-                {
-                    if(savedProject)
-                        openFile(fs.readdirSync(clientFilesPath)[0])
-                    else
-                    return console.log('no file found in files: ' + clientSession.files)
-                } else if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
-                    openFile(clientSession.files[0].name)
-                else 
-                    console.error("No default file was found!") // TODO replace with async function
-            })
+            await sendListFiles(clientFilesPath)
+            if(clientSession.files[0] == undefined)
+            {
+                if(savedProject)
+                    openFile(fs.readdirSync(clientFilesPath)[0])
+                else
+                return console.log('no file found in files: ', clientSession.files)
+            } else if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
+                openFile(clientSession.files[0].name)
+            else 
+                console.error("No default file was found!") // TODO replace with async function
+            
           
         }
            
@@ -1149,9 +1163,17 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
 
             
    }
-
-    //  while(ws.OPEN)   
+//  TODO Improve this  
    setTimeout(() => {
+        if(connectionPromise)
+        {
+
+            console.warn('Another user is already connecting')
+                    connectionPromise.finally(() => handshake(req))
+                    
+        }
+
+        else
        handshake(req)
    }, 100);
 //    handshake(req)
@@ -1304,8 +1326,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             }
 
         const oldFileName = clientObj.openFile ? clientObj.openFile.name : undefined;
-        file.openFile(clientObj, shared)
-        onOpenFile(oldFileName, fileName)
+        file.openFile(clientObj, shared).then(() => onOpenFile(oldFileName, fileName))
+        
     }
 
     function onOpenFile(oldFileName, fileName)

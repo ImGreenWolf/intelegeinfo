@@ -253,10 +253,6 @@ app.get('/editor', (req, res) => {
                 text = file.toString().replace('#{login}', ` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`);
                 text = text.replace(/\*\{(.*)\}/g, '$1');
                 res.send(text.toString());
-                // for(const match of text.matchAll(/\*{(.*)}/g))
-                // {
-                //     match[1]
-                // }
             });
         }
         else {
@@ -264,6 +260,12 @@ app.get('/editor', (req, res) => {
             text = text.replace(/\*\{(.*)\}/g, '');
             res.send(text.toString());
         }
+    });
+});
+// app.get('/problem', problemCreator);
+app.get('/embed/editor', (req, res) => {
+    fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'public', 'embedEditor.html'), (err, file) => {
+        res.send(file.toString());
     });
 });
 app.use((0, cookie_parser_1.default)());
@@ -320,6 +322,7 @@ var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app :
     res.setHeader('Location', 'https://intelegeinfo.go.ro' + req.url);
     res.end();
 });
+let connectionPromise;
 const codeMap = new Map();
 const unsecureServer = httpServer.listen(3000);
 exports.server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(3443);
@@ -499,6 +502,7 @@ function compileFile(clientId, sessionId) {
         }
     });
 }
+const baseUrl = 'https://intelegeinfo.go.ro';
 exports.wss.addListener('connection', async (ws, req) => {
     let sessionId;
     let clientId;
@@ -517,6 +521,9 @@ exports.wss.addListener('connection', async (ws, req) => {
     let spawnPromise;
     let shouldSave = false;
     let shouldSaveTimeout;
+    console.log(req.headers.referer);
+    const isEmbededEditor = new URL(req.url, baseUrl).searchParams.get('embeded') == 'true';
+    const sameOrigin = req.headers.referer == 'intelegeinfo.go.ro' || !req.headers.referer;
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies);
     function getJWTCookie(cookies) {
@@ -583,71 +590,73 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
             }, heartbeatTimeout);
             // TODO Check if session exists, otherwise create a new one and make this client the host.
-            if (wssessionId) {
-                //client connected to existing session
-                const activeSession = exports.sessionMap.has(wssessionId) || (isShared && shared.getSession(wssessionId));
-                if (activeSession) // = There is an active session, join it.
-                 {
-                    if (isShared) {
-                        if (shared.getSession(wssessionId))
-                            clientSession = shared.getSession(wssessionId);
-                    } // sessionMap.get(wssessionId ||  uuidv4() as UUID) || new EditorSession; 
-                    if (!exports.sessionMap.get(wssessionId))
-                        return console.error(new Error("Didnt find session in sessionMap while joing session"));
-                    else
-                        clientSession = exports.sessionMap.get(wssessionId);
-                    if (!clientSession.isPublic)
-                        return ws.close(3000, "This session doesn't exist or isn't puiblic. <br> <a href='/editor'>Create a new session</a>");
-                    clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, userData);
-                    clientObj = getThisClientSession().getClientObjectById(clientId);
-                    exports.clients.set(clientId, ws);
-                    isHost = false;
-                    // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
+            connectionPromise = new Promise((resolve, reject) => {
+                if (wssessionId) {
+                    //client connected to existing session
+                    const activeSession = exports.sessionMap.has(wssessionId) || (isShared && shared.getSession(wssessionId));
+                    if (activeSession) // = There is an active session, join it.
+                     {
+                        if (isShared) {
+                            if (shared.getSession(wssessionId))
+                                clientSession = shared.getSession(wssessionId);
+                        } // sessionMap.get(wssessionId ||  uuidv4() as UUID) || new EditorSession; 
+                        if (!exports.sessionMap.get(wssessionId))
+                            return console.error(new Error("Didnt find session in sessionMap while joing session"));
+                        else
+                            clientSession = exports.sessionMap.get(wssessionId);
+                        if (!clientSession.isPublic && urlParams.has('isPublic'))
+                            return ws.close(3000, "This session doesn't exist or isn't puiblic. <br> <a href='/editor'>Create a new session</a>");
+                        clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, userData);
+                        clientObj = getThisClientSession().getClientObjectById(clientId);
+                        exports.clients.set(clientId, ws);
+                        isHost = false;
+                        // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
+                    }
+                    else // there is no session, create it.
+                     {
+                        //getThisClientSession()?.clients.push(clientId); // add client to client list.
+                        clientSession = createThisClientSession(wssessionId);
+                        clientId = getThisClientSession()?.spawnClient(ws, userData);
+                        clientObj = getThisClientSession().getClientObjectById(clientId);
+                        exports.clients.set(clientId, ws); // TODO remove this map
+                        // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
+                        if (clientSession && !isShared) {
+                            exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
+                        }
+                        isHost = true;
+                    }
+                    sessionId = getThisClientSession().sessionId;
+                    clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
+                    // clients.set(clientId, ws);
+                    if (clientObj && isShared) {
+                        shared.getSession(sessionId)?.clients.set(clientId, clientObj);
+                        shared.addClient(clientId, sessionId);
+                        shared.updateSession(sessionId, clientSession);
+                    }
+                    connectionReady(!isHost, req).finally(resolve);
                 }
-                else // there is no session, create it.
-                 {
-                    //getThisClientSession()?.clients.push(clientId); // add client to client list.
-                    clientSession = createThisClientSession(wssessionId);
-                    clientId = getThisClientSession()?.spawnClient(ws, userData);
-                    clientObj = getThisClientSession().getClientObjectById(clientId);
-                    exports.clients.set(clientId, ws); // TODO remove this map
-                    // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
-                    if (clientSession && !isShared) {
+                else {
+                    //client connected to new SOLO session
+                    clientSession = createThisClientSession();
+                    if (getThisClientSession() != undefined) {
+                        sessionId = clientSession.sessionId;
+                        clientId = getThisClientSession()?.spawnClient(ws, userData);
+                        clientObj = getThisClientSession().getClientObjectById(clientId);
+                        clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
                         exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
                     }
-                    isHost = true;
+                    else
+                        console.error(new Error("Failed to create SOLO session"));
+                    if (clientObj && shared) {
+                        shared.getSession(sessionId)?.clients.set(clientId, clientObj);
+                        shared.addClient(clientId, sessionId);
+                        shared.updateSession(sessionId, clientSession);
+                    }
+                    exports.clients.set(clientId, ws);
+                    // will always be false
+                    connectionReady(false, req).finally(resolve);
                 }
-                sessionId = getThisClientSession().sessionId;
-                clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
-                // clients.set(clientId, ws);
-                if (clientObj && isShared) {
-                    shared.getSession(sessionId)?.clients.set(clientId, clientObj);
-                    shared.addClient(clientId, sessionId);
-                    shared.updateSession(sessionId, clientSession);
-                }
-                connectionReady(!isHost, req);
-            }
-            else {
-                //client connected to new SOLO session
-                clientSession = createThisClientSession();
-                if (getThisClientSession() != undefined) {
-                    sessionId = clientSession.sessionId;
-                    clientId = getThisClientSession()?.spawnClient(ws, userData);
-                    clientObj = getThisClientSession().getClientObjectById(clientId);
-                    clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
-                    exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
-                }
-                else
-                    console.error(new Error("Failed to create SOLO session"));
-                if (clientObj && shared) {
-                    shared.getSession(sessionId)?.clients.set(clientId, clientObj);
-                    shared.addClient(clientId, sessionId);
-                    shared.updateSession(sessionId, clientSession);
-                }
-                exports.clients.set(clientId, ws);
-                // will always be false
-                connectionReady(false, req);
-            }
+            });
         }
         // TODO add session map 
         // if (gdbProcess) {
@@ -795,7 +804,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             if (!clientSession)
                 return;
             const session = clientSession.clients.size != 1 ? { isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit } : undefined;
-            const welcomeMessage = !userLoggedIn ?
+            const welcomeMessage = isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.go.ro'>Intelegeinfo.go.ro</a>" : !userLoggedIn ?
                 `Bine ai venit pe Intelege Info!
         Scrie niste cod, apoi apasa compile si execute code, sau ruleaza in debugger.
         Invita-ti prietenii sa editeze codul impreuna cu tine in timp real apasand butonul share`
@@ -858,15 +867,16 @@ exports.wss.addListener('connection', async (ws, req) => {
                     fs_1.default.rmSync(clientFilesPath, { recursive: true, force: true });
                     console.log('deteled existing session folde');
                 }
-                fs_1.default.mkdir(clientFilesPath, { recursive: true }, (err) => {
+                fs_1.default.mkdir(clientFilesPath, { recursive: true }, async (err) => {
                     if (err) {
                         console.error("Error creating cache folder:", err);
                         return;
                     }
                     const defaultFileName = 'main.cpp';
                     console.log('created file');
-                    new types_2.EditorFile(clientSession, defaultFileName, undefined, function () {
-                        this.openFile(clientObj, shared).then(() => onOpenFile(undefined, defaultFileName));
+                    new types_2.EditorFile(clientSession, defaultFileName, undefined, async function () {
+                        await this.openFile(clientObj, shared);
+                        onOpenFile(undefined, defaultFileName);
                     });
                     // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
                     //     listFiles(clientFilesPath).then(() => {
@@ -879,18 +889,17 @@ exports.wss.addListener('connection', async (ws, req) => {
                 console.warn("Cache folder already exists for sessionId " + sessionId);
                 if (cacheFolderExists && !cooperator && clientSession.files.length == 0)
                     clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
-                sendListFiles(clientFilesPath).then(() => {
-                    if (clientSession.files[0] == undefined) {
-                        if (savedProject)
-                            openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
-                        else
-                            return console.log('no file found in files: ' + clientSession.files);
-                    }
-                    else if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
-                        openFile(clientSession.files[0].name);
+                await sendListFiles(clientFilesPath);
+                if (clientSession.files[0] == undefined) {
+                    if (savedProject)
+                        openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
                     else
-                        console.error("No default file was found!"); // TODO replace with async function
-                });
+                        return console.log('no file found in files: ', clientSession.files);
+                }
+                else if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
+                    openFile(clientSession.files[0].name);
+                else
+                    console.error("No default file was found!"); // TODO replace with async function
             }
             const session = sendConnectionMessage();
             if (getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
@@ -920,9 +929,14 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }, 100);
             }
         }
-        //  while(ws.OPEN)   
+        //  TODO Improve this  
         setTimeout(() => {
-            handshake(req);
+            if (connectionPromise) {
+                console.warn('Another user is already connecting');
+                connectionPromise.finally(() => handshake(req));
+            }
+            else
+                handshake(req);
         }, 100);
         //    handshake(req)
         // debug mode only for now
@@ -1041,8 +1055,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 return;
             }
             const oldFileName = clientObj.openFile ? clientObj.openFile.name : undefined;
-            file.openFile(clientObj, shared);
-            onOpenFile(oldFileName, fileName);
+            file.openFile(clientObj, shared).then(() => onOpenFile(oldFileName, fileName));
         }
         function onOpenFile(oldFileName, fileName) {
             replicateFunction((clientWs, id, thisClientObj) => {

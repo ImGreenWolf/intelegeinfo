@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc -b",
-    "run": "node",
+    "run": "npx pm2 start dist/server/server.js --watch dist/",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate"
   },
   "keywords": [],

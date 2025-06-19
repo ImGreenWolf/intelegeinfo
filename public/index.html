@@ -114,24 +114,33 @@ int main() {
 
             </div>
             <div class="display-shadow">
-                <h1 style="grid-column: 1 / -1;">Editeaza cod impreuna de profesori si prieteni!</h1>
+               
+                <h1 style="grid-column: 1 / -1;">Editeaza cod alaturi de profesori si prieteni!</h1>
                 
                 <div class="text">
                     <h1>Colaboreaza</h1>
-                    <p>Creaza programe alaturi de colegi sau profesori. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
+                    <p>Creaza programe alaturi de colegi sau profesori.</p>
                 </div>
                 <div class="text">
                     <h1>Editeaza</h1>
-                    <p>Editeaza-ti codul de oriunde, oricand, in C++ sau Python. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
+                    <p>Editeaza-ti codul de oriunde, oricand, in C++ sau Python.</p>
                 </div>
                 <div class="text">
                     <h1>Resurse</h1>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
+                    <p></p>
                 </div>
                 <div class="text">
                     <h1>Debugger</h1>
-                    <p>Editeaza-ti codul de oriunde, oricand, in C++ sau Python. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus nihil ut vitae atque sed quaerat incidunt sint possimus magni unde numquam maxime harum, optio nostrum et, quidem facilis, suscipit quibusdam.</p>
+                    <p>Intelege cum se executa programul tau.</p>
                 </div>
+                <div id="editor-demo">
+                    <h1>Incearca editorul</h1>
+                    <div>
+                    <iframe src="./embed/editor?session=13eb797d-3f4e-4253-bed4-788fe7078b6d&isPublic=true" seamless width="600" height="500"></iframe>
+                    <iframe src="./embed/editor?session=13eb797d-3f4e-4253-bed4-788fe7078b6d&isPublic=true" width="600" height="500"></iframe>
+                    </div>
+                </div>
+              
                 <div id="graphic" style="grid-column: 1/-1; align-self: flex-end;">
 
                 </div>
@@ -209,9 +218,8 @@ int main() {
     <script src="ace-builds-master/src-noconflict/ext-modelist.js"></script>
     <script type="module">
         
-            import { Pixelated, hasRequestAnimationFrame } from '/editor/components'
-            if(!hasRequestAnimationFrame)
-            return;
+            import { Pixelated } from '/editor/components'
+
             const elem = await new Pixelated()
             const args = {x:document.body.clientWidth, y:100, spacingX : 15, spacingY: 18, pointSize:1.4,
                  innerVignette:1,outerVignette:0.3, timeScale:0.08, hover : false, trasnlate : 1,
@@ -220,6 +228,54 @@ int main() {
 
             document.addEventListener('resize',  elem.render(args))
             document.getElementById('graphic').appendChild(node)
+
+
+            function bubbleIframeMouseMove(iframe){
+    // Save any previous onmousemove handler
+    var existingOnMouseMove = iframe.contentWindow.onmousemove;
+
+    // Attach a new onmousemove listener
+    iframe.contentWindow.onpointermove  = function(e){
+        // Fire any existing onmousemove listener 
+        if(existingOnMouseMove) existingOnMouseMove(e);
+
+        // Create a new event for the this window
+        var evt = document.createEvent("MouseEvents");
+
+        // We'll need this to offset the mouse move appropriately
+        var boundingClientRect = iframe.getBoundingClientRect();
+
+        // Initialize the event, copying exiting event values
+        // for the most part
+        evt.initMouseEvent( 
+            "pointerMove", 
+            true, // bubbles
+            false, // not cancelable 
+            window,
+            e.detail,
+            e.screenX,
+            e.screenY, 
+            e.clientX + boundingClientRect.left, 
+            e.clientY + boundingClientRect.top, 
+            e.ctrlKey, 
+            e.altKey,
+            e.shiftKey, 
+            e.metaKey,
+            e.button, 
+            null // no related element
+        );
+
+        // Dispatch the mousemove event on the iframe element
+        iframe.dispatchEvent(evt);
+    };
+}
+
+// Get the iframe element we want to track mouse movements on
+var iframes = document.getElementsByTagName('iframe');
+
+// Run it through the function to setup bubbling
+for(const myIframe of iframes)
+bubbleIframeMouseMove(myIframe);
         </script>
     <script>
         

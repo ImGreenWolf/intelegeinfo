@@ -1,0 +1,20 @@
+@use 'codeEditor';
+
+.container
+{
+    padding: 5px;
+    overflow: hidden;
+    grid-template-columns: minmax(20%, auto) 50px; 
+    grid-template-rows: 2fr 1fr;
+    grid-template-areas:
+        "main buttons"
+        "output buttons";
+}
+
+
+#output
+{
+    font-size: 0.75rem;
+    padding: 0 100px;
+    margin: 0 auto;
+}
