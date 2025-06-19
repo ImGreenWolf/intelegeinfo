@@ -24,7 +24,15 @@ router.get('/', async (req, res) => {
                 continue
             let files = ''
             for(const file of fs.readdirSync(path.join(mainDir, dir)))
-                files += `<a href='subiecte/file/${path.join(dir, file)}'>${file}</a><br>`
+                files += `<a href='subiecte/file/${path.join(dir, file)}'>${file.replace(`E_d_Informatica_${dir.match(dateReg)[0]}_sp_`, '')
+            .replace(`E_d_informatica_${dir.match(dateReg)[0]}_sp_`, '')
+            .replace('.pdf', '').replaceAll('_', ' ')
+            .replace('bar', 'barem').replace('var', 'varianta')
+            .replace('MI','Mate info').replace('SN','Stiinte ale naturii')
+            .replace('LRO','in Romana').replace('LMA','in Maghiara')
+            .replace('C', 'C++')
+        
+        }</a><br>`
             if(dir.match(dateReg)!=undefined)
             {
                 const title = dir.includes('model') ? "Modele" : dir.includes('ses_speciala') ? "Sesiune Speciala" : dir.includes('ses_iunie') || dir.includes('_iul') || dir.includes('_iun') ? "Sesiunea iunie-iulie" : ""
@@ -39,6 +47,20 @@ router.get('/', async (req, res) => {
     let html =
 
     `
+    <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Subiectele de informatica de la bacaulerautul de clasa a 12-a.">
+    <meta name="keywords" content="bac, bacalaureat, subiecte info, subiecte, mateinfo,2025,2026,2024,probleme,probleme info">
+    <meta name="author" content="Radu Bitere">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Subiecte Bac</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/guides.css">
+    
+    </head>
+
     <style>
     #grid
     {
@@ -47,12 +69,19 @@ router.get('/', async (req, res) => {
         flex-wrap: wrap;
         padding: 50px;
         justify-content: space-between;
-    }
+        font-family: Poppins;
 
+
+        :any-link
+        {
+        color: black;
+        }
+    }
     </style>
+
+
     <div id='grid'>
     ${grid}
-
     </div>
     
     

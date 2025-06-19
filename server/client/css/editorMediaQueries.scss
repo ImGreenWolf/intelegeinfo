@@ -1,0 +1,230 @@
+// /* media queries */
+
+
+// @media screen and (max-width: 1300px) {
+//     .container {
+//         grid-template-columns: 2fr 1fr;
+//         /* grid-template-rows: auto 500px 0.5fr 300px; */
+//         grid-template-areas:
+//             'header header'
+//             'main output'
+//             'buttons output'
+//             'sidebar sidebar';
+            
+//     }
+//     #vector-container
+//     {
+//         overflow: visible;
+//     }
+//     #output-container textarea
+//     {
+//         max-width: 60%;
+//         padding: 5px;
+//         font-size: 12px;
+//     }
+
+//     header #signup, header #login
+//     {
+//         padding: 5px 10px;
+//     }
+// }
+
+
+ @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
+    .container {
+        grid-template-columns: 1fr;
+        /* grid-template-rows: auto 600px 100px 600px 100px; */
+        grid-template-rows: auto 1fr auto 1fr auto;
+        grid-template-areas:
+            'header header'
+            'main main'
+            'buttons buttons'
+            'output output'
+            'sidebar sidebar';
+        font-size: 1rem;
+    }
+
+    .buttons
+    {
+
+        justify-content: space-around;
+        align-content: stretch;
+        align-items: stretch;
+        // gap: 2px;
+        flex-wrap: nowrap;
+        height: 50px;
+    }
+
+    .buttons .speed-control 
+    {
+        padding: 10px;
+        gap: 5px;
+
+    }
+
+    .buttons .speed-control button
+    {
+        width: 40px;
+        min-height: 40px;
+        font-size: 0.5rem;
+    }
+
+    header #signup, header #login
+    {
+        padding: 10px 20px;
+    }
+
+    .buttons button
+    {
+        width: 25%;
+    }
+    #vector-container
+    {
+        overflow: visible;
+    }
+    #output-container textarea
+    {
+        max-width: 100%;
+        padding: 20px;
+        // margin-bottom: 20px;
+        font-size: 18px;
+    }
+    header h1
+    {
+        font-size: 20px;
+        width: 50%;
+    }
+    header
+    {
+
+        nav 
+        {
+            width: 50vw;
+        }
+        ul 
+        {
+            justify-content: flex-end !important;
+
+        }
+    } 
+    html
+    {
+        font-size: 24px;
+    }
+
+    #join-session:not(.tight-screen)
+    {
+        display: none;
+    }
+
+    #mobile-dropdown
+    {
+        display: block;
+    }
+    
+    #editor,
+    button
+    {
+        font-size: 1rem;
+    }
+    #output
+    {
+        font-size: 0.75rem;
+    }
+    #console
+    {
+        font-size: 1rem;
+    }
+
+    .chat-content
+    {
+        font-size: 1rem;
+    }
+}
+/*
+
+/* landscape phone screen */
+
+@media screen and (((max-aspect-ratio: 2/1) or (orientation: landscape))  and  (max-height: 500px) ) {
+    .container {
+        // max-width: 100%;
+        grid-template-columns: auto minmax(20%, auto) auto 1fr;
+        grid-template-rows:  1fr auto;
+        grid-template-areas:
+            'header main buttons output'
+            'header sidebar sidebar sidebar';
+        gap: 10px;
+    }
+    .buttons
+    {
+        flex-direction: column;
+        width: 50px;
+        justify-content: flex-start;
+        align-content: stretch;
+        align-items: stretch;
+        // gap: 1px;
+        
+    }
+    #dock
+    {
+        min-width: 75px !important;
+        grid-area: header !important;
+        #content-container
+        {
+            width: 50px;
+
+            #button-container
+            {
+                flex-wrap: wrap;
+                min-height: 50px;
+                height: auto !important;
+            }
+        }
+        &>p
+        {
+            width: 50px;
+            font-size: 0.75rem !important;
+        }
+    }
+    .buttons button
+    {
+        width: 100%;
+        font-size: 0.75rem;
+        writing-mode: sideways-lr;
+    }
+    
+    #editor
+    {
+        font-size: 12px;
+        max-height: 500px;
+    }
+    #vector-container
+    {
+        overflow: visible;
+        
+    }
+    #output-container textarea
+    {
+        max-width: 30%;
+        padding: 5px;
+        font-size: 8px;
+    }
+    header
+    {
+        min-height: calc(100% + 2rem);
+        margin: -1rem 1rem -1rem -1rem;
+        
+    }
+    header .horizontal
+    {
+        display: none;
+    }
+    header .vertical
+    {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        
+    }
+    
+} 

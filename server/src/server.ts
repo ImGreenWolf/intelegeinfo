@@ -659,9 +659,9 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
 
     let shouldSave:boolean = false; 
     let shouldSaveTimeout;
-    console.log(req.headers.referer)
-    const isEmbededEditor = new URL(req.url, baseUrl).searchParams.get('embeded') == 'true' 
-    const sameOrigin = req.headers.referer == 'intelegeinfo.go.ro' || !req.headers.referer
+    console.log(req.headers)
+    const isEmbededEditor = new URL(req.url, baseUrl).searchParams.get('embeded') == 'true'  || req.headers['Sec-Fetch-User'] =='?1'
+    const sameOrigin = req.headers.referer == 'intelegeinfo.go.ro' || req.headers.referer
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies)
       function getJWTCookie(cookies) { return cookies
@@ -1070,16 +1070,14 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         //create cache folder for session if its a new one
         const cacheFolderExists = fs.existsSync(path.join(rootDirName, "cache", sessionId));
 
-                console.log(!cacheFolderExists)
-        console.log(!cooperator)
-        console.log(clientSession.files.length)
+    
         if((!cacheFolderExists && !cooperator && clientSession.files.length==0) )
         {
 
             if(clientSession.files.length==0 && cacheFolderExists && !cooperator && savedProject == undefined)
             {
                 fs.rmSync(clientFilesPath, {recursive: true, force: true})
-                console.log('deteled existing session folde')
+                console.log('deteled existing session folder')
             }
 
              fs.mkdir(clientFilesPath, { recursive: true }, async (err) => {
@@ -1088,7 +1086,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                     return;
                 }
                 const defaultFileName = 'main.cpp'
-                console.log('created file')
+
                  new EditorFile(clientSession, defaultFileName, undefined, async function () {
                     await this.openFile(clientObj, shared)
                         onOpenFile(undefined, defaultFileName)
@@ -1138,7 +1136,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 let displayNames:any[] = [];
                 getThisClientSession()?.clients.forEach((client, id) => {
                     if(client != clientObj)
-                    displayNames.push({displayName: client.displayName, fileName: client.openFile.name, clientId: client.clientId, color: client.color});
+                        displayNames.push({displayName: client.displayName, fileName: client.openFile.name, clientId: client.clientId, color: client.color});
                })
 
                replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN", ...clientInfo(clientObj), session});
@@ -1169,7 +1167,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         {
 
             console.warn('Another user is already connecting')
-                    connectionPromise.finally(() => handshake(req))
+                    connectionPromise.then(() => handshake(req))
                     
         }
 
@@ -1835,7 +1833,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                    
                     // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
                     replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
+                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
                     });
                     getThisClientSession().messageIndex++; // counter used to id and group console mssages.
                     // clients.forEach((client, id) => {

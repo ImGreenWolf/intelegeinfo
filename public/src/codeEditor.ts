@@ -543,6 +543,8 @@ let currentFileName: string;
 let wsClientId: UUID;
 let wsSessionId: UUID;
 const outputArea = document.getElementById("output");
+let testSubjectArea: HTMLIFrameElement;
+let activeClientArea = outputArea!
 const outputConsoles: Console[] = [];
 let activeConsole: Console|undefined;
 let contextMenu: HTMLDivElement;
@@ -589,7 +591,7 @@ let paramsURL = ''
 for(const param of params)
 {
   const paramIndex = params.indexOf(param)
-  if(typeof param == 'string' || typeof param == 'boolean')
+  if(typeof param == 'string' || typeof param == 'boolean' && param)
   {
     if(paramIndex!=0)
       paramsURL+="&"
@@ -598,6 +600,7 @@ for(const param of params)
     
     
 }
+
 const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + (params.find(val => val!=undefined) && params.length !=0 ? "?" : "") + paramsURL
 // Initialize the manager
 const cursorManager = new MultiCursorManager(editor);
@@ -969,7 +972,40 @@ export function redo() {
       editor.session.getUndoManager().undo(editor.session)
 }
 
+export function openTestSubjects(ev)
+{
+  if(activeClientArea == testSubjectArea)
+    return testSubjectArea.src = '/subiecte'
 
+  if(activeClientArea != testSubjectArea && activeClientArea)
+    activeClientArea.style.display = 'none';
+  // outputArea!.style.display = 'initial';
+    if(!testSubjectArea)
+    {
+
+        activeClientArea = testSubjectArea = createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})
+              document.getElementById('client-area-body')?.insertBefore(testSubjectArea,outputArea!)
+    }
+  else
+activeClientArea=testSubjectArea
+
+  
+  activeClientArea.style.display = '';
+
+
+}
+
+export function openChat(ev)
+{
+
+  if(activeClientArea)
+    activeClientArea.style.display = 'none';
+  if(outputArea)
+  activeClientArea = outputArea
+  activeClientArea.style.display = '';
+
+
+}
 
 editor.on('changeSession', (e) => 
 {
@@ -1076,7 +1112,7 @@ editor.on('changeSession', (e) =>
 
         const errorInfo = getErrorInfo(compileErrorObjs.get(marker.marker.id)!)
         const actionsContainer = createNode('div', {css: "display: flex; gap: 10px; margin: 5px;"})
-        actionsContainer.appendChild(createNode('a', {innerText: "Despre eroare", attributes: [{name: 'href', value: errorInfo.link}]}))
+        actionsContainer.appendChild(createNode('a', {innerText: "Despre eroare", attributes: [{name: 'href', value: "/guides/post/"+errorInfo.link}]}))
         actionsContainer.appendChild(createNode('a', {innerText: "Repara", css: "text-decoration: underline; cursor: pointer;", onclick(ev) {
             errorInfo.fixFunction()
         },}))
@@ -1791,7 +1827,7 @@ function clearGhostMarkers(editor: {
 
 function writeOutput(data: string, messageJson?: any,manuallScroll?, manualMessageType?: ConsoleMessageType) {
   if (outputArea) {
-    const msgText = data.replaceAll("<", "&lt").replaceAll(">", "&gt");
+    const msgText = data
 
     if (messageJson && messageJson.messageType) {
       const localmsgId = (messageJson.id as number) || -1;

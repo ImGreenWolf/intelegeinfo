@@ -1,5 +1,8 @@
-@use 'codeEditor';
 
+@use 'theme';
+@import 'codeEditor';
+
+    
 .container
 {
     padding: 5px;
@@ -12,9 +15,64 @@
 }
 
 
+
+
 #output
 {
     font-size: 0.75rem;
-    padding: 0 100px;
+    // padding: 0 100px;
     margin: 0 auto;
+
 }
+
+:any-link
+{
+    color: theme.$text-color;
+}
+
+@media screen and (max-aspect-ratio: 3 / 1) and (orientation: portrait) {
+    html {
+        font-size: 14px; 
+    }
+
+}
+
+@media screen and (((max-aspect-ratio: 2/1) or (orientation: landscape))  and  (max-height: 500px) ) {
+
+    .buttons
+    {
+        flex-direction: column;
+        width: 50px;
+        justify-content: flex-start;
+        align-content: stretch;
+        align-items: stretch;
+        // gap: 1px;
+        
+    }
+
+    .buttons button
+    {
+        width: 100%;
+        font-size: 0.75rem;
+        writing-mode: sideways-lr;
+    }
+    
+    #editor
+    {
+        font-size: 12px;
+        max-height: 500px;
+    }
+    #vector-container
+    {
+        overflow: visible;
+        
+    }
+    #output-container textarea
+    {
+        max-width: 30%;
+        padding: 5px;
+        font-size: 8px;
+    }
+
+    
+} 

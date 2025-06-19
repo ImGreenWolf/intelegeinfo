@@ -521,9 +521,9 @@ exports.wss.addListener('connection', async (ws, req) => {
     let spawnPromise;
     let shouldSave = false;
     let shouldSaveTimeout;
-    console.log(req.headers.referer);
-    const isEmbededEditor = new URL(req.url, baseUrl).searchParams.get('embeded') == 'true';
-    const sameOrigin = req.headers.referer == 'intelegeinfo.go.ro' || !req.headers.referer;
+    console.log(req.headers);
+    const isEmbededEditor = new URL(req.url, baseUrl).searchParams.get('embeded') == 'true' || req.headers['Sec-Fetch-User'] == '?1';
+    const sameOrigin = req.headers.referer == 'intelegeinfo.go.ro' || req.headers.referer;
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies);
     function getJWTCookie(cookies) {
@@ -859,13 +859,10 @@ exports.wss.addListener('connection', async (ws, req) => {
             // printClientConsoleInfo("connected to worker: " + process.pid)
             //create cache folder for session if its a new one
             const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
-            console.log(!cacheFolderExists);
-            console.log(!cooperator);
-            console.log(clientSession.files.length);
             if ((!cacheFolderExists && !cooperator && clientSession.files.length == 0)) {
                 if (clientSession.files.length == 0 && cacheFolderExists && !cooperator && savedProject == undefined) {
                     fs_1.default.rmSync(clientFilesPath, { recursive: true, force: true });
-                    console.log('deteled existing session folde');
+                    console.log('deteled existing session folder');
                 }
                 fs_1.default.mkdir(clientFilesPath, { recursive: true }, async (err) => {
                     if (err) {
@@ -873,7 +870,6 @@ exports.wss.addListener('connection', async (ws, req) => {
                         return;
                     }
                     const defaultFileName = 'main.cpp';
-                    console.log('created file');
                     new types_2.EditorFile(clientSession, defaultFileName, undefined, async function () {
                         await this.openFile(clientObj, shared);
                         onOpenFile(undefined, defaultFileName);
@@ -933,7 +929,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         setTimeout(() => {
             if (connectionPromise) {
                 console.warn('Another user is already connecting');
-                connectionPromise.finally(() => handshake(req));
+                connectionPromise.then(() => handshake(req));
             }
             else
                 handshake(req);
@@ -1486,7 +1482,7 @@ bash `.trim().replaceAll('\n', "");
                             break;
                         // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
                         replicateFunction((clientWs) => {
-                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: types_1.ConsoleMessageType.UserChat, body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client
+                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: types_1.ConsoleMessageType.UserChat, body: messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client
                         });
                         getThisClientSession().messageIndex++; // counter used to id and group console mssages.
                         // clients.forEach((client, id) => {

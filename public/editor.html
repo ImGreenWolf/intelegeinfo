@@ -9,6 +9,7 @@
     <title>Intelegeinfo | Editorul colaborativ de cod online creat de elevi, pentru elevi</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/codeEditor.css">
+    <link rel="stylesheet" href="/css/editorMediaQueries.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
@@ -150,12 +151,13 @@ int main() {
                 <div class="editor-tabs-container"> 
                 <!-- <h2>Output</h2> -->
                 <!-- <button onclick="this.parentElement.parentElement.style.display = 'None'">x</button> -->
-                 <span class="file-tab">Chat</span>
+                 <span class="file-tab" onclick="window.editor.openChat(this)">Chat</span>
+                 <span class="file-tab" onclick="window.editor.openTestSubjects(this)">Subiecte bac</span>
                  </div>
             </div>
-
-            <samp id="output"  translate="no">
-
+            <div id="client-area-body">
+                <samp id="output"  translate="no">
+            </div>
                 
             </samp>
             <div id="typingIndicatorContainer"></div>

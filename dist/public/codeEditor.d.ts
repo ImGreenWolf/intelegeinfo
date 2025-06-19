@@ -42,6 +42,8 @@ export declare function toggleCamera(): void;
 export declare function beautifyEditor(): void;
 export declare function undo(): void;
 export declare function redo(): void;
+export declare function openTestSubjects(ev: any): "/subiecte" | undefined;
+export declare function openChat(ev: any): void;
 export declare function createFileNamePrompt(): void;
 export declare function awaitFileNamePrompt(): Promise<string>;
 export declare function toggleConsoleDebugProgram(elem: HTMLElement): void;

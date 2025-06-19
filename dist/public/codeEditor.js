@@ -407,6 +407,8 @@ let currentFileName;
 let wsClientId;
 let wsSessionId;
 const outputArea = document.getElementById("output");
+let testSubjectArea;
+let activeClientArea = outputArea;
 const outputConsoles = [];
 let activeConsole;
 let contextMenu;
@@ -447,7 +449,7 @@ const paramNames = ['session', 'save', 'embeded'];
 let paramsURL = '';
 for (const param of params) {
     const paramIndex = params.indexOf(param);
-    if (typeof param == 'string' || typeof param == 'boolean') {
+    if (typeof param == 'string' || typeof param == 'boolean' && param) {
         if (paramIndex != 0)
             paramsURL += "&";
         paramsURL += `${paramNames[paramIndex]}=${param}`;
@@ -739,6 +741,27 @@ export function undo() {
 export function redo() {
     editor.session.getUndoManager().undo(editor.session);
 }
+export function openTestSubjects(ev) {
+    if (activeClientArea == testSubjectArea)
+        return testSubjectArea.src = '/subiecte';
+    if (activeClientArea != testSubjectArea && activeClientArea)
+        activeClientArea.style.display = 'none';
+    // outputArea!.style.display = 'initial';
+    if (!testSubjectArea) {
+        activeClientArea = testSubjectArea = createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] });
+        document.getElementById('client-area-body')?.insertBefore(testSubjectArea, outputArea);
+    }
+    else
+        activeClientArea = testSubjectArea;
+    activeClientArea.style.display = '';
+}
+export function openChat(ev) {
+    if (activeClientArea)
+        activeClientArea.style.display = 'none';
+    if (outputArea)
+        activeClientArea = outputArea;
+    activeClientArea.style.display = '';
+}
 editor.on('changeSession', (e) => {
     //TODO Check if i can imrove the changedCss check, so it
     // doesnt create new listener for each update.
@@ -830,7 +853,7 @@ editor.on('changeSession', (e) => {
                 errorDisplay.classList.add('compile-error-tooltip');
                 const errorInfo = getErrorInfo(compileErrorObjs.get(marker.marker.id));
                 const actionsContainer = createNode('div', { css: "display: flex; gap: 10px; margin: 5px;" });
-                actionsContainer.appendChild(createNode('a', { innerText: "Despre eroare", attributes: [{ name: 'href', value: errorInfo.link }] }));
+                actionsContainer.appendChild(createNode('a', { innerText: "Despre eroare", attributes: [{ name: 'href', value: "/guides/post/" + errorInfo.link }] }));
                 actionsContainer.appendChild(createNode('a', { innerText: "Repara", css: "text-decoration: underline; cursor: pointer;", onclick(ev) {
                         errorInfo.fixFunction();
                     }, }));
@@ -1357,7 +1380,7 @@ function clearGhostMarkers(editor) {
 }
 function writeOutput(data, messageJson, manuallScroll, manualMessageType) {
     if (outputArea) {
-        const msgText = data.replaceAll("<", "&lt").replaceAll(">", "&gt");
+        const msgText = data;
         if (messageJson && messageJson.messageType) {
             const localmsgId = messageJson.id || -1;
             msgId = localmsgId;
