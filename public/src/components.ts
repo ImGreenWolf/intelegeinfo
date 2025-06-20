@@ -100,21 +100,21 @@ export class Dock extends IElement {
             font-family: Poppins;
             font-size: 0.75em;
             box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .dock-button img
         {
             width: 25px;
             height: 25px;
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
         }
         .dock-button p 
         {
             display: block;
-            position: relative;
+            position: absolute;
             transition-duration: 0.3s;
-            top: -50px;
+            top: 0;
             opacity: 0;
             text-align: center;
             z-index: 0;
@@ -132,7 +132,7 @@ export class Dock extends IElement {
         .dock-button:hover p
         {
 
-            top: -80px;
+            top: -50px;
             opacity: 1;
         }
 
@@ -268,7 +268,7 @@ export class Pixelated extends IElement {
                         {
                             const randOffset = (Math.random()-0.5)*2 * randomness
                             const height = perlin.turbulence(x+0.5,y+0.5,z, 64)
-                            const dist =   Math.max(Math.max(0, Math.min(1,Math.sqrt(Math.pow(hx/2-x,2) + Math.pow(hy/2-y,2)) / hx)) * 10,innerVignette)
+                            const dist =    Math.max(Math.max(0, Math.min(1,Math.sqrt(Math.pow(hx/2-x,2) + Math.pow(hy/2-y,2)) / hx)) * 10,innerVignette)
                             const outdist = Math.max(1- Math.pow(Math.max(0, Math.min(1,Math.sqrt(Math.pow(hx/2-x,2)/hx/500*2+ Math.pow(hy/2-y,2)/hy/300*2))),2),outerVignette)
                             const alphadist = 1 - Math.max(0, Math.min(1,Math.sqrt(Math.pow(hx/2-x,2)/hx/100 + Math.pow(hy/2-y,2))/hy/100))
                             const value = Math.round(Math.abs(Math.pow((Math.max(-1,Math.min(1,height))+1-dist/5),power))*200*dist*outdist+offset) //* Math.min(1,z/10)*(y-y*(1-perspective))/hy
@@ -277,7 +277,7 @@ export class Pixelated extends IElement {
                             // perlin.getDirection(x,y,z)
                             if(value>20)
                             {   
-                                const cx = x+Math.sin(angle+ randomness * value/255)*value/50 
+                                const cx = x+Math.sin(angle + randomness * value/255)*value/50 
                                 const cy = y+Math.cos(angle + randomness* value/255)*value/50
                                 const tx = cx*trasnlate
                                 const ty = cy*trasnlate

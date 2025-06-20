@@ -72,21 +72,21 @@ export class Dock extends IElement {
             font-family: Poppins;
             font-size: 0.75em;
             box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .dock-button img
         {
             width: 25px;
             height: 25px;
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
         }
         .dock-button p 
         {
             display: block;
-            position: relative;
+            position: absolute;
             transition-duration: 0.3s;
-            top: -50px;
+            top: 0;
             opacity: 0;
             text-align: center;
             z-index: 0;
@@ -104,7 +104,7 @@ export class Dock extends IElement {
         .dock-button:hover p
         {
 
-            top: -80px;
+            top: -50px;
             opacity: 1;
         }
 

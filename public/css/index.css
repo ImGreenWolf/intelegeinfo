@@ -7,6 +7,8 @@ body {
   grid-auto-flow: row;
   justify-items: center;
   overflow: hidden;
+  top: 10em;
+  position: relative;
 }
 
 #fill {
@@ -41,25 +43,42 @@ body {
 }
 
 header2 {
-  min-width: 50%;
-  backdrop-filter: blur(1px);
   display: grid;
   align-self: center;
-  grid-template-columns: 10em 1fr;
+  grid-template-columns: 30em 1fr;
   grid-template-rows: 2lh;
   align-items: center;
-  justify-content: center;
-  background-image: linear-gradient(30deg, rgba(46, 46, 46, 0.29), rgba(34, 34, 34, 0.301), rgba(22, 22, 22, 0.288));
-  padding: 0.5em 2em;
-  margin-top: 20px;
-  border-radius: 1lh;
-  border: 2px solid rgba(190, 190, 190, 0.1);
+  justify-content: space-around;
+  justify-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1em 2em;
+  z-index: 200;
+  box-shadow: 0 5px 20px 10px rgba(0, 0, 0, 0.3);
+  background-image: linear-gradient(30deg, rgba(28, 35, 58, 0.29), rgba(39, 49, 77, 0.301), rgba(23, 21, 59, 0.288)), linear-gradient(rgba(0, 0, 0, 0.692), rgba(0, 0, 0, 0.507));
+}
+header2::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  mask: linear-gradient(black, rgba(0, 0, 0, 0.4));
+  backdrop-filter: blur(36px);
+  z-index: -1;
+  display: block;
 }
 header2 nav {
+  border-radius: 1lh;
+  backdrop-filter: blur(5px);
+  box-shadow: 2px 5px 10px 5px rgba(0, 0, 0, 0.3), inset 10px 10px 20px -10px rgba(63, 86, 105, 0.247);
+  background-color: rgba(16, 21, 27, 0.363);
+  padding: 0.75em;
   justify-self: center;
-  width: 50%;
+  width: 50em;
   position: relative;
-  left: -5em;
+  left: -15em;
 }
 header2 nav ul {
   margin: 0;
@@ -94,6 +113,9 @@ footer nav {
   justify-self: center;
   width: 50%;
   position: relative;
+  display: flex;
+  justify-content: space-around;
+  margin: auto;
   left: -5em;
 }
 footer nav ul {
@@ -101,6 +123,9 @@ footer nav ul {
   padding: 0;
   display: flex;
   justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   width: 100%;
 }
 footer nav ul :any-link {
@@ -394,6 +419,16 @@ a.button:hover {
   background-color: rgb(0, 110, 255);
 }
 
+#graphic {
+  position: absolute;
+  right: 30%;
+  height: 60%;
+  width: 300px;
+  top: 100px;
+  mask-image: linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0), rgba(0, 0, 0, 0));
+  z-index: -1;
+}
+
 h1 {
   text-shadow: 1px 1px 3px rgb(255, 255, 255);
 }
@@ -469,6 +504,12 @@ h1 {
 }
 
 @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
+  #graphic {
+    width: 100px;
+    left: 20%;
+    top: 120px;
+    height: 200px;
+  }
   html, * {
     font-size: 12px;
   }
@@ -476,26 +517,29 @@ h1 {
     font-size: 10dvw;
   }
   #editor-container {
-    width: 300px;
+    max-width: 90vw;
   }
   .display-shadow {
     column-gap: 10px;
     grid-template-columns: 1fr;
+    padding: 0;
   }
   #editor-tabs-container {
     flex-shrink: 1;
     overflow-x: auto !important;
     width: 100px;
   }
-  #mockup-container {
+  .display-shadow #mockup-container {
     grid-column: 1 !important;
     grid-row: 2/-1 !important;
     height: 250px !important;
+    width: 300px;
+    margin: 50px auto;
   }
-  #mockup-container img {
+  .display-shadow #mockup-container img {
     height: 300px !important;
   }
-  #mockup-container img#desktop {
+  .display-shadow #mockup-container img#desktop {
     height: 150px !important;
   }
   .text {

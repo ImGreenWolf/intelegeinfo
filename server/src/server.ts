@@ -798,7 +798,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 shared.updateSession(sessionId, clientSession)
             } 
             
-            connectionReady(!isHost, req).finally(resolve)
+            connectionReady(!isHost, req).then(resolve)
+            return;
         } else
         {
 
@@ -826,7 +827,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             clients.set(clientId, ws);
             
                 // will always be false
-            connectionReady(false, req).finally(resolve)
+            connectionReady(false, req).then(resolve)
+
         }
 
             
@@ -998,8 +1000,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                             // } return console.error("Client not found " + client);
                             clientSocket?.send(JSON.stringify(response));
                         }
-                
-            // ;
+   
                 });
    }
 
@@ -1034,8 +1035,9 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     }
 
     
-   async function connectionReady(cooperator: boolean = false, req: IncomingMessage) 
+async function connectionReady(cooperator: boolean = false, req: IncomingMessage) 
    {
+    await new Promise<void>(async (resolve) => {
         const urlParams = new URL("ws:/intelegeinfo.go.ro:8080"+req.url).searchParams
         let defaultText: string;
         const clientFilesPath = clientSession.getClientFilesPath();
@@ -1051,7 +1053,6 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 fs.cpSync(path.join(rootDirName,"saved", savedProject.fileUUID), path.join(rootDirName, "cache", sessionId), {recursive: true})
                 project = savedProject;
                 clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
-                console.log(clientSession.files)
                 // fs.renameSync()
                 // defaultText =  
                 // console.log(defaultText)
@@ -1080,19 +1081,23 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 console.log('deteled existing session folder')
             }
 
-             fs.mkdir(clientFilesPath, { recursive: true }, async (err) => {
-                if (err) {
-                    console.error("Error creating cache folder:", err);
-                    return;
-                }
-                const defaultFileName = 'main.cpp'
+            const err = undefined  
+            fs.mkdirSync(clientFilesPath, { recursive: true })
+            if (err) {
+                console.error("Error creating cache folder:", err);
+                return;
+            }
+            const defaultFileName = 'main.cpp'
 
-                 new EditorFile(clientSession, defaultFileName, undefined, async function () {
-                    await this.openFile(clientObj, shared)
+                new EditorFile(clientSession, defaultFileName, undefined, function () {
+                    this.openFile(clientObj, shared).then(() => {
                         onOpenFile(undefined, defaultFileName)
-                       
-                         
-                })
+                        console.log('Opened file')
+                        resolve()
+                    })
+                    
+                        
+            })
 
                 // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
                 //     listFiles(clientFilesPath).then(() => {
@@ -1100,7 +1105,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
 
                 //     })
                 //     });
-            })
+            
         } else 
         {
             console.warn("Cache folder already exists for sessionId " + sessionId);
@@ -1119,9 +1124,10 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             else 
                 console.error("No default file was found!") // TODO replace with async function
             
+                resolve()
           
         }
-           
+           })
            
             const session = sendConnectionMessage()
 
@@ -1135,6 +1141,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 
                 let displayNames:any[] = [];
                 getThisClientSession()?.clients.forEach((client, id) => {
+                    if(!client.openFile)
+                        throw 'invalid file'
                     if(client != clientObj)
                         displayNames.push({displayName: client.displayName, fileName: client.openFile.name, clientId: client.clientId, color: client.color});
                })
@@ -1159,7 +1167,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                
             }
 
-            
+        
    }
 //  TODO Improve this  
    setTimeout(() => {
@@ -1167,7 +1175,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         {
 
             console.warn('Another user is already connecting')
-                    connectionPromise.then(() => handshake(req))
+            connectionPromise.then(() => handshake(req))
                     
         }
 
@@ -1846,7 +1854,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 case WebSocketMessageType.MouseUpdate:
                     if(clientObj.openFile)
                         replicateFunction((thisClientWs, thisClientId, thisClientObj) => {
-                            if(!thisClientObj.openFile.name)
+                            if(!thisClientObj.openFile)
                                 return;
                             if(clientSession.getClientObjectById(thisClientId).canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
                                 thisClientWs.send(JSON.stringify({ ...messageJSON, ...clientInfo(clientObj)})) // TODO Sanitize this

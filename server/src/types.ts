@@ -500,32 +500,29 @@ Tralalero Tralala`.split('\n')
         
     }
 
-    public  async openFile(clientObj: ClientObject, shared?)
+    public async openFile(clientObj: ClientObject, shared?)
     {
         try{
            
-                fs.readFile(this.filePath, (err, data) => {
-                if (err) {
-                    throw ("Error opening file: " + err.message);
-                } else {
-                    // Send the file content to the client
-                    const oldFileName = clientObj.openFileName
-                    this.session.replicateFunction((cws, id, obj) => {
-                        if((obj as ClientObject).openFileName == oldFileName)
-                            cws.send(JSON.stringify({type: WebSocketMessageType.CodeSelection, body: null}))
-                    }, clientObj)
-                    clientObj.editorMode = getEditorMode(this.name)
-                    clientObj.openFileName = this.name
-                    clientObj.openFile = this
-                    this.session.clientsActiveFile.set(clientObj.clientId, this.name)
-                    console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
-                    if(shared) shared.updateSession(this.session.sessionId, this.session)
-                    clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: this.name, body: {command: FileManagementCommands.Open ,content: data.toString()}})); // Send the list of files to the client
-                    
-                }
-        });
-            
-       
+                const data = fs.readFileSync(this.filePath)
+
+                clientObj.openFile = this
+                // Send the file content to the client
+                const oldFileName = clientObj.openFileName
+                this.session.replicateFunction((cws, id, obj) => {
+                    if((obj as ClientObject).openFileName == oldFileName)
+                        cws.send(JSON.stringify({type: WebSocketMessageType.CodeSelection, body: null}))
+                }, clientObj)
+                clientObj.editorMode = getEditorMode(this.name)
+                clientObj.openFileName = this.name
+                
+                this.session.clientsActiveFile.set(clientObj.clientId, this.name)
+                console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
+                if(shared) shared.updateSession(this.session.sessionId, this.session)
+                clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: this.name, body: {command: FileManagementCommands.Open ,content: data.toString()}})); // Send the list of files to the client
+                
+                
+
         
         }
         catch (err)

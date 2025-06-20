@@ -633,7 +633,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                         shared.addClient(clientId, sessionId);
                         shared.updateSession(sessionId, clientSession);
                     }
-                    connectionReady(!isHost, req).finally(resolve);
+                    connectionReady(!isHost, req).then(resolve);
+                    return;
                 }
                 else {
                     //client connected to new SOLO session
@@ -654,7 +655,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     }
                     exports.clients.set(clientId, ws);
                     // will always be false
-                    connectionReady(false, req).finally(resolve);
+                    connectionReady(false, req).then(resolve);
                 }
             });
         }
@@ -796,7 +797,6 @@ exports.wss.addListener('connection', async (ws, req) => {
                     // } return console.error("Client not found " + client);
                     clientSocket?.send(JSON.stringify(response));
                 }
-                // ;
             });
         }
         function sendConnectionMessage() {
@@ -828,75 +828,80 @@ exports.wss.addListener('connection', async (ws, req) => {
                 return { clientId: clientId, displayName: clientObj.displayName, color: clientObj.color };
         }
         async function connectionReady(cooperator = false, req) {
-            const urlParams = new URL("ws:/intelegeinfo.go.ro:8080" + req.url).searchParams;
-            let defaultText;
-            const clientFilesPath = clientSession.getClientFilesPath();
-            let savedProject;
-            if (urlParams.has("save")) {
-                try {
-                    if (!getJWTCookie(req.headers.cookie))
-                        throw 'not logged in';
-                    const id = jsonwebtoken_1.default.verify(getJWTCookie(req.headers.cookie), privateKeyPem);
-                    savedProject = (await loadProject(urlParams.get('save')));
-                    if (savedProject.userId !== parseInt(id.sub))
-                        throw 'not authorized';
-                    fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
-                    project = savedProject;
-                    clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
-                    console.log(clientSession.files);
-                    // fs.renameSync()
-                    // defaultText =  
-                    // console.log(defaultText)
+            await new Promise(async (resolve) => {
+                const urlParams = new URL("ws:/intelegeinfo.go.ro:8080" + req.url).searchParams;
+                let defaultText;
+                const clientFilesPath = clientSession.getClientFilesPath();
+                let savedProject;
+                if (urlParams.has("save")) {
+                    try {
+                        if (!getJWTCookie(req.headers.cookie))
+                            throw 'not logged in';
+                        const id = jsonwebtoken_1.default.verify(getJWTCookie(req.headers.cookie), privateKeyPem);
+                        savedProject = (await loadProject(urlParams.get('save')));
+                        if (savedProject.userId !== parseInt(id.sub))
+                            throw 'not authorized';
+                        fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
+                        project = savedProject;
+                        clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
+                        // fs.renameSync()
+                        // defaultText =  
+                        // console.log(defaultText)
+                    }
+                    catch (err) {
+                        printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId));
+                        defaultText = fs_1.default.readFileSync("user_code.cpp").toString();
+                    }
                 }
-                catch (err) {
-                    printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId));
+                else
                     defaultText = fs_1.default.readFileSync("user_code.cpp").toString();
-                }
-            }
-            else
-                defaultText = fs_1.default.readFileSync("user_code.cpp").toString();
-            console.log(clientSession.files);
-            // printClientConsoleInfo("connected to worker: " + process.pid)
-            //create cache folder for session if its a new one
-            const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
-            if ((!cacheFolderExists && !cooperator && clientSession.files.length == 0)) {
-                if (clientSession.files.length == 0 && cacheFolderExists && !cooperator && savedProject == undefined) {
-                    fs_1.default.rmSync(clientFilesPath, { recursive: true, force: true });
-                    console.log('deteled existing session folder');
-                }
-                fs_1.default.mkdir(clientFilesPath, { recursive: true }, async (err) => {
+                console.log(clientSession.files);
+                // printClientConsoleInfo("connected to worker: " + process.pid)
+                //create cache folder for session if its a new one
+                const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
+                if ((!cacheFolderExists && !cooperator && clientSession.files.length == 0)) {
+                    if (clientSession.files.length == 0 && cacheFolderExists && !cooperator && savedProject == undefined) {
+                        fs_1.default.rmSync(clientFilesPath, { recursive: true, force: true });
+                        console.log('deteled existing session folder');
+                    }
+                    const err = undefined;
+                    fs_1.default.mkdirSync(clientFilesPath, { recursive: true });
                     if (err) {
                         console.error("Error creating cache folder:", err);
                         return;
                     }
                     const defaultFileName = 'main.cpp';
-                    new types_2.EditorFile(clientSession, defaultFileName, undefined, async function () {
-                        await this.openFile(clientObj, shared);
-                        onOpenFile(undefined, defaultFileName);
+                    new types_2.EditorFile(clientSession, defaultFileName, undefined, function () {
+                        this.openFile(clientObj, shared).then(() => {
+                            onOpenFile(undefined, defaultFileName);
+                            console.log('Opened file');
+                            resolve();
+                        });
                     });
                     // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
                     //     listFiles(clientFilesPath).then(() => {
                     //         openFile("main.cpp")
                     //     })
                     //     });
-                });
-            }
-            else {
-                console.warn("Cache folder already exists for sessionId " + sessionId);
-                if (cacheFolderExists && !cooperator && clientSession.files.length == 0)
-                    clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
-                await sendListFiles(clientFilesPath);
-                if (clientSession.files[0] == undefined) {
-                    if (savedProject)
-                        openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
-                    else
-                        return console.log('no file found in files: ', clientSession.files);
                 }
-                else if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
-                    openFile(clientSession.files[0].name);
-                else
-                    console.error("No default file was found!"); // TODO replace with async function
-            }
+                else {
+                    console.warn("Cache folder already exists for sessionId " + sessionId);
+                    if (cacheFolderExists && !cooperator && clientSession.files.length == 0)
+                        clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
+                    await sendListFiles(clientFilesPath);
+                    if (clientSession.files[0] == undefined) {
+                        if (savedProject)
+                            openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
+                        else
+                            return console.log('no file found in files: ', clientSession.files);
+                    }
+                    else if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
+                        openFile(clientSession.files[0].name);
+                    else
+                        console.error("No default file was found!"); // TODO replace with async function
+                    resolve();
+                }
+            });
             const session = sendConnectionMessage();
             if (getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
              {
@@ -906,6 +911,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }, clientObj);
                 let displayNames = [];
                 getThisClientSession()?.clients.forEach((client, id) => {
+                    if (!client.openFile)
+                        throw 'invalid file';
                     if (client != clientObj)
                         displayNames.push({ displayName: client.displayName, fileName: client.openFile.name, clientId: client.clientId, color: client.color });
                 });
@@ -1492,7 +1499,7 @@ bash `.trim().replaceAll('\n', "");
                     case types_1.WebSocketMessageType.MouseUpdate:
                         if (clientObj.openFile)
                             replicateFunction((thisClientWs, thisClientId, thisClientObj) => {
-                                if (!thisClientObj.openFile.name)
+                                if (!thisClientObj.openFile)
                                     return;
                                 if (clientSession.getClientObjectById(thisClientId).canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
                                     thisClientWs.send(JSON.stringify({ ...messageJSON, ...clientInfo(clientObj) })); // TODO Sanitize this
