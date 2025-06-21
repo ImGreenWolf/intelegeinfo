@@ -1578,6 +1578,15 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
         // });
         // gdbBuffer = "";
+         if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
+        {
+            
+            onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>")
+            closeProcess(program)
+            resolve()
+       
+          
+         }
         replicateFunction((clientWs) => {
         clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
     });

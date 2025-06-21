@@ -1251,6 +1251,12 @@ bash `.trim().replaceAll('\n', "");
                     //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                     // });
                     // gdbBuffer = "";
+                    if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
+                     {
+                        onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>");
+                        closeProcess(program);
+                        resolve();
+                    }
                     replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
                     });
