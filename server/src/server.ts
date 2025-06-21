@@ -1519,7 +1519,11 @@ async function onClosedProgram(code,time, message, error?)
             clientSession.program.stdout.removeAllListeners()
             clientSession.program.stderr.removeAllListeners()
         }
+        replicateFunction((clientWs) => {
+            clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body: message, clientId: clientId}));  // Send GDB output to the client
+        });
 
+        
         if(code !=0)
             return;
         if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
@@ -1532,10 +1536,7 @@ async function onClosedProgram(code,time, message, error?)
         })
         }
 
-        replicateFunction((clientWs) => {
-            clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body: message, clientId: clientId}));  // Send GDB output to the client
-        });
-
+        
     }
 async function readStdio(program, messageJSON, res: typeof clientSession.sessionContainer)
     {

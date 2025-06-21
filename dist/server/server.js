@@ -1201,6 +1201,9 @@ bash `.trim().replaceAll('\n', "");
                 clientSession.program.stdout.removeAllListeners();
                 clientSession.program.stderr.removeAllListeners();
             }
+            replicateFunction((clientWs) => {
+                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
+            });
             if (code != 0)
                 return;
             if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
@@ -1212,9 +1215,6 @@ bash `.trim().replaceAll('\n', "");
                     });
                 });
             }
-            replicateFunction((clientWs) => {
-                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
-            });
         }
         async function readStdio(program, messageJSON, res) {
             return new Promise((resolve, reject) => {
