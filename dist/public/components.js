@@ -496,7 +496,11 @@ export class LoadingThrobber extends IElement {
             this.newtonThrober,
             this.queueThrober
         ];
-        throbbers[Math.round(Math.random()) * throbbers.length](throbber);
+        const index = Math.max(0, Math.min(1, Math.round(Math.random()) * throbbers.length));
+        if (throbbers[index] != undefined)
+            throbbers[index](throbber);
+        else
+            throw 'invalid function';
         return throbber;
     }
     queueThrober(throbber) {
