@@ -496,7 +496,7 @@ export class LoadingThrobber extends IElement {
             this.newtonThrober,
             this.queueThrober
         ];
-        throbbers[Math.round(Math.random() * throbbers.length)](throbber);
+        throbbers[Math.round(Math.random()) * throbbers.length](throbber);
         return throbber;
     }
     queueThrober(throbber) {

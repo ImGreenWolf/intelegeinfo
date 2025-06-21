@@ -148,6 +148,7 @@ header
     backdrop-filter: blur(5px);
     text-align: center;
     animation: fade-in 0.4s;
+    pointer-events: none;
     & p
     {
         width: 50%;
@@ -1879,7 +1880,10 @@ form label
     }
 }
 
-
+#client-area-body
+{
+    overflow: auto;
+}
 
 .throbber-container
 {
