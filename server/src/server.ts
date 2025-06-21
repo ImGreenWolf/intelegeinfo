@@ -1514,6 +1514,14 @@ async function onClosedProgram(code,time, message, error?)
         let notes: string = "";
         processInputBuffer = '';
         // const time = 
+        if(clientSession.program)
+        {
+            clientSession.program.stdout.removeAllListeners()
+            clientSession.program.stderr.removeAllListeners()
+        }
+
+        if(code !=0)
+            return;
         if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
         {
             await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
@@ -1524,13 +1532,6 @@ async function onClosedProgram(code,time, message, error?)
         })
         }
 
-        
-        if(clientSession.program)
-        {
-            clientSession.program.stdout.removeAllListeners()
-            clientSession.program.stderr.removeAllListeners()
-        }
-        if(code || code!=9)
         replicateFunction((clientWs) => {
             clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body: message, clientId: clientId}));  // Send GDB output to the client
         });

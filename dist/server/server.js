@@ -1197,6 +1197,12 @@ bash `.trim().replaceAll('\n', "");
             let notes = "";
             processInputBuffer = '';
             // const time = 
+            if (clientSession.program) {
+                clientSession.program.stdout.removeAllListeners();
+                clientSession.program.stderr.removeAllListeners();
+            }
+            if (code != 0)
+                return;
             if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
              {
                 await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
@@ -1206,14 +1212,9 @@ bash `.trim().replaceAll('\n', "");
                     });
                 });
             }
-            if (clientSession.program) {
-                clientSession.program.stdout.removeAllListeners();
-                clientSession.program.stderr.removeAllListeners();
-            }
-            if (code || code != 9)
-                replicateFunction((clientWs) => {
-                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
-                });
+            replicateFunction((clientWs) => {
+                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
+            });
         }
         async function readStdio(program, messageJSON, res) {
             return new Promise((resolve, reject) => {
