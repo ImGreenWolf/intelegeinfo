@@ -1411,7 +1411,8 @@ if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag +
     try {
         const builder = spawn(`docker`, ["build" ,"-t", clientSession.currentbuildTag,, '"' +sessionFolder+'"'], { stdio: 'pipe', shell: true });
 
-        replicateFunction((ws,id, obj) => obj.sendMessage({bodt: 'Please wait.. Preparing your sandbox'}, WebSocketMessageType.ExecuteStatus))
+        replicateFunction((ws,id, obj) => obj.sendMessage({body: 'Please wait.. Preparing your sandbox'}, WebSocketMessageType.ExecuteStatus))
+       
         
         builder.on('exit', code => {
         if(code == 0)
