@@ -2372,7 +2372,7 @@ ws.onmessage = (event) => {
                     if (!eventJson.body)
                         activeConsole.compileMessage.remove();
                     else
-                        activeConsole.compileMessage.innerText = eventJson.body;
+                        activeConsole.compileMessage.children[1].innerHTML = eventJson.body;
                     document.getElementById('compile-status').innerText = eventJson.body;
                     document.getElementById('compile-status').style.opacity = '1';
                     setTimeout(() => {
