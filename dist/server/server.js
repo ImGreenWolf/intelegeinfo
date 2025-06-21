@@ -1235,13 +1235,15 @@ bash `.trim().replaceAll('\n', "");
                         console.log("Program spawned");
                         spawnDate = Date.now();
                         res.editorMode.onSpawn(clientSession);
-                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, spawn: 1 });
+                        replicateFunction((ws, id, obj) => obj.sendMessage({ spawn: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
+                        // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
                         if (clientSession.program.stdin && processInputBuffer)
                             if (clientSession.program?.stdin?.writable)
                                 clientSession.program.stdin.write(processInputBuffer); // write buffer
                         dataTimeout =
                             setTimeout(() => {
-                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                                replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
+                                // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
                             }, 400);
                         resolve();
                     });
@@ -1254,8 +1256,7 @@ bash `.trim().replaceAll('\n', "");
                     // gdbBuffer = "";
                     if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
                      {
-                        onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>");
-                        closeProcess(program);
+                        closeProcess(program).then(() => onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"));
                         resolve();
                     }
                     replicateFunction((clientWs) => {
@@ -1263,7 +1264,7 @@ bash `.trim().replaceAll('\n', "");
                     });
                     clearTimeout(dataTimeout);
                     dataTimeout = setTimeout(() => {
-                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                        replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                     }, 100);
                 });
                 clientSession.program?.stderr?.on("data", (data) => {
@@ -1483,7 +1484,7 @@ bash `.trim().replaceAll('\n', "");
                         if (getProcessFromMap() != undefined) {
                             getProcessFromMap()?.stdin?.write(messageJSON.command + "\n");
                             dataTimeout = setTimeout(() => {
-                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                                replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                             }, 200);
                         }
                         else
@@ -1941,7 +1942,7 @@ bash `.trim().replaceAll('\n', "");
                                 else if (clientSession.program != undefined) {
                                     if (clientSession.program?.stdin?.writable) {
                                         clientSession.program?.stdin?.write(command); //program.stdin.write(message + "\n");
-                                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.ExecuteStatus, input: 1 });
+                                        replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                     }
                                     else
                                         console.error("stdin isnt writeable");

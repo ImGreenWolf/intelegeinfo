@@ -1523,7 +1523,7 @@ async function onClosedProgram(code,time, message, error?)
             clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body: message, clientId: clientId}));  // Send GDB output to the client
         });
 
-        
+
         if(code !=0)
             return;
         if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
@@ -1560,13 +1560,15 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         console.log("Program spawned")
         spawnDate = Date.now()
         res.editorMode.onSpawn(clientSession);
-        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
+        replicateFunction((ws,id, obj) => obj.sendMessage({spawn: 1}, WebSocketMessageType.ExecuteStatus))
+        // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         if( clientSession.program.stdin && processInputBuffer)
             if(clientSession.program?.stdin?.writable)
             clientSession.program.stdin.write(processInputBuffer) // write buffer
         dataTimeout = 
         setTimeout(() => {
-            clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+            replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
+            // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
         }, 400);
         resolve()
 
@@ -1582,9 +1584,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         // gdbBuffer = "";
          if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
         {
+            closeProcess(program).then(() => onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"))
             
-            onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>")
-            closeProcess(program)
             resolve()
        
           
@@ -1595,7 +1596,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     clearTimeout(dataTimeout)
         dataTimeout = setTimeout(() => {
-        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+            replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
     }, 100);
 
     });
@@ -1838,7 +1839,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                      {
                         getProcessFromMap()?.stdin?.write(messageJSON.command + "\n");
                         dataTimeout = setTimeout(() => {
-                            clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                            replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                         }, 200);
                      }
                      else
@@ -2422,7 +2423,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 if(clientSession.program?.stdin?.writable)
                                 {
                                         clientSession.program?.stdin?.write(command); //program.stdin.write(message + "\n");
-                                        clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                                        replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                                 }
                                 else
                                     console.error("stdin isnt writeable")

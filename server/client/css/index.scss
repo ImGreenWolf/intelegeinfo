@@ -58,7 +58,7 @@ header2
     // backdrop-filter: blur(5px);
     display: grid;
     align-self: center;
-    grid-template-columns: 30em 1fr;
+    grid-template-columns: 1fr;
     grid-template-rows: 2lh;
     align-items: center;
     justify-content: space-around;
@@ -83,13 +83,18 @@ header2
         z-index: -1;
         display: block;
     }
+    h2
+    {
+        position: absolute;
+        left: 3em;
+    }
     nav
     {
         
         justify-self: center;
-        width:50em;
+        max-width:50em;
+        width: 100%;
         position: relative;
-        left: -15em;
         ul {
             margin: 0;
             padding: 0;
@@ -170,28 +175,26 @@ footer
     nav
     {
         justify-self: center;
-        width: 50%;
+        width: 100%;
+        gap: 5px;
         position: relative;
-        display: flex;
-        justify-content: space-around;
-
+        display: grid;
+        justify-content: space-evenly;
+        align-content: space-between;
+        grid-template-columns: 1fr 1fr 1fr;
         margin: auto;
-        left: -5em;
-        ul {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: space-around;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
+        
+        a 
+        {
+            font-size: 0.75em !important;
+            width: 100px;
+        }
             :any-link
             {
                 color: rgb(255, 255, 255)
             }
             
-        }
+        
     } 
 }
 
@@ -255,14 +258,32 @@ footer
         text-decoration: underline;
     }
 
-    div p 
-    {
-            min-width: 15em;
-    }
+    // div p 
+    // {
+    //         min-width: 15em;
+    // }
     .text
     {
         grid-column: 1;
         width: 100%;
+
+        position: relative;
+        &:nth-child(2)
+        {
+            left: 50px;
+        }
+        &:nth-child(3)
+        {
+            left: -30px;
+        }
+        &:nth-child(4)
+        {
+            left: 40px;
+        }
+        &:nth-child(5)
+        {
+            left:  -5px;
+        }
     }
 
     #mockup-container
@@ -596,12 +617,13 @@ right: 30%;
 height: 60%;
 width: 300px;
 top: 100px;
+opacity: 0.25;
 mask-image: linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0), rgba(0, 0, 0, 0));
 z-index: -1;
 }
 h1
 {
-    text-shadow: 1px 1px 3px rgb(255, 255, 255);
+    text-shadow: 0.05em 0.05em 0.075em rgba(61, 61, 61, 0.74);
 }
 #guides
 {
@@ -693,14 +715,58 @@ h1
 }
 
 
- @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
 
+ @media screen and ((max-aspect-ratio: 2/3) or (max-width: 1600px)) {
+    #mockup-container
+    {
+        height: 75% !important;  
+        img#desktop
+        {
+            height: 250px !important;
+        }
+        img
+        {
+            height: 400px !important;
+        }
+    }   
+
+    header2 nav
+    {
+        max-width:30em;
+    }
+ }
+
+ @media screen and (max-width: 1024px){
+
+    
+    header2
+    {
+        nav 
+        {
+            justify-self: center;
+            transform: none;
+            grid-column: 1/-1;
+        }
+
+        h2
+        {
+
+            display: none;
+        }
+    }
+    
     #graphic
     {
         width: 100px;
-        left: 20%;
-        top: 120px;
+        left: 25%;
+        top: 100px;
         height: 200px;
+        grid-column: 1 !important;
+        grid-row: 1 / -1 !important;
+        height: 250px !important;
+        width: 300px;
+        margin: 50px auto;
+    
     }
     html, * {
         font-size: 12px;
@@ -750,6 +816,7 @@ h1
     .text
     {
         width: 75% !important;
+                max-width: 20em;
     }
 
 //     .main-container

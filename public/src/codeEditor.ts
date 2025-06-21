@@ -2145,7 +2145,7 @@ export function copySessionLink() {
           sessionCodeNode.classList.add('session-code');
           if(DockElement)
           DockElement.getElementsByTagName('div')[0].prepend(createNode('h2', {innerText: data.code, css: "font-size: 1em"}))
-          document.getElementById('join-session')!.parentNode!.insertBefore(sessionCodeNode, document.getElementById('join-session'))
+          // document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'))
           // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
           if(!window.location.search.includes("session=") && startedSessionId!=undefined)
             window.history.pushState({page: "updated session info"}, "intelge info", window.location.search + (window.location.search ? "&" : "?" ) + "session="+startedSessionId)
@@ -3584,15 +3584,16 @@ function onRun() {
   editor.setReadOnly(true);
   processRunning = true;
   document.getElementById('buttons')?.classList.add('executing')
-
-
-  
-
   document.getElementById('execute-control')!.innerText = "Opreste Programul"
+
+  if(document.getElementById('console-input'))
+    document.getElementById('console-input')?.remove();
 
   if(!activeConsole)
      activeConsole = spawnConsole()
   
+  activeConsole.compileMessage?.remove()
+  activeConsole.stdin
   
     // if(currentFileName.toLowerCase().includes("gui"))
   //   displaynoVNC(activeConsole.element)
