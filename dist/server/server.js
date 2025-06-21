@@ -1119,6 +1119,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
                         try {
                             const builder = (0, child_process_1.spawn)(`docker`, ["build", "-t", clientSession.currentbuildTag, , '"' + sessionFolder + '"'], { stdio: 'pipe', shell: true });
+                            replicateFunction((ws, id, obj) => obj.sendMessage({ bodt: 'Please wait.. Preparing your sandbox' }, types_1.WebSocketMessageType.ExecuteStatus));
                             builder.on('exit', code => {
                                 if (code == 0)
                                     resolve();
