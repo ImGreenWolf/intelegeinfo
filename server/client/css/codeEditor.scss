@@ -1068,7 +1068,7 @@ value
     animation: output-console-container 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95)
 
     }
-    & div
+    &>div
     {
     padding: 5px;
     }
@@ -1881,3 +1881,63 @@ form label
 
 
 
+.throbber-container
+{
+    display: flex;
+    width: 100px;
+    height: 15px;
+    position: relative;
+    margin: auto;
+
+    .throbber-elem
+    {
+        //  animation: throbberelem 1s infinite;
+        background-color: white;
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        aspect-ratio: 1;
+        position: relative;
+        
+        
+        
+
+    }
+    &.queue .throbber-elem
+    {
+        position: absolute;
+    }
+    &.newton
+    {
+        justify-content: center;
+        height: 50px;
+        align-items: end;
+    }
+}
+
+@keyframes throbberelem {
+    0% {
+        left: 0;
+        top: 0;
+        transform: translateX(0);
+    }
+    30% {
+        top: -25px;
+        left: 0;
+        
+    }
+    60% {
+        top: -25px;
+        left: 100%;
+    }
+    70% {
+        top: 0;
+        left: 100%;
+        transform: translateX(0);
+    }
+    100% {
+        top: 0;
+        left: 0%;
+        
+    }
+}

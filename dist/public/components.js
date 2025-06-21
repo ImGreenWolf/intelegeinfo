@@ -489,3 +489,99 @@ export class EditorCanvas extends IElement {
         this.ws.send(JSON.stringify({ type: 'canvas', command: type, ...args, clientId: this.clientId }));
     }
 }
+export class LoadingThrobber extends IElement {
+    render() {
+        const throbber = createNode('div', { className: 'throbber-container' });
+        const throbbers = [
+            this.newtonThrober,
+            this.queueThrober
+        ];
+        throbbers[Math.round(Math.random() * throbbers.length)](throbber);
+        return throbber;
+    }
+    queueThrober(throbber) {
+        throbber.classList.add('queue');
+        for (let i = 0; i < 6; i++)
+            throbber.appendChild(createNode('div', { className: 'throbber-elem', }));
+        let i = 0;
+        const duration = 1000;
+        const riseTime = 25;
+        const fallTime = 25;
+        const height = 20;
+        function cycleQueue() {
+            const firstItem = throbber.children[i];
+            let startTime = undefined;
+            function updateQueue(time) {
+                const padding = throbber.clientWidth / 6 - firstItem.clientWidth;
+                const width = firstItem.clientWidth;
+                if (startTime === undefined) {
+                    firstItem.style.left = "0px";
+                    startTime = time;
+                }
+                let elapsed = time - startTime;
+                let perc = elapsed / duration * 100;
+                if (perc < riseTime)
+                    firstItem.style.top = (perc) / riseTime * -height + "px";
+                else {
+                    if (perc < 100 - fallTime) {
+                        firstItem.style.top = -height + 'px';
+                        firstItem.style.left = (throbber.clientWidth - width - padding / 2) * (perc - riseTime) * 100 / (100 - fallTime - riseTime) / 100 + "px";
+                    }
+                    else
+                        firstItem.style.top = -height * (100 - perc) / fallTime + "px";
+                }
+                let m = 0;
+                for (let k = 0; k < 6; k++)
+                    if (i != k)
+                        throbber.children[k].style.left = throbber.clientWidth - (4 - m++) * (width + padding) - (perc + width + padding * 2) / 100 * (width + padding) - width + "px"; // - perc/(25+padding)*10
+                if (perc <= 100)
+                    requestAnimationFrame(updateQueue);
+                else {
+                    firstItem.style.top = "0px";
+                    i = (i + 1) % 6;
+                    cycleQueue();
+                }
+            }
+            requestAnimationFrame(updateQueue);
+        }
+        cycleQueue();
+        // // Start cycling every 1.5 seconds
+        // setInterval(cycleQueue, 1500);
+    }
+    newtonThrober(throbber) {
+        throbber.classList.add('newton');
+        for (let i = 0; i < 6; i++)
+            throbber.appendChild(createNode('div', { className: 'throbber-elem', }));
+        let startTime = undefined;
+        const duration = 2000;
+        function updateNewton(time) {
+            if (startTime === undefined)
+                startTime = time;
+            let elapsed = time - startTime;
+            let perc = elapsed / duration * 100;
+            const pi = Math.PI;
+            const distance = 50;
+            const angle = (Math.sin((perc - 50) / 50 * pi) - 0.5) * 180 + 90;
+            const startAngle = Math.min(angle / 2, 0);
+            const endAngle = Math.max(angle / 2, 0);
+            function calcAngle(angle) {
+                const x = Math.sin(angle * pi / 180) * distance;
+                const y = Math.cos(angle * pi / 180) * distance - distance;
+                return { x, y };
+            }
+            const elem = throbber.children[0];
+            elem.style.left = calcAngle(startAngle).x + 'px';
+            elem.style.top = calcAngle(startAngle).y + 'px';
+            const lelem = throbber.lastChild;
+            lelem.style.left = calcAngle(endAngle).x + 'px';
+            lelem.style.top = calcAngle(endAngle).y + 'px';
+            if (perc < 100)
+                requestAnimationFrame(updateNewton);
+            else {
+                startTime = undefined;
+                requestAnimationFrame(updateNewton);
+            }
+        }
+        requestAnimationFrame(updateNewton);
+    }
+}

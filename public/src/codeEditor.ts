@@ -12,7 +12,7 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { createNode, Dock, EditorCanvas, Pixelated } from "./components";
+import { createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated } from "./components";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 
@@ -141,7 +141,7 @@ class Console {
   }
   public onCompileStart(message = 'Comunicating with server')
   {
-    this.compileMessage = createNode('div', {innerText: message})
+    this.compileMessage = createNode('div', {html: [new LoadingThrobber().render(), createNode('p', {innerText:message, css:"text-align: center; opacity: 0.75" })]})
     this.element.appendChild(this.compileMessage)
     
   }
@@ -3146,7 +3146,11 @@ ws.onmessage = (event) => {
           //     : errorOutputString ||
           //         "Compilation error. (couldnt retrieve error message, sorry)"
           // );
-          activeConsole!.compileMessage!.innerText = eventJson.body
+          if(!eventJson.body)
+            activeConsole!.compileMessage!.remove()
+          else
+            activeConsole!.compileMessage!.innerText = eventJson.body
+
           document.getElementById('compile-status')!.innerText = eventJson.body;
           document.getElementById('compile-status')!.style.opacity = '1'
 
@@ -3609,7 +3613,6 @@ function spawnConsole()
   document.getElementById('active-console')!.id = '';
 
   return new Console()
-    
 }
 
 function startProgram()

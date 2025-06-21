@@ -74,4 +74,9 @@ export declare class EditorCanvas extends IElement {
     handleReplication(ev: any): void;
     private replicateDraw;
 }
+export declare class LoadingThrobber extends IElement {
+    render(): Node;
+    private queueThrober;
+    private newtonThrober;
+}
 export {};

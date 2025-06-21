@@ -885,7 +885,7 @@ value {
 .output-console-container#active-console {
   animation: output-console-container 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
-.output-console-container div {
+.output-console-container > div {
   padding: 5px;
 }
 .output-console-container .console-inline-message, .output-console-container .console-program-input, .output-console-container .console-program-output {
@@ -1498,6 +1498,55 @@ form label {
 }
 .ace_codeLens a:hover {
   opacity: 1;
+}
+
+.throbber-container {
+  display: flex;
+  width: 100px;
+  height: 15px;
+  position: relative;
+  margin: auto;
+}
+.throbber-container .throbber-elem {
+  background-color: white;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  aspect-ratio: 1;
+  position: relative;
+}
+.throbber-container.queue .throbber-elem {
+  position: absolute;
+}
+.throbber-container.newton {
+  justify-content: center;
+  height: 50px;
+  align-items: end;
+}
+
+@keyframes throbberelem {
+  0% {
+    left: 0;
+    top: 0;
+    transform: translateX(0);
+  }
+  30% {
+    top: -25px;
+    left: 0;
+  }
+  60% {
+    top: -25px;
+    left: 100%;
+  }
+  70% {
+    top: 0;
+    left: 100%;
+    transform: translateX(0);
+  }
+  100% {
+    top: 0;
+    left: 0%;
+  }
 }
 
 /*# sourceMappingURL=codeEditor.css.map */

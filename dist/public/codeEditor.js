@@ -2,7 +2,7 @@
 // import QRCode from 'qrcode'
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
-import { createNode, Dock, EditorCanvas } from "./components";
+import { createNode, Dock, EditorCanvas, LoadingThrobber } from "./components";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 const ClientDock = inIframe ? undefined : new Dock();
@@ -89,7 +89,7 @@ class Console {
         this.onCompileStart();
     }
     onCompileStart(message = 'Comunicating with server') {
-        this.compileMessage = createNode('div', { innerText: message });
+        this.compileMessage = createNode('div', { html: [new LoadingThrobber().render(), createNode('p', { innerText: message, css: "text-align: center; opacity: 0.75" })] });
         this.element.appendChild(this.compileMessage);
     }
     onProcessStart() {
@@ -2369,7 +2369,10 @@ ws.onmessage = (event) => {
                     //     : errorOutputString ||
                     //         "Compilation error. (couldnt retrieve error message, sorry)"
                     // );
-                    activeConsole.compileMessage.innerText = eventJson.body;
+                    if (!eventJson.body)
+                        activeConsole.compileMessage.remove();
+                    else
+                        activeConsole.compileMessage.innerText = eventJson.body;
                     document.getElementById('compile-status').innerText = eventJson.body;
                     document.getElementById('compile-status').style.opacity = '1';
                     setTimeout(() => {
