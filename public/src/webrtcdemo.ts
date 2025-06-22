@@ -168,6 +168,11 @@ export class IIWebRTC
         var configuration: RTCConfiguration = {
             iceServers : [ 
                { urls: "stun:stun.l.google.com:19302" },
+               {
+                urls: "turn:intelegeinfo.go.ro:3478",
+                username: "name",
+                credential: 'pass'
+               },
                 { urls: "stun:stun.l.google.com:5349" },
                 { urls: "stun:stun1.l.google.com:3478" },
                 { urls: "stun:stun1.l.google.com:5349" },
@@ -177,7 +182,7 @@ export class IIWebRTC
                 { urls: "stun:stun3.l.google.com:5349" },
                 { urls: "stun:stun4.l.google.com:19302" },
                 { urls: "stun:stun4.l.google.com:5349" }
-             ]
+             ],iceTransportPolicy: 'relay'
         };
 
         navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
