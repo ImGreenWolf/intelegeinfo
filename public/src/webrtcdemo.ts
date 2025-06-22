@@ -2,6 +2,8 @@
 
 // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc"
 
+import { createNode } from "./components";
+
 
 // //@ts-ignore
 // const signaler = new WebSocket(WSUrl)
@@ -158,21 +160,40 @@ export class IIWebRTC
     thistargetId
     thisClientId
     signaler
+    audio: HTMLAudioElement | undefined
     onData: (data: string) => void = (data) => console.log(data)
 
     constructor(thistargetId,thisClientId, signaler: WebSocket, isHost, onConnection: (dataChannel: RTCDataChannel) => void)
     {
         var configuration: RTCConfiguration = {
-            iceServers : [ {
-                urls: "stun:stun2.1.google.com:19302"
-            } ]
+            iceServers : [ 
+               { urls: "stun:stun.l.google.com:19302" },
+                { urls: "stun:stun.l.google.com:5349" },
+                { urls: "stun:stun1.l.google.com:3478" },
+                { urls: "stun:stun1.l.google.com:5349" },
+                { urls: "stun:stun2.l.google.com:19302" },
+                { urls: "stun:stun2.l.google.com:5349" },
+                { urls: "stun:stun3.l.google.com:3478" },
+                { urls: "stun:stun3.l.google.com:5349" },
+                { urls: "stun:stun4.l.google.com:19302" },
+                { urls: "stun:stun4.l.google.com:5349" }
+             ]
         };
 
         navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
-                    for(const track of stream.getTracks())
-                    this.pc?.addTrack(track, stream)
+            if(!this.audio)
+            {
+                this.audio = createNode('audio');
+                this.audio.autoplay = true;
+                document.body.appendChild(this.audio)
+                
+                for(const track of stream.getTracks())
+                this.pc?.addTrack(track, stream)
+            }
+        })
         
-                  })
+
+          
         // this.polite = !isHost
         // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc?session="+sessionId
         // const signaler = new WebSocket(WSUrl) // 
@@ -184,10 +205,19 @@ export class IIWebRTC
         this.pc! = new RTCPeerConnection(configuration); // create local peer connection
         // console.log(this.id,'is caller : ', isHost, "target: ",thistargetId)
        
-            this.dc = this.pc!.createDataChannel('data') // data channel for communication created locally on host
+        this.dc = this.pc!.createDataChannel('data') // data channel for communication created locally on host
 
-            console.log(this.id, "is host:", isHost, "caller:", thisClientId, "callee:", thistargetId)
-
+        console.log(this.id, "is host:", isHost, "caller:", thisClientId, "callee:", thistargetId)
+        this.pc!.ontrack = ({ track, streams }) => {
+        track.onunmute = () => {
+            if(!this.audio)
+                return
+            if (this.audio!.srcObject) 
+                return;
+            this.audio!.srcObject! = streams[0];
+                    
+        };
+        };
             //ready to negotiate step 1
         this.pc!.onnegotiationneeded = async () => {
             try {
@@ -204,23 +234,7 @@ export class IIWebRTC
             }
         };
 
-        this.pc.oniceconnectionstatechange = () => {
-            console.log(this.id, 'ICE state:', this.pc!.iceConnectionState);
-        };
 
-        this.dc!.onopen = () => {
-            console.log(this.id, 'Data channel open');
-        };
-
-        this.dc!.onclose = () => {
-            console.log(this.id, 'Data channel closed');
-        };
-
-        this.dc!.onerror = (e) => {
-            console.error(this.id, 'Data channel error:', e);
-        };
-        
-    
 
         
 

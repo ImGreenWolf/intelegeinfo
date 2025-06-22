@@ -9,6 +9,7 @@ export declare class IIWebRTC {
     thistargetId: any;
     thisClientId: any;
     signaler: any;
+    audio: HTMLAudioElement | undefined;
     onData: (data: string) => void;
     constructor(thistargetId: any, thisClientId: any, signaler: WebSocket, isHost: any, onConnection: (dataChannel: RTCDataChannel) => void);
     handleSignal({ type, targetId, callerId, description, candidate }: {
