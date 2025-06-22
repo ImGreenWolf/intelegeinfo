@@ -226,6 +226,7 @@ class EditorCursor {
             const cursorObj = 
             this.refreshCursor(eventJson)
             this.update(eventJson);
+             
           }
 
           protected refreshCursor(eventJson)
@@ -257,7 +258,7 @@ class EditorCursor {
               // }, 1000);
             }
             document.body.appendChild(this.cursorContainer)
-
+            
             return this.cursor;
           }
           public remove()
@@ -395,7 +396,7 @@ if(false)
     else
     {
       
-                       const updatedPos = updateCursor(this.cursor, eventJson)
+            const updatedPos = updateCursor(this.cursor, eventJson)
             this.posX = updatedPos.posX;
             this.posY = updatedPos.posY;
             this.step =0;
@@ -407,7 +408,7 @@ if(false)
                 clearInterval(this.updateInterval)
               }
 
-            if(true) { // interpolate cursor position
+            if(false) { // interpolate cursor position
              this.updateInterval = setInterval(() => {
               
               this.cposX = this.lposX*(1-this.step) + this.posX*this.step;
@@ -443,6 +444,11 @@ if(false)
               }
                 
             }, stepSize)}
+            else
+            {
+                this.cursorContainer!.style.left = this.posX+'px';
+              this.cursorContainer!.style.top = this.posY+'px';
+            }
 
     }       
 
@@ -542,6 +548,7 @@ let lastViewedMessage: number;
 let currentFileName: string;
 let wsClientId: UUID;
 let wsSessionId: UUID;
+let isHost: boolean = false;
 const outputArea = document.getElementById("output");
 let testSubjectArea: HTMLIFrameElement;
 let activeClientArea = outputArea!
@@ -563,6 +570,8 @@ const editorSessions: Map<string, FileEditorSession> = new Map<
   string,
   FileEditorSession
 >();
+
+let rtc: Map<UUID, IIWebRTC> = new Map()
 const editor: Ace.Editor = ace.edit("editor", {
   mode: "ace/mode/c_cpp",
   enableLiveAutocompletion: true,
@@ -1163,7 +1172,7 @@ function getPixelFromRelativePosition(editor: Ace.Editor, relX, relY, eventJson)
 
 //  TODO Web RTC cursors for better performance
 function updateLocalCursor(ev, fromPress) {
-  const deltaTime = 60;
+  const deltaTime = 20;
   // if(fromPress && ev.pointerType != "touch") return; // i can remove this and add a few things to show when a user is clicking
   if(ev.timeStamp-lastTime>deltaTime)
     {
@@ -1190,9 +1199,11 @@ function updateLocalCursor(ev, fromPress) {
       {
         const height = ev.height;
         const width = ev.width;
-        ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth , rechHeight}))
+        for(const conn of rtc.values())
+        conn.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth , rechHeight, clientId: wsClientId}))
       } else
-        ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth , rechHeight }))
+        for(const conn of rtc.values())
+        conn.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth , rechHeight, clientId: wsClientId}))
 
     }
   }
@@ -1978,7 +1989,7 @@ export function joinsession()
         const codeInput: HTMLInputElement = document.getElementById('code') as HTMLInputElement;
         if(codeInput.valueAsNumber==undefined) return;
 
-        await fetch('editor/joinsession?code='+codeInput.valueAsNumber, {
+        await fetch('/editor/joinsession?code='+codeInput.valueAsNumber, {
         }).then(response => {
             return response.json()
         }).then(res => {
@@ -2214,7 +2225,8 @@ if(document.cookie.includes('session=') && !window.location.search.includes('sav
 }
 
 
-const tooltip = (await (await fetch('/editor/tooltipHints')).json())
+let tooltip:any= {};
+ fetch('/editor/tooltipHints').then(data => data.json().then(json => tooltip = json))
 
 
 class TokenTooltip extends Tooltip {
@@ -2349,6 +2361,8 @@ class TokenTooltip extends Tooltip {
 }
 
   const ws = new WebSocket(WSUrl);
+
+
   ws.addEventListener('open', (ev) => {
   const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
   //writeOutput(sessionId || "No session ID found in URL.");
@@ -2398,8 +2412,7 @@ ws.onerror = (err) => {
 
 
 
-
-
+import { IIWebRTC } from "./webrtcdemo.js";
 
 
 
@@ -2795,6 +2808,45 @@ ws.onmessage = (event) => {
   }
 
   switch (type) {
+
+    case 'rtc':
+      // if(eventJson.end)
+      // {
+      //   const conn = rtc.get(eventJson.callerId)!
+      //   conn.close()
+      //   rtc.delete(eventJson.callerId)
+      //   break;
+      // }
+        const peerRTC = rtc.get(eventJson.callerId || eventJson.targetId);
+        if (peerRTC) {
+          peerRTC.handleSignal(eventJson);
+          break
+        }
+        
+      if(!eventJson.description)
+        break;
+      if(eventJson.description.type != "offer" )
+        break;
+
+      const callerId = eventJson.callerId
+            if(rtc.has(callerId))
+              break
+                      console.log('Createing remote rtc')
+          const newRTC = new IIWebRTC(callerId, wsClientId, ws, false, (dc) => {
+            ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate}))
+          })
+
+          rtc.set(callerId, newRTC)
+          newRTC.onData = (data) => {
+            const eventJson = JSON.parse(data)
+            console.log(eventJson)
+            
+            if(!cursors.has(eventJson.clientId))
+              new EditorCursor(eventJson)
+            else
+              cursors.get(callerId)!.update(eventJson)
+          }
+    break;
     case WebSocketMessageType.Error:
       writeOutput(data, eventJson);
       break;
@@ -2843,19 +2895,14 @@ ws.onmessage = (event) => {
     case WebSocketMessageType.MouseUpdate:
        if(!eventJson.clientId) break;
 
-       if(eventJson.fileName)
-       {
-        cursors.get(eventJson.clientId)?.remove()
-        return;
-       }
-
-
-
+      //  if(eventJson.fileName)
+      //  {
+      //   cursors.get(eventJson.clientId)?.remove()
+      //   return;
+      //  }
 
         if(!cursors.has(eventJson.clientId))
          new EditorCursor(eventJson)
-        else
-          cursors.get(eventJson.clientId)!.update(eventJson)
 
       // TODO Add incative class to cursor when user doesnt move it.
 
@@ -2917,6 +2964,7 @@ ws.onmessage = (event) => {
       wsClientId = eventJson.clientId;
       wsSessionId = eventJson.sessionId;
       isColabSession = eventJson.session!=undefined
+      isHost = eventJson.session!=undefined ? eventJson.session.isHost : false
       client = new SessionClient(wsClientId, eventJson.displayName, eventJson.color)
       // if(!document.cookie.includes('session='))
       document.cookie='session='
@@ -2954,6 +3002,7 @@ ws.onmessage = (event) => {
         if(!sessionData.canChat)
           document.getElementById('console')?.setAttribute('disabled','true')
       }
+
       
 
       
@@ -3254,7 +3303,7 @@ ws.onmessage = (event) => {
       const colabClients: {displayName:string, fileName:string, clientId: UUID, color: string }[] = eventJson.clients;
       const colabClientId = eventJson.clientId;
       const colabCommand = eventJson.colabCommand;
-
+      
       isColabSession = true;
       switch(colabCommand) 
       {
@@ -3275,10 +3324,45 @@ ws.onmessage = (event) => {
             break;
         case "HOST":
           writeOutput(eventJson.body, eventJson, false, ConsoleMessageType.SessionInfo);
+          isHost = true
+          break;
         case "JOIN":
           // a new client joined
           addMouseListener(eventJson.session)
           clients.push(new SessionClient(colabClientId, eventJson.displayName, eventJson.color))
+          if(rtc.has(colabClientId) || colabClientId == wsClientId)
+            break;
+          console.log('Createing local rtc')
+          const newRTC = new IIWebRTC(colabClientId,wsClientId, ws, true, (dc) => {
+            ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate}))
+            navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+            for(const track of stream.getTracks())
+            newRTC.pc?.addTrack(track, stream)
+
+          })
+          })
+           const audio = createNode('audio');
+           audio.autoplay = true;
+           document.body.appendChild(audio)
+           newRTC.pc!.ontrack = ({ track, streams }) => {
+            track.onunmute = () => {
+              if (audio.srcObject) {
+                return;
+              }
+             
+                      audio!.srcObject! = streams[0];
+                      
+            };
+          };
+          rtc.set(colabClientId, newRTC)
+          newRTC.onData = (data) => {
+            const eventJson = JSON.parse(data)
+            
+            if(!cursors.has(eventJson.clientId))
+              new EditorCursor(eventJson)
+            else
+              cursors.get(colabClientId)!.update(eventJson)
+          }
         break;
 
         case "LIST":

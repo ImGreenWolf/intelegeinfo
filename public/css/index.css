@@ -102,6 +102,9 @@ header2 nav ul li {
 header2 nav ul :any-link {
   color: rgb(255, 255, 255);
   text-decoration: none;
+  height: 100%;
+  width: 100%;
+  display: block;
 }
 header2 nav ul li:first-child {
   border-radius: 1lh 0 0 1lh;

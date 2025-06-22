@@ -20,6 +20,7 @@ var WebSocketMessageType;
     WebSocketMessageType["MouseUpdate"] = "MouseUpdate";
     WebSocketMessageType["WebCam"] = "webcam";
     WebSocketMessageType["Canvas"] = "canvas";
+    WebSocketMessageType["RTC"] = "rtc";
 })(WebSocketMessageType || (exports.WebSocketMessageType = WebSocketMessageType = {}));
 var ConsoleMessageType;
 (function (ConsoleMessageType) {

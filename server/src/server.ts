@@ -122,6 +122,7 @@ app.use('/editor/components',
 
 
     })
+app.use('/editor', express.static(path.join(rootDirName,'dist', 'public')))
 
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'dist', 'public', 'mode_cpp_custom.js'))
@@ -134,7 +135,6 @@ app.get('/editor/worker-base.js', (req, res) => {
 })
 app.use(express.static("public"));
 app.use("/guides", GuideCreator);
-
 
 
 
@@ -412,26 +412,30 @@ server.on('listening', onServerStart)
 
 
     export const wss = new WebSocket.Server({noServer: true, clientTracking: true,  });
-    
-
+    import { wssRTC } from "./peerConnectionManager";
 
 //                      END                      //  
 
       server.on('upgrade', function upgrade(request, socket, head) {
-  const { pathname } = new URL(request.url, 'wss://intelegeinfo.go.ro');
-    switch(pathname){
-  case '/api': 
-    wssAPI.handleUpgrade(request, socket, head, function done(ws) {
-      wssAPI.emit('connection', ws, request);
-    });
-    break
-   case '/editor':
-    wss.handleUpgrade(request, socket, head, function done(ws) {
-      wss.emit('connection', ws, request);
-    });
-    break;
-  default:
-    socket.destroy();
+        const { pathname } = new URL(request.url, 'wss://intelegeinfo.go.ro');
+            switch(pathname){
+        case '/api': 
+            wssAPI.handleUpgrade(request, socket, head, function done(ws) {
+            wssAPI.emit('connection', ws, request);
+            });
+            break
+        case '/editor':
+            wss.handleUpgrade(request, socket, head, function done(ws) {
+            wss.emit('connection', ws, request);
+            });
+            break;
+            case '/rtc':
+            wss.handleUpgrade(request, socket, head, function done(ws) {
+            wssRTC.emit('connection', ws, request);
+            });
+            break
+        default:
+            socket.destroy();
   
 }
 });
@@ -1004,11 +1008,11 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 });
    }
 
-    function sendConnectionMessage() 
+    function sendConnectionMessage(isHost) 
     {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
             if(!clientSession) return;
-    const session = clientSession.clients.size!=1 ? {isHost: clientObj.isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit} : undefined;
+    const session = clientSession.clients.size!=1 ? {isHost , canChat: clientObj.canChat, canEdit: clientObj.canEdit} : undefined; //clientObj.isHost
         const welcomeMessage =  isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.go.ro'>Intelegeinfo.go.ro</a>" : !userLoggedIn ?
     `Bine ai venit pe Intelege Info!
         Scrie niste cod, apoi apasa compile si execute code, sau ruleaza in debugger.
@@ -1039,7 +1043,6 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
    {
     await new Promise<void>(async (resolve) => {
         const urlParams = new URL("ws:/intelegeinfo.go.ro:8080"+req.url).searchParams
-        let defaultText: string;
         const clientFilesPath = clientSession.getClientFilesPath();
         let savedProject: Project | undefined;
         if(urlParams.has("save"))
@@ -1058,10 +1061,9 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
                 // console.log(defaultText)
                     }catch(err) {
                         printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId))
-                        defaultText = fs.readFileSync("user_code.cpp").toString();
                     }
         }
-            else defaultText = fs.readFileSync("user_code.cpp").toString();
+           
     
        
         console.log(clientSession.files)
@@ -1129,7 +1131,7 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
         }
            })
            
-            const session = sendConnectionMessage()
+            const session = sendConnectionMessage(!cooperator)
 
             if(getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
             {
@@ -1663,6 +1665,18 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
 
             switch (type) {
+                case WebSocketMessageType.RTC:
+                    // for(const cws of clientSession.clients.values())
+                    //     cws.CWebSocket.send(JSON.stringify({...messageJSON, calerId: clientId}))
+                    if(!messageJSON.targetId)
+                        break;
+                    const cws = clientSession.clients.get(messageJSON.targetId)
+                    if(cws!=clientObj)
+                        if(cws)
+                            cws.CWebSocket.send(JSON.stringify({...messageJSON, callerId: clientId}))
+                        else
+                            ws.send(JSON.stringify({type: 'rtc', end: true,callerId: messageJSON.targetId}))
+                break;
                 case WebSocketMessageType.Canvas:
 
                     replicateFunction((clientWs, clientid, thisClientObj) => {
@@ -1701,7 +1715,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 
                 case WebSocketMessageType.Handshake:
 
-                    sendConnectionMessage() // TODO Implement this on client side, to ensure client received handshake message.
+                    sendConnectionMessage(true) // TODO Implement this on client side, to ensure client received handshake message.
                             /*
                     //handle heartbeat
                     heartbeatInterval = setInterval(() => {
@@ -1868,10 +1882,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     break;
 
                 case WebSocketMessageType.MouseUpdate:
-                    if(clientObj.openFile)
+                    if(!clientObj.openFile)
+                        throw "Client open file is invalid"
                         replicateFunction((thisClientWs, thisClientId, thisClientObj) => {
                             if(!thisClientObj.openFile)
-                                return;
+                                throw "this client obj has invalid file";
                             if(clientSession.getClientObjectById(thisClientId).canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
                                 thisClientWs.send(JSON.stringify({ ...messageJSON, ...clientInfo(clientObj)})) // TODO Sanitize this
                         }, clientObj)

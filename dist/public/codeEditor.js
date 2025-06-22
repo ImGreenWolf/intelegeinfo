@@ -299,7 +299,7 @@ class EditorCursor {
                 this.lposY = this.cposY;
                 clearInterval(this.updateInterval);
             }
-            if (true) { // interpolate cursor position
+            if (false) { // interpolate cursor position
                 this.updateInterval = setInterval(() => {
                     this.cposX = this.lposX * (1 - this.step) + this.posX * this.step;
                     this.cposY = this.lposY * (1 - this.step) + this.posY * this.step;
@@ -327,6 +327,10 @@ class EditorCursor {
                         }
                     }
                 }, stepSize);
+            }
+            else {
+                this.cursorContainer.style.left = this.posX + 'px';
+                this.cursorContainer.style.top = this.posY + 'px';
             }
         }
     }
@@ -406,6 +410,7 @@ let lastViewedMessage;
 let currentFileName;
 let wsClientId;
 let wsSessionId;
+let isHost = false;
 const outputArea = document.getElementById("output");
 let testSubjectArea;
 let activeClientArea = outputArea;
@@ -424,6 +429,7 @@ let cameraEnabled = false;
 let videoStream;
 const variableArrayIndexes = [];
 const editorSessions = new Map();
+let rtc = new Map();
 const editor = ace.edit("editor", {
     mode: "ace/mode/c_cpp",
     enableLiveAutocompletion: true,
@@ -896,7 +902,7 @@ function getPixelFromRelativePosition(editor, relX, relY, eventJson) {
 }
 //  TODO Web RTC cursors for better performance
 function updateLocalCursor(ev, fromPress) {
-    const deltaTime = 60;
+    const deltaTime = 20;
     // if(fromPress && ev.pointerType != "touch") return; // i can remove this and add a few things to show when a user is clicking
     if (ev.timeStamp - lastTime > deltaTime) {
         lastEv = ev;
@@ -917,10 +923,12 @@ function updateLocalCursor(ev, fromPress) {
         if (pointerType == "touch") {
             const height = ev.height;
             const width = ev.width;
-            ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth, rechHeight }));
+            for (const conn of rtc.values())
+                conn.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth, rechHeight, clientId: wsClientId }));
         }
         else
-            ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth, rechHeight }));
+            for (const conn of rtc.values())
+                conn.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth, rechHeight, clientId: wsClientId }));
     }
 }
 function updateCursor(cursor, eventJson) {
@@ -1503,7 +1511,7 @@ export function joinsession() {
         const codeInput = document.getElementById('code');
         if (codeInput.valueAsNumber == undefined)
             return;
-        await fetch('editor/joinsession?code=' + codeInput.valueAsNumber, {}).then(response => {
+        await fetch('/editor/joinsession?code=' + codeInput.valueAsNumber, {}).then(response => {
             return response.json();
         }).then(res => {
             if (res.redirect)
@@ -1686,7 +1694,8 @@ if (document.cookie.includes('session=') && !window.location.search.includes('sa
         if (!window.confirm('You have a previous unsaved session, would you like to recover it?'))
             document.cookie = 'session=';
 }
-const tooltip = (await (await fetch('/editor/tooltipHints')).json());
+let tooltip = {};
+fetch('/editor/tooltipHints').then(data => data.json().then(json => tooltip = json));
 class TokenTooltip extends Tooltip {
     constructor(editor) {
         if (editor.tokenTooltip)
@@ -1837,6 +1846,7 @@ ws.onerror = (err) => {
     displayMessagePopup("WEBSOCKET ERROR: " + err.type);
     console.error(err);
 };
+import { IIWebRTC } from "./webrtcdemo.js";
 export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;
@@ -2127,6 +2137,40 @@ ws.onmessage = (event) => {
         }
     }
     switch (type) {
+        case 'rtc':
+            // if(eventJson.end)
+            // {
+            //   const conn = rtc.get(eventJson.callerId)!
+            //   conn.close()
+            //   rtc.delete(eventJson.callerId)
+            //   break;
+            // }
+            const peerRTC = rtc.get(eventJson.callerId || eventJson.targetId);
+            if (peerRTC) {
+                peerRTC.handleSignal(eventJson);
+                break;
+            }
+            if (!eventJson.description)
+                break;
+            if (eventJson.description.type != "offer")
+                break;
+            const callerId = eventJson.callerId;
+            if (rtc.has(callerId))
+                break;
+            console.log('Createing remote rtc');
+            const newRTC = new IIWebRTC(callerId, wsClientId, ws, false, (dc) => {
+                ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate }));
+            });
+            rtc.set(callerId, newRTC);
+            newRTC.onData = (data) => {
+                const eventJson = JSON.parse(data);
+                console.log(eventJson);
+                if (!cursors.has(eventJson.clientId))
+                    new EditorCursor(eventJson);
+                else
+                    cursors.get(callerId).update(eventJson);
+            };
+            break;
         case WebSocketMessageType.Error:
             writeOutput(data, eventJson);
             break;
@@ -2164,14 +2208,13 @@ ws.onmessage = (event) => {
         case WebSocketMessageType.MouseUpdate:
             if (!eventJson.clientId)
                 break;
-            if (eventJson.fileName) {
-                cursors.get(eventJson.clientId)?.remove();
-                return;
-            }
+            //  if(eventJson.fileName)
+            //  {
+            //   cursors.get(eventJson.clientId)?.remove()
+            //   return;
+            //  }
             if (!cursors.has(eventJson.clientId))
                 new EditorCursor(eventJson);
-            else
-                cursors.get(eventJson.clientId).update(eventJson);
             // TODO Add incative class to cursor when user doesnt move it.
             break;
         case WebSocketMessageType.Chat:
@@ -2209,6 +2252,7 @@ ws.onmessage = (event) => {
                 wsClientId = eventJson.clientId;
                 wsSessionId = eventJson.sessionId;
                 isColabSession = eventJson.session != undefined;
+                isHost = eventJson.session != undefined ? eventJson.session.isHost : false;
                 client = new SessionClient(wsClientId, eventJson.displayName, eventJson.color);
                 // if(!document.cookie.includes('session='))
                 document.cookie = 'session=';
@@ -2470,10 +2514,41 @@ ws.onmessage = (event) => {
                     break;
                 case "HOST":
                     writeOutput(eventJson.body, eventJson, false, ConsoleMessageType.SessionInfo);
+                    isHost = true;
+                    break;
                 case "JOIN":
                     // a new client joined
                     addMouseListener(eventJson.session);
                     clients.push(new SessionClient(colabClientId, eventJson.displayName, eventJson.color));
+                    if (rtc.has(colabClientId) || colabClientId == wsClientId)
+                        break;
+                    console.log('Createing local rtc');
+                    const newRTC = new IIWebRTC(colabClientId, wsClientId, ws, true, (dc) => {
+                        ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate }));
+                        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                            for (const track of stream.getTracks())
+                                newRTC.pc?.addTrack(track, stream);
+                        });
+                    });
+                    const audio = createNode('audio');
+                    audio.autoplay = true;
+                    document.body.appendChild(audio);
+                    newRTC.pc.ontrack = ({ track, streams }) => {
+                        track.onunmute = () => {
+                            if (audio.srcObject) {
+                                return;
+                            }
+                            audio.srcObject = streams[0];
+                        };
+                    };
+                    rtc.set(colabClientId, newRTC);
+                    newRTC.onData = (data) => {
+                        const eventJson = JSON.parse(data);
+                        if (!cursors.has(eventJson.clientId))
+                            new EditorCursor(eventJson);
+                        else
+                            cursors.get(colabClientId).update(eventJson);
+                    };
                     break;
                 case "LIST":
                     const colabContainer = document.getElementById("colab-container") || null;

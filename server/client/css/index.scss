@@ -126,6 +126,9 @@ header2
             {
                 color: rgb(255, 255, 255);
                 text-decoration: none;
+                height: 100%;
+                width: 100%;
+                display: block;
             }
             li:first-child
             {
@@ -190,10 +193,12 @@ footer
         {
             font-size: 0.75em !important;
             width: 150px;
+            
         }
             :any-link
             {
-                color: rgb(255, 255, 255)
+                color: rgb(255, 255, 255);
+                
             }
             
         

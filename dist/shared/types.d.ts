@@ -15,7 +15,8 @@ export declare enum WebSocketMessageType {
     ExecuteStatus = "executestatus",
     MouseUpdate = "MouseUpdate",
     WebCam = "webcam",
-    Canvas = "canvas"
+    Canvas = "canvas",
+    RTC = "rtc"
 }
 export declare enum ConsoleMessageType {
     UserChat = "chat",
