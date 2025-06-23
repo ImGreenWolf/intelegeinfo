@@ -5,6 +5,7 @@ declare class Python extends EditorMode {
     static name: string;
     static dockerSafeTag: string;
     static extension: string[];
+    wsProxy: ChildProcess;
     isInterpreter: boolean;
     runParams: (clientObj: ClientObject) => string;
     static defaultText: string;

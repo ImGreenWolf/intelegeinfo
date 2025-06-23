@@ -45,6 +45,7 @@ class Python extends BaseEditorMode_1.default {
     static name = 'Python';
     static dockerSafeTag = 'py';
     static extension = ['py'];
+    wsProxy;
     isInterpreter = true;
     runParams = (clientObj) => {
         const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
@@ -133,28 +134,32 @@ CMD bash `;
                     fs.appendFileSync(path_1.default.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock \ \n`);
                     setTimeout(() => {
                         // Start websockify
-                        const wsProxy = (0, child_process_1.spawn)('websockify', [
-                            '-D',
-                            '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
-                            '--token-plugin=TokenFile',
-                            '--token-source=' + path_1.default.resolve('/tmp/tokens.txt'),
-                            '--unix-target', `/tmp/vnc-${clientSession.sessionId}/vnc.sock`,
-                            '8080'
-                        ], { stdio: 'pipe' });
-                        wsProxy.stdout.on('data', (data) => {
-                            console.log('[ws stdout]', data.toString());
-                        });
-                        wsProxy.stderr.on('data', (data) => {
-                            console.error('[ws stderr]', data.toString());
-                        });
-                        wsProxy.on('exit', (code) => {
-                            console.log(`[ws exit] Process exited with code ${code}`);
-                        });
                         try {
-                            fs.accessSync(`/tmp/vnc-${clientSession.sessionId}/vnc.sock`);
+                            this.wsProxy = (0, child_process_1.spawn)('websockify', [
+                                '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
+                                '--token-plugin=TokenFile',
+                                '--token-source=' + path_1.default.resolve('/tmp/tokens.txt'),
+                                '--unix-target', `/tmp/vnc-${clientSession.sessionId}/vnc.sock`,
+                                '8080'
+                            ], { stdio: 'pipe' });
+                            this.wsProxy.stdout.on('data', (data) => {
+                                console.log('[ws stdout]', data.toString());
+                            });
+                            this.wsProxy.stderr.on('data', (data) => {
+                                console.error('[ws stderr]', data.toString());
+                            });
+                            this.wsProxy.on('exit', (code) => {
+                                console.log(`[ws exit] Process exited with code ${code}`);
+                            });
+                            try {
+                                fs.accessSync(`/tmp/vnc-${clientSession.sessionId}/vnc.sock`);
+                            }
+                            catch (err) {
+                                console.log("Cant acesss socket: " + err);
+                            }
                         }
                         catch (err) {
-                            console.log("Cant acesss socket: " + err);
+                            console.warn(err);
                         }
                     }, 3000);
                 }
@@ -190,9 +195,13 @@ CMD bash `;
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
         // execSync('docker exec -i '+res.imageName + ' sh -c "pip install opencv-python"')
-        return (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "python clientFiles/" + res.fileName], {
+        const proc = (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "python clientFiles/" + res.fileName], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
         });
+        proc.addListener('close', code => {
+            this.wsProxy.kill();
+        });
+        return proc;
     }
     compile(res) {
         //  setTimeout(() => {

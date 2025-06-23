@@ -3211,7 +3211,7 @@ export function displaynoVNC(container) {
     // TODO Implement a better noVNC client
     const src = window.location.protocol + +'//' + window.location.hostname + ':8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token=' + wsSessionId;
     frame.src = 'https://' + window.location.hostname + ':8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token=' + wsSessionId;
-    frame.id = 'noVDC';
+    frame.id = 'noVNC';
     container.appendChild(frame);
 }
 function parseCode() {

@@ -9,6 +9,7 @@ class Python extends EditorMode {
     static name = 'Python'
     static dockerSafeTag: string = 'py'
     static extension = ['py']
+    wsProxy: ChildProcess
     isInterpreter = true;
     runParams = (clientObj: ClientObject) => {
       const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
@@ -106,8 +107,8 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
           fs.appendFileSync(path.resolve('/tmp/tokens.txt'), `${clientSession.sessionId}: unix_socket:/tmp/vnc-${clientSession.sessionId}/vnc.sock \ \n`)
         setTimeout(() => {
                 // Start websockify
-            const wsProxy = spawn('websockify', [
-            '-D',
+                try {
+             this.wsProxy = spawn('websockify', [
             '--web', path.join(rootDirName, 'vnc', 'noVNC'),
             '--token-plugin=TokenFile',
             '--token-source='+path.resolve('/tmp/tokens.txt'),
@@ -117,15 +118,15 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
             
             ], {stdio: 'pipe'});
 
-            wsProxy.stdout.on('data', (data) => {
+            this.wsProxy.stdout.on('data', (data) => {
             console.log('[ws stdout]', data.toString());
             });
 
-            wsProxy.stderr.on('data', (data) => {
+            this.wsProxy.stderr.on('data', (data) => {
             console.error('[ws stderr]', data.toString());
             });
 
-            wsProxy.on('exit', (code) => {
+            this.wsProxy.on('exit', (code) => {
             console.log(`[ws exit] Process exited with code ${code}`);
             });
                 try {
@@ -137,6 +138,11 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
 
 
 
+                }
+                catch(err)
+                {
+                  console.warn(err)
+                }
 
 
 
@@ -187,10 +193,16 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
         // execSync('docker exec -i '+res.imageName + ' sh -c "pip install opencv-python"')
-        return spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","python clientFiles/" + res.fileName], {
+         
+        const proc = spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","python clientFiles/" + res.fileName], {
             stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
         });
+        
+        proc.addListener('close', code => {
+          this.wsProxy.kill()
+        })
 
+        return proc;
        
     }
     compile(res) {
