@@ -77,7 +77,7 @@ int main()
         });
     }
     startDebugging(res) {
-        return (0, child_process_1.spawn)("docker", ["exec", res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+        return (0, child_process_1.spawn)("docker", ["exec", '-di', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
     }
     checkCodeSyntax = (sessionObj, file) => {
         return new Promise((resolve, reject) => {
