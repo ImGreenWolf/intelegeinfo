@@ -135,6 +135,8 @@ CMD bash `;
                     setTimeout(() => {
                         // Start websockify
                         try {
+                            //  TODO create a global webosckify instance for all connections, not attempt
+                            // to create one for each editor session, it wont work anyways
                             this.wsProxy = (0, child_process_1.spawn)('websockify', [
                                 '--web', path_1.default.join(server_1.rootDirName, 'vnc', 'noVNC'),
                                 '--token-plugin=TokenFile',
@@ -200,9 +202,10 @@ CMD bash `;
         const proc = (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "python clientFiles/" + res.fileName], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
         });
-        proc.addListener('close', code => {
-            this.wsProxy.kill();
-        });
+        // proc.addListener('close', code => {
+        //   if(this.wsProxy)
+        //     this.wsProxy.kill()
+        // })
         return proc;
     }
     compile(res) {

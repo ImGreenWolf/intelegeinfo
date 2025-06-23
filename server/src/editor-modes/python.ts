@@ -108,6 +108,9 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         setTimeout(() => {
                 // Start websockify
                 try {
+
+                  //  TODO create a global webosckify instance for all connections, not attempt
+                  // to create one for each editor session, it wont work anyways
              this.wsProxy = spawn('websockify', [
             '--web', path.join(rootDirName, 'vnc', 'noVNC'),
             '--token-plugin=TokenFile',
@@ -200,9 +203,10 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
             stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
         });
         
-        proc.addListener('close', code => {
-          this.wsProxy.kill()
-        })
+        // proc.addListener('close', code => {
+        //   if(this.wsProxy)
+        //     this.wsProxy.kill()
+        // })
 
         return proc;
        
