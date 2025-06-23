@@ -10734,7 +10734,7 @@ var EditSession = /** @class */ (function () {
         delete this.$breakpoints[row];
         this._signal("changeBreakpoint", {});
     };
-    EditSession.prototype.addMarker = function (range, clazz, type, inFront) {
+    EditSession.prototype.addMarker = function (range, clazz, type, inFront, extraStyle='') {
         var id = this.$markerId++;
         var marker = {
             range: range,
@@ -10742,6 +10742,7 @@ var EditSession = /** @class */ (function () {
             renderer: typeof type == "function" ? type : null,
             clazz: clazz,
             inFront: !!inFront,
+            extraStyle: extraStyle,
             id: id
         };
         if (inFront) {
@@ -16842,6 +16843,7 @@ var Marker = /** @class */ (function () {
         for (var key in this.markers) {
             var marker = this.markers[key];
             var id = marker //marker.id;
+            let extaStyle = marker.extraStyle;
             if (!marker.range) {
                 marker.update(html, this, this.session, config);
                 continue;
@@ -16856,19 +16858,19 @@ var Marker = /** @class */ (function () {
                 marker.renderer(html, range, left, top, config);
             }
             else if (marker.type == "fullLine") {
-                this.drawFullLineMarker(html, range, marker.clazz, config,'', id);
+                this.drawFullLineMarker(html, range, marker.clazz, config,extaStyle, id);
             }
             else if (marker.type == "screenLine") {
-                this.drawScreenLineMarker(html, range, marker.clazz, config,'', id);
+                this.drawScreenLineMarker(html, range, marker.clazz, config,extaStyle, id);
             }
             else if (range.isMultiLine()) {
                 if (marker.type == "text")
-                    this.drawTextMarker(html, range, marker.clazz, config,'', id);
+                    this.drawTextMarker(html, range, marker.clazz, config,extaStyle, id);
                 else
-                    this.drawMultiLineMarker(html, range, marker.clazz, config,'', id);
+                    this.drawMultiLineMarker(html, range, marker.clazz, config,extaStyle, id);
             }
             else {
-                this.drawSingleLineMarker(html, range, marker.clazz + " ace_start" + " ace_br15", config, 0, '', id);
+                this.drawSingleLineMarker(html, range, marker.clazz + " ace_start" + " ace_br15", config, 0, extaStyle, id);
             }
         }
         if (this.i != -1) {

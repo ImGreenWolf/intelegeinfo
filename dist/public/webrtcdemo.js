@@ -119,37 +119,26 @@ export class IIWebRTC {
     thistargetId;
     thisClientId;
     signaler;
+    localAudioStream;
+    localAudioSender = [];
+    //remote audio
     audio;
     onData = (data) => console.log(data);
+    onStartVoice = (data) => console.log(data);
     constructor(thistargetId, thisClientId, signaler, isHost, onConnection) {
         var configuration = {
             iceServers: [
                 { urls: "stun:stun.l.google.com:19302" },
                 {
                     urls: "turn:intelegeinfo.go.ro:3478",
-                    username: "name",
-                    credential: 'pass'
+                    username: "webrtc",
+                    credential: 'TODOimplementpass' // TODO i know this isnt okay. cant be bothered right now though
                 },
                 { urls: "stun:stun.l.google.com:5349" },
                 { urls: "stun:stun1.l.google.com:3478" },
                 { urls: "stun:stun1.l.google.com:5349" },
-                { urls: "stun:stun2.l.google.com:19302" },
-                { urls: "stun:stun2.l.google.com:5349" },
-                { urls: "stun:stun3.l.google.com:3478" },
-                { urls: "stun:stun3.l.google.com:5349" },
-                { urls: "stun:stun4.l.google.com:19302" },
-                { urls: "stun:stun4.l.google.com:5349" }
-            ], iceTransportPolicy: 'relay'
+            ]
         };
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-            if (!this.audio) {
-                this.audio = createNode('audio');
-                this.audio.autoplay = true;
-                document.body.appendChild(this.audio);
-                for (const track of stream.getTracks())
-                    this.pc?.addTrack(track, stream);
-            }
-        });
         // this.polite = !isHost
         // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc?session="+sessionId
         // const signaler = new WebSocket(WSUrl) // 
@@ -159,7 +148,22 @@ export class IIWebRTC {
         // console.log(this.id,'is caller : ', isHost, "target: ",thistargetId)
         this.dc = this.pc.createDataChannel('data'); // data channel for communication created locally on host
         console.log(this.id, "is host:", isHost, "caller:", thisClientId, "callee:", thistargetId);
+        this.dc.onclose = () => {
+            this.dc = undefined;
+        };
+        this.dc.onerror = (err) => {
+            console.error("DATA CHANNEL ERROR: ", err);
+            this.dc = undefined;
+        };
+        // this.beginSendingAudio()
         this.pc.ontrack = ({ track, streams }) => {
+            //  this.audio = createNode('audio');
+            // this.audio.autoplay = true;
+            // document.body.appendChild(this.audio)
+            this.audio = createNode('audio');
+            this.audio.autoplay = true;
+            // this.audio.autoplay = true;
+            document.body.appendChild(this.audio);
             track.onunmute = () => {
                 if (!this.audio)
                     return;
@@ -167,6 +171,7 @@ export class IIWebRTC {
                     return;
                 this.audio.srcObject = streams[0];
             };
+            this.onStartVoice(track, streams);
         };
         //ready to negotiate step 1
         this.pc.onnegotiationneeded = async () => {
@@ -271,6 +276,37 @@ export class IIWebRTC {
     }
     close() {
         this.pc?.close();
+    }
+    beginSendingAudio() {
+        return new Promise(resolve => {
+            const constrains = {
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true,
+                    //@ts-expect-error
+                    suppressLocalAudioPlayback: true
+                }
+            };
+            navigator.mediaDevices.getUserMedia(constrains).then(stream => {
+                // if(this.localAudioStream)
+                //     return;
+                this.localAudioStream = stream;
+                for (const track of stream.getTracks())
+                    this.pc?.addTrack(track, stream);
+                resolve(stream);
+            });
+        });
+    }
+    // stop sending audio permenantly
+    stopSendingAudio() {
+        for (const track of this.localAudioStream?.getTracks())
+            track.stop();
+        // navigator.mediaDevices.getUserMedia({audio: false}).then(stream => {
+        //     this.localAudioStream = undefined
+        //     for(const track of  this.localAudioSender)
+        //          this.pc?.removeTrack(track)
+        // })
     }
 }
 function webrtc() {

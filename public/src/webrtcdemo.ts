@@ -160,43 +160,30 @@ export class IIWebRTC
     thistargetId
     thisClientId
     signaler
+    localAudioStream: MediaStream | undefined
+    localAudioSender: RTCRtpSender[] = []
+    //remote audio
     audio: HTMLAudioElement | undefined
     onData: (data: string) => void = (data) => console.log(data)
+    onStartVoice: (track: MediaStreamTrack, stream: readonly MediaStream[]) => void = (data) => console.log(data)
 
     constructor(thistargetId,thisClientId, signaler: WebSocket, isHost, onConnection: (dataChannel: RTCDataChannel) => void)
     {
         var configuration: RTCConfiguration = {
             iceServers : [ 
-               { urls: "stun:stun.l.google.com:19302" },
+                { urls: "stun:stun.l.google.com:19302" },
                {
                 urls: "turn:intelegeinfo.go.ro:3478",
-                username: "name",
-                credential: 'pass'
+                username: "webrtc",
+                credential: 'TODOimplementpass' // TODO i know this isnt okay. cant be bothered right now though
                },
-                { urls: "stun:stun.l.google.com:5349" },
+               { urls: "stun:stun.l.google.com:5349" },
                 { urls: "stun:stun1.l.google.com:3478" },
                 { urls: "stun:stun1.l.google.com:5349" },
-                { urls: "stun:stun2.l.google.com:19302" },
-                { urls: "stun:stun2.l.google.com:5349" },
-                { urls: "stun:stun3.l.google.com:3478" },
-                { urls: "stun:stun3.l.google.com:5349" },
-                { urls: "stun:stun4.l.google.com:19302" },
-                { urls: "stun:stun4.l.google.com:5349" }
-             ],iceTransportPolicy: 'relay'
+             ]
         };
 
-        navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
-            if(!this.audio)
-            {
-                this.audio = createNode('audio');
-                this.audio.autoplay = true;
-                document.body.appendChild(this.audio)
-                
-                for(const track of stream.getTracks())
-                this.pc?.addTrack(track, stream)
-            }
-        })
-        
+      
 
           
         // this.polite = !isHost
@@ -213,15 +200,39 @@ export class IIWebRTC
         this.dc = this.pc!.createDataChannel('data') // data channel for communication created locally on host
 
         console.log(this.id, "is host:", isHost, "caller:", thisClientId, "callee:", thistargetId)
+
+          
+        this.dc.onclose = () => {
+            this.dc = undefined;
+        }
+          
+        this.dc.onerror = (err) => {
+            console.error("DATA CHANNEL ERROR: ", err);
+            
+            this.dc = undefined;
+        }
+            // this.beginSendingAudio()
+
+
+
         this.pc!.ontrack = ({ track, streams }) => {
-        track.onunmute = () => {
-            if(!this.audio)
-                return
-            if (this.audio!.srcObject) 
-                return;
-            this.audio!.srcObject! = streams[0];
-                    
-        };
+            //  this.audio = createNode('audio');
+            // this.audio.autoplay = true;
+            // document.body.appendChild(this.audio)
+              this.audio = createNode('audio');
+              this.audio.autoplay = true
+            // this.audio.autoplay = true;
+            document.body.appendChild(this.audio)
+            track.onunmute = () => {
+                if(!this.audio)
+                    return
+                if (this.audio!.srcObject) 
+                    return;
+                this.audio!.srcObject! = streams[0];
+                        
+            };
+
+            this.onStartVoice(track,streams)
         };
             //ready to negotiate step 1
         this.pc!.onnegotiationneeded = async () => {
@@ -344,6 +355,43 @@ export class IIWebRTC
     public close()
     {
         this.pc?.close()
+    }
+
+    public beginSendingAudio(): Promise<MediaStream>
+    {
+        return new Promise(resolve => {
+            const constrains: MediaStreamConstraints = {
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true,
+                    //@ts-expect-error
+                    suppressLocalAudioPlayback: true
+                }
+            }
+            navigator.mediaDevices.getUserMedia(constrains).then(stream => {
+                // if(this.localAudioStream)
+                //     return;
+                this.localAudioStream = stream
+                
+                for(const track of stream.getTracks())
+                    this.pc?.addTrack(track, stream)
+
+                resolve(stream)
+            })
+        })
+        
+    }
+    // stop sending audio permenantly
+    public stopSendingAudio()
+    {
+        for(const track of this.localAudioStream?.getTracks()!)
+        track.stop()
+        // navigator.mediaDevices.getUserMedia({audio: false}).then(stream => {
+        //     this.localAudioStream = undefined
+        //     for(const track of  this.localAudioSender)
+        //          this.pc?.removeTrack(track)
+        // })
     }
 }
 

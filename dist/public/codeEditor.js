@@ -5,10 +5,6 @@
 import { createNode, Dock, EditorCanvas, LoadingThrobber } from "./components";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
-const ClientDock = inIframe ? undefined : new Dock();
-const DockElement = inIframe ? undefined : ClientDock.render();
-if (DockElement)
-    document.getElementsByClassName('container')[0].appendChild(DockElement);
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
 var codeLens = ace.require("ace/ext/code_lens");
@@ -34,6 +30,27 @@ function parseArray(str) {
 }
 // Class to render one visual cursor
 class VisualCursor {
+    color;
+    cursorId;
+    getPosition;
+    constructor(color, cursorId, getPosition) {
+        this.color = color;
+        this.cursorId = cursorId;
+        this.getPosition = getPosition;
+    }
+    type = "line";
+    clazz = "ace_remote_cursor";
+    markerRef = undefined;
+    update(html, markerLayer, session, config) {
+        const pos = this.getPosition();
+        const screenPos = session.documentToScreenPosition(pos.row, pos.column);
+        const top = markerLayer.$getTop(screenPos.row, config);
+        const left = markerLayer.$padding + screenPos.column * config.characterWidth;
+        markerLayer.elt("ace_remote_cursor", `height: ${config.lineHeight}px; top: ${top}px; left: ${left}px; --color: #` + this.color);
+        // FOR FUTURE REFERENCE, HTML DOESNT WORK ANYMORE, USE ELT
+    }
+}
+class RemoteCursorSelection {
     cursorId;
     getPosition;
     constructor(cursorId, getPosition) {
@@ -111,9 +128,9 @@ class MultiCursorManager {
     constructor(editor) {
         this.editor = editor;
     }
-    addCursor(cursorId, position) {
+    addCursor(cursorId, position, color) {
         this.cursorsPos.set(cursorId, position);
-        const marker = new VisualCursor(cursorId, () => this.cursorsPos.get(cursorId));
+        const marker = new VisualCursor(color, cursorId, () => this.cursorsPos.get(cursorId));
         const markerDyn = this.editor.session.addDynamicMarker(marker, true);
         marker.markerRef = markerDyn;
         this.cursors.set(cursorId, marker);
@@ -132,13 +149,13 @@ class MultiCursorManager {
         this.editor.renderer.updateFrontMarkers();
         return success;
     }
-    replicateCursor(cursorId, position) {
+    replicateCursor(color, cursorId, position) {
         if (this.cursors.has(cursorId)) {
             this.updateCursor(cursorId, position);
             return this.cursorsPos.get(cursorId);
         }
         else
-            return this.addCursor(cursorId, position);
+            return this.addCursor(cursorId, position, color);
     }
 }
 class EditorCursor {
@@ -411,6 +428,7 @@ let currentFileName;
 let wsClientId;
 let wsSessionId;
 let isHost = false;
+let ClientOptions;
 const outputArea = document.getElementById("output");
 let testSubjectArea;
 let activeClientArea = outputArea;
@@ -429,13 +447,19 @@ let cameraEnabled = false;
 let videoStream;
 const variableArrayIndexes = [];
 const editorSessions = new Map();
+const ClientDock = inIframe ? undefined : new Dock();
+const DockElement = inIframe ? undefined : ClientDock.render();
+let microphone;
+let microphonePaused = true;
+if (DockElement)
+    document.getElementsByClassName('container')[0].appendChild(DockElement);
 let rtc = new Map();
 const editor = ace.edit("editor", {
     mode: "ace/mode/c_cpp",
     enableLiveAutocompletion: true,
     enableBasicAutocompletion: true,
     enableSnippets: true,
-    placeholder: "incepe sa scrii niste cod...",
+    placeholder: "scrie niste cod...",
     tooltipFollowsMouse: true,
     animatedScroll: true,
     useWorker: true,
@@ -672,6 +696,26 @@ export function displayMessagePopup(message) {
     <p>${message}</p>
     
     `);
+}
+function getStreamVolume(stream, updateFreq = 50, volumeCallback) {
+    const audioContext = new AudioContext();
+    const audioSource = audioContext.createMediaStreamSource(stream);
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512;
+    analyser.minDecibels = -127;
+    analyser.maxDecibels = 0;
+    analyser.smoothingTimeConstant = 0.4;
+    audioSource.connect(analyser);
+    const volumes = new Uint8Array(analyser.frequencyBinCount);
+    setInterval(() => {
+        analyser.getByteFrequencyData(volumes);
+        let volumeSum = 0;
+        for (const volume of volumes)
+            volumeSum += volume;
+        const averageVolume = volumeSum / volumes.length;
+        // Value range: 127 = analyser.maxDecibels - analyser.minDecibels;
+        volumeCallback(averageVolume);
+    }, updateFreq);
 }
 //
 ///
@@ -910,10 +954,15 @@ function updateLocalCursor(ev, fromPress) {
         const posX = ev.pageX;
         const posY = ev.pageY;
         for (const checkCursor of cursors.values())
-            if (getDistanceFromPosition(checkCursor.cursorContainer, posX, posY) < 100)
+            if (getDistanceFromPosition(checkCursor.cursorContainer, posX, posY) < 100) {
+                // if(checkCursor.cursor?.checkVisibility)
+                // rtc.get(checkCursor.id)!.audio.volume =  Math.floor(Math.min(100-getDistanceFromPosition(checkCursor.cursorContainer!, posX, posY)/2, 100)*2)/2/100 ;
                 checkCursor.nameElement.style.opacity = Math.min(100 - getDistanceFromPosition(checkCursor.cursorContainer, posX, posY) / 2, 100) + "%";
-            else
+            }
+            else {
+                // rtc.get(checkCursor.id)!.audio.volume =  0 ;
                 checkCursor.nameElement.style.opacity = "0%";
+            }
         const sizeX = document.body.clientWidth;
         const sizeY = document.body.clientHeight;
         const pos = getPointerRelativePosition(editor, posX, posY);
@@ -1553,8 +1602,8 @@ export function copySessionLink() {
     <form id="createSessionForm">
       <button id='close-share-session'>x</button>
 
-      <label for="chat">Enable Chat <input type="checkbox" name="chat" checked></label>
-      
+      <label for="chat">Porneste Chat <input type="checkbox" name="chat" checked></label>
+      <label for="chat">Porneste Voce <input type="checkbox" name="voice"></label>
       <label for="code-permission">Editor Permission 
           <select id='code-permission' name='codePermission'>
             <option value='0'>Everyone</option>
@@ -2136,6 +2185,86 @@ ws.onmessage = (event) => {
             setDebugLineStyle(debugLine);
         }
     }
+    function enableVoice() {
+        if (microphone)
+            throw 'microphone already exists';
+        microphone = createNode('div', { html: [createNode('div', { css: 'width: 100%; position: absolute; bottom: 0; background-color:white;' })],
+            id: 'microphone' });
+        microphone.onclick = (ev) => {
+            if (microphonePaused)
+                unpauseVoice(true);
+            else
+                pauseVoice();
+        };
+        document.getElementById('content-container')?.appendChild(microphone);
+        // for(const newRTC of rtc.values())
+        //   sendVoice(newRTC)
+    }
+    function pauseVoice() {
+        for (const newRTC of rtc.values())
+            if (newRTC.localAudioStream)
+                for (const track of newRTC.localAudioStream.getTracks())
+                    track.enabled = false;
+        microphonePaused = true;
+        microphone?.classList.remove('playing');
+    }
+    function unpauseVoice(autoStart = false) {
+        for (const newRTC of rtc.values())
+            if (newRTC.localAudioStream)
+                for (const track of newRTC.localAudioStream.getTracks())
+                    track.enabled = true;
+            else if (autoStart)
+                sendVoice(newRTC);
+        microphonePaused = false;
+        microphone?.classList.add('playing');
+    }
+    function sendVoice(newRTC) {
+        newRTC.beginSendingAudio().then(stream => {
+            const audio = stream.getTracks()[0];
+            if (audio) {
+                getStreamVolume(stream, 10, (volume) => {
+                    const normalize = Math.min(1, Math.max(0, Math.pow(volume / 100, 2)));
+                    const val = normalize * 255;
+                    const color = `rgb(${val}, ${val}, ${val})`;
+                    // (microphone!.children[0] as HTMLElement).style.backgroundColor = color;
+                    microphone.children[0].style.height = normalize * 50 + 'px';
+                });
+                audio.onmute = (ev) => {
+                    if (microphone)
+                        microphone.style.opacity = '0.15';
+                };
+                audio.onunmute = (ev) => {
+                    if (microphone)
+                        microphone.style.opacity = '1';
+                };
+            }
+        });
+    }
+    function disableVoice() {
+        if (microphone)
+            microphone.remove();
+        microphone = undefined;
+        for (const newRTC of rtc.values())
+            newRTC.stopSendingAudio();
+    }
+    function createRTCConnection(targetId, isHost) {
+        const newRTC = new IIWebRTC(targetId, wsClientId, ws, isHost, (dc) => {
+            ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate }));
+            addMouseListener(ClientOptions);
+            console.log(ClientOptions);
+        });
+        rtc.set(targetId, newRTC);
+        // if(ClientOptions)
+        //   if(ClientOptions.canVoice)
+        //       sendVoice(newRTC)
+        newRTC.onData = (data) => {
+            const eventJson = JSON.parse(data);
+            if (!cursors.has(eventJson.clientId))
+                new EditorCursor(eventJson);
+            else
+                cursors.get(targetId).update(eventJson);
+        };
+    }
     switch (type) {
         case 'rtc':
             // if(eventJson.end)
@@ -2158,18 +2287,27 @@ ws.onmessage = (event) => {
             if (rtc.has(callerId))
                 break;
             console.log('Createing remote rtc');
-            const newRTC = new IIWebRTC(callerId, wsClientId, ws, false, (dc) => {
-                ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate }));
-            });
-            rtc.set(callerId, newRTC);
-            newRTC.onData = (data) => {
-                const eventJson = JSON.parse(data);
-                console.log(eventJson);
-                if (!cursors.has(eventJson.clientId))
-                    new EditorCursor(eventJson);
-                else
-                    cursors.get(callerId).update(eventJson);
-            };
+            createRTCConnection(callerId, false);
+            // const newRTC = new IIWebRTC(callerId, wsClientId, ws, false, (dc) => {
+            //   ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate}))
+            // })
+            // if(!microphone)
+            // newRTC.onStartVoice = (track,stream) => {
+            //   microphone = createNode('div', {css: 'width: 50px; height: 50px; background-color: black;'})
+            //   document.getElementById('button-container')?.appendChild(microphone)
+            //   getStreamVolume(stream[0], 50, (volume) => {
+            //     console.log(volume)
+            //   })
+            // }
+            // rtc.set(callerId, newRTC)
+            // newRTC.onData = (data) => {
+            //   const eventJson = JSON.parse(data)
+            //   console.log(eventJson)
+            //   if(!cursors.has(eventJson.clientId))
+            //     new EditorCursor(eventJson)
+            //   else
+            //     cursors.get(callerId)!.update(eventJson)
+            // }
             break;
         case WebSocketMessageType.Error:
             writeOutput(data, eventJson);
@@ -2260,7 +2398,6 @@ ws.onmessage = (event) => {
                     document.cookie = 'session=' + wsSessionId + ';';
                 }, 15000);
                 //console.log(editor.session.toJSON()) // TODO Implement saving the editor session in a file on the server or on the client.
-                addMouseListener(eventJson);
             }
             if (eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
                 document.getElementById('share')?.classList.add('host');
@@ -2279,6 +2416,12 @@ ws.onmessage = (event) => {
                     editor.setReadOnly(true);
                 if (!sessionData.canChat)
                     document.getElementById('console')?.setAttribute('disabled', 'true');
+                ClientOptions = { canChat: eventJson.session.canChat, canEdit: eventJson.session.canEdit, canVoice: eventJson.session.canVoice };
+                if (!ClientOptions.canVoice)
+                    disableVoice();
+                else if (!microphone)
+                    enableVoice();
+                console.log(ClientOptions);
             }
             break;
         case WebSocketMessageType.CodeChange:
@@ -2428,7 +2571,6 @@ ws.onmessage = (event) => {
         case WebSocketMessageType.CodeSelection:
             if (!data) {
                 //clear selection
-                console.log("removed sleection");
                 editor.session.removeMarker(marker);
                 if (eventJson.clientId)
                     cursorManager.removeCursor(eventJson.clientId);
@@ -2445,9 +2587,9 @@ ws.onmessage = (event) => {
                 editor.session.removeMarker(marker);
             if (start && end) {
                 if (start !== end)
-                    marker = editor.session.addMarker(range, "ace_remote_selection", "line", false);
+                    marker = editor.session.addMarker(range, "ace_remote_selection", "line", false, 'background-color: #' + eventJson.color);
                 // TODO fix this so that the cursor goes to the end of the selection.
-                cursorManager.replicateCursor(eventJson.clientId, {
+                cursorManager.replicateCursor(eventJson.color, eventJson.clientId, {
                     row: (end.row > start.row) ? end.row : start.row,
                     column: (end.column > start.column) ? end.column : start.column,
                 });
@@ -2518,37 +2660,12 @@ ws.onmessage = (event) => {
                     break;
                 case "JOIN":
                     // a new client joined
-                    addMouseListener(eventJson.session);
+                    // addMouseListener(eventJson.session)
                     clients.push(new SessionClient(colabClientId, eventJson.displayName, eventJson.color));
                     if (rtc.has(colabClientId) || colabClientId == wsClientId)
                         break;
                     console.log('Createing local rtc');
-                    const newRTC = new IIWebRTC(colabClientId, wsClientId, ws, true, (dc) => {
-                        ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate }));
-                        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                            for (const track of stream.getTracks())
-                                newRTC.pc?.addTrack(track, stream);
-                        });
-                    });
-                    const audio = createNode('audio');
-                    audio.autoplay = true;
-                    document.body.appendChild(audio);
-                    newRTC.pc.ontrack = ({ track, streams }) => {
-                        track.onunmute = () => {
-                            if (audio.srcObject) {
-                                return;
-                            }
-                            audio.srcObject = streams[0];
-                        };
-                    };
-                    rtc.set(colabClientId, newRTC);
-                    newRTC.onData = (data) => {
-                        const eventJson = JSON.parse(data);
-                        if (!cursors.has(eventJson.clientId))
-                            new EditorCursor(eventJson);
-                        else
-                            cursors.get(colabClientId).update(eventJson);
-                    };
+                    createRTCConnection(colabClientId, true);
                     break;
                 case "LIST":
                     const colabContainer = document.getElementById("colab-container") || null;
@@ -2606,7 +2723,9 @@ ws.onmessage = (event) => {
                         const clientIndex = clients.findIndex((val) => val.clientId == eventJson.clientId);
                         if (clientIndex == -1) {
                             // create a new user
-                            const client = new SessionClient(colabClientId, eventJson.displayName, eventJson.color);
+                            if (!eventJson.clientId)
+                                return;
+                            const client = new SessionClient(eventJson.clientId, eventJson.displayName, eventJson.color);
                             client.editorSession = { fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor };
                             clients.push(client);
                         }

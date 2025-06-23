@@ -191,23 +191,35 @@ app.get('/editor/joinsession', (req, res) => {
         res.status(500).send({ error: "code expired or is invalid" });
     }
 });
+function checkboxValue(checkbox) {
+    return checkbox === 'on' ? true : false;
+}
 app.post('/editor/startsession/:id', (req, res) => {
-    const id = req.params.id;
-    if (!req.body && !id)
-        res.status(501);
-    if (exports.sessionMap.has(id)) {
-        const { chat, codePermission } = req.body;
-        if (exports.sessionMap.get(id).isPublic) {
-            exports.sessionMap.get(id).makeSessionPublic(chat === 'on' ? true : false, codePermission);
-            res.status(200);
+    try {
+        const id = req.params.id;
+        if (!req.body && !id)
+            res.status(501);
+        if (exports.sessionMap.has(id)) {
+            const { chat, codePermission, voice } = req.body;
+            if (exports.sessionMap.get(id).isPublic) {
+                exports.sessionMap.get(id).makeSessionPublic({ enableChat: checkboxValue(chat),
+                    editorPermission: codePermission,
+                    enableVoice: checkboxValue(voice) });
+                res.status(200);
+                return;
+            }
+            exports.sessionMap.get(id).makeSessionPublic({ enableChat: checkboxValue(chat),
+                editorPermission: codePermission,
+                enableVoice: checkboxValue(voice) });
+            res.status(201).send('');
+        }
+        else {
+            res.status(500);
             return;
         }
-        exports.sessionMap.get(id).makeSessionPublic(chat === 'on' ? true : false, codePermission);
-        res.status(201).send('');
     }
-    else {
-        res.status(500);
-        return;
+    catch (err) {
+        res.status(500).send(err);
     }
 });
 app.get('/editor/tooltipHints', (req, res) => {
@@ -308,6 +320,13 @@ function onServerStart() {
     else
         console.log("Server running on port " + PORT);
     cleanUp();
+    (0, child_process_1.exec)('sudo turnserver -a -o -v -n', (err, stdout) => {
+        if (err)
+            console.error('Couldnt start turn server');
+        else
+            console.log('Started turn server');
+        console.log(stdout);
+    });
 }
 const https = __importStar(require("https"));
 const http = __importStar(require("http"));
@@ -810,16 +829,16 @@ exports.wss.addListener('connection', async (ws, req) => {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
             if (!clientSession)
                 return;
-            const session = clientSession.clients.size != 1 ? { isHost, canChat: clientObj.canChat, canEdit: clientObj.canEdit } : undefined; //clientObj.isHost
+            const session = clientSession.clients.size != 1 ? clientObj.permissions : undefined; //clientObj.isHost
             const welcomeMessage = isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.go.ro'>Intelegeinfo.go.ro</a>" : !userLoggedIn ?
                 `Bine ai venit pe Intelege Info!
-        Scrie niste cod, apoi apasa compile si execute code, sau ruleaza in debugger.
-        Invita-ti prietenii sa editeze codul impreuna cu tine in timp real apasand butonul share`
+     Scrie cod, apoi apasa COMPILE si EXECUTE CODE sau ruleaza in DEBUGGER.
+      Invita-ti prietenii sa editeze codul împreună cu tine în timp real apăsând butonul SHARE.`
                 :
                     `Bine ai revenit ${userData?.username} pe Intelege Info!
         Poti salva codul tau apasand pe butonul save.`;
             // Send initial message to client
-            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Handshake, ...clientInfo(), messageType: types_1.ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project, session, canEdit: clientObj.canEdit }));
+            ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Handshake, ...clientInfo(), messageType: types_1.ConsoleMessageType.Info, sessionId: sessionId, body: welcomeMessage, project, session: clientObj.permissions, canEdit: clientObj.permissions.canEdit }));
             return session;
         }
         function clientInfo(thisclientObj, prefix = '') {
@@ -1133,9 +1152,13 @@ exports.wss.addListener('connection', async (ws, req) => {
                             builder.stderr.on('data', data => console.error(data.toString()));
                             builder.on('error', err => {
                                 reject('Error building Docker image:' + err);
+                                onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
+                                reject(err);
                             });
                         }
                         catch (error) {
+                            onClosedProgram(-1, 0, `<span class="console-error">${error}</span>`);
+                            reject(error);
                             console.error('Error building Docker image:', error);
                             return;
                         }
@@ -1509,7 +1532,7 @@ bash `.trim().replaceAll('\n', "");
                         });
                         break;
                     case types_1.WebSocketMessageType.Chat:
-                        if (!clientObj.canChat)
+                        if (!clientObj.permissions.canChat)
                             break;
                         // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
                         replicateFunction((clientWs) => {
@@ -1526,12 +1549,12 @@ bash `.trim().replaceAll('\n', "");
                         replicateFunction((thisClientWs, thisClientId, thisClientObj) => {
                             if (!thisClientObj.openFile)
                                 throw "this client obj has invalid file";
-                            if (clientSession.getClientObjectById(thisClientId).canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
+                            if (clientSession.getClientObjectById(thisClientId).permissions.canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
                                 thisClientWs.send(JSON.stringify({ ...messageJSON, ...clientInfo(clientObj) })); // TODO Sanitize this
                         }, clientObj);
                         break;
                     case types_1.WebSocketMessageType.CodeChange:
-                        if (!clientObj.canEdit)
+                        if (!clientObj.permissions.canEdit)
                             break;
                         const fileName = messageJSON.fileName;
                         // if(shouldSave==false)
@@ -1577,7 +1600,7 @@ bash `.trim().replaceAll('\n', "");
                         }, clientObj);
                         break;
                     case types_1.WebSocketMessageType.ConsoleTyping:
-                        if (!clientObj.canChat)
+                        if (!clientObj.permissions.canChat)
                             break;
                         const TypingIndicatorType = messageJSON.status;
                         replicateFunction((clientWs, localClientId) => {
@@ -1587,9 +1610,9 @@ bash `.trim().replaceAll('\n', "");
                     case types_1.WebSocketMessageType.CodeSelection:
                         //fs.writeFileSync(path.join(rootDirName, "cache", sessionId , "user_code.cpp"), messageJSON.code);
                         // console.log(type + " for sessionId " + sessionId);
-                        if (!clientObj.canEdit)
+                        if (!clientObj.permissions.canEdit)
                             break;
-                        const codeSelectionJSON = { type: types_1.WebSocketMessageType.CodeSelection, clientId: clientId, body: messageJSON };
+                        const codeSelectionJSON = { type: types_1.WebSocketMessageType.CodeSelection, clientId: clientId, body: messageJSON, color: clientObj.color };
                         getThisClientSession().clientCommandBuffer.set(clientId, { codeSelection: codeSelectionJSON });
                         // rename this to something more apropriate eg guily client idk
                         //    replicateSocketMessage(sessionId, clientId, true, {type: type, clientId: clientId, body: messageJSON}, (client) => { let filter = getThisClientSession()?.clientsActiveFile.get(client) != fileName; console.log(getThisClientSession()?.clientsActiveFile.get(client) + fileName); return filter;});
@@ -1612,7 +1635,7 @@ bash `.trim().replaceAll('\n', "");
     
     
                         */
-                        if (!clientObj.canEdit)
+                        if (!clientObj.permissions.canEdit)
                             break;
                         const commandType = messageJSON.command;
                         switch (commandType) {
@@ -1620,7 +1643,7 @@ bash `.trim().replaceAll('\n', "");
                                 new types_2.EditorFile(clientSession, messageJSON.name);
                                 break;
                             case types_3.FileManagementCommands.Delete:
-                                if (!clientObj.canEdit)
+                                if (!clientObj.permissions.canEdit)
                                     break;
                                 clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj);
                                 break;
@@ -1629,7 +1652,7 @@ bash `.trim().replaceAll('\n', "");
                                 sendListFiles(clientFilesPath);
                                 break;
                             case types_3.FileManagementCommands.Rename:
-                                if (!clientObj.canEdit)
+                                if (!clientObj.permissions.canEdit)
                                     break;
                                 clientSession.files.find(file => file.name == messageJSON.name).rename(messageJSON.newName, clientObj);
                                 break;
@@ -1639,7 +1662,7 @@ bash `.trim().replaceAll('\n', "");
                         }
                         break;
                     default:
-                        if (!clientObj.canEdit)
+                        if (!clientObj.permissions.canEdit)
                             break;
                         handleCommand(command, exports.clients); // pass all the clients in the session
                         async function handleCommand(command, sockets) {
@@ -1684,6 +1707,8 @@ bash `.trim().replaceAll('\n', "");
                                                         }
                                                         catch (err) {
                                                             console.error("Failed to run docker commands: " + err);
+                                                            onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
+                                                            reject(err);
                                                         }
                                                     });
                                                 });

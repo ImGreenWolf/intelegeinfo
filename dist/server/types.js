@@ -53,12 +53,12 @@ class ClientObject {
     ping;
     isHost = false;
     CWebSocket;
-    canEdit = true;
-    canChat = true;
+    permissions;
     color = randomHexColor();
     editorMode = editor_modes_1.CppMode;
     openFileName;
     openFile;
+    editorPermission = EditorPermission.Everyone;
     // EditorSessionObject: EditorSession
     constructor(sessionId, EditorSession, WebSocket, displayName, user) {
         this.sessionId = sessionId;
@@ -95,6 +95,9 @@ var EditorPermission;
     EditorPermission[EditorPermission["RequirePermission"] = 1] = "RequirePermission";
     EditorPermission[EditorPermission["Everyone"] = 0] = "Everyone";
 })(EditorPermission || (exports.EditorPermission = EditorPermission = {}));
+function EditorOptionsToPermissions(options, client) {
+    return { isHost: client.isHost, canChat: options.enableChat, canEdit: client.editorPermission >= EditorPermission.Everyone, canVoice: options.enableVoice };
+}
 class EditorSession {
     sessionId;
     clientsActiveFile = new Map(); // client , file name
@@ -114,21 +117,21 @@ class EditorSession {
     displayServer = 0;
     hostClient;
     isPublic;
-    enableChat = true;
-    editorPermission = EditorPermission.Everyone;
     joinCode;
     qrCode;
-    makeSessionPublic(enableChat, editorPermission) {
+    editorOptions = { editorPermission: EditorPermission.Everyone, enableChat: true, enableVoice: false };
+    makeSessionPublic(options) {
         this.isPublic = true;
-        this.enableChat = enableChat;
-        this.editorPermission = editorPermission;
+        this.editorOptions = options;
         for (const client of this.clients.values()) {
-            client.canChat = enableChat;
-            client.canEdit = editorPermission == EditorPermission.Everyone;
-            client.sendMessage({ type: types_1.WebSocketMessageType.Handshake, session: { isHost: client.isHost, canChat: client.canChat, canEdit: client.canEdit } });
+            // client.canChat = options.enableChat;
+            // client.canVoice = options.enableVoice
+            // client.canEdit = options.editorPermission == EditorPermission.Everyone;
+            const permissions = EditorOptionsToPermissions(this.editorOptions, client);
+            client.sendMessage({ type: types_1.WebSocketMessageType.Handshake, session: permissions });
         }
-        this.hostClient.canChat = true; // TODO figure out why i need to add this, when it should be true by default for the host.
-        this.hostClient.canEdit = true;
+        this.hostClient.permissions.canEdit = true; // TODO figure out why i need to add this, when it should be true by default for the host.
+        this.hostClient.permissions.canChat = true;
     }
     constructor(sessionId) {
         this.sessionId = sessionId || (0, uuid_1.v4)();
@@ -344,13 +347,13 @@ Tralalero Tralala`.split('\n');
             newClient = new ClientObject(this.sessionId, this, ws);
         if (this.clients.size == 0) {
             this.hostClient = newClient;
+            newClient.editorPermission = EditorPermission.OnlyHost;
             newClient.isHost = true;
-            newClient.canChat = true;
-            newClient.canEdit = true;
+            newClient.permissions = EditorOptionsToPermissions(this.editorOptions, newClient);
+            newClient.permissions.isHost = true;
         }
         else {
-            newClient.canChat = this.enableChat;
-            newClient.canEdit = (this.editorPermission == EditorPermission.Everyone);
+            newClient.permissions = EditorOptionsToPermissions(this.editorOptions, newClient);
         }
         this.clientsSockets.set(newClient.clientId, ws);
         this.clients.set(newClient.clientId, newClient);

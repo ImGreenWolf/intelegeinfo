@@ -12,12 +12,12 @@ export declare class ClientObject {
     ping: number;
     isHost: boolean;
     CWebSocket: WebSocket;
-    canEdit: boolean;
-    canChat: boolean;
+    permissions: ClientPermissions;
     color: string;
     editorMode: typeof EditorMode;
     openFileName: string;
     openFile: EditorFile;
+    editorPermission: EditorPermission;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: string | Record<string, any>, type?: WebSocketMessageType): void;
 }
@@ -28,6 +28,17 @@ export declare enum EditorPermission {
     OnlyHost = 2,
     RequirePermission = 1,
     Everyone = 0
+}
+export interface EditorOptions {
+    enableChat: boolean;
+    enableVoice: boolean;
+    editorPermission: EditorPermission;
+}
+export interface ClientPermissions {
+    canChat: boolean;
+    canVoice: boolean;
+    canEdit: boolean;
+    isHost: boolean;
 }
 export declare class EditorSession {
     sessionId: UUID;
@@ -53,11 +64,10 @@ export declare class EditorSession {
     displayServer: number;
     hostClient: ClientObject;
     isPublic: boolean;
-    enableChat: boolean;
-    editorPermission: EditorPermission;
     joinCode: number;
     qrCode: any;
-    makeSessionPublic(enableChat: boolean, editorPermission: EditorPermission): void;
+    editorOptions: EditorOptions;
+    makeSessionPublic(options: EditorOptions): void;
     constructor(sessionId?: UUID);
     toJSON(): any;
     static fromJSON(data: any): EditorSession;

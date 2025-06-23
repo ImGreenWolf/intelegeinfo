@@ -9,8 +9,11 @@ export declare class IIWebRTC {
     thistargetId: any;
     thisClientId: any;
     signaler: any;
+    localAudioStream: MediaStream | undefined;
+    localAudioSender: RTCRtpSender[];
     audio: HTMLAudioElement | undefined;
     onData: (data: string) => void;
+    onStartVoice: (track: MediaStreamTrack, stream: readonly MediaStream[]) => void;
     constructor(thistargetId: any, thisClientId: any, signaler: WebSocket, isHost: any, onConnection: (dataChannel: RTCDataChannel) => void);
     handleSignal({ type, targetId, callerId, description, candidate }: {
         type: any;
@@ -22,4 +25,6 @@ export declare class IIWebRTC {
     addMediaStream(selfVideo: any): Promise<void>;
     send(data: string): void;
     close(): void;
+    beginSendingAudio(): Promise<MediaStream>;
+    stopSendingAudio(): void;
 }

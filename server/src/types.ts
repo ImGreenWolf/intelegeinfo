@@ -20,12 +20,12 @@ export class ClientObject {
     ping: number;
     isHost: boolean = false;
     CWebSocket: WebSocket;
-    canEdit: boolean = true;
-    canChat: boolean = true;
+    permissions: ClientPermissions
     color: string = randomHexColor();
     editorMode: typeof EditorMode = CppMode;
     openFileName: string
     openFile: EditorFile;
+    editorPermission: EditorPermission = EditorPermission.Everyone
     // EditorSessionObject: EditorSession
     public constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {
         this.sessionId = sessionId;
@@ -41,12 +41,12 @@ export class ClientObject {
         else
         {
             const displayNames = EditorSession.clientsDisplayNames;
-        if(false) this.displayName = EditorSession.brainrotNames[Math.floor(Math.random() * EditorSession.brainrotNames.length)]
-        else this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)]
+            if(false) this.displayName = EditorSession.brainrotNames[Math.floor(Math.random() * EditorSession.brainrotNames.length)]
+            else this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)]
 
-        displayNames.splice(displayNames.indexOf(this.displayName), 1)
-        if(this.displayName[0]) 
-            this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
+            displayNames.splice(displayNames.indexOf(this.displayName), 1)
+            if(this.displayName[0]) 
+                this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
         }
         
       }
@@ -73,7 +73,24 @@ export enum EditorPermission
     RequirePermission = 1,
     Everyone = 0,
 }
+export interface EditorOptions
+{
+    enableChat: boolean,
+    enableVoice: boolean,
+    editorPermission: EditorPermission
+}
 
+export interface ClientPermissions
+{
+    canChat: boolean,
+    canVoice: boolean,
+    canEdit: boolean,
+    isHost: boolean,
+}
+function EditorOptionsToPermissions(options, client: ClientObject)
+{
+    return {isHost: client.isHost, canChat: options.enableChat, canEdit:  client.editorPermission >= EditorPermission.Everyone, canVoice: options.enableVoice}
+}
 export class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string> = new Map<UUID, string>(); // client , file name
@@ -94,26 +111,26 @@ export class EditorSession {
 
     hostClient: ClientObject
     isPublic: boolean
-    enableChat: boolean = true
-    editorPermission: EditorPermission = EditorPermission.Everyone
     joinCode: number;
     qrCode;
-    
-    public makeSessionPublic(enableChat: boolean, editorPermission: EditorPermission)
+
+    editorOptions: EditorOptions = {editorPermission: EditorPermission.Everyone, enableChat: true, enableVoice: false}
+    public makeSessionPublic(options: EditorOptions)
     {
         this.isPublic = true
-        this.enableChat = enableChat
-        this.editorPermission = editorPermission
+        this.editorOptions = options
         for(const client of this.clients.values())
         {
             
-            client.canChat = enableChat;
-            client.canEdit = editorPermission == EditorPermission.Everyone;
+            // client.canChat = options.enableChat;
+            // client.canVoice = options.enableVoice
+            // client.canEdit = options.editorPermission == EditorPermission.Everyone;
 
-            client.sendMessage({type: WebSocketMessageType.Handshake, session: {isHost: client.isHost, canChat: client.canChat, canEdit: client.canEdit}})
+            const permissions: ClientPermissions = EditorOptionsToPermissions( this.editorOptions,client)
+            client.sendMessage({type: WebSocketMessageType.Handshake, session: permissions})
         }
-        this.hostClient.canChat = true; // TODO figure out why i need to add this, when it should be true by default for the host.
-        this.hostClient.canEdit = true;
+        this.hostClient.permissions.canEdit = true// TODO figure out why i need to add this, when it should be true by default for the host.
+        this.hostClient.permissions.canChat = true
         
     }
 
@@ -363,18 +380,18 @@ Tralalero Tralala`.split('\n')
     {
         let newClient: ClientObject;
         if(userData != undefined) newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
-        else newClient = new ClientObject(this.sessionId, this, ws);
+            else newClient = new ClientObject(this.sessionId, this, ws);
         if(this.clients.size == 0)
         {
             this.hostClient = newClient
+            newClient.editorPermission = EditorPermission.OnlyHost
             newClient.isHost = true;
-            newClient.canChat = true;
-            newClient.canEdit = true;
+            newClient.permissions = EditorOptionsToPermissions( this.editorOptions,newClient)
+            newClient.permissions.isHost = true
         }
         else
         {
-        newClient.canChat = this.enableChat;
-        newClient.canEdit = (this.editorPermission == EditorPermission.Everyone);
+            newClient.permissions = EditorOptionsToPermissions( this.editorOptions,newClient)
         }
         
         this.clientsSockets.set(newClient.clientId, ws)
