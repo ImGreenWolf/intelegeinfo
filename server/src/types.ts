@@ -25,6 +25,7 @@ export class ClientObject {
     editorMode: typeof EditorMode = CppMode;
     openFileName: string
     openFile: EditorFile;
+    webcamid: number
     editorPermission: EditorPermission = EditorPermission.Everyone
     // EditorSessionObject: EditorSession
     public constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {

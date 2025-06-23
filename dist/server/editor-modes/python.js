@@ -49,7 +49,7 @@ class Python extends BaseEditorMode_1.default {
     runParams = (clientObj) => {
         const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
         if (hasGUI)
-            return `--device=/dev/video10:/dev/video0 -v "/tmp/vnc-${clientObj.sessionId}:/app/vnc"`;
+            return `--device=/dev/video${clientObj.webcamid}:/dev/video0 -v "/tmp/vnc-${clientObj.sessionId}:/app/vnc"`;
         else
             return "";
     };

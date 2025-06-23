@@ -697,7 +697,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     let project;
     let processInputBuffer = '';
     let spawnPromise;
-
+    let webcamid
     let shouldSave:boolean = false; 
     let shouldSaveTimeout;
     console.log(req.headers)
@@ -1733,8 +1733,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     try {
                         if(messageJSON.started)
                         {
+                            clientObj.webcamid = Math.floor(Math.random()*50)
                             execSync('sudo modprobe -r v4l2loopback')
-                            const video = exec('sudo modprobe v4l2loopback video_nr=10 card_label="virtualcam" exclusive_caps=1')
+                            const video = exec(`sudo modprobe v4l2loopback video_nr=${clientObj.webcamid} card_label="${clientId}" exclusive_caps=1`)
                             video.stdout.pipe(process.stdout)
                             video.stderr.pipe(process.stdout)
 

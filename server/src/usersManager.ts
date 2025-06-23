@@ -260,14 +260,19 @@ async function updateTransporter() {
 
         process.env.GOOGLE_EMAILV_ACCESSTOKEN = accessToken.token;
         transporter = nodemailer.createTransport({
-        service: "gmail",
+        // service: "gmail",
+        host: 'antares.webyouridea.ro',
+        port: 465,
+        secure: true,
         auth: {
-          type: "OAuth2",
-          user: 'intelegeinfo@gmail.com',
-          clientId: process.env.GOOGLE_CLIENT_ID!,
-          clientSecret:  process.env.GOOGLE_CLIENT_SECRET!,
-          refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
-          accessToken: accessToken.token,//process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+        //   type: "OAuth2",
+        //   user: 'intelegeinfo@gmail.com',
+        //   clientId: process.env.GOOGLE_CLIENT_ID!,
+        //   clientSecret:  process.env.GOOGLE_CLIENT_SECRET!,
+        //   refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
+        //   accessToken: accessToken.token,//process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+        user: 'noreply@intelegeinfo.ro',
+        pass: 'UqEYt879APBP'
         //   expires: Date.now(),
         },
         tls: {
@@ -310,17 +315,18 @@ router.get('/verifyemail', (req, res) => {
      
        
         var mailOptions = {
-            from: 'intelegeinfo@gmail.com',
+            from: 'noreply@intelegeinfo.ro',
             to: user.email,
             subject: code.toString() + ' | Verificare Email',
             // html: callbackFile,
             text: code.toString(),
-            auth: {
-                user: 'intelegeinfo@gmail.com',
-                refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
-                accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
-                expires: Date.now(),
-            },
+            // auth: {
+            //     user: 'noreply@intelegeinfo.ro',
+            //     pass: 'UqEYt879APBP'
+                // refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
+                // accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+                // expires: Date.now(),
+            // },
           };
           if(false)
           res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail))

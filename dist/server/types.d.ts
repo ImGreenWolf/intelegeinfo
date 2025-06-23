@@ -17,6 +17,7 @@ export declare class ClientObject {
     editorMode: typeof EditorMode;
     openFileName: string;
     openFile: EditorFile;
+    webcamid: number;
     editorPermission: EditorPermission;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: string | Record<string, any>, type?: WebSocketMessageType): void;

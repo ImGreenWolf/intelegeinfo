@@ -220,14 +220,19 @@ async function updateTransporter() {
     oauth2Client.getAccessToken().then(accessToken => {
         process.env.GOOGLE_EMAILV_ACCESSTOKEN = accessToken.token;
         transporter = nodemailer_1.default.createTransport({
-            service: "gmail",
+            // service: "gmail",
+            host: 'antares.webyouridea.ro',
+            port: 465,
+            secure: true,
             auth: {
-                type: "OAuth2",
-                user: 'intelegeinfo@gmail.com',
-                clientId: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
-                accessToken: accessToken.token, //process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+                //   type: "OAuth2",
+                //   user: 'intelegeinfo@gmail.com',
+                //   clientId: process.env.GOOGLE_CLIENT_ID!,
+                //   clientSecret:  process.env.GOOGLE_CLIENT_SECRET!,
+                //   refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
+                //   accessToken: accessToken.token,//process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+                user: 'noreply@intelegeinfo.ro',
+                pass: 'UqEYt879APBP'
                 //   expires: Date.now(),
             },
             tls: {
@@ -254,17 +259,18 @@ exports.router.get('/verifyemail', (req, res) => {
             for (const match of user.email.matchAll(/#{(\w*) ?(?:\?)(.*): ?(.*)}|#{(\w*)}/g))
                 censoredEmail = censoredEmail.replace(match[1], "*".repeat(match[1].length)).replace(match[2], "*".repeat(match[2].length));
             var mailOptions = {
-                from: 'intelegeinfo@gmail.com',
+                from: 'noreply@intelegeinfo.ro',
                 to: user.email,
                 subject: code.toString() + ' | Verificare Email',
                 // html: callbackFile,
                 text: code.toString(),
-                auth: {
-                    user: 'intelegeinfo@gmail.com',
-                    refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
-                    accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
-                    expires: Date.now(),
-                },
+                // auth: {
+                //     user: 'noreply@intelegeinfo.ro',
+                //     pass: 'UqEYt879APBP'
+                // refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
+                // accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
+                // expires: Date.now(),
+                // },
             };
             if (false)
                 res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail));

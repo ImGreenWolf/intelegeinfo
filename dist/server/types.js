@@ -58,6 +58,7 @@ class ClientObject {
     editorMode = editor_modes_1.CppMode;
     openFileName;
     openFile;
+    webcamid;
     editorPermission = EditorPermission.Everyone;
     // EditorSessionObject: EditorSession
     constructor(sessionId, EditorSession, WebSocket, displayName, user) {
