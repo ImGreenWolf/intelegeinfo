@@ -126,6 +126,7 @@ class Console {
   stdin: string[] = []
   event = new Event("open");
   compileMessage: HTMLDivElement | undefined
+  noVNC: HTMLIFrameElement | undefined
   constructor () {
     if(outputConsoles.length>0)
       outputConsoles[outputConsoles.length-1].callbackCreate(this)
@@ -3936,7 +3937,9 @@ function onExit() {
   editor.session.removeMarker(lastDebugId);
   document.getElementById('buttons')?.classList.remove('executing')
   document.getElementById('execute-control')!.innerText = "Executa Programul"
-
+  
+  if(activeConsole?.noVNC)
+    activeConsole?.noVNC?.remove()
   if(document.getElementById('active-console'))
     document.getElementById('active-console')!.id = '';
   activeConsole = undefined
@@ -4230,6 +4233,8 @@ export function displaynoVNC(container)
   const src = window.location.protocol+ +'//'+window.location.hostname+':8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token='+wsSessionId
   frame.src = 'https://'+window.location.hostname+':8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token='+wsSessionId
   frame.id = 'noVNC'
+  if(activeConsole)
+    activeConsole!.noVNC = frame
   container.appendChild(frame)
 }
 

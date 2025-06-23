@@ -116,7 +116,7 @@
     filter: blur(10px);
   }
 }
-#noVDC {
+#noVNC {
   min-width: 600px;
   min-height: 480px;
 }

@@ -3,6 +3,7 @@ declare class Console {
     stdin: string[];
     event: Event;
     compileMessage: HTMLDivElement | undefined;
+    noVNC: HTMLIFrameElement | undefined;
     constructor();
     onCompileStart(message?: string): void;
     onProcessStart(): void;
