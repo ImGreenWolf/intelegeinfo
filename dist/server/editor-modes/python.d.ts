@@ -7,6 +7,7 @@ declare class Python extends EditorMode {
     static extension: string[];
     wsProxy: ChildProcess;
     isInterpreter: boolean;
+    hasGUI: boolean;
     runParams: (clientObj: ClientObject) => string;
     static defaultText: string;
     static dockerFile: string;

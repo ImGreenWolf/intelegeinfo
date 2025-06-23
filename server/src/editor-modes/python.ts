@@ -4,7 +4,7 @@ import path from "path";
 import { rootDirName } from "../server";
 import * as fs from 'fs'
 import { ClientObject, EditorFile, EditorSession } from "../types";
-import { WebSocketMessageType } from "../../../shared/src/types";
+import { WebSocketMessageType } from '../../../dist/shared/types';
 class Python extends EditorMode {
 
     static name = 'Python'

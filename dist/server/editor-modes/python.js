@@ -41,19 +41,20 @@ const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 const server_1 = require("../server");
 const fs = __importStar(require("fs"));
-const types_1 = require("../../../shared/src/types");
+const types_1 = require("../../../dist/shared/types");
 class Python extends BaseEditorMode_1.default {
     static name = 'Python';
     static dockerSafeTag = 'py';
     static extension = ['py'];
     wsProxy;
     isInterpreter = true;
+    hasGUI = false;
     runParams = (clientObj) => {
-        const hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
+        this.hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
         let buffer = '';
         if (clientObj.webcamid)
             buffer += '--device=/dev/video${clientObj.webcamid}:/dev/video0';
-        if (hasGUI)
+        if (this.hasGUI)
             return buffer + ` -v "/tmp/vnc-${clientObj.sessionId}:/app/vnc"`;
         else
             return "";
@@ -203,7 +204,7 @@ CMD bash `;
         const proc = (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "python clientFiles/" + res.fileName], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
         });
-        if (sessionObj)
+        if (sessionObj && this.hasGUI)
             sessionObj.replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawnGUI' }, types_1.WebSocketMessageType.ExecuteStatus));
         // proc.addListener('close', code => {
         //   if(this.wsProxy)
