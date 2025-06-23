@@ -7,3 +7,4 @@ saved/
 prisma/migrations/
 generated/
 server/data/subiecte
+.env

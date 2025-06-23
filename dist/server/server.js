@@ -331,7 +331,7 @@ function onServerStart() {
 const https = __importStar(require("https"));
 const http = __importStar(require("http"));
 //          GLOBAL  SERVER  VARIABLES       //
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 try {
     var privkey = fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem');
     var fullchain = fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem');
@@ -343,11 +343,14 @@ const credentials = { key: process.env.NODE_ENV == 'development' ? '' : privkey 
 if (process.env.NODE_ENV == 'development')
     console.log('SERVER RUNNING IN DEV MODE');
 var httpsServer = https.createServer(credentials, app);
-var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req, res) => {
-    res.statusCode = 301;
-    res.setHeader('Location', 'https://intelegeinfo.go.ro' + req.url);
-    res.end();
-});
+if (fullchain && privkey)
+    var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req, res) => {
+        res.statusCode = 301;
+        res.setHeader('Location', 'https://intelegeinfo.go.ro' + req.url);
+        res.end();
+    });
+else
+    var httpServer = http.createServer(app);
 let connectionPromise;
 const codeMap = new Map();
 const unsecureServer = httpServer.listen(3000);
