@@ -334,8 +334,8 @@ const http = __importStar(require("http"));
 const PORT = process.env.PORT || 3000;
 const SECPORT = process.env.SECPORT || 3443;
 try {
-    var privkey = fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem');
-    var fullchain = fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem');
+    var privkey = fs_1.default.readFileSync(process.env.PRIVKEYPATH);
+    var fullchain = fs_1.default.readFileSync(process.env.FULLCHAINPATH);
 }
 catch (err) {
 }

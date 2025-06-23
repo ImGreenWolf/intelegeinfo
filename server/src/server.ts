@@ -408,8 +408,8 @@ import * as http from 'http'
             const PORT = process.env.PORT || 3000;
             const SECPORT = process.env.SECPORT || 3443;
     try  {
-        var privkey = fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem')
-        var fullchain = fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem')
+        var privkey = fs.readFileSync(process.env.PRIVKEYPATH)
+        var fullchain = fs.readFileSync(process.env.FULLCHAINPATH)
     }
     catch(err)
     {
