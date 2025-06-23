@@ -12,8 +12,11 @@ class Python extends EditorMode {
     isInterpreter = true;
     runParams = (clientObj: ClientObject) => {
       const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
+      let buffer = '';
+      if(clientObj.webcamid)
+        buffer += '--device=/dev/video${clientObj.webcamid}:/dev/video0'
       if(hasGUI)
-      return `--device=/dev/video${clientObj.webcamid}:/dev/video0 -v "/tmp/vnc-${clientObj.sessionId}:/app/vnc"`
+      return buffer+ ` -v "/tmp/vnc-${clientObj.sessionId}:/app/vnc"`
       else 
       return ""
     }
