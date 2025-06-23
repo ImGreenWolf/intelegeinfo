@@ -13,7 +13,7 @@ declare class Python extends EditorMode {
     vcam: ChildProcess;
     onBuild(res: any, clientSession: EditorSession): Promise<number>;
     receiveWebCam(rawData: any): void;
-    execute(res: any): Promise<import("child_process").ChildProcessWithoutNullStreams>;
+    execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Promise<import("child_process").ChildProcessWithoutNullStreams>;
     compile(res: any): void;
     onSpawn(sessionObj: any): void;
 }

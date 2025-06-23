@@ -565,7 +565,7 @@ export class EditorCanvas extends IElement {
         this.ctx.fillStyle ='white'
         this.ctx.strokeStyle = 'black'
         this.ctx.fillRect(0,0,this.w,this.h)
-        this.ctx.lineWidth = 1;
+        this.ctx.lineWidth = 5;
         
         this.canvas.onmousedown = (ev => {
             this.isDrawing = 1

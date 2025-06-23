@@ -41,6 +41,7 @@ const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 const server_1 = require("../server");
 const fs = __importStar(require("fs"));
+const types_1 = require("../../../shared/src/types");
 class Python extends BaseEditorMode_1.default {
     static name = 'Python';
     static dockerSafeTag = 'py';
@@ -195,13 +196,15 @@ CMD bash `;
                 this.vcam.stdin.write(data);
             }
     }
-    async execute(res) {
+    async execute(res, clientObj, sessionObj) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
         // execSync('docker exec -i '+res.imageName + ' sh -c "pip install opencv-python"')
         const proc = (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "python clientFiles/" + res.fileName], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
         });
+        if (sessionObj)
+            sessionObj.replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawnGUI' }, types_1.WebSocketMessageType.ExecuteStatus));
         // proc.addListener('close', code => {
         //   if(this.wsProxy)
         //     this.wsProxy.kill()

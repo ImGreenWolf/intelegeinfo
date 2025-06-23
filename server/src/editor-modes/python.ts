@@ -4,6 +4,7 @@ import path from "path";
 import { rootDirName } from "../server";
 import * as fs from 'fs'
 import { ClientObject, EditorFile, EditorSession } from "../types";
+import { WebSocketMessageType } from "../../../shared/src/types";
 class Python extends EditorMode {
 
     static name = 'Python'
@@ -11,12 +12,13 @@ class Python extends EditorMode {
     static extension = ['py']
     wsProxy: ChildProcess
     isInterpreter = true;
+    hasGUI = false;
     runParams = (clientObj: ClientObject) => {
-      const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
+      this.hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
       let buffer = '';
       if(clientObj.webcamid)
         buffer += '--device=/dev/video${clientObj.webcamid}:/dev/video0'
-      if(hasGUI)
+      if(this.hasGUI)
       return buffer+ ` -v "/tmp/vnc-${clientObj.sessionId}:/app/vnc"`
       else 
       return ""
@@ -158,7 +160,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         } else
         pid = parseInt(data);
 
-
+          
            this.vcam = spawn('python3', ['camera.py'], {stdio: 'pipe'})
 
 
@@ -194,7 +196,7 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         this.vcam.stdin.write(data);
       }
   }
-    async execute(res) {
+    async execute(res, clientObj: ClientObject, sessionObj: EditorSession) {
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
         // execSync('docker exec -i '+res.imageName + ' sh -c "pip install opencv-python"')
@@ -202,7 +204,9 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         const proc = spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","python clientFiles/" + res.fileName], {
             stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
         });
-        
+        if(sessionObj && this.hasGUI)
+           sessionObj.replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawnGUI'}, WebSocketMessageType.ExecuteStatus))
+
         // proc.addListener('close', code => {
         //   if(this.wsProxy)
         //     this.wsProxy.kill()

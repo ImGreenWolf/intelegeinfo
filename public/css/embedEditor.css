@@ -178,6 +178,11 @@ header {
   overflow: hidden;
 }
 
+.ace_scrollbar {
+  background-color: transparent;
+  scrollbar-color: #474747 #191919;
+}
+
 .service-stopped, .service-error {
   position: absolute;
   top: 0;

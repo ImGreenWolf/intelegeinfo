@@ -1531,8 +1531,7 @@ bash `.trim().replaceAll('\n', "")
             if(hasGUI && clientSession.displayServer == 0) // doesnt have display server
             {
                 clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
-                replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawnGUI'}, WebSocketMessageType.ExecuteStatus))
-
+               
             }
                 
             resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
@@ -2119,7 +2118,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                         // clientSession.program = spawn('docker', ['exec', "-i", res.imageName, "bash","-c", "./main"], {
                                                         //     stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
                                                         //     });
-                                                        clientSession.program = await clientObj.openFile.editorMode.execute(res)
+                                                        clientSession.program = await clientObj.openFile.editorMode.execute(res, clientObj, clientSession)
 
                                                         readStdio(clientSession.program, messageJSON, res).then(()=> resolve())
                                                     }

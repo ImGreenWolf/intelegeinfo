@@ -136,6 +136,12 @@ header
     overflow: hidden;
 
 }
+.ace_scrollbar
+{
+    background-color: transparent;
+    scrollbar-color: #474747 #191919;
+    // scrollbar-width: thin;
+}
 
 .service-stopped, .service-error
 {

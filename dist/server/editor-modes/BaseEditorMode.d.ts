@@ -9,7 +9,7 @@ declare abstract class EditorMode {
     isExecutable: boolean;
     runParams(clientObj: any): string;
     isInterpreter: boolean;
-    abstract execute(res: any): ChildProcess | Promise<ChildProcess>;
+    abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): ChildProcess | Promise<ChildProcess>;
     abstract compile(res: any, file: EditorFile, isDebugging?: boolean): any;
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<any>;
     shouldRebuild(sessionObj: EditorSession, clientObj: ClientObject): boolean;
