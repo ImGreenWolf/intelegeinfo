@@ -332,8 +332,14 @@ const https = __importStar(require("https"));
 const http = __importStar(require("http"));
 //          GLOBAL  SERVER  VARIABLES       //
 const PORT = 3000;
-const credentials = { key: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem'),
-    cert: process.env.NODE_ENV == 'development' ? '' : fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem') };
+try {
+    var privkey = fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem');
+    var fullchain = fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem');
+}
+catch (err) {
+}
+const credentials = { key: process.env.NODE_ENV == 'development' ? '' : privkey || '',
+    cert: process.env.NODE_ENV == 'development' ? '' : fullchain || '' };
 if (process.env.NODE_ENV == 'development')
     console.log('SERVER RUNNING IN DEV MODE');
 var httpsServer = https.createServer(credentials, app);
