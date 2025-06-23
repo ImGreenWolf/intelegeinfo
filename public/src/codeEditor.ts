@@ -4227,8 +4227,8 @@ export function displaynoVNC(container)
 {
   const frame = document.createElement('iframe')
   // TODO Implement a better noVNC client
-  const src = window.location.protocol+ +'//'+window.location.hostname+'8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token='+wsSessionId
-  frame.src = 'https://'+window.location.hostname+'8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token='+wsSessionId
+  const src = window.location.protocol+ +'//'+window.location.hostname+':8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token='+wsSessionId
+  frame.src = 'https://'+window.location.hostname+':8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token='+wsSessionId
   frame.id = 'noVDC'
   container.appendChild(frame)
 }
