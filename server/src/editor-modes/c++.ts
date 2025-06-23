@@ -89,7 +89,7 @@ int main()
     }
 
     startDebugging(res) {
-        return spawn("docker", ["exec", res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+        return spawn("docker", ["exec", '-di', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
     }
 
       checkCodeSyntax = (sessionObj: EditorSession, file: EditorFile): Promise<string> =>

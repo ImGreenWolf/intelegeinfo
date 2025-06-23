@@ -310,7 +310,7 @@ class EditorCursor {
             this.posX = updatedPos.posX;
             this.posY = updatedPos.posY;
             this.step = 0;
-            const stepSize = 8;
+            const stepSize = 1;
             if (this.updateInterval) {
                 this.lposX = this.cposX;
                 this.lposY = this.cposY;
@@ -348,6 +348,21 @@ class EditorCursor {
             else {
                 this.cursorContainer.style.left = this.posX + 'px';
                 this.cursorContainer.style.top = this.posY + 'px';
+                if (eventJson.pointerType == "touch") {
+                    if (this.animTimeout)
+                        clearTimeout(this.animTimeout);
+                    this.animTimeout = setTimeout(() => {
+                        this.animated = false;
+                        this.cursor.animate([
+                            { opacity: "100%", transform: "scale(1) translate(-50%, -50%)" },
+                            { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)" },
+                        ], {
+                            duration: 250,
+                            fill: "both",
+                            // easing: "ease-out"
+                        });
+                    }, 250);
+                }
             }
         }
     }
@@ -969,7 +984,7 @@ function updateLocalCursor(ev, fromPress) {
         const rectWidth = editor.renderer.characterWidth;
         const rechHeight = editor.renderer.lineHeight;
         const pointerType = ev.pointerType;
-        if (pointerType == "touch") {
+        if (pointerType != "mouse") {
             const height = ev.height;
             const width = ev.width;
             for (const conn of rtc.values())
@@ -1015,7 +1030,14 @@ function addMouseListener(session) {
     // TODO Maybe limit this only to the editor itself.
     if (session != undefined && session.canEdit && session.canChat)
         document.onpointermove = (ev) => updateLocalCursor(ev, false);
-    document.onpointerdown = (ev) => updateLocalCursor(ev, true);
+    document.onpointerdown = (ev) => {
+        //   ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, pointerType:  ev.pointerType}))
+        updateLocalCursor(ev, true);
+    };
+    // document.onpointerdown = (ev) => {
+    //   ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, pointerType:  ev.pointerType}))
+    //   updateLocalCursor(ev, true)
+    // }
 }
 /* IMPORTS */
 // FileManagement.ts
@@ -2249,8 +2271,19 @@ ws.onmessage = (event) => {
     }
     function createRTCConnection(targetId, isHost) {
         const newRTC = new IIWebRTC(targetId, wsClientId, ws, isHost, (dc) => {
-            ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate }));
-            addMouseListener(ClientOptions);
+            document.onpointerdown = onCapture;
+            document.onpointermove = onCapture;
+            document.onpointerover = onCapture;
+            function onCapture(ev) {
+                ws.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, pointerType: ev.pointerType }));
+                // updateLocalCursor(ev, true)
+                document.onpointerdown = null;
+                document.onpointermove = null;
+                document.onpointerover = null;
+                setTimeout(() => {
+                    addMouseListener(ClientOptions);
+                }, 100);
+            }
             console.log(ClientOptions);
         });
         rtc.set(targetId, newRTC);
