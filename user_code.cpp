@@ -1,4 +1,4 @@
-//          Compilator C++ online | intelegeinfo.go.ro
+//          Compilator C++ online | intelegeinfo.ro
 
 #include <iostream>
 

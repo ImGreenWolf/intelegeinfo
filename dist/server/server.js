@@ -347,7 +347,7 @@ var httpsServer = https.createServer(credentials, app);
 if (fullchain && privkey)
     var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req, res) => {
         res.statusCode = 301;
-        res.setHeader('Location', 'https://intelegeinfo.go.ro' + req.url);
+        res.setHeader('Location', 'https://intelegeinfo.ro' + req.url);
         res.end();
     });
 else
@@ -368,7 +368,7 @@ exports.wss = new ws_1.default.Server({ noServer: true, clientTracking: true, })
 const peerConnectionManager_1 = require("./peerConnectionManager");
 //                      END                      //  
 exports.server.on('upgrade', function upgrade(request, socket, head) {
-    const { pathname } = new URL(request.url, 'wss://intelegeinfo.go.ro');
+    const { pathname } = new URL(request.url, 'wss://intelegeinfo.ro');
     switch (pathname) {
         case '/api':
             metrics_1.wssAPI.handleUpgrade(request, socket, head, function done(ws) {
@@ -538,7 +538,7 @@ function compileFile(clientId, sessionId) {
         }
     });
 }
-const baseUrl = 'https://intelegeinfo.go.ro';
+const baseUrl = 'https://intelegeinfo.ro';
 exports.wss.addListener('connection', async (ws, req) => {
     let sessionId;
     let clientId;
@@ -559,7 +559,7 @@ exports.wss.addListener('connection', async (ws, req) => {
     let shouldSaveTimeout;
     console.log(req.headers);
     const isEmbededEditor = new URL(req.url, baseUrl).searchParams.get('embeded') == 'true' || req.headers['Sec-Fetch-User'] == '?1';
-    const sameOrigin = req.headers.referer == 'intelegeinfo.go.ro' || req.headers.referer;
+    const sameOrigin = req.headers.referer == 'intelegeinfo.ro' || req.headers.referer;
     const cookies = req.headers.cookie;
     const jwtCookie = getJWTCookie(cookies);
     function getJWTCookie(cookies) {
@@ -603,7 +603,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             });
         }
         function handshake(req) {
-            const urlParams = new URL("http://intelegeinfo.go.ro/editor" + req.url).searchParams;
+            const urlParams = new URL("http://intelegeinfo.ro/editor" + req.url).searchParams;
             const wssessionId = urlParams.get('session') != undefined || urlParams.get('session') != undefined ? urlParams.get('session') : recoveredSession ? recoveredSession : undefined;
             let isHost = false;
             //handle heartbeat
@@ -840,7 +840,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             if (!clientSession)
                 return;
             const session = clientSession.clients.size != 1 ? clientObj.permissions : undefined; //clientObj.isHost
-            const welcomeMessage = isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.go.ro'>Intelegeinfo.go.ro</a>" : !userLoggedIn ?
+            const welcomeMessage = isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.ro'>intelegeinfo.ro</a>" : !userLoggedIn ?
                 `Bine ai venit pe Intelege Info!
      Scrie cod, apoi apasa COMPILE si EXECUTE CODE sau ruleaza in DEBUGGER.
       Invita-ti prietenii sa editeze codul împreună cu tine în timp real apăsând butonul SHARE.`
@@ -865,7 +865,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         async function connectionReady(cooperator = false, req) {
             await new Promise(async (resolve) => {
-                const urlParams = new URL("ws:/intelegeinfo.go.ro:8080" + req.url).searchParams;
+                const urlParams = new URL("ws:/intelegeinfo.ro:8080" + req.url).searchParams;
                 const clientFilesPath = clientSession.getClientFilesPath();
                 let savedProject;
                 if (urlParams.has("save")) {
@@ -1191,8 +1191,8 @@ exports.wss.addListener('connection', async (ws, req) => {
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
--m 256MB \
---cpus="0.25" \
+-m ${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB \
+--cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")} \
 -di \
 --rm \
 ${clientObj.openFile.editorMode.runParams(clientObj)} \

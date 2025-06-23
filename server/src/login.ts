@@ -27,7 +27,7 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 
 function createToken(user: any) {
     return jwt.sign({
-      iss: "intelegeinfo.go.ro",
+      iss: "intelegeinfo.ro",
       sub: user.id,
       role: user.role,
     }, privateKeyPem, {  algorithm: 'RS256', expiresIn: 1000000});
@@ -294,7 +294,7 @@ router.get('/callback', async (req:any, res:any) => {
       
         
        
-        fetch('http://intelegeinfo.go.ro/signup',  {
+        fetch('http://intelegeinfo.ro/signup',  {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({email: userInfo.email, password:  'google' , name: userInfo.name, loginMethod: 'google' })

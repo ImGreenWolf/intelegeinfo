@@ -10,7 +10,7 @@ class CppMode extends EditorMode {
     static extension: string[] = ['cpp', 'c++'];
     static dockerSafeTag: string = 'cpp'
     static defaultText: string =
-    `//    Compilator C++ online | intelegeinfo.go.ro
+    `//    Compilator C++ online | intelegeinfo.ro
 
 #include <iostream>
 

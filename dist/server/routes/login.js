@@ -57,7 +57,7 @@ const privateKey = node_forge_1.default.pki.privateKeyFromPem(privateKeyPem);
 const publicKeyPem = fs_1.default.readFileSync('../public.pem', 'utf8');
 function createToken(user) {
     return jsonwebtoken_1.default.sign({
-        iss: "intelegeinfo.go.ro",
+        iss: "intelegeinfo.ro",
         sub: user.id,
         role: user.role
     }, privateKeyPem, { algorithm: 'RS256', expiresIn: '1h' });
@@ -232,7 +232,7 @@ router.get('/callback', async (req, res) => {
                 res.send('Account was not created with google. Try logging in with a different method!');
         }
         else {
-            fetch('http://intelegeinfo.go.ro/signup', {
+            fetch('http://intelegeinfo.ro/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userInfo.email, password: 'google', name: userInfo.name, loginMethod: 'google' })

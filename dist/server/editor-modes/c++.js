@@ -10,7 +10,7 @@ class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
     static extension = ['cpp', 'c++'];
     static dockerSafeTag = 'cpp';
-    static defaultText = `//    Compilator C++ online | intelegeinfo.go.ro
+    static defaultText = `//    Compilator C++ online | intelegeinfo.ro
 
 #include <iostream>
 

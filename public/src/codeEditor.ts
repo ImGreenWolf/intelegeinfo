@@ -4226,7 +4226,7 @@ console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start
 export function displaynoVNC(container)
 {
   const frame = document.createElement('iframe')
-  frame.src = 'http://intelegeinfo.go.ro:8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token='+wsSessionId
+  frame.src = 'http://intelegeinfo.ro:8080/vnc_lite.html?bell=true&quality=5&resize=scale&path=novnc/websockify?token='+wsSessionId
   frame.id = 'noVDC'
   container.appendChild(frame)
 }

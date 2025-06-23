@@ -53,7 +53,7 @@ class Python extends BaseEditorMode_1.default {
         else
             return "";
     };
-    static defaultText = `#    Compilator Python online | intelegeinfo.go.ro
+    static defaultText = `#    Compilator Python online | intelegeinfo.ro
 
 x = input("Scrie ceva: ")
 

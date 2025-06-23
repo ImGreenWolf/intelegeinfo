@@ -471,7 +471,7 @@ router.post('/saveProject', authMiddleware, (req, res) => {
 
 //  function createToken(user: any) {
 //      return jwt.sign({
-//        iss: "intelegeinfo.go.ro",
+//        iss: "intelegeinfo.ro",
 //        sub: user.id,
 //        role: user.role
 //      }, privateKeyPem, {  algorithm: 'RS256', expiresIn: '1h'});
@@ -486,7 +486,7 @@ router.post('/saveProject', authMiddleware, (req, res) => {
     
 //     Profile.parseUserInfoInFile(id, './public/pages/emailVerification.html').then(file => {
 //         const verifyJWT = jwt.sign({
-//             iss: "intelegeinfo.go.ro",
+//             iss: "intelegeinfo.ro",
 //             sub: id,
 //           }, privateKeyPem, {  algorithm: 'RS256', expiresIn: '1h'});
 
@@ -495,7 +495,7 @@ router.post('/saveProject', authMiddleware, (req, res) => {
 
 
 // //path.join(req.host,'user','verifyemail','callback')
-//         const callbackFile = file.replace('#{callback}', `'http://intelegeinfo.go.ro/user/verifyemail/callback?token=${verifyJWT}'`)
+//         const callbackFile = file.replace('#{callback}', `'http://intelegeinfo.ro/user/verifyemail/callback?token=${verifyJWT}'`)
 
 //         console.log(verifyJWT + "\n now awating callback: \n")
 //         var mailOptions = {

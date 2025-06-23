@@ -130,7 +130,7 @@ export class IIWebRTC {
             iceServers: [
                 { urls: "stun:stun.l.google.com:19302" },
                 {
-                    urls: "turn:intelegeinfo.go.ro:3478",
+                    urls: "turn:intelegeinfo.ro:3478",
                     username: "webrtc",
                     credential: 'TODOimplementpass' // TODO i know this isnt okay. cant be bothered right now though
                 },
@@ -195,6 +195,8 @@ export class IIWebRTC {
             const newDC = ev.channel;
             if (!this.dc)
                 this.dc = newDC;
+            const pair = this.pc.sctp.transport.iceTransport.getSelectedCandidatePair();
+            console.log(pair);
             if (onConnection)
                 onConnection(newDC);
             newDC.addEventListener('message', ev => {
@@ -268,6 +270,10 @@ export class IIWebRTC {
         }
     }
     send(data) {
+        if (this.pc?.connectionState == "failed" || this.pc?.connectionState == "closed") {
+            this.pc = undefined;
+            return;
+        }
         if (this.dc)
             if (this.pc.connectionState == 'connected' && this.dc.readyState == 'open')
                 this.dc.send(data);

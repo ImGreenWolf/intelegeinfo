@@ -18,7 +18,7 @@ class Python extends EditorMode {
       return ""
     }
     static defaultText: string =
-    `#    Compilator Python online | intelegeinfo.go.ro
+    `#    Compilator Python online | intelegeinfo.ro
 
 x = input("Scrie ceva: ")
 
