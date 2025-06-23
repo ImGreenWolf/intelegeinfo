@@ -1239,7 +1239,7 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
                         if(element!='')
                         {
                              const gdbOutput = parseGDBString(element);
-                             console.log(JSON.stringify(gdbOutput.json) + '\n' + gdbOutput.err)
+                             console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
                     // console.log(gdbOutput.json);
                 
                     const response: {
@@ -1249,17 +1249,19 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
                         messageType: ConsoleMessageType,
                         clientId: UUID,
                         body: string;
+                        raw: string;
                         message: string;
                         msgId: number;
                         line: number;
                         variables: any[];
                     } = {
-                        error: gdbOutput.err ? gdbOutput.err : false,
+                        error: gdbOutput.err ? gdbOutput.err : undefined,
                         input: false,
                         type: WebSocketMessageType.Output,
                         messageType: ConsoleMessageType.DebugProgram,
                         clientId: clientId,
                         body: gdbOutput.json ? gdbOutput.json : undefined,
+                        raw: gdbBuffer,
                         message: 'next', //command.toString(),
                         msgId: clientSession.gdbProcess?.pid || -1,
                         line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
@@ -2380,7 +2382,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                 // We have everything, remove listener
                                                 clientSession.gdbProcess?.stdout?.removeListener("data", onData);
                                                 resolve();
-                                                return res.send(({
+                                                 res.send(({
                                                     error: false,
                                                     input: false,
                                                     type: WebSocketMessageType.Output,

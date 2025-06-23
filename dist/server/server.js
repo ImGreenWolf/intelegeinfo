@@ -986,15 +986,16 @@ exports.wss.addListener('connection', async (ws, req) => {
                         gdbBuffer.toString().split('\n').forEach(element => {
                             if (element != '') {
                                 const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
-                                console.log(JSON.stringify(gdbOutput.json) + '\n' + gdbOutput.err);
+                                console.log(JSON.stringify(gdbOutput.json), gdbOutput.err);
                                 // console.log(gdbOutput.json);
                                 const response = {
-                                    error: gdbOutput.err ? gdbOutput.err : false,
+                                    error: gdbOutput.err ? gdbOutput.err : undefined,
                                     input: false,
                                     type: types_1.WebSocketMessageType.Output,
                                     messageType: types_1.ConsoleMessageType.DebugProgram,
                                     clientId: clientId,
                                     body: gdbOutput.json ? gdbOutput.json : undefined,
+                                    raw: gdbBuffer,
                                     message: 'next', //command.toString(),
                                     msgId: clientSession.gdbProcess?.pid || -1,
                                     line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
@@ -1910,7 +1911,7 @@ bash `.trim().replaceAll('\n', "");
                                                             // We have everything, remove listener
                                                             clientSession.gdbProcess?.stdout?.removeListener("data", onData);
                                                             resolve();
-                                                            return res.send(({
+                                                            res.send(({
                                                                 error: false,
                                                                 input: false,
                                                                 type: types_1.WebSocketMessageType.Output,
