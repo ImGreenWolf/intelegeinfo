@@ -332,6 +332,7 @@ const https = __importStar(require("https"));
 const http = __importStar(require("http"));
 //          GLOBAL  SERVER  VARIABLES       //
 const PORT = process.env.PORT || 3000;
+const SECPORT = process.env.SECPORT || 3443;
 try {
     var privkey = fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem');
     var fullchain = fs_1.default.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem');
@@ -353,8 +354,8 @@ else
     var httpServer = http.createServer(app);
 let connectionPromise;
 const codeMap = new Map();
-const unsecureServer = httpServer.listen(3000);
-exports.server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(3443);
+const unsecureServer = httpServer.listen(PORT);
+exports.server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(SECPORT);
 exports.server.on('listening', onServerStart);
 // app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });

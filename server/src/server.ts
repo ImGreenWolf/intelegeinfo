@@ -406,6 +406,7 @@ import * as https from 'https'
 import * as http from 'http'
 //          GLOBAL  SERVER  VARIABLES       //
             const PORT = process.env.PORT || 3000;
+            const SECPORT = process.env.SECPORT || 3443;
     try  {
         var privkey = fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/privkey.pem')
         var fullchain = fs.readFileSync('/etc/letsencrypt/live/intelegeinfo.go.ro/fullchain.pem')
@@ -416,8 +417,10 @@ import * as http from 'http'
     }
     const credentials = {key: process.env.NODE_ENV == 'development' ? '' : privkey || '',
         cert: process.env.NODE_ENV == 'development' ? '' :  fullchain || ''}
+
 if(process.env.NODE_ENV == 'development')
     console.log('SERVER RUNNING IN DEV MODE')
+
 var httpsServer = https.createServer(credentials, app);
 if(fullchain && privkey)
     var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app :(req,res) => {
@@ -429,8 +432,8 @@ else
 var httpServer = http.createServer(app);
 let connectionPromise: Promise<void> | undefined;
 const codeMap: Map<number, UUID> = new Map()
-const unsecureServer = httpServer.listen(3000);
-export const server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(3443);
+const unsecureServer = httpServer.listen(PORT);
+export const server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(SECPORT);
 server.on('listening', onServerStart)
 
     // app.listen(PORT, '0.0.0.0', onServerStart);
