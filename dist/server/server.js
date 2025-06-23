@@ -555,7 +555,6 @@ exports.wss.addListener('connection', async (ws, req) => {
     let project;
     let processInputBuffer = '';
     let spawnPromise;
-    let webcamid;
     let shouldSave = false;
     let shouldSaveTimeout;
     console.log(req.headers);

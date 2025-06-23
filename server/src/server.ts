@@ -697,7 +697,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     let project;
     let processInputBuffer = '';
     let spawnPromise;
-    let webcamid
+    
     let shouldSave:boolean = false; 
     let shouldSaveTimeout;
     console.log(req.headers)
