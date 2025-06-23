@@ -42,7 +42,7 @@ int main()
         super();
     }
     execute(res) {
-        (0, child_process_1.execSync)('docker exec -i ' + res.imageName + ' bash -c "ls"', { stdio: 'inherit' });
+        // execSync('docker exec -i ' + res.imageName + ' bash -c "ls"', {stdio: 'inherit'})
         return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", `(cd ./clientFiles && exec ../${res.fileName.split('.')[0]})`], {
             stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
         });
@@ -77,7 +77,7 @@ int main()
         });
     }
     startDebugging(res) {
-        return (0, child_process_1.spawn)("docker", ["exec", '-di', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+        return (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
     }
     checkCodeSyntax = (sessionObj, file) => {
         return new Promise((resolve, reject) => {

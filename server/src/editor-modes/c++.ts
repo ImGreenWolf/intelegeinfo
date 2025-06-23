@@ -49,7 +49,7 @@ int main()
     }
 
     execute(res) {
-        execSync('docker exec -i ' + res.imageName + ' bash -c "ls"', {stdio: 'inherit'})
+        // execSync('docker exec -i ' + res.imageName + ' bash -c "ls"', {stdio: 'inherit'})
          return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", `(cd ./clientFiles && exec ../${res.fileName.split('.')[0]})`], {
             stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
         });
@@ -89,7 +89,7 @@ int main()
     }
 
     startDebugging(res) {
-        return spawn("docker", ["exec", '-di', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+        return spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
     }
 
       checkCodeSyntax = (sessionObj: EditorSession, file: EditorFile): Promise<string> =>
