@@ -140,6 +140,8 @@ CMD bash `;
                                 '--token-plugin=TokenFile',
                                 '--token-source=' + path_1.default.resolve('/tmp/tokens.txt'),
                                 '--unix-target', `/tmp/vnc-${clientSession.sessionId}/vnc.sock`,
+                                '--cert', process.env.FULLCHAINPATH,
+                                '--key', process.env.PRIVKEYPATH,
                                 '8080'
                             ], { stdio: 'pipe' });
                             this.wsProxy.stdout.on('data', (data) => {

@@ -113,6 +113,8 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
             '--token-plugin=TokenFile',
             '--token-source='+path.resolve('/tmp/tokens.txt'),
             '--unix-target', `/tmp/vnc-${clientSession.sessionId}/vnc.sock`, 
+            '--cert', process.env.FULLCHAINPATH,
+            '--key', process.env.PRIVKEYPATH,
             '8080'
             
             
