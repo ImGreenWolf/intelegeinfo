@@ -6,7 +6,7 @@ export declare const rootDirName: string;
 export declare function authMiddleware(req: any, res: any, next: any, role?: string): void;
 import * as https from 'https';
 import * as http from 'http';
-export declare const server: https.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
+export declare const server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | https.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
 export declare let clients: Map<UUID, WebSocket>;
 export declare let runningProcesses: Map<UUID, ChildProcess>;
 export declare let sessionMap: Map<UUID, EditorSession>;

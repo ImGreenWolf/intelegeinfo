@@ -394,7 +394,7 @@ var EditorCanvasDrawType;
     EditorCanvasDrawType["end"] = "end";
 })(EditorCanvasDrawType || (EditorCanvasDrawType = {}));
 export class EditorCanvas extends IElement {
-    canvas = createNode('canvas');
+    canvas = createNode('canvas', { css: 'touch-action: none' });
     ctx = this.canvas.getContext('2d');
     h = this.canvas.height;
     w = this.canvas.width;
@@ -408,7 +408,7 @@ export class EditorCanvas extends IElement {
         this.canvas.height = rect.height;
         this.h = this.canvas.height;
         this.w = this.canvas.width;
-        console.log(this.w);
+        // console.log(this.w)
         this.onUpdate();
     }
     render() {
@@ -426,18 +426,27 @@ export class EditorCanvas extends IElement {
         this.ctx.strokeStyle = 'black';
         this.ctx.fillRect(0, 0, this.w, this.h);
         this.ctx.lineWidth = 5;
-        this.canvas.onmousedown = (ev => {
-            this.isDrawing = 1;
-            this.beginDraw(this.relativeToCanvas({ x: ev.offsetX, y: ev.offsetY }));
+        this.canvas.addEventListener('pointerdown', ev => {
+            if (ev.pointerType != 'pen') {
+                this.isDrawing = 1;
+                this.beginDraw(this.relativeToCanvas({ x: ev.offsetX, y: ev.offsetY }));
+            }
+            else if (this.isDrawing == 0) {
+                this.isDrawing = 1;
+                this.beginDraw(this.relativeToCanvas({ x: ev.offsetX, y: ev.offsetY }));
+            }
+            else
+                this.draw(this.relativeToCanvas({ x: ev.offsetX, y: ev.offsetY }));
         });
-        this.canvas.onmousemove = (ev => {
+        this.canvas.addEventListener('pointermove', ev => {
+            // if(ev.pointerType!='pen')
             if (this.isDrawing == 1)
                 this.draw(this.relativeToCanvas({ x: ev.offsetX, y: ev.offsetY }));
             // setTimeout(() => {
             //     this.isDrawing = 0 
             // }, 1000);
         });
-        this.canvas.onmouseup = (ev => {
+        this.canvas.addEventListener('pointerup', ev => {
             if (this.isDrawing != 1)
                 return;
             this.isDrawing = 0;

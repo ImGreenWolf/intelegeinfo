@@ -320,7 +320,7 @@ class EditorCursor {
             if(this.pointerType != eventJson.pointerType)
               this.refreshCursor(eventJson)
 
-            if(eventJson.pointerType == "touch" && this.animated==false)
+            if(eventJson.pointerType === "touch" && this.animated==false)
                 {
                   this.animated = true;
                   this.cursor!.animate(
@@ -479,7 +479,7 @@ if(false)
               this.cursorContainer!.style.top = this.posY+'px';
               
               
-              if(eventJson.pointerType == "touch")
+              if(eventJson.pointerType === "touch")
                   {
                     if(this.animTimeout)
                       clearTimeout(this.animTimeout)
@@ -586,7 +586,7 @@ class SessionClient {
 
 // VARIABLES //
 let client: SessionClient | undefined;
-const clients: SessionClient[] = []
+let clients: SessionClient[] = []
 const cursors: Map<string, EditorCursor> = new Map()
 const typingIndicators: Map<UUID,HTMLDivElement> = new Map();
 let debounceTimer: NodeJS.Timeout;
@@ -1286,14 +1286,17 @@ function updateLocalCursor(ev, fromPress) {
       const rectWidth = editor.renderer.characterWidth
       const rechHeight = editor.renderer.lineHeight
       const pointerType = ev.pointerType;
+      
       if(pointerType != "mouse")
       {
         const height = ev.height;
         const width = ev.width;
         for(const conn of rtc.values())
+          if(clients.find(val => val.clientId == conn.thistargetId)?.editorSession?.fileName == client?.editorSession?.fileName)
         conn.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth , rechHeight, clientId: wsClientId}))
       } else
         for(const conn of rtc.values())
+          if(clients.find(val => val.clientId == conn.thistargetId)?.editorSession?.fileName == client?.editorSession?.fileName)
         conn.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth , rechHeight, clientId: wsClientId}))
 
     }
@@ -3089,7 +3092,7 @@ ws.onmessage = (event) => {
     case WebSocketMessageType.Canvas:
       if(canvas)
         canvas.handleReplication(eventJson)
-
+      break;
     case WebSocketMessageType.Console:
     case WebSocketMessageType.Output:
       
@@ -3202,6 +3205,7 @@ ws.onmessage = (event) => {
       isColabSession = eventJson.session!=undefined
       
       isHost = eventJson.session!=undefined ? eventJson.session.isHost : false
+      if(!client)
       client = new SessionClient(wsClientId, eventJson.displayName, eventJson.color)
       // if(!document.cookie.includes('session='))
       document.cookie='session='
@@ -3595,7 +3599,8 @@ ws.onmessage = (event) => {
             colabClients.forEach((client) => {
               const clientId = client.displayName.split("-")[0];
               colabContainer.innerHTML += `<div class="colab-client" id=${clientId}>${clientId}</div>`;
-              clients.push(new SessionClient(client.clientId, client.displayName, client.color))
+              // if(!clients.find(val => val.clientId === client.clientId))
+              //   clients.push(new SessionClient(client.clientId, client.displayName, client.color))
             });
         break;
       }
@@ -3646,11 +3651,12 @@ ws.onmessage = (event) => {
               const clientIndex = clients.findIndex((val) => val!.clientId == eventJson.clientId)
               if(clientIndex == -1)
               {
-                // create a new user
+                // create a new user // if its self
                 if(!eventJson.clientId)
                   return
                 const client = new SessionClient(eventJson.clientId, eventJson.displayName, eventJson.color)
                 client.editorSession = {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor}
+                // if(!clients.find(val => val.clientId === client.clientId))
                 clients.push(client)
               }
                  
@@ -3661,7 +3667,7 @@ ws.onmessage = (event) => {
           {
             const fileContent = eventJson.body.content;
             currentFileName = fileName;
-            console.log(editorSessions.get(fileName));
+            console.log('opening file:',editorSessions.get(fileName));
 
             if (!editorSessions.has(fileName)) {
               const newSession = ace.createEditSession(fileContent);
@@ -3676,13 +3682,15 @@ ws.onmessage = (event) => {
                 fileName: fileName,
                 fileElement: undefined
               }
-              client!.editorSession = session
               editorSessions.set(fileName, session);
+              client!.editorSession = session
+              
             } else {
-
-              if(!editorSessions.get(fileName)?.editor)
-                editorSessions.get(fileName)!.editor =  ace.createEditSession(fileContent);
-
+              
+              let currentSession = editorSessions.get(fileName)!
+              if(!currentSession.editor)
+               currentSession.editor =  ace.createEditSession(fileContent);
+              editorSessions.set(fileName, currentSession);
 
               console.log("File already opened: ", fileName);
               const session = editorSessions.get(fileName)!;
@@ -3937,7 +3945,7 @@ function onExit() {
   editor.session.removeMarker(lastDebugId);
   document.getElementById('buttons')?.classList.remove('executing')
   document.getElementById('execute-control')!.innerText = "Executa Programul"
-  
+
   if(activeConsole?.noVNC)
     activeConsole?.noVNC?.remove()
   if(document.getElementById('active-console'))

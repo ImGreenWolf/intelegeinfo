@@ -5,7 +5,7 @@ import WebSocket from "ws";
 import path from 'path';
 import { ConsoleMessageType, WebSocketMessageType } from '../../dist/shared/types'
 import { Readable, Writable } from "stream";
-import {ClientObject, EditorFile, EditorPermission, EditorSession} from "./types"
+import {ClientObject, ClientPermissions, EditorFile, EditorPermission, EditorSession} from "./types"
 import { QRCode } from "qrcode";
 import * as qrcode from "qrcode";
 import archiver from 'archiver';
@@ -1078,7 +1078,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     
 async function connectionReady(cooperator: boolean = false, req: IncomingMessage) 
    {
-    await new Promise<void>(async (resolve) => {
+    const session = await new Promise<ClientPermissions>(async (resolve) => {
         const urlParams = new URL("ws:/intelegeinfo.ro:8080"+req.url).searchParams
         const clientFilesPath = clientSession.getClientFilesPath();
         let savedProject: Project | undefined;
@@ -1103,14 +1103,14 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
            
     
        
-        console.log(clientSession.files)
+        
 
         // printClientConsoleInfo("connected to worker: " + process.pid)
 
         //create cache folder for session if its a new one
         const cacheFolderExists = fs.existsSync(path.join(rootDirName, "cache", sessionId));
 
-    
+        
         if((!cacheFolderExists && !cooperator && clientSession.files.length==0) )
         {
 
@@ -1130,9 +1130,10 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
 
                 new EditorFile(clientSession, defaultFileName, undefined, function () {
                     this.openFile(clientObj, shared).then(() => {
+                        const session = sendConnectionMessage(!cooperator)
                         onOpenFile(undefined, defaultFileName)
                         console.log('Opened file')
-                        resolve()
+                        resolve(session)
                     })
                     
                         
@@ -1152,23 +1153,24 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
                 clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
 
             await sendListFiles(clientFilesPath)
+            const session = sendConnectionMessage(!cooperator)
             if(clientSession.files[0] == undefined)
             {
                 if(savedProject)
                     openFile(fs.readdirSync(clientFilesPath)[0])
                 else
-                return console.log('no file found in files: ', clientSession.files)
+                    return console.log('no file found in files: ', clientSession.files)
             } else if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
                 openFile(clientSession.files[0].name)
             else 
                 console.error("No default file was found!") // TODO replace with async function
             
-                resolve()
+                resolve(session)
           
         }
            })
            
-            const session = sendConnectionMessage(!cooperator)
+            
 
             if(getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
             {
@@ -1382,7 +1384,7 @@ async function connectionReady(cooperator: boolean = false, req: IncomingMessage
         replicateFunction((clientWs, id, thisClientObj) => {
             clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, command:  FileManagementCommands.Open, fileName, oldFileName,  name: clientObj.displayName, color: clientObj.color, clientId: clientId}));  // Send GDB output to the client
             if(thisClientObj.openFile && thisClientObj != clientObj)
-                if(thisClientObj.openFile.name != fileName || thisClientObj.openFile.name == oldFileName) // TODO choose one
+                // if(thisClientObj.openFile.name != fileName || thisClientObj.openFile.name == oldFileName) // TODO choose one
                     clientWs.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, fileName, oldFileName,  ...clientInfo(clientObj)}));  // Send GDB output to the client  
         });
     }
@@ -1621,7 +1623,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     })
 
-    clientSession.program.stdout?.on("data", (data) => {
+    clientSession.program.stdout?.addListener("data", (data) => {
         gdbBuffer += data.toString();
         // replicateFunction((clientWs) => {
         //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
@@ -1647,14 +1649,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     });
 
 
-    clientSession.program?.stderr?.on("data", (data) => {
+    clientSession.program?.stderr?.addListener("data", (data) => {
     gdbBuffer += data.toString();
     replicateFunction((clientWs) => {
         clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
     });
     });
 
-    clientSession.program?.on("close", (code) => {
+    clientSession.program?.addListener("close", (code) => {
 
         clearTimeout(dataTimeout);
         clearTimeout(programTimeout)
@@ -1686,7 +1688,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     }
 
     // Handle GDB session commands from client
-    ws.on("message", async (message: Buffer, isBinary: boolean) => {  
+    ws.addListener("message", async (message: Buffer, isBinary: boolean) => {  
         try {
             let messageJSON;    
             if(JSON.parse(message.toString()).data != undefined)
@@ -2540,7 +2542,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     if (!process.killed && process) {
                         process.kill(9);
                         
-                        process.on(('close'), (code) => {
+                        process.addListener(('close'), (code) => {
 
 
                             onClosedProcess();
@@ -2641,7 +2643,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     }
 
     // Handle WebSocket disconnection
-    ws.on("close", () => {
+    ws.addEventListener("close", () => {
         onCloseSession();
         console.log("Client " + clientId + " disconnected");
     });
@@ -2667,7 +2669,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
 })
 
-process.on('exit', () => {
+process.addListener('exit', () => {
     console.log('Server is exiting...')
     wss.clients.forEach(client => {
         client.close(1012, 'server is being shut down')

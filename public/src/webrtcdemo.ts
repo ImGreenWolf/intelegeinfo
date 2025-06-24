@@ -186,7 +186,7 @@ export class IIWebRTC
       
 
           
-        // this.polite = !isHost
+        // this.polite = isHost
         // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc?session="+sessionId
         // const signaler = new WebSocket(WSUrl) // 
 
@@ -305,7 +305,7 @@ export class IIWebRTC
                     this.isSettingRemoteAnswerPending = description.type === "answer";
                     console.log(this.id,'setting remote description', description.type)
 
-                    await this.pc!.setRemoteDescription(new RTCSessionDescription(description)); // step 3: describe the remote connection
+                    await this.pc!.setRemoteDescription(description); // step 3: describe the remote connection
                     this.isSettingRemoteAnswerPending = false;
                     if (description.type === "offer") {
                         console.log(this.id,'awnsered offer')
@@ -318,7 +318,8 @@ export class IIWebRTC
                 } else if (candidate) {
                     try {
                         // console.log('added ICE candidate: ',candidate)
-                        await this.pc!.addIceCandidate(new RTCIceCandidate(candidate));
+                        // if(this.pc?.remoteDescription)
+                        await this.pc!.addIceCandidate(candidate);
                     } catch (err) {
                         if (!this.ignoreOffer) {
                         throw err;

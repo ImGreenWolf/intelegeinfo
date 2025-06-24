@@ -171,23 +171,26 @@ int main() {
                     <hgroup>
                         <h1>Vrei sa incerci?</h1>
                         <!-- <a href="/guides/embed">vrei sa integrezi editorul in siteul tau?</a> -->
-                         <button onclick="window.startIframes()" style="padding: 20px;">Porneste editorul</button>
+                        
                     </hgroup>
                     <div>
-                        <iframe seamless width="600" height="500"></iframe>
-                        <iframe seamless width="600" height="500"></iframe>
+                        <button onclick="window.startIframes(this)" style="padding: 20px; border-radius: 50px; width: 200px;"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
+                        <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
+                        <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
                     </div>
                 </div>
-        <div class="content-container">
+        <div class="content-container" id="features">
             <h1>Ce ofera editorul?</h1>
-            <ul>
+            <ul class="content-list">
                 <li>
                     <h2>Colaborare</h2>
                     <p>Creeaze alaturi de colegii sau elevii tai, in timp real. Cu intelegeinfo poti explica mai usor si mai vizual codul tau,
                     sau sa scrii in chat.
+                    
                     </p>
-                    <img src="media/colaboration-demo.png">
+                    
                 </li>
+                <img src="media/colaboration-demo.png" alt="The editor with two cursors">
                 <li>
                     <h2>Deseneaza</h2>
                     <p>Daca vrei sa arati scheme colegiilor sau eleviilor tai, creaze un fisier .png, .jpeg, etc si deseneaza,
@@ -195,8 +198,12 @@ int main() {
                 </li>
                 <li>
                     <h2>Aplicatii cu interfata</h2>
-                    <p>Creaza aplicatii cu interfata (GUI) si interactioneaza in timp real.</p>
+                    <p>Creaza aplicatii cu interfata (GUI) si interactioneaza in timp real.
+                        </p>
+                    
+
                 </li>
+                <img src="media/gui-demo.png" alt="A GUI playing snake.">
                 <li>
                     <h2>Camera video</h2>
                     <p>Integreaza camera video in programul tau, si foloseste-o ca pe camera de pe dispozitivul tau.</p>
@@ -208,7 +215,18 @@ int main() {
                 <li>
                     <h2>Limbaje</h2>
                     <p>Scrie-ti programele in C++ sau in Python. Mai multe limbaje vor aparea in curand!</p>
+                    
                 </li>
+                <ul class="language-carusel">
+                        <img src="media/logos/c++-logo.png" alt="c++ logo" class="available">
+                        <img src="media/logos/python-logo.webp" alt="python logo" class="available">
+                        <img src="media/logos/js-logo.png" alt="c++ logo">
+                        <img src="media/logos/ts-logo.svg" alt="python logo">
+                        <img src="media/logos/node.js-logo.webp" alt="c++ logo">
+                        <img src="media/logos/java-logo.webp" alt="python logo">
+                        <img src="media/logos/Go-logo.png" alt="c++ logo">
+                        <img src="media/logos/C-logo.png" alt="python logo">
+                    </ul>
                 <li>
                     <h2>Resurse</h2>
                     <p><a href="/guides">Descopera</a> materialele care iti explica conceptele de baza ale programarii.</p>
@@ -305,12 +323,13 @@ int main() {
 }
 
         // Get the iframe element we want to track mouse movements on
-        var iframes = document.getElementsByTagName('iframe');
+        var iframes = document.getElementsByClassName('demoEditorFrame');
 
         // Run it through the function to setup bubbling
         const pageSessionUuid = crypto.randomUUID()
         window.startIframes = startIframes
-        function startIframes() {
+        function startIframes(target) {
+            target.remove()
                     for(const myIframe of iframes)
         {
             myIframe.src = `./embed/editor?session=${pageSessionUuid}&isPublic=true`

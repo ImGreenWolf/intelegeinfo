@@ -1366,7 +1366,6 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
   border: 2px solid white;
   border-radius: 50%;
-  animation: touch-cursor 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
 }
 
 #session-controls {

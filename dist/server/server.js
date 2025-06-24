@@ -864,7 +864,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 return { clientId: clientId, displayName: clientObj.displayName, color: clientObj.color };
         }
         async function connectionReady(cooperator = false, req) {
-            await new Promise(async (resolve) => {
+            const session = await new Promise(async (resolve) => {
                 const urlParams = new URL("ws:/intelegeinfo.ro:8080" + req.url).searchParams;
                 const clientFilesPath = clientSession.getClientFilesPath();
                 let savedProject;
@@ -887,7 +887,6 @@ exports.wss.addListener('connection', async (ws, req) => {
                         printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId));
                     }
                 }
-                console.log(clientSession.files);
                 // printClientConsoleInfo("connected to worker: " + process.pid)
                 //create cache folder for session if its a new one
                 const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
@@ -905,9 +904,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                     const defaultFileName = 'main.cpp';
                     new types_2.EditorFile(clientSession, defaultFileName, undefined, function () {
                         this.openFile(clientObj, shared).then(() => {
+                            const session = sendConnectionMessage(!cooperator);
                             onOpenFile(undefined, defaultFileName);
                             console.log('Opened file');
-                            resolve();
+                            resolve(session);
                         });
                     });
                     // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
@@ -921,6 +921,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     if (cacheFolderExists && !cooperator && clientSession.files.length == 0)
                         clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
                     await sendListFiles(clientFilesPath);
+                    const session = sendConnectionMessage(!cooperator);
                     if (clientSession.files[0] == undefined) {
                         if (savedProject)
                             openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
@@ -931,10 +932,9 @@ exports.wss.addListener('connection', async (ws, req) => {
                         openFile(clientSession.files[0].name);
                     else
                         console.error("No default file was found!"); // TODO replace with async function
-                    resolve();
+                    resolve(session);
                 }
             });
-            const session = sendConnectionMessage(!cooperator);
             if (getThisClientSession()?.clients.size > 1) // multiple clients connected to this session
              {
                 // display join message
@@ -1097,8 +1097,8 @@ exports.wss.addListener('connection', async (ws, req) => {
             replicateFunction((clientWs, id, thisClientObj) => {
                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, command: types_3.FileManagementCommands.Open, fileName, oldFileName, name: clientObj.displayName, color: clientObj.color, clientId: clientId })); // Send GDB output to the client
                 if (thisClientObj.openFile && thisClientObj != clientObj)
-                    if (thisClientObj.openFile.name != fileName || thisClientObj.openFile.name == oldFileName) // TODO choose one
-                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.MouseUpdate, fileName, oldFileName, ...clientInfo(clientObj) })); // Send GDB output to the client  
+                    // if(thisClientObj.openFile.name != fileName || thisClientObj.openFile.name == oldFileName) // TODO choose one
+                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.MouseUpdate, fileName, oldFileName, ...clientInfo(clientObj) })); // Send GDB output to the client  
             });
         }
         /**
@@ -1284,7 +1284,7 @@ bash `.trim().replaceAll('\n', "");
                         resolve();
                     });
                 });
-                clientSession.program.stdout?.on("data", (data) => {
+                clientSession.program.stdout?.addListener("data", (data) => {
                     gdbBuffer += data.toString();
                     // replicateFunction((clientWs) => {
                     //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
@@ -1303,13 +1303,13 @@ bash `.trim().replaceAll('\n', "");
                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                     }, 100);
                 });
-                clientSession.program?.stderr?.on("data", (data) => {
+                clientSession.program?.stderr?.addListener("data", (data) => {
                     gdbBuffer += data.toString();
                     replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
                     });
                 });
-                clientSession.program?.on("close", (code) => {
+                clientSession.program?.addListener("close", (code) => {
                     clearTimeout(dataTimeout);
                     clearTimeout(programTimeout);
                     switch (code) {
@@ -1335,7 +1335,7 @@ bash `.trim().replaceAll('\n', "");
             });
         }
         // Handle GDB session commands from client
-        ws.on("message", async (message, isBinary) => {
+        ws.addListener("message", async (message, isBinary) => {
             try {
                 let messageJSON;
                 if (JSON.parse(message.toString()).data != undefined)
@@ -2041,7 +2041,7 @@ bash `.trim().replaceAll('\n', "");
                     if (process) {
                         if (!process.killed && process) {
                             process.kill(9);
-                            process.on(('close'), (code) => {
+                            process.addListener(('close'), (code) => {
                                 onClosedProcess();
                                 resolve();
                                 console.log('stopped process');
@@ -2120,7 +2120,7 @@ bash `.trim().replaceAll('\n', "");
             }
         }
         // Handle WebSocket disconnection
-        ws.on("close", () => {
+        ws.addEventListener("close", () => {
             onCloseSession();
             console.log("Client " + clientId + " disconnected");
         });
@@ -2140,7 +2140,7 @@ bash `.trim().replaceAll('\n', "");
         }
     });
 });
-process.on('exit', () => {
+process.addListener('exit', () => {
     console.log('Server is exiting...');
     exports.wss.clients.forEach(client => {
         client.close(1012, 'server is being shut down');
