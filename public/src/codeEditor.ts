@@ -18,6 +18,7 @@ const inIframe = window.self !== window.top;
 
 
 // new Pixelated().render().then(node => document.body.appendChild(node))
+//@ts-ignore
 
 
 //  import * as Ace from "ace-builds";
@@ -25,13 +26,14 @@ declare const ace: typeof Ace;
 import modelist from "ace-builds/src-noconflict/ext-modelist";
 // import { Callback } from "ioredis";
 // import { EditorSession } from "../../server/types";
-import { Project } from "../../generated/prisma";
+import { Project } from "../../generated/prisma"
+import { HandshakeMessage, WebSocketMessage } from "../../shared/src/messageTypes"
+import { EditorWindow, EditorWindowTab } from "./windowManager.js";
 import path from "path";
 const AceRange = ace.require("ace/range").Range;
 const aceModes: typeof modelist = ace.require("ace/ext/modelist");
 var codeLens = ace.require("ace/ext/code_lens");
 //  const msgMap: Map<Number, WSMessage> = new Map();
-
 
 
 // function getCompiledCode() {
@@ -551,6 +553,7 @@ export enum WebSocketMessageType {
   MouseUpdate = "MouseUpdate",
   WebCam = 'webcam',
   Canvas = 'canvas',
+  RTC = 'rtc',
 }
 
 export enum ConsoleMessageType {
@@ -585,8 +588,8 @@ class SessionClient {
 }
 
 // VARIABLES //
-let client: SessionClient | undefined;
-let clients: SessionClient[] = []
+export let client: SessionClient | undefined;
+export let clients: Map<UUID,SessionClient> = new Map()
 const cursors: Map<string, EditorCursor> = new Map()
 const typingIndicators: Map<UUID,HTMLDivElement> = new Map();
 let debounceTimer: NodeJS.Timeout;
@@ -597,7 +600,7 @@ let code;
 let debugLine = 1; // debug row
 let lastDebugId: any;
 let lastViewedMessage: number;
-let currentFileName: string;
+let currentFileName: string | undefined;
 let wsClientId: UUID;
 let wsSessionId: UUID;
 let isHost: boolean = false;
@@ -619,7 +622,7 @@ let canvas: EditorCanvas | undefined
 let cameraEnabled = false;
 let videoStream: MediaStream
 const variableArrayIndexes: number[] = [];
-const editorSessions: Map<string, FileEditorSession> = new Map<
+export const editorSessions: Map<string, FileEditorSession> = new Map<
   string,
   FileEditorSession
 >();
@@ -631,21 +634,40 @@ if(DockElement)
   document.getElementsByClassName('container')[0].appendChild(DockElement)
 
 let rtc: Map<UUID, IIWebRTC> = new Map()
-const editor: Ace.Editor = ace.edit("editor", {
-  mode: "ace/mode/c_cpp",
-  enableLiveAutocompletion: true,
-  enableBasicAutocompletion: true,
-  enableSnippets: true,
-  placeholder: "scrie niste cod...",
-  tooltipFollowsMouse: true,
-  animatedScroll: true,
-  useWorker:true,
-  //   fontSize: "18px",
-  //maxLines: 30,
-  wrap: true,
-  autoScrollEditorIntoView: true,
-  enableCodeLens: true,
+
+
+
+class CodeWindow extends EditorWindow {
+
+  editor = ace.edit("editor", {
+    mode: "ace/mode/c_cpp",
+    enableLiveAutocompletion: true,
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    placeholder: "scrie niste cod...",
+    tooltipFollowsMouse: true,
+    animatedScroll: true,
+    useWorker:true,
+    //   fontSize: "18px",
+    //maxLines: 30,
+    wrap: true,
+    autoScrollEditorIntoView: true,
+    enableCodeLens: true,
 });
+
+  constructor()
+  {
+    super(document.getElementById("editor-container"), document.getElementById("editor-tabs-container"), document.getElementById("editor"))
+   
+  }
+
+
+}
+
+const codeWindow = new CodeWindow()
+const chatWindow = new EditorWindow(document.getElementById('output-container'), document.querySelector('#output-container .editor-tabs-container'), document.querySelector('#output-container #client-area-body'))
+
+
 
 var event = ace.require("ace/lib/event");
 var Range = ace.require("ace/range").Range;
@@ -671,7 +693,7 @@ for(const param of params)
 
 const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + (params.find(val => val!=undefined) && params.length !=0 ? "?" : "") + paramsURL
 // Initialize the manager
-const cursorManager = new MultiCursorManager(editor);
+const cursorManager = new MultiCursorManager(codeWindow.editor);
 
 let msgId: number = 0;
 type CursorPosition = { row: number; column: number };
@@ -880,12 +902,10 @@ function arraysEqual(a: string | any[], b: string | any[]) {
 //   writeOutput(window.getComputedStyle(ddd).fontSize)
 // }
 
-editor.setTheme("ace/theme/editor-theme");
-editor.setHighlightActiveLine(true);
-editor.resize();
+
 let isRemoteChange = false; // used for colaborative changes
 let marker: number; //selection marker
-const renderer = editor.renderer;
+const renderer = codeWindow.editor.renderer;
 // Define the type or class for ghostManager
 interface GhostManager {
   clear: () => void;
@@ -901,7 +921,7 @@ const ghostManager: GhostManager = new (class implements GhostManager {
   add(variableName: string, value: string) {
     // Implementation for adding ghost markers
   }
-})(editor);
+})(codeWindow.editor);
 
 // TODO add on load event or pre load
 // getCompiledCode()
@@ -1054,13 +1074,40 @@ export function toggleCamera() {
 export function beautifyEditor() {
    
    
-      beautify.beautify(editor.session);
+      // beautify.beautify(editor.session);
+
+    fetch('problem/create', {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body:
+      
+      `
+          {
+        "name": "test",
+        "clientId": "${wsClientId}",
+        "sessionId": "${wsSessionId}",
+        "tests":
+        [
+            {
+                "dataIn": "1 2",
+                "dataOut": "2 4"
+            },
+            {
+                "dataIn": "2 4",
+                "dataOut": "4 8"
+            }
+        ]
+    }
+      `
+      
+    })
+      
 }
 export function undo() {
-      editor.session.getUndoManager().redo(editor.session)
+      codeWindow.editor.session.getUndoManager().redo(codeWindow.editor.session)
 }
 export function redo() {
-      editor.session.getUndoManager().undo(editor.session)
+      codeWindow.editor.session.getUndoManager().undo(codeWindow.editor.session)
 }
 
 export function openTestSubjects(ev)
@@ -1098,140 +1145,7 @@ export function openChat(ev)
 
 }
 
-editor.on('changeSession', (e) => 
-{
-  
-  //TODO Check if i can imrove the changedCss check, so it
-  // doesnt create new listener for each update.
-  let errorDisplay: HTMLDivElement | undefined;
-  let errorDisplayTimeout: NodeJS.Timeout;
-  
-  !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable')
-  !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable')
-  editor.session.on('changeBreakpoint', e => {
 
-  })
-
-  editor.session.on('changeScrollTop', scrollTop => {
-    // if(lastEv!=undefined)
-    //   updateLocalCursor(lastEv)
-  })
-
-  function getContext(line, variable): {type: string}
-  {
-      return {type: "int"}
-  }
-  function getErrorInfo(compileErrorObj: CompileError): {link: string, fixFunction: () => void}
-  {
-    const mathces = compileErrorObj.text.match(/'.+?'/g)!
-    console.log(mathces[0])
-    const basicError = compileErrorObj.text.replaceAll(/'.+?'/g,'').trim()
-    console.log(basicError)
-    // TODO Improve this
-    const cases = [
-      {text: 'expected',
-        test: (error) => error.includes('expected') ,
-        return: {link: 'expected', fixFunction: () => {
-          const varName = mathces[0].replaceAll("'", '')
-          let i=1;
-          const searchRow = compileErrorObj.range.end.row;
-          const cond = () =>!(editor.session.getLine(searchRow-i).trim().includes(';') || editor.session.getLine(searchRow-i).trim() != '' && searchRow-i > 0) //(!editor.session.getLine(searchRow-i).trim().includes(';') || editor.session.getLine(searchRow-i).trim() == '') && searchRow-i > 0
-          while(cond())
-           {
-            console.log(cond(), editor.session.getLine(searchRow-i).trim(), editor.session.getLine(searchRow-i).trim().includes(';'))
-            i++
-           } 
-           const insertRange = {column: editor.session.getLine(searchRow-i).length+1, row: searchRow-i}
-          editor.session.insert(insertRange,`;`)
-          editor.session.selection.selectWord()
-          // editor.selection.setRange(new Range({start: {row: insertRange.row, column: 0}, end: insertRange}))
-        }}
-      },
-
-      {text: 'was not declared in this scope',
-        test: (error) => error.includes('was not declared in this scope') ,
-         return: {link: 'undeclared', fixFunction: () => {
-          const varName = mathces[0].replaceAll("'", '')
-          const context = getContext(editor.session.getLines(compileErrorObj.range.start.row, compileErrorObj.range.end.row), varName)
-          editor.session.insert({column: 0, row: compileErrorObj.range.start.row},`\n`)
-          editor.session.insert({column: compileErrorObj.range.start.column, row: compileErrorObj.range.start.row},`${context.type} ${varName};`)
-          editor.session.selection.selectWord()
-        }}
-      },
-    ]
-
-    for(const elem of cases)
-    {
-      if(elem.test(basicError))
-        return elem.return
-    }
-    // switch(basicError.includes())
-    // {
-    //   case 'expected  before':
-    //     return 
-    //   break;
-    //   case "was not declared in this scope":
-    //     return {link: 'undeclared', fixFunction: () => {
-    //       const varName = mathces[0].replaceAll("'", '')
-    //       const context = getContext(editor.session.getLines(compileErrorObj.range.start.row, compileErrorObj.range.end.row), varName)
-    //       editor.session.insert({column: 0, row: compileErrorObj.range.start.row},`\n`)
-    //       editor.session.insert({column: compileErrorObj.range.start.column, row: compileErrorObj.range.start.row},`${context.type} ${varName};`)
-    //     }}
-    //     break;
-    //   case "invalid conversion from to":
-    //     break;
-    // }
-
-    return {link: '', fixFunction: () => {}}
-  }
- editor.session.on('markerUpdate', (marker) => {
-    if(!marker.changedCss) return;
-
-    // TODO add marke events only to errored tokens
-    marker.elem.addEventListener('mouseover', ev => {
-      if(errorDisplay) return;
-      if(errorDisplayTimeout)
-        clearTimeout(errorDisplayTimeout)
-      
-      errorDisplayTimeout = setTimeout(() => {
-        errorDisplay = document.createElement('div')
-        const top = marker.elem.getBoundingClientRect().top;
-        const left = marker.elem.getBoundingClientRect().left
-        errorDisplay.style.cssText = `top: ${top}px; left: ${left}px; position: absolute;`
-        errorDisplay.innerText = compileErrorObjs.get(marker.marker.id)!.text
-        errorDisplay.classList.add('compile-error-tooltip')
-
-        const errorInfo = getErrorInfo(compileErrorObjs.get(marker.marker.id)!)
-        const actionsContainer = createNode('div', {css: "display: flex; gap: 10px; margin: 5px;"})
-        actionsContainer.appendChild(createNode('a', {innerText: "Despre eroare", attributes: [{name: 'href', value: "/guides/post/"+errorInfo.link}]}))
-        actionsContainer.appendChild(createNode('a', {innerText: "Repara", css: "text-decoration: underline; cursor: pointer;", onclick(ev) {
-            errorInfo.fixFunction()
-        },}))
-        errorDisplay!.appendChild(actionsContainer)
-        document.body.appendChild(errorDisplay)
-        compileErrorObjs.get(marker.marker.id)!.display = errorDisplay;
-      }, 200);
-      
-    })
-
-    if(errorDisplay)
-      if(!errorDisplay.checkVisibility())
-      {
-        errorDisplay.remove();
-      errorDisplay = undefined;
-      }
-      else
-     errorDisplay!.addEventListener('mouseleave', ev => {
-      if(errorDisplayTimeout)
-        clearTimeout(errorDisplayTimeout)
-      if(!errorDisplay) return;
-
-      errorDisplay.remove();
-      errorDisplay = undefined;
-    })
-  })
-
-})
 
 function getPointerRelativePosition(editor: Ace.Editor, x, y) {
   const rect = editor.container.getBoundingClientRect();
@@ -1281,10 +1195,10 @@ function updateLocalCursor(ev, fromPress) {
       const sizeX = document.body.clientWidth;
       const sizeY = document.body.clientHeight;
 
-      const pos = getPointerRelativePosition(editor, posX, posY)
+      const pos = getPointerRelativePosition(codeWindow.editor, posX, posY)
 
-      const rectWidth = editor.renderer.characterWidth
-      const rechHeight = editor.renderer.lineHeight
+      const rectWidth = codeWindow.editor.renderer.characterWidth
+      const rechHeight = codeWindow.editor.renderer.lineHeight
       const pointerType = ev.pointerType;
       
       if(pointerType != "mouse")
@@ -1292,11 +1206,11 @@ function updateLocalCursor(ev, fromPress) {
         const height = ev.height;
         const width = ev.width;
         for(const conn of rtc.values())
-          if(clients.find(val => val.clientId == conn.thistargetId)?.editorSession?.fileName == client?.editorSession?.fileName)
+          // if(clients.find(val => val.clientId == conn.thistargetId)?.editorSession?.fileName == client?.editorSession?.fileName)
         conn.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth , rechHeight, clientId: wsClientId}))
       } else
         for(const conn of rtc.values())
-          if(clients.find(val => val.clientId == conn.thistargetId)?.editorSession?.fileName == client?.editorSession?.fileName)
+          // if(clients.find(val => val.clientId == conn.thistargetId)?.editorSession?.fileName == client?.editorSession?.fileName)
         conn.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth , rechHeight, clientId: wsClientId}))
 
     }
@@ -1310,7 +1224,7 @@ function updateCursor(cursor, eventJson)
           let posX = 0;
           let posY = 0;
           const remSize: number = parseFloat(getComputedStyle(document.documentElement).fontSize)
-        const relPos = getPixelFromRelativePosition(editor, eventJson.relPosX, eventJson.relPosY, eventJson);
+        const relPos = getPixelFromRelativePosition(codeWindow.editor, eventJson.relPosX, eventJson.relPosY, eventJson);
         if(sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3)
         {
           const scale = 5;
@@ -1410,14 +1324,14 @@ function getFileValue(fileName: string): Promise<string>
 function displayBlankEditor()
 {
   currentFileName = '';
-  editor.session.setValue('Create a new file!')
-  editor.session.setMode('txt')
+  codeWindow.editor.session.setValue('Create a new file!')
+  codeWindow.editor.session.setMode('txt')
 }
 function renameFile(fileName: string, newName?: string) {
   if(!editorSessions.has(fileName)) return false;
   if(newName)
   {
-    editor.session.setMode(aceModes.getModeForPath(newName).mode);
+    codeWindow.editor.session.setMode(aceModes.getModeForPath(newName).mode);
     editorSessions.get(fileName)!.fileElement!.fileElem.innerText = newName;
   }
     
@@ -1428,7 +1342,7 @@ function renameFile(fileName: string, newName?: string) {
       
       editorSessions.get(fileName)!.fileElement!.fileElem.style.display = 'block';
       editorSessions.get(fileName)!.fileElement!.fileElem.innerText = name; 
-      editor.session.setMode(aceModes.getModeForPath(name).mode);
+      codeWindow.editor.session.setMode(aceModes.getModeForPath(name).mode);
       ws.send(JSON.stringify({
         type: WebSocketMessageType.FileManagement,
         command: FileManagementCommands.Rename,
@@ -1445,19 +1359,19 @@ interface User {
     name,
     color,
     id,
-    elem?
+    elem?,
   }
 
-class FileElement
+class FileElement extends EditorWindowTab
 {
-  
   public Users: User[] = [];
   fileElem: HTMLSpanElement
   usersContainer: HTMLDivElement
   animOptions = {duration: 200, easing: "ease-in"}
   name
-  constructor(fileName:string) {
-    this.fileElem =  createNode('span', {className: "file-tab", htmlSting: `<p>${fileName}</p>`}) //document.createElement("span"); 
+  constructor(fileName:string, session) {
+    super(createNode('span', {className: "file-tab", htmlSting: `<p>${fileName}</p>`}), codeWindow, session)
+    this.fileElem = this.element  //document.createElement("span"); 
     this.name = fileName
     // this.fileElem.className = "file-tab";
     // this.fileElem.innerText = fileName;
@@ -1465,6 +1379,7 @@ class FileElement
     this.fileElem.onclick = () => {
       openFile(fileName);
     };
+
     this.fileElem.oncontextmenu = (ev) => {
       ev.preventDefault()
       if(contextMenu)
@@ -1504,7 +1419,7 @@ class FileElement
   {
     const existingUser = this.Users.findIndex((value) => user.id == value.id)
     if(existingUser != -1)
-      return
+      return console.warn('User already exists on file element.')
     
     const elem = createNode('div', {css: 'background-color: #'+ user.color});
     this.Users.push({...user, elem})
@@ -1516,16 +1431,15 @@ class FileElement
   }
   removeUser (userId)
   {
-    const user = this.Users.findIndex((value) => userId == value.id)
+    const user = this.Users.findIndex((value) => userId === value.id)
     if(user == -1)
-      return
+      return console.warn('Couldnt remove user on file element.')
     const elem: HTMLElement = this.Users[user].elem;
-    this.Users.splice(user)
-    elem.animate([{flexGrow: '1'}, {flexGrow: '0'}], this.animOptions).onfinish = 
+    this.Users.splice(this.Users.findIndex((value) => userId === value.id), 1) // i got stuck for a day because of this 1
+    elem.animate([{flexGrow: '1'}, {flexGrow: '0'}], this.animOptions).addEventListener('finish',
     () => {
       elem.remove()
-      
-    }
+    })
     
 
   }
@@ -1540,17 +1454,19 @@ function onFileCreate(fileName: string) {
   // const command = JSON.parse(messageBodyJson);
 
   // const fileName = command.content;
-  const file = new FileElement(fileName)
-  //open newly created file
-  if(namePrompt?.innerText == fileName)
-  {
-       openFile(namePrompt.innerText);
-      namePrompt.innerText = "";
-  }
+ 
 
   if(editorSessions.has(fileName))
   {
     const session = editorSessions.get(fileName)!;
+    const file = new FileElement(fileName, session.editor)
+    //open newly created file
+    if(namePrompt?.innerText == fileName)
+    {
+        openFile(namePrompt.innerText);
+        namePrompt.innerText = "";
+    }
+
     if(!session.fileElement)
      {
         const newSession: FileEditorSession =
@@ -1567,6 +1483,14 @@ function onFileCreate(fileName: string) {
   }
   else
   {
+    const file = new FileElement(fileName, undefined)
+    //open newly created file
+    if(namePrompt?.innerText == fileName)
+    {
+        openFile(namePrompt.innerText);
+        namePrompt.innerText = "";
+    }
+
     const newSession: FileEditorSession =
     {
       editor: undefined,
@@ -1939,17 +1863,17 @@ function clearGhostMarkers(editor: {
   }
 }
 
-function writeOutput(data: string, messageJson?: any,manuallScroll?, manualMessageType?: ConsoleMessageType) {
+function writeOutput(data: string, message?: any,manuallScroll?, manualMessageType?: ConsoleMessageType) {
   if (outputArea) {
     const msgText = data
 
-    if (messageJson && messageJson.messageType) {
-      const localmsgId = (messageJson.id as number) || -1;
+    if (message && message.messageType) {
+      const localmsgId = (message.id as number) || -1;
       msgId = localmsgId;
-      if (messageJson.id === -1)
-        console.error(new Error("invalid message id: " + messageJson));
-      const messageType = manualMessageType? manualMessageType : messageJson.messageType;
-      const messageClientId = messageJson.clientId;
+      if (message.id === -1)
+        console.error(new Error("invalid message id: " + message));
+      const messageType = manualMessageType? manualMessageType : message.messageType;
+      const messageClientId = message.clientId;
       let messageGroup = outputArea;
       switch (messageType) {
         case ConsoleMessageType.UserChat:
@@ -1972,7 +1896,7 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?, manualMessa
             outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" msg-id="${localmsgId}" clientId="${(
               messageClientId as string
             ).trim()}"><span class="chat-displayName">${
-              messageJson.clientDisplayName
+              message.clientDisplayName
             }</span><div class="chat-content-container"><span class="chat-content">${msgText}</span></div></span>`;
           break;
         case ConsoleMessageType.SessionInfo:
@@ -1988,10 +1912,10 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?, manualMessa
           // errorElem.id = 'compile-error'
           errorElem.innerHTML = msgText;
           errorElem.onclick = () => {
-            const {range, row, column, rowend, columnEnd} = messageJson.params;
-            editor.focus()
-            editor.gotoLine(row, column)
-            editor.selection.setRange(range)
+            const {range, row, column, rowend, columnEnd} = message.params;
+            codeWindow.editor.focus()
+            codeWindow.editor.gotoLine(row, column)
+            codeWindow.editor.selection.setRange(range)
           }
           outputArea.appendChild(errorElem)
           // outputArea.innerHTML += `<span class="console-error" msg-id="${msgId}" id='compile-error'>${msgText}</span>`;
@@ -2012,7 +1936,7 @@ function writeOutput(data: string, messageJson?: any,manuallScroll?, manualMessa
         case ConsoleMessageType.Output:
           if(document.getElementById('active-console'))
             messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
-          messageGroup.innerHTML += `<pre class="console-program-${messageJson.type == WebSocketMessageType.End ? "return" : messageJson.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
+          messageGroup.innerHTML += `<pre class="console-program-${message.type == WebSocketMessageType.End ? "return" : message.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
           break;
 
         default:
@@ -2042,7 +1966,7 @@ export function joinsession()
     <form id="codeForm" method="get">
        <script src="../dist/public/emailCodeVerificationClient.js" async type="text/javascript"></script>
         <div class="text-container">
-            <h1>Join a session</h1>
+            <h1>Conecteaza-te</h1>
         </div>
         <div class="input-container">
             <input type="number" maxlength="6" name="code" id="code" autocomplete="off">
@@ -2467,26 +2391,27 @@ class TokenTooltip extends Tooltip {
 
 
   ws.addEventListener('open', (ev) => {
-  const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
-  //writeOutput(sessionId || "No session ID found in URL.");
+    const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
+    //writeOutput(sessionId || "No session ID found in URL.");
 
-  window.onbeforeunload = (ev => {
-    if(!inIframe)
-    if(modifiedFile)
-      ev.preventDefault()
-  })
-  let hoverTooltip = 0;
+    window.onbeforeunload = (ev => {
+      if(!inIframe)
+      if(modifiedFile)
+        ev.preventDefault()
+    })
 
-  setTimeout(() => {
-    if(wsSessionId==undefined)
-      ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-      setTimeout(() => {
-        if(wsSessionId==undefined)
-          ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-      }, 3000); 
-  }, 500); 
+    let hoverTooltip = 0;
 
-  const tooltip = new TokenTooltip(editor);
+    setTimeout(() => {
+      if(wsSessionId==undefined)
+        ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+        setTimeout(() => {
+          if(wsSessionId==undefined)
+            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+        }, 3000); 
+    }, 500); 
+
+    const tooltip = new TokenTooltip(codeWindow.editor);
 
 });
 
@@ -2500,16 +2425,16 @@ ws.addEventListener('close', (ev) => {
   socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
   socketStopped.appendChild(socketText)
   document.getElementById('editor')?.appendChild(socketStopped)
-  if(serviceRestart)
-    setTimeout(() => {
-      window.location.reload()
-    }, 2000);
+  // if(serviceRestart)
+  //   setTimeout(() => {
+  //     window.location.reload()
+  //   }, 2000);
 })
 
 
 
 ws.onerror = (err) => {
-  displayMessagePopup("WEBSOCKET ERROR: " + err.type)
+  displayMessagePopup("Sorry we encountered an error while connecting to the server...")
   console.error(err)
 }
 
@@ -2561,19 +2486,19 @@ outputArea.onscroll = ev => {
 }
 
 
- editor.on("change", (delta: any) => {
+ codeWindow.editor.on("change", (delta: any) => {
 
-    !editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable')
-    !editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable')
+    !codeWindow.editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable')
+    !codeWindow.editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable')
     
-    editor.renderer.updateFull();
+    codeWindow.editor.renderer.updateFull();
     parsedCode = parseCode();
 
     if (isRemoteChange) return;
-      const code = editor.getValue();
+      const code = codeWindow.editor.getValue();
 
     if (!currentFileName) console.error("Current file name is invalid");
-    
+    if(currentFileName)
     dirtyFile(currentFileName)
     ws.send(
       JSON.stringify({
@@ -2586,11 +2511,11 @@ outputArea.onscroll = ev => {
     ); // Send code to server on change // TODO Remove code from body.
   });
 
-  editor.on("changeSelection", () => {
+  codeWindow.editor.on("changeSelection", () => {
 
     if (isRemoteChange) return;
     if( !isColabSession) return;
-    const selection = editor.getSelectionRange();
+    const selection = codeWindow.editor.getSelectionRange();
 
 
     // const start = selection.start;
@@ -2629,7 +2554,7 @@ type FileEditorSession = {
    
 }
 
- class CompileError {
+export class CompileError {
   range: Ace.Range;
   annotation;
   markerId: number;
@@ -2646,7 +2571,7 @@ type FileEditorSession = {
       type: "error",
     }
 
-    this.markerId = editor.session.addMarker(
+    this.markerId = codeWindow.editor.session.addMarker(
       range,
       "ace_carret_error",
       "text",
@@ -2689,16 +2614,18 @@ function dirtyFile(fileName: string)
 
 const markers: number[] = [];
 const errorAnnotations: Ace.Ace.Annotation[] = [];
-const compileErrorObjs: Map<number,CompileError> = new Map();
+export const compileErrorObjs: Map<number,CompileError> = new Map();
 
 //    END   //
 
 ws.onmessage = (event) => {
-  let eventJson = JSON.parse(event.data);
-  lastEventJson = eventJson;
-  let command = eventJson.message;
-  let data = eventJson.body;
-  const type: string = eventJson.type;
+  const parsedData = JSON.parse(event.data);
+  const type: WebSocketMessageType = parsedData.type
+  let messageJson = parsedData as WebSocketMessage
+  lastEventJson = messageJson;
+  let command = parsedData.message;
+  let data = parsedData.body;
+
 
   // if(type!=WebSocketMessageType.Handshake && !wsSessionId)
   //   return displayMessagePopup('editor was not initialised. Session id is invalid.')
@@ -2720,7 +2647,7 @@ ws.onmessage = (event) => {
     if(eventJson.message != 'info locals' && eventJson.messageType != ConsoleMessageType.DebugProgram)
       writeOutput(data, eventJson);
 
-    const session = editor.getSession();
+    const session = codeWindow.editor.getSession();
     const doc = session.getDocument();
 
     const text = doc.getValue();
@@ -3034,12 +2961,150 @@ ws.onmessage = (event) => {
     }
   }
 
+function onRemoteClientJoin(rclient: HandshakeMessage['users'][number]) 
+{
+  if(!rclient)
+    throw 'Ivalid remote client'
+  // clients.push(new SessionClient(rclient.clientId, rclient.displayName, rclient.color))
+    if(!rtc.has(rclient.clientId))
+    createRTCConnection(rclient.clientId, true)
+
+  if(rclient.clientId == wsClientId)
+    throw 'duplicate client id'
+    // const clientIndex = clients.findIndex((val) => val!.clientId == messageJson.clientId)
+    const fileName = rclient.openFile
+
+    // if(clientIndex == -1)
+    // {
+      
+      createClient(rclient.clientId, rclient.displayName, rclient.color, {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor})
+      editorSessions.get(fileName)?.fileElement?.addUser({name: rclient.displayName, color: rclient.color, id: rclient.clientId}, undefined)
+}
+
+ function createFileSession(fileName, fileContent) {
+      const newSession = ace.createEditSession(fileContent);
+      // undo manager?
+      // if(fileName.split('.')[1] != 'cpp')
+      
+      newSession.setMode(aceModes.getModeForPath(fileName).mode);
+      codeWindow.editor.setSession(newSession);
+      
+      const session: FileEditorSession =
+      {
+        editor: newSession,
+        fileName: fileName,
+        fileElement: undefined
+      }
+      editorSessions.set(fileName, session);
+      client!.editorSession = session
+  }
+
+  function updateFileSession(fileName, fileContent) {
+    // let currentSession = editorSessions.get(fileName)!
+    if(!editorSessions.get(fileName)!.editor)
+      editorSessions.get(fileName)!.editor =  ace.createEditSession(fileContent);
+    
+
+    console.log("File already opened: ", fileName, "current session: ", editorSessions.get(fileName)!);
+    // let session = editorSessions.get(fileName)!;
+    switch(fileName.split('.').at(-1))
+    {
+      case 'png':
+      case 'jpeg':
+      case 'webp':
+      case 'img':
+        codeWindow.editor.container.style.display = 'none';
+        canvas = new EditorCanvas(ws, wsClientId)
+        codeWindow.editor.container.parentElement?.appendChild(canvas.render())
+        canvas.updateSize()
+        break;
+      default:
+        codeWindow.editor.container.style.display = 'initial';
+        if(canvas)
+        {
+          canvas.remove()
+          canvas = undefined;
+        }
+      
+        break;
+    }
+    if (editorSessions.has(fileName)!)
+      {
+        const file = editorSessions.get(fileName)!
+        file.editor!.setMode(aceModes.getModeForPath(fileName).mode);
+        file.fileElement!.parentWindow.getEditor().setSession(editorSessions.get(fileName)!.editor);
+      } 
+    if (fileContent.toString() != editorSessions.get(fileName)!.editor!.getValue().toString()) {
+      isRemoteChange = true;  // must add this to prevent sending on changed event
+      editorSessions.get(fileName)!.editor!.setValue(fileContent);
+      isRemoteChange = false;
+    }
+    // editorSessions.set(fileName, currentSession);
+  }
+
+function onFileSessionUpdated(newFileName, client: SessionClient) {
+  
+  
+    // if(document.getElementById('active-open-file'))
+    //   document.getElementById('active-open-file')!.id = '';
+    const elem = editorSessions.get(newFileName)?.fileElement!;
+    if(elem)
+    {
+      if(currentFileName !== newFileName)
+        editorSessions.get(newFileName)?.fileElement!.addUser({name: client.displayName, color: client.color, id: client.clientId}, currentFileName)
+        // editorSessions.get(newFileName)!.fileElement!.fileElem.id = 'active-open-file';
+        client.editorSession = editorSessions.get(newFileName)!
+        clients.get(client.clientId)!.editorSession! =  editorSessions.get(newFileName)!
+        console.log(elem.parentWindow)
+        elem.parentWindow.activeTab?.element.classList.remove('open-file')
+        elem.parentWindow.activeTab = elem
+        elem.parentWindow.activeTab?.element.classList.add('open-file')
+    }
+
+    if(currentFileName)
+    if(currentFileName != newFileName)
+    {
+      
+      const prevElem = editorSessions.get(currentFileName)!
+      if(prevElem.fileElement?.parentWindow == elem.parentWindow)
+      {
+        console.log('REMOVED USER IN onFileSessionUpdated')
+        prevElem.fileElement?.removeUser(client.clientId)
+
+      }
+      
+
+    }
+
+    currentFileName = newFileName;
+  }
+
+function openFile(fileName, fileContent, client: SessionClient) {
+  
+  console.log('opening file:',editorSessions, client);
+
+  if (!editorSessions.has(fileName)) 
+    createFileSession(fileName, fileContent)
+  else 
+    updateFileSession(fileName, fileContent)
+
+  onFileSessionUpdated(fileName, client)
+
+  
+}
+
+function createClient(clientId, displayName, color, session) {
+  const client = new SessionClient(clientId,displayName, color)
+  client.editorSession = session
+  clients.set(clientId,client)
+  console.log("Created client: ", client, clients)
+}
 
 
 
-  switch (type) {
+  switch (messageJson.type) {
 
-    case 'rtc':
+    case WebSocketMessageType.RTC:
       // if(eventJson.end)
       // {
       //   const conn = rtc.get(eventJson.callerId)!
@@ -3047,18 +3112,19 @@ ws.onmessage = (event) => {
       //   rtc.delete(eventJson.callerId)
       //   break;
       // }
-        const peerRTC = rtc.get(eventJson.callerId || eventJson.targetId);
+        
+        const peerRTC = rtc.get(messageJson.callerId || messageJson.targetId);
         if (peerRTC) {
-          peerRTC.handleSignal(eventJson);
+          peerRTC.handleSignal(messageJson as any);
           break
         }
         
-      if(!eventJson.description)
+      if(!messageJson.description)
         break;
-      if(eventJson.description.type != "offer" )
+      if(messageJson.description.type != "offer" )
         break;
 
-      const callerId = eventJson.callerId
+      const callerId = messageJson.callerId
             if(rtc.has(callerId))
               break
                       console.log('Createing remote rtc')
@@ -3087,16 +3153,16 @@ ws.onmessage = (event) => {
           // }
     break;
     case WebSocketMessageType.Error:
-      writeOutput(data, eventJson);
+      writeOutput(data, messageJson);
       break;
     case WebSocketMessageType.Canvas:
       if(canvas)
-        canvas.handleReplication(eventJson)
+        canvas.handleReplication(messageJson)
       break;
     case WebSocketMessageType.Console:
     case WebSocketMessageType.Output:
       
-      if(byteSize(eventJson.body) > 64000) // 1000000 is 1Mb
+      if(byteSize(messageJson.body) > 64000) // 1000000 is 1Mb
       {
         writeOutput('error! output exceeded 64kb')
        
@@ -3105,14 +3171,14 @@ ws.onmessage = (event) => {
       else 
       // writeOutput(data, eventJson)
 
-      handleOutput(eventJson);
-      if(eventJson.message === 'end')
+      handleOutput(messageJson);
+      if(messageJson.message === 'end')
         cleanDebug()
         
       break;
 
     case WebSocketMessageType.End:
-      if(eventJson.body==="gdb")
+      if(messageJson.body==="gdb")
       {
         cleanDebug()
         const cmdBut = document.getElementById("buttons");
@@ -3122,8 +3188,8 @@ ws.onmessage = (event) => {
       else
       {
         if(data)
-          writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${eventJson.time < 100 ? 'green' : 'red'}">` + eventJson.time +"</span>ms" + (eventJson.notes  != "" &&  eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>": "" + "</span>"), eventJson);
-        else  writeOutput("Forced closed program." + (eventJson.notes  != "" &&  eventJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + eventJson.notes + "</span>": "" + "</span>"), eventJson);
+          writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time +"</span>ms" + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
+        else  writeOutput("Forced closed program." + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
       
       }
 
@@ -3132,7 +3198,7 @@ ws.onmessage = (event) => {
       
       break;
     case WebSocketMessageType.MouseUpdate:
-       if(!eventJson.clientId) break;
+       if(!messageJson.clientId) break;
 
       //  if(eventJson.fileName)
       //  {
@@ -3140,8 +3206,8 @@ ws.onmessage = (event) => {
       //   return;
       //  }
 
-        if(!cursors.has(eventJson.clientId))
-         new EditorCursor(eventJson)
+        if(!cursors.has(messageJson.clientId))
+         new EditorCursor(messageJson)
 
       // TODO Add incative class to cursor when user doesnt move it.
 
@@ -3150,7 +3216,7 @@ ws.onmessage = (event) => {
     case WebSocketMessageType.Chat:
       if(!outputArea)
         break;
-      if(eventJson.clientId)
+      if(messageJson.clientId)
       {
         
         const lastMessageGroup: HTMLDivElement = document.querySelector('[msg-id="'+ ((msgId!=-1) ? msgId.toString() : '0') +'"]')!;
@@ -3187,104 +3253,172 @@ ws.onmessage = (event) => {
         }
 
 
-        writeOutput(data, eventJson, blockScroll);
+        writeOutput(data, messageJson, blockScroll);
 
            
       }
       else
       
-      writeOutput(data, eventJson);
+      writeOutput(data, messageJson);
 
       break;
 
     case WebSocketMessageType.Handshake:
-      if((!wsSessionId && !wsClientId) || eventJson.sessionId)
-      {
-      wsClientId = eventJson.clientId;
-      wsSessionId = eventJson.sessionId;
-      isColabSession = eventJson.session!=undefined
+
+
+      // if((!wsSessionId && !wsClientId) || messageJson.sessionId)
+      // {
+      // wsClientId = messageJson.clientId;
+      // wsSessionId = messageJson.sessionId;
+      // isColabSession = messageJson.session!=undefined
       
-      isHost = eventJson.session!=undefined ? eventJson.session.isHost : false
-      if(!client)
-      client = new SessionClient(wsClientId, eventJson.displayName, eventJson.color)
-      // if(!document.cookie.includes('session='))
-      document.cookie='session='
+      // isHost = messageJson.session!=undefined ? messageJson.session.isHost : false
+      // if(!client)
+      // client = new SessionClient(wsClientId, messageJson.displayName, messageJson.color)
+      // // if(!document.cookie.includes('session='))
+      // document.cookie='session='
+
+      // setTimeout(() => {
+      //   document.cookie = 'session='+wsSessionId+';' 
+      // }, 15000);
+      // //console.log(editor.session.toJSON()) // TODO Implement saving the editor session in a file on the server or on the client.
+        
+        
+      // }
+
+      
+      // if(messageJson.session ? messageJson.session.isHost : false || !messageJson.session)
+      //   document.getElementById('share')?.classList.add('host')
+
+      // if(messageJson.body)
+      //   writeOutput(messageJson.body, messageJson);
+
+
+      // const projectData = messageJson.project;
+      // const sessionData = messageJson.session;
+      // if(projectData)
+      // { 
+      //   const projNameNode = document.createElement('h1');
+      //   projNameNode.innerText = messageJson.project.name as string;
+      //   projNameNode.id = 'active-project-name'
+      //   document.getElementById('join-session')!.parentNode!.insertBefore(projNameNode, document.getElementById('join-session'))
+      // }
+
+      // if(sessionData)
+      // {
+      //   if(!sessionData.canEdit)
+      //     editor.setReadOnly(true)
+      //   if(!sessionData.canChat)
+      //     document.getElementById('console')?.setAttribute('disabled','true')
+
+      //   ClientOptions = {canChat: messageJson.session.canChat, canEdit: messageJson.session.canEdit, canVoice: messageJson.session.canVoice}
+
+      //   if(!ClientOptions.canVoice)
+      //     disableVoice()
+      //   else
+      //     if(!microphone)
+      //       enableVoice()
+           
+
+      // console.log(ClientOptions)
+      // }
+      function updatePermissions(newPermissions) {
+          if(!newPermissions.canEdit)
+            codeWindow.editor.setReadOnly(true)
+          if(!newPermissions.canChat)
+            document.getElementById('console')?.setAttribute('disabled','true')
+          if(newPermissions.isHost)
+            document.getElementById('share')?.classList.add('host')
+          ClientOptions = newPermissions
+  
+          if(!ClientOptions.canVoice)
+            disableVoice()
+          else
+            if(!microphone)
+              enableVoice()
+        }
+
+
+
+      const sessionData = messageJson.permissions;
+
+      if(wsClientId && wsSessionId)
+      {
+        updatePermissions(sessionData)
+        return;
+      }
+
+
+      wsClientId = messageJson.clientId;
+      wsSessionId = messageJson.sessionId
+      isHost = sessionData!=undefined ? sessionData.isHost : false
+      isColabSession = sessionData!=undefined
+
+      if(sessionData)
+        updatePermissions(sessionData)
+
+
+      writeOutput(messageJson.body, messageJson);
+
+
+      if(!document.cookie.includes('session='))
+        document.cookie='session='
       setTimeout(() => {
         document.cookie = 'session='+wsSessionId+';' 
       }, 15000);
-      //console.log(editor.session.toJSON()) // TODO Implement saving the editor session in a file on the server or on the client.
-        
-        
-      }
-
       
-      if(eventJson.session ? eventJson.session.isHost : false || !eventJson.session)
-        document.getElementById('share')?.classList.add('host')
-
-      if(eventJson.body)
-        writeOutput(eventJson.body, eventJson);
 
 
-      const projectData = eventJson.project;
-      const sessionData = eventJson.session;
-      if(projectData)
-      { 
-        const projNameNode = document.createElement('h1');
-        projNameNode.innerText = eventJson.project.name as string;
-        projNameNode.id = 'active-project-name'
-        document.getElementById('join-session')!.parentNode!.insertBefore(projNameNode, document.getElementById('join-session'))
-      }
-
-      if(sessionData)
-      {
-        if(!sessionData.canEdit)
-          editor.setReadOnly(true)
-        if(!sessionData.canChat)
-          document.getElementById('console')?.setAttribute('disabled','true')
-
-        ClientOptions = {canChat: eventJson.session.canChat, canEdit: eventJson.session.canEdit, canVoice: eventJson.session.canVoice}
-
-        if(!ClientOptions.canVoice)
-          disableVoice()
+      messageJson.files.forEach((file: string) => {
+          onFileCreate(file);
+        });
+      
+      messageJson.users?.forEach(rclient => {
+        if(rclient.clientId != wsClientId)
+        {
+             
+            onRemoteClientJoin(rclient)
+        }
         else
-          if(!microphone)
-            enableVoice()
-           
-
-      console.log(ClientOptions)
-      }
-
-      
-
+        {
+          if(!client)
+          {
+            client = new SessionClient(wsClientId, messageJson.displayName, messageJson.color)
+            client.editorSession = {fileName: rclient.openFile, editor: undefined, fileElement: undefined}
+            clients.set(wsClientId, client)
+            
+          }
+        }
+      })
       
       break;
     case WebSocketMessageType.CodeChange:
       // editor.session.getDocument().applyDelta(delta);
       if (
-        editor.getValue() !== data.body &&
-        eventJson.clientId !== wsClientId
+        codeWindow.editor.getValue() !== data.body &&
+        messageJson.clientId !== wsClientId
       ) {
-        const delta = eventJson.delta;
-        console.log(eventJson);
+        const delta = messageJson.delta;
+        console.log(messageJson);
         isRemoteChange = true;
-        editor.session.getDocument().applyDelta(delta);
+        codeWindow.editor.session.getDocument().applyDelta(delta);
         isRemoteChange = false;
         document.getElementById('buttons')?.classList.remove('compiled')
-        dirtyFile(eventJson.fileName)
+        dirtyFile(messageJson.fileName)
 
       }
       break;
     case WebSocketMessageType.CompileResult:
 
 
-      const compileErrors = JSON.parse(eventJson.body);
+      const compileErrors = JSON.parse(messageJson.body);
       
     for(const elem of document.getElementsByClassName('console-error'))
           elem.remove()
-       editor.session.setAnnotations([])
+       codeWindow.editor.session.setAnnotations([])
         errorAnnotations.length=0;
         for(const marker of markers)
-          editor.session.removeMarker(marker)
+          codeWindow.editor.session.removeMarker(marker)
 
         markers.length =0;
 
@@ -3294,7 +3428,7 @@ ws.onmessage = (event) => {
         
         
         for(const marker of markers)
-          editor.session.removeMarker(marker)
+          codeWindow.editor.session.removeMarker(marker)
 
         markers.length =0;
       }  
@@ -3335,7 +3469,7 @@ ws.onmessage = (event) => {
                   );
                   // window.alert((editor.renderer as any).$markerFront);
                   //  writeOutput(result.message, {messageType: 'error', params: {range, row: range.start.row+1, column: range.start.column+1, rowend: range.end.row+1, columnemnd: range.end.column+1}})
-                  editor.session.setAnnotations(errorAnnotations);
+                  codeWindow.editor.session.setAnnotations(errorAnnotations);
                   
 
                   // for(const error of document.getElementsByClassName('ace_carret_error') as HTMLCollectionOf<HTMLDivElement>)
@@ -3352,9 +3486,9 @@ ws.onmessage = (event) => {
           default:
           case "success":
             for(const marker of markers)
-              editor.session.removeMarker(marker)
+              codeWindow.editor.session.removeMarker(marker)
               errorAnnotations.length = 0;
-              editor.session.setAnnotations([]);
+              codeWindow.editor.session.setAnnotations([]);
               document.getElementById('compile-error')?.remove()
               compileErrorObjs.forEach(element => {   // TODO improve this
                 element.display?.remove()
@@ -3370,7 +3504,7 @@ ws.onmessage = (event) => {
 
     case WebSocketMessageType.ExecuteStatus:
       let errorOutputString = "";
-      switch (eventJson.status)
+      switch (messageJson.status)
       {
         case 'spawnGUI':
           displaynoVNC(activeConsole!.element)
@@ -3382,14 +3516,14 @@ ws.onmessage = (event) => {
 
         break;
         default:
-          if(eventJson.error)
+          if(messageJson.error)
           {
           onExit()
             // ON ERROR
             document.getElementById('buttons')?.classList.remove('compiled')
-            for (const markerId of markers) editor.session.removeMarker(markerId);
+            for (const markerId of markers) codeWindow.editor.session.removeMarker(markerId);
 
-            for (const errorMessage of eventJson.error.errors) {
+            for (const errorMessage of messageJson.error.errors) {
               errorOutputString += errorMessage.error + "\n";
 
               if (errorMessage.row != -1) {
@@ -3403,7 +3537,7 @@ ws.onmessage = (event) => {
                 });
 
                 markers.push(
-                  editor.session.addMarker(
+                  codeWindow.editor.session.addMarker(
                     new AceRange(row, column, row, column + 1),
                     "ace-error-line",
                     "screenLine"
@@ -3411,9 +3545,9 @@ ws.onmessage = (event) => {
                 );
               }
             }
-            editor.session.setAnnotations(errorAnnotations);
+            codeWindow.editor.session.setAnnotations(errorAnnotations);
           } else {
-            if(eventJson.input == 1)
+            if(messageJson.input == 1)
             {
               if(document.getElementById('console-input'))
                 document.getElementById('console-input')?.remove();
@@ -3435,9 +3569,9 @@ ws.onmessage = (event) => {
               console.focus();
             }
               
-            editor.session.setAnnotations([]);
+            codeWindow.editor.session.setAnnotations([]);
             document.getElementById('buttons')?.classList.add('compiled')
-            for (const markerId of markers) editor.session.removeMarker(markerId);
+            for (const markerId of markers) codeWindow.editor.session.removeMarker(markerId);
           }
 
           // writeOutput(
@@ -3446,12 +3580,12 @@ ws.onmessage = (event) => {
           //     : errorOutputString ||
           //         "Compilation error. (couldnt retrieve error message, sorry)"
           // );
-          if(!eventJson.body)
+          if(!messageJson.body)
             activeConsole!.compileMessage!.remove()
           else
-            activeConsole!.compileMessage!.children[1].innerHTML = eventJson.body
+            activeConsole!.compileMessage!.children[1].innerHTML = messageJson.body
 
-          document.getElementById('compile-status')!.innerText = eventJson.body;
+          document.getElementById('compile-status')!.innerText = messageJson.body;
           document.getElementById('compile-status')!.style.opacity = '1'
 
           setTimeout(() => {
@@ -3467,13 +3601,13 @@ ws.onmessage = (event) => {
       if (!data) {
         //clear selection
 
-        editor.session.removeMarker(marker);
-        if(eventJson.clientId)
-          cursorManager.removeCursor(eventJson.clientId);
+        codeWindow.editor.session.removeMarker(marker);
+        if(messageJson.clientId)
+          cursorManager.removeCursor(messageJson.clientId);
         return;
       }
 
-      const selection = eventJson.body.range;
+      const selection = messageJson.body.range;
       const start = selection.start;
       const end = selection.end;      const range: Ace.Range = new AceRange(start.row, start.column, end.row, end.column);
 
@@ -3481,20 +3615,20 @@ ws.onmessage = (event) => {
           let cursorColumn;
       
       //if(start.end==end.end || start.row*end.row * start.column * start*end.column==0) return;
-      if (marker) editor.session.removeMarker(marker);
+      if (marker) codeWindow.editor.session.removeMarker(marker);
       if (start && end) {
         if (start !== end)
 
-          marker = editor.session.addMarker(
+          marker = codeWindow.editor.session.addMarker(
             range,
             "ace_remote_selection",
             "line",
             false,
-            'background-color: #' + eventJson.color
+            'background-color: #' + messageJson.color
           );
           
           // TODO fix this so that the cursor goes to the end of the selection.
-        cursorManager.replicateCursor(eventJson.color, eventJson.clientId, {
+        cursorManager.replicateCursor(messageJson.color, messageJson.clientId, {
   row: (end.row > start.row)as boolean ? end.row : start.row,
   column: (end.column > start.column) as boolean ? end.column : start.column,
         });
@@ -3504,8 +3638,8 @@ ws.onmessage = (event) => {
       break;
 
     case WebSocketMessageType.ConsoleTyping:
-      const indicatorStatus = eventJson.status;
-      const indicatorClientId = eventJson.clientId;
+      const indicatorStatus = messageJson.status;
+      const indicatorClientId = messageJson.clientId;
       const typingIndicatorContainer = document.getElementById('typingIndicatorContainer');
       
       switch(indicatorStatus)
@@ -3520,7 +3654,7 @@ ws.onmessage = (event) => {
               // typingIndicator. = indicatorClientId;
               
               typingIndicators.set(indicatorClientId, typingIndicator)
-              typingIndicator.textContent = eventJson.displayName + " scrie..."
+              typingIndicator.textContent = messageJson.displayName + " scrie..."
               typingIndicatorContainer?.appendChild(typingIndicator);
 
               
@@ -3552,9 +3686,9 @@ ws.onmessage = (event) => {
       
     break;
     case WebSocketMessageType.ColabData:
-      const colabClients: {displayName:string, fileName:string, clientId: UUID, color: string }[] = eventJson.clients;
-      const colabClientId = eventJson.clientId;
-      const colabCommand = eventJson.colabCommand;
+      const colabClients: {displayName:string, fileName:string, clientId: UUID, color: string }[] = messageJson.clients;
+      const colabClientId = messageJson.clientId;
+      const colabCommand = messageJson.colabCommand;
       
       isColabSession = true;
       switch(colabCommand) 
@@ -3564,29 +3698,26 @@ ws.onmessage = (event) => {
             break;
             
             const success = cursorManager.removeCursor(colabClientId);
-            cursors.get(eventJson.clientId)?.remove()
+            cursors.get(messageJson.clientId)?.remove()
             // document.getElementById('cursor-'+colabClientId)?.remove()
             // cursors.delete(colabClientId)
            
-            writeOutput(eventJson.body, eventJson, false, ConsoleMessageType.SessionInfo);
-            const collabClient = clients.find((val) => {try { return val!.editorSession!.fileElement?.Users.find(val => val.id == colabClientId) != undefined} catch(err) {return false}})!;
+            writeOutput(messageJson.body, messageJson, false, ConsoleMessageType.SessionInfo);
+            const collabClient = clients.get(colabClientId)
               if(!collabClient) throw 'couldnt find collab client'
-            clients.splice(clients.indexOf(collabClient))
             collabClient.editorSession?.fileElement?.removeUser(colabClientId)
+            clients.delete(colabClientId)
             break;
         case "HOST":
-          writeOutput(eventJson.body, eventJson, false, ConsoleMessageType.SessionInfo);
+          writeOutput(messageJson.body, messageJson, false, ConsoleMessageType.SessionInfo);
           isHost = true
           break;
         case "JOIN":
           // a new client joined
           // addMouseListener(eventJson.session)
-          clients.push(new SessionClient(colabClientId, eventJson.displayName, eventJson.color))
-          if(rtc.has(colabClientId) || colabClientId == wsClientId)
-            break;
-          console.log('Createing local rtc')
-          createRTCConnection(colabClientId, true)
-          
+         if(messageJson.client.clientId == wsClientId)
+          throw 'Error: joined client is this client'
+          onRemoteClientJoin(messageJson.client)
           
         break;
 
@@ -3608,7 +3739,7 @@ ws.onmessage = (event) => {
      
       break;
     case WebSocketMessageType.Heartbeat:
-      ping = Date.now() - ping - eventJson.expectedDelay;
+      ping = Date.now() - ping - messageJson.expectedDelay;
 
       ws.send(JSON.stringify({ type: WebSocketMessageType.Heartbeat })); // send heartbeat to server
       if (ping != -1) console.log("heartbeat ping: " + ping);
@@ -3616,14 +3747,14 @@ ws.onmessage = (event) => {
       break;
     case WebSocketMessageType.FileManagement:
       //   data.command should work too but it doesnt TODO
-      const commandType = JSON.parse(event.data).body ? JSON.parse(event.data).body.command : eventJson.command;
+      const commandType = JSON.parse(event.data).body ? JSON.parse(event.data).body.command : messageJson.command;
 
       switch (commandType) {
         case FileManagementCommands.Create:
           onFileCreate(data.content);
           break;
         case FileManagementCommands.Delete:
-          deleteFile(eventJson.name, true)
+          deleteFile(messageJson.name, true)
           break;
         case FileManagementCommands.List:
           JSON.parse(event.data).body.content.forEach((file: string) => {
@@ -3632,108 +3763,57 @@ ws.onmessage = (event) => {
 
           break;
         case FileManagementCommands.Rename:
-          renameFile(eventJson.name, eventJson.newName)
+          renameFile(messageJson.name, messageJson.newName)
           break;
         case FileManagementCommands.Open:
-          const fileName: string = eventJson.fileName;
+          const fileName: string = messageJson.fileName;
           // remote open meaning another user opened a file
-          if(!eventJson.body)
+          if(!messageJson.body)
           {
+            if(messageJson.clientId == wsClientId)
+              // if(messageJson.oldFileName !== fileName)
+            {
+              return
+              // client!.editorSession = {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor};
+              //  return onFileSessionUpdated(messageJson.fileName, client!)
+            }
+               
+              // else return
             // add and remove activity markers, it calls even for own user
-            if(eventJson.oldFileName != eventJson.fileName)
-              if(eventJson.oldFileName !=undefined)
-                editorSessions.get(eventJson.oldFileName)?.fileElement?.removeUser(eventJson.clientId)
-              editorSessions.get(fileName)?.fileElement?.addUser({name: eventJson.displayName, color: eventJson.color, id: eventJson.clientId}, eventJson.oldFileName)
-              //obsolete?
-              if(wsClientId == eventJson.clientId)
-                break;
-              // check if we know about this user
-              const clientIndex = clients.findIndex((val) => val!.clientId == eventJson.clientId)
-              if(clientIndex == -1)
+            if(messageJson.oldFileName !== messageJson.fileName)
+              if(messageJson.oldFileName !== undefined)
               {
-                // create a new user // if its self
-                if(!eventJson.clientId)
-                  return
-                const client = new SessionClient(eventJson.clientId, eventJson.displayName, eventJson.color)
-                client.editorSession = {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor}
-                // if(!clients.find(val => val.clientId === client.clientId))
-                clients.push(client)
+                  console.log('REMOVED USER IN FileManagementCommands.Open', clients.get(messageJson.clientId)!.editorSession!)
+                 clients.get(messageJson.clientId)!.editorSession!.fileElement?.removeUser(messageJson.clientId)
               }
+
+              clients.get(messageJson.clientId)!.editorSession = editorSessions.get(fileName) //{fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor};
+
+              editorSessions.get(fileName)?.fileElement?.addUser({name: messageJson.displayName, color: messageJson.color, id: messageJson.clientId}, messageJson.oldFileName)
+              console.log('added user: ', clients.get(messageJson.clientId)!.editorSession!)
+              //obsolete?
+              // if(wsClientId == messageJson.clientId)
+              //   break;
+              // check if we know about this user
+              // const clientIndex = clients.findIndex((val) => val!.clientId == messageJson.clientId)
+              // if(clientIndex == -1)
+              // {
+              //   // create a new user // if its self
+              //   if(!messageJson.clientId)
+              //     break
+              //   createClient(messageJson.clientId, messageJson.displayName, messageJson.color, {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor})
+                
+              // }
                  
-              else
-                clients[clientIndex].editorSession = {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor};
+              // else
+                
+                console.log('updated client', clients.get(messageJson.clientId))
           }
           else
-          {
-            const fileContent = eventJson.body.content;
-            currentFileName = fileName;
-            console.log('opening file:',editorSessions.get(fileName));
-
-            if (!editorSessions.has(fileName)) {
-              const newSession = ace.createEditSession(fileContent);
-              // undo manager?
-              // if(fileName.split('.')[1] != 'cpp')
-                newSession.setMode(aceModes.getModeForPath(fileName).mode);
-              editor.setSession(newSession);
-              
-              const session: FileEditorSession =
-              {
-                editor: newSession,
-                fileName: fileName,
-                fileElement: undefined
-              }
-              editorSessions.set(fileName, session);
-              client!.editorSession = session
-              
-            } else {
-              
-              let currentSession = editorSessions.get(fileName)!
-              if(!currentSession.editor)
-               currentSession.editor =  ace.createEditSession(fileContent);
-              editorSessions.set(fileName, currentSession);
-
-              console.log("File already opened: ", fileName);
-              const session = editorSessions.get(fileName)!;
-              switch(fileName.split('.').at(-1))
-              {
-                case 'png':
-                case 'jpeg':
-                case 'webp':
-                case 'img':
-                  editor.container.style.display = 'none';
-                  canvas = new EditorCanvas(ws, wsClientId)
-                  editor.container.parentElement?.appendChild(canvas.render())
-                  canvas.updateSize()
-                  break;
-                default:
-                  editor.container.style.display = 'initial';
-                  if(canvas)
-                  {
-                    canvas.remove()
-                    canvas = undefined;
-                  }
-                
-                  break;
-              }
-              if (session)
-                {
-                  session.editor!.setMode(aceModes.getModeForPath(fileName).mode);
-                  editor.setSession(session.editor);
-                } 
-              if (fileContent.toString() != session?.editor!.getValue().toString()) {
-                isRemoteChange = true;  // must add this to prevent sending on changed event
-                session.editor!.setValue(fileContent);
-                isRemoteChange = false;
-              }
-            }
-            if(document.getElementById('active-open-file'))
-              document.getElementById('active-open-file')!.id = '';
-            const elem = editorSessions.get(fileName)?.fileElement!;
-            if(elem)
-            {
-              elem.fileElem.id = 'active-open-file';
-            }
-          }
+          if(client)
+            openFile(fileName, messageJson.body.content, client)
+          else
+            throw 'CLIENT IS INVALID WHILE OPENING FILE'
           
 
           break;
@@ -3769,7 +3849,7 @@ export function compileCode(this, ev) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      code: editor.getValue(),
+      code: codeWindow.editor.getValue(),
       clientId: wsClientId,
       sessionId: wsSessionId,
     }),
@@ -3785,7 +3865,7 @@ document.getElementById('compile-error')?.remove()
         // ON ERROR
         
         document.getElementById('buttons')?.classList.remove('compiled')
-        for (const markerId of markers) editor.session.removeMarker(markerId);
+        for (const markerId of markers) codeWindow.editor.session.removeMarker(markerId);
 
         for (const errorMessage of data.errors) {
           errorOutputString += errorMessage.error + "\n";
@@ -3801,7 +3881,7 @@ document.getElementById('compile-error')?.remove()
             });
 
             markers.push(
-              editor.session.addMarker(
+              codeWindow.editor.session.addMarker(
                 new AceRange(row, column, row, column + 1),
                 "ace-error-line",
                 "screenLine"
@@ -3809,11 +3889,11 @@ document.getElementById('compile-error')?.remove()
             );
           }
         }
-        editor.session.setAnnotations(errorAnnotations);
+        codeWindow.editor.session.setAnnotations(errorAnnotations);
       } else {
-        editor.session.setAnnotations([]);
+        codeWindow.editor.session.setAnnotations([]);
         document.getElementById('buttons')?.classList.add('compiled')
-        for (const markerId of markers) editor.session.removeMarker(markerId);
+        for (const markerId of markers) codeWindow.editor.session.removeMarker(markerId);
       }
 
       writeOutput(
@@ -3823,7 +3903,7 @@ document.getElementById('compile-error')?.remove()
               "Compilation error. (couldnt retrieve error message, sorry)", {messageType: "error"}
       );
 
-      code = editor.getValue();
+      code = codeWindow.editor.getValue();
     });
 }
 
@@ -3887,7 +3967,7 @@ function updatePlaybackSpeed() {
   playbackId = setInterval(() => {
     if (!ws.OPEN || processRunning) return clearInterval(playbackId);
     sendDebugCommand("-exec-next");
-    if (debugLine >= editor.session.getLength() + 2) {
+    if (debugLine >= codeWindow.editor.session.getLength() + 2) {
       // add offset to complete exectuin and display result.
       clearInterval(playbackId);
       onExit();
@@ -3896,7 +3976,7 @@ function updatePlaybackSpeed() {
 }
 
 function onRun() {
-  editor.setReadOnly(true);
+  codeWindow.editor.setReadOnly(true);
   processRunning = true;
   document.getElementById('buttons')?.classList.add('executing')
   document.getElementById('execute-control')!.innerText = "Opreste Programul"
@@ -3940,9 +4020,9 @@ function startProgram()
 }
 
 function onExit() {
-  editor.setReadOnly(false);
+  codeWindow.editor.setReadOnly(false);
   processRunning = false
-  editor.session.removeMarker(lastDebugId);
+  codeWindow.editor.session.removeMarker(lastDebugId);
   document.getElementById('buttons')?.classList.remove('executing')
   document.getElementById('execute-control')!.innerText = "Executa Programul"
 
@@ -3960,8 +4040,8 @@ function setDebugLineStyle(lineIndex: number) {
 
 
   //editor.session.setBreakpoint(lineIndex-1)
-  editor.session.removeMarker(lastDebugId);
-  lastDebugId = editor.session.highlightLines(
+  codeWindow.editor.session.removeMarker(lastDebugId);
+  lastDebugId = codeWindow.editor.session.highlightLines(
     lineIndex - 1,
     lineIndex - 1,
     ""
@@ -4073,7 +4153,7 @@ interface Lens {
 }
   const commandId = "createFileCommand";
 
-  editor.commands.addCommand({
+  codeWindow.editor.commands.addCommand({
     name: commandId,
     exec: function(editor: Ace.Editor, args) {
       const filename = args?.filename || "unnamed.txt";
@@ -4082,7 +4162,7 @@ interface Lens {
       editor.renderer.updateFull(true)
       codeLens.clear(editor.session)
   }});
-  editor.commands.addCommand({
+  codeWindow.editor.commands.addCommand({
     name: "include<fstream>",
     exec: function(editor: Ace.Editor, args) {
       const index = editor.getValue().lastIndexOf("#include");
@@ -4095,7 +4175,7 @@ interface Lens {
       }
 
   }});
-  editor.commands.addCommand({
+  codeWindow.editor.commands.addCommand({
     name: "usingnamespacestd",
     exec: function(editor: Ace.Editor, args) {
       const index = editor.getValue().lastIndexOf("#include");
@@ -4111,7 +4191,7 @@ interface Lens {
  
 
   // Register CodeLens provider
-  codeLens.registerCodeLensProvider(editor, {
+  codeLens.registerCodeLensProvider(codeWindow.editor, {
     provideCodeLenses: function(session, callback) {
       const lines = session.getDocument().getAllLines();
       const lenses: any = [];
@@ -4132,7 +4212,7 @@ interface Lens {
             }
           });
 
-          if(!editor.getValue().includes("#include <fstream>"))
+          if(!codeWindow.editor.getValue().includes("#include <fstream>"))
             lenses.push({
             start: { row },
             command: {
@@ -4145,7 +4225,7 @@ interface Lens {
           
         }
         if(line.includes("#include <iostream>"))
-        if(!editor.getValue().includes("using namespace std;"))
+        if(!codeWindow.editor.getValue().includes("using namespace std;"))
             lenses.push({
             start: { row },
             command: {
@@ -4161,7 +4241,7 @@ interface Lens {
   });
 
 
-
+  // TODO finish this
   const customCompleter = {
     getCompletions: function(editor: Ace.Editor, session: Ace.EditSession, pos, prefix, callback) {
       // if (prefix.length === 0) {
@@ -4250,7 +4330,7 @@ export function displaynoVNC(container)
 
 function parseCode()
 {
-    const code = editor.session.getValue()
+    const code = codeWindow.editor.session.getValue()
     let depth = 0;
     const functions:{name: string, type: string, depth: number, tokenIndex:number, content: string}[] = [];
     const variables:{name: string, type: string, depth: number, tokenIndex:number, functionName: string}[] = [];
@@ -4338,7 +4418,7 @@ function parseCode()
 
 function indexToFunctionName(index)
 {
-  const code = editor.session.getValue()
+  const code = codeWindow.editor.session.getValue()
     let depth = 0;
     let tokenIndex = 0;
     for(let i=0;i<Math.min(index,code.length);i++)

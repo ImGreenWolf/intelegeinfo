@@ -148,8 +148,13 @@ int main() {
                 </div>
             </div>
         </div>
+        <div id="problem" class="content-container">
+            <h1>Poti rezolva aceasta problema?</h1> <!-- aici vom avea o problema random pe care o poti rezolva, probabil o s-o mut in shadow container-->
+            <p>Scrie un program c++ care sa citeasca de la tastatura un numar n, iar apoi n numere naturale, iar apoi sa afiseze media aritmetica a acelor numere.</p>
+            <a href="/editor">Incepe sa rezolvi</a>
+        </div>
         <div id="guides" class="content-container">
-            <h1>Descopera resursele intelegeinfo</h1>
+            <h1>Descopera cele mai populare resurse</h1>
             <script type="module">
 
                 fetch('/guides/posts').then(res => {
@@ -174,7 +179,7 @@ int main() {
                         
                     </hgroup>
                     <div>
-                        <button onclick="window.startIframes(this)" style="padding: 20px; border-radius: 50px; width: 200px;"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
+                        <button onclick="window.startIframes(this)"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
                         <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
                         <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
                     </div>
@@ -211,6 +216,14 @@ int main() {
                 <li>
                     <h2>Debugger</h2>
                     <p>Afla cum se executa programul tau, valorile variabilelor, adresele de memorie, si multe alte informatii despre acesta.</p>
+                </li>
+                <li>
+                    <h2>Salveaza</h2>
+                    <p>Salveaza-ti proiectele si codul in cont pentru a avea acess la ele mai tarziu.</p>
+                </li>
+                <li>
+                    <h2>Parteajeaza</h2>
+                    <p>Trimite-ti codul mai departe colegiilor sau profesorilor tai, usor si la indemana.</p>
                 </li>
                 <li>
                     <h2>Limbaje</h2>

@@ -9,6 +9,7 @@ body {
   overflow: hidden;
   top: 10em;
   position: relative;
+  row-gap: 10em;
 }
 
 #fill {
@@ -508,22 +509,26 @@ h1 {
 }
 
 .content-container {
-  width: 75%;
+  width: 50%;
 }
 
 #features ul.content-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 50px;
+  row-gap: 10em;
+  column-gap: 2em;
+  justify-content: space-between;
 }
 #features ul.content-list li {
-  width: 800px;
+  max-width: 800px;
   grid-column: 1;
 }
 #features ul.content-list > img {
+  justify-self: end;
   width: 100%;
+  max-width: 600px;
   box-shadow: 5px 7px 20px 20px rgba(0, 0, 0, 0.24);
-  border-radius: 5px;
+  border-radius: 15px;
 }
 
 ul.language-carusel {
@@ -563,6 +568,16 @@ ul.language-carusel img:not(.available) {
   gap: 3em;
   flex-wrap: wrap;
   justify-content: space-around;
+  position: relative;
+}
+#editor-demo div button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
 }
 #editor-demo div iframe {
   border: 5px solid black;
@@ -572,7 +587,10 @@ ul.language-carusel img:not(.available) {
   width: 100%;
 }
 #editor-demo div iframe:not([src]) {
-  display: none;
+  background: url(/media/landingpageBackground.png), radial-gradient(transparent, rgb(20, 20, 20) 80%);
+  opacity: 0.25;
+  background-blend-mode: color-burn;
+  filter: blur(5px);
 }
 
 :any-link {

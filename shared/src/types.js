@@ -5,12 +5,19 @@ export var WebSocketMessageType;
     WebSocketMessageType["Output"] = "output";
     WebSocketMessageType["End"] = "end";
     WebSocketMessageType["Console"] = "console";
+    WebSocketMessageType["Chat"] = "chat";
     WebSocketMessageType["ConsoleTyping"] = "consolekeepalive";
     WebSocketMessageType["CodeChange"] = "codeChange";
     WebSocketMessageType["CodeSelection"] = "codeSelection";
     WebSocketMessageType["ColabData"] = "colabData";
     WebSocketMessageType["Heartbeat"] = "heartbeat";
     WebSocketMessageType["FileManagement"] = "FileManagement";
+    WebSocketMessageType["CompileResult"] = "CompileResult";
+    WebSocketMessageType["ExecuteStatus"] = "executestatus";
+    WebSocketMessageType["MouseUpdate"] = "MouseUpdate";
+    WebSocketMessageType["WebCam"] = "webcam";
+    WebSocketMessageType["Canvas"] = "canvas";
+    WebSocketMessageType["RTC"] = "rtc";
 })(WebSocketMessageType || (WebSocketMessageType = {}));
 export var ConsoleMessageType;
 (function (ConsoleMessageType) {
@@ -22,13 +29,12 @@ export var ConsoleMessageType;
     ConsoleMessageType["Output"] = "output";
     ConsoleMessageType["DebugProgram"] = "debugProgram";
 })(ConsoleMessageType || (ConsoleMessageType = {}));
-import { msgMap, ws } from "../../public/js/codeEditor";
 export class WSMessage {
     type;
     data;
     id;
     // session: EditorSession;
-    constructor(type, data, msgMap, id, onReceive) {
+    constructor(type, data, msgMap, id, ws, onReceive) {
         this.type = type;
         this.data = data;
         this.id = id;
@@ -38,16 +44,24 @@ export class WSMessage {
         //     this.onReceive(data)
         // }
         this.onReceiveCallback = onReceive;
-        this.sendMessage(data, id);
+        this.sendMessage(data, id, ws);
     }
     onReceiveCallback;
     onReceive(data) {
         this.onReceiveCallback(data);
-        msgMap.delete(this.id);
+        // msgMap.delete(this.id);
     }
-    sendMessage(data, msgId) {
+    sendMessage(data, msgId, ws) {
         ws.send(JSON.stringify({ data, msgId: msgId }));
         console.log("sent message");
-        msgMap.set(msgId, this);
+        // msgMap.set(msgId, this);
     }
 }
+export var FileManagementCommands;
+(function (FileManagementCommands) {
+    FileManagementCommands["Create"] = "create";
+    FileManagementCommands["Delete"] = "delete";
+    FileManagementCommands["List"] = "list";
+    FileManagementCommands["Rename"] = "rename";
+    FileManagementCommands["Open"] = "open";
+})(FileManagementCommands || (FileManagementCommands = {}));

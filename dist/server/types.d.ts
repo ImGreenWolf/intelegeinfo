@@ -45,7 +45,8 @@ export declare class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string>;
     files: EditorFile[];
-    clients: Map<UUID, ClientObject>;
+    clientsMap: Map<UUID, ClientObject>;
+    clients: ClientObject[];
     clientsDisplayNames: string[];
     clientsSockets: Map<UUID, WebSocket>;
     messageIndex: number;
@@ -90,7 +91,7 @@ export declare class EditorFile {
     constructor(session: EditorSession, name: string, content?: any, onCreate?: (this: EditorFile) => void);
     delete(clientObj: any): void;
     rename(newName: any, clientObj: any): void;
-    openFile(clientObj: ClientObject, shared?: any): Promise<void>;
+    openFile(clientObj: ClientObject, shared?: any): Promise<string>;
     changeContent(content: any): void;
 }
 export declare function randomHexColor(): string;

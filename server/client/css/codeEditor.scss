@@ -371,7 +371,7 @@ header
         //     box-shadow: 0 1em 0 0 theme.$background-color;
         //     z-index: 0
         // }
-        &#active-open-file
+        &#active-open-file,&.open-file
         {
             // border: 1px solid theme.$text-color;
             cursor: default;
@@ -382,7 +382,7 @@ header
         {
             border-top: 1px solid transparent !important;
         }
-        &:not(#active-open-file)
+        &:not(#active-open-file,.open-file)
         {
                     
             // border-bottom: 3px solid color.adjust($color: theme.$border-color, $lightness: -20%);
@@ -1519,7 +1519,7 @@ pointer-events: none;
 
 
 
-button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #login
+button:not(.custom-button), #editor-tabs span:not(#active-open-file,.open-file), #signup, #login
 {
     transition-duration: 0.3s;
     user-select: none;
@@ -1981,5 +1981,93 @@ form label
     opacity: 1;
     div {
         display: none;
+    }
+}
+
+
+
+mini-dock
+{
+    position: relative;
+    top: 5px;
+    // left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    min-width: 50px;
+    // width: 50px;
+    gap: 0.25em;
+    margin: -10px 0;
+    a,button
+    {
+        display: block;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        margin: 0;
+        border-radius: 50%;
+        border: 2px solid theme.$border-color;
+        background-color:  theme.$foreground-color; //color.adjust($color: theme.$foreground-color, $whiteness: 5%);
+        transition-duration: 0.2s;
+        box-sizing: content-box;
+        outline: 1px solid var(--outline);
+        &:not(:hover)
+        {
+            background-color: color.adjust($color: theme.$foreground-color, $alpha: -0.75, $whiteness: -2%);
+            opacity: 0.75;
+            outline: 1px solid transparent;
+            
+        }
+    }
+    h2 
+    {
+        text-align: center;
+        padding: 0 5px;
+        margin: 0 5px;
+        font-weight: 200;
+        border-left: 2px solid theme.$border-color;
+        // transition-duration: 0.2s;
+        font-family: Poppins,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        opacity: 0.1;
+    }
+    // &:not(:has(:hover)) h2 
+    // {
+    //     opacity: 0.5;
+    //     transition-duration: 5s;
+    //     transition-property: opacity;
+    // }
+    #home
+    {
+        // background-image: url(../media/home-svgrepo-com.svg);
+        // background-size: 60%;
+        // background-position: center;
+        // background-repeat: no-repeat;
+        --outline: rgba(133, 28, 28, 0.418);
+        text-decoration: none;
+        text-align: center;
+        // padding: 2px;
+        font-size: 15px;
+        line-height: 1lh;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-weight: 600;
+        border-radius: 1lh;
+        width: 40px;
+        // &:hover
+        // {
+        //     background-color: rgba(255, 166, 0, 0.137);
+        // }
+    }
+
+    #joinSession
+    {
+        background-image: url(../media/group-svgrepo-com.svg);
+        background-size: 50%;
+        background-position: center;
+        background-repeat: no-repeat;
+        --outline: rgba(39, 138, 39, 0.384);
+        // &:hover
+        // {
+        //     background-color: rgba(25, 129, 42, 0.137);
+        // }
     }
 }

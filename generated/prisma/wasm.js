@@ -171,9 +171,31 @@ exports.Prisma.GuideScalarFieldEnum = {
   visits: 'visits'
 };
 
+exports.Prisma.ProblemScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  author: 'author',
+  positiveRatings: 'positiveRatings',
+  negativeRatings: 'negativeRatings',
+  description: 'description',
+  requirement: 'requirement',
+  tests: 'tests',
+  averageTimeLimit: 'averageTimeLimit',
+  averageMemLimit: 'averageMemLimit',
+  category: 'category',
+  solves: 'solves'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -185,6 +207,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   ADMIN: 'ADMIN'
@@ -195,7 +223,8 @@ exports.Prisma.ModelName = {
   User: 'User',
   Code: 'Code',
   RefreshToken: 'RefreshToken',
-  Guide: 'Guide'
+  Guide: 'Guide',
+  Problem: 'Problem'
 };
 
 /**

@@ -258,7 +258,7 @@ oauth2Client.setCredentials({
 async function updateTransporter() {
           oauth2Client.getAccessToken().then(accessToken => {
 
-        process.env.GOOGLE_EMAILV_ACCESSTOKEN = accessToken.token;
+        process.env.GOOGLE_EMAILV_ACCESSTOKEN = accessToken.token as string;
         transporter = nodemailer.createTransport({
         // service: "gmail",
         host: 'antares.webyouridea.ro',

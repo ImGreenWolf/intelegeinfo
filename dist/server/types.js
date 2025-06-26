@@ -103,7 +103,8 @@ class EditorSession {
     sessionId;
     clientsActiveFile = new Map(); // client , file name
     files = [];
-    clients = new Map();
+    clientsMap = new Map();
+    clients = [];
     clientsDisplayNames;
     clientsSockets = new Map();
     messageIndex = 1;
@@ -124,12 +125,12 @@ class EditorSession {
     makeSessionPublic(options) {
         this.isPublic = true;
         this.editorOptions = options;
-        for (const client of this.clients.values()) {
+        for (const client of this.clientsMap.values()) {
             // client.canChat = options.enableChat;
             // client.canVoice = options.enableVoice
             // client.canEdit = options.editorPermission == EditorPermission.Everyone;
             const permissions = EditorOptionsToPermissions(this.editorOptions, client);
-            client.sendMessage({ type: types_1.WebSocketMessageType.Handshake, session: permissions });
+            client.sendMessage({ type: types_1.WebSocketMessageType.Handshake, permissions });
         }
         this.hostClient.permissions.canEdit = true; // TODO figure out why i need to add this, when it should be true by default for the host.
         this.hostClient.permissions.canChat = true;
@@ -230,7 +231,7 @@ Tralalero Tralala`.split('\n');
     toJSON() {
         return {
             sessionId: this.sessionId,
-            clients: Object.fromEntries(this.clients),
+            clients: Object.fromEntries(this.clientsMap),
             clientsActiveFile: Object.fromEntries(this.clientsActiveFile),
             clientsDisplayNames: this.clientsDisplayNames
         };
@@ -238,7 +239,7 @@ Tralalero Tralala`.split('\n');
     // Deserialize from plain object
     static fromJSON(data) {
         const session = new EditorSession(data.sessionId);
-        session.clients = new Map(Object.entries(data.clients || {}));
+        session.clientsMap = new Map(Object.entries(data.clients || {}));
         session.clientsActiveFile = new Map(Object.entries(data.clientsActiveFile || {}));
         session.clientsDisplayNames = data.clientsDisplayNames || [];
         return session;
@@ -246,7 +247,7 @@ Tralalero Tralala`.split('\n');
     static fromMerge(id, base, update) {
         const session = new EditorSession(id);
         Object.assign(session, base, update);
-        session.clients = new Map(update?.clients || base?.clients || []);
+        session.clientsMap = new Map(update?.clientsMap || base?.clientsMap || []);
         session.clientsActiveFile = new Map(update?.clientsActiveFile || base?.clientsActiveFile || []);
         return session;
     }
@@ -329,10 +330,11 @@ Tralalero Tralala`.split('\n');
         return ClientObject.clientId;
     }
     getClientObjectById(clientId) {
-        return this.clients.get(clientId);
+        return this.clientsMap.get(clientId);
     }
     removeClient(clientId) {
-        this.clients.delete(clientId);
+        this.clients.splice(this.clients.findIndex(val => val.clientId === clientId));
+        this.clientsMap.delete(clientId);
         this.clientCommandBuffer.delete(clientId);
         this.clientsActiveFile.delete(clientId);
         this.clientsSockets.delete(clientId);
@@ -346,7 +348,7 @@ Tralalero Tralala`.split('\n');
             newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
         else
             newClient = new ClientObject(this.sessionId, this, ws);
-        if (this.clients.size == 0) {
+        if (this.clientsMap.size == 0) {
             this.hostClient = newClient;
             newClient.editorPermission = EditorPermission.OnlyHost;
             newClient.isHost = true;
@@ -357,7 +359,8 @@ Tralalero Tralala`.split('\n');
             newClient.permissions = EditorOptionsToPermissions(this.editorOptions, newClient);
         }
         this.clientsSockets.set(newClient.clientId, ws);
-        this.clients.set(newClient.clientId, newClient);
+        this.clientsMap.set(newClient.clientId, newClient);
+        this.clients.push(newClient);
         return newClient.clientId;
     }
     replicateFunction(callback, excludeClientObj) {
@@ -369,7 +372,7 @@ Tralalero Tralala`.split('\n');
             if (!thisClientWs)
                 return;
             if (excludeClientId != thisClientId)
-                callback(thisClientWs, thisClientId, this.clients.get(thisClientId));
+                callback(thisClientWs, thisClientId, this.clientsMap.get(thisClientId));
         });
     }
     getClientFilesPath() {
@@ -409,11 +412,12 @@ class EditorFile {
                         if (!session.files)
                             throw 'session.files is undifined.';
                         session.files.push(this);
-                        session.replicateFunction((clientWs) => {
-                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
-                        });
                         if (onCreate)
                             onCreate.call(this);
+                        else
+                            session.replicateFunction((clientWs) => {
+                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
+                            });
                     }
                 });
             else
@@ -459,7 +463,7 @@ class EditorFile {
     }
     async openFile(clientObj, shared) {
         try {
-            const data = fs_1.default.readFileSync(this.filePath);
+            const data = fs_1.default.readFileSync(this.filePath).toString();
             clientObj.openFile = this;
             // Send the file content to the client
             const oldFileName = clientObj.openFileName;
@@ -473,7 +477,7 @@ class EditorFile {
             console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
             if (shared)
                 shared.updateSession(this.session.sessionId, this.session);
-            clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, fileName: this.name, body: { command: types_2.FileManagementCommands.Open, content: data.toString() } })); // Send the list of files to the client
+            return data;
         }
         catch (err) {
             console.error(err);

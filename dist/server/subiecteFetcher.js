@@ -64,35 +64,38 @@ async function update() {
             console.error(`ERROR: ${err}`);
         }
     }
-    try {
-        const links = [`https://subiecte.edu.ro/2025/bacalaureat/Subiecte_si_bareme/E_d_2025_ses_speciala.zip`,
-            `http://subiecte2024.edu.ro/2024/bacalaureat/Subiecte_si_bareme/E_d_2024_ses_speciala.zip`,
-            `http://subiecte2023.edu.ro/2023/bacalaureat/Subiecte_si_bareme/E_d_2023_ses_speciala.zip`,
-            `http://subiecte2022.edu.ro/2022/bacalaureat/Subiecte_si_bareme/Ed_mai_2022_sesiune_speciala.zip`,
-            `http://subiecte2021.edu.ro/2021/bacalaureat/Subiecte_si_bareme/speciala/E_d_scris_20_mai_2021`,
-            `http://subiecte2020.edu.ro/2020/bacalaureat/Subiecte_si_bareme/iunie/2020/E_d_scris_25062020.zip`,
-            `https://subiecte.edu.ro/2025/bacalaureat/Subiecte_si_bareme/E_d_2025_ses_iunie.zip`,
-            `http://subiecte2024.edu.ro/2024/bacalaureat/Subiecte_si_bareme/E_d_04_iulie_2024.zip`,
-            `http://subiecte2024.edu.ro/2024/bacalaureat/Subiecte_si_bareme/E_d_04-iul-2024_rezerva.zip`,
-            `http://subiecte2023.edu.ro/2023/bacalaureat/Subiecte_si_bareme/E_d__2023_ses_iunie_iulie.zip`,
-            `http://subiecte2023.edu.ro/2023/bacalaureat/Subiecte_si_bareme/E_d_2023_ses_iunie-iulie_rezerva.zip`,
-            `http://subiecte2022.edu.ro/2022/bacalaureat/Subiecte_si_bareme/Ed_2022_22_iunie%20.zip`,
-            `http://subiecte2022.edu.ro/2022/bacalaureat/Subiecte_si_bareme/E_d_2022_22_iunie_Rezerva.zip`,
-            `http://subiecte2021.edu.ro/2021/bacalaureat/Subiecte_si_bareme/iunie-iulie/E_d_30_iunie_2021.zip`,
-            `http://subiecte2020.edu.ro/2020/bacalaureat/Subiecte_si_bareme/speciala/2020/E_d_scris_08_iulie_2020.zip`
-        ];
-        const dateReg = /20\d*/g;
-        console.log("Starting download for year");
-        for (const url of links) {
-            if (parseInt(url.match(dateReg)[0]) < startYear)
-                await fetchSubiect(url);
-        }
-        console.log("\n");
-        // await extract(path.join(outputDir, fileName), {dir: path.join(outputDir, 'extracted')})
-    }
-    catch (err) {
-        console.error(`ERROR: ${err}`);
-    }
+    // try {
+    // const links =
+    // [   `https://subiecte.edu.ro/2025/bacalaureat/Subiecte_si_bareme/E_d_2025_ses_speciala.zip`,
+    //     `http://subiecte2024.edu.ro/2024/bacalaureat/Subiecte_si_bareme/E_d_2024_ses_speciala.zip`,
+    //     `http://subiecte2023.edu.ro/2023/bacalaureat/Subiecte_si_bareme/E_d_2023_ses_speciala.zip`,
+    //     `http://subiecte2022.edu.ro/2022/bacalaureat/Subiecte_si_bareme/Ed_mai_2022_sesiune_speciala.zip`,
+    //     `http://subiecte2021.edu.ro/2021/bacalaureat/Subiecte_si_bareme/speciala/E_d_scris_20_mai_2021`,
+    //     `http://subiecte2020.edu.ro/2020/bacalaureat/Subiecte_si_bareme/iunie/2020/E_d_scris_25062020.zip`,
+    //     `https://subiecte.edu.ro/2025/bacalaureat/Subiecte_si_bareme/E_d_2025_ses_iunie.zip`,
+    //     `http://subiecte2024.edu.ro/2024/bacalaureat/Subiecte_si_bareme/E_d_04_iulie_2024.zip`,
+    //     `http://subiecte2024.edu.ro/2024/bacalaureat/Subiecte_si_bareme/E_d_04-iul-2024_rezerva.zip`,
+    //     `http://subiecte2023.edu.ro/2023/bacalaureat/Subiecte_si_bareme/E_d__2023_ses_iunie_iulie.zip`,
+    //     `http://subiecte2023.edu.ro/2023/bacalaureat/Subiecte_si_bareme/E_d_2023_ses_iunie-iulie_rezerva.zip`,
+    //     `http://subiecte2022.edu.ro/2022/bacalaureat/Subiecte_si_bareme/Ed_2022_22_iunie%20.zip`,
+    //     `http://subiecte2022.edu.ro/2022/bacalaureat/Subiecte_si_bareme/E_d_2022_22_iunie_Rezerva.zip`,
+    //     `http://subiecte2021.edu.ro/2021/bacalaureat/Subiecte_si_bareme/iunie-iulie/E_d_30_iunie_2021.zip`,
+    //     `http://subiecte2020.edu.ro/2020/bacalaureat/Subiecte_si_bareme/speciala/2020/E_d_scris_08_iulie_2020.zip`
+    // ]
+    // const dateReg = /20\d*/g;
+    // console.log("Starting download for year")
+    // for( const url of links)
+    // {   
+    //     if(parseInt(url.match(dateReg)[0])<startYear)
+    //         await fetchSubiect(url)
+    // }   
+    // console.log("\n")
+    // // await extract(path.join(outputDir, fileName), {dir: path.join(outputDir, 'extracted')})
+    // }
+    // catch(err)
+    // {
+    //     console.error(`ERROR: ${err}`)
+    // }
     return { code: 0, dir: outputDir };
 }
 async function downloadZip(buffer, outputDir) {

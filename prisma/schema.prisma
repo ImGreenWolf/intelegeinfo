@@ -72,3 +72,21 @@ model Guide {
   category String?
   visits Int @default(0)
 }
+
+model Problem {
+  id Int  @id @default(autoincrement())
+  name String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  author String @default("Anonim")
+  positiveRatings Int @default(0)
+  negativeRatings Int @default(0)
+  description String?
+  requirement Json? // data in, data out, notes, example, explenation
+  tests Json[]
+  averageTimeLimit Float
+  averageMemLimit Float
+  category String?
+  solves Int @default(0)
+}
+

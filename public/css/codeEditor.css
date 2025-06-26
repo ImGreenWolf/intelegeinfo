@@ -369,14 +369,14 @@ header {
   padding-top: 0.25rem;
   font-size: 0.75rem;
 }
-#editor-tabs .file-tab#active-open-file, .tabs-container .file-tab#active-open-file {
+#editor-tabs .file-tab#active-open-file, #editor-tabs .file-tab.open-file, .tabs-container .file-tab#active-open-file, .tabs-container .file-tab.open-file {
   cursor: default;
   background-color: rgb(20, 20, 20);
 }
 #editor-tabs .file-tab:has(.file-users-container div), .tabs-container .file-tab:has(.file-users-container div) {
   border-top: 1px solid transparent !important;
 }
-#editor-tabs .file-tab:not(#active-open-file), .tabs-container .file-tab:not(#active-open-file) {
+#editor-tabs .file-tab:not(#active-open-file, .open-file), .tabs-container .file-tab:not(#active-open-file, .open-file) {
   height: 80%;
   opacity: 0.8;
 }
@@ -1241,7 +1241,7 @@ value {
   justify-self: start;
 }
 
-button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #login {
+button:not(.custom-button), #editor-tabs span:not(#active-open-file, .open-file), #signup, #login {
   transition-duration: 0.3s;
   user-select: none;
   outline-offset: 0.5px;
@@ -1249,15 +1249,15 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file), #signup, #
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   cursor: pointer;
 }
-button:not(.custom-button).inset-button *, #editor-tabs span:not(#active-open-file).inset-button *, #signup.inset-button *, #login.inset-button * {
+button:not(.custom-button).inset-button *, #editor-tabs span:not(#active-open-file, .open-file).inset-button *, #signup.inset-button *, #login.inset-button * {
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
 }
-button:not(.custom-button):hover, #editor-tabs span:not(#active-open-file):hover, #signup:hover, #login:hover {
+button:not(.custom-button):hover, #editor-tabs span:not(#active-open-file, .open-file):hover, #signup:hover, #login:hover {
   outline: 1px solid rgba(255, 255, 255, 0.8) !important;
   transform: translateY(0.5px) scale(0.98);
   transition-duration: 0.1s;
 }
-button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-tabs span:not(#active-open-file):active, #editor-tabs span:not(#active-open-file) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
+button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-tabs span:not(#active-open-file, .open-file):active, #editor-tabs span:not(#active-open-file, .open-file) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
   transition-duration: 0.02s;
   transform: translateY(1px) scale(90%);
 }
@@ -1575,6 +1575,62 @@ form label {
 }
 #microphone:not(.playing) div {
   display: none;
+}
+
+mini-dock {
+  position: relative;
+  top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  min-width: 50px;
+  gap: 0.25em;
+  margin: -10px 0;
+}
+mini-dock a, mini-dock button {
+  display: block;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(190, 190, 190, 0.1);
+  background-color: rgb(5, 5, 5);
+  transition-duration: 0.2s;
+  box-sizing: content-box;
+  outline: 1px solid var(--outline);
+}
+mini-dock a:not(:hover), mini-dock button:not(:hover) {
+  background-color: hsla(0, 104.0816326531%, 0.9607843137%, 0.25);
+  opacity: 0.75;
+  outline: 1px solid transparent;
+}
+mini-dock h2 {
+  text-align: center;
+  padding: 0 5px;
+  margin: 0 5px;
+  font-weight: 200;
+  border-left: 2px solid rgba(190, 190, 190, 0.1);
+  font-family: Poppins, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  opacity: 0.1;
+}
+mini-dock #home {
+  --outline: rgba(133, 28, 28, 0.418);
+  text-decoration: none;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1lh;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  font-weight: 600;
+  border-radius: 1lh;
+  width: 40px;
+}
+mini-dock #joinSession {
+  background-image: url(../media/group-svgrepo-com.svg);
+  background-size: 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+  --outline: rgba(39, 138, 39, 0.384);
 }
 
 /*# sourceMappingURL=codeEditor.css.map */

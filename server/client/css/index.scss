@@ -15,6 +15,7 @@ body
     overflow: hidden;
      top: 10em;
      position: relative;
+     row-gap: 10em;
     // width: 100dvw;
 }
 #fill
@@ -680,24 +681,29 @@ h1
 }
 .content-container
 {
-    width: 75%;
+    width: 50%;
 }
  #features ul.content-list
  {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 50px;
+    row-gap: 10em;
+    column-gap: 2em;
+    justify-content: space-between;
+    
     li 
     {
-         width: 800px;
+         max-width: 800px;
          grid-column: 1;
     }
    
     &>img 
     {
+        justify-self: end;
         width: 100%;
+        max-width: 600px;
         box-shadow: 5px 7px 20px 20px rgba(0, 0, 0, 0.24);
-        border-radius: 5px;
+        border-radius: 15px;
     }
  }
 
@@ -746,7 +752,16 @@ h1
         gap: 3em;
         flex-wrap: wrap;
         justify-content: space-around;
-
+        position: relative;
+        button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+        }
         iframe
         {
             border: 5px solid black;
@@ -754,9 +769,13 @@ h1
             max-width: 600px;
             min-width: 150px;
             width: 100%;
+            
             &:not([src])
             {
-                display: none;
+                background: url(/media/landingpageBackground.png), radial-gradient(transparent, rgb(20, 20, 20) 80%);
+                opacity: 0.25;
+                background-blend-mode: color-burn;
+                filter: blur(5px);
             }
         }
     }

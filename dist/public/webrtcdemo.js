@@ -278,8 +278,12 @@ export class IIWebRTC {
         if (this.dc)
             if (this.pc.connectionState == 'connected' && this.dc.readyState == 'open')
                 this.dc.send(data);
-            else
+            else {
+                setTimeout(() => {
+                    this.pc?.restartIce();
+                }, 5000);
                 throw "Connection is " + this.pc.connectionState + ". And datachannel is " + this.dc.readyState;
+            }
     }
     close() {
         this.pc?.close();
