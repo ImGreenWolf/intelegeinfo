@@ -20,7 +20,7 @@ const problemCreator = new Map();
 class ProblemCreator {
     editorSession;
 }
-async function createProblem(name, tests, editorSession, clientObj) {
+async function createProblem(name, author, description, category, requirement, tests, editorSession, clientObj) {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
     //     console.error('no running container')
@@ -81,10 +81,10 @@ async function createProblem(name, tests, editorSession, clientObj) {
         dbClient_1.default.problem.create({
             data: {
                 name: name || "unnamed",
-                author: 'none',
-                category: 'none',
-                description: 'testing',
-                requirement: 'testing',
+                author,
+                category,
+                description,
+                requirement,
                 tests,
                 averageMemLimit: 0,
                 averageTimeLimit: 0
@@ -131,11 +131,20 @@ exports.router.post('/create', (req, res) => {
         }
         if (!data.name)
             throw 'invalid name';
-        createProblem(data.name, tests, session, client);
+        createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client);
         res.status(200).send(tests[0].dataIn);
     }
     catch (err) {
         res.status(500).send(err);
     }
+});
+exports.router.get('/random', async (req, res) => {
+    const length = await dbClient_1.default.problem.count();
+    const problem = await dbClient_1.default.problem.findUnique({
+        where: {
+            id: Math.floor(Math.random() * length) + 1
+        }
+    });
+    res.send(problem);
 });
 exports.default = exports.router;

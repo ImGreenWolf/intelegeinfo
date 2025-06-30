@@ -15,12 +15,16 @@ export declare class ClientObject {
     permissions: ClientPermissions;
     color: string;
     editorMode: typeof EditorMode;
-    openFileName: string;
-    openFile: EditorFile;
+    openFileName: string[];
+    openFile: EditorFile[];
+    lastOpenFile: EditorFile | undefined;
     webcamid: number;
     editorPermission: EditorPermission;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: string | Record<string, any>, type?: WebSocketMessageType): void;
+    getFile(name: any): EditorFile;
+    getFilesName(): any[];
+    checkClientsFileOpen(otherClient: any): boolean;
 }
 interface CommandBuffer {
     codeSelection: any;
@@ -88,10 +92,12 @@ export declare class EditorFile {
     session: EditorSession;
     filePath: any;
     editorMode: EditorMode;
-    constructor(session: EditorSession, name: string, content?: any, onCreate?: (this: EditorFile) => void);
-    delete(clientObj: any): void;
+    constructor(session: EditorSession, name: string, content?: any, options?: {
+        abstract?: boolean;
+    }, onCreate?: (this: EditorFile) => void);
+    delete(clientObj: ClientObject): void;
     rename(newName: any, clientObj: any): void;
-    openFile(clientObj: ClientObject, shared?: any): Promise<string>;
+    openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;
     changeContent(content: any): void;
 }
 export declare function randomHexColor(): string;

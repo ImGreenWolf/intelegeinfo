@@ -56,8 +56,9 @@ class ClientObject {
     permissions;
     color = randomHexColor();
     editorMode = editor_modes_1.CppMode;
-    openFileName;
-    openFile;
+    openFileName = [];
+    openFile = [];
+    lastOpenFile;
     webcamid;
     editorPermission = EditorPermission.Everyone;
     // EditorSessionObject: EditorSession
@@ -87,6 +88,15 @@ class ClientObject {
             this.CWebSocket.send(JSON.stringify({ type, ...message }));
         else
             this.CWebSocket.send(JSON.stringify(message));
+    }
+    getFile(name) {
+        return this.openFile.find(val => val.name == name);
+    }
+    getFilesName() {
+        return this.openFile.map(val => val.name);
+    }
+    checkClientsFileOpen(otherClient) {
+        return this.getFilesName().find(val => otherClient.getFilesName().some(other => val === other)) !== -1;
     }
 }
 exports.ClientObject = ClientObject;
@@ -333,7 +343,7 @@ Tralalero Tralala`.split('\n');
         return this.clientsMap.get(clientId);
     }
     removeClient(clientId) {
-        this.clients.splice(this.clients.findIndex(val => val.clientId === clientId));
+        this.clients.splice(this.clients.findIndex(val => val.clientId === clientId), 1);
         this.clientsMap.delete(clientId);
         this.clientCommandBuffer.delete(clientId);
         this.clientsActiveFile.delete(clientId);
@@ -386,7 +396,7 @@ class EditorFile {
     session;
     filePath;
     editorMode;
-    constructor(session, name, content = undefined, onCreate) {
+    constructor(session, name, content = undefined, options, onCreate) {
         this.name = name;
         this.session = session;
         this.filePath = path_1.default.join(this.session.getClientFilesPath(), this.name);
@@ -399,6 +409,9 @@ class EditorFile {
             this.content = '';
         else
             this.content = content;
+        if (options)
+            if (options.abstract != undefined && options.abstract)
+                return;
         try {
             // Create a new instance of the EditorFile class from the provided type
             // Example: let newFile = new EditorFile(session, name, content, onCreate);
@@ -424,11 +437,14 @@ class EditorFile {
                 throw "File already exists!";
         }
         catch (err) {
-            console.error(err);
+            session.replicateFunction((localws, id, localObj) => {
+                localObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Notification, body: err });
+            });
         }
     }
     delete(clientObj) {
         try {
+            clientObj.openFile.splice(clientObj.openFile.findIndex(val => val == this), 1);
             fs_1.default.unlink(this.filePath, (err) => {
                 if (err) {
                     throw "Error deleting file: " + err.message;
@@ -445,35 +461,49 @@ class EditorFile {
             });
         }
         catch (err) {
-            console.error(err);
+            clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Notification, body: err });
         }
     }
     rename(newName, clientObj) {
-        fs_1.default.rename(this.filePath, path_1.default.join(this.session.getClientFilesPath(), newName), () => {
-            this.session.replicateFunction((cws) => {
-                cws.send(JSON.stringify({
-                    type: types_1.WebSocketMessageType.FileManagement,
-                    command: types_2.FileManagementCommands.Rename,
-                    name: this.name,
-                    newName: newName
-                }));
-            }, clientObj);
-            this.name = newName;
-        });
+        try {
+            fs_1.default.rename(this.filePath, path_1.default.join(this.session.getClientFilesPath(), newName), () => {
+                this.session.replicateFunction((cws) => {
+                    cws.send(JSON.stringify({
+                        type: types_1.WebSocketMessageType.FileManagement,
+                        command: types_2.FileManagementCommands.Rename,
+                        name: this.name,
+                        newName: newName
+                    }));
+                }, clientObj);
+                this.name = newName;
+            });
+        }
+        catch (err) {
+            clientObj.replicateFunction((localws, id, localObj) => {
+                localObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Notification, body: err });
+            });
+        }
     }
-    async openFile(clientObj, shared) {
+    async openFile(clientObj, shared, closedFileName) {
         try {
             const data = fs_1.default.readFileSync(this.filePath).toString();
-            clientObj.openFile = this;
+            clientObj.openFile.push(this);
+            clientObj.openFileName.push(this.name);
             // Send the file content to the client
             const oldFileName = clientObj.openFileName;
+            if (closedFileName) {
+                const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName);
+                clientObj.openFile.splice(closedFileIndex, 1);
+                clientObj.openFileName.splice(closedFileIndex, 1);
+            }
             this.session.replicateFunction((cws, id, obj) => {
                 if (obj.openFileName == oldFileName)
                     cws.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeSelection, body: null }));
             }, clientObj);
             clientObj.editorMode = getEditorMode(this.name);
-            clientObj.openFileName = this.name;
+            // clientObj.openFileName = this.name
             this.session.clientsActiveFile.set(clientObj.clientId, this.name);
+            clientObj.lastOpenFile = this;
             console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
             if (shared)
                 shared.updateSession(this.session.sessionId, this.session);

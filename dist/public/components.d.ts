@@ -18,10 +18,10 @@ export declare function createNode<K extends keyof HTMLElementTagNameMap>(tag: K
     id?: string;
     html?: Node[];
     htmlSting?: string;
-    attributes?: {
+    attributes?: ({
         name: string;
         value: string;
-    }[];
+    } | undefined)[];
     onclick?: (ev: any) => void;
 }): HTMLElementTagNameMap[K];
 export declare class Dock extends IElement {

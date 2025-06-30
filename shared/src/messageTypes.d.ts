@@ -46,7 +46,7 @@ type HandshakeMessage = {
     permissions: any;
     files: string[];
     project?: string[];
-    users: {displayName: string, clientId: UUID, openFile: string, color: string}[];
+    users: {displayName: string, clientId: UUID, openFile: string[], color: string}[];
 };
 
 // type ColabDataMessage = {

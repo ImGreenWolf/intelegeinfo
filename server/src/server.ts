@@ -867,7 +867,8 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                     shared.addClient(clientId, sessionId);
                     shared.updateSession(sessionId, clientSession)
                 } 
-                if(urlParams.has('isPublic'))
+                console.log(urlParams)
+                if(urlParams.has('embeded'))
                         clientSession.isPublic = true
                 
                 connectionReady(!isHost, req).finally(resolve)
@@ -1081,13 +1082,15 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         }
 
         ws.send(JSON.stringify(message)); 
-        sendFileContents(fileContent)
+        if(files[0] && fileContent)
+        sendFileContents(fileContent, files[0])
               
         return session;
     }
 
-    function sendFileContents(fileContent) {
-        clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: clientObj.openFile.name, body: {command: FileManagementCommands.Open ,content: fileContent}})); // Send the list of files to the client
+    function sendFileContents(fileContent, fileName) {
+        if(clientObj.getFile(fileName))
+            clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, body: {command: FileManagementCommands.Open ,content: fileContent}})); // Send the list of files to the client
     }  
 
     function clientInfo(thisclientObj?: ClientObject , prefix: string = ''): {clientId: typeof clientId, displayName: typeof clientObj.displayName, color: typeof clientObj.color, openFile: typeof clientObj.openFileName}
@@ -1097,11 +1100,11 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         if(!thisclientObj)
             thisclientObj = clientObj;
         if(thisclientObj)
-            return  {clientId: thisclientObj.clientId, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.openFileName}
+            return  {clientId: thisclientObj.clientId, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName()}
         // JSON.parse(`{"${prefix}clientId": "${thisclientObj.clientId}", "${prefix}displayName": "${thisclientObj.displayName}", "${prefix}color": "${thisclientObj.color}", "${prefix}openFile": "${thisclientObj.openFileName}"}`)
         else if(prefix)
             return JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`)
-        else return {clientId: clientId, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.openFileName,}
+        else return {clientId: clientId, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName()}
     }
 
     async function loadSave(fileUUID)
@@ -1162,17 +1165,17 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 return;
             }
             const defaultFileName = 'main.cpp'
-
-                new EditorFile(clientSession, defaultFileName, undefined, function () {
-                    this.openFile(clientObj, shared).then((fileContent) => {
-                        const session = sendConnectionMessage(!cooperator, fileContent)
-                        // onOpenFile(undefined, defaultFileName)
-                        console.log('Opened file')
-                        resolve(session)
-                    })
-                    
+            const session = sendConnectionMessage(!cooperator, '')
+            resolve(session)
                         
-            })
+            //     new EditorFile(clientSession, defaultFileName, undefined, undefined, function () {
+            //         this.openFile(clientObj, shared).then((fileContent) => {
+            //             // const session = sendConnectionMessage(!cooperator, fileContent)
+            //             // resolve(session)
+                        
+            //         })
+                    
+            // })
 
                 // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
                 //     listFiles(clientFilesPath).then(() => {
@@ -1187,7 +1190,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
             console.warn("Cache folder already exists for sessionId " + sessionId);
             // load project files
             if(cacheFolderExists && !cooperator && clientSession.files.length==0)
-                clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
+                clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString(), {abstract: true})})
 
             // const session = sendConnectionMessage(!cooperator, '')
             
@@ -1232,7 +1235,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                     if(!client.openFile)
                         throw 'invalid file'
                     if(client != clientObj)
-                        displayNames.push({displayName: client.displayName, fileName: client.openFile.name, clientId: client.clientId, color: client.color});
+                        displayNames.push({displayName: client.displayName, fileName: client.getFilesName(), clientId: client.clientId, color: client.color});
                })
                replicateFunction((clientws) => {
                    clientws.send(JSON.stringify({type: WebSocketMessageType.ColabData, colabCommand: "JOIN", client: clientInfo(clientObj), permissions: session}));  // Send GDB output to the client
@@ -1244,7 +1247,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
 
                // send all other client's information
                clientSession.clientsMap.forEach((client) => {
-                   ws.send(JSON.stringify({type: WebSocketMessageType.FileManagement, command:  FileManagementCommands.Open, fileName: client.openFile.name,  name: client.displayName, color: client.color, clientId: client.clientId}));  // Send GDB output to the client
+                   ws.send(JSON.stringify({type: WebSocketMessageType.FileManagement, command:  FileManagementCommands.Open, fileName: client.getFilesName(),  name: client.displayName, color: client.color, clientId: client.clientId}));  // Send GDB output to the client
                },clientObj)
 
                setTimeout(() => {
@@ -1400,7 +1403,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         }
     }
     
-    function openFile(fileName: string)
+    function openFile(fileName: string, closedFile?)
     {
         // if(fs.existsSync(path.join(clientFilesPath, fileName)))
         // console.log("path: " + path.join(clientFilesPath || path.join(rootDirName, "cache", sessionId,"clientFiles"), fileName))
@@ -1412,15 +1415,14 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
                 return;
             }
 
-        const oldFileName = clientObj.openFile ? clientObj.openFile.name : undefined;
-        file.openFile(clientObj, shared).then((fileContent) => onOpenFile(oldFileName, fileName, fileContent))
+        
+        file.openFile(clientObj, shared, closedFile).then((fileContent) => onOpenFile(closedFile, fileName, fileContent))
         
     }
 
     function onOpenFile(oldFileName, fileName, fileContent)
     {
-        sendFileContents(fileContent)
-        console.log('Sent onopen file')
+        sendFileContents(fileContent, fileName)
         replicateFunction((clientWs, id, thisClientObj) => {
             clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, command:  FileManagementCommands.Open, fileName, oldFileName,  name: clientObj.displayName, color: clientObj.color, clientId: clientId}));  // Send GDB output to the client
             if(thisClientObj.openFile && thisClientObj != clientObj)
@@ -1530,7 +1532,7 @@ console.log('Skipping build stage.')
   const imageName = `session-container-${sessionId}`;
 // fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
   // 4. Run the Docker container with access to the sandbox folder
-const hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
+const hasGUI = clientObj.openFileName[0].toLowerCase().includes("gui")
 console.log(hasGUI ? 'executing with GUI' : "no gui")
 if(clientSession.sessionContainer)
     execSync('docker rm -f ' + clientSession.sessionContainer.imageName)
@@ -1544,7 +1546,7 @@ const runCommand =
 --cpus=${0.25*parseInt(process.env.CONT_MEM_MUlTI||"1")} \
 -di \
 --rm \
-${clientObj.openFile.editorMode.runParams(clientObj)} \
+${clientObj.openFile[0].editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "")
 
@@ -1557,7 +1559,7 @@ bash `.trim().replaceAll('\n', "")
 
   // Return the child process for external handling
     const childProcess = spawn(runCommand, { shell: true, stdio: 'pipe'});
-    clientSession.sessionContainer = {process: childProcess as ChildProcess, imageName, fileName, editorMode: clientObj.openFile.editorMode} 
+    clientSession.sessionContainer = {process: childProcess as ChildProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
 
      childProcess?.on("spawn", () => {
         console.log("Docker container spawned")
@@ -1765,7 +1767,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 case WebSocketMessageType.Canvas:
 
                     replicateFunction((clientWs, clientid, thisClientObj) => {
-                        if(thisClientObj.openFile.name == clientObj.openFile.name)
+                        if(thisClientObj.checkClientsFileOpen(clientObj))
                             clientWs.send(JSON.stringify({...messageJSON}));  // Send GDB output to the client
                     }, clientObj);
                 break;
@@ -1783,7 +1785,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             video.on('close', data => console.log('added camera. ' + data.toString()))
                             console.log('added camera')
                         } else
-                          (clientObj.openFile.editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
+                          (clientObj.openFile[0].editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
                          
                     } catch(err)
                     {
@@ -1973,7 +1975,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         replicateFunction((thisClientWs, thisClientId, thisClientObj) => {
                             if(!thisClientObj.openFile)
                                 throw "this client obj has invalid file";
-                            if(clientSession.getClientObjectById(thisClientId).permissions.canEdit && thisClientObj.openFile.name == clientObj.openFile.name)
+                            if(clientSession.getClientObjectById(thisClientId).permissions.canEdit && thisClientObj.checkClientsFileOpen(clientObj))
                                 thisClientWs.send(JSON.stringify({ ...messageJSON, ...clientInfo(clientObj)})) // TODO Sanitize this
                         }, clientObj)
                 break;
@@ -1998,16 +2000,17 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
                             // checkSyntaxTimeout = setTimeout(() => {
-                                if(clientObj.openFile.editorMode.checkCodeSyntax)
-                                    clientObj.openFile.editorMode.checkCodeSyntax(clientSession, clientObj.openFile).then(json => {
+                            if(clientObj.getFile(fileName) && clientObj.getFile(fileName).editorMode)
+                                if(clientObj.getFile(fileName).editorMode.checkCodeSyntax)
+                                    clientObj.getFile(fileName).editorMode.checkCodeSyntax(clientSession, clientObj.getFile(fileName)).then(json => {
                                         if(!JSON.parse(json)[0])
                                             return  replicateFunction((clientWs, localClientId) => {
                                                 if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                    clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: JSON.stringify(    [   {kind: 'success'} ]     )}))
+                                                    clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, fileName,clientId: clientId, body: JSON.stringify(    [   {kind: 'success'} ]     )}))
                                                 })
                                         replicateFunction((clientWs, localClientId) => {
                                             if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, clientId: clientId, body: json}))
+                                                clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, fileName, clientId: clientId, body: json}))
                                             })
                                     }).catch(err => {
                                         console.error('syntax checker error: ' + err)
@@ -2019,11 +2022,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         }, 200);
                     // }
                     
-                    clientObj.openFile.changeContent(messageJSON.body)
+                    clientObj.getFile(fileName).changeContent(messageJSON.body)
                         // replicate changes to others
-                    replicateFunction((thisclientWs, localClientId, thisclientObj) => {
-                        if(thisclientObj.openFileName === clientObj.openFileName)
-                            thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId,delta: messageJSON.delta, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId}))
+                    replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                        if(clientObj.checkClientsFileOpen(thisClientObj))
+                            thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId,delta: messageJSON.delta, fileName, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId}))
                         }, clientObj)
                     
                     break;
@@ -2040,14 +2043,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     //fs.writeFileSync(path.join(rootDirName, "cache", sessionId , "user_code.cpp"), messageJSON.code);
                    // console.log(type + " for sessionId " + sessionId);
                    if(!clientObj.permissions.canEdit) break;
-                    const codeSelectionJSON = {type: WebSocketMessageType.CodeSelection, clientId: clientId, body: messageJSON, color: clientObj.color}
+                    const codeSelectionJSON = {type: WebSocketMessageType.CodeSelection, clientId: clientId, body: messageJSON, color: clientObj.color, fileName: messageJSON.fileName}
                     getThisClientSession().clientCommandBuffer.set(clientId, {codeSelection: codeSelectionJSON})
 
                                                                                 // rename this to something more apropriate eg guily client idk
                 //    replicateSocketMessage(sessionId, clientId, true, {type: type, clientId: clientId, body: messageJSON}, (client) => { let filter = getThisClientSession()?.clientsActiveFile.get(client) != fileName; console.log(getThisClientSession()?.clientsActiveFile.get(client) + fileName); return filter;});
                    
-                   replicateFunction((clientWs, localClientId) => {
-                        if(getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
+                   replicateFunction((clientWs, localClientId, thisClientObj) => {
+                        if(clientObj.checkClientsFileOpen(thisClientObj))
                              clientWs.send(JSON.stringify(codeSelectionJSON))
                     }, clientObj)
                 
@@ -2075,7 +2078,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                     switch (commandType) {
                         case FileManagementCommands.Create:
-                            new EditorFile(clientSession, messageJSON.name)
+                            new EditorFile(clientSession, messageJSON.name, messageJSON.body)
 
 
                     break;
@@ -2098,7 +2101,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                     case FileManagementCommands.Open:
                         
-                        openFile(messageJSON.body)
+                        openFile(messageJSON.body, messageJSON.closedFile)
                         console.log('clientId', clientId, 'sessionid', sessionId)
                     break;
                     }
@@ -2131,7 +2134,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             if(res == null) return resolve()
                                                 
                                             try {
-                                                clientObj.openFile.editorMode.sendError = (err, fatal)  => {
+                                                clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal)  => {
                                                     // printClientConsoleError(err)
                                                     if(fatal)
                                                     {
@@ -2143,21 +2146,21 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                 } 
 
 
-                                                if(!clientObj.openFile.editorMode.isInterpreter)
+                                                if(!clientObj.getFile(res.fileName).editorMode.isInterpreter)
                                                 {
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                                     });
 
                                                     //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
-                                                    await clientObj.openFile.editorMode.compile(res, clientObj.openFile, false)
+                                                    await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
                                                     
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                                     });
                                                 }
                                                 
-                                                clientSession.program = await clientObj.openFile.editorMode.execute(res, clientObj, clientSession)
+                                                clientSession.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession)
 
 
 
@@ -2207,7 +2210,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     const timeLimit = problem.averageTimeLimit
                                                     const memoryLimit =  problem.averageMemLimit
 
-                                                    await clientObj.openFile.editorMode.compile(res, clientObj.openFile, false)
+                                                    await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
 
                                                     testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError)
                                                     
@@ -2278,13 +2281,13 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         });
 
                                         // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
-                                        await clientObj.openFile.editorMode.compile(res, clientObj.openFile, true)
+                                        await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), true)
                                         
                                         replicateFunction((clientWs) => {
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                         });
 
-                                        clientSession.gdbProcess = clientObj.openFile.editorMode.startDebugging(res)
+                                        clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res)
                                         if(!clientSession.gdbProcess)
                                             return;
                                         addProcessToMap(sessionId, clientSession.gdbProcess);

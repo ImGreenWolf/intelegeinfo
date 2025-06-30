@@ -246,7 +246,8 @@ footer
     justify-content: center;
     align-items: start;
     justify-items: center;
-    margin-bottom: 150px;
+    margin-bottom: 75px;
+    background-image: url(../media/Threads_About@2x-b4c9b65429f47818297535a7e3b29801.png);
     .openEditor
     {
         grid-column: 1 / -1
@@ -323,7 +324,7 @@ footer
 }
 .main-container div#text-container
 {
-    margin: 100px 0;
+    margin: 7rem 0;
     position: relative;
     max-width: 500px;
     text-align: center;
@@ -332,6 +333,7 @@ footer
     grid-template-rows: auto auto;
     align-content: stretch;
     height: 400px;
+    justify-items: center;
     /* left: 50%;
     transform: translate(-50%, -50%); */
     /* top: 50%; */
@@ -456,7 +458,7 @@ a.button
     }
 .main-container h
 {
-    font-size: 70px;
+    font-size: 5em;
     display: block;
     
 } 
@@ -632,6 +634,9 @@ z-index: -1;
 h1
 {
     text-shadow: 0.05em 0.05em 0.075em rgba(61, 61, 61, 0.74);
+    font-family: Teachers;
+    font-weight: 800;
+    font-size: 3em;
 }
 #guides
 {
@@ -681,20 +686,27 @@ h1
 }
 .content-container
 {
-    width: 50%;
+    width: 75%;
+    &>*:not(h2,h1)
+    {
+        width: 75%;
+        margin: auto;
+    }
 }
  #features ul.content-list
  {
     display: grid;
     grid-template-columns: 1fr 1fr;
     row-gap: 10em;
-    column-gap: 2em;
+    column-gap: 10em;
     justify-content: space-between;
-    
+    padding: 0;
+    align-items: center;
     li 
     {
-         max-width: 800px;
-         grid-column: 1;
+        max-width: 800px;
+        grid-column: 1;
+        text-align: justify;
     }
    
     &>img 
@@ -715,11 +727,49 @@ h1
     grid-column: 1 / -1;
     gap: 3em;
     justify-content: center;
+    padding: 0;
     img 
     {
-        width: 125px;
-        
+        max-width: 125px;
+        width: 100%;
         border-radius: 5px;
+        &:not(.available)
+        {
+            filter: grayscale(1);
+            opacity: 0.75;
+        }
+    }
+ }
+
+ .language-carusel-infinate
+ {
+    display: block;
+    width: 100%;
+    height: 10vw;
+    max-height: 125px;
+    min-height: 50px;
+    padding: 20px;
+    mask-image: linear-gradient(90deg, transparent 15%, white 30%, white 70%, transparent 85%);
+    &::after
+    {
+        // box-shadow: inset 0 0 20px 20px theme.$background-color;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        content: '';
+        mask-image: linear-gradient(90deg, white 20%, transparent 35%, transparent 65%, white 80%);
+        backdrop-filter: blur(3px);
+    }
+   
+    img 
+    {
+        max-width: 125px;
+        width: 10vw;
+        min-width: 25px;
+        border-radius: 5px;
+        position: absolute;
         &:not(.available)
         {
             filter: grayscale(1);
@@ -772,10 +822,10 @@ h1
             
             &:not([src])
             {
-                background: url(/media/landingpageBackground.png), radial-gradient(transparent, rgb(20, 20, 20) 80%);
-                opacity: 0.25;
-                background-blend-mode: color-burn;
-                filter: blur(5px);
+                // background: url(/media/landingpageBackground.png), radial-gradient(transparent, rgb(20, 20, 20) 80%);
+                // opacity: 0.25;
+                // background-blend-mode: color-burn;
+                // // filter: blur(5px);
             }
         }
     }
@@ -901,7 +951,32 @@ h1
         width: 75% !important;
                 max-width: 20em;
     }
+    .content-list
+    {
+        grid-template-columns: 100% !important;
+        gap: 2.5em !important;
+        max-width: 300px;
+        &>img 
+        {
+            margin-bottom: 5em;
+        }
+    }
+    .content-container, #editor-demo
+    {
+        &>h1,&>h2
+        {
+            margin: auto;
+            text-align: center;
+            font-size: 1.5rem;
+            width: 75%;
+            margin-bottom: 1lh;
+        }
+    }
 
+    ul.language-carusel
+    {
+        gap: 1em;
+    }
 //     .main-container
 // {
 //     position: relative;
@@ -942,4 +1017,45 @@ h1
 
  }
 
+#problem
+{
+    
+    
+    .problem-requirement
+    {
+        width: 50%;
+        samp
+        {
+            border-radius: 1lh;
+            padding: 0.75em;
+            background-color: theme.$foreground-color;
+            display: block;
+            margin: 1em;
+            border: 3px solid theme.$border-color;
+            white-space: pre;
+        }
+    }
+    
+    &>div >div
+        {
+            width: 100%;
+            display: flex;
+            gap: 2em;
+            justify-content: space-between;
+            
+        a
+        {
+         border-radius: 1lh;
+        padding: 1em;
+        background-color: theme.$button-color;
+        display: inline-block;
+        margin: 1em;
+        // border: 3px solid theme.$border-color;
+        text-decoration: none;
+        }
+        }
+  
 
+    
+    
+}

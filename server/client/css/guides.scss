@@ -6,12 +6,19 @@ article {
     width: 700px;
     margin: auto;
     display: block;
-    padding: 50px;
-    top: 60px;
-    padding-top: 100px;
+    padding: 75px 100px;
+    top: 100px;
     margin-bottom: 50px;
     position: relative;
     background-color: white;
+    box-shadow: 0px 20px 30px 10px #00000024;
+    border-radius: 5px;
+    ::selection
+    {
+        background-color: rgba(59, 1, 1, 0.829);
+        color: white;
+        text-decoration: underline;
+    }
 }
 code.ace_editor {
     padding: 1px;
@@ -190,9 +197,10 @@ header nav ul li
     {
         font-size: xx-large;
         margin: 0;
-        border-bottom: 3px dotted rgba(0, 0, 0, 0.397);
+        border-bottom: 1px dotted rgba(0, 0, 0, 0.397);
         padding-block: 0;
-        padding-inline: 0.25em;
+        padding-inline: 0.15em;
+        line-height: 1.25lh;
     }
 }
 

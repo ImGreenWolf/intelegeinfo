@@ -39,6 +39,16 @@
     opacity: 100%;
   }
 }
+@keyframes editor-fade-in {
+  0% {
+    opacity: 90%;
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 100%;
+    filter: blur(0px);
+  }
+}
 @keyframes fade-out {
   100% {
     opacity: 0.05;
@@ -101,19 +111,14 @@
 }
 @keyframes client-popup {
   0% {
-    transform: translateX(-50%);
+    transform: translate(-50%, 0);
     opacity: 0;
     filter: blur(10px);
   }
-  10%, 90% {
+  100% {
     opacity: 100%;
     transform: translate(-50%, -50%);
     filter: blur(0px);
-  }
-  100% {
-    transform: translateX(-50%);
-    opacity: 0;
-    filter: blur(10px);
   }
 }
 #noVNC {
@@ -155,7 +160,8 @@ header {
   display: none;
 }
 
-.shadow.inset {
+.shadow.inset, :not(.editor-container) .editor-theme::after, .editor-container:after {
+  content: "";
   box-shadow: rgba(0, 0, 0, 0.18) 0px -6px 11px 5px inset, rgba(0, 0, 0, 0.25) -1px 6px 18px 4px inset;
   z-index: 13;
   position: absolute;
@@ -242,6 +248,7 @@ header {
   min-width: 400px;
   max-width: 100%;
   font-size: 16px;
+  animation: editor-fade-in 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .ace_remote_selection {
@@ -325,7 +332,7 @@ header {
   align-items: stretch;
   font-size: 0.7rem;
 }
-#editor-tabs .editor-tabs-container, .tabs-container .editor-tabs-container {
+#editor-tabs .editor-tabs-container, #editor-tabs .file-scroller, .tabs-container .editor-tabs-container, .tabs-container .file-scroller {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -343,7 +350,7 @@ header {
   border: 2px solid rgba(255, 217, 0, 0.582);
 }
 #editor-tabs .file-tab, .tabs-container .file-tab {
-  transition-duration: 0.1s;
+  transition-duration: 0.3s;
   display: inline-flex;
   flex-direction: column-reverse;
   text-align: center;
@@ -361,13 +368,21 @@ header {
   cursor: pointer;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px 2px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
   box-sizing: border-box;
+  background-position: 95% center;
+  background-repeat: no-repeat;
+  box-sizing: content-box;
   z-index: 1;
 }
 #editor-tabs .file-tab p, .tabs-container .file-tab p {
   flex-grow: 1;
-  margin: 0 0.5em;
+  margin: 0 1.5em;
   padding-top: 0.25rem;
   font-size: 0.75rem;
+  line-height: 2em;
+}
+#editor-tabs .file-tab[draggable]:hover, .tabs-container .file-tab[draggable]:hover {
+  background-image: url(../media/icons/drag_indicator.svg);
+  background-size: 1em;
 }
 #editor-tabs .file-tab#active-open-file, #editor-tabs .file-tab.open-file, .tabs-container .file-tab#active-open-file, .tabs-container .file-tab.open-file {
   cursor: default;
@@ -405,14 +420,13 @@ header {
   max-height: 50px;
   text-align: center;
   padding: 5px;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, -50%);
   z-index: 20;
   background-color: rgba(20, 20, 20, 0);
   backdrop-filter: blur(2px);
   box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
   border-radius: 0.5lh;
-  animation: client-popup 5s;
-  animation-fill-mode: both;
+  animation: 0.5s client-popup;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -494,15 +508,17 @@ header {
   position: relative;
 }
 
-#session-controls {
+.controls {
   display: flex;
   transition-duration: 0.2s;
   box-sizing: content-box;
+  transition-duration: 0.2s;
+  width: fit-content;
   gap: 5px;
   padding: 1px 5px 1px 5px;
   align-items: center;
 }
-#session-controls #saveProject.saved {
+.controls #saveProject.saved {
   opacity: 0.5;
 }
 
@@ -1241,7 +1257,7 @@ value {
   justify-self: start;
 }
 
-button:not(.custom-button), #editor-tabs span:not(#active-open-file, .open-file), #signup, #login {
+button:not(.custom-button, .noanimate), #editor-tabs span:not(#active-open-file, .open-file, .noanimate), #signup, #login {
   transition-duration: 0.3s;
   user-select: none;
   outline-offset: 0.5px;
@@ -1249,15 +1265,18 @@ button:not(.custom-button), #editor-tabs span:not(#active-open-file, .open-file)
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   cursor: pointer;
 }
-button:not(.custom-button).inset-button *, #editor-tabs span:not(#active-open-file, .open-file).inset-button *, #signup.inset-button *, #login.inset-button * {
+button:not(.custom-button, .noanimate):disabled, #editor-tabs span:not(#active-open-file, .open-file, .noanimate):disabled, #signup:disabled, #login:disabled {
+  opacity: 0.5;
+}
+button:not(.custom-button, .noanimate).inset-button *, #editor-tabs span:not(#active-open-file, .open-file, .noanimate).inset-button *, #signup.inset-button *, #login.inset-button * {
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
 }
-button:not(.custom-button):hover, #editor-tabs span:not(#active-open-file, .open-file):hover, #signup:hover, #login:hover {
+button:not(.custom-button, .noanimate):hover, #editor-tabs span:not(#active-open-file, .open-file, .noanimate):hover, #signup:hover, #login:hover {
   outline: 1px solid rgba(255, 255, 255, 0.8) !important;
   transform: translateY(0.5px) scale(0.98);
   transition-duration: 0.1s;
 }
-button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-tabs span:not(#active-open-file, .open-file):active, #editor-tabs span:not(#active-open-file, .open-file) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
+button:not(.custom-button, .noanimate):active, button:not(.custom-button, .noanimate) :focus, #editor-tabs span:not(#active-open-file, .open-file, .noanimate):active, #editor-tabs span:not(#active-open-file, .open-file, .noanimate) :focus, #signup:active, #signup :focus, #login:active, #login :focus {
   transition-duration: 0.02s;
   transform: translateY(1px) scale(90%);
 }
@@ -1277,6 +1296,12 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
 }
 .ridge-gradient.inset-button.circle {
   border-radius: 50%;
+}
+.ridge-gradient.inset-button.circle button {
+  border-radius: 50% !important;
+}
+.ridge-gradient.inset-button:has(:disabled) {
+  opacity: 0.5;
 }
 
 .inset-button a {
@@ -1366,11 +1391,6 @@ button:not(.custom-button):active, button:not(.custom-button) :focus, #editor-ta
   background-image: radial-gradient(transparent, rgba(255, 255, 255, 0.281));
   border: 2px solid white;
   border-radius: 50%;
-}
-
-#session-controls {
-  transition-duration: 0.2s;
-  width: fit-content;
 }
 
 .slide-out-display {
@@ -1502,7 +1522,9 @@ form label {
 }
 
 #client-area-body {
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: contents;
 }
 
 .throbber-container {
@@ -1631,6 +1653,96 @@ mini-dock #joinSession {
   background-position: center;
   background-repeat: no-repeat;
   --outline: rgba(39, 138, 39, 0.384);
+}
+
+.dropdown .file-tab {
+  cursor: grab;
+}
+
+#code-window-container {
+  position: relative;
+}
+
+.default-screen {
+  background-color: rgb(19, 19, 19);
+  display: grid !important;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  grid-template-columns: auto 1fr;
+  padding: 2em;
+  gap: 1em;
+  box-shadow: inset 5px 5px 35px -30px rgb(107, 107, 107);
+}
+.default-screen h1 {
+  font-size: 3em;
+  font-family: Teachers, Poppins, Cambria;
+}
+.default-screen .language-info {
+  grid-column: 2/2;
+  grid-row: 1/3;
+}
+.default-screen .language-carousel {
+  display: grid;
+  max-width: 100%;
+  margin: 5em auto;
+  padding: 1em 0;
+  grid-column: span 2;
+  height: 50px;
+  justify-content: space-around;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1em 1.5em;
+  box-sizing: border-box;
+  align-items: center;
+  align-content: center;
+  max-height: 100%;
+  max-height: 350px;
+  width: 100%;
+  border-top: 2px solid gray;
+  align-content: stretch;
+}
+.default-screen .language-carousel button {
+  user-select: none;
+  display: flex;
+  gap: 1em;
+  padding: 1em 1.5em;
+  border: 2px solid rgb(36, 36, 36);
+  border-radius: 50px;
+  font-family: Poppins;
+  height: 25px;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  transition-duration: 0.5s;
+  background-color: transparent;
+  box-sizing: content-box;
+  color: white;
+  background-image: linear-gradient(30deg, rgba(20, 20, 20, 0.5), rgba(29, 29, 29, 0.301), rgba(20, 20, 20, 0.5));
+  backdrop-filter: blur(5px);
+  box-shadow: inset 5px 5px 25px -25px rgb(107, 107, 107), 3px 5px 15px 5px rgba(0, 0, 0, 0.24);
+}
+.default-screen .language-carousel button:not(:disabled) {
+  cursor: pointer;
+}
+.default-screen .language-carousel button:not(:disabled):hover {
+  border: 2px solid rgb(63, 63, 63);
+}
+.default-screen .language-carousel button .language-logo {
+  min-width: 30px;
+  height: 100%;
+  min-height: 30px;
+  aspect-ratio: 1;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  user-select: none;
+}
+.default-screen .language-carousel button:disabled {
+  filter: grayscale(1);
+  opacity: 0.75;
 }
 
 /*# sourceMappingURL=codeEditor.css.map */

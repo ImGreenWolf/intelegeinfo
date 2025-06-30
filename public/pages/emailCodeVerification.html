@@ -55,15 +55,21 @@
         <div class="button-container">
             <button  type="submit">Verifica</button>
             <a href="/">Retrimite linkul</a>
+            <p id="status"></p>
         </div>
         
     </form>
 </body>
 
 
-<script src="../../dist/public/emailCodeVerificationClient.js">
+<script src="../client/scripts/emailCodeVerificationClient.js">
 
-    async function submit()
+
+
+</script>
+
+<script>
+     async function submit()
     {
         let code = codeInput.value;
         const id = new URLSearchParams(window.location.search).get('id')
@@ -79,6 +85,8 @@
 
             if(res.sucess)
                 location.href = res.redirect;
+        }).catch(err => {
+            document.getElementById('status').innerText = err
         })
     }
     form.addEventListener('submit', async (ev) => {
@@ -86,7 +94,5 @@
         ev.preventDefault()
         submit()
     })
-
-
 </script>
 </html>

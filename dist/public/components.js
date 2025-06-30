@@ -34,7 +34,8 @@ export function createNode(tag, options) {
                 elem.appendChild(node);
         if (options.attributes)
             for (const attribute of options.attributes)
-                elem.setAttribute(attribute.name, attribute.value);
+                if (attribute)
+                    elem.setAttribute(attribute.name, attribute.value);
         if (options.htmlSting)
             elem.innerHTML = options.htmlSting;
         if (options.onclick)

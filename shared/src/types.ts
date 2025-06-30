@@ -26,7 +26,8 @@ export enum ConsoleMessageType {
     Debug = 'debug',
     SessionInfo = "session",
     Output = 'output',
-    DebugProgram  = "debugProgram"
+    DebugProgram  = "debugProgram",
+    Notification = 'notification'
 }
 
 

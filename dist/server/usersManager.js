@@ -179,6 +179,7 @@ function getClientId(token) {
     return userId;
 }
 exports.default = dbClient_1.default;
+let transporter;
 exports.router.get('/checkLoggedIn', (req, res) => {
     if (getIdFromJWT(req) != undefined)
         res.status(200).send(true);
@@ -209,42 +210,30 @@ exports.router.get('/profilePicture/:id', (req, res) => {
         res.status(500).send('failed: ' + err);
     });
 });
+async function updateTransporter() {
+    transporter = nodemailer_1.default.createTransport({
+        host: 'antares.webyouridea.ro',
+        port: 587, // STARTTLS
+        secure: false, // false because STARTTLS is used
+        requireTLS: true,
+        auth: {
+            user: process.env.EMAILADDRESS,
+            pass: process.env.EMAILPASS
+        },
+        tls: {
+            rejectUnauthorized: false,
+        },
+        logger: true,
+        debug: true
+    });
+}
 const oauth2Client = new OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, // Client Secret
 "https://developers.google.com/oauthplayground" // Redirect URL
 );
-let transporter;
 oauth2Client.setCredentials({
     refresh_token: process.env.GOOGLE_EMAILV_REFRESHTOKEN
 });
-async function updateTransporter() {
-    oauth2Client.getAccessToken().then(accessToken => {
-        process.env.GOOGLE_EMAILV_ACCESSTOKEN = accessToken.token;
-        transporter = nodemailer_1.default.createTransport({
-            // service: "gmail",
-            host: 'antares.webyouridea.ro',
-            port: 465,
-            secure: true,
-            auth: {
-                //   type: "OAuth2",
-                //   user: 'intelegeinfo@gmail.com',
-                //   clientId: process.env.GOOGLE_CLIENT_ID!,
-                //   clientSecret:  process.env.GOOGLE_CLIENT_SECRET!,
-                //   refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
-                //   accessToken: accessToken.token,//process.env.GOOGLE_EMAILV_ACCESSTOKEN,
-                user: 'noreply@intelegeinfo.ro',
-                pass: 'UqEYt879APBP'
-                //   expires: Date.now(),
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
-        console.info('Updated access token: ' + accessToken.res);
-    }).catch(err => {
-        console.error('Failed to generate access token for email: ' + err);
-    });
-}
-// updateTransporter()
+updateTransporter();
 setInterval(updateTransporter, 3600 * 1000);
 exports.router.get('/verifyemail', (req, res) => {
     const id = parseInt(req.query.id);
@@ -253,24 +242,21 @@ exports.router.get('/verifyemail', (req, res) => {
             return res.send('Your account is already verified');
         Profile.parseUserInfoInFile(id, path_1.default.join(rootDirName, 'public', 'pages', 'emailCodeVerification.html')).catch(err => {
             res.status(403).send({ message: "error parsing file", err });
-        }).then(file => {
+        }).then(async (file) => {
             const code = generateCode();
             let censoredEmail = user.email;
             for (const match of user.email.matchAll(/#{(\w*) ?(?:\?)(.*): ?(.*)}|#{(\w*)}/g))
                 censoredEmail = censoredEmail.replace(match[1], "*".repeat(match[1].length)).replace(match[2], "*".repeat(match[2].length));
+            await transporter.verify();
             var mailOptions = {
                 from: 'noreply@intelegeinfo.ro',
                 to: user.email,
-                subject: code.toString() + ' | Verificare Email',
+                subject: code.toString() + ' | Verificare Email intelegeinfo',
                 // html: callbackFile,
-                text: code.toString(),
-                // auth: {
-                //     user: 'noreply@intelegeinfo.ro',
-                //     pass: 'UqEYt879APBP'
-                // refreshToken: process.env.GOOGLE_EMAILV_REFRESHTOKEN,
-                // accessToken: process.env.GOOGLE_EMAILV_ACCESSTOKEN,
-                // expires: Date.now(),
-                // },
+                text: `Bine ai venit pe intelegeinfo!
+            ${code.toString()}
+            
+            Spor la codat!`,
             };
             if (false)
                 res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail));

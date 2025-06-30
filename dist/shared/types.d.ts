@@ -25,7 +25,8 @@ export declare enum ConsoleMessageType {
     Debug = "debug",
     SessionInfo = "session",
     Output = "output",
-    DebugProgram = "debugProgram"
+    DebugProgram = "debugProgram",
+    Notification = "notification"
 }
 export declare class WSMessage {
     type: WebSocketMessageType;

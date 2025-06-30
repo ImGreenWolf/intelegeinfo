@@ -92,9 +92,32 @@ router.get('/', async (req, res) => {
 
     res.status(200).send(html)
 })
+
+router.use('/pdf', express.static(path.join(rootDirName, 'server', 'libs','pdf')))
 router.get('/file/:dir/:name', (req, res) => {
 
     
-    res.sendFile(path.join(rootDirName, 'server', 'data', 'subiecte', req.params.dir, req.params.name))
+    // res.sendFile(path.join(rootDirName, 'server', 'data', 'subiecte', req.params.dir, req.params.name))
+    if(!req.headers['referer'].includes('file') && req.headers['sec-fetch-dest']=='iframe')
+    res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>PDF Viewer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>html, body { margin: 0; height: 100%; }</style>
+      </head>
+      <body>
+        <iframe
+          src="/subiecte/pdf/web/viewer.html?file=${path.relative('./subiecte/pdf/web/', path.join('subiecte','file', req.params.dir, req.params.name))}"
+          width="100%"
+          height="100%"
+          style="border: none;">
+        </iframe>
+      </body>
+    </html>
+  `);
+  else
+     res.sendFile(path.join(rootDirName, 'server', 'data', 'subiecte', req.params.dir, req.params.name))
 })
 

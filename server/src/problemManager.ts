@@ -22,7 +22,7 @@ export type ProblemTest = {
     dataIn: string,
     dataOut: string,
 }
-export async function createProblem(name,tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
+export async function createProblem(name, author, description, category, requirement, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
 {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
@@ -100,10 +100,10 @@ export async function createProblem(name,tests: ProblemTest[], editorSession: Ed
         prisma.problem.create({
             data: {
                 name: name || "unnamed",
-                author: 'none',
-                category: 'none',
-                description: 'testing',
-                requirement: 'testing',
+                author,
+                category,
+                description,
+                requirement,
                 tests,
                 averageMemLimit: 0,
                 averageTimeLimit: 0
@@ -166,7 +166,7 @@ router.post('/create', (req, res) => {
             } 
             if(!data.name)
                 throw 'invalid name'
-        createProblem(data.name, tests, session, client)
+        createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
         res.status(200).send(tests[0].dataIn)
     }
     catch(err)
@@ -174,5 +174,17 @@ router.post('/create', (req, res) => {
         res.status(500).send(err)
     }
     
+})
+
+router.get('/random', async (req, res) => {
+    const length = await prisma.problem.count()
+    const problem = await prisma.problem.findUnique({
+        where:
+        {
+            id: Math.floor  (Math.random() * length) + 1
+        }
+    })
+
+    res.send(problem)
 })
 export default router

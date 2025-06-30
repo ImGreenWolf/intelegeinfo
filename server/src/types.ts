@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { UUID } from "crypto";
 import WebSocket, { WebSocket as WSWebSocket } from 'ws';
 import { ChildProcess } from 'child_process';
-import {WSMessage } from '../../shared/src/types'
-import { WebSocketMessageType } from '../../dist/shared/types';
+import { WSMessage } from '../../shared/src/types'
+import { ConsoleMessageType, WebSocketMessageType } from '../../dist/shared/types';
 import { User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
@@ -23,8 +23,9 @@ export class ClientObject {
     permissions: ClientPermissions
     color: string = randomHexColor();
     editorMode: typeof EditorMode = CppMode;
-    openFileName: string
-    openFile: EditorFile;
+    openFileName: string[] = [];
+    openFile: EditorFile[] = [];
+    lastOpenFile: EditorFile | undefined
     webcamid: number
     editorPermission: EditorPermission = EditorPermission.Everyone
     // EditorSessionObject: EditorSession
@@ -59,7 +60,20 @@ export class ClientObject {
         else
         this.CWebSocket.send(JSON.stringify(message))
     }
-      
+    public getFile(name)
+    {
+    return this.openFile.find(val => val.name == name)
+    }
+
+    public getFilesName()
+    {
+    return this.openFile.map(val => val.name)
+    }
+    public checkClientsFileOpen(otherClient)
+    {
+        return this.getFilesName().find(val => otherClient.getFilesName().some(other => val === other)) !== -1
+    }
+    
   }
 
 interface CommandBuffer {
@@ -369,7 +383,7 @@ Tralalero Tralala`.split('\n')
 
     public removeClient(clientId: UUID)
     {
-        this.clients.splice(this.clients.findIndex(val => val.clientId === clientId))
+        this.clients.splice(this.clients.findIndex(val => val.clientId === clientId), 1)
         this.clientsMap.delete(clientId);
         this.clientCommandBuffer.delete(clientId)
         this.clientsActiveFile.delete(clientId)
@@ -400,7 +414,6 @@ Tralalero Tralala`.split('\n')
         this.clientsSockets.set(newClient.clientId, ws)
         this.clientsMap.set(newClient.clientId, newClient);
         this.clients.push(newClient)
-
         return newClient.clientId;
     }
 
@@ -434,7 +447,8 @@ Tralalero Tralala`.split('\n')
     session: EditorSession;
     filePath 
     editorMode: EditorMode
-    constructor(session: EditorSession, name: string, content=undefined, onCreate?: (this: EditorFile)=> void) {
+    
+    constructor(session: EditorSession, name: string, content=undefined, options?: {abstract?: boolean}, onCreate?: (this: EditorFile)=> void) {
         this.name = name;
 
        
@@ -450,6 +464,9 @@ Tralalero Tralala`.split('\n')
             this.content = ''
         else
             this.content = content;
+        if(options)
+            if(options.abstract != undefined && options.abstract)
+                return
         try {
             // Create a new instance of the EditorFile class from the provided type
             // Example: let newFile = new EditorFile(session, name, content, onCreate);
@@ -478,14 +495,17 @@ Tralalero Tralala`.split('\n')
         }
         catch (err)
         {
-            console.error(err)
+            session.replicateFunction((localws, id, localObj) => {
+                localObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: err})
+            } )
         }
     }
 
 
-    public delete(clientObj)
+    public delete(clientObj: ClientObject)
     {
         try {
+            clientObj.openFile.splice(clientObj.openFile.findIndex(val => val == this), 1)
             fs.unlink(this.filePath, (err) => {
             if (err) {
                throw "Error deleting file: " + err.message;
@@ -502,44 +522,62 @@ Tralalero Tralala`.split('\n')
         }
         catch(err)
         {
-            console.error(err)
+             clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: err})
+            
         }
     }
 
     public rename(newName,clientObj)
     {
-        fs.rename(this.filePath, path.join(this.session.getClientFilesPath(), newName), () => {
-            this.session.replicateFunction((cws) => {
-                cws.send(JSON.stringify({
-                    type: WebSocketMessageType.FileManagement,
-                    command: FileManagementCommands.Rename,
-                    name: this.name,
-                    newName: newName
-                }))
-            }, clientObj)
+        try {
+            fs.rename(this.filePath, path.join(this.session.getClientFilesPath(), newName), () => {
+                this.session.replicateFunction((cws) => {
+                    cws.send(JSON.stringify({
+                        type: WebSocketMessageType.FileManagement,
+                        command: FileManagementCommands.Rename,
+                        name: this.name,
+                        newName: newName
+                    }))
+                }, clientObj)
 
-            this.name = newName
-        })
-        
+                this.name = newName
+            })
+        }
+        catch(err)
+        {
+            clientObj.replicateFunction((localws, id, localObj) => {
+                localObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: err})
+            } )
+        }
     }
 
-    public async openFile(clientObj: ClientObject, shared?)
+    public async openFile(clientObj: ClientObject, shared?, closedFileName?: string)
     {
         try{
            
                 const data = fs.readFileSync(this.filePath).toString()
 
-                clientObj.openFile = this
+                clientObj.openFile.push(this)
+                clientObj.openFileName.push(this.name)
                 // Send the file content to the client
                 const oldFileName = clientObj.openFileName
+                if(closedFileName)
+                {
+                    const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName)
+                    clientObj.openFile.splice(closedFileIndex,1)
+                    clientObj.openFileName.splice(closedFileIndex,1)
+                }
+              
+
                 this.session.replicateFunction((cws, id, obj) => {
                     if((obj as ClientObject).openFileName == oldFileName)
                         cws.send(JSON.stringify({type: WebSocketMessageType.CodeSelection, body: null}))
                 }, clientObj)
                 clientObj.editorMode = getEditorMode(this.name)
-                clientObj.openFileName = this.name
+                // clientObj.openFileName = this.name
                 
                 this.session.clientsActiveFile.set(clientObj.clientId, this.name)
+                clientObj.lastOpenFile = this
                 console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
                 if(shared) shared.updateSession(this.session.sessionId, this.session)
                     return data;

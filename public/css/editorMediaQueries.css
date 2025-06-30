@@ -68,6 +68,24 @@
   .chat-content {
     font-size: 1rem;
   }
+  .default-screen .language-carousel {
+    display: grid;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    grid-column: span 2;
+    height: 50px;
+    justify-content: space-around;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1em 1.5em;
+    align-items: stretch;
+    height: 100%;
+    padding: 1em 0;
+    width: 100%;
+    border-top: 2px solid gray;
+    overflow: auto;
+    box-sizing: content-box;
+  }
 }
 /*
 

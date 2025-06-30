@@ -1,6 +1,16 @@
 import Ace from "ace-builds";
 import { UUID } from "crypto";
-import { EditorWindowTab } from "./windowManager.js";
+import { EditorWindow, EditorWindowTab } from "./windowManager.js";
+declare class VisualCursor implements Ace.Ace.MarkerLike {
+    color: any;
+    cursorId: string;
+    private getPosition;
+    constructor(color: any, cursorId: string, getPosition: () => CursorPosition);
+    type: string;
+    clazz: string;
+    markerRef: Ace.Ace.MarkerLike | undefined;
+    update(html: string[], markerLayer: any, session: Ace.Ace.EditSession, config: any): void;
+}
 declare class Console {
     element: HTMLDivElement;
     stdin: string[];
@@ -12,6 +22,17 @@ declare class Console {
     onProcessStart(): void;
     callbackCreate(callerConsole: Console): void;
     sendCommand(cmd: string): void;
+}
+export declare class MultiCursorManager {
+    private editor;
+    private cursorsPos;
+    private cursors;
+    constructor(editor: Ace.Ace.Editor);
+    selectMarker: number | null;
+    addCursor(cursorId: string, position: CursorPosition, color: any): VisualCursor;
+    updateCursor(cursorId: string, position: CursorPosition): void;
+    removeCursor(cursorId: string): boolean;
+    replicateCursor(color: any, cursorId: string, position: CursorPosition): CursorPosition | VisualCursor | undefined;
 }
 declare class EditorCursor {
     cursor: HTMLDivElement | undefined;
@@ -61,12 +82,13 @@ export declare enum ConsoleMessageType {
     Debug = "debug",
     SessionInfo = "session",
     Output = "output",
-    DebugProgram = "debugProgram"
+    DebugProgram = "debugProgram",
+    Notification = "notification"
 }
 declare class SessionClient {
     cursor: EditorCursor | undefined;
     typingIndicator: HTMLDivElement | undefined;
-    editorSession: FileEditorSession | undefined;
+    editorSession: FileEditorSession[];
     clientId: UUID;
     color: any;
     displayName: any;
@@ -75,13 +97,22 @@ declare class SessionClient {
 export declare let client: SessionClient | undefined;
 export declare let clients: Map<UUID, SessionClient>;
 export declare const editorSessions: Map<string, FileEditorSession>;
+export declare const windows: EditorWindow[];
+type CursorPosition = {
+    row: number;
+    column: number;
+};
+export declare let isRemoteChange: boolean;
 export declare function displayMessagePopup(message: any): void;
+export declare function displayConfirmPopup(message: any, confirmText?: string, rejectText?: string): Promise<{
+    value: boolean;
+    popup?: HTMLElement;
+}>;
 export declare function toggleCamera(): void;
 export declare function beautifyEditor(): void;
 export declare function undo(): void;
 export declare function redo(): void;
-export declare function openTestSubjects(ev: any): "/subiecte" | undefined;
-export declare function openChat(ev: any): void;
+export declare function displayBlankEditor(index: any): void;
 interface User {
     name: any;
     color: any;
@@ -96,8 +127,9 @@ declare class FileElement extends EditorWindowTab {
         duration: number;
         easing: string;
     };
-    name: any;
-    constructor(fileName: string, session: any);
+    constructor(fileName: string, session: any, index?: number);
+    getDragText: () => string | undefined;
+    openTab(ev: MouseEvent): void;
     addUser(user: User, lastFileName: any): void;
     removeUser(userId: any): void;
     remove(): void;
@@ -110,7 +142,11 @@ export declare function saveProject(): void;
 export declare function listProjects(): void;
 export declare function joinsession(): void;
 export declare function copySessionLink(): void;
-export declare function createFile(fileName?: string): void;
+export declare function createFile(fileName?: string, fileContent?: any, index?: number): void;
+export declare function closeDefaultScreen(createdFileElement: any): void;
+export declare function openFile(fileName?: string): void;
+export declare let tooltip: any;
+export declare const ws: WebSocket;
 export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 type FileEditorSession = {
     editor: Ace.EditSession | undefined;
@@ -123,8 +159,9 @@ export declare class CompileError {
     markerId: number;
     text: string;
     display: HTMLDivElement | undefined;
-    constructor(range: Ace.Range, text: string);
+    constructor(session: any, range: Ace.Range, text: string);
 }
+export declare function dirtyFile(fileName: string): void;
 export declare const compileErrorObjs: Map<number, CompileError>;
 export declare function compileCode(this: any, ev: any): void;
 export declare function sendDebugCommand(cmd: string): void;
@@ -132,5 +169,23 @@ export declare function playback(): void;
 export declare function restartPlayback(): void;
 export declare function setPlaybackSpeed(newPlaybackSpeed: number): void;
 export declare function displaynoVNC(container: any): void;
+export declare function parseCode(): {
+    functions: {
+        name: string;
+        type: string;
+        depth: number;
+        tokenIndex: number;
+        content: string;
+    }[];
+    variables: {
+        name: string;
+        type: string;
+        depth: number;
+        tokenIndex: number;
+        functionName: string;
+    }[];
+};
+export declare function indexToFunctionName(parsedCode: any, index: any): any;
 export declare function downloadEditorFiles(): Promise<void>;
+export declare function onFileSessionUpdated(newFileName: any, client: SessionClient): void;
 export {};

@@ -22,14 +22,12 @@
   
   @keyframes move-in {
     from {
-    //   transform: translateY(100%);
-      filter: blur(5px);
+      // transform: translateY(100%);
         opacity: 0;
     }
   
     to {
-    //   transform: translateY(0%);
-      filter: blur(0);
+      // transform: translateY(0%);
       opacity: 1;
 
     }
@@ -37,11 +35,12 @@
   
   /* Apply the custom animation to the old and new page states */
   ::view-transition-old(root) {
-    animation: 0.2s ease-in both move-out;
+    animation: 0.5s move-out ;
+    // background-color: theme.$background-color;
   }
   
   ::view-transition-new(root) {
-    animation: 0.2s ease-in both move-in;
+    animation: 0.5s move-in;
   }
 
 body
@@ -210,11 +209,11 @@ header a p
   font-weight: 500;
 }
 
-.dropdown-container 
+*:has(.dropdown)
 {
       position: relative;
 }
-.dropdown-container:has( input:not(:checked)) .dropdown
+*:not(.open):has(.dropdown)>.dropdown
 {
   display: none;
 }
@@ -222,15 +221,19 @@ header a p
 {
   position: absolute;
   right: 0;
-  top: 75px;
+  top: 100%;
   z-index: 10;
   background-color: rgba(0, 0, 0, 0.457);
   backdrop-filter: blur(3px);
   padding: 30px;
-  min-width: 200px;
+  width: 100px;
   border-radius: 10px;
   box-shadow: 0 20px 30px 10px rgba(0, 0, 0, 0.229);
   border: 4px solid rgba(128, 128, 128, 0.153);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  
 }
 
 #mobile-dropdown

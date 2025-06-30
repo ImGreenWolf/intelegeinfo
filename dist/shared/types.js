@@ -31,6 +31,7 @@ var ConsoleMessageType;
     ConsoleMessageType["SessionInfo"] = "session";
     ConsoleMessageType["Output"] = "output";
     ConsoleMessageType["DebugProgram"] = "debugProgram";
+    ConsoleMessageType["Notification"] = "notification";
 })(ConsoleMessageType || (exports.ConsoleMessageType = ConsoleMessageType = {}));
 class WSMessage {
     type;

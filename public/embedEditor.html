@@ -9,13 +9,17 @@
     <title>Intelegeinfo | Editorul colaborativ de cod online creat de elevi, pentru elevi</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/embedEditor.css">
+    <link rel="stylesheet" href="/css/embededitorMediaQueries.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Teachers:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
     <script src="/ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-    <!-- <script data-main="js/codeEditor" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script> -->
     <script src="/ace-builds-master/src-noconflict/mode-c_cpp.js"></script>
     <script  type="module" src="/editor/codeEditor.js" type="text/javascript" charset="utf-8"></script>
+    <!-- lazy loading -->
+    <link rel="stylesheet" href="../css/codeVerification.css">
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8688715521861715"
+     crossorigin="anonymous"></script> -->
 </head>
 
 
@@ -41,83 +45,93 @@ int main() {
     </script>
 <body>
         
-
+   
     <div class="container">
         
-
             <!-- <div id="name-prompt">
                 <textarea id="name-prompt-text"></textarea>
                 <button onclick="createFile(document.getElementById('name-prompt-text').value)">Create</button>
             </div> -->
 
-            <div id="editor-container">
-                <div class="shadow inset"></div>
-                <div id="editor-tabs">
-                    <div  class="editor-tabs-container">  
-                        <div  id="editor-tabs-container" class="editor-tabs-container" style="width: auto;">     
+        <div id="editor-container">
+            <div id="editor-tabs">
+                <div  class="editor-tabs-container">  
+                    <div  id="editor-tabs-container" class="file-scroller" style="width: auto;">     
 
-                        </div>              
-                        <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
-                        <div class="ridge-gradient inset-button black circle">
-                            <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()"></button>
-                        </div>
+                    </div>              
+                    <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
+                    <div class="ridge-gradient inset-button black circle">
+                        <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()"></button>
                     </div>
-                    <!-- <div id="session-controls">                   
-                        <div class="slide-out-display">
-                            <div class="ridge-gradient inset-button black circle">
-                                <button onclick="document.getElementById('slide-out').classList.toggle('enabled')" id="slide-out-button">&ltri;</button>
-                            </div>
-                            <div class="slide-out-container" id="slide-out">
-                                <button onclick="window.editor.toggleCamera()" id="toggle-camera">📷</button>
-                                <button onclick="window.editor.beautifyEditor()">Beautify</button>
-                                <button onclick="window.editor.redo()" id="editor-undo">&circlearrowright;</button>
-                                <button onclick="window.editor.undo()" id="editor-redo">&circlearrowleft;</button>
-                                <button onclick="window.editor.downloadEditorFiles()" id="editor-download">&DownArrowBar;</button> 
-                            </div>
-                            <vl></vl>
-                        </div>
-                        <div class="ridge-gradient inset-button black">
-                            <button class="share-session" id="share" onclick="window.editor.copySessionLink()">share</button>
-                        </div>
-                        <div class="ridge-gradient inset-button black">
-                            <button class="share-session" id="saveProject" onclick="window.editor.saveProject()">save</button>
-                        </div>
-                        
-                    </div> -->
                 </div>
-                <div id="editor" translate="no">   
+
+            </div>
+                <div id="code-window-container">
+                    <!-- <div id="editor" translate="no"></div>   -->
                 </div>
             </div>
             
-                <div class="buttons" id="buttons">
-                    <p id="compile-status"></p>
-                    <button onclick="window.editor.sendDebugCommand('execute')" class="execute-control" id="execute-control">Executa Programul</button>
-                    <button onclick="window.editor.sendDebugCommand('-exec-run')" id="run">Run in Debugger</button> 
-                    <!-- <button onclick="window.editor.compileCode()" class="compile" id="compile">Compile</button> -->
-                    <!-- <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button> -->
-                    <button onclick="window.editor.playback()" class="debug-control" id="playback">Playback</button>
-                    <div class="speed-control debug-control" id="speed-control"> 
-                        <button onclick="window.editor.restartPlayback()">r</button>
-                        <button onclick="window.editor.setPlaybackSpeed(1)">></button>
-                        <button onclick="window.editor.setPlaybackSpeed(2)">>></button>
-                        <button onclick="window.editor.setPlaybackSpeed(3)">>>></button>
-                    </div>
-                    <button onclick="window.editor.sendDebugCommand('-exec-next')" class="debug-control" id="next">Step Over</button>
+        <div class="buttons" id="buttons">
+            <p id="compile-status"></p>
+            <button onclick="window.editor.sendDebugCommand('execute')" class="execute-control" id="execute-control">Executa Programul</button>
+            <button onclick="window.editor.sendDebugCommand('-exec-run')" id="run">Run in Debugger</button> 
+            <!-- <button onclick="window.editor.compileCode()" class="compile" id="compile">Compile</button> -->
+            <!-- <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button> -->
+            <button onclick="window.editor.playback()" class="debug-control" id="playback">Playback</button>
+            <div class="speed-control debug-control" id="speed-control"> 
+                <button onclick="window.editor.restartPlayback()">r</button>
+                <button onclick="window.editor.setPlaybackSpeed(1)">></button>
+                <button onclick="window.editor.setPlaybackSpeed(2)">>></button>
+                <button onclick="window.editor.setPlaybackSpeed(3)">>>></button>
+            </div>
+            <button onclick="window.editor.sendDebugCommand('-exec-next')" class="debug-control" id="next">Step Over</button>
 
-                    <!-- <button onclick="sendDebugCommand('continue')">Continue Execution</button> -->
-                    <button onclick="window.editor.sendDebugCommand('-exec-quit')" class="debug-control" id="quit">Stop Debugging</button>
-                </div>
-
-            
-            
+            <!-- <button onclick="sendDebugCommand('continue')">Continue Execution</button> -->
+            <button onclick="window.editor.sendDebugCommand('-exec-quit')" class="debug-control" id="quit">Stop Debugging</button>
+        </div>
 
             
+            
+
+             
         <div id="output-container">
-            <samp id="output"  translate="no">
+            <div class="tabs-container"> 
+                <div class="editor-tabs-container"> 
+                    <div class="file-scroller"> 
+                    </div>
+                <!-- <h2>Output</h2> -->
+                <!-- <button onclick="this.parentElement.parentElement.style.display = 'None'">x</button> -->
+                 <!-- <span class="file-tab" onclick="window.editor.openChat(this)">Chat</span>
+                 <span class="file-tab" onclick="window.editor.openTestSubjects(this)">Subiecte bac</span> -->
+                 </div>
+                 <div class="controls">
+                    <div class="ridge-gradient inset-button black circle" >
+                        <button  onclick="this.classList.toggle('open')" class="noanimate" style="padding: 0; width: 25px;">
+                            &blacktriangledown;
 
+                            <div class="dropdown" id="tab-catalouge">
+                                <!-- <button>Subiecte Bac</button>
+                                <button>Probleme</button>
+                                <button>Creator Probleme</button> -->
+                                
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="client-area-body">
+                <samp id="output"  translate="no">
+            </div>
                 
             </samp>
-        </div> 
+            <div id="typingIndicatorContainer"></div>
+
+            <div id="console-container">
+            
+                <textarea id="console" oninput="window.editor.onConsoleInput(this)" placeholder="scrie..." translate="no"></textarea>
+            <button onclick="window.editor.submitConsole(document.getElementById('console'))"></button>
+            </div>
+    </div>
        
         
         

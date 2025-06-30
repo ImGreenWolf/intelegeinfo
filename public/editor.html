@@ -12,16 +12,16 @@
     <link rel="stylesheet" href="/css/editorMediaQueries.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Teachers:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
     <meta name="google-adsense-account" content="ca-pub-8688715521861715">
     <script src="/ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-    <!-- <script data-main="js/codeEditor" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script> -->
     <script src="/ace-builds-master/src-noconflict/mode-c_cpp.js"></script>
+    <script src="/ace-builds-master/src-noconflict/theme-editor-theme.js"></script>
     <script  type="module" src="/editor/codeEditor.js" type="text/javascript" charset="utf-8"></script>
     <!-- lazy loading -->
     <link rel="stylesheet" href="../css/codeVerification.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8688715521861715"
-     crossorigin="anonymous"></script>
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8688715521861715"
+     crossorigin="anonymous"></script> -->
 </head>
 
 
@@ -50,21 +50,20 @@ int main() {
    
     <div class="container">
         
-             <mini-dock>
-        <a href="/" id="home">&leftarrow;</a>
-        <button onclick="window.editor.joinsession()" id="joinSession" class="custom-button"></button>
-        <h2>intelegeinfo.ro</h2>
-    </mini-dock>
+        <mini-dock>
+            <a href="/" id="home">&leftarrow;</a>
+            <button onclick="window.editor.joinsession()" id="joinSession" class="custom-button"></button>
+            <h2>intelegeinfo.ro</h2>
+        </mini-dock>
             <!-- <div id="name-prompt">
                 <textarea id="name-prompt-text"></textarea>
                 <button onclick="createFile(document.getElementById('name-prompt-text').value)">Create</button>
             </div> -->
 
             <div id="editor-container">
-                <div class="shadow inset"></div>
                 <div id="editor-tabs">
                     <div  class="editor-tabs-container">  
-                        <div  id="editor-tabs-container" class="editor-tabs-container" style="width: auto;">     
+                        <div  id="editor-tabs-container" class="file-scroller">     
 
                         </div>              
                         <span id="name-prompt"  contenteditable="plaintext-only" style="display: none;"></span>
@@ -72,7 +71,7 @@ int main() {
                             <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()"></button>
                         </div>
                     </div>
-                    <div id="session-controls">                   
+                    <div id="session-controls" class="controls">                   
                         <div class="slide-out-display">
                             <div class="ridge-gradient inset-button black circle">
                                 <button onclick="document.getElementById('slide-out').classList.toggle('enabled')" id="slide-out-button">&ltri;</button>
@@ -95,9 +94,10 @@ int main() {
                         
                     </div>
                 </div>
-                <div id="editor" translate="no">   
+                    <div id="code-window-container">
+                        <!-- <div id="editor" translate="no"></div>   -->
+                    </div>
                 </div>
-            </div>
             
                 <div class="buttons" id="buttons">
                     <p id="compile-status"></p>
@@ -126,11 +126,27 @@ int main() {
         <div id="output-container">
             <div class="tabs-container"> 
                 <div class="editor-tabs-container"> 
+                    <div class="file-scroller"> 
+                    </div>
                 <!-- <h2>Output</h2> -->
                 <!-- <button onclick="this.parentElement.parentElement.style.display = 'None'">x</button> -->
-                 <span class="file-tab" onclick="window.editor.openChat(this)">Chat</span>
-                 <span class="file-tab" onclick="window.editor.openTestSubjects(this)">Subiecte bac</span>
+                 <!-- <span class="file-tab" onclick="window.editor.openChat(this)">Chat</span>
+                 <span class="file-tab" onclick="window.editor.openTestSubjects(this)">Subiecte bac</span> -->
                  </div>
+                 <div class="controls">
+                    <div class="ridge-gradient inset-button black circle" >
+                        <button  onclick="this.classList.toggle('open')" class="noanimate" style="padding: 0; width: 25px;">
+                            &blacktriangledown;
+
+                            <div class="dropdown" id="tab-catalouge">
+                                <!-- <button>Subiecte Bac</button>
+                                <button>Probleme</button>
+                                <button>Creator Probleme</button> -->
+                                
+                            </div>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div id="client-area-body">
                 <samp id="output"  translate="no">
