@@ -2216,6 +2216,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         reject('No files in session')
                                     
                                     const mainPromise = new Promise<void>((resolve, reject) => {   
+                                        if(!clientSession.clientsActiveFile.get(clientId))
+                                        {
+                                            onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`)
+                                            return reject('No client active file')
+                                        }
                                         buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                             if(res == null) return resolve()
