@@ -8,7 +8,6 @@ const inIframe = window.self !== window.top;
 import { cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updateCatalouge } from "./windowManager.js";
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
-var codeLens = ace.require("ace/ext/code_lens");
 //  const msgMap: Map<Number, WSMessage> = new Map();
 // function getCompiledCode() {
 //   return fetch("/getCompiledCode", {
@@ -688,20 +687,16 @@ function arraysEqual(a, b) {
 // }
 export let isRemoteChange = false; // used for colaborative changes
 let marker; //selection marker
-const renderer = codeWindow.getEditor().renderer;
 // Initialize ghostManager with the correct type
-const ghostManager = new (class {
-    editor;
-    constructor(editor) {
-        this.editor = editor;
-    }
-    clear() {
-        // Implementation for clearing ghost markers
-    }
-    add(variableName, value) {
-        // Implementation for adding ghost markers
-    }
-})(codeWindow.getEditor());
+// const ghostManager: GhostManager = new (class implements GhostManager {
+//   constructor(private editor: any) {}
+//   clear() {
+//     // Implementation for clearing ghost markers
+//   }
+//   add(variableName: string, value: string) {
+//     // Implementation for adding ghost markers
+//   }
+// })(codeWindow.getEditor());
 // TODO add on load event or pre load
 // getCompiledCode()
 //   .then(function (response) {
@@ -2016,7 +2011,7 @@ export class CompileError {
 let modifiedFile = false;
 let ping = -1;
 function cleanDebug() {
-    renderer.removeGhostText();
+    // renderer.removeGhostText(); // TODO reimplement
     document.getElementById('vector-container').innerHTML = '';
     clearTimeout(playbackId);
     onExit();
@@ -2158,13 +2153,11 @@ ws.onmessage = (event) => {
                                 console.log(buffer);
                                 if (i++ == conditions.length) {
                                     // wait to buffer all values
-                                    renderer.setGhostText("   " + buffer, pos);
+                                    //renderer.setGhostText("   " + buffer, pos); // TODO reimplement
                                     console.log(buffer);
                                     buffer = "";
                                 }
-                            }
-                            else
-                                renderer.setGhostText("   " + buffer, pos);
+                            } //else renderer.setGhostText("   " + buffer, pos); // TODO reimplement
                         });
                     }
                 // }, 50);
@@ -2316,9 +2309,9 @@ ws.onmessage = (event) => {
         // undo manager?
         // if(fileName.split('.')[1] != 'cpp')
         newSession.setMode(aceModes.getModeForPath(fileName).mode);
-        if (client?.editorSession[index].fileElement?.parentWindow.getEditor().session)
-            client?.editorSession[index].fileElement?.parentWindow.getEditor().session.destroy();
-        client?.editorSession[index].fileElement?.parentWindow.getEditor().setSession(newSession);
+        if (client?.editorSession[index].fileElement?.parentWindow.createEditor().session)
+            client?.editorSession[index].fileElement?.parentWindow.createEditor().session.destroy();
+        client?.editorSession[index].fileElement?.parentWindow.createEditor().setSession(newSession);
         const session = {
             editor: newSession,
             fileName: fileName,
@@ -2340,13 +2333,13 @@ ws.onmessage = (event) => {
             case 'jpeg':
             case 'webp':
             case 'img':
-                codeWindow.getEditor().container.style.display = 'none';
+                codeWindow.createEditor().container.style.display = 'none';
                 canvas = new EditorCanvas(ws, wsClientId);
                 codeWindow.getEditor().container.parentElement?.appendChild(canvas.render());
                 canvas.updateSize();
                 break;
             default:
-                codeWindow.getEditor().container.style.display = '';
+                codeWindow.createEditor().container.style.display = '';
                 if (canvas) {
                     canvas.remove();
                     canvas = undefined;
@@ -2356,8 +2349,8 @@ ws.onmessage = (event) => {
         if (editorSessions.has(fileName)) {
             file.editor.setMode(aceModes.getModeForPath(fileName).mode);
             file.fileElement.parentWindow.setActiveFile(file.fileElement); // we need to set the active tab before changing sessions!!
-            if (file.fileElement.parentWindow.getEditor().session)
-                file.fileElement.parentWindow.getEditor().setSession(editorSessions.get(fileName).editor);
+            if (file.fileElement.parentWindow.createEditor().session)
+                file.fileElement.parentWindow.createEditor().setSession(editorSessions.get(fileName).editor);
         }
         if (fileContent.toString() != editorSessions.get(fileName).editor.getValue()) {
             isRemoteChange = true; // must add this to prevent sending on changed event
@@ -3195,84 +3188,6 @@ function getDistanceFromPosition(checkCursor, posX, posY) {
     const elemY = checkCursor.offsetTop;
     return Math.sqrt(Math.pow(elemX - posX, 2) + Math.pow(elemY - posY, 2));
 }
-const commandId = "createFileCommand";
-codeWindow.getEditor().commands.addCommand({
-    name: commandId,
-    exec: function (editor, args) {
-        const filename = args?.filename || "unnamed.txt";
-        createFile(filename);
-        openFile(filename);
-        editor.renderer.updateFull(true);
-        codeLens.clear(editor.session);
-    }
-});
-codeWindow.getEditor().commands.addCommand({
-    name: "include<fstream>",
-    exec: function (editor, args) {
-        const index = editor.getValue().lastIndexOf("#include");
-        if (index == -1)
-            editor.session.insert({ row: 0, column: 0 }, "#include <fstream>\n");
-        else {
-            const point = editor.session.doc.indexToPosition(index);
-            editor.session.insert({ row: point.row + 1, column: 0 }, "#include <fstream>\n");
-        }
-    }
-});
-codeWindow.getEditor().commands.addCommand({
-    name: "usingnamespacestd",
-    exec: function (editor, args) {
-        const index = editor.getValue().lastIndexOf("#include");
-        if (index == -1)
-            editor.session.insert({ row: 0, column: 0 }, "\nusing namespace std;\n");
-        else {
-            const point = editor.session.doc.indexToPosition(index);
-            editor.session.insert({ row: point.row + 1, column: 0 }, "\nusing namespace std;\n");
-        }
-    }
-});
-// Register CodeLens provider
-codeLens.registerCodeLensProvider(codeWindow.getEditor(), {
-    provideCodeLenses: function (session, callback) {
-        const lines = session.getDocument().getAllLines();
-        const lenses = [];
-        const regex = /[i o]fstream\s+\w+\s*\(\s*["'](.+?)["']\s*\);/;
-        lines.forEach((line, row) => {
-            const match = line.match(regex);
-            if (match) {
-                const filename = match[1];
-                if (!editorSessions.has(filename))
-                    lenses.push({
-                        start: { row },
-                        command: {
-                            id: commandId,
-                            title: `Create file "${filename}"`,
-                            arguments: { filename }
-                        }
-                    });
-                if (!codeWindow.getEditor().getValue().includes("#include <fstream>"))
-                    lenses.push({
-                        start: { row },
-                        command: {
-                            id: "include<fstream>",
-                            title: `Add #include <fstream>"`,
-                            arguments: {}
-                        }
-                    });
-            }
-            if (line.includes("#include <iostream>"))
-                if (!codeWindow.getEditor().getValue().includes("using namespace std;"))
-                    lenses.push({
-                        start: { row },
-                        command: {
-                            id: "usingnamespacestd",
-                            title: `Add using namespace std;`,
-                            arguments: {}
-                        }
-                    });
-        });
-        callback(null, lenses);
-    }
-});
 export function displaynoVNC(container) {
     const frame = document.createElement('iframe');
     // TODO Implement a better noVNC client

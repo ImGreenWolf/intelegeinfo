@@ -107,9 +107,9 @@ export class EditorWindow {
             this.editor =undefined
         }
     }
-    public getEditor(newSession?)
-    {
 
+    public createEditor(newSession?)
+    {
         if(!this.editor)
         {
             console.log('creating new editor')
@@ -135,6 +135,14 @@ export class EditorWindow {
             this.initializeEditor(newSession)
             
         }
+
+        return this.editor
+    }
+    public getEditor(newSession?)
+    {
+
+       if(!this.editor)
+        throw new Error('invalid editor')
 
         if(newSession)
         {
@@ -450,7 +458,100 @@ export class EditorWindow {
           
             // Register it
             ace.require("ace/ext/language_tools").addCompleter(customCompleter);
-        
+            var codeLens = ace.require("ace/ext/code_lens");
+            const editor = this.editor
+            
+              const commandId = "createFileCommand";
+            
+              editor.commands.addCommand({
+                name: commandId,
+                exec: function(editor: Ace.Editor, args) {
+                  const filename = args?.filename || "unnamed.txt";
+                  createFile(filename)
+                  openFile(filename)
+                  editor.renderer.updateFull(true)
+                  codeLens.clear(editor.session)
+              }});
+              editor.commands.addCommand({
+                name: "include<fstream>",
+                exec: function(editor: Ace.Editor, args) {
+                  const index = editor.getValue().lastIndexOf("#include");
+                  if(index == -1)
+                    editor.session.insert({row: 0,column: 0}, "#include <fstream>\n")
+                  else
+                  {
+                    const point = editor.session.doc.indexToPosition(index)
+                    editor.session.insert({row: point.row+1,column: 0}, "#include <fstream>\n")
+                  }
+            
+              }});
+              editor.commands.addCommand({
+                name: "usingnamespacestd",
+                exec: function(editor: Ace.Editor, args) {
+                  const index = editor.getValue().lastIndexOf("#include");
+                  if(index == -1)
+                    editor.session.insert({row: 0,column: 0}, "\nusing namespace std;\n")
+                  else
+                  {
+                    const point = editor.session.doc.indexToPosition(index)
+                    editor.session.insert({row: point.row+1,column: 0}, "\nusing namespace std;\n")
+                  }
+            
+              }});
+             
+            
+              // Register CodeLens provider
+              codeLens.registerCodeLensProvider(editor, {
+                provideCodeLenses: function(session, callback) {
+                  const lines = session.getDocument().getAllLines();
+                  const lenses: any = [];
+            
+                  const regex = /[i o]fstream\s+\w+\s*\(\s*["'](.+?)["']\s*\);/;
+            
+                  lines.forEach((line, row) => {
+                    const match = line.match(regex);
+                    if (match) {
+                      const filename = match[1];
+                      if(!editorSessions.has(filename))
+                      lenses.push({
+                        start: { row },
+                        command: {
+                          id: commandId,
+                          title: `Create file "${filename}"`,
+                          arguments: { filename }
+                        }
+                      });
+            
+                      if(!editor.getValue().includes("#include <fstream>"))
+                        lenses.push({
+                        start: { row },
+                        command: {
+                          id: "include<fstream>",
+                          title: `Add #include <fstream>"`,
+                          arguments: { }
+                        }
+                      });
+            
+                      
+                    }
+                    if(line.includes("#include <iostream>"))
+                    if(!editor.getValue().includes("using namespace std;"))
+                        lenses.push({
+                        start: { row },
+                        command: {
+                          id: "usingnamespacestd",
+                          title: `Add using namespace std;`,
+                          arguments: { }
+                        }
+                      });
+                  });
+            
+                  callback(null,lenses);
+                }
+              });
+
+
+
     }
 
    

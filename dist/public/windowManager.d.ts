@@ -13,6 +13,7 @@ export declare class EditorWindow {
     tooltip: TokenTooltip | undefined;
     constructor(index: any, element: any, tabContainer: any, contentContainer: any);
     destroyEditor(): void;
+    createEditor(newSession?: any): Ace.Editor;
     getEditor(newSession?: any): Ace.Editor;
     setActiveFile(fileTab: EditorWindowTab): void;
     protected initializeEditor(newSession?: any): void;
