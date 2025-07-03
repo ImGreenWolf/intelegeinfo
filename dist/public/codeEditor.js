@@ -945,6 +945,7 @@ function updateLocalCursor(ev, fromPress) {
         const sizeY = document.body.clientHeight;
         const foundEditor = client?.editorSession.find(editor => editor.fileElement?.parentWindow.element === document.elementsFromPoint(posX, posY).find(val => val.classList.contains('ace_editor')));
         const session = foundEditor ? foundEditor : client?.editorSession[0];
+        console.log(foundEditor, session);
         if (!session || !session.fileElement)
             return;
         const editor = session.fileElement.parentWindow.editor;
@@ -952,6 +953,7 @@ function updateLocalCursor(ev, fromPress) {
         const rectWidth = editor ? editor.renderer.characterWidth : undefined;
         const rechHeight = editor ? editor.renderer.lineHeight : undefined;
         const pointerType = ev.pointerType;
+        console.log(rectWidth, rechHeight);
         if (pointerType != "mouse") {
             const height = ev.height;
             const width = ev.width;

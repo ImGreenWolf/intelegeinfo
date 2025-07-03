@@ -456,7 +456,8 @@ export class EditorWindow {
    
     public addTab(newTab: EditorWindowTab)
     {
-        this.tabContainer.appendChild(newTab.element)
+        
+       
         this.tabs.push(newTab)
         newTab.parentWindow = this
         const content = newTab.content as HTMLElement
@@ -467,6 +468,8 @@ export class EditorWindow {
                 content.style.display = 'none'
             }
 
+        if(this.tabContainer)
+            this.tabContainer.appendChild(newTab.element)
     }
 }
 

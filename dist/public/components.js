@@ -48,15 +48,15 @@ export class Dock extends IElement {
         const loggedIn = false;
         const username = '';
         const t = loggedIn ?
-            `<img src="../media/home-svgrepo-com.svg"><p>home</p>,
+            `<img src="../media/icons/home.svg"><p>home</p>,
         <img src="../media/profile-round-1346-svgrepo-com.svg"><p>profile</p>,
         <img src="../media/notebook-svgrepo-com.svg"><p>proiecte</p>,
-        <img src="../media/group-svgrepo-com.svg"><p>join</p>`
+        <img src="../media/icons/group_search.svg"><p>join</p>`
             :
-                `<img src="../media/home-svgrepo-com.svg"><p>home</p>,
-        <img src="../media/login-svgrepo-com.svg"><p>signup</p>,
-        <img src="../media/login-svgrepo-com.svg"><p>login</p>,
-        <img src="../media/group-svgrepo-com.svg"><p>join</p>`;
+                `<img src="../media/icons/home.svg"><p>home</p>,
+        <img src="../media/icons/person_add.svg"><p>signup</p>,
+        <img src="../media/icons/account_box.svg"><p>login</p>,
+        <img src="../media/icons/group_search.svg"><p>join</p>`;
         const arr = [];
         arr.push(this.stylesheet(`
         .dock-button

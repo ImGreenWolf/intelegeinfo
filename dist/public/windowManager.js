@@ -344,7 +344,6 @@ export class EditorWindow {
         ace.require("ace/ext/language_tools").addCompleter(customCompleter);
     }
     addTab(newTab) {
-        this.tabContainer.appendChild(newTab.element);
         this.tabs.push(newTab);
         newTab.parentWindow = this;
         const content = newTab.content;
@@ -353,6 +352,8 @@ export class EditorWindow {
                 this.contentContainer.appendChild(content);
                 content.style.display = 'none';
             }
+        if (this.tabContainer)
+            this.tabContainer.appendChild(newTab.element);
     }
 }
 export class EditorWindowTab {

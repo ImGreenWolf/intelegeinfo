@@ -1815,8 +1815,12 @@ mini-dock #joinSession {
   padding: 5px;
   overflow: hidden;
   grid-template-columns: minmax(20%, auto) 50px;
-  grid-template-rows: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
   grid-template-areas: "main buttons" "output buttons";
+}
+
+#output-container {
+  grid-template-rows: 1fr;
 }
 
 #output {
