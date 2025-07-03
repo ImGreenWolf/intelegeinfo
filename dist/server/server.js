@@ -1793,8 +1793,10 @@ bash `.trim().replaceAll('\n', "");
                                                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                         if (res == null)
                                                             return resolve();
-                                                        if (!clientObj.getFile(res.fileName))
+                                                        if (!clientObj.getFile(res.fileName)) {
+                                                            onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`);
                                                             return reject('No client active file');
+                                                        }
                                                         try {
                                                             clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal) => {
                                                                 // printClientConsoleError(err)
