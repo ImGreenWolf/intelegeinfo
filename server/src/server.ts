@@ -2212,13 +2212,15 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         // const filePath = path.join(rootDirName, "cache", sessionId, "main.exe");
                                          function runProgram(): Promise<void>[]
                                   {
-                                    
+                                    if(clientSession.files.length == 0)
+                                        reject('No files in session')
                                     
                                     const mainPromise = new Promise<void>((resolve, reject) => {   
                                         buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                             if(res == null) return resolve()
-                                                
+                                                if(!clientObj.getFile(res.fileName))
+                                                    return reject('No client active file')
                                             try {
                                                 clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal)  => {
                                                     // printClientConsoleError(err)
