@@ -8,13 +8,17 @@ import { WebSocketMessageType } from '../../../dist/shared/types';
 class Python extends EditorMode {
 
     static name = 'Python'
+    static logoSrc: string = 'python-logo.webp';
+    static description: string = 'nothing yet';
+    static versions
+
     static dockerSafeTag: string = 'py'
     static extension = ['py']
     wsProxy: ChildProcess
     isInterpreter = true;
     hasGUI = false;
     runParams = (clientObj: ClientObject) => {
-      this.hasGUI = clientObj.openFileName.toLowerCase().includes("gui")
+      this.hasGUI = clientObj.openFileName[0].toLowerCase().includes("gui")
       let buffer = '';
       if(clientObj.webcamid)
         buffer += '--device=/dev/video${clientObj.webcamid}:/dev/video0'

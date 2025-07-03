@@ -192,8 +192,7 @@ export default prisma;
 
 
 
-
-let transporter: nodemailer.Transporter;
+ let transporter: nodemailer.Transporter;
 
 
 router.get('/checkLoggedIn', (req, res) => {
@@ -236,7 +235,7 @@ router.get('/profilePicture/:id', (req, res) => {
 })
 
 
-async function updateTransporter() {
+ async function updateTransporter() {
     transporter = nodemailer.createTransport({
         host: 'antares.webyouridea.ro',
         port: 587,           // STARTTLS
@@ -249,8 +248,6 @@ async function updateTransporter() {
         tls: {
             rejectUnauthorized: false,    
         },
-        logger: true,
-        debug: true
       })
     }
 
@@ -328,7 +325,6 @@ router.get('/verifyemail', (req, res) => {
                 console.log(info)
                 res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail))
                      }
-
         })
       })
 }).catch(err => {

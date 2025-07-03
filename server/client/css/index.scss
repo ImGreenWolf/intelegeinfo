@@ -220,7 +220,8 @@ footer
     // margin: auto;
     flex-wrap: wrap;
     grid-template-columns: 1fr;
-    justify-content: center;
+    grid-template-rows: 65vh 400px;
+    // justify-content: center;
     justify-items: center;
 
     /* gap: 1s00px; */
@@ -324,7 +325,7 @@ footer
 }
 .main-container div#text-container
 {
-    margin: 7rem 0;
+    // margin: 7rem 0;
     position: relative;
     max-width: 500px;
     text-align: center;
@@ -360,6 +361,8 @@ footer
         overflow-wrap: break-word;
         width: 20em;
         margin: auto;
+        font-style: italic;
+        font-weight: 300;
     }
     .inset-button a
     {
@@ -430,6 +433,7 @@ a.button
         color: theme.$text-color;
         padding: 0.5lh;
         font-size: 1.2em;
+        min-width: 300px;
         // width: 100%;
         display: flex;
         justify-content: center;
@@ -636,7 +640,11 @@ h1
     text-shadow: 0.05em 0.05em 0.075em rgba(61, 61, 61, 0.74);
     font-family: Teachers;
     font-weight: 800;
-    font-size: 3em;
+    
+}
+h1.center 
+{
+    text-align: center;
 }
 #guides
 {
@@ -682,43 +690,102 @@ h1
 {
 
     align-self: center;
-    
+    h1
+    {
+        text-align: center;
+    }
 }
 .content-container
 {
-    width: 75%;
+    width: 100%;
     &>*:not(h2,h1)
     {
         width: 75%;
         margin: auto;
     }
 }
- #features ul.content-list
+
+
+ #features .content-list
  {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: 10em;
-    column-gap: 10em;
-    justify-content: space-between;
-    padding: 0;
-    align-items: center;
-    li 
+    grid-template-columns: 350px 250px 400px 400px;
+    grid-template-rows: auto;
+    grid-auto-flow: dense;
+    justify-items: center;
+    grid-template-areas: 
+    "a a b c"
+    "a a g d"
+    "e f f d";
+    gap: 2em;
+    // min-height: 1600px;
+    justify-content: center;
+    // grid-auto-flow: column;
+    
+    .bento-card
     {
-        max-width: 800px;
-        grid-column: 1;
-        text-align: justify;
-    }
-   
-    &>img 
-    {
-        justify-self: end;
-        width: 100%;
-        max-width: 600px;
-        box-shadow: 5px 7px 20px 20px rgba(0, 0, 0, 0.24);
-        border-radius: 15px;
+        display: block;
+        box-sizing: content-box;
+        background-color: rgb(25,25,25);
+        border-radius: 1em;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        .bento-image 
+        {
+            position: relative;
+            padding: 10px;
+            // height: 100%;
+            box-sizing: content-box;
+            max-height: 600px;
+            img {
+                width: 100%;
+                max-height: 100%;
+                max-width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+             
+            &:has(img:not([src]))
+            {
+                display: none;
+            }
+           &::after
+           {
+                content: "";
+                display: block;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left:0;
+                right:0;
+
+                background-image: linear-gradient(0, rgb(25,25,25),transparent 75%);
+                box-shadow: 0 0 30px 10px rgb(25,25,25) inset; 
+           }
+        }
+        .bento-text 
+        {
+            padding: 2em;
+        }
+
+        &::after
+        {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left:0;
+            right:0;
+
+            box-shadow: 0 0 20px -20px rgb(97, 97, 97) inset,
+            0 10px 20px -20px rgb(150, 150, 150) inset,
+            10px 10px 15px -20px rgb(97, 97, 97) inset;
+        }
     }
  }
-
  ul.language-carusel
  {
     display: grid;
@@ -953,13 +1020,22 @@ h1
     }
     .content-list
     {
-        grid-template-columns: 100% !important;
-        gap: 2.5em !important;
-        max-width: 300px;
-        &>img 
-        {
-            margin-bottom: 5em;
-        }
+        // grid-template-columns: 100% !important;
+        // gap: 2.5em !important;
+        // max-width: 300px;
+        grid-template-areas: 
+        "a"
+        "b"
+        "c"
+        "d"
+        "e"
+        "f"
+        "g" !important;
+        // &>img 
+        // {
+        //     margin-bottom: 5em;
+        // }
+        
     }
     .content-container, #editor-demo
     {

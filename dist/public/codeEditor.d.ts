@@ -98,6 +98,7 @@ export declare let client: SessionClient | undefined;
 export declare let clients: Map<UUID, SessionClient>;
 export declare const editorSessions: Map<string, FileEditorSession>;
 export declare const windows: EditorWindow[];
+declare var Tooltip: any;
 type CursorPosition = {
     row: number;
     column: number;
@@ -146,6 +147,16 @@ export declare function createFile(fileName?: string, fileContent?: any, index?:
 export declare function closeDefaultScreen(createdFileElement: any): void;
 export declare function openFile(fileName?: string): void;
 export declare let tooltip: any;
+export declare class TokenTooltip extends Tooltip {
+    constructor(editor: any);
+    token: {};
+    range: any;
+    update(): Promise<void>;
+    onMouseMove(e: any): void;
+    onMouseOut(e: any): void;
+    setPosition(x: any, y: any): void;
+    destroy(): void;
+}
 export declare const ws: WebSocket;
 export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 type FileEditorSession = {
@@ -172,6 +183,7 @@ export declare function displaynoVNC(container: any): void;
 export declare function parseCode(): {
     functions: {
         name: string;
+        value: string;
         type: string;
         depth: number;
         tokenIndex: number;

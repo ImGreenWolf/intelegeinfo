@@ -1,4 +1,4 @@
-import { client, compileErrorObjs, createFile, dirtyFile, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, openFile, parseCode, tooltip, WebSocketMessageType, windows, ws } from "./codeEditor.js";
+import { client, compileErrorObjs, createFile, dirtyFile, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
 import { createNode } from "./components.js";
 export const cursorManagers = new Map();
 const preloadTabs = false;
@@ -12,6 +12,7 @@ export class EditorWindow {
     editor;
     index;
     tabs = [];
+    tooltip = undefined;
     constructor(index, element, tabContainer, contentContainer) {
         this.index = index;
         this.tabContainer = tabContainer;
@@ -129,6 +130,9 @@ export class EditorWindow {
         this.editor.setHighlightActiveLine(true);
         this.editor.resize();
         const windowEditor = this.editor;
+        if (this.tooltip)
+            this.tooltip.destroy();
+        this.tooltip = new TokenTooltip(this.getEditor());
         if (newSession) {
             // if(this.editor.session)
             //     draggedTab!.parentWindow.editor?.session.destroy()
@@ -321,9 +325,10 @@ export class EditorWindow {
                     completions = parsedCode.functions
                         //  .filter(c => {return c.name == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.name == undefined})
                         .map(c => ({
-                        caption: c.name, value: c.name, meta: "function", score: 100,
+                        caption: c.name, snippet: c.value, meta: "function", score: 100,
                         docHTML: `${c.type} <b>${c.name}</b><pre>${c.content}</pre>`
-                    })).concat(parsedCode.variables
+                    }))
+                        .concat(parsedCode.variables
                         .filter(c => { return c.functionName == indexToFunctionName(parsedCode, editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.functionName == undefined; })
                         .map(c => ({
                         caption: c.name, value: c.name, meta: `${c.type} variable : ${c.functionName ? c.functionName : "Global"}`, score: 100,
@@ -387,9 +392,8 @@ export class EditorWindowTab {
         if (!this.content)
             throw 'File tab content is undifined.';
         const elem = this.content;
-        if (elem.outerHTML) {
+        if (elem.outerHTML)
             this.onOpenTab(elem);
-        }
     }
     onOpenTab(elem) {
         if (!this.parentWindow)
@@ -449,29 +453,20 @@ export function updateCatalouge() {
 function createEditorTab(name, content, disableDrag) {
     return new EditorWindowTab(name, createNode('span', { className: "file-tab", html: [createNode('p', { innerText: name })] }), content, undefined, disableDrag);
 }
-export async function showDefaultScreen() {
-    const window = windows[0];
-    window.destroyEditor();
-    const languages = [
-        { name: 'c++', src: 'c++-logo.png', ext: 'cpp' },
-        { name: 'python', src: 'python-logo.webp', ext: 'py' },
-        { name: 'javascript', src: 'js-logo.png', }, // ext: 'js'},
-        { name: 'typescript', src: 'ts-logo.svg', }, // ext: 'ts'},
-        { name: 'java', src: 'java-logo.webp', }, // ext: 'java'},
-        { name: 'go', src: 'Go-logo.png', }, // ext: 'go'},
-        { name: 'c', src: 'C-logo.png', }, //ext: 'c'},
-        { name: 'html', src: 'html-logo.webp', }, // ext: 'html'},
-        { name: 'css', src: 'css-logo.png', }, //ext: 'css'},
-        { name: 'node.js', src: 'node.js-logo.webp', } // ext: 'js'},
-    ];
+async function loadLanguages() {
+    const languageCarousel = document.getElementById('languageCarousel');
+    if (!languageCarousel)
+        return;
+    const res = (await fetch('/editor/languages'));
+    const languages = await res.json();
     let langaugeElements = [];
-    let i = 1;
     for (const language of languages)
         langaugeElements.push(createNode('button', { html: [
                 createNode('div', { css: "background-image: url(../media/logos/" + language.src + ");",
                     className: 'language-logo',
                     attributes: [
-                        { name: 'draggable', value: 'false' }
+                        { name: 'draggable', value: 'false' },
+                        { name: 'aria-label', value: `Create ${language.name} project` }
                     ] }),
                 createNode('p', { innerText: language.name })
             ],
@@ -482,7 +477,48 @@ export async function showDefaultScreen() {
             ],
             className: 'custom-button'
         }));
-    const languageCarousel = createNode('ul', { html: langaugeElements, className: 'language-carousel' });
+    for (let i = 0; i < langaugeElements.length; i++) {
+        languageCarousel.replaceChild(langaugeElements[i], languageCarousel.children[i]);
+        languageCarousel.children[i].animate([
+            { opacity: "0%", transform: "translateY(-50%)" },
+            { opacity: "100%", transform: "translateY(0%)" },
+        ], {
+            duration: Math.random() * 400 + 100,
+            delay: Math.random() * 20,
+            // easing: "ease-out"
+        });
+    }
+}
+export async function showDefaultScreen() {
+    const window = windows[0];
+    window.destroyEditor();
+    // const languages: {name, src,ext?, description?, versions?}[] = [
+    //     {name: 'c++', src: 'c++-logo.png', ext: 'cpp'},
+    //      {name: 'python', src: 'python-logo.webp', ext: 'py'},
+    //     {name: 'javascript', src: 'js-logo.png',},// ext: 'js'},
+    //     {name: 'typescript', src: 'ts-logo.svg',},// ext: 'ts'},
+    //     {name: 'java', src: 'java-logo.webp',},// ext: 'java'},
+    //     {name: 'go', src: 'Go-logo.png',},// ext: 'go'},
+    //     {name: 'c', src: 'C-logo.png',}, //ext: 'c'},
+    //     {name: 'html', src: 'html-logo.webp',},// ext: 'html'},
+    //     {name: 'css', src: 'css-logo.png', },//ext: 'css'},
+    //     {name: 'node.js', src: 'node.js-logo.webp',}// ext: 'js'},
+    //     ]
+    let langaugeElements = [];
+    for (let i = 0; i <= 9; i++)
+        langaugeElements.push(createNode('div', { html: [
+                createNode('div', {
+                    className: 'language-logo',
+                    attributes: [
+                        { name: 'draggable', value: 'false' }
+                    ]
+                }),
+                createNode('p', { innerText: '' })
+            ],
+            attributes: [{ name: 'disabled', value: 'true' }],
+            className: 'custom-button'
+        }));
+    const languageCarousel = createNode('div', { html: langaugeElements, className: 'language-carousel', id: 'languageCarousel' });
     const container = createNode('div', { className: 'default-screen', html: [
             createNode('h1', { innerText: 'Creaza un nou proiect' }),
             languageCarousel,
@@ -508,11 +544,12 @@ export async function showDefaultScreen() {
     for (const elem of languageCarousel.children)
         elem.animate([
             { opacity: "0%", transform: "translateY(-50%)" },
-            { opacity: "100%", transform: "translateY(0%)" },
+            { opacity: "75%", transform: "translateY(0%)" },
         ], {
             duration: 200,
             delay: Math.random() * 200 + 50,
-            easing: "ease-out"
+            easing: "ease-out",
+            fill: "both"
         });
     // container.onpointerup = stopHolding
     // container.onpointercancel = stopHolding
@@ -596,4 +633,125 @@ export async function showDefaultScreen() {
     window.addTab(tab);
     window.setActiveFile(tab);
     tab.openTab(undefined);
+    setTimeout(() => {
+        loadLanguages();
+    }, 10);
+}
+let tooltip = {};
+fetch('/editor/tooltipHints').then(data => data.json().then(json => tooltip = json));
+var event = ace.require("ace/lib/event");
+var Range = ace.require("ace/range").Range;
+var Tooltip = ace.require("ace/tooltip").Tooltip;
+class TokenTooltip extends Tooltip {
+    constructor(editor) {
+        if (editor.tokenTooltip)
+            return;
+        super(editor.container);
+        editor.tokenTooltip = this;
+        this.editor = editor;
+        this.update = this.update.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseOut = this.onMouseOut.bind(this);
+        event.addListener(editor.renderer.scroller, "mousemove", this.onMouseMove);
+        event.addListener(editor.renderer.content, "mouseout", this.onMouseOut);
+    }
+    token = {};
+    range = new Range();
+    async update() {
+        this.$timer = null;
+        var r = this.editor.renderer;
+        if (this.lastT - (r.timeStamp || 0) > 5000) {
+            r.rect = null;
+            r.timeStamp = this.lastT;
+            this.maxHeight = window.innerHeight;
+            this.maxWidth = window.innerWidth;
+        }
+        var canvasPos = r.rect || (r.rect = r.scroller.getBoundingClientRect());
+        var offset = (this.x + r.scrollLeft - canvasPos.left - r.$padding) / r.characterWidth;
+        var row = Math.floor((this.y + r.scrollTop - canvasPos.top) / r.lineHeight);
+        var col = Math.round(offset);
+        var screenPos = { row: row, column: col, side: offset - col > 0 ? 1 : -1 };
+        var session = this.editor.session;
+        var docPos = session.screenToDocumentPosition(screenPos.row, screenPos.column);
+        var token = session.getTokenAt(docPos.row, docPos.column);
+        if (!token && !session.getLine(docPos.row)) {
+            token = {
+                type: "",
+                value: "",
+                state: session.bgTokenizer.getState(0)
+            };
+        }
+        var tokenText = '';
+        if (editorSessions.has(token.value)) // see inside files
+         {
+            //  this.hide();
+            const fileText = await editorSessions.get(token.value)?.editor?.getValue();
+            tokenText = `<b>${token.value}</b>: <pre style="opacity: 0.75; max-height: 20lh; overflow: hidden;">${fileText}</pre>`;
+        }
+        else if (!token || !tooltip.tooltips[token.value]) {
+            session.removeMarker(this.marker);
+            this.hide();
+            return;
+        }
+        else {
+            const tooltipValue = tooltip.tooltips[token.value] || undefined; //(await (await fetch('/editor/tooltipHints/'+token.value)).json()).description;
+            tokenText = tooltipValue.description + "\n<span>" + tooltipValue.example + "</span>";
+        }
+        if (token.state)
+            tokenText += "|" + token.state;
+        if (token.merge)
+            tokenText += "\n  merge";
+        if (token.stateTransitions)
+            tokenText += "\n  " + token.stateTransitions.join("\n  ");
+        if (this.tokenText != tokenText) {
+            this.setHtml(tokenText);
+            this.width = this.getWidth();
+            this.height = this.getHeight();
+            this.tokenText = tokenText;
+        }
+        if (!this.isOpen) {
+            this.setTheme(r.theme);
+            this.setClassName('ii-hoverHints');
+        }
+        this.show(null, this.x, this.y);
+        this.token = token;
+        session.removeMarker(this.marker);
+        this.range = new Range(docPos.row, token.start, docPos.row, token.start + token.value.length);
+        this.marker = session.addMarker(this.range, "ace_bracket", "text");
+    }
+    ;
+    onMouseMove(e) {
+        this.x = e.clientX;
+        this.y = e.clientY;
+        if (this.isOpen) {
+            this.lastT = e.timeStamp;
+            this.setPosition(this.x, this.y);
+        }
+        if (!this.$timer)
+            this.$timer = setTimeout(this.update, this.isOpen ? 100 : 1500);
+    }
+    ;
+    onMouseOut(e) {
+        if (e && e.currentTarget.contains(e.relatedTarget))
+            return;
+        this.hide();
+        this.editor.session.removeMarker(this.marker);
+        this.$timer = clearTimeout(this.$timer);
+    }
+    ;
+    setPosition(x, y) {
+        if (x + 10 + this.width > this.maxWidth)
+            x = window.innerWidth - this.width - 10;
+        if (y > window.innerHeight * 0.75 || y + 20 + this.height > this.maxHeight)
+            y = y - this.height - 30;
+        Tooltip.prototype.setPosition.call(this, x + 10, y + 20);
+    }
+    ;
+    destroy() {
+        this.onMouseOut(undefined);
+        event.removeListener(this.editor.renderer.scroller, "mousemove", this.onMouseMove);
+        event.removeListener(this.editor.renderer.content, "mouseout", this.onMouseOut);
+        delete this.editor.tokenTooltip;
+    }
+    ;
 }

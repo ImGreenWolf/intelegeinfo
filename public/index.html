@@ -113,7 +113,7 @@ int main() {
             </div>
             <div class="display-shadow">
                
-                <h1 style="grid-column: 1 / -1;">Editeaza cod alaturi de profesori si prieteni!</h1>
+                <h1 style="grid-column: 1 / -1; font-size: 1lh;">Editeaza cod alaturi de profesori si prieteni!</h1>
                 
                 <div class="text">
                     <h1>Colaboreaza</h1>
@@ -124,11 +124,11 @@ int main() {
                     <p>Editeaza-ti codul de oriunde, oricand, in C++ sau Python.</p>
                 </div>
                 <div class="text">
-                    <h1>Resurse</h1>
+                    <h1>Descopera</h1>
                     <p>Dezvolta-ti cunostiintele cu resursele noastre!</p>
                 </div>
                 <div class="text">
-                    <h1>Debugger</h1>
+                    <h1>Debug</h1>
                     <p>Intelege cum se executa programul tau.</p>
                 </div>
                 <div id="mockup-container">
@@ -178,7 +178,7 @@ int main() {
         </div> -->
 
         <div id="guides" class="content-container">
-            <h1>Descopera cele mai populare resurse</h1>
+            <h1 class="center">Descopera cele mai populare resurse</h1>
             <script type="module">
 
                 fetch('/guides/posts').then(res => {
@@ -211,56 +211,153 @@ int main() {
         </ul>
         <div class="content-container" id="features">
             <h1>Ce ofera editorul?</h1>
-            <ul class="content-list">
-                <li>
-                    <h2>Colaborare</h2>
-                    <p>Creeaze alaturi de colegii sau elevii tai, in timp real. Cu intelegeinfo poti explica mai usor si mai vizual codul tau,
-                    sau sa scrii in chat.
-                    
-                    </p>
-                    
-                </li>
-                <img src="media/colaboration-demo.png" alt="The editor with two cursors">
-                <li>
-                    <h2>Deseneaza</h2>
-                    <p>Daca vrei sa arati scheme colegiilor sau eleviilor tai, creaze un fisier .png, .jpeg, etc si deseneaza,
-                         iar ceilalti vor putea vedea in timp real ce desenezi. Si daca doresti, poti salva desenul pe calculator.</p>
-                </li>
-                <li>
-                    <h2>Aplicatii cu interfata</h2>
-                    <p>Creaza aplicatii cu interfata (GUI) si interactioneaza in timp real.
+            <div class="content-list">
+                <!-- <li>
+                    <h2>Colaborare <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p>Creeaze alaturi de colegii sau elevii tai, in timp real. Cu intelegeinfo poti explica mai usor si mai vizual codul tau,
+                        sau sa scrii in chat.
                         </p>
-                    
+                        <img src="media/colaboration-demo.png" alt="The editor with two cursors">
+                    </div>
+                </li>
+                <li>
+                    <h2>Deseneaza <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p>Daca vrei sa arati scheme colegiilor sau eleviilor tai, creaze un fisier .png, .jpeg, etc si deseneaza,
+                        iar ceilalti vor putea vedea in timp real ce desenezi. Si daca doresti, poti salva desenul pe calculator.</p>
+                    </div>
+                </li>
+                <li>
+                    <h2>Aplicatii cu interfata <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p>Creaza aplicatii cu interfata (GUI) si interactioneaza in timp real.</p>
+                        <img src="media/gui-demo.png" alt="A GUI playing snake.">
+                    </div>
+                </li>
+                <li>
+                    <h2>Camera video <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p>Integreaza camera video in programul tau, si foloseste-o ca pe camera de pe dispozitivul tau.</p>
+                    </div>
+                </li>
+                <li>
+                    <h2>Debugger <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p>Afla cum se executa programul tau, valorile variabilelor, adresele de memorie, si multe alte informatii despre acesta.</p>
+                    </div>
+                </li>
+                <li>
+                    <h2>Salveaza <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p>Salveaza-ti proiectele si codul in cont pentru a avea acess la ele mai tarziu.</p>
+                    </div>
+                </li>
+                <li>
+                    <h2>Parteajeaza <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p>Trimite-ti codul mai departe colegiilor sau profesorilor tai, usor si la indemana.</p>
+                    </div>
+                </li>
+                <li>
+                    <h2>Limbaje <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p>Scrie-ti programele in C++ sau in Python. Mai multe limbaje vor aparea in curand!</p>
+                    </div>
+                </li>
+                <li>
+                    <h2>Resurse <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
+                    <div>
+                        <p><a href="/guides">Descopera</a> materialele care iti explica conceptele de baza ale programarii.</p>
+                    </div>
+                </li> -->
 
-                </li>
-                <img src="media/gui-demo.png" alt="A GUI playing snake.">
-                <li>
-                    <h2>Camera video</h2>
-                    <p>Integreaza camera video in programul tau, si foloseste-o ca pe camera de pe dispozitivul tau.</p>
-                </li>
-                <li>
-                    <h2>Debugger</h2>
-                    <p>Afla cum se executa programul tau, valorile variabilelor, adresele de memorie, si multe alte informatii despre acesta.</p>
-                </li>
-                <li>
-                    <h2>Salveaza</h2>
-                    <p>Salveaza-ti proiectele si codul in cont pentru a avea acess la ele mai tarziu.</p>
-                </li>
-                <li>
-                    <h2>Parteajeaza</h2>
-                    <p>Trimite-ti codul mai departe colegiilor sau profesorilor tai, usor si la indemana.</p>
-                </li>
-                <li>
-                    <h2>Limbaje</h2>
-                    <p>Scrie-ti programele in C++ sau in Python. Mai multe limbaje vor aparea in curand!</p>
-                    
-                </li>
-                 <li>
-                    <h2>Resurse</h2>
-                    <p><a href="/guides">Descopera</a> materialele care iti explica conceptele de baza ale programarii.</p>
-                </li>
 
-                <ul class="language-carusel" style="position: relative;">
+                <section class="bento-card" style="grid-area: a;">
+                    <div class="bento-image">
+                        
+                        <img src="media/colaboration-demo.png">
+                    </div>
+                    <div class="bento-text">
+                        <h2>Colaborare</h2>
+                        <p>Creeaze alaturi de colegii sau elevii tai, in timp real. Cu intelegeinfo poti explica mai usor si mai vizual codul tau,
+                        sau sa scrii in chat.</p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: b;">
+                    <div class="bento-image">
+                        
+                        <img src="media/gui-demo.png">
+                    </div>
+                    <div class="bento-text">
+                        <h2>Programe cu interfata</h2>
+                        <p>Creaza aplicatii cu interfata (GUI) si interactioneaza in timp real.</p>
+                    </div>
+                </section>
+
+                
+                <section class="bento-card" style="grid-area: c;">
+                    <div class="bento-image">
+                        
+                        <img>
+                    </div>
+                    <div class="bento-text">
+                        <h2>Debugger</h2>
+                        <p>Afla cum se executa programul tau, valorile variabilelor, adresele de memorie, si multe alte informatii despre acesta.</p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: g;">
+                    <div class="bento-image">
+                        
+                        <img>
+                    </div>
+                    <div class="bento-text">
+                        <h2>Intelegeinfo.ro</h2>
+                        <p>Oferim o platforma pe care elevii pot invata si intelege informatica, limbajele de programare si conceptele de baza, alaturi de mentori
+                            si profesori.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: e;">
+                    <div class="bento-image">
+                        
+                        <img>
+                    </div>
+                    <div class="bento-text">
+                        <h2>Partajare</h2>
+                        <p>Arata-le profesoriilor si colegiilor proiectele tale.</p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: d;">
+                    <div class="bento-image">
+                        
+                        <img>
+                    </div>
+                    <div class="bento-text">
+                        <h2>Autocompletare</h2>
+                        <p>Scrie cod mai repede, dar de asemenea, intelegeinfo iti ofera documentatie direct in editor, ca sa poti intelege ce face
+                            fiecare functie, sau ce proprietati are un obiect.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: f;">
+                    <div class="bento-image">
+                        
+                        <img>
+                    </div>
+                    <div class="bento-text">
+                        <h2>Camera video si microfon</h2>
+                        <p>Integreaza camera video in programul tau, si foloseste-o ca pe camera de pe dispozitivul tau.</p>
+                    </div>
+                </section>
+
+
+                <!-- <ul class="language-carusel" style="position: relative;">
                         <img src="media/logos/c++-logo.png" alt="c++ logo" class="available">
                         <img src="media/logos/python-logo.webp" alt="python logo" class="available">
                         <img src="media/logos/js-logo.png" alt="c++ logo">
@@ -271,21 +368,12 @@ int main() {
                         <img src="media/logos/C-logo.png" alt="python logo">
                         <img src="media/logos/html-logo.webp" alt="python logo">
                         <img src="media/logos/css-logo.png" alt="python logo">
-                    </ul>
+                    </ul> -->
                
             </ul>
         </div>
 
-        <div id="editor-demo">
-                    
-                    <h1>Incearca editorul!</h1>
-                        
-                    <div>
-                        <button onclick="window.startIframes(this)"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
-                        <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
-                        <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
-                    </div>
-        </div>
+        
 
 
         <script>
@@ -311,27 +399,21 @@ int main() {
             }
             requestAnimationFrame(updateCarousel)
         </script>
-        <footer>
-            <h2>Intelegeinfo</h2>
-            <nav>
-                
-                    <a href="/">Pornire</a>
-                    <a href="/editor">Editor</a>
-                    <a href="/guides">Resurse</a>
-            
-                
-                    <a href="/contact/suggest">Ai o sugestie?</a>
-                    <a href="/contact/issue">Ai gasit o greseala?</a>
-                    <a href="/contact">Ai o intrebare?</a>
-                
-                
-                    <a href="/tos">Termeni si conditii</a>
-                    <a href="/privacy">Privacy Policy</a>
-                    <a href="/gdpr">GDPR</a>
-                </ul>
-            </nav>
-        </footer>
+
+        
+        
     </div>
+
+    <div id="editor-demo">
+                    
+                    <h1>Incearca editorul!</h1>
+                        
+                    <div>
+                        <button onclick="window.startIframes(this)"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
+                        <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
+                        <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
+                    </div>
+        </div>
     <!-- <script src="js/types.js"  type="module" charset="utf-8"></script> -->
 
     <script type="module">
@@ -357,7 +439,26 @@ int main() {
 
 
     </script>
-
+    <footer>
+            <h2>Intelegeinfo</h2>
+            <nav>
+                
+                    <a href="/">Pornire</a>
+                    <a href="/editor">Editor</a>
+                    <a href="/guides">Resurse</a>
+            
+                
+                    <a href="/contact/suggest">Ai o sugestie?</a>
+                    <a href="/contact/issue">Ai gasit o greseala?</a>
+                    <a href="/contact">Ai o intrebare?</a>
+                
+                
+                    <a href="/tos">Termeni si conditii</a>
+                    <a href="/privacy">Privacy Policy</a>
+                    <a href="/gdpr">GDPR</a>
+                </ul>
+            </nav>
+        </footer>
 
     <script async>
             function loadScript( url, callback ) {

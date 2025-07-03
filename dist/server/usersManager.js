@@ -223,8 +223,6 @@ async function updateTransporter() {
         tls: {
             rejectUnauthorized: false,
         },
-        logger: true,
-        debug: true
     });
 }
 const oauth2Client = new OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, // Client Secret

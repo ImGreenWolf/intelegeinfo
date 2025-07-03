@@ -8,6 +8,8 @@ const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
+    static logoSrc = 'c++-logo.png';
+    static description = 'nothing yet';
     static extension = ['cpp', 'c++'];
     static dockerSafeTag = 'cpp';
     static defaultText = `//    Compilator C++ online | intelegeinfo.ro
@@ -95,7 +97,7 @@ int main()
                 buffer += data.toString();
             });
             compileProcess.on('close', (code) => {
-                resolve(buffer);
+                resolve(buffer.replace('compilation terminated.', '')); // TODO check how to fix this, maybe remove it directly from stderr
             });
         });
     };

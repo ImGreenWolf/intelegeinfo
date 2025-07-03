@@ -7,6 +7,10 @@ import { rootDirName } from "../server";
 class CppMode extends EditorMode {
 
     static name = 'C++'
+    static logoSrc: string = 'c++-logo.png'
+    static description: string = 'nothing yet'
+
+
     static extension: string[] = ['cpp', 'c++'];
     static dockerSafeTag: string = 'cpp'
     static defaultText: string =
@@ -113,7 +117,7 @@ int main()
                 })
     
                 compileProcess.on('close', (code)=> {
-                        resolve(buffer)
+                        resolve(buffer.replace('compilation terminated.','')) // TODO check how to fix this, maybe remove it directly from stderr
                 })
             })
     

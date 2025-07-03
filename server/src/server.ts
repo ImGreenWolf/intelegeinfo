@@ -236,7 +236,14 @@ app.post('/editor/startsession/:id', (req, res) => {
         
     
 })
-
+app.get('/editor/languages', (req, res) => {
+    const languages:{name, src,ext?, description?, versions?}[] = []
+    for(const mode of EditorModes.modes)
+    {
+        languages.push({name: mode.name, src: mode.logoSrc, description: mode.description, versions: mode.versions, ext: mode.extension[0]})
+    }
+    res.send(JSON.stringify(languages))
+})
 app.use('/editor/problem', router)
 
 app.get('/editor/tooltipHints', (req, res) => {
@@ -436,6 +443,7 @@ if(fullchain && privkey)
 else
 var httpServer = http.createServer(app);
 let connectionPromise: Promise<void> | undefined;
+let connectionPromiseTimeout: NodeJS.Timeout;
 const codeMap: Map<number, UUID> = new Map()
 const unsecureServer = httpServer.listen(PORT);
 export const server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(SECPORT);
@@ -763,21 +771,67 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     }
 
 
+function endConnectionPromise()
+{
+    if(connectionPromiseTimeout)
+        clearTimeout(connectionPromiseTimeout)
+    connectionPromiseTimeout=undefined
+    if(connectionPromise)
+        connectionPromise=undefined
+}
+    awaitHandshake()
+    //  TODO Improve this 
+    async function awaitHandshake()
+    {
+        if(clientObj != undefined)
+        {
+            console.warn('retrying handshake')
+        }
 
-
-    //  TODO Improve this  
-   setTimeout(() => {
         if(connectionPromise)
         {
             console.warn('Another user is already connecting')
-            connectionPromise.then(() => handshake(req)).catch(err => {
-                 connectionPromise = undefined
-                 console.error('kksjsjkdjsdkj on timeout')
-            })      
+            var timeout = setTimeout(() => {
+                awaitHandshake()
+            }, 500);  
+
+            connectionPromise.then(() => 
+            {
+                if(timeout)
+                    clearTimeout(timeout)
+                timeout=undefined
+                endConnectionPromise()
+                handshake(req)
+                
+            }).catch(err => {
+                endConnectionPromise()
+                console.error('kksjsjkdjsdkj on timeout', err)
+            }).finally(() => {
+                if(timeout)
+                    clearTimeout(timeout)
+                timeout=undefined
+            })
+                
         }
         else
+        {
             handshake(req)
-   }, 100);
+            if(!connectionPromise)
+                throw 'invalid'
+            connectionPromise.then(() => {
+                endConnectionPromise()
+                if(timeout)
+                    clearTimeout(timeout)
+                timeout=undefined
+            })
+            // var timeout = setTimeout(() => {
+            //     awaitHandshake()
+            // }, 500);
+        }
+                
+        
+    } 
+
 
 
 
@@ -813,8 +867,12 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
         //     }
             
         // }, heartbeatTimeout);
-        
+        if(connectionPromiseTimeout)
+        clearTimeout(connectionPromiseTimeout)
+    connectionPromiseTimeout=undefined
         // TODO Check if session exists, otherwise create a new one and make this client the host.
+        if(connectionPromise)
+            console.warn('connection promise is taken')
         try {
              connectionPromise = new Promise((resolve, reject) => {
             if(wssessionId) { 
@@ -908,16 +966,44 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
 
             
         })
-        connectionPromise.catch(res => {
-            console.log(res)
-             connectionPromise = undefined
-        }
-    )
+        
+        // connectionPromise.catch(res => {
+        //     console.log(res)
+        //      connectionPromise = undefined
+        //      if(connectionPromiseTimeout)
+        //      {
+        //         clearTimeout(connectionPromiseTimeout)
+        //         connectionPromiseTimeout = undefined
+        //      }
+        // })
+        
+        connectionPromise.then(() => 
+            {
+                
+              if(connectionPromiseTimeout)
+        clearTimeout(connectionPromiseTimeout)
+    connectionPromiseTimeout=undefined
+                
+            })
+
+        //  connectionPromiseTimeout = setTimeout(() => {
+        //     console.error('CONNECTION PROMISE TIMEOUT')
+        //     ws.close(1011, 'Something went wrong... Please refresh the page!')
+        //     connectionPromise = undefined;
+        //     if(!clientSession)
+        //         console.error('Client session doesnt exist on connection promise timeout')
+        //     clientSession.removeClient(clientId)
+        //     clientObj = undefined;
+        //     if(clientSession.clients.length == 0)
+        //         sessionMap.delete(sessionId)
+        // }, 5000);
+
+        
         }catch(err)
-    {
-        connectionPromise = undefined
-        console.log(err)
-    }
+        {
+            endConnectionPromise()
+            console.log("d;aa;a;;a;a",err)
+        }
        
        
     }
@@ -2544,7 +2630,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         const closedClientId = clientId;
         replicateSocketMessage(sessionId, clientId, true, {type: WebSocketMessageType.CodeSelection, body: ""});
         clients.delete(clientId);
-        
+        endConnectionPromise()
+      
         clearInterval(heartbeatInterval); // Clear the interval to stop sending pings
         // getThisClientSession()?.clients.splice(getThisClientSession()?.clients.indexOf(clientId)||-1 , 1);
         clientSession?.removeClient(clientId)

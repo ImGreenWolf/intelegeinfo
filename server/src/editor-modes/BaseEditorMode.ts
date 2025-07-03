@@ -5,10 +5,15 @@ import { ClientObject, EditorFile, EditorSession } from "../types";
 abstract class EditorMode {
 
     static name: string;
+    static logoSrc: string;
+    static description: string;
+    static versions
+
     static dockerFile: string;
     static dockerSafeTag: string
     static extension: string[];
     static defaultText: string;
+
     isExecutable: boolean = true
     runParams(clientObj): string
     {

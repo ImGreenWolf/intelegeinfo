@@ -2,6 +2,8 @@ import EditorMode from "./BaseEditorMode";
 import { EditorFile, EditorSession } from "../types";
 declare class CppMode extends EditorMode {
     static name: string;
+    static logoSrc: string;
+    static description: string;
     static extension: string[];
     static dockerSafeTag: string;
     static defaultText: string;

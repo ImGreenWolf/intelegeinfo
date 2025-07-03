@@ -3,6 +3,9 @@ import EditorMode from "./BaseEditorMode";
 import { ClientObject, EditorSession } from "../types";
 declare class Python extends EditorMode {
     static name: string;
+    static logoSrc: string;
+    static description: string;
+    static versions: any;
     static dockerSafeTag: string;
     static extension: string[];
     wsProxy: ChildProcess;

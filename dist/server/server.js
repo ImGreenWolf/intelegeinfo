@@ -223,6 +223,13 @@ app.post('/editor/startsession/:id', (req, res) => {
         res.status(500).send(err);
     }
 });
+app.get('/editor/languages', (req, res) => {
+    const languages = [];
+    for (const mode of EditorModes.modes) {
+        languages.push({ name: mode.name, src: mode.logoSrc, description: mode.description, versions: mode.versions, ext: mode.extension[0] });
+    }
+    res.send(JSON.stringify(languages));
+});
 app.use('/editor/problem', problemManager_1.default);
 app.get('/editor/tooltipHints', (req, res) => {
     res.send(JSON.parse(fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'server', 'data', 'tooltips.json')).toString()));
@@ -355,6 +362,7 @@ if (fullchain && privkey)
 else
     var httpServer = http.createServer(app);
 let connectionPromise;
+let connectionPromiseTimeout;
 const codeMap = new Map();
 const unsecureServer = httpServer.listen(PORT);
 exports.server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(SECPORT);
@@ -608,18 +616,54 @@ exports.wss.addListener('connection', async (ws, req) => {
                 });
             });
         }
-        //  TODO Improve this  
-        setTimeout(() => {
+        function endConnectionPromise() {
+            if (connectionPromiseTimeout)
+                clearTimeout(connectionPromiseTimeout);
+            connectionPromiseTimeout = undefined;
+            if (connectionPromise)
+                connectionPromise = undefined;
+        }
+        awaitHandshake();
+        //  TODO Improve this 
+        async function awaitHandshake() {
+            if (clientObj != undefined) {
+                console.warn('retrying handshake');
+            }
             if (connectionPromise) {
                 console.warn('Another user is already connecting');
-                connectionPromise.then(() => handshake(req)).catch(err => {
-                    connectionPromise = undefined;
-                    console.error('kksjsjkdjsdkj on timeout');
+                var timeout = setTimeout(() => {
+                    awaitHandshake();
+                }, 500);
+                connectionPromise.then(() => {
+                    if (timeout)
+                        clearTimeout(timeout);
+                    timeout = undefined;
+                    endConnectionPromise();
+                    handshake(req);
+                }).catch(err => {
+                    endConnectionPromise();
+                    console.error('kksjsjkdjsdkj on timeout', err);
+                }).finally(() => {
+                    if (timeout)
+                        clearTimeout(timeout);
+                    timeout = undefined;
                 });
             }
-            else
+            else {
                 handshake(req);
-        }, 100);
+                if (!connectionPromise)
+                    throw 'invalid';
+                connectionPromise.then(() => {
+                    endConnectionPromise();
+                    if (timeout)
+                        clearTimeout(timeout);
+                    timeout = undefined;
+                });
+                // var timeout = setTimeout(() => {
+                //     awaitHandshake()
+                // }, 500);
+            }
+        }
         function handshake(req) {
             const urlParams = new URL("https://intelegeinfo.ro/editor" + req.url).searchParams;
             // session id to connect to
@@ -642,7 +686,12 @@ exports.wss.addListener('connection', async (ws, req) => {
             //         ws.close(); // Close the connection if no response received within double of timeout seconds
             //     }
             // }, heartbeatTimeout);
+            if (connectionPromiseTimeout)
+                clearTimeout(connectionPromiseTimeout);
+            connectionPromiseTimeout = undefined;
             // TODO Check if session exists, otherwise create a new one and make this client the host.
+            if (connectionPromise)
+                console.warn('connection promise is taken');
             try {
                 connectionPromise = new Promise((resolve, reject) => {
                     if (wssessionId) {
@@ -719,14 +768,35 @@ exports.wss.addListener('connection', async (ws, req) => {
                         connectionReady(false, req).finally(resolve);
                     }
                 });
-                connectionPromise.catch(res => {
-                    console.log(res);
-                    connectionPromise = undefined;
+                // connectionPromise.catch(res => {
+                //     console.log(res)
+                //      connectionPromise = undefined
+                //      if(connectionPromiseTimeout)
+                //      {
+                //         clearTimeout(connectionPromiseTimeout)
+                //         connectionPromiseTimeout = undefined
+                //      }
+                // })
+                connectionPromise.then(() => {
+                    if (connectionPromiseTimeout)
+                        clearTimeout(connectionPromiseTimeout);
+                    connectionPromiseTimeout = undefined;
                 });
+                //  connectionPromiseTimeout = setTimeout(() => {
+                //     console.error('CONNECTION PROMISE TIMEOUT')
+                //     ws.close(1011, 'Something went wrong... Please refresh the page!')
+                //     connectionPromise = undefined;
+                //     if(!clientSession)
+                //         console.error('Client session doesnt exist on connection promise timeout')
+                //     clientSession.removeClient(clientId)
+                //     clientObj = undefined;
+                //     if(clientSession.clients.length == 0)
+                //         sessionMap.delete(sessionId)
+                // }, 5000);
             }
             catch (err) {
-                connectionPromise = undefined;
-                console.log(err);
+                endConnectionPromise();
+                console.log("d;aa;a;;a;a", err);
             }
         }
         function getThisClientSession(thissessionid = sessionId) {
@@ -2039,6 +2109,7 @@ bash `.trim().replaceAll('\n', "");
             const closedClientId = clientId;
             replicateSocketMessage(sessionId, clientId, true, { type: types_1.WebSocketMessageType.CodeSelection, body: "" });
             exports.clients.delete(clientId);
+            endConnectionPromise();
             clearInterval(heartbeatInterval); // Clear the interval to stop sending pings
             // getThisClientSession()?.clients.splice(getThisClientSession()?.clients.indexOf(clientId)||-1 , 1);
             clientSession?.removeClient(clientId);

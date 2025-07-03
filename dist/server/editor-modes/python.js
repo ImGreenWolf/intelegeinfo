@@ -44,13 +44,16 @@ const fs = __importStar(require("fs"));
 const types_1 = require("../../../dist/shared/types");
 class Python extends BaseEditorMode_1.default {
     static name = 'Python';
+    static logoSrc = 'python-logo.webp';
+    static description = 'nothing yet';
+    static versions;
     static dockerSafeTag = 'py';
     static extension = ['py'];
     wsProxy;
     isInterpreter = true;
     hasGUI = false;
     runParams = (clientObj) => {
-        this.hasGUI = clientObj.openFileName.toLowerCase().includes("gui");
+        this.hasGUI = clientObj.openFileName[0].toLowerCase().includes("gui");
         let buffer = '';
         if (clientObj.webcamid)
             buffer += '--device=/dev/video${clientObj.webcamid}:/dev/video0';

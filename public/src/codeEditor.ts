@@ -12,7 +12,7 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated } from "./components";
+import { createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated } from "./components.js";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 
@@ -343,9 +343,10 @@ class EditorCursor {
 if(false)
 {
    const updatedPos = updateCursor(this.cursor, eventJson)
-            
-            this.posX = updatedPos.posX;
-            this.posY = updatedPos.posY;
+            if(!updatedPos)
+              return
+            this.posX = updatedPos!.posX;
+            this.posY = updatedPos!.posY;
             this.step =0;
             const duration=100
             let startTime = undefined
@@ -367,7 +368,8 @@ if(false)
             if(true) { // interpolate cursor position
               
              const animatePosition = (timestamp) => {
-             
+             if(!updatedPos)
+              return
               if(!startTime) startTime = timestamp;
               const elapsed = timestamp - startTime!;
               const t = Math.min(elapsed/duration, 1);
@@ -429,6 +431,8 @@ if(false)
     {
       
             const updatedPos = updateCursor(this.cursor, eventJson)
+            if(!updatedPos)
+              return
             this.posX = updatedPos.posX;
             this.posY = updatedPos.posY;
             this.step =0;
@@ -440,7 +444,10 @@ if(false)
                 clearInterval(this.updateInterval)
               }
 
-            if(false) { // interpolate cursor position
+            if(false) { 
+              // interpolate cursor position
+              if(!updatedPos)
+              return
              this.updateInterval = setInterval(() => {
               
               this.cposX = this.lposX*(1-this.step) + this.posX*this.step;
@@ -450,8 +457,8 @@ if(false)
               this.step+=1/stepSize;
               if(this.step>=1)
               {
-                this.lposX = updatedPos.posX;
-                this.lposY = updatedPos.posY;
+                this.lposX = updatedPos!.posX;
+                this.lposY = updatedPos!.posY;
                 clearInterval(this.updateInterval)
                 if(eventJson.pointerType == "touch")
                 {
@@ -1153,34 +1160,34 @@ export function toggleCamera() {
 
 export function beautifyEditor() {
    
-   
-      // beautify.beautify(editor.session);
+    if(codeWindow.editor)
+      beautify.beautify(codeWindow.editor.session);
 
-    fetch('problem/create', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body:
+    // fetch('problem/create', {
+    //   method: 'POST',
+    //   headers: { "Content-Type": "application/json" },
+    //   body:
       
-      `
-          {
-        "name": "test",
-        "clientId": "${wsClientId}",
-        "sessionId": "${wsSessionId}",
-        "tests":
-        [
-            {
-                "dataIn": "1 2",
-                "dataOut": "2 4"
-            },
-            {
-                "dataIn": "2 4",
-                "dataOut": "4 8"
-            }
-        ]
-    }
-      `
+    //   `
+    //       {
+    //     "name": "test",
+    //     "clientId": "${wsClientId}",
+    //     "sessionId": "${wsSessionId}",
+    //     "tests":
+    //     [
+    //         {
+    //             "dataIn": "1 2",
+    //             "dataOut": "2 4"
+    //         },
+    //         {
+    //             "dataIn": "2 4",
+    //             "dataOut": "4 8"
+    //         }
+    //     ]
+    // }
+    //   `
       
-    })
+    // })
       
 }
 export function undo() {
@@ -1191,11 +1198,11 @@ export function redo() {
 }
 
 
-function getPointerRelativePosition(editor: Ace.Editor, x, y) {
-  const rect = editor.container.getBoundingClientRect();
+function getPointerRelativePosition(window: EditorWindow, x, y) {
+  const rect = window.element.getBoundingClientRect();
   // Normalize mouse coordinates within editor container
-  const relX = (x - rect.left + editor.renderer.scrollLeft)  // / rect.width;
-  const relY = (y - rect.top + editor.renderer.scrollTop) // / rect.height;
+  const relX = (x - rect.left + window.element.scrollLeft)  // / rect.width;
+  const relY = (y - rect.top + window.element.scrollTop) // / rect.height;
   return { relX, relY, rect}; // values from 0 to 1
 }
 
@@ -1240,11 +1247,14 @@ function updateLocalCursor(ev: PointerEvent, fromPress) {
       const sizeY = document.body.clientHeight;
       const foundEditor = client?.editorSession.find(editor => editor.fileElement?.parentWindow.element === document.elementsFromPoint(posX, posY).find(val => val.classList.contains('ace_editor')))
       const session =  foundEditor ? foundEditor : client?.editorSession[0] 
-      const editor = session!.fileElement?.parentWindow.editor!
-      const pos = getPointerRelativePosition(editor, posX, posY)
+      if(!session || !session.fileElement)
+        return
+      const editor = session.fileElement.parentWindow.editor
+      
+      const pos =getPointerRelativePosition(codeWindow, posX, posY)
 
-      const rectWidth = editor.renderer.characterWidth
-      const rechHeight = editor.renderer.lineHeight
+      const rectWidth = editor ? editor.renderer.characterWidth : undefined
+      const rechHeight = editor ? editor.renderer.lineHeight : undefined
       const pointerType = ev.pointerType;
       
       if(pointerType != "mouse")
@@ -1270,7 +1280,9 @@ function updateCursor(cursor, eventJson)
       let posX = 0;
       let posY = 0;
       const remSize: number = parseFloat(getComputedStyle(document.documentElement).fontSize)
-    const relPos = getPixelFromRelativePosition(codeWindow.getEditor(), eventJson.relPosX, eventJson.relPosY, eventJson);
+      if(!codeWindow.editor)
+        return
+    const relPos = getPixelFromRelativePosition(codeWindow.editor!, eventJson.relPosX, eventJson.relPosY, eventJson);
     if(sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3)
     {
       const scale = 5;
@@ -2150,7 +2162,7 @@ export function copySessionLink() {
       <button id='close-share-session'>x</button>
 
       <label for="chat">Porneste Chat <input type="checkbox" name="chat" checked></label>
-      <label for="chat">Porneste Voce <input type="checkbox" name="voice"></label>
+      <label for="voice">Porneste Voce <input type="checkbox" name="voice"></label>
       <label for="code-permission">Editor Permission 
           <select id='code-permission' name='codePermission'>
             <option value='0'>Everyone</option>
@@ -2368,7 +2380,7 @@ export let tooltip:any= {};
  fetch('/editor/tooltipHints').then(data => data.json().then(json => tooltip = json))
 
 
-class TokenTooltip extends Tooltip {
+export class TokenTooltip extends Tooltip {
     constructor(editor) {
         if (editor.tokenTooltip)
             return;
@@ -2418,7 +2430,7 @@ class TokenTooltip extends Tooltip {
         }
         var tokenText= '';
 
-        if(editorSessions.has(token.value))
+        if(editorSessions.has(token.value)) // see inside files
         {
         //  this.hide();
           
@@ -2523,7 +2535,7 @@ class TokenTooltip extends Tooltip {
         }, 3000); 
     }, 500); 
 
-    const tooltip = new TokenTooltip(codeWindow.getEditor());
+    
 
 });
 
@@ -4321,28 +4333,31 @@ export function displaynoVNC(container)
   container.appendChild(frame)
 }
 
-
+ const types = ("asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|" +
+    "_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|" +
+    "class|wchar_t|template|char16_t|char32_t").split("|")
 
 export function parseCode()
 {
-    const code = codeWindow.getEditor().session.getValue()
-    let depth = 0;
-    const functions:{name: string, type: string, depth: number, tokenIndex:number, content: string}[] = [];
+    const code = codeWindow.getEditor().session.getLines(0, 1000)
+    let breadth = 0;
+    const functions:{name: string, value: string, type: string, depth: number, tokenIndex:number, content: string}[] = [];
     const variables:{name: string, type: string, depth: number, tokenIndex:number, functionName: string}[] = [];
     let buffer = '';
+    let args = '';
     let tokenIndex = 0;
-    const tokens:{name: string, body: string, depth: number, tokenIndex:number,}[] = [];
-    const storageType = ("asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|" +
-    "_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|" +
-    "class|wchar_t|template|char16_t|char32_t");
-    const types = storageType.split("|")
-    for(let i=0;i<code.length;i++)
+    const tokens:{name: string, body: string, breadth: number, tokenIndex:number,}[] = [];
+    
+    for(const line of code)
+    for(let i=0;i<line.length;i++)
     {
       
-      const char = code[i];
-     if(((char == " " || char == "\n" || char == "\\n") && buffer!='' && buffer.trim()!='') || i+1==code.length) {
-
-        tokens.push({body: buffer+char, name: buffer.trim(),depth, tokenIndex})
+      const char = line[i];
+      if(([' ', '\n', '\\n', '{', '}', ';'].includes(char) && buffer.trim()!='' && (args.at(-1)==')' || args==''))
+      ) // why?
+      {
+        tokens.push({body: args, name: buffer.trim(),breadth: breadth, tokenIndex})
+        args=''
         buffer=''
         continue
       }
@@ -4351,52 +4366,62 @@ export function parseCode()
           switch(char)
           {
             case "{":
-              depth++;
-              
-            break;
+              breadth++;
+            continue
             case "}":
-              // if(depth-1==0)
-                tokenIndex++
-              depth--;
-
+              tokenIndex++
+              breadth--;
+              continue
             case ";":
               continue;
+            case '(':
+              args+=char
+              buffer+=char
+              break
+            case ')':
+              args+=char
+              buffer+=char
               break;
           }
-          buffer+=char;
+          if(args[0] != '(' )  
+            buffer+=char;
+          else
+            if(char!='(' && char!=')')
+              args+=char
+          
           
       }
       
     }
 
     
-
+console.log(tokens)
     tokens.forEach((token,index) => {
 
 
-      if(index>0)
-        if(types.includes(tokens[index-1].name))
-       {
-      
-          if(token.name.includes("(") && token.name.includes(")"))
+      if(index!=0) // start from second token
+        if(types.includes(tokens[index-1].name)) // get token before this token, think int name. name is current token, the one before will be the type.
+       { // this will be valid for functions and variables.
+          
+          if(token.name.endsWith('()'))
           {
             if(tokens[index+1] == undefined) return;
             let content = tokens[index+1].body;
             let j=index+1;
-            if(j<tokens.length && tokens[j].depth !=undefined)
-            while(tokens[j].depth>token.depth && j<=tokens.length && tokens[j+1] !=undefined)
+            if(j<tokens.length && tokens[j].breadth !=undefined)
+            while(tokens[j].breadth>token.breadth && j<=tokens.length && tokens[j+1] !=undefined)
               content+=tokens[++j].body;
-
-            functions.push({name: token.name, type: tokens[index-1].name, depth: token.depth, content,tokenIndex: token.tokenIndex})
+            const funcName = token.name.substring(0, token.name.length-2)
+            functions.push({name: funcName+token.body, value: addPlaceholdersToFunction(funcName, token), type: tokens[index-1].name, depth: token.breadth, content,tokenIndex: token.tokenIndex})
           }
           else
           {
             const functionName = functions.find(value => {
               return value.tokenIndex == token.tokenIndex
-            })?.name as string;
+            })?.value as string;
             token.name.split(',').map(v => {
               if(isNaN(parseInt(v)))
-                variables.push({name: v, type: tokens[index-1].name, depth: token.depth, functionName,tokenIndex: token.tokenIndex})
+                variables.push({name: v, type: tokens[index-1].name, depth: token.breadth, functionName,tokenIndex: token.tokenIndex})
             })
             
           }
@@ -4410,6 +4435,36 @@ export function parseCode()
     return {functions, variables}
 }
 
+function addPlaceholdersToFunction(funcName, token)
+{
+  /*
+    $1,$2... - tab stops
+    ${1:placeholder text}
+    $0 - final position
+  */
+  const tokens = (token.body as string).substring(1,token.body.length-1).split(' ');
+  let k=1;
+  let buffer='';
+  let type = '';
+  console.log(tokens)
+  for(let i=0; i<tokens.length; i++)
+  {
+    const token = tokens[i]
+    
+    if(types.includes(token))
+    {
+      type=token
+      continue;
+    }
+
+    if(type)
+      buffer += "${"+ k++ + ":" + type + '}'
+    if(tokens.length-1 != i)
+      buffer +=', '
+  } 
+  console.log(buffer)
+  return `${funcName}(${buffer})`+"$0"
+}
 
 export function indexToFunctionName(parsedCode, index)
 {
@@ -4432,7 +4487,7 @@ export function indexToFunctionName(parsedCode, index)
       
       
     }
-
+    if(parsedCode)
     return parsedCode.functions.find(value => {
       return value.tokenIndex == tokenIndex
     })
@@ -4497,10 +4552,10 @@ export function onFileSessionUpdated(newFileName, client: SessionClient) {
           prevElem.fileElement?.removeUser(client.clientId)
           // prevElem.fileElement?.element.classList.remove('open-file')
         }
-        else if(prevActiveTab != elem)
+        else if(prevActiveTab != elem && prevActiveTab && (prevActiveTab as FileElement).removeUser)
         {
           // prevElem.fileElement?.element.classList.remove('open-file');
-          (prevActiveTab as FileElement)?.removeUser(client.clientId)
+          (prevActiveTab as FileElement).removeUser(client.clientId)
         }
       }
 

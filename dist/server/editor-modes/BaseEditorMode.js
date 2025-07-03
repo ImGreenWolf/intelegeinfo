@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // maybe change from class to interface
 class EditorMode {
     static name;
+    static logoSrc;
+    static description;
+    static versions;
     static dockerFile;
     static dockerSafeTag;
     static extension;

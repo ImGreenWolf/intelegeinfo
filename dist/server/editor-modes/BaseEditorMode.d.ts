@@ -2,6 +2,9 @@ import { ChildProcess } from "child_process";
 import { ClientObject, EditorFile, EditorSession } from "../types";
 declare abstract class EditorMode {
     static name: string;
+    static logoSrc: string;
+    static description: string;
+    static versions: any;
     static dockerFile: string;
     static dockerSafeTag: string;
     static extension: string[];

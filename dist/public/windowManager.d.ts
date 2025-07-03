@@ -10,6 +10,7 @@ export declare class EditorWindow {
     editor: Ace.Editor | undefined;
     index: number;
     tabs: EditorWindowTab[];
+    tooltip: TokenTooltip | undefined;
     constructor(index: any, element: any, tabContainer: any, contentContainer: any);
     destroyEditor(): void;
     getEditor(newSession?: any): Ace.Editor;
@@ -30,3 +31,15 @@ export declare class EditorWindowTab {
 }
 export declare function updateCatalouge(): void;
 export declare function showDefaultScreen(): Promise<void>;
+declare var Tooltip: any;
+declare class TokenTooltip extends Tooltip {
+    constructor(editor: any);
+    token: {};
+    range: any;
+    update(): Promise<void>;
+    onMouseMove(e: any): void;
+    onMouseOut(e: any): void;
+    setPosition(x: any, y: any): void;
+    destroy(): void;
+}
+export {};

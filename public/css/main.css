@@ -87,7 +87,6 @@ header h1 {
 .logo-font, header h1 {
   font-family: "Playwrite DK Loopet", "Courier New", Courier, monospace;
   transform: rotate(-5deg);
-  text-decoration: underline;
   text-align: center;
   font-weight: 500;
 }
@@ -186,6 +185,7 @@ header a p {
   display: flex;
   flex-direction: column;
   gap: 0.25em;
+  min-height: 200px;
 }
 
 #mobile-dropdown {

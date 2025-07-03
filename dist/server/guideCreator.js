@@ -143,6 +143,7 @@ async function getPosts() {
             for (const guide of guides)
                 guideEntries.push({ name: guide.name, html: `<a href="guides/post/${encodeURI(guide.name)}"><h2>${guide.name}</h2></a>
             <div>${guide.description || guide.content.substring(0, 100)}..</div>
+            <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} viz</p>
             `
                 });
             resolve({ guideEntries });
@@ -155,10 +156,11 @@ function postsRequest(guideEntries, req, res, error) {
     <style>
     body
     {
-        background-color: rgb(20,20,20)
+        background-color: rgb(20,20,20);
+        font-family: Poppins;
     }
     #guides
-{
+    {
 
     ul
     {
@@ -169,7 +171,7 @@ function postsRequest(guideEntries, req, res, error) {
         justify-content: start;
         position: relative;
         // font-size: 0.5rem;
-        padding: 0;
+        padding: 5em;
         li 
         {
             max-width: 200px;
@@ -349,7 +351,7 @@ router.get('/', (req, res) => {
             guideEntries += `<li><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`;
         const html = `${htmlHead('Resurse')}
     <content>
-    <ul>
+    <ul style="font-family: Poppins">
     ${guideEntries}
     </ul>
     </content>`;

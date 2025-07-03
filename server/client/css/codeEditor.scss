@@ -341,11 +341,10 @@ header
         // font-size: 10px;
         // line-height: 25px;
         transition-duration: 0.3s;
-        display: inline-flex;
-        flex-direction: column-reverse;
+        display: grid;
+        grid-template-rows: 1px 2.5em;
+        justify-items: center;
         text-align: center;
-        justify-content: center;
-        align-items: center;
         // margin: auto 0;
         font-size: 0.75rem;
         background-color: theme.$button-color;
@@ -358,12 +357,12 @@ header
         position: relative;
         cursor: pointer;
         box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px 2px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-        box-sizing: border-box;
         background-position: 95% center;
         background-repeat: no-repeat;
         box-sizing: content-box;
         z-index: 1;
-        
+        max-height: 40px;
+
         p 
         {
             flex-grow: 1;
@@ -420,6 +419,7 @@ header
             width: 100%;
             padding: 0 5px;
             gap: 1px;
+            grid-row: 1;
             div
             {
                 flex-grow: 1;
@@ -441,24 +441,31 @@ header
 .client-popup
 {
     position: absolute;
-    bottom: 150px;
+    bottom: 100px;
     left: 50%;
     min-width: 300px;
     max-height: 50px;
     text-align: center;
-    padding: 5px;
+    padding: 0.5em 2em;
     transform: translate(-50%, -50%);
-    z-index: 20;
-    background-color: color.adjust($color: theme.$background-color, $alpha: -3);
-    backdrop-filter: blur(2px);
+    z-index: 2000;
+    background-color: color.adjust($color: theme.$background-color, $alpha: -0.5);
+    backdrop-filter: blur(0.5em);
     box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
     // border: 1px solid theme.$border-color;
     border-radius: 0.5lh;
     animation: 0.5s client-popup;
-
+    box-shadow: 0 0 20px -20px rgb(97, 97, 97) inset,
+            0 5px 20px -20px rgb(150, 150, 150) inset,
+            5px 5px 15px -20px rgb(97, 97, 97) inset,
+            3px 10px 20px 20px rgba(0, 0, 0, 0.212);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 1em;
+    button 
+    {
+        padding: 0.25em 1em;
+    }
     .client-popup-close
     {
         border-radius: 50%;
@@ -479,8 +486,8 @@ header
     left: 50%;
     transform: translate(-50%, 0);
     z-index: 110;
-    background-color: rgb(18 19 20 / 53%);
-    backdrop-filter: blur(3px);
+    background-color: color.adjust($color: theme.$background-color, $alpha: -0.75);
+    backdrop-filter: blur(0.5em);
     box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px #ffffff0a;
     animation: pop-up-fade 0.2s;
 }
@@ -1435,17 +1442,20 @@ pointer-events: none;
     @extend .pop-up;
 
     border-radius: 1lh;
-    height: 300px;
-    padding: 30px;
-    width: 500px;
+    height: 400px;
+    padding: 3em;
+    min-width: 700px;
     display: grid;
-    gap: 50px;
-    grid-template-columns: auto 200px;
+    gap: 3em;
+    grid-template-columns: 350px 300px;
+    justify-content: center;
+    align-content: center;
     box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px #ffffff0a;
     & form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1em;
+        
     }
     
     #connect-data-inner
@@ -1454,11 +1464,12 @@ pointer-events: none;
         flex-direction: column;
         align-content: center;
         align-items: center;
-        justify-content: space-around;
+        justify-content: center;
+        height: 100%;
         transition: 0.2s ease-in-out;
         img 
         {
-            width: 100%;
+            width: 75%;
             aspect-ratio: 1;
             background-color: rgb(242, 242, 242);
             padding: 10px;
@@ -1497,7 +1508,13 @@ pointer-events: none;
         }
         
     }
-
+    label 
+    {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        font-family: 'Poppins';
+    }
 
     #connect-data-container:not(.created) #connect-data-inner
     {
@@ -1533,8 +1550,70 @@ pointer-events: none;
     #close-share-session
     {
         width: 25px;
-        margin: 10px;
+        // margin: 10px;
         justify-self: start;
+    }
+    select
+    // ::picker(select)
+     {
+     appearance: base-select;
+    }
+
+    select 
+    {
+        padding: 0.25em 1.5em;
+        line-height: 2em;
+        width: 100%;
+        text-align: center;
+        font-family: 'Teachers';
+        border: 2px solid theme.$border-color;
+    }
+    select::picker-icon {
+        color: #999;
+        transition: 0.4s rotate;
+    }
+    select:open::picker-icon {
+        rotate: 180deg;
+    }
+
+    ::picker(select) {
+        border: none;
+        // padding: 1em;
+        opacity: 0;
+        transition: all 0.4s allow-discrete;
+        // top: calc(anchor(bottom) + 1px);
+        // left: anchor(10%);
+        right: 0px;
+    }
+    ::picker(select):popover-open {
+        opacity: 1;
+    }
+    @starting-style {
+        ::picker(select):popover-open {
+            opacity: 0;
+        }
+    }
+    option 
+    {
+        background-color: theme.$background-color;
+        color: theme.$text-color;
+        // padding: 0.25em 1.5em;
+        text-align: center;
+        // width: 100%;
+    }
+    option:checked {
+        font-weight: bold;
+    }
+    option:first-of-type {
+        border-radius: 8px 8px 0 0;
+    }
+
+    option:last-of-type {
+        border-radius: 0 0 8px 8px;
+    }
+
+    option:not(option:last-of-type) {
+        border-bottom: none;
     }
 }
 
@@ -1823,7 +1902,7 @@ form input[type=checkbox]
     font-family: Trebuchet, Arial, sans-serif;
     font-weight: bold;
     cursor: pointer;
-    border: 2px ridge #ddd;
+    border: 2px solid theme.$border-color;
     margin: 0;
     box-sizing: content-box;
     padding: 0;
@@ -1868,8 +1947,8 @@ form input[type=checkbox]
         top: 50%;
         transform: translateY(-50%);
         // pointer-events: none;
-        background: theme.$text-color;
-        border: 2px solid color.adjust($color: theme.$text-color, $lightness: -20%);
+        background: theme.$border-color;
+        border: 2px solid color.adjust($color: theme.$border-color, $whiteness: 5%);
         border-radius: 50%;
         box-sizing: border-box;
         box-shadow: 
@@ -2049,7 +2128,7 @@ mini-dock
         {
             background-color: color.adjust($color: theme.$foreground-color, $alpha: -0.75, $whiteness: -2%);
             opacity: 0.75;
-            outline: 1px solid transparent;
+            // outline: 1px solid transparent;
             
         }
     }
@@ -2064,32 +2143,28 @@ mini-dock
         font-family: Poppins,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         opacity: 0.1;
     }
-    // &:not(:has(:hover)) h2 
-    // {
-    //     opacity: 0.5;
-    //     transition-duration: 5s;
-    //     transition-property: opacity;
-    // }
-    #home
+
+    #new,#home
     {
-        // background-image: url(../media/home-svgrepo-com.svg);
-        // background-size: 60%;
-        // background-position: center;
-        // background-repeat: no-repeat;
-        --outline: rgba(133, 28, 28, 0.418);
         text-decoration: none;
         text-align: center;
         // padding: 2px;
-        font-size: 15px;
+        font-size: 1em;
         line-height: 1lh;
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-        font-weight: 600;
+        font-weight: 300;
         border-radius: 1lh;
+    }
+    #new
+    {
+        border-radius: 50%;
+    }
+    #home
+    {
+        // --outline: rgba(133, 28, 28, 0.418);
+        
         width: 40px;
-        // &:hover
-        // {
-        //     background-color: rgba(255, 166, 0, 0.137);
-        // }
+
     }
 
     #joinSession
@@ -2125,8 +2200,8 @@ mini-dock
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 500;
     grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
     // position: relative;
     padding: 2em;
     gap: 1em;
@@ -2134,23 +2209,24 @@ mini-dock
     
     h1 
     {
-        font-size: 3em;
+        // font-size: 3em;
         font-family: Teachers, Poppins, Cambria;
     }
     .language-info
     {
         // border: 1px solid gray;
         grid-column: 2/2;
-        grid-row: 1/3;
+        // grid-row: 1/3;
     }
     
 .language-carousel
  {
     display: grid;
     max-width: 100%;
-    margin: 5em auto;
+    // margin: 5em auto;
     padding: 1em 0;
     grid-column: span 2 ;
+    grid-row: 2;
     height: 50px;
     justify-content: space-around;
     grid-template-columns: repeat(4, 1fr);
@@ -2163,8 +2239,9 @@ mini-dock
     width: 100%;
     border-top: 2px solid gray;
     align-content: stretch;
-
-    button
+    // align-self: self-end;
+    justify-self: end;
+    .custom-button
     {
         user-select: none;
         display: flex;
@@ -2192,16 +2269,23 @@ mini-dock
         3px 5px 15px 5px rgba(0, 0, 0, 0.24);
         
 
-
-        &:not(:disabled)
+        &[disabled]
+        {
+            filter: grayscale(1);
+            opacity: 0.5;
+            border: 2px dashed rgb(36, 36, 36);
+        }
+        &:not([disabled])
         {
             cursor: pointer;
+            transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
             &:hover
             {
                 border: 2px solid rgb(63, 63, 63);
+                background-color: theme.$button-color;
+                
             }
         }
-
         .language-logo 
         {
             min-width: 30px;
@@ -2215,11 +2299,7 @@ mini-dock
             user-select: none;
             
         }
-        &:disabled
-            {
-                filter: grayscale(1);
-                opacity: 0.75;
-            }
+        
     }
     
  }

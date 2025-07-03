@@ -179,7 +179,7 @@ header {
   display: grid;
   grid-template-rows: max-content auto;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
-  border: 2px solid rgba(190, 190, 190, 0.1);
+  border: 2px solid rgb(31, 31, 31);
   border-radius: 0.5em;
   overflow: hidden;
 }
@@ -283,7 +283,7 @@ header {
 
 .compile-error-tooltip {
   border-radius: 0.2lh;
-  border: 1px solid rgba(190, 190, 190, 0.1);
+  border: 1px solid rgb(31, 31, 31);
   font-size: 0.75rem;
   min-height: 50px;
   border-top: 6px solid black;
@@ -328,7 +328,7 @@ header {
   display: flex;
   justify-content: space-between;
   font-family: "Poppins", sans-serif;
-  border-bottom: 1px solid rgba(190, 190, 190, 0.1);
+  border-bottom: 1px solid rgb(31, 31, 31);
   align-items: stretch;
   font-size: 0.7rem;
 }
@@ -344,34 +344,33 @@ header {
   overflow: hidden;
 }
 #editor-tabs button, .tabs-container button {
-  border: 2px solid rgba(190, 190, 190, 0.3);
+  border: 2px solid #1f1f1f;
 }
 #editor-tabs .host, .tabs-container .host {
   border: 2px solid rgba(255, 217, 0, 0.582);
 }
 #editor-tabs .file-tab, .tabs-container .file-tab {
   transition-duration: 0.3s;
-  display: inline-flex;
-  flex-direction: column-reverse;
+  display: grid;
+  grid-template-rows: 1px 2.5em;
+  justify-items: center;
   text-align: center;
-  justify-content: center;
-  align-items: center;
   font-size: 0.75rem;
   background-color: rgb(0, 0, 0);
   border-radius: 0.25em 0.25em 0 0;
   height: 100%;
   color: white;
   min-width: 70px;
-  border: 1px solid rgba(190, 190, 190, 0.1);
+  border: 1px solid rgb(31, 31, 31);
   border-bottom: none !important;
   position: relative;
   cursor: pointer;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px 2px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-  box-sizing: border-box;
   background-position: 95% center;
   background-repeat: no-repeat;
   box-sizing: content-box;
   z-index: 1;
+  max-height: 40px;
 }
 #editor-tabs .file-tab p, .tabs-container .file-tab p {
   flex-grow: 1;
@@ -401,6 +400,7 @@ header {
   width: 100%;
   padding: 0 5px;
   gap: 1px;
+  grid-row: 1;
 }
 #editor-tabs .file-tab .file-users-container div, .tabs-container .file-tab .file-users-container div {
   flex-grow: 1;
@@ -414,29 +414,33 @@ header {
 
 .client-popup {
   position: absolute;
-  bottom: 150px;
+  bottom: 100px;
   left: 50%;
   min-width: 300px;
   max-height: 50px;
   text-align: center;
-  padding: 5px;
+  padding: 0.5em 2em;
   transform: translate(-50%, -50%);
-  z-index: 20;
-  background-color: rgba(20, 20, 20, 0);
-  backdrop-filter: blur(2px);
+  z-index: 2000;
+  background-color: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(0.5em);
   box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
   border-radius: 0.5lh;
   animation: 0.5s client-popup;
+  box-shadow: 0 0 20px -20px rgb(97, 97, 97) inset, 0 5px 20px -20px rgb(150, 150, 150) inset, 5px 5px 15px -20px rgb(97, 97, 97) inset, 3px 10px 20px 20px rgba(0, 0, 0, 0.212);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 1em;
+}
+.client-popup button {
+  padding: 0.25em 1em;
 }
 .client-popup .client-popup-close {
   border-radius: 50%;
   width: 25px;
   aspect-ratio: 1;
   background-color: transparent;
-  border: 1px solid rgba(190, 190, 190, 0.1);
+  border: 1px solid rgb(31, 31, 31);
 }
 .client-popup div {
   width: 100%;
@@ -448,8 +452,8 @@ header {
   left: 50%;
   transform: translate(-50%, 0);
   z-index: 110;
-  background-color: rgba(18, 19, 20, 0.53);
-  backdrop-filter: blur(3px);
+  background-color: rgba(20, 20, 20, 0.25);
+  backdrop-filter: blur(0.5em);
   box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px rgba(255, 255, 255, 0.0392156863);
   animation: pop-up-fade 0.2s;
 }
@@ -524,7 +528,7 @@ header {
 
 vl {
   width: 1px;
-  background-color: rgba(190, 190, 190, 0.1);
+  background-color: rgb(31, 31, 31);
 }
 
 #name-prompt {
@@ -613,7 +617,7 @@ button:not(.custom-button) {
   grid-row: 2;
   position: relative;
   background-color: rgb(20, 20, 20);
-  border: 2px solid rgba(190, 190, 190, 0.1);
+  border: 2px solid rgb(31, 31, 31);
   display: grid;
   grid-template-rows: auto 1fr;
   grid-area: output;
@@ -638,7 +642,7 @@ button:not(.custom-button) {
 #output {
   overflow-y: auto;
   overflow-x: visible;
-  border-top: 1px solid rgba(190, 190, 190, 0.1);
+  border-top: 1px solid rgb(31, 31, 31);
   display: flex;
   flex-direction: column;
   margin: 10px;
@@ -678,7 +682,7 @@ button:not(.custom-button) {
 #console-container textarea {
   width: 100%;
   padding: 10px;
-  border: 2px solid rgba(190, 190, 190, 0.1);
+  border: 2px solid rgb(31, 31, 31);
   outline: 0;
   border-radius: 1lh;
   resize: none;
@@ -708,7 +712,7 @@ button:not(.custom-button) {
 }
 
 #console-container textarea:not(.filled):focus {
-  outline: 0.2px solid rgba(190, 190, 190, 0.1);
+  outline: 0.2px solid rgb(31, 31, 31);
   outline-offset: 1px;
 }
 
@@ -952,7 +956,7 @@ value {
   content: "program output";
   color: rgba(255, 255, 255, 0.5);
   height: 15px;
-  border-bottom: 1px solid rgba(190, 190, 190, 0.1);
+  border-bottom: 1px solid rgb(31, 31, 31);
   display: block;
   font-size: 0.5rem;
   margin: -1em;
@@ -964,7 +968,7 @@ value {
   top: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1px solid rgba(190, 190, 190, 0.1);
+  border: 1px solid rgb(31, 31, 31);
   background-color: rgb(0, 0, 0);
   color: white;
   left: -25px;
@@ -1094,7 +1098,7 @@ value {
 }
 .vector-display .vector-header {
   width: 100%;
-  border-bottom: 1px solid rgba(190, 190, 190, 0.1);
+  border-bottom: 1px solid rgb(31, 31, 31);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   padding: 2px 20px;
   margin: 2px auto;
@@ -1172,29 +1176,32 @@ value {
 
 .share-container {
   border-radius: 1lh;
-  height: 300px;
-  padding: 30px;
-  width: 500px;
+  height: 400px;
+  padding: 3em;
+  min-width: 700px;
   display: grid;
-  gap: 50px;
-  grid-template-columns: auto 200px;
+  gap: 3em;
+  grid-template-columns: 350px 300px;
+  justify-content: center;
+  align-content: center;
   box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px rgba(255, 255, 255, 0.0392156863);
 }
 .share-container form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1em;
 }
 .share-container #connect-data-inner {
   display: flex;
   flex-direction: column;
   align-content: center;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
+  height: 100%;
   transition: 0.2s ease-in-out;
 }
 .share-container #connect-data-inner img {
-  width: 100%;
+  width: 75%;
   aspect-ratio: 1;
   background-color: rgb(242, 242, 242);
   padding: 10px;
@@ -1226,6 +1233,12 @@ value {
   display: inline;
   text-align: center;
 }
+.share-container label {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  font-family: "Poppins";
+}
 .share-container #connect-data-container:not(.created) #connect-data-inner {
   filter: blur(5px);
   transition-duration: 1s;
@@ -1253,8 +1266,56 @@ value {
 }
 .share-container #close-share-session {
   width: 25px;
-  margin: 10px;
   justify-self: start;
+}
+.share-container select {
+  appearance: base-select;
+}
+.share-container select {
+  padding: 0.25em 1.5em;
+  line-height: 2em;
+  width: 100%;
+  text-align: center;
+  font-family: "Teachers";
+  border: 2px solid rgb(31, 31, 31);
+}
+.share-container select::picker-icon {
+  color: #999;
+  transition: 0.4s rotate;
+}
+.share-container select:open::picker-icon {
+  rotate: 180deg;
+}
+.share-container ::picker(select) {
+  border: none;
+  opacity: 0;
+  transition: all 0.4s allow-discrete;
+  right: 0px;
+}
+.share-container ::picker(select):popover-open {
+  opacity: 1;
+}
+@starting-style {
+  .share-container ::picker(select):popover-open {
+    opacity: 0;
+  }
+}
+.share-container option {
+  background-color: rgb(20, 20, 20);
+  color: white;
+  text-align: center;
+}
+.share-container option:checked {
+  font-weight: bold;
+}
+.share-container option:first-of-type {
+  border-radius: 8px 8px 0 0;
+}
+.share-container option:last-of-type {
+  border-radius: 0 0 8px 8px;
+}
+.share-container option:not(option:last-of-type) {
+  border-bottom: none;
 }
 
 button:not(.custom-button, .noanimate), #editor-tabs span:not(#active-open-file, .open-file, .noanimate), #signup, #login {
@@ -1446,7 +1507,7 @@ form input[type=checkbox] {
   font-family: Trebuchet, Arial, sans-serif;
   font-weight: bold;
   cursor: pointer;
-  border: 2px ridge #ddd;
+  border: 2px solid rgb(31, 31, 31);
   margin: 0;
   box-sizing: content-box;
   padding: 0;
@@ -1480,8 +1541,8 @@ form input[type=checkbox]::after {
   height: 1.25em;
   top: 50%;
   transform: translateY(-50%);
-  background: white;
-  border: 2px solid #cccccc;
+  background: rgb(31, 31, 31);
+  border: 2px solid rgb(41.6666666667, 41.6666666667, 41.6666666667);
   border-radius: 50%;
   box-sizing: border-box;
   box-shadow: -3px 0px 5px 1px rgba(0, 0, 0, 0.5);
@@ -1616,7 +1677,7 @@ mini-dock a, mini-dock button {
   padding: 0;
   margin: 0;
   border-radius: 50%;
-  border: 2px solid rgba(190, 190, 190, 0.1);
+  border: 2px solid rgb(31, 31, 31);
   background-color: rgb(5, 5, 5);
   transition-duration: 0.2s;
   box-sizing: content-box;
@@ -1625,26 +1686,29 @@ mini-dock a, mini-dock button {
 mini-dock a:not(:hover), mini-dock button:not(:hover) {
   background-color: hsla(0, 104.0816326531%, 0.9607843137%, 0.25);
   opacity: 0.75;
-  outline: 1px solid transparent;
 }
 mini-dock h2 {
   text-align: center;
   padding: 0 5px;
   margin: 0 5px;
   font-weight: 200;
-  border-left: 2px solid rgba(190, 190, 190, 0.1);
+  border-left: 2px solid rgb(31, 31, 31);
   font-family: Poppins, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   opacity: 0.1;
 }
-mini-dock #home {
-  --outline: rgba(133, 28, 28, 0.418);
+mini-dock #new, mini-dock #home {
   text-decoration: none;
   text-align: center;
-  font-size: 15px;
+  font-size: 1em;
   line-height: 1lh;
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-  font-weight: 600;
+  font-weight: 300;
   border-radius: 1lh;
+}
+mini-dock #new {
+  border-radius: 50%;
+}
+mini-dock #home {
   width: 40px;
 }
 mini-dock #joinSession {
@@ -1671,26 +1735,24 @@ mini-dock #joinSession {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 500;
   grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
   padding: 2em;
   gap: 1em;
   box-shadow: inset 5px 5px 35px -30px rgb(107, 107, 107);
 }
 .default-screen h1 {
-  font-size: 3em;
   font-family: Teachers, Poppins, Cambria;
 }
 .default-screen .language-info {
   grid-column: 2/2;
-  grid-row: 1/3;
 }
 .default-screen .language-carousel {
   display: grid;
   max-width: 100%;
-  margin: 5em auto;
   padding: 1em 0;
   grid-column: span 2;
+  grid-row: 2;
   height: 50px;
   justify-content: space-around;
   grid-template-columns: repeat(4, 1fr);
@@ -1703,8 +1765,9 @@ mini-dock #joinSession {
   width: 100%;
   border-top: 2px solid gray;
   align-content: stretch;
+  justify-self: end;
 }
-.default-screen .language-carousel button {
+.default-screen .language-carousel .custom-button {
   user-select: none;
   display: flex;
   gap: 1em;
@@ -1724,13 +1787,20 @@ mini-dock #joinSession {
   backdrop-filter: blur(5px);
   box-shadow: inset 5px 5px 25px -25px rgb(107, 107, 107), 3px 5px 15px 5px rgba(0, 0, 0, 0.24);
 }
-.default-screen .language-carousel button:not(:disabled) {
+.default-screen .language-carousel .custom-button[disabled] {
+  filter: grayscale(1);
+  opacity: 0.5;
+  border: 2px dashed rgb(36, 36, 36);
+}
+.default-screen .language-carousel .custom-button:not([disabled]) {
   cursor: pointer;
+  transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
 }
-.default-screen .language-carousel button:not(:disabled):hover {
+.default-screen .language-carousel .custom-button:not([disabled]):hover {
   border: 2px solid rgb(63, 63, 63);
+  background-color: rgb(0, 0, 0);
 }
-.default-screen .language-carousel button .language-logo {
+.default-screen .language-carousel .custom-button .language-logo {
   min-width: 30px;
   height: 100%;
   min-height: 30px;
@@ -1739,10 +1809,6 @@ mini-dock #joinSession {
   background-position: center;
   background-repeat: no-repeat;
   user-select: none;
-}
-.default-screen .language-carousel button:disabled {
-  filter: grayscale(1);
-  opacity: 0.75;
 }
 
 /*# sourceMappingURL=codeEditor.css.map */
