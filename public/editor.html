@@ -100,8 +100,14 @@ int main() {
             
                 <div class="buttons" id="buttons">
                     <p id="compile-status"></p>
-                    <button onclick="window.editor.sendDebugCommand('execute')" class="execute-control" id="execute-control">Executa Programul</button>
-                    <button onclick="window.editor.sendDebugCommand('-exec-run')" id="run">Run in Debugger</button> 
+                    <button onclick="window.editor.sendDebugCommand('execute')" class="execute-control" id="execute-control">
+                        <span style="background-image: url(../media/icons/play_arrow.svg);" class="button-icon"></span>
+                        Executa Programul
+                    </button>
+                    <button onclick="window.editor.sendDebugCommand('-exec-run')" id="run">
+                        <span style="background-image: url(../media/icons/troubleshoot.svg);" class="button-icon"></span>
+                        Run in Debugger
+                    </button> 
                     <!-- <button onclick="window.editor.compileCode()" class="compile" id="compile">Compile</button> -->
                     <!-- <button onclick="sendDebugCommand('break main')">Set Breakpoint at main()</button> -->
                     <button onclick="window.editor.playback()" class="debug-control" id="playback">Playback</button>
