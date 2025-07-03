@@ -89,7 +89,7 @@ check()
 setInterval(() => {
     
     check()
-}, 15000);
+}, 30*1000);
 
 function check()
 {
@@ -164,13 +164,13 @@ Raducu <3</i>
 //     ,
 // };
  transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-                console.error("Error sending email: ", error)
-            } else {
-                console.log(info)
-               
-                        }
+        if (error) {
+            console.error("Error sending email: ", error)
+        } else {
+            console.log(info)
+            
+                    }
 
-        })
+    })
 }
 }

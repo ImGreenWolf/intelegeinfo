@@ -75,7 +75,7 @@ updateTransporter();
 check();
 setInterval(() => {
     check();
-}, 15000);
+}, 30 * 1000);
 function check() {
     console.clear();
     // checkURL('pagina principala', 'https://www.evaluare.edu.ro/')

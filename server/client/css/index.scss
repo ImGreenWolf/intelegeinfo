@@ -1024,13 +1024,13 @@ h1.center
         // gap: 2.5em !important;
         // max-width: 300px;
         grid-template-areas: 
-        "a"
-        "b"
-        "c"
-        "d"
-        "e"
-        "f"
-        "g" !important;
+        "a a"
+        "b g"
+        "c c"
+        "d d"
+        "f e" !important;
+        grid-template-columns: auto !important;
+        justify-items: stretch !important;
         // &>img 
         // {
         //     margin-bottom: 5em;

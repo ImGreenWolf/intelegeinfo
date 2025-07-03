@@ -760,7 +760,9 @@ ul.language-carusel img:not(.available) {
     max-width: 20em;
   }
   .content-list {
-    grid-template-areas: "a" "b" "c" "d" "e" "f" "g" !important;
+    grid-template-areas: "a a" "b g" "c c" "d d" "f e" !important;
+    grid-template-columns: auto !important;
+    justify-items: stretch !important;
   }
   .content-container > h1, .content-container > h2, #editor-demo > h1, #editor-demo > h2 {
     margin: auto;
