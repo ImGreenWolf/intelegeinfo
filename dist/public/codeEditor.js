@@ -2693,6 +2693,7 @@ ws.onmessage = (event) => {
                     onRun();
                     break;
                 case 'container-spawn':
+                    onRun();
                     break;
                 default:
                     const index = 0; //client?.editorSession.findIndex(file => file.fileName === messageJson.fileName) 

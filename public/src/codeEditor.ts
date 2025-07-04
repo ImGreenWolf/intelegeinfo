@@ -3596,7 +3596,7 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
           onRun()
         break;
         case 'container-spawn':
-
+        onRun()
         break;
         default:
           const index = 0 //client?.editorSession.findIndex(file => file.fileName === messageJson.fileName) 
