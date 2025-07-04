@@ -9,32 +9,652 @@
 
 <url>
   <loc>https://intelegeinfo.ro/</loc>
-  <lastmod>2025-06-15T21:46:26+00:00</lastmod>
-  <priority>0.9</priority>
-</url>
-<url>
-  <loc>https://intelegeinfo.ro/editor</loc>
-  <lastmod>2025-06-15T21:54:13+00:00</lastmod>
+  <lastmod>2025-07-04T18:16:58+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
+  <loc>https://intelegeinfo.ro/editor/</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
   <loc>https://intelegeinfo.ro/guides</loc>
-  <lastmod>2025-06-15T21:54:13+00:00</lastmod>
-  <priority>0.70</priority>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://intelegeinfo.ro/signup</loc>
-  <lastmod>2025-06-09T17:19:00+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://intelegeinfo.ro/login</loc>
-  <lastmod>2025-06-07T08:55:48+00:00</lastmod>
-  <priority>0.64</priority>
+  <loc>https://intelegeinfo.ro/subiecte</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.80</priority>
 </url>
 <url>
   <loc>https://intelegeinfo.ro/guides/post/Matrici</loc>
-  <lastmod>2025-06-15T21:54:13+00:00</lastmod>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/guides/post/../../subiecte</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2025_E_d_Informatica_modele/E_d_informatica_2025_sp_MI_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2025_E_d_Informatica_modele/E_d_informatica_2025_sp_MI_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2025_E_d_Informatica_modele/E_d_informatica_2025_sp_MI_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2025_E_d_Informatica_modele/E_d_informatica_2025_sp_SN_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2025_E_d_Informatica_modele/E_d_informatica_2025_sp_SN_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2025_E_d_Informatica_modele/E_d_informatica_2025_sp_SN_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2024_E_d_Informatica_modele/E_d_Informatica_2024_sp_MI_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2024_E_d_Informatica_modele/E_d_Informatica_2024_sp_MI_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2024_E_d_Informatica_modele/E_d_Informatica_2024_sp_MI_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2024_E_d_Informatica_modele/E_d_Informatica_2024_sp_SN_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2024_E_d_Informatica_modele/E_d_Informatica_2024_sp_SN_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2024_E_d_Informatica_modele/E_d_Informatica_2024_sp_SN_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_MI_C_var_03_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_MI_C_var_03_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_MI_C_var_03_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_MI_Pascal_var_03_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_MI_Pascal_var_03_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_MI_bar_03_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_SN_C_var_03_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_SN_C_var_03_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_SN_Pascal_var_03_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_SN_Pascal_var_03_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_04_iulie_2024/E_d_Informatica_2024_sp_SN_bar_03_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_2024_ses_speciala/E_d_Informatica_2024_sp_MI_C_var_04_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_2024_ses_speciala/E_d_Informatica_2024_sp_MI_C_var_04_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_2024_ses_speciala/E_d_Informatica_2024_sp_MI_bar_04_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_2024_ses_speciala/E_d_Informatica_2024_sp_SN_C_var_04_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_2024_ses_speciala/E_d_Informatica_2024_sp_SN_bar_04_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2023_E_d_Informatica_modele/E_d_Informatica_2023_sp_MI_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2023_E_d_Informatica_modele/E_d_Informatica_2023_sp_MI_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2023_E_d_Informatica_modele/E_d_Informatica_2023_sp_MI_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2023_E_d_Informatica_modele/E_d_Informatica_2023_sp_SN_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2023_E_d_Informatica_modele/E_d_Informatica_2023_sp_SN_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2023_E_d_Informatica_modele/E_d_Informatica_2023_sp_SN_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_2023_ses_speciala/E_d_Informatica_2023_sp_MI_C_var_06_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_2023_ses_speciala/E_d_Informatica_2023_sp_MI_bar_06_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_MI_C_var_05_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_MI_C_var_05_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_MI_C_var_05_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_MI_C_var_05_LSR.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_MI_Pascal_var_05_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_MI_Pascal_var_05_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_MI_Pascal_var_05_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_MI_bar_05_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_SN_C_var_05_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_SN_C_var_05_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_SN_Pascal_var_05_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_SN_Pascal_var_05_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d__2023_ses_iunie_iulie/E_d_Informatica_2023_sp_SN_bar_05_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2022_E_d_Informatica_modele/E_d_Informatica_2022_sp_MI_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2022_E_d_Informatica_modele/E_d_Informatica_2022_sp_SN_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2022_E_d_Informatica_modele/E_d_informatica_2022_sp_MI_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2022_E_d_Informatica_modele/E_d_informatica_2022_sp_MI_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2022_E_d_Informatica_modele/E_d_informatica_2022_sp_SN_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2022_E_d_Informatica_modele/E_d_informatica_2022_sp_SN_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_Informatica_2022_sp_MI_bar_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_Informatica_2022_sp_SN_bar_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_MI_C_var_01_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_MI_C_var_01_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_MI_C_var_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_MI_Pascal_var_01_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_MI_Pascal_var_01_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_MI_Pascal_var_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_SN_C_var_01_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_SN_C_var_01_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_SN_C_var_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_SN_Pascal_var_01_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_2022_22_iunie/E_d_informatica_2022_sp_SN_Pascal_var_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_mai_2022/E_d_Informatica_2022_sp_MI_bar_04_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Ed_mai_2022/E_d_informatica_2022_sp_MI_C_var_04_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2021_E_d_Informatica_modele/E_d_Informatica_2021_sp_MI_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2021_E_d_Informatica_modele/E_d_Informatica_2021_sp_MI_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2021_E_d_Informatica_modele/E_d_Informatica_2021_sp_MI_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2021_E_d_Informatica_modele/E_d_Informatica_2021_sp_SN_C_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2021_E_d_Informatica_modele/E_d_Informatica_2021_sp_SN_Pascal_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2021_E_d_Informatica_modele/E_d_Informatica_2021_sp_SN_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_MI_C_var_01_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_MI_C_var_01_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_MI_C_var_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_MI_Pascal_var_01_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_MI_Pascal_var_01_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_MI_Pascal_var_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_MI_bar_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_SN_C_var_01_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_SN_C_var_01_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_SN_C_var_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_SN_Pascal_var_01_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_SN_Pascal_var_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_30_iunie_2021/E_d_Informatica_2021_sp_SN_bar_01_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_08_iul_2020_pt_postare/E_d_Informatica_2020_sp_MI_C_var_02_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_08_iul_2020_pt_postare/E_d_Informatica_2020_sp_MI_bar_02_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_MI_C_var_06_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_MI_C_var_06_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_MI_C_var_06_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_MI_Pascal_var_06_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_MI_Pascal_var_06_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_MI_Pascal_var_06_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_MI_bar_06.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_SN_C_var_06_LGE.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_SN_C_var_06_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_SN_C_var_06_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_SN_Pascal_var_06_LMA.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_SN_Pascal_var_06_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_25_iun_2020_pt_postare/E_d_Informatica_2020_sp_SN_bar_06.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_Informatica_2020_model/E_d_Informatica_2020_sp_MI_C_var_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_Informatica_2020_model/E_d_Informatica_2020_sp_MI_Pascal_var_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_Informatica_2020_model/E_d_Informatica_2020_sp_MI_bar_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_Informatica_2020_model/E_d_Informatica_2020_sp_SN_C_var_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_Informatica_2020_model/E_d_Informatica_2020_sp_SN_Pascal_var_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_Informatica_2020_model/E_d_Informatica_2020_sp_SN_bar_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2019_Informatica_modele/E_d_Informatica_2019_sp_MI_C_var_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2019_Informatica_modele/E_d_Informatica_2019_sp_MI_Pascal_var_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2019_Informatica_modele/E_d_Informatica_2019_sp_MI_bar_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2019_Informatica_modele/E_d_Informatica_2019_sp_SN_C_var_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2019_Informatica_modele/E_d_Informatica_2019_sp_SN_Pascal_var_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2019_Informatica_modele/E_d_Informatica_2019_sp_SN_bar_model_LRO.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2018_E_d_Informatica_modele/E_d_Informatica_2018_C_sp_MI_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2018_E_d_Informatica_modele/E_d_Informatica_2018_C_sp_SN_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2018_E_d_Informatica_modele/E_d_Informatica_2018_Pascal_sp_MI_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2018_E_d_Informatica_modele/E_d_Informatica_2018_Pascal_sp_SN_var_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2018_E_d_Informatica_modele/E_d_Informatica_2018_sp_MI_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/Bac_2018_E_d_Informatica_modele/E_d_Informatica_2018_sp_SN_bar_model.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_scris_20_mai_2021/E_d_Informatica_2021_sp_MI_C_var_07.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://intelegeinfo.ro/subiecte/file/E_d_scris_20_mai_2021/E_d_Informatica_2021_sp_MI_bar_07.pdf</loc>
+  <lastmod>2025-07-04T18:20:23+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 
