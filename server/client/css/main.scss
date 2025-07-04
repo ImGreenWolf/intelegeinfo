@@ -208,7 +208,7 @@ header a p
   font-weight: 500;
 }
 
-*:has(.dropdown)
+:has(>.dropdown)
 {
       position: relative;
 }

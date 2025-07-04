@@ -694,78 +694,86 @@ exports.wss.addListener('connection', async (ws, req) => {
                 console.warn('connection promise is taken');
             try {
                 connectionPromise = new Promise((resolve, reject) => {
-                    if (wssessionId) {
-                        //client connected to existing session
-                        const activeSession = exports.sessionMap.has(wssessionId) || (isShared && shared.getSession(wssessionId));
-                        if (activeSession) // = There is an active session, join it.
-                         {
-                            if (isShared) {
-                                if (shared.getSession(wssessionId))
-                                    clientSession = shared.getSession(wssessionId);
-                            } // sessionMap.get(wssessionId ||  uuidv4() as UUID) || new EditorSession; 
-                            if (!exports.sessionMap.get(wssessionId))
-                                return console.error(new Error("Didnt find session in sessionMap while joing session"));
-                            else
-                                clientSession = exports.sessionMap.get(wssessionId);
-                            if (!clientSession.isPublic) {
-                                ws.close(3000, "This session doesn't exist or isn't puiblic. <br> <a href='/editor'>Create a new session</a>");
-                                reject();
-                                return;
+                    try {
+                        if (wssessionId) {
+                            //client connected to existing session
+                            const activeSession = exports.sessionMap.has(wssessionId) || (isShared && shared.getSession(wssessionId));
+                            if (activeSession) // = There is an active session, join it.
+                             {
+                                if (isShared) {
+                                    if (shared.getSession(wssessionId))
+                                        clientSession = shared.getSession(wssessionId);
+                                } // sessionMap.get(wssessionId ||  uuidv4() as UUID) || new EditorSession; 
+                                if (!exports.sessionMap.get(wssessionId))
+                                    return console.error(new Error("Didnt find session in sessionMap while joing session"));
+                                else
+                                    clientSession = exports.sessionMap.get(wssessionId);
+                                if (!clientSession.isPublic) {
+                                    ws.close(3000, "This session doesn't exist or isn't puiblic. <br> <a href='/editor'>Create a new session</a>");
+                                    resolve();
+                                    return;
+                                }
+                                clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, userData);
+                                clientObj = getThisClientSession().getClientObjectById(clientId);
+                                exports.clients.set(clientId, ws);
+                                isHost = false;
+                                // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
                             }
-                            clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, userData);
-                            clientObj = getThisClientSession().getClientObjectById(clientId);
-                            exports.clients.set(clientId, ws);
-                            isHost = false;
-                            // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
+                            else // there is no session, create it.
+                             {
+                                //getThisClientSession()?.clients.push(clientId); // add client to client list.
+                                clientSession = createThisClientSession(wssessionId);
+                                clientId = getThisClientSession()?.spawnClient(ws, userData);
+                                clientObj = getThisClientSession().getClientObjectById(clientId);
+                                exports.clients.set(clientId, ws); // TODO remove this map
+                                // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
+                                if (clientSession && !isShared) {
+                                    exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
+                                }
+                                isHost = true;
+                            }
+                            sessionId = getThisClientSession().sessionId;
+                            clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
+                            // clients.set(clientId, ws);
+                            if (clientObj && isShared) {
+                                shared.getSession(sessionId)?.clientsMap.set(clientId, clientObj);
+                                shared.addClient(clientId, sessionId);
+                                shared.updateSession(sessionId, clientSession);
+                            }
+                            console.log(urlParams);
+                            if (urlParams.has('embeded'))
+                                clientSession.isPublic = true;
+                            connectionReady(!isHost, req).finally(resolve);
+                            return;
                         }
-                        else // there is no session, create it.
-                         {
-                            //getThisClientSession()?.clients.push(clientId); // add client to client list.
-                            clientSession = createThisClientSession(wssessionId);
-                            clientId = getThisClientSession()?.spawnClient(ws, userData);
-                            clientObj = getThisClientSession().getClientObjectById(clientId);
-                            exports.clients.set(clientId, ws); // TODO remove this map
-                            // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
-                            if (clientSession && !isShared) {
+                        else {
+                            //client connected to new SOLO session
+                            clientSession = createThisClientSession();
+                            if (getThisClientSession() != undefined) {
+                                sessionId = clientSession.sessionId;
+                                clientId = getThisClientSession()?.spawnClient(ws, userData);
+                                clientObj = getThisClientSession().getClientObjectById(clientId);
+                                // to automatically make public if it has isPublic query
+                                clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
                                 exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
                             }
-                            isHost = true;
+                            else
+                                console.error(new Error("Failed to create SOLO session"));
+                            if (clientObj && shared) {
+                                shared.getSession(sessionId)?.clientsMap.set(clientId, clientObj);
+                                shared.addClient(clientId, sessionId);
+                                shared.updateSession(sessionId, clientSession);
+                            }
+                            exports.clients.set(clientId, ws);
+                            // will always be false
+                            connectionReady(false, req).finally(resolve);
                         }
-                        sessionId = getThisClientSession().sessionId;
-                        clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
-                        // clients.set(clientId, ws);
-                        if (clientObj && isShared) {
-                            shared.getSession(sessionId)?.clientsMap.set(clientId, clientObj);
-                            shared.addClient(clientId, sessionId);
-                            shared.updateSession(sessionId, clientSession);
-                        }
-                        console.log(urlParams);
-                        if (urlParams.has('embeded'))
-                            clientSession.isPublic = true;
-                        connectionReady(!isHost, req).finally(resolve);
-                        return;
                     }
-                    else {
-                        //client connected to new SOLO session
-                        clientSession = createThisClientSession();
-                        if (getThisClientSession() != undefined) {
-                            sessionId = clientSession.sessionId;
-                            clientId = getThisClientSession()?.spawnClient(ws, userData);
-                            clientObj = getThisClientSession().getClientObjectById(clientId);
-                            // to automatically make public if it has isPublic query
-                            clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
-                            exports.sessionMap.set(clientSession.sessionId, clientSession); // TODO Implement this in EditorSession class & polish it
-                        }
-                        else
-                            console.error(new Error("Failed to create SOLO session"));
-                        if (clientObj && shared) {
-                            shared.getSession(sessionId)?.clientsMap.set(clientId, clientObj);
-                            shared.addClient(clientId, sessionId);
-                            shared.updateSession(sessionId, clientSession);
-                        }
-                        exports.clients.set(clientId, ws);
-                        // will always be false
-                        connectionReady(false, req).finally(resolve);
+                    catch (err) {
+                        if (connectionPromiseTimeout)
+                            clearTimeout(connectionPromiseTimeout);
+                        connectionPromiseTimeout = undefined;
+                        endConnectionPromise();
                     }
                 });
                 // connectionPromise.catch(res => {
@@ -777,7 +785,12 @@ exports.wss.addListener('connection', async (ws, req) => {
                 //         connectionPromiseTimeout = undefined
                 //      }
                 // })
-                connectionPromise.then(() => {
+                connectionPromise.catch(err => {
+                    if (connectionPromiseTimeout)
+                        clearTimeout(connectionPromiseTimeout);
+                    connectionPromiseTimeout = undefined;
+                    endConnectionPromise();
+                }).then(() => {
                     if (connectionPromiseTimeout)
                         clearTimeout(connectionPromiseTimeout);
                     connectionPromiseTimeout = undefined;
@@ -2245,3 +2258,7 @@ const gdbUtilities_1 = require("./gdbUtilities");
 //             });
 // })
 app.use(handle404);
+process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    // application specific logging, throwing an error, or other logic here
+});

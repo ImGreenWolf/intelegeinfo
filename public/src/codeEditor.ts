@@ -1205,7 +1205,7 @@ export function redo() {
 
 
 function getPointerRelativePosition(window: EditorWindow, x, y) {
-  const rect = window.element.getBoundingClientRect();
+  const rect = window.editor!.container.getBoundingClientRect();
   // Normalize mouse coordinates within editor container
   const relX = (x - rect.left + window.element.scrollLeft)  // / rect.width;
   const relY = (y - rect.top + window.element.scrollTop) // / rect.height;
@@ -1253,7 +1253,6 @@ function updateLocalCursor(ev: PointerEvent, fromPress) {
       const sizeY = document.body.clientHeight;
       const foundEditor = client?.editorSession.find(editor => editor.fileElement?.parentWindow.element === document.elementsFromPoint(posX, posY).find(val => val.classList.contains('ace_editor')))
       const session =  foundEditor ? foundEditor : client?.editorSession[0] 
-      console.log(foundEditor, session)
       if(!session || !session.fileElement)
         return
       const editor = session.fileElement.parentWindow.editor
@@ -1263,7 +1262,6 @@ function updateLocalCursor(ev: PointerEvent, fromPress) {
       const rectWidth = editor ? editor.renderer.characterWidth : undefined
       const rechHeight = editor ? editor.renderer.lineHeight : undefined
       const pointerType = ev.pointerType;
-      console.log(rectWidth, rechHeight)
       if(pointerType != "mouse")
       {
         const height = ev.height;
@@ -2572,7 +2570,7 @@ ws.addEventListener('close', (ev) => {
   const socketText = document.createElement('p')
   socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
   socketStopped.appendChild(socketText)
-  document.getElementById('editor')?.appendChild(socketStopped)
+  document.getElementById('code-window-container')?.appendChild(socketStopped)
   // if(serviceRestart)
   //   setTimeout(() => {
   //     window.location.reload()
@@ -3668,10 +3666,14 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
           //     : errorOutputString ||
           //         "Compilation error. (couldnt retrieve error message, sorry)"
           // );
-          if(!messageJson.body)
-            activeConsole!.compileMessage!.remove()
-          else
-            activeConsole!.compileMessage!.children[1].innerHTML = messageJson.body
+          if(activeConsole)
+            if( activeConsole.compileMessage)
+              if(!messageJson.body)
+                  activeConsole.compileMessage.remove()
+                else
+                  activeConsole.compileMessage.children[1].innerHTML = messageJson.body
+
+         
 
           document.getElementById('compile-status')!.innerText = messageJson.body;
           document.getElementById('compile-status')!.style.opacity = '1'

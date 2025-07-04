@@ -11,7 +11,7 @@ if %errorlevel% neq 0 (
 start cmd.exe /c sass server/client/css:public/css -w
 echo TypeScript compilation completed successfully.
 echo Starting Node.js server...
-call npx nodemon --ignore cache --inspect
+call npx nodemon --ignore cache --inspect --trace-warnings
 if %errorlevel% neq 0 (
     echo Node.js server failed to start.
     pause

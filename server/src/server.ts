@@ -874,6 +874,9 @@ function endConnectionPromise()
             console.warn('connection promise is taken')
         try {
              connectionPromise = new Promise((resolve, reject) => {
+                try {
+
+
             if(wssessionId) { 
                 //client connected to existing session
                 const activeSession = sessionMap.has(wssessionId) || (isShared && shared.getSession(wssessionId));
@@ -886,8 +889,8 @@ function endConnectionPromise()
                     if(!clientSession.isPublic) 
                     {
                         ws.close(3000,"This session doesn't exist or isn't puiblic. <br> <a href='/editor'>Create a new session</a>")
-                        reject()
-                        return;
+                        resolve()
+                        return
                     }
 
                     clientId = (getThisClientSession() || clientSession)?.spawnClient(ws,userData)
@@ -962,7 +965,14 @@ function endConnectionPromise()
                 connectionReady(false, req).finally(resolve)
 
             }
-
+            }
+            catch(err)
+            {
+                if(connectionPromiseTimeout)
+                    clearTimeout(connectionPromiseTimeout)
+                connectionPromiseTimeout=undefined
+                endConnectionPromise()
+            }
             
         })
         
@@ -976,7 +986,12 @@ function endConnectionPromise()
         //      }
         // })
         
-        connectionPromise.then(() => 
+        connectionPromise.catch(err => {
+                if(connectionPromiseTimeout)
+                    clearTimeout(connectionPromiseTimeout)
+                connectionPromiseTimeout=undefined
+                endConnectionPromise()
+            }).then(() => 
             {
                 
               if(connectionPromiseTimeout)
@@ -2831,3 +2846,7 @@ app.use(handle404);
 
 
 
+process.on('unhandledRejection', (reason: any, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // application specific logging, throwing an error, or other logic here
+});
