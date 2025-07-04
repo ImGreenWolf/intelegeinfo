@@ -661,6 +661,7 @@ h1.center
         grid-auto-flow: column;
         // font-size: 0.5rem;
         padding: 0;
+        
         li 
         {
             max-width: 200px;
@@ -668,6 +669,7 @@ h1.center
             min-width: 25px;
             max-height: 200px;
             height: 100%;
+            box-sizing: border-box;
             min-height: 25px;
             aspect-ratio: 1;
             background-color: rgb(26, 28, 31);;
@@ -1013,10 +1015,12 @@ h1.center
     #guides ul
     {
 
-        display: grid;
         grid-template-columns: auto auto;
+        grid-template-rows: 1fr 1fr;
         max-width: 100%;
         position: relative;
+        grid-auto-flow: initial;
+        height: 400px;
         
          grid-auto-flow: initial;
         & li:last-child {

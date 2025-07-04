@@ -772,10 +772,10 @@ button:not(.custom-button) {
 
 .chat-content {
   border-radius: 1lh;
-  min-width: 20px;
-  max-width: 400px;
+  min-width: 2em;
+  max-width: 40em;
   padding: 5px 1lh;
-  font-size: 14px;
+  font-size: 1em;
   display: block;
   text-overflow: ellipsis;
   text-wrap-style: pretty;

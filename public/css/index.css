@@ -501,6 +501,7 @@ h1.center {
   min-width: 25px;
   max-height: 200px;
   height: 100%;
+  box-sizing: border-box;
   min-height: 25px;
   aspect-ratio: 1;
   background-color: rgb(26, 28, 31);
@@ -754,10 +755,12 @@ ul.language-carusel img:not(.available) {
     margin: 50px auto;
   }
   #guides ul {
-    display: grid;
     grid-template-columns: auto auto;
+    grid-template-rows: 1fr 1fr;
     max-width: 100%;
     position: relative;
+    grid-auto-flow: initial;
+    height: 400px;
     grid-auto-flow: initial;
   }
   #guides ul li:last-child {
