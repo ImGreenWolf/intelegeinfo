@@ -2449,6 +2449,8 @@ ws.onmessage = (event) => {
             else {
                 if (data)
                     writeOutput(data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time + "</span>ms" + (messageJson.notes != "" && messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>" : "" + "</span>"), messageJson);
+                if (messageJson.sandbox)
+                    activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox));
                 else
                     writeOutput("Forced closed program." + (messageJson.notes != "" && messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>" : "" + "</span>"), messageJson);
             }
@@ -3096,6 +3098,7 @@ function onExit() {
     document.getElementById('execute-control').innerText = "Executa Programul";
     if (activeConsole?.noVNC)
         activeConsole?.noVNC?.remove();
+    activeConsole?.compileMessage?.remove();
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';
     activeConsole = undefined;
@@ -3370,4 +3373,41 @@ export function onFileSessionUpdated(newFileName, client) {
             }
         }
     currentFileName = newFileName;
+}
+function sandboxHead() {
+    console.log = (data) => {
+        let parsedData = data;
+        switch (typeof data) {
+            case 'object':
+                parsedData = JSON.stringify(data);
+                break;
+            default:
+                parsedData = data.toString();
+        }
+        document.body.innerText += parsedData;
+        document.body.innerHTML += "<br>";
+    };
+}
+function createSandbox(fileName, existingCode) {
+    const editor = editorSessions.get(fileName)?.editor;
+    if (!editor)
+        return;
+    const code = existingCode ? existingCode : editor.getValue();
+    const codeScript = createNode('script', { htmlSting: code });
+    const headScript = createNode('script', { htmlSting: sandboxHead.toString() + "\n sandboxHead()" });
+    const frame = createNode('iframe', { attributes: [{ name: 'src', value: 'about:blank' }] });
+    frame.srcdoc =
+        `<head>
+    ${headScript.outerHTML}
+    <!-- debug from here -->
+   
+    </head>
+    <body style="color: white; font-family: monospace; overflow-wrap: break-word;">
+     ${codeScript.outerHTML}
+    </body>`;
+    return frame;
+    // const doc = frame.contentWindow!.document
+    // doc.open()
+    // doc.writeln(createNode('script', {innerText: code}).outerHTML)
+    // doc.close()
 }

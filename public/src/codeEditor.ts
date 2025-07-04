@@ -28,7 +28,7 @@ import modelist from "ace-builds/src-noconflict/ext-modelist";
 // import { EditorSession } from "../../server/types";
 import { Project } from "../../generated/prisma"
 import { HandshakeMessage, WebSocketMessage } from "../../shared/src/messageTypes"
-import { cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updateCatalouge } from "./windowManager.js";
+import { createEditorTab, cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updateCatalouge } from "./windowManager.js";
 import path from "path";
 const AceRange = ace.require("ace/range").Range;
 const aceModes: typeof modelist = ace.require("ace/ext/modelist");
@@ -3241,7 +3241,9 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
       {
         if(data)
           writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time +"</span>ms" + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
-        else  writeOutput("Forced closed program." + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
+        if(messageJson.sandbox)
+          activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox)!)
+          else  writeOutput("Forced closed program." + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
       
       }
 
@@ -4106,6 +4108,9 @@ function onExit() {
 
   if(activeConsole?.noVNC)
     activeConsole?.noVNC?.remove()
+
+  activeConsole?.compileMessage?.remove()
+
   if(document.getElementById('active-console'))
     document.getElementById('active-console')!.id = '';
   activeConsole = undefined
@@ -4467,3 +4472,49 @@ export function onFileSessionUpdated(newFileName, client: SessionClient) {
 
     currentFileName = newFileName;
   }
+function sandboxHead()
+{
+  console.log = (data) => 
+    {
+      let parsedData = data;
+      switch(typeof data)
+      {
+        case 'object':
+          parsedData = JSON.stringify(data);
+          break
+        default:
+          parsedData = data.toString()
+      }
+      document.body.innerText += parsedData
+      document.body.innerHTML += "<br>"
+    }
+
+}
+
+  function createSandbox(fileName, existingCode?)
+  {
+    const editor = editorSessions.get(fileName)?.editor;
+    if(!editor)
+      return
+    const code = existingCode ? existingCode : editor.getValue()
+    const codeScript = createNode('script', {htmlSting: code})
+    const headScript = createNode('script', {htmlSting: sandboxHead.toString() + "\n sandboxHead()"})
+    const frame = createNode('iframe', {attributes: [{name: 'src', value: 'about:blank'}]})
+    frame.srcdoc =
+    `<head>
+    ${headScript.outerHTML}
+    <!-- debug from here -->
+   
+    </head>
+    <body style="color: white; font-family: monospace; overflow-wrap: break-word;">
+     ${codeScript.outerHTML}
+    </body>`
+
+    return frame
+    // const doc = frame.contentWindow!.document
+    // doc.open()
+    // doc.writeln(createNode('script', {innerText: code}).outerHTML)
+    // doc.close()
+  }
+
+  

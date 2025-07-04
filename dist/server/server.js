@@ -1629,7 +1629,9 @@ bash `.trim().replaceAll('\n', "");
                         break;
                     case types_1.WebSocketMessageType.Console:
                         if (getProcessFromMap() != undefined) {
-                            getProcessFromMap()?.stdin?.write(messageJSON.command + "\n");
+                            if (!getProcessFromMap().stdin)
+                                return;
+                            getProcessFromMap().stdin.write(messageJSON.command + "\n");
                             dataTimeout = setTimeout(() => {
                                 replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                             }, 200);
@@ -1787,48 +1789,53 @@ bash `.trim().replaceAll('\n', "");
                                             // const filePath = path.join(rootDirName, "cache", sessionId, "main.exe");
                                             function runProgram() {
                                                 if (clientSession.files.length == 0)
-                                                    reject('No files in session');
+                                                    resolveExectute();
                                                 const mainPromise = new Promise((resolve, reject) => {
                                                     if (!clientSession.clientsActiveFile.get(clientId)) {
                                                         onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`);
                                                         return reject('No client active file');
                                                     }
-                                                    buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
-                                                        //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
-                                                        if (res == null)
-                                                            return resolve();
-                                                        if (!clientObj.getFile(res.fileName)) {
-                                                            onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`);
-                                                            return reject('No client active file');
-                                                        }
-                                                        try {
-                                                            clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal) => {
-                                                                // printClientConsoleError(err)
-                                                                if (fatal) {
-                                                                    // closeProcess(clientSession.process)
-                                                                    onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
-                                                                    reject(err);
-                                                                }
-                                                            };
-                                                            if (!clientObj.getFile(res.fileName).editorMode.isInterpreter) {
-                                                                replicateFunction((clientWs) => {
-                                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
-                                                                });
-                                                                //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
-                                                                await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
-                                                                replicateFunction((clientWs) => {
-                                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
-                                                                });
+                                                    if (!clientObj.editorMode.clientCompile)
+                                                        buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
+                                                            if (res == null)
+                                                                return resolve();
+                                                            if (!clientObj.getFile(res.fileName)) {
+                                                                onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`);
+                                                                return reject('No client active file');
                                                             }
-                                                            clientSession.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession);
-                                                            readStdio(clientSession.program, messageJSON, res).then(() => resolve());
-                                                        }
-                                                        catch (err) {
-                                                            console.error("Failed to run docker commands: " + err);
-                                                            onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
-                                                            reject(err);
-                                                        }
-                                                    });
+                                                            try {
+                                                                clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal) => {
+                                                                    // printClientConsoleError(err)
+                                                                    if (fatal) {
+                                                                        // closeProcess(clientSession.process)
+                                                                        onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
+                                                                        reject(err);
+                                                                    }
+                                                                };
+                                                                if (!clientObj.editorMode.isInterpreter) {
+                                                                    replicateFunction((clientWs) => {
+                                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
+                                                                    });
+                                                                    //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
+                                                                    await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
+                                                                    replicateFunction((clientWs) => {
+                                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
+                                                                    });
+                                                                }
+                                                                clientSession.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession);
+                                                                readStdio(clientSession.program, messageJSON, res).then(() => resolve());
+                                                            }
+                                                            catch (err) {
+                                                                console.error("Failed to run docker commands: " + err);
+                                                                onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
+                                                                reject(err);
+                                                            }
+                                                        });
+                                                    else {
+                                                        clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession);
+                                                        resolve();
+                                                    }
                                                 });
                                                 return [spawnPromise, mainPromise];
                                             }
@@ -1896,36 +1903,41 @@ bash `.trim().replaceAll('\n', "");
                                 }
                                 else if (command == "-exec-run") {
                                     if (!getProcessFromMap()) {
-                                        buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
-                                            mode = "debug"; //set mode to debug
-                                            try {
-                                                replicateFunction((clientWs) => {
-                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
-                                                });
-                                                // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
-                                                await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), true);
-                                                replicateFunction((clientWs) => {
-                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
-                                                });
-                                                clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res);
-                                                if (!clientSession.gdbProcess)
-                                                    return;
-                                                addProcessToMap(sessionId, clientSession.gdbProcess);
-                                            }
-                                            catch (err) {
-                                                printClientConsoleError("docker error: " + err);
-                                            }
-                                            if (!getThisClientSession().process)
-                                                console.error('Invalid session while starting debug process');
-                                            printClientConsoleDebug("started debugging process.");
-                                            queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
-                                            clientSession.gdbProcess.stdout.on('data', (data) => {
-                                                console.log("GDB Data: " + data.toString());
+                                        if (!clientObj.editorMode.clientCompile)
+                                            buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                                                mode = "debug"; //set mode to debug
+                                                try {
+                                                    replicateFunction((clientWs) => {
+                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
+                                                    });
+                                                    // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
+                                                    await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), true);
+                                                    replicateFunction((clientWs) => {
+                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
+                                                    });
+                                                    clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession);
+                                                    if (!clientSession.gdbProcess)
+                                                        return;
+                                                    addProcessToMap(sessionId, clientSession.gdbProcess);
+                                                }
+                                                catch (err) {
+                                                    printClientConsoleError("docker error: " + err);
+                                                }
+                                                if (!getThisClientSession().process)
+                                                    console.error('Invalid session while starting debug process');
+                                                printClientConsoleDebug("started debugging process.");
+                                                queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
+                                                // clientSession.gdbProcess.stdout.on('data', (data) => {
+                                                //     console.log("GDB Data: " + data.toString())
+                                                // })
+                                                // clientSession.gdbProcess.stderr.on('data', (derr) => {
+                                                //     console.error("GDB Error: " + derr.toString())
+                                                // }) 
                                             });
-                                            clientSession.gdbProcess.stderr.on('data', (derr) => {
-                                                console.error("GDB Error: " + derr.toString());
-                                            });
-                                        });
+                                        else {
+                                            clientSession.process = clientSession.gdbProcess = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession);
+                                            // clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession) 
+                                        }
                                         //     fs.accessSync(filePath)
                                         //     mode="debug"; //set mode to debug
                                         //     gdbProcess = spawn("gdb", ["-q",  "-interpreter=mi", filePath]); //"-ex", "set pagination off", 
@@ -1948,54 +1960,47 @@ bash `.trim().replaceAll('\n', "");
                                         // gdbProcess.stderr.on('data', (derr) => {
                                         //         console.error(derr.toString())
                                         //     })
-                                        app.get("/requestValue", (req, res) => {
-                                            const command = req.query.value;
-                                            const cmdId = parseInt(req.query.cmdId);
-                                            // console.log(clientId + " " + command)
-                                            if (mode != "debug")
-                                                res.status(400).send('Bad Request: GDB process not active');
-                                            if (!clientSession.gdbProcess)
-                                                res.status(400).send('Bad Request: GDB process not active');
-                                            if (!command)
-                                                res.status(400).send('Bad Request: invalid command');
-                                            //res.send({code: fs.readFileSync("user_code.cpp").toString()});
-                                            if (mode != "debug" || !clientSession.gdbProcess || !command)
-                                                return;
-                                            new Promise((resolve, reject) => {
-                                                let gdbBuffer = "";
-                                                const onData = (data) => {
-                                                    gdbBuffer += data.toString();
-                                                    // Check if the full response has arrived
-                                                    if (gdbBuffer.includes("(gdb)")) {
-                                                        if (parseInt(gdbBuffer.toString().match(/(?<=\$)\d*/)?.[0]) === cmdId + 1) {
-                                                            // We have everything, remove listener
-                                                            clientSession.gdbProcess?.stdout?.removeListener("data", onData);
-                                                            resolve();
-                                                            res.send(({
-                                                                error: false,
-                                                                input: false,
-                                                                type: types_1.WebSocketMessageType.Output,
-                                                                messageType: types_1.ConsoleMessageType.Debug,
-                                                                body: gdbBuffer,
-                                                                message: command?.toString(),
-                                                                cmdId: cmdId,
-                                                                msgId: clientSession.gdbProcess?.pid
-                                                            }));
-                                                        }
-                                                        else
-                                                            gdbBuffer = "";
-                                                    }
-                                                };
-                                                if (clientSession.gdbProcess && clientSession.gdbProcess.stdin && clientSession.gdbProcess.stdout) {
-                                                    // Use .on instead of .once, because GDB output can be split
-                                                    clientSession.gdbProcess?.stdout?.on("data", onData);
-                                                    // Send the command
-                                                    clientSession.gdbProcess?.stdin?.write("print " + command + "\n");
-                                                }
-                                                else
-                                                    console.error("GDB process not found for session " + sessionId);
-                                            });
-                                        });
+                                        // app.get("/requestValue", (req,res) => {
+                                        //     const command = req.query.value;
+                                        //     const cmdId: number = parseInt(req.query.cmdId as string);
+                                        //     // console.log(clientId + " " + command)
+                                        //     if(mode != "debug") res.status(400).send('Bad Request: GDB process not active');
+                                        //     if(!clientSession.gdbProcess)  res.status(400).send('Bad Request: GDB process not active');
+                                        //     if(!command)     res.status(400).send('Bad Request: invalid command');
+                                        //     //res.send({code: fs.readFileSync("user_code.cpp").toString()});
+                                        //     if(mode != "debug" || !clientSession.gdbProcess || !command) return;
+                                        //     new Promise<void>((resolve, reject) => {
+                                        //         let gdbBuffer = "";
+                                        //         const onData = (data: Buffer) => {
+                                        //                 gdbBuffer += data.toString();
+                                        //                     // Check if the full response has arrived
+                                        //             if (gdbBuffer.includes("(gdb)")) {
+                                        //                 if(parseInt((gdbBuffer.toString().match(/(?<=\$)\d*/)?.[0] as string)) === cmdId+1) {
+                                        //                 // We have everything, remove listener
+                                        //                 clientSession.gdbProcess?.stdout?.removeListener("data", onData);
+                                        //                 resolve();
+                                        //                  res.send(({
+                                        //                     error: false,
+                                        //                     input: false,
+                                        //                     type: WebSocketMessageType.Output,
+                                        //                     messageType: ConsoleMessageType.Debug,
+                                        //                     body: gdbBuffer,
+                                        //                     message: command?.toString(),
+                                        //                     cmdId: cmdId,
+                                        //                     msgId: clientSession.gdbProcess?.pid
+                                        //                 }));
+                                        //                 } else gdbBuffer = "";
+                                        //             }
+                                        //         };
+                                        //         if(clientSession.gdbProcess && clientSession.gdbProcess.stdin && clientSession.gdbProcess.stdout) 
+                                        //         {
+                                        //             // Use .on instead of .once, because GDB output can be split
+                                        //             clientSession.gdbProcess?.stdout?.on("data", onData);
+                                        //             // Send the command
+                                        //             clientSession.gdbProcess?.stdin?.write("print " + command + "\n");
+                                        //         } else console.error("GDB process not found for session " + sessionId);
+                                        //     });
+                                        // });
                                         // try {
                                         //     // gdbProcess.stdout?.on("data", (data) => {
                                         //     //     console.log(data.toString())
@@ -2028,7 +2033,8 @@ bash `.trim().replaceAll('\n', "");
                                         await queueCommand(getProcessFromMap(), command, sessionId); // gdbProcess.stdin.write(message + "\n");
                                 }
                                 else if (command === "-exec-quit") {
-                                    onClosedProcess(); //.then(() => {
+                                    closeProcess(clientSession.process);
+                                    //  onClosedProcess()//.then(() => {
                                     printClientConsoleInfo("Closed process");
                                     replicateFunction((clientWs) => {
                                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, body: "gdb", clientId: clientId })); // Send GDB output to the client

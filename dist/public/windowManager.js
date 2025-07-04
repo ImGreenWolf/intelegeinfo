@@ -450,6 +450,7 @@ export class EditorWindowTab {
     constructor(name, element, content, parentWindow, disableDrag) {
         this.name = name;
         this.content = content;
+        createEditorTab;
         this.element = element;
         if (!disableDrag)
             this.element.draggable = true;
@@ -536,7 +537,7 @@ export function updateCatalouge() {
         catalouge?.appendChild(tab.element);
     }
 }
-function createEditorTab(name, content, disableDrag) {
+export function createEditorTab(name, content, disableDrag) {
     return new EditorWindowTab(name, createNode('span', { className: "file-tab", html: [createNode('p', { innerText: name })] }), content, undefined, disableDrag);
 }
 async function loadLanguages() {

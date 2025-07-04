@@ -55,7 +55,7 @@ export declare class EditorSession {
     clientsSockets: Map<UUID, WebSocket>;
     messageIndex: number;
     clientCommandBuffer: Map<UUID, CommandBuffer>;
-    process: ChildProcess | undefined;
+    process: DebugProcess | ChildProcess | undefined;
     msgMap: Map<number, WSMessage>;
     brainrotNames: string[];
     currentbuildTag: string;
@@ -65,7 +65,7 @@ export declare class EditorSession {
         fileName: string;
         editorMode: EditorMode;
     };
-    gdbProcess: ChildProcess | undefined;
+    gdbProcess: DebugProcess | undefined;
     program: ChildProcess | undefined;
     displayServer: number;
     hostClient: ClientObject;
@@ -100,5 +100,6 @@ export declare class EditorFile {
     openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;
     changeContent(content: any): void;
 }
+import DebugProcess from './editor-modes/ProcessTypes';
 export declare function randomHexColor(): string;
 export {};

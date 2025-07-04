@@ -10,11 +10,12 @@ class EditorMode {
     static dockerSafeTag;
     static extension;
     static defaultText;
-    isExecutable = true;
+    static clientCompile = false;
+    static isExecutable = true;
     runParams(clientObj) {
         return '';
     }
-    isInterpreter = false; // used for JIT languages like python or js
+    static isInterpreter = false; // used for JIT languages like python or js
     checkCodeSyntax;
     shouldRebuild(sessionObj, clientObj) {
         return false;
@@ -25,7 +26,7 @@ class EditorMode {
     onBuild(res, clientSession) {
         return 0;
     }
-    startDebugging(res) {
+    startDebugging(res, clientObj, sessionObj) {
         return;
     }
     sendError(err, fatal = false) {

@@ -116,12 +116,12 @@ export class EditorSession {
     clientsSockets: Map<UUID, WebSocket> = new Map();
     messageIndex: number = 1;
     clientCommandBuffer: Map<UUID, CommandBuffer> = new Map();
-    process: ChildProcess | undefined;
+    process: DebugProcess | ChildProcess | undefined;
     msgMap: Map<number, WSMessage> = new Map();
     brainrotNames: string[];
     currentbuildTag = '';
     sessionContainer: {process: ChildProcess, imageName: string, fileName: string, editorMode: EditorMode};
-    gdbProcess: ChildProcess | undefined;
+    gdbProcess: DebugProcess | undefined;
     program: ChildProcess | undefined;
     displayServer: number = 0;
 
@@ -605,6 +605,7 @@ Tralalero Tralala`.split('\n')
 
 // }
 import * as EditorModes from './editor-modes/'
+import DebugProcess from './editor-modes/ProcessTypes';
 function getEditorMode(fileName: string): typeof EditorModes.EditorMode
 {
     const ext = fileName.trim().split('.')[1]

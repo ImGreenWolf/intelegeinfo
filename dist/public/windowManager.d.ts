@@ -31,6 +31,7 @@ export declare class EditorWindowTab {
     remove(): void;
 }
 export declare function updateCatalouge(): void;
+export declare function createEditorTab(name: any, content: any, disableDrag?: any): EditorWindowTab;
 export declare function showDefaultScreen(): Promise<void>;
 declare var Tooltip: any;
 declare class TokenTooltip extends Tooltip {

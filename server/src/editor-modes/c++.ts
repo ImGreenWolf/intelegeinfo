@@ -1,9 +1,8 @@
-import { execSync, spawn } from "child_process";
+import { ChildProcess, execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
 import { EditorFile, EditorSession } from "../types";
 import path from "path";
-import { rootDirName } from "../server";
-
+import DebugProcess from "./ProcessTypes";
 class CppMode extends EditorMode {
 
     static name = 'C++'
@@ -92,8 +91,8 @@ int main()
         })
     }
 
-    startDebugging(res) {
-        return spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+    startDebugging(res, clientObj) {
+        return new CPPDebugger(res, clientObj)
     }
 
       checkCodeSyntax = (sessionObj: EditorSession, file: EditorFile): Promise<string> =>
@@ -126,7 +125,30 @@ int main()
         }
 
 }
+ class CPPDebugger extends DebugProcess
+    {
+        sendCommand: (string: any) => void;
+        onResponse: () => string;
+        kill: () => void;
+        addListener: (ev: any, func: (code: any) => void) => void 
+        = function (ev, func) {
+            switch (ev) 
+            { 
+                case 'close':
+                    process.addListener(ev, func)
+            }
+            return func
+        }
+        public process: ChildProcess
 
+        constructor(res, clientObj) {
+            super()
+
+            this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+
+            
+        }
+    }
 
 export default CppMode
 

@@ -17,7 +17,6 @@ import archiver from 'archiver';
 const app = express();
 const compression = require('compression')
 import SharedStateManager from "./sessionStore"
-
 import { Prisma, Problem } from "../../generated/prisma";
 import prisma from "./dbClient";
 import problemCreator from './problemCreator.js'
@@ -1036,14 +1035,14 @@ function endConnectionPromise()
     
     }
 
-    function addProcessToMap(sessionId: UUID, process: ChildProcess) {
+    function addProcessToMap(sessionId: UUID, process: DebugProcess | ChildProcess) {
         getThisClientSession().process = process; 
     }
     
     function removeRunningProcessFromMap() {
         getThisClientSession().process = undefined;
     }
-    function getProcessFromMap(clientSession?: EditorSession): ChildProcess | undefined {
+    function getProcessFromMap(clientSession?: EditorSession): DebugProcess | ChildProcess | undefined {
         if(clientSession)
             return clientSession.process;
         else
@@ -2025,7 +2024,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 case WebSocketMessageType.Console:
                      if(getProcessFromMap()!=undefined)
                      {
-                        getProcessFromMap()?.stdin?.write(messageJSON.command + "\n");
+                        if(!(getProcessFromMap() as ChildProcess).stdin)
+                            return
+                        (getProcessFromMap() as ChildProcess).stdin.write(messageJSON.command + "\n");
                         dataTimeout = setTimeout(() => {
                             replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                         }, 200);
@@ -2213,7 +2214,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                          function runProgram(): Promise<void>[]
                                   {
                                     if(clientSession.files.length == 0)
-                                        reject('No files in session')
+                                        resolveExectute()
                                     
                                     const mainPromise = new Promise<void>((resolve, reject) => {   
                                         if(!clientSession.clientsActiveFile.get(clientId))
@@ -2221,6 +2222,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`)
                                             return reject('No client active file')
                                         }
+                                        if(!clientObj.editorMode.clientCompile)
                                         buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                             if(res == null) return resolve()
@@ -2243,7 +2245,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                 } 
 
 
-                                                if(!clientObj.getFile(res.fileName).editorMode.isInterpreter)
+                                                if(!clientObj.editorMode.isInterpreter)
                                                 {
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
@@ -2273,6 +2275,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                 reject(err)
                                             }
                                         });
+                                        else 
+                                        {
+                                            clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession) 
+                                            resolve()
+                                        }
                                        })
                                        
                                        return [spawnPromise, mainPromise]
@@ -2368,6 +2375,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         {
                             
                             if(!getProcessFromMap()) {
+                                if(!clientObj.editorMode.clientCompile)
                                 buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then(async res => {
                                                
                                     mode="debug"; //set mode to debug
@@ -2384,7 +2392,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
                                         });
 
-                                        clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res)
+                                        clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession)
                                         if(!clientSession.gdbProcess)
                                             return;
                                         addProcessToMap(sessionId, clientSession.gdbProcess);
@@ -2397,15 +2405,20 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                
                                     queueCommand(getProcessFromMap() as ChildProcess,'-break-insert 1\n', sessionId);
                                        
-                                    clientSession.gdbProcess.stdout.on('data', (data) => {
-                                        console.log("GDB Data: " + data.toString())
-                                    })
+                                    // clientSession.gdbProcess.stdout.on('data', (data) => {
+                                    //     console.log("GDB Data: " + data.toString())
+                                    // })
 
-                                    clientSession.gdbProcess.stderr.on('data', (derr) => {
-                                        console.error("GDB Error: " + derr.toString())
-                                    }) 
+                                    // clientSession.gdbProcess.stderr.on('data', (derr) => {
+                                    //     console.error("GDB Error: " + derr.toString())
+                                    // }) 
 
                                 })
+                                else 
+                                {
+                                    clientSession.process = clientSession.gdbProcess = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession)
+                                    // clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession) 
+                                }
 
 
                             //     fs.accessSync(filePath)
@@ -2434,60 +2447,60 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             // gdbProcess.stderr.on('data', (derr) => {
                             //         console.error(derr.toString())
                             //     })
-                                app.get("/requestValue", (req,res) => {
-                                    const command = req.query.value;
-                                    const cmdId: number = parseInt(req.query.cmdId as string);
-                                    // console.log(clientId + " " + command)
-                                    if(mode != "debug") res.status(400).send('Bad Request: GDB process not active');
-                                    if(!clientSession.gdbProcess)  res.status(400).send('Bad Request: GDB process not active');
-                                    if(!command)     res.status(400).send('Bad Request: invalid command');
-                                    //res.send({code: fs.readFileSync("user_code.cpp").toString()});
-                                    if(mode != "debug" || !clientSession.gdbProcess || !command) return;
+                                // app.get("/requestValue", (req,res) => {
+                                //     const command = req.query.value;
+                                //     const cmdId: number = parseInt(req.query.cmdId as string);
+                                //     // console.log(clientId + " " + command)
+                                //     if(mode != "debug") res.status(400).send('Bad Request: GDB process not active');
+                                //     if(!clientSession.gdbProcess)  res.status(400).send('Bad Request: GDB process not active');
+                                //     if(!command)     res.status(400).send('Bad Request: invalid command');
+                                //     //res.send({code: fs.readFileSync("user_code.cpp").toString()});
+                                //     if(mode != "debug" || !clientSession.gdbProcess || !command) return;
                                     
-                                    new Promise<void>((resolve, reject) => {
-                                        let gdbBuffer = "";
+                                //     new Promise<void>((resolve, reject) => {
+                                //         let gdbBuffer = "";
                                 
-                                        const onData = (data: Buffer) => {
+                                //         const onData = (data: Buffer) => {
                                            
-                                                gdbBuffer += data.toString();
-                                                    // Check if the full response has arrived
-                                            if (gdbBuffer.includes("(gdb)")) {
-                                                if(parseInt((gdbBuffer.toString().match(/(?<=\$)\d*/)?.[0] as string)) === cmdId+1) {
+                                //                 gdbBuffer += data.toString();
+                                //                     // Check if the full response has arrived
+                                //             if (gdbBuffer.includes("(gdb)")) {
+                                //                 if(parseInt((gdbBuffer.toString().match(/(?<=\$)\d*/)?.[0] as string)) === cmdId+1) {
                                                     
-                                                // We have everything, remove listener
-                                                clientSession.gdbProcess?.stdout?.removeListener("data", onData);
-                                                resolve();
-                                                 res.send(({
-                                                    error: false,
-                                                    input: false,
-                                                    type: WebSocketMessageType.Output,
-                                                    messageType: ConsoleMessageType.Debug,
-                                                    body: gdbBuffer,
-                                                    message: command?.toString(),
-                                                    cmdId: cmdId,
-                                                    msgId: clientSession.gdbProcess?.pid
-                                                }));
+                                //                 // We have everything, remove listener
+                                //                 clientSession.gdbProcess?.stdout?.removeListener("data", onData);
+                                //                 resolve();
+                                //                  res.send(({
+                                //                     error: false,
+                                //                     input: false,
+                                //                     type: WebSocketMessageType.Output,
+                                //                     messageType: ConsoleMessageType.Debug,
+                                //                     body: gdbBuffer,
+                                //                     message: command?.toString(),
+                                //                     cmdId: cmdId,
+                                //                     msgId: clientSession.gdbProcess?.pid
+                                //                 }));
 
-                                                } else gdbBuffer = "";
+                                //                 } else gdbBuffer = "";
                                 
-                                            }
+                                //             }
                                             
                                 
                                         
                                                 
                                             
-                                        };
-                                        if(clientSession.gdbProcess && clientSession.gdbProcess.stdin && clientSession.gdbProcess.stdout) 
-                                        {
-                                            // Use .on instead of .once, because GDB output can be split
-                                            clientSession.gdbProcess?.stdout?.on("data", onData);
+                                //         };
+                                //         if(clientSession.gdbProcess && clientSession.gdbProcess.stdin && clientSession.gdbProcess.stdout) 
+                                //         {
+                                //             // Use .on instead of .once, because GDB output can be split
+                                //             clientSession.gdbProcess?.stdout?.on("data", onData);
                                     
-                                            // Send the command
-                                            clientSession.gdbProcess?.stdin?.write("print " + command + "\n");
-                                        } else console.error("GDB process not found for session " + sessionId);
-                                    });
+                                //             // Send the command
+                                //             clientSession.gdbProcess?.stdin?.write("print " + command + "\n");
+                                //         } else console.error("GDB process not found for session " + sessionId);
+                                //     });
                     
-                                });
+                                // });
                                 // try {
                                 //     // gdbProcess.stdout?.on("data", (data) => {
                                 //     //     console.log(data.toString())
@@ -2526,8 +2539,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 
                 
                         } else if(command==="-exec-quit") {
-                            
-                             onClosedProcess()//.then(() => {
+                            closeProcess(clientSession.process)
+                            //  onClosedProcess()//.then(() => {
                                 printClientConsoleInfo("Closed process")
                                 replicateFunction((clientWs) => {
                                     clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: "gdb", clientId: clientId}));  // Send GDB output to the client
@@ -2594,11 +2607,10 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         //   fs.unlinkSync(filePath)
     }
 
-    async function closeProcess(process: ChildProcess | undefined, processId?: UUID): Promise<void>
+    async function closeProcess(process: DebugProcess | ChildProcess | undefined, processId?: UUID): Promise<void>
     {
         try {
             return await new Promise<void>((resolve, reject) => {
-
                 if (process) {
 
                     if (!process.killed && process) {
@@ -2618,7 +2630,6 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             
                         }, 3000);
                     }
-
                     else {
                         onClosedProcess();
                         resolve();
@@ -2780,6 +2791,7 @@ import { parseGDBString } from "./gdbUtilities";
 import { run } from "googleapis/build/src/apis/run";
 import e from "express";
 import { JsonArray } from "../../generated/prisma/runtime/library";
+import DebugProcess from "./editor-modes/ProcessTypes";
 
 
 

@@ -1,5 +1,6 @@
 import { ChildProcess } from "child_process";
 import { ClientObject, EditorFile, EditorSession } from "../types";
+import DebugProcess from "./ProcessTypes";
 
 // maybe change from class to interface
 abstract class EditorMode {
@@ -13,14 +14,15 @@ abstract class EditorMode {
     static dockerSafeTag: string
     static extension: string[];
     static defaultText: string;
+    static clientCompile = false
 
-    isExecutable: boolean = true
+    static isExecutable: boolean = true
     runParams(clientObj): string
     {
         return '';
     }
-    isInterpreter: boolean = false; // used for JIT languages like python or js
-    abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): ChildProcess | Promise<ChildProcess>
+    static isInterpreter: boolean = false; // used for JIT languages like python or js
+    abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): ChildProcess | Promise<ChildProcess> | undefined
     abstract compile(res: any, file: EditorFile, isDebugging?: boolean)
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<any>
 
@@ -36,7 +38,7 @@ abstract class EditorMode {
     {
         return 0;
     }
-    startDebugging(res): ChildProcess
+    startDebugging(res, clientObj, sessionObj): DebugProcess
     {
         return
     }

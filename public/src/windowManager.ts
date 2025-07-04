@@ -585,6 +585,7 @@ export class EditorWindowTab {
     {   
         this.name = name
         this.content = content
+        createEditorTab
         this.element = element;
         if(!disableDrag)
             this.element.draggable =  true
@@ -696,7 +697,7 @@ export function updateCatalouge()
     
 }
 
-function createEditorTab(name, content, disableDrag?)
+export function createEditorTab(name, content, disableDrag?)
 {
     return new EditorWindowTab(name, createNode('span', {className: "file-tab", html: [createNode('p', {innerText: name})]}), content, undefined, disableDrag)
 }
