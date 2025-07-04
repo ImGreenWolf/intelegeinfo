@@ -25,6 +25,7 @@ int main()
     cout << "Intelege info" << endl;
     
     return 0;
+
 }`;
     static dockerFile = `
     # Base image with GCC
