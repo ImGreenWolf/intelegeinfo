@@ -669,7 +669,7 @@ h1.center
             min-width: 25px;
             max-height: 200px;
             height: 100%;
-            box-sizing: border-box;
+            
             min-height: 25px;
             aspect-ratio: 1;
             background-color: rgb(26, 28, 31);;
@@ -762,7 +762,7 @@ h1.center
             padding: 1em;
             // height: 100%;
             box-sizing: content-box;
-            max-height: 600px;
+            max-height: 450px;
             height: 100%;
             img {
                 width: 100%;
@@ -1021,7 +1021,10 @@ h1.center
         position: relative;
         grid-auto-flow: initial;
         height: 400px;
-        
+        li 
+        {
+            box-sizing: border-box;
+        }
          grid-auto-flow: initial;
         & li:last-child {
             position: absolute;
