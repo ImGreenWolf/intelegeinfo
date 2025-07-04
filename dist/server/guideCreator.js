@@ -64,7 +64,7 @@ router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
     <style>
         #main {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             height: 100vh;
             margin-top: 20px;
         }
@@ -105,10 +105,11 @@ ${htmlHead(guide.name, guide.description, guide.category)}
             <textarea type="text"  name="content" id="content">${guide.content}</textarea>
             <button type="submit">Submit</button>
         </form>
-
+        <article style="margin: 0;">
         <content id="preview">
-
+        
         </content>
+    </article>
     </div>
     <script>
         const preview = document.getElementById('preview')
@@ -225,7 +226,7 @@ router.post('/submit', (req, res) => {
             author: "Radu" // TODO Replace with user name
         }
     }).then(guide => {
-        res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
+        res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
     }).catch(() => {
         try {
             dbClient_1.default.guide.create({
@@ -236,7 +237,7 @@ router.post('/submit', (req, res) => {
                     category,
                 }
             }).then((guide) => {
-                res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <content>${content}</content>`);
+                res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
             }).catch(err => {
                 res.status(500).send('Failed to create problem: ' + err);
             });
