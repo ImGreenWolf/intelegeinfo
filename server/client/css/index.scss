@@ -664,9 +664,11 @@ h1.center
         li 
         {
             max-width: 200px;
-            min-width: 75px;
+            width: 100%;
+            min-width: 25px;
             max-height: 200px;
-            min-height: 75px;
+            height: 100%;
+            min-height: 25px;
             aspect-ratio: 1;
             background-color: rgb(26, 28, 31);;
             padding: 2em;
