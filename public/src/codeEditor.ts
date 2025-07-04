@@ -2314,7 +2314,7 @@ export function copySessionLink() {
       document.getElementsByClassName('connect-info')[0].appendChild(share)
       if(canShare)
         share.onclick = () => {
-          navigator.share({url: data.link, title: "Link colaborare intelegeinfo", text: "Vizualizeaza si editeaza cod alaturi de mine: \n\n"})
+          navigator.share({url: data.link, title: "Link colaborare intelegeinfo", text: "Vizualizeaza si editeaza cod alaturi de mine: \n"})
           .then(() => displayMessagePopup("Lnkul a fost impartasit!"))
           .catch(() => displayMessagePopup("Scuze, nu am putut copia linkul..\n Copiaza-l manual din bara de adresa!"))
         }
