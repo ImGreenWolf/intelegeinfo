@@ -575,7 +575,6 @@ h1.center {
   position: relative;
   padding: 1em;
   box-sizing: content-box;
-  max-height: 450px;
   height: 100%;
 }
 #features .content-list .bento-card .bento-image img {

@@ -1,12 +1,10 @@
 import { ChildProcess, execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
 import { ClientObject, EditorFile, EditorSession } from "../types";
-import path from "path";
-import { rootDirName } from "../server";
-import { ConsoleMessageType, WebSocketMessageType } from "../../../dist/shared/types.js";
+import { WebSocketMessageType } from "../../../dist/shared/types.js";
 import inspector from 'inspector'
-import fs from 'fs'
 import DebugProcess from "./ProcessTypes";
+
 class javascript extends EditorMode {
 
     static name = 'JS'
@@ -17,7 +15,8 @@ class javascript extends EditorMode {
     static extension: string[] = ['js'];
     static dockerSafeTag: string = 'js'
     static defaultText: string =
-    `//    Compilator C++ online | intelegeinfo.ro
+`//    Compilator C++ online | intelegeinfo.ro
+
     console.log('Intelege info')
 `
     static dockerFile = ''

@@ -14,6 +14,7 @@ class javascript extends BaseEditorMode_1.default {
     static extension = ['js'];
     static dockerSafeTag = 'js';
     static defaultText = `//    Compilator C++ online | intelegeinfo.ro
+
     console.log('Intelege info')
 `;
     static dockerFile = '';
