@@ -655,7 +655,7 @@ h1.center
         display: grid;
         gap: 2em;
         color: rgb(255, 255, 255);
-        justify-content: start;
+        justify-content: space-evenly;
         grid-template-rows: 1fr;
         position: relative;
         grid-auto-flow: column;
@@ -694,7 +694,7 @@ h1.center
         }
     }
 
-    @for $i from 1 through 10 {
+    @for $i from 1 through 5 {
         li:nth-child(#{$i}) {
             transform: translateY(calc(15px * math.cos($i) + 3em)) rotate(calc(-5deg * math.sin($i) + 2deg * math.cos($i * 3)));
         }
@@ -748,22 +748,22 @@ h1.center
         position: relative;
         display: flex;
         flex-direction: column;
+        // justify-content: space-between;
         overflow: hidden;
         --color: rgb(25,25,25);
         // background-image: url(/media/noise.svg);
         .bento-image 
         {
             position: relative;
-            padding: 10px;
+            padding: 1em;
             // height: 100%;
             box-sizing: content-box;
             max-height: 600px;
-            
+            height: 100%;
             img {
                 width: 100%;
                 max-height: 100%;
                 max-width: 100%;
-                height: 100%;
                 object-fit: cover;
             }
              
@@ -892,7 +892,7 @@ h1.center
     min-height: 300px;
     div {
         display: flex;
-        gap: 3em;
+        row-gap: 3em;
         flex-wrap: wrap;
         justify-content: space-around;
         position: relative;
@@ -949,6 +949,19 @@ h1.center
     {
         max-width:30em;
     }
+
+    #features .content-list {
+        grid-template-areas: 
+    "a a a c"
+    "b g g d"
+    "e f f d";
+        grid-template-columns: 250px 50px 250px 300px;
+        grid-template-rows: 500px auto;
+        .bento-card
+        {
+            justify-content: flex-end;
+        }
+    }
  }
 
  @media screen and (max-width: 1024px){
@@ -1002,6 +1015,7 @@ h1.center
         grid-template-columns: auto auto;
         max-width: 100%;
         position: relative;
+        
          grid-auto-flow: initial;
         & li:last-child {
             position: absolute;
