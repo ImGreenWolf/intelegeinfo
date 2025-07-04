@@ -68,7 +68,7 @@ router.get('/guideCreator/load/:name', authMiddleware, (req: Request, res: Respo
         #main {
             display: flex;
             justify-content: space-around;
-            height: 100vh;
+            min-height: 100vh;
             margin-top: 20px;
         }
         #preview {

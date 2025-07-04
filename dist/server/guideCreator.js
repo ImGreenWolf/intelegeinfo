@@ -65,7 +65,7 @@ router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
         #main {
             display: flex;
             justify-content: space-around;
-            height: 100vh;
+            min-height: 100vh;
             margin-top: 20px;
         }
         #preview {
@@ -106,10 +106,10 @@ ${htmlHead(guide.name, guide.description, guide.category)}
             <button type="submit">Submit</button>
         </form>
         <article style="margin: 0;">
-        <content id="preview">
-        
-        </content>
-    </article>
+            <content id="preview">
+            
+            </content>
+        </article>
     </div>
     <script>
         const preview = document.getElementById('preview')
