@@ -3262,7 +3262,7 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
       {
         if(data)
           writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time +"</span>ms" + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
-        if(messageJson.sandbox)
+        else if(messageJson.sandbox)
           activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox)!)
           else  writeOutput("Forced closed program." + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
       
