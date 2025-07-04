@@ -468,11 +468,13 @@ header
     }
     .client-popup-close
     {
+        @extend .icon;
+        background-image: url(../media/icons/close.svg);
         border-radius: 50%;
-        width: 25px;
-        aspect-ratio: 1;
+        // width: 25px;
+        // aspect-ratio: 1;
         background-color: transparent;
-        border: 1px solid theme.$border-color;
+        border: 2px solid theme.$border-color;
     }
     & div
     {
@@ -1506,7 +1508,7 @@ pointer-events: none;
             display: flex;
             align-items: center;
         }
-        #copy-link
+        .connect-info button
         {
             width: 25px;
             height: 25px;
@@ -1958,8 +1960,8 @@ form input[type=checkbox]
         top: 50%;
         transform: translateY(-50%);
         // pointer-events: none;
-        background: theme.$border-color;
-        border: 2px solid color.adjust($color: theme.$border-color, $whiteness: 5%);
+        background: color.adjust($color: theme.$text-color, $lightness: -5%);;
+        border: 2px solid color.adjust($color: theme.$text-color, $lightness: -20%);
         border-radius: 50%;
         box-sizing: border-box;
         box-shadow: 
@@ -2325,10 +2327,15 @@ form#codeForm {
 
 .button-icon
 {
-     display: inline-block; 
+    @extend .icon;
+     margin: 0lh 0.25lh -0.3rem 0lh;
+
+}
+.icon
+{
+    display: inline-block; 
      width: 1lh; 
      height: 1lh; 
-     margin: 0lh 0.25lh -0.3rem 0lh;
      background-repeat: no-repeat;
      background-size: cover;
      background-position: center;

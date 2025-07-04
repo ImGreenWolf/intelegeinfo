@@ -722,7 +722,13 @@ export function displayMessagePopup(message) {
         if (classList.split[' '])
             for (const classname of classList.split[' '])
                 popup.classList.add(classname);
-        popup.innerHTML = `<button class="client-popup-close">x</button><div>${innerHTML}</div>`;
+        // popup.innerHTML = `<button class="client-popup-close"></button><div>${innerHTML}</div>`;
+        const close = createNode('button', { className: 'client-popup-close' });
+        close.onclick = () => {
+            popup.remove();
+        };
+        popup.appendChild(close);
+        popup.appendChild(createNode('div', { htmlSting: innerHTML }));
         document.body.appendChild(popup);
         setTimeout(() => {
             popup.remove();
@@ -1641,7 +1647,8 @@ export function copySessionLink() {
         <img id="data.qrurl"> 
         <p>or</p>
         <div class='connect-info'>
-          <p class='code' id="data.code">xxxxxx</p><button id='copy-link'>copy</button>
+          <p class='code' id="data.code">xxxxxx</p>
+          <button id='copy-link' class='icon' style="background-image: url(../media/icons/link.svg)"></button>
         </div>
       </div>
     </div>
@@ -1737,8 +1744,19 @@ export function copySessionLink() {
                 }
             };
             document.getElementById('copy-link').onclick = () => {
-                displayMessagePopup(data.link);
+                navigator.clipboard.writeText(data.link)
+                    .then(() => displayMessagePopup("Lnkul a fost copiat!"))
+                    .catch(() => displayMessagePopup("Scuze, nu am putut copia linkul..\n Copiaza-l manual din bara de adresa!"));
             };
+            const canShare = navigator.canShare({ url: data.link });
+            const share = createNode('button', { className: 'icon', css: `background-image: url(../media/icons/share${canShare ? '' : '_off'}.svg)` });
+            document.getElementsByClassName('connect-info')[0].appendChild(share);
+            if (canShare)
+                share.onclick = () => {
+                    navigator.share({ url: data.link, title: "Editeaza cu mine!", text: "Vizualizeaza si editeaza programul meu pe intelegeinfo.ro" })
+                        .then(() => displayMessagePopup("Lnkul a fost impartasit!"))
+                        .catch(() => displayMessagePopup("Scuze, nu am putut copia linkul..\n Copiaza-l manual din bara de adresa!"));
+                };
         });
 }
 export function createFile(fileName = "untitled.txt", fileContent, index) {

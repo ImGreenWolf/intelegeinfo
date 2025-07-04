@@ -1,4 +1,4 @@
-import { client, compileErrorObjs, createFile, dirtyFile, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
+import { client, compileErrorObjs, createFile, dirtyFile, displayMessagePopup, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
 import { createNode } from "./components.js";
 export const cursorManagers = new Map();
 const preloadTabs = false;
@@ -280,6 +280,8 @@ export class EditorWindow {
                 fileName: name,
                 saveFile: true,
             })); // Send code to server on change // TODO Remove code from body.
+            if (!navigator.onLine)
+                displayMessagePopup('Se pare ca nu esti conectat la internet!');
         });
         this.editor.on("changeSelection", () => {
             if (!this.activeTab)

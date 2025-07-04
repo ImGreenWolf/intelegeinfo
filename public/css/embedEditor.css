@@ -436,11 +436,10 @@ header {
   padding: 0.25em 1em;
 }
 .client-popup .client-popup-close {
+  background-image: url(../media/icons/close.svg);
   border-radius: 50%;
-  width: 25px;
-  aspect-ratio: 1;
   background-color: transparent;
-  border: 1px solid rgb(31, 31, 31);
+  border: 2px solid rgb(31, 31, 31);
 }
 .client-popup div {
   width: 100%;
@@ -1232,7 +1231,7 @@ value {
   display: flex;
   align-items: center;
 }
-.share-container #connect-data-inner #copy-link {
+.share-container #connect-data-inner .connect-info button {
   width: 25px;
   height: 25px;
   font-size: 10px;
@@ -1550,8 +1549,8 @@ form input[type=checkbox]::after {
   height: 1.25em;
   top: 50%;
   transform: translateY(-50%);
-  background: rgb(31, 31, 31);
-  border: 2px solid rgb(41.6666666667, 41.6666666667, 41.6666666667);
+  background: rgb(242.25, 242.25, 242.25);
+  border: 2px solid #cccccc;
   border-radius: 50%;
   box-sizing: border-box;
   box-shadow: -3px 0px 5px 1px rgba(0, 0, 0, 0.5);
@@ -1826,10 +1825,13 @@ form#codeForm {
 }
 
 .button-icon {
+  margin: 0lh 0.25lh -0.3rem 0lh;
+}
+
+.icon, .client-popup .client-popup-close, .button-icon {
   display: inline-block;
   width: 1lh;
   height: 1lh;
-  margin: 0lh 0.25lh -0.3rem 0lh;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

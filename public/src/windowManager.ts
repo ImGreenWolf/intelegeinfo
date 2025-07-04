@@ -1,5 +1,5 @@
 import  Ace  from "ace-builds";
-import { client, CompileError, compileErrorObjs, createFile, dirtyFile, displayBlankEditor, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, onFileSessionUpdated, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
+import { client, CompileError, compileErrorObjs, createFile, dirtyFile, displayBlankEditor, displayMessagePopup, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, onFileSessionUpdated, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
 import { createNode } from "./components.js";
 declare const ace: typeof Ace;
 
@@ -343,7 +343,7 @@ export class EditorWindow {
             
             windowEditor.renderer.updateFull();
             parsedCode = parseCode();
-        
+            
             if (isRemoteChange) return;
                 const code = windowEditor.getValue();
         
@@ -359,6 +359,9 @@ export class EditorWindow {
                 saveFile: true,
                 })
             ); // Send code to server on change // TODO Remove code from body.
+
+            if(!navigator.onLine)
+                displayMessagePopup('Se pare ca nu esti conectat la internet!')
         });
         
         this.editor.on("changeSelection", () => {
