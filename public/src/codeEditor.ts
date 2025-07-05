@@ -2564,7 +2564,7 @@ export class TokenTooltip extends Tooltip {
 
 ws.addEventListener('close', (ev) => {
   const serviceRestart = ev.code == 1006;
-  console.log(ev.code + " " + ev.reason)
+  console.warn(ev.code, ev.reason)
   const socketStopped = document.createElement('div')
   socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error')
   const socketText = document.createElement('p')

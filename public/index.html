@@ -16,7 +16,7 @@
     <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8688715521861715"
      crossorigin="anonymous"></script> -->
     <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.4/dist/lenis.css">
+
 
 
     <meta property="og:title" content="Intelegeinfo" />
@@ -25,17 +25,6 @@
     <meta property="og:image" content="https://intelegeinfo.ro/media/colaboration-demo.png" />
     <meta property="og:description" content="Editorul colaborativ de cod online creat de elevi, pentru elevi." />
 </head>
-
-
-
-
-    <!-- <textarea id="code" rows="10" cols="50">
-#include <iostream>
-int main() {
-    int x = 5;
-    std::cout << "Hello, Debugger!";
-    return 0;
-}</textarea> -->
 
 
 <body>
@@ -77,7 +66,7 @@ int main() {
 
                                 </div>              
                                 <div class="ridge-gradient inset-button black circle">
-                                    <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()"></button>
+                                    <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()" alt="create new file"></button>
                                 </div>
                             </div>
                             <div id="session-controls" class="controls">                   
@@ -183,7 +172,7 @@ int main() {
             </script>
         </div> -->
 
-        <div id="guides" class="content-container">
+        <section id="guides" class="content-container">
             <h1 class="center">Descopera cele mai populare resurse</h1>
             <script type="module">
 
@@ -201,9 +190,9 @@ int main() {
                         }
                 })
             </script>
-        </div>
+        </section>
          
-        <ul class="language-carusel-infinate" id="carousel" style="position: relative;">
+        <section class="language-carusel-infinate" id="carousel" style="position: relative;">
             <img src="media/logos/c++-logo.png" alt="c++ logo" class="available">
             <img src="media/logos/python-logo.webp" alt="python logo" class="available">
             <img src="media/logos/js-logo.png" alt="c++ logo" class="available">
@@ -214,75 +203,15 @@ int main() {
             <img src="media/logos/C-logo.png" alt="python logo">
             <img src="media/logos/html-logo.webp" alt="python logo">
             <img src="media/logos/css-logo.png" alt="python logo">
-        </ul>
-        <div class="content-container" id="features">
+        </section>
+        <section class="content-container" id="features">
             <h1>Ce ofera editorul?</h1>
             <div class="content-list">
-                <!-- <li>
-                    <h2>Colaborare <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p>Creeaze alaturi de colegii sau elevii tai, in timp real. Cu intelegeinfo poti explica mai usor si mai vizual codul tau,
-                        sau sa scrii in chat.
-                        </p>
-                        <img src="media/colaboration-demo.png" alt="The editor with two cursors">
-                    </div>
-                </li>
-                <li>
-                    <h2>Deseneaza <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p>Daca vrei sa arati scheme colegiilor sau eleviilor tai, creaze un fisier .png, .jpeg, etc si deseneaza,
-                        iar ceilalti vor putea vedea in timp real ce desenezi. Si daca doresti, poti salva desenul pe calculator.</p>
-                    </div>
-                </li>
-                <li>
-                    <h2>Aplicatii cu interfata <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p>Creaza aplicatii cu interfata (GUI) si interactioneaza in timp real.</p>
-                        <img src="media/gui-demo.png" alt="A GUI playing snake.">
-                    </div>
-                </li>
-                <li>
-                    <h2>Camera video <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p>Integreaza camera video in programul tau, si foloseste-o ca pe camera de pe dispozitivul tau.</p>
-                    </div>
-                </li>
-                <li>
-                    <h2>Debugger <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p>Afla cum se executa programul tau, valorile variabilelor, adresele de memorie, si multe alte informatii despre acesta.</p>
-                    </div>
-                </li>
-                <li>
-                    <h2>Salveaza <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p>Salveaza-ti proiectele si codul in cont pentru a avea acess la ele mai tarziu.</p>
-                    </div>
-                </li>
-                <li>
-                    <h2>Parteajeaza <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p>Trimite-ti codul mai departe colegiilor sau profesorilor tai, usor si la indemana.</p>
-                    </div>
-                </li>
-                <li>
-                    <h2>Limbaje <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p>Scrie-ti programele in C++ sau in Python. Mai multe limbaje vor aparea in curand!</p>
-                    </div>
-                </li>
-                <li>
-                    <h2>Resurse <button class="custom-button show-section" onclick="this.parentElement.parentElement.classList.toggle('open')"></button></h2>
-                    <div>
-                        <p><a href="/guides">Descopera</a> materialele care iti explica conceptele de baza ale programarii.</p>
-                    </div>
-                </li> -->
-
 
                 <section class="bento-card" style="grid-area: a;">
                     <div class="bento-image">
                         
-                        <img src="media/colaboration-demo.png">
+                        <img src="media/colaboration-demo.png"  alt="colaboration demo">
                     </div>
                     <div class="bento-text">
                         <h2>Colaborare</h2>
@@ -294,7 +223,7 @@ int main() {
                 <section class="bento-card" style="grid-area: b; --color: rgb(28,28,28)">
                     <div class="bento-image">
                         
-                        <img src="media/gui-demo.png">
+                        <img src="media/gui-demo.png"  alt="graphical interface demo">
                     </div>
                     <div class="bento-text">
                         <h2>Programe cu interfata</h2>
@@ -306,7 +235,7 @@ int main() {
                 <section class="bento-card" style="grid-area: c;">
                     <div class="bento-image">
                         
-                        <img src="media/debugger-demo.png">
+                        <img src="media/debugger-demo.png"  alt="debugger demo">
                     </div>
                     <div class="bento-text">
                         <h2>Debugger</h2>
@@ -341,7 +270,7 @@ int main() {
                 <section class="bento-card" style="grid-area: d; --color: rgb(26,26,26)">
                     <div class="bento-image">
                         
-                        <img src="media/autocompletion-demo.png">
+                        <img src="media/autocompletion-demo.png" alt="autocompletion demo">
                     </div>
                     <div class="bento-text">
                         <h2>Autocompletare</h2>
@@ -360,91 +289,19 @@ int main() {
                         <h2>Camera video si microfon</h2>
                         <p>Integreaza camera video in programul tau, si foloseste-o ca pe camera de pe dispozitivul tau.</p>
                     </div>
-                </section>
+                </section>  
+        </div>   
+        </section>
 
-
-                <!-- <ul class="language-carusel" style="position: relative;">
-                        <img src="media/logos/c++-logo.png" alt="c++ logo" class="available">
-                        <img src="media/logos/python-logo.webp" alt="python logo" class="available">
-                        <img src="media/logos/js-logo.png" alt="c++ logo">
-                        <img src="media/logos/ts-logo.svg" alt="python logo">
-                        <img src="media/logos/node.js-logo.webp" alt="c++ logo">
-                        <img src="media/logos/java-logo.webp" alt="python logo">
-                        <img src="media/logos/Go-logo.png" alt="c++ logo">
-                        <img src="media/logos/C-logo.png" alt="python logo">
-                        <img src="media/logos/html-logo.webp" alt="python logo">
-                        <img src="media/logos/css-logo.png" alt="python logo">
-                    </ul> -->
-               
-            </ul>
+    <section id="editor-demo"> 
+        <h1>Incearca editorul!</h1>    
+        <div>
+            <button onclick="window.startIframes(this)"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
+            <iframe seamless width="600" height="500" class="demoEditorFrame" alt="editor demo editor left"></iframe>
+            <iframe seamless width="600" height="500" class="demoEditorFrame" alt="editor demo editor right"></iframe>
         </div>
+    </section>
 
-        
-
-
-        <script>
-            const carousel = document.getElementById('carousel')
-            let offset = 0;
-            let startTime = undefined;
-            let delta = 0;
-            function updateCarousel(timestamp)
-            {
-               
-                delta = timestamp - startTime
-                
-                
-                let i=0
-                for(const elem of carousel.children)
-                {
-                    
-                    elem.style.left = (offset +  (carousel.clientWidth+300)/carousel.children.length*i++ + 300/2)%(carousel.clientWidth+300)-300 + 'px' 
-                }
-                offset += 1
-                startTime=timestamp
-                requestAnimationFrame(updateCarousel)
-            }
-            requestAnimationFrame(updateCarousel)
-        </script>
-
-        
-        
-    </div>
-
-    <div id="editor-demo">
-                    
-                    <h1>Incearca editorul!</h1>
-                        
-                    <div>
-                        <button onclick="window.startIframes(this)"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
-                        <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
-                        <iframe seamless width="600" height="500" class="demoEditorFrame"></iframe>
-                    </div>
-        </div>
-    <!-- <script src="js/types.js"  type="module" charset="utf-8"></script> -->
-
-    <script type="module">
-       
-
-
-     
-
-        // Get the iframe element we want to track mouse movements on
-        var iframes = document.getElementsByClassName('demoEditorFrame');
-
-        // Run it through the function to setup bubbling
-        const pageSessionUuid = crypto.randomUUID()
-        window.startIframes = startIframes
-        function startIframes(target) {
-            target.remove()
-                    for(const myIframe of iframes)
-        {
-            myIframe.src = `./embed/editor?session=${pageSessionUuid}&isPublic=true`
-            // bubbleIframeMouseMove(myIframe);
-        }
-        }
-
-
-    </script>
     <footer>
             <h2>Intelegeinfo</h2>
             <nav>
@@ -528,13 +385,52 @@ int main() {
         });
      
     </script>
-
-
     <script>
-    function openEditor(text)
-    {
-        location.href += "editor"
+            const carousel = document.getElementById('carousel')
+            let offset = 0;
+            let startTime = undefined;
+            let delta = 0;
+            function updateCarousel(timestamp)
+            {
+               
+                delta = timestamp - startTime
+                const carouselWidth = carousel.clientWidth
+                
+                let i=0
+                for(const elem of carousel.children)
+                {
+                    
+                    elem.style.left = (offset +  (carouselWidth+300)/carousel.children.length*i++ + 300/2)%(carouselWidth+300)-300 + 'px' 
+                }
+                offset += 1
+                startTime=timestamp
+                requestAnimationFrame(updateCarousel)
+            }
+            requestAnimationFrame(updateCarousel)
+    </script>
+    <script type="module">
+    // Get the iframe element we want to track mouse movements on
+    var iframes = document.getElementsByClassName('demoEditorFrame');
+
+    // Run it through the function to setup bubbling
+    const pageSessionUuid = crypto.randomUUID()
+    window.startIframes = startIframes
+    function startIframes(target) {
+        target.remove()
+        for(const myIframe of iframes)
+        {
+            myIframe.src = `./embed/editor?session=${pageSessionUuid}&isPublic=true`
+            // bubbleIframeMouseMove(myIframe);
+        }
     }
+
+
+    </script>
+    <script>
+        function openEditor(text)
+        {
+            location.href += "editor"
+        }
     </script>
     <script>
         let k=0;
@@ -570,11 +466,11 @@ int main() {
                     fill.innerHTML = text
                     
                 }
-        </script>
+    </script>
 
 
 <script src="https://unpkg.com/lenis@1.3.4/dist/lenis.min.js"></script> 
-
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.3.4/dist/lenis.css">
 <script>
     // Initialize Lenis
     const lenis = new Lenis({
