@@ -7,15 +7,11 @@
     <meta name="author" content="Radu Bitere">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Intelegeinfo | Editorul colaborativ de cod online creat de elevi, pentru elevi</title>
-    <link rel="stylesheet" href="/css/codeEditor.css">
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Teachers:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    
     <meta name="google-adsense-account" content="ca-pub-8688715521861715">
     <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8688715521861715"
      crossorigin="anonymous"></script> -->
-    <link rel="stylesheet" href="/css/index.css">
+  
 
 
 
@@ -26,7 +22,14 @@
     <meta property="og:description" content="Editorul colaborativ de cod online creat de elevi, pentru elevi." />
 </head>
 
+<link rel="stylesheet" href="/css/codeEditor.css">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/index.css">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Teachers:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+   
 <body>
     <div id="fill">
             
@@ -66,7 +69,7 @@
 
                                 </div>              
                                 <div class="ridge-gradient inset-button black circle">
-                                    <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()" alt="create new file"></button>
+                                    <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()" aria-label="create new file"></button>
                                 </div>
                             </div>
                             <div id="session-controls" class="controls">                   
@@ -297,8 +300,8 @@
         <h1>Incearca editorul!</h1>    
         <div>
             <button onclick="window.startIframes(this)"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
-            <iframe seamless width="600" height="500" class="demoEditorFrame" alt="editor demo editor left"></iframe>
-            <iframe seamless width="600" height="500" class="demoEditorFrame" alt="editor demo editor right"></iframe>
+            <iframe seamless width="600" height="500" class="demoEditorFrame" title="editor demo editor left"></iframe>
+            <iframe seamless width="600" height="500" class="demoEditorFrame" title="editor demo editor right"></iframe>
         </div>
     </section>
 
@@ -390,6 +393,7 @@
             let offset = 0;
             let startTime = undefined;
             let delta = 0;
+            
             function updateCarousel(timestamp)
             {
                
@@ -404,7 +408,12 @@
                 }
                 offset += 1
                 startTime=timestamp
+                if(carousel.checkVisibility())
                 requestAnimationFrame(updateCarousel)
+            else
+            setTimeout(() => {
+                requestAnimationFrame(updateCarousel)
+            }, 16*30);
             }
             requestAnimationFrame(updateCarousel)
     </script>
