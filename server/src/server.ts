@@ -124,7 +124,33 @@ app.use('/editor/components',
 
 
     })
-app.use('/editor', express.static(path.join(rootDirName,'dist', 'public')))
+
+app.get('/editor', (req, res) => {
+    fs.readFile(path.join(rootDirName, 'public', 'editor.html'), (err,file) => {
+        let text;
+        const userId  = users.getIdFromJWT(req);
+        
+        const logged = userId!=undefined;
+        if(logged) 
+            {
+                users.getUserData(userId as number).then((userdata) => {
+                    text = file.toString().replace('#{login}',` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`)
+                    text = text.replace(/\*\{(.*)\}/g, '$1')
+                    res.contentType('html').send(text.toString());
+                })
+            }
+        else 
+        {
+            text = file.toString().replace('#{login}','<li><a id="signup" href="../signup">Sign-up</a><a id="login" href="../login">Login</a></li>')
+            text = text.replace(/\*\{(.*)\}/g, '')
+            res.contentType('html').send(text.toString());
+        }
+    })
+
+})
+
+
+app.use('/editor/', express.static(path.join(rootDirName,'dist', 'public')))
 
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path.join(rootDirName,'dist', 'public', 'mode_cpp_custom.js'))
@@ -290,29 +316,7 @@ app.get('/editor/:session/downloadFiles', (req, res) => {
 
 
 // app.get('/problem', problemCreator);
-app.get('/editor', (req, res) => {
-    fs.readFile(path.join(rootDirName, 'public', 'editor.html'), (err,file) => {
-        let text;
-        const userId  = users.getIdFromJWT(req);
-        
-        const logged = userId!=undefined;
-        if(logged) 
-            {
-                users.getUserData(userId as number).then((userdata) => {
-                    text = file.toString().replace('#{login}',` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`)
-                    text = text.replace(/\*\{(.*)\}/g, '$1')
-                    res.send(text.toString());
-                })
-            }
-        else 
-        {
-            text = file.toString().replace('#{login}','<li><a id="signup" href="../signup">Sign-up</a><a id="login" href="../login">Login</a></li>')
-            text = text.replace(/\*\{(.*)\}/g, '')
-            res.send(text.toString());
-        }
-    })
 
-})
 
 
 // app.get('/problem', problemCreator);
