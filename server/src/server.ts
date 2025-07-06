@@ -435,7 +435,7 @@ if(process.env.NODE_ENV == 'development')
 var httpsServer = https.createServer(credentials, app);
 let httpMeter = tx2.counter('http connections')
 if(fullchain && privkey)
-    var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req,res) => {
+    var httpServer = http.createServer(process.env.NODE_ENV == 'development' || true ? app : (req,res) => {
         res.statusCode = 301;
         res.setHeader('Location', 'https://intelegeinfo.ro' + req.url);
         res.end();
