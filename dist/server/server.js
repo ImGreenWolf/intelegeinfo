@@ -353,11 +353,13 @@ const credentials = { key: process.env.NODE_ENV == 'development' ? '' : privkey 
 if (process.env.NODE_ENV == 'development')
     console.log('SERVER RUNNING IN DEV MODE');
 var httpsServer = https.createServer(credentials, app);
+let httpMeter = tx2_1.default.counter('http connections');
 if (fullchain && privkey)
     var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req, res) => {
         res.statusCode = 301;
         res.setHeader('Location', 'https://intelegeinfo.ro' + req.url);
         res.end();
+        httpMeter.inc(1);
     });
 else
     var httpServer = http.createServer(app);
