@@ -160,7 +160,7 @@ app.get('/editor', (req, res) => {
         }
     });
 });
-app.use('/editor', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public')));
+app.use('/editor/', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public')));
 app.get('/editor/mode_cpp_custom.js', (req, res) => {
     res.sendFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'mode_cpp_custom.js'));
 });
