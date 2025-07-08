@@ -1825,7 +1825,7 @@ bash `.trim().replaceAll('\n', "");
                                                                     // printClientConsoleError(err)
                                                                     if (fatal) {
                                                                         // closeProcess(clientSession.process)
-                                                                        onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
+                                                                        onClosedProgram(-1, 0, `<span class="console-error">Compile error: ${err}</span>`);
                                                                         reject(err);
                                                                     }
                                                                 };
