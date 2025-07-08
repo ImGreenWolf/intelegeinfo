@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { type WebSocketMessageType , type ConsoleMessageType} from "./types";
 // import { type ClientPermissions } from "../../server/src/types"
-export const sessionCookieName = 'editor_session_id'
+
 // export type MessageType = {
 //     readonly [K in WebSocketMessageType]:
 //         K extends WebSocketMessageType.Handshake ? { type: K, messageType: string, sessionId: string, body: unknown, project?: unknown, session: unknown, files: unknown, users?: unknown } :

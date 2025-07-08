@@ -19,8 +19,7 @@ class CppMode extends BaseEditorMode_1.default {
 
 using namespace std;
 
-int main()
-{
+int main() {
     
     cout << "Intelege info" << endl;
     
@@ -59,19 +58,19 @@ int main()
                 compile.stdout.on('data', chunk => {
                     const data = chunk.toString();
                     buffer += data;
-                    this.sendError(data);
+                    // this.sendError(data)
                 });
                 compile.stderr.on('data', chunk => {
                     const data = chunk.toString();
                     buffer += data;
-                    this.sendError(data, true);
+                    // this.sendError(data, true)
                 });
                 compile.on('close', code => {
                     if (code == 0)
                         resolve();
                     else {
-                        //  this.sendError(buffer, true)
-                        reject(code + ": " + buffer);
+                        this.sendError(buffer, true);
+                        //  reject(code + ": " + buffer, true)
                     }
                 });
             }

@@ -2242,17 +2242,19 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`)
                                             return reject('No client active file')
                                         }
+
                                         if(!clientObj.editorMode.clientCompile)
                                         buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                             if(res == null) return resolve()
-                                                if(!clientObj.getFile(res.fileName))
-                                                {
-                                                    onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`)
-                                                    return reject('No client active file')
-                                                }
+                                            if(!clientObj.getFile(res.fileName))
+                                            {
+                                                onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`)
+                                                return reject('No client active file')
+                                            }
                                                     
                                             try {
+                                                
                                                 clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal)  => {
                                                     // printClientConsoleError(err)
                                                     if(fatal)

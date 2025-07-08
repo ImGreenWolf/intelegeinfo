@@ -19,8 +19,7 @@ class CppMode extends EditorMode {
 
 using namespace std;
 
-int main()
-{
+int main() {
     
     cout << "Intelege info" << endl;
     
@@ -62,25 +61,27 @@ int main()
     compile(res, file:EditorFile, isDebugging=false) {
         return new Promise<void>((resolve, reject) => {
             try {
-                 const compile = spawn(`docker`, ['exec', res.imageName, 'bash','-c', `g++ ${isDebugging? '-g' : ""} -O0 clientFiles/${res.fileName} -o ${res.fileName.split('.')[0]}`], {stdio: 'pipe'})
-                    let buffer = ''
-                 compile.stdout.on('data', chunk => {
+
+                const compile = spawn(`docker`, ['exec', res.imageName, 'bash','-c', `g++ ${isDebugging? '-g' : ""} -O0 clientFiles/${res.fileName} -o ${res.fileName.split('.')[0]}`], {stdio: 'pipe'})
+                let buffer = ''
+
+                compile.stdout.on('data', chunk => {
                     const data = chunk.toString()
                     buffer += data
-                    this.sendError(data)
+                    // this.sendError(data)
                 })
                 compile.stderr.on('data', chunk => {
                     const data = chunk.toString()
                     buffer += data
-                    this.sendError(data, true)
+                    // this.sendError(data, true)
                 })
                 compile.on('close', code => {
                     if(code==0)
                         resolve()
                     else 
                     {
-                        //  this.sendError(buffer, true)
-                         reject(code + ": " + buffer)
+                         this.sendError(buffer, true)
+                        //  reject(code + ": " + buffer, true)
                     }
                         
                 })
@@ -96,34 +97,34 @@ int main()
         return new CPPDebugger(res, clientObj)
     }
 
-      checkCodeSyntax = (sessionObj: EditorSession, file: EditorFile): Promise<string> =>
-        {
-            return new Promise((resolve, reject) => {
-                const filePath = sessionObj.getClientFilesPath();//            path.join(rootDirName, "cache", sessionId);
-                const codeFile = !["cpp"].includes(path.extname(file.name|| "main.cpp"))? file.name : "main.cpp";
-                const compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
-                    windowsHide: true,
-                    detached: true,
-                });
-                let buffer = '';
-                compileProcess.stdout.on('data', data => {
-                    
-                    buffer += data.toString()
-                })
-    
-                compileProcess.stderr.on('data', data => {
-                    
-                    buffer += data.toString()
-                })
-    
-                compileProcess.on('close', (code)=> {
-                        resolve(buffer.replace('compilation terminated.','')) // TODO check how to fix this, maybe remove it directly from stderr
-                })
+    checkCodeSyntax = (sessionObj: EditorSession, file: EditorFile): Promise<string> =>
+    {
+        return new Promise((resolve, reject) => {
+            const filePath = sessionObj.getClientFilesPath();//            path.join(rootDirName, "cache", sessionId);
+            const codeFile = !["cpp"].includes(path.extname(file.name|| "main.cpp"))? file.name : "main.cpp";
+            const compileProcess = spawn("g++", ["-fsyntax-only", "-fdiagnostics-format=json",path.join(filePath, codeFile || "main.cpp") ], {
+                windowsHide: true,
+                detached: true,
+            });
+            let buffer = '';
+            compileProcess.stdout.on('data', data => {
+                
+                buffer += data.toString()
             })
-    
-            
+
+            compileProcess.stderr.on('data', data => {
+                
+                buffer += data.toString()
+            })
+
+            compileProcess.on('close', (code)=> {
+                    resolve(buffer.replace('compilation terminated.','')) // TODO check how to fix this, maybe remove it directly from stderr
+            })
+        })
+
         
-        }
+    
+    }
 
 }
  class CPPDebugger extends DebugProcess
