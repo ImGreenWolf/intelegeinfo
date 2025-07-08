@@ -2259,7 +2259,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     {
                                                         // closeProcess(clientSession.process)
                                                         onClosedProgram(-1, 0, `<span class="console-error">Compile error: ${err}</span>`)
-                                                        reject(err)
+                                                        resolve()
                                                     }
                                                         
                                                 } 
