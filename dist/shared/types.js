@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FileManagementCommands = exports.WSMessage = exports.ConsoleMessageType = exports.WebSocketMessageType = void 0;
+exports.FileManagementCommands = exports.WSMessage = exports.sessionCookieName = exports.ConsoleMessageType = exports.WebSocketMessageType = void 0;
 var WebSocketMessageType;
 (function (WebSocketMessageType) {
     WebSocketMessageType["Handshake"] = "handshake";
@@ -33,6 +33,7 @@ var ConsoleMessageType;
     ConsoleMessageType["DebugProgram"] = "debugProgram";
     ConsoleMessageType["Notification"] = "notification";
 })(ConsoleMessageType || (exports.ConsoleMessageType = ConsoleMessageType = {}));
+exports.sessionCookieName = 'editor_session_id';
 class WSMessage {
     type;
     data;

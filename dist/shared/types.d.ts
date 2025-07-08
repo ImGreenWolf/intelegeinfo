@@ -28,6 +28,7 @@ export declare enum ConsoleMessageType {
     DebugProgram = "debugProgram",
     Notification = "notification"
 }
+export declare const sessionCookieName = "editor_session_id";
 export declare class WSMessage {
     type: WebSocketMessageType;
     data: Record<string, any>;

@@ -2137,6 +2137,7 @@ mini-dock
         transition-duration: 0.2s;
         box-sizing: content-box;
         outline: 1px solid var(--outline);
+        color: theme.$text-color;
         &:not(:hover)
         {
             background-color: color.adjust($color: theme.$foreground-color, $alpha: -0.75, $whiteness: -2%);

@@ -172,6 +172,7 @@ app.get('/editor/worker-base.js', (req, res) => {
 });
 app.use(express_1.default.static("public"));
 app.use("/guides", guideCreator_1.default);
+app.use('/shared/src/', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'shared')));
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id;
     const session = exports.sessionMap[sessionId];
@@ -583,7 +584,7 @@ exports.wss.addListener('connection', async (ws, req) => {
     }
     const recoveredSession = cookies
         ?.split("; ")
-        .find((c) => c.startsWith("session="))
+        .find((c) => c.startsWith(types_3.sessionCookieName + "="))
         ?.split("=")[1];
     let userData;
     let userLoggedIn = false;
@@ -1398,7 +1399,7 @@ bash `.trim().replaceAll('\n', "");
                     });
                 });
                 clientSession.program.stdout?.addListener("data", (data) => {
-                    gdbBuffer += data.toString();
+                    // gdbBuffer += data.toString();
                     // replicateFunction((clientWs) => {
                     //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                     // });
@@ -1417,7 +1418,7 @@ bash `.trim().replaceAll('\n', "");
                     }, 100);
                 });
                 clientSession.program?.stderr?.addListener("data", (data) => {
-                    gdbBuffer += data.toString();
+                    // gdbBuffer += data.toString();
                     replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
                     });

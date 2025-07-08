@@ -38,7 +38,7 @@ import * as EditorModes from './editor-modes/'
 import Metrics, { wssAPI } from './metrics'
 import examSubjects from './examSubjects'
 import tx2 from 'tx2';
-import { FileManagementCommands } from "../../dist/shared/types";
+import { FileManagementCommands,sessionCookieName } from "../../dist/shared/types";
 import { WebSocketMessage } from "../../shared/src/messageTypes"
 import router, { handleExecError, handleSucces, ProblemTest, testProblem } from "./problemManager";
 interface ResponseWRaw extends IncomingMessage 
@@ -164,7 +164,7 @@ app.get('/editor/worker-base.js', (req, res) => {
 app.use(express.static("public"));
 app.use("/guides", GuideCreator);
 
-
+app.use('/shared/src/',  express.static(path.join(rootDirName,'dist', 'shared')))
 
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id as UUID;
@@ -699,7 +699,7 @@ function compileFile(clientId, sessionId): Promise<any>
 }
 
 
-    
+
 const baseUrl = 'https://intelegeinfo.ro'
 wss.addListener('connection', async (ws: WebSocket, req) => {
 
@@ -730,7 +730,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
       ?.split("=")[1];}
     const recoveredSession: UUID | undefined = cookies
       ?.split("; ")
-      .find((c) => c.startsWith("session="))
+      .find((c) => c.startsWith(sessionCookieName+"="))
       ?.split("=")[1] as UUID;
     let userData: users.UserNoPassword |undefined;
     let userLoggedIn: boolean = false
@@ -1734,7 +1734,7 @@ async function onClosedProgram(code,time, message, error?)
         
     }
 async function readStdio(program, messageJSON, res: typeof clientSession.sessionContainer)
-    {
+{
     return new Promise<void>((resolve, reject) => {
     addProcessToMap(sessionId, program); // add to process map
     mode = "run";
@@ -1751,6 +1751,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     // if(programTimeout) clearTimeout(programTimeout)
 
     spawnPromise = new Promise<void>((resolve, reject) => {
+
     clientSession.program?.on("spawn", () => {
         console.log("Program spawned")
         spawnDate = Date.now()
@@ -1772,36 +1773,34 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     })
 
     clientSession.program.stdout?.addListener("data", (data) => {
-        gdbBuffer += data.toString();
+        // gdbBuffer += data.toString();
         // replicateFunction((clientWs) => {
         //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
         // });
         // gdbBuffer = "";
          if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
         {
-            closeProcess(program).then(() => onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"))
-            
+            closeProcess(program).then(() => onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"))        
             resolve()
-       
-          
          }
         replicateFunction((clientWs) => {
-        clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
-    });
+            clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+         });
 
-    clearTimeout(dataTimeout)
-        dataTimeout = setTimeout(() => {
-            replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
-    }, 100);
+        clearTimeout(dataTimeout)
+            dataTimeout = setTimeout(() => {
+                replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
+        }, 100);
 
     });
 
 
     clientSession.program?.stderr?.addListener("data", (data) => {
-    gdbBuffer += data.toString();
-    replicateFunction((clientWs) => {
-        clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
-    });
+        // gdbBuffer += data.toString();
+
+        replicateFunction((clientWs) => {
+            clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+        });
     });
 
     clientSession.program?.addListener("close", (code) => {

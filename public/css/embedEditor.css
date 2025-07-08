@@ -1690,6 +1690,7 @@ mini-dock a, mini-dock button {
   transition-duration: 0.2s;
   box-sizing: content-box;
   outline: 1px solid var(--outline);
+  color: white;
 }
 mini-dock a:not(:hover), mini-dock button:not(:hover) {
   background-color: hsla(0, 104.0816326531%, 0.9607843137%, 0.25);

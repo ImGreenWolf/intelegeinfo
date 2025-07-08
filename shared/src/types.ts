@@ -30,6 +30,7 @@ export enum ConsoleMessageType {
     Notification = 'notification'
 }
 
+export const sessionCookieName = 'editor_session_id'
 
 export class WSMessage {
   type: WebSocketMessageType;

@@ -6,7 +6,7 @@ import { text } from "body-parser";
 // import * as FileManagement from "./FIleManagement";
 
 // import { WebSocketMessageType } from "./types"; // fuck this
-import { WSMessage } from '../../shared/src/types'
+import { WSMessage } from '../../shared/src/types.js'
 import { UUID } from "crypto";
 // import QRCode from 'qrcode'
 // import { WebSocketMessageType } from "../../dist/shared/types";
@@ -32,7 +32,7 @@ import { createEditorTab, cursorManagers, EditorWindow, EditorWindowTab, showDef
 import path from "path";
 const AceRange = ace.require("ace/range").Range;
 const aceModes: typeof modelist = ace.require("ace/ext/modelist");
-
+const sessionCookieName = 'editor_session_id'
 //  const msgMap: Map<Number, WSMessage> = new Map();
 
 
@@ -2383,10 +2383,10 @@ export function openFile(fileName: string = "main.cpp") {
 // websocket //
 
 
-if(document.cookie.includes('session=') && !window.location.search.includes('save') && !window.location.search.includes('session'))
+if(document.cookie.includes(sessionCookieName+'=') && !window.location.search.includes('save') && !window.location.search.includes(sessionCookieName))
 {
   const sesCookie = document.cookie
-  document.cookie = 'session=';
+  document.cookie = sessionCookieName+'=';
   if(!inIframe)
   displayConfirmPopup(`Ai un proiect nesalvat,
 dorești să-l recuperezi?`, "Da", "Nu").then(res => {
@@ -2639,6 +2639,7 @@ enum FileManagementCommands {
   List = "list",
   Rename = "rename",
   Open = "open",
+  Close = "close"
 }
 
 type errorObject = {
@@ -3436,10 +3437,10 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
       writeOutput(messageJson.body, messageJson);
 
 
-      if(!document.cookie.includes('session='))
-        document.cookie='session='
+      if(!document.cookie.includes(sessionCookieName+'='))
+        document.cookie=sessionCookieName+'='
       setTimeout(() => {
-        document.cookie = 'session='+wsSessionId+';' 
+        document.cookie = sessionCookieName+'='+wsSessionId+';' 
       }, 15000);
       
 
@@ -4456,6 +4457,29 @@ export function onFileSessionUpdated(newFileName, client: SessionClient) {
     //   document.getElementById('active-open-file')!.id = '';
     const elem = editorSessions.get(newFileName)?.fileElement!;
     console.log("elem: ", elem)
+    if(currentFileName)
+      if(currentFileName != newFileName)
+      {
+        
+        const prevElem =  client.editorSession.find(val => val.fileElement?.name != newFileName)?.fileElement
+        
+
+
+        if(prevElem?.parentWindow == elem.parentWindow || client.clientId != wsClientId)
+        {
+          
+          console.log('REMOVED USER IN onFileSessionUpdated')
+          prevElem?.removeUser(client.clientId)
+          // prevElem.fileElement?.element.classList.remove('open-file')
+        }
+        // else if(prevActiveTab != elem && prevActiveTab && (prevActiveTab as FileElement).removeUser)
+        // {
+        //   // prevElem.fileElement?.element.classList.remove('open-file');
+        //   (prevActiveTab as FileElement).removeUser(client.clientId)
+        // }
+      }
+
+      
     if(elem)
     {
       if(currentFileName !== newFileName)
@@ -4473,27 +4497,7 @@ export function onFileSessionUpdated(newFileName, client: SessionClient) {
         // elem.parentWindow.activeTab?.element.classList.add('open-file')
     }
 
-    if(currentFileName)
-      if(currentFileName != newFileName)
-      {
-        
-        const prevElem = editorSessions.get(currentFileName)!
-        
-
-
-        if(prevElem.fileElement?.parentWindow == elem.parentWindow || client.clientId != wsClientId)
-        {
-          
-          console.log('REMOVED USER IN onFileSessionUpdated')
-          prevElem.fileElement?.removeUser(client.clientId)
-          // prevElem.fileElement?.element.classList.remove('open-file')
-        }
-        else if(prevActiveTab != elem && prevActiveTab && (prevActiveTab as FileElement).removeUser)
-        {
-          // prevElem.fileElement?.element.classList.remove('open-file');
-          (prevActiveTab as FileElement).removeUser(client.clientId)
-        }
-      }
+    
 
     currentFileName = newFileName;
   }

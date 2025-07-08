@@ -69,12 +69,10 @@ export class EditorWindow {
             
             if(draggedTab.parentWindow)
                 if(draggedTab.parentWindow.tabs.findIndex(val => val.name != draggedTab?.name) != -1)
-                    draggedTab.parentWindow.tabs.find(val => val.name != draggedTab?.name)!.openTab(ev)
-                    // openFile(draggedTab.parentWindow.tabs[0].name)
+                    draggedTab.parentWindow.tabs.find(val => val.name != draggedTab?.name)!.openTab(ev) // open another tab
                 else
                 {
-                    // const session = ace.createEditSession('')
-                    // draggedTab!.parentWindow.editor?.setSession(session)
+                    // if there are no other tabs, open default content
                     draggedTab!.parentWindow.destroyEditor()
                     client!.editorSession![draggedTab!.parentWindow.index].editor = undefined
                     // showDefaultScreen()
@@ -85,7 +83,8 @@ export class EditorWindow {
             
             // client!.editorSession![window.index].editor! =  client!.editorSession![draggedTab!.parentWindow.index].editor!
             draggedTab!.parentWindow = window
-            openFile(draggedTab.name)
+            // openFile(draggedTab.name)
+            draggedTab.openTab()
             // window.tabs.push(draggedTab)
             
             if(!editorSessions.has(draggedTab.name))
@@ -588,7 +587,7 @@ export class EditorWindowTab {
     {   
         this.name = name
         this.content = content
-        createEditorTab
+        
         this.element = element;
         if(!disableDrag)
             this.element.draggable =  true
@@ -638,6 +637,7 @@ export class EditorWindowTab {
                 child.remove();
             else
                 (child as HTMLElement).style.display = 'none';
+            
         this.parentWindow.setActiveFile(this)
 
         if(!preloadTabs)
