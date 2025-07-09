@@ -195,4 +195,42 @@ exports.router.get('/page', async (req, res) => {
     });
     res.send(problems);
 });
+const fs_1 = __importDefault(require("fs"));
+exports.router.get('/:sessionId/details/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const sessionId = req.params.sessionId;
+    if (!id)
+        throw 'invalid id';
+    const problem = await dbClient_1.default.problem.findUnique({
+        where: {
+            id
+        }
+    });
+    let fileBuffer = fs_1.default.readFileSync(path_1.default.join(server_1.rootDirName, 'public', 'pages', 'problemTemplate.html')).toString();
+    if (fileBuffer === undefined)
+        throw 'File buffer is invalid';
+    const serverSideReplace = (template, data) => template.replace(/\${(\w*|.*)}/g, (_, key) => {
+        console.log(key, data[key]);
+        const params = key.split('.');
+        const reg = /(.*)\[(\d*)\]/;
+        for (let i = 0; i < params.length; i++) {
+            const param = params[i];
+            console.log(param.match(reg));
+            if (param) {
+                const match = param.match(reg);
+                if (match) {
+                    params[i] = match[1];
+                    params.splice(++i, 0, match[2]);
+                }
+            }
+        }
+        console.log(params);
+        let buffer = data[params[0]];
+        let i = 1;
+        while (i < params.length)
+            buffer = buffer[params[i++]];
+        return buffer;
+    });
+    res.send(serverSideReplace(fileBuffer, { json: problem, sessionId }));
+});
 exports.default = exports.router;

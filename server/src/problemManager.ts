@@ -169,7 +169,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
 
 
 import express from 'express';
-import { sessionMap } from "./server";
+import { rootDirName, sessionMap } from "./server";
 import { execSync, spawn } from "child_process";
 import path from "path";
 import { Readable } from "stream";
@@ -257,6 +257,55 @@ router.get('/page', async (req, res) => {
     })
 
     res.send(problems)
+})
+import fs from 'fs';
+router.get('/:sessionId/details/:id', async (req, res) => {
+    const id = parseInt(req.params.id)
+    const sessionId = req.params.sessionId as UUID
+    if(!id)
+        throw 'invalid id';
+    const problem = await prisma.problem.findUnique({
+        where: {
+            id
+        }
+    })
+
+    let fileBuffer = fs.readFileSync(path.join(rootDirName, 'public', 'pages', 'problemTemplate.html')).toString()
+
+    if(fileBuffer === undefined)
+        throw 'File buffer is invalid'
+
+    const serverSideReplace = (template: string, data) =>
+        template.replace(/\${(\w*|.*)}/g, (_,key: string) => 
+        {
+            console.log(key, data[key])
+            const params = key.split('.')
+            const reg = /(.*)\[(\d*)\]/
+            for(let i=0; i<params.length;i++ ) {
+                const param = params[i];
+                console.log(param.match(reg))
+                if(param)
+                {
+                    const match = param.match(reg)
+                    if(match)
+                    {
+                        params[i] = match[1]
+                        params.splice(++i, 0, match[2])
+                    }
+                        
+                }
+                
+            }
+            console.log(params)
+            let buffer = data[params[0]]
+            let i = 1;
+            while(i<params.length)
+                buffer = buffer[params[i++]]
+            
+            return buffer;
+        })
+
+    res.send(serverSideReplace(fileBuffer, {json: problem, sessionId}))
 })
 
 

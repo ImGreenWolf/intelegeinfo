@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="${json.description}">
+    <meta name="keywords" content="C++, info, cpp, clasa a 9 a, clasa a 9-a, scoala, edu, educatie,intelege info, understand programing, programare, prog, vizualizare">
+    <meta name="author" content="${json.author}">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Problema - ${json.name}</title>
+    
+    <meta name="google-adsense-account" content="ca-pub-8688715521861715">
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8688715521861715"
+     crossorigin="anonymous"></script> -->
+  
+
+    <meta property="og:title" content="Poti rezolva aceasta problema? - ${json.name}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://intelegeinfo.ro/" />
+    <meta property="og:image" content="https://intelegeinfo.ro/media/colaboration-demo.png" />
+    <meta property="og:description" content="${json.description}" />
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D9ZPLVG5XF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D9ZPLVG5XF');
+</script>
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Teachers:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+   
+
+
+<body>
+
+<h2>${json.name}</h2>
+<p>${json.description}</p>
+<h2>Exemplu</h2>
+<p>date de intrare</p>
+<samp>${json.tests[0].dataIn}</samp>
+<p>date de iesire</p>
+<samp>${json.tests[0].dataOut}</samp>
+<button class="openProblem" onclick="window.problem.test(`${sessionId}`, `${json.id}`)">Testeaza</a>
+
+
+<!-- <script type="module" src="/client/scripts/problemTemplate.js"></script>    -->
+<script type="module">
+import * as problem from '/client/scripts/problemTemplate.js'
+window.problem = problem</script>
+</body>
+</html>

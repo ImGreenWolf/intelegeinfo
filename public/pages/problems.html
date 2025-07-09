@@ -25,8 +25,10 @@
     </style>
 </head>
 <body>
-    <h1>Directory Viewer</h1>
-    <ul id="directory-list"></ul>
+    <h1>Probleme</h1>
+    <div id="problem-list">
+
+    </div>
 
     <script>
         async function fetchDirectory() {
@@ -35,14 +37,16 @@
                 if (!response.ok) {
                     throw new Error('Failed to fetch directory data');
                 }
+                const sessionId = new URLSearchParams(location.search).get('sessionId')
                 const data = await response.json();
-                const list = document.getElementById('directory-list');
+                const list = document.getElementById('problem-list');
                 list.innerHTML = '';
+                console.log(data)
                 data.forEach(item => {
                     const listItem = document.createElement('li');
                     const link = document.createElement('a');
-                    link.href = item.path;
-                    link.textContent = JSON.parse(item.data).name || item.data.name || 'Unnamed Problem';
+                    link.href = `../editor/problem/${sessionId}/details/${item.id}`;
+                    link.textContent = item.name
                     listItem.appendChild(link);
                     list.appendChild(listItem);
                 });
@@ -51,16 +55,16 @@
             }
         }
 
-        // fetchDirectory();
+        fetchDirectory();
 
-        async function test(problemId)
-        {
-            const sessionId = new URLSearchParams(location.search).get('sessionId')
-            const res = await fetch(`../editor/problem/${sessionId}/test/${problemId}`)
-            console.log(res.body)
-        }
+        // async function test(problemId)
+        // {
+        //     const sessionId = new URLSearchParams(location.search).get('sessionId')
+        //     const res = await fetch(`../editor/problem/${sessionId}/test/${problemId}`)
+        //     console.log(res.body)
+        // }
 
-        test(1)
+        // test(1)
     </script>
 </body>
 </html>
