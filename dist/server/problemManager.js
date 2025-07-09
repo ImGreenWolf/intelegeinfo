@@ -105,10 +105,11 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
             let outputBuffer = '';
             const program = await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession);
             console.log('started program');
-            const pipeStream = new node_stream_1.Writable();
-            pipeStream.write(stdin);
+            const pipeStream = new stream_1.Readable();
             program.addListener('spawn', () => {
-                program.stdin.pipe(pipeStream);
+                pipeStream.pipe(program.stdin);
+                pipeStream.push(stdin);
+                pipeStream.push(null);
                 console.log('wrote stdin', stdin);
             });
             program.stdout.addListener('data', (data) => {
@@ -137,6 +138,7 @@ const express_1 = __importDefault(require("express"));
 const server_1 = require("./server");
 const child_process_1 = require("child_process");
 const path_1 = __importDefault(require("path"));
+const stream_1 = require("stream");
 exports.router = express_1.default.Router();
 exports.router.post('/create', (req, res) => {
     try {

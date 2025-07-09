@@ -135,12 +135,13 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
             const program = await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
             console.log('started program')
 
-            const pipeStream = new Writable()
-
-            pipeStream.write(stdin)
-
+            const pipeStream = new Readable()
+            
             program.addListener('spawn', () => {
-                 program.stdin.pipe(pipeStream)
+                pipeStream.pipe(program.stdin)
+                 pipeStream.push(stdin)
+                pipeStream.push(null)
+            
                  console.log('wrote stdin', stdin)
             })
   
