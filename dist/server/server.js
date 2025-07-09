@@ -1357,8 +1357,11 @@ bash `.trim().replaceAll('\n', "");
                         try {
                             // const timeLimit = problem.averageTimeLimit || 0
                             // const memoryLimit =  problem.averageMemLimit || 0
+                            console.log('starting compile');
                             await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
-                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, problemManager_1.handleSucces, problemManager_1.handleExecError).then(() => resolve()).catch(reject);
+                            console.log('compile finished');
+                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, problemManager_1.handleSucces, problemManager_1.handleExecError)
+                                .then(() => resolve()).catch(reject);
                         }
                         catch (err) {
                             console.error("Failed to run docker commands: " + err);

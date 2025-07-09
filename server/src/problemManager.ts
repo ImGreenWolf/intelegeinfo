@@ -139,10 +139,10 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
             
             program.addListener('spawn', () => {
                 pipeStream.pipe(program.stdin)
-                 pipeStream.push(stdin)
+                pipeStream.push(stdin)
                 pipeStream.push(null)
             
-                 console.log('wrote stdin', stdin)
+                console.log('wrote stdin', stdin)
             })
   
             program.stdout.addListener('data', (data) => {
@@ -160,6 +160,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
 
             program.on('exit', (code) => {
                 console.log('finished test with code ' + code)
+                
                 if(code != 0)
                     reject()
                 else if(outputBuffer === expectedStoud)
@@ -229,8 +230,9 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
         if(!session.executeProblemChecker)
             throw 'No problem checker...'
         session.executeProblemChecker(req.params.problemId)
-        .catch((err) =>  res.status(500).send({err: err || true, result: 'sksksksk'}))
         .then(() =>  res.status(200).send({result: true}))
+        .catch((err) =>  res.status(500).send({err: err || true, result: 'sksksksk'}))
+       
         
         // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
        

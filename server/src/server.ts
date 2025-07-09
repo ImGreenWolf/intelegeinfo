@@ -1723,10 +1723,12 @@ return new Promise<void>((resolve, reject) => {
                     try {
                         // const timeLimit = problem.averageTimeLimit || 0
                         // const memoryLimit =  problem.averageMemLimit || 0
-
+                        console.log('starting compile') 
                         await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
+                        console.log('compile finished')
 
-                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError).then(() => resolve()).catch(reject)
+                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError)
+                        .then(() => resolve()).catch(reject)
                         
 
                     }
