@@ -194,4 +194,109 @@ header a p {
   height: 25px;
 }
 
+header2 {
+  color: white;
+  display: grid;
+  align-self: center;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2lh;
+  align-items: center;
+  justify-content: space-around;
+  justify-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1em 2em;
+  z-index: 200;
+  box-shadow: 0 5px 20px 10px rgba(0, 0, 0, 0.3);
+  background-image: linear-gradient(30deg, rgba(28, 35, 58, 0.29), rgba(39, 49, 77, 0.301), rgba(23, 21, 59, 0.288)), linear-gradient(rgba(0, 0, 0, 0.692), rgba(0, 0, 0, 0.507));
+}
+header2::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  mask: linear-gradient(black, rgba(0, 0, 0, 0.4));
+  backdrop-filter: blur(36px);
+  z-index: -1;
+  display: block;
+}
+header2 h2 {
+  position: absolute;
+  left: 3em;
+}
+header2 nav {
+  justify-self: center;
+  max-width: 50em;
+  width: 100%;
+  position: relative;
+}
+header2 nav ul {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  list-style-type: none;
+  box-shadow: 2px 5px 10px 5px rgba(0, 0, 0, 0.3), inset 10px 10px 20px -10px rgba(63, 86, 105, 0.247);
+  border-radius: 1lh;
+}
+header2 nav ul li {
+  width: 100%;
+  backdrop-filter: blur(5px);
+  border: 2px solid transparent;
+  background-color: rgba(16, 21, 27, 0.363);
+  padding: 0.75em;
+  transition-duration: 0.2s;
+  text-align: center;
+  font-weight: 600;
+}
+header2 nav ul :any-link {
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+header2 nav ul li:first-child {
+  border-radius: 1lh 0 0 1lh;
+}
+header2 nav ul li:first-child:hover {
+  box-shadow: inset -5px 0px 20px -10px rgba(108, 114, 119, 0.3);
+}
+header2 nav ul li:last-child {
+  border-radius: 0 1lh 1lh 0;
+}
+header2 nav ul li:last-child:hover {
+  box-shadow: inset 5px 0px 20px -10px rgba(108, 114, 119, 0.3);
+}
+header2 nav ul li:hover {
+  transform: scale(1.1);
+  z-index: 1;
+  margin: 0 5px;
+  box-shadow: inset 0px 0px 20px -10px rgba(108, 114, 119, 0.3);
+}
+
+@media screen and (max-width: 1024px) {
+  footer {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  footer nav a {
+    width: 100px;
+  }
+  header2 {
+    font-size: 12px;
+  }
+  header2 nav {
+    justify-self: center;
+    transform: none;
+    grid-column: 1/-1;
+  }
+  header2 h2 {
+    display: none;
+  }
+}
+
 /*# sourceMappingURL=main.css.map */

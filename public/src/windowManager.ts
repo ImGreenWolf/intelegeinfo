@@ -676,14 +676,21 @@ export class EditorWindowTab {
 
 const draggedIdName = 'dragged'
 
-export function updateCatalouge()
+export function updateCatalouge(sessionId)
 {
     const catalouge = document.getElementById('tab-catalouge')
+
+
+
     const tabs =
     [
         createEditorTab('Subiecte', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})),
-        createEditorTab('Pbinfo', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: 'https://www.pbinfo.ro/'}, {name: 'allow', value: "encrypted-media"}]}))
+        createEditorTab('Pbinfo', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: 'https://www.pbinfo.ro/'}, {name: 'allow', value: "encrypted-media"}]})),
+         createEditorTab('Probleme', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problems.html?sessionId='+sessionId}]}))
     ]
+
+
+
     for(const tab of tabs)
     {
         tab.element.ondragend = () => 

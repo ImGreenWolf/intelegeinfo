@@ -513,7 +513,6 @@ chatWindow.addTab(function () {
 }());
 // chatWindow.addTab(new EditorWindowTab('chat', createNode('a', {className: "file-tab", innerText: "Subiecte"}), createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})))
 export const windows = [codeWindow, chatWindow];
-updateCatalouge();
 var event = ace.require("ace/lib/event");
 var Range = ace.require("ace/range").Range;
 var Tooltip = ace.require("ace/tooltip").Tooltip;
@@ -2584,6 +2583,7 @@ ws.onmessage = (event) => {
             if (sessionData)
                 updatePermissions(sessionData);
             writeOutput(messageJson.body, messageJson);
+            updateCatalouge(wsSessionId);
             if (!document.cookie.includes(sessionCookieName + '='))
                 document.cookie = sessionCookieName + '=';
             setTimeout(() => {

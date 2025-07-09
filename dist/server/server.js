@@ -1343,6 +1343,33 @@ bash `.trim().replaceAll('\n', "");
                 ]);
             });
         }
+        async function executeProblemChecker(problemId) {
+            return new Promise((resolve, reject) => {
+                dbClient_1.default.problem.findUnique({
+                    where: {
+                        id: problemId
+                    },
+                }).then(problem => {
+                    buildAndRunCppSandbox(clientSession.getClientFilesPath(), clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                        //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
+                        if (res == null)
+                            return resolve();
+                        try {
+                            const timeLimit = problem.averageTimeLimit;
+                            const memoryLimit = problem.averageMemLimit;
+                            await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
+                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, problemManager_1.handleSucces, problemManager_1.handleExecError);
+                        }
+                        catch (err) {
+                            console.error("Failed to run docker commands: " + err);
+                            onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
+                            reject(err);
+                        }
+                    }).catch(reject);
+                }).catch(reject);
+            });
+        }
+        clientSession.executeProblemChecker = executeProblemChecker;
         async function onClosedProgram(code, time, message, error) {
             let notes = "";
             processInputBuffer = '';
@@ -1852,40 +1879,6 @@ bash `.trim().replaceAll('\n', "");
                                                         clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession);
                                                         resolve();
                                                     }
-                                                });
-                                                return [spawnPromise, mainPromise];
-                                            }
-                                            runProgram()[1].then(resolveExectute)
-                                                .catch(err => { });
-                                        });
-                                    }
-                                    async function executeProblemChecker(problemId) {
-                                        return new Promise((resolveExectute, reject) => {
-                                            // const filePath = path.join(rootDirName, "cache", sessionId, "main.exe");
-                                            function runProgram() {
-                                                const mainPromise = new Promise((resolve, reject) => {
-                                                    dbClient_1.default.problem.findUnique({
-                                                        where: {
-                                                            id: problemId
-                                                        },
-                                                    }).then(problem => {
-                                                        buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
-                                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
-                                                            if (res == null)
-                                                                return resolve();
-                                                            try {
-                                                                const timeLimit = problem.averageTimeLimit;
-                                                                const memoryLimit = problem.averageMemLimit;
-                                                                await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
-                                                                (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, problemManager_1.handleSucces, problemManager_1.handleExecError);
-                                                            }
-                                                            catch (err) {
-                                                                console.error("Failed to run docker commands: " + err);
-                                                                onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
-                                                                reject(err);
-                                                            }
-                                                        });
-                                                    });
                                                 });
                                                 return [spawnPromise, mainPromise];
                                             }

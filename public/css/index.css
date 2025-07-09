@@ -776,7 +776,7 @@ h1.center {
     transform: translate(-50%, -50%) rotate(3deg) scale(0.75);
     box-shadow: 2px 2px 10px 10px rgba(0, 0, 0, 0.274);
   }
-  html, * {
+  html {
     font-size: 12px;
   }
   .main-container h {

@@ -10,64 +10,210 @@ const fs_1 = __importDefault(require("fs"));
 const subiecteFetcher_1 = require("./subiecteFetcher");
 const router = express_1.default.Router();
 exports.default = router;
+var Sessions;
+(function (Sessions) {
+    Sessions[Sessions["IunieIulie"] = 0] = "IunieIulie";
+    Sessions[Sessions["AugustSeptembrie"] = 1] = "AugustSeptembrie";
+    Sessions[Sessions["Special"] = 2] = "Special";
+    Sessions[Sessions["Model"] = 3] = "Model";
+})(Sessions || (Sessions = {}));
 router.get('/', async (req, res) => {
     const updates = await (0, subiecteFetcher_1.update)();
-    const mainDir = updates.dir;
+    // const mainDir = updates.dir
     let grid = '';
+    // grid += subjectFormat(2025, [
+    //   {name: Sessions.IunieIulie,
+    //   folderPath: 'E_d_2025_ses_iunie',
+    //   variants: [
+    //     {name: 'MI - Varianta 1', file: 'E_d_Informatica_2025_sp_MI_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_MI_bar_01_LRO.pdf'},
+    //     {name: 'SN - Varianta 1', file: 'E_d_Informatica_2025_sp_SN_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_SN_bar_01_LRO.pdf'}
+    //   ] 
+    //   },
+    //   {name: Sessions.Special,
+    //     folderPath: 'Bac_2025_Ed_ses_speciala',
+    //     variants: [
+    //       {name: 'MI - Varianta 6', file: 'E_d_informatica_2025_sp_MI_var_06_LRO.pdf', barem: 'E_d_informatica_2025_sp_MI_bar_06_LRO.pdf'},
+    //     ] 
+    //   },
+    //   {name: Sessions.Model,
+    //     folderPath: 'Bac_2025_E_d_Informatica_modele',
+    //     variants: [
+    //       {name: 'MI - Varianta 1', file: 'E_d_informatica_2025_sp_MI_C_var_model.pdf', barem: 'E_d_informatica_2025_sp_MI_C_bar_model.pdf'},
+    //       {name: 'SN - Varianta 1', file: 'E_d_informatica_2025_sp_SN_C_var_model.pdf', barem: 'E_d_informatica_2025_sp_SN_bar_model.pdf'}
+    //     ] 
+    //   }
+    // ])
+    //   grid += subjectFormat(2024, [
+    //     {name: Sessions.IunieIulie,
+    //   folderPath: 'E_d_2025_ses_iunie',
+    //   variants: [
+    //     {name: 'MI - Varianta 1', file: 'E_d_Informatica_2025_sp_MI_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_MI_bar_01_LRO.pdf'},
+    //     {name: 'SN - Varianta 1', file: 'E_d_Informatica_2025_sp_SN_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_SN_bar_01_LRO.pdf'}
+    //   ] 
+    //   },
+    //     {name: Sessions.Special,
+    //     folderPath: 'E_d_2024_ses_speciala',
+    //     variants: [
+    //       {name: 'MI - Varianta 4', file: 'E_d_Informatica_2024_sp_MI_C_var_04_LRO.pdf', barem: 'E_d_Informatica_2024_sp_MI_C_bar_04_LRO.pdf'},
+    //       {name: 'SN - Varianta 4', file: 'E_d_Informatica_2024_sp_SN_C_var_04_LRO.pdf', barem: 'E_d_Informatica_2024_sp_SN_bar_04_LRO.pdf'}
+    //     ] 
+    //     },
+    //     {name: Sessions.Model,
+    //     folderPath: 'Bac_2024_E_d_Informatica_modele',
+    //     variants: [
+    //       {name: 'MI - Varianta 1', file: 'E_d_Informatica_2024_sp_MI_C_var_model.pdf', barem: 'E_d_Informatica_2024_sp_MI_bar_model.pdf'},
+    //       {name: 'SN - Varianta 1', file: 'E_d_Informatica_2024_sp_SN_C_var_model.pdf', barem: 'E_d_Informatica_2024_sp_SN_bar_model.pdf'}
+    //     ] 
+    //   }])
+    //   grid += subjectFormat(2024, [
+    //     {name: Sessions.IunieIulie,
+    //   folderPath: 'E_d_2025_ses_iunie',
+    //   variants: [
+    //     {name: 'MI - Varianta 1', file: 'E_d_Informatica_2025_sp_MI_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_MI_bar_01_LRO.pdf'},
+    //     {name: 'SN - Varianta 1', file: 'E_d_Informatica_2025_sp_SN_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_SN_bar_01_LRO.pdf'}
+    //   ] 
+    //   },
+    //     {name: Sessions.Special,
+    //     folderPath: 'E_d_2024_ses_speciala',
+    //     variants: [
+    //       {name: 'MI - Varianta 4', file: 'E_d_Informatica_2024_sp_MI_C_var_04_LRO.pdf', barem: 'E_d_Informatica_2024_sp_MI_C_bar_04_LRO.pdf'},
+    //       {name: 'SN - Varianta 4', file: 'E_d_Informatica_2024_sp_SN_C_var_04_LRO.pdf', barem: 'E_d_Informatica_2024_sp_SN_bar_04_LRO.pdf'}
+    //     ] 
+    //     },
+    //     {name: Sessions.Model,
+    //     folderPath: 'Bac_2024_E_d_Informatica_modele',
+    //     variants: [
+    //       {name: 'MI - Varianta 1', file: 'E_d_Informatica_2024_sp_MI_C_var_model.pdf', barem: 'E_d_Informatica_2024_sp_MI_bar_model.pdf'},
+    //       {name: 'SN - Varianta 1', file: 'E_d_Informatica_2024_sp_SN_C_var_model.pdf', barem: 'E_d_Informatica_2024_sp_SN_bar_model.pdf'}
+    //     ] 
+    //   }])
+    // if(mainDir)
+    // {
+    //     const dateReg = /20\d*/g;
+    //      for(const dir of fs.readdirSync(mainDir).sort((a,b) => a.includes('.') || b.includes('.') ? 0 : parseInt(b.match(dateReg)[0]) - parseInt(a.match(dateReg)[0])))
+    //      {
+    //         if(dir.includes('.'))
+    //             continue
+    //         let files = ''
+    //         for(const file of fs.readdirSync(path.join(mainDir, dir)))
+    //             files += `<a href='subiecte/file/${path.join(dir, file)}'>${file.replace(`E_d_Informatica_${dir.match(dateReg)[0]}_sp_`, '')
+    //         .replace(`E_d_informatica_${dir.match(dateReg)[0]}_sp_`, '')
+    //         .replace('.pdf', '').replaceAll('_', ' ')
+    //         .replace('bar', 'barem').replace('var', 'varianta')
+    //         .replace('MI','Mate info').replace('SN','Stiinte ale naturii')
+    //         .replace('LRO','in Romana').replace('LMA','in Maghiara')
+    //         .replace('C', 'C++')
+    //     }</a><br>`
+    //         if(dir.match(dateReg)!=undefined)
+    //         {
+    //             const title = dir.includes('model') ? "Modele" : dir.includes('ses_speciala') ? "Sesiune Speciala" : dir.includes('ses_iunie') || dir.includes('_iul') || dir.includes('_iun') ? "Sesiunea iunie-iulie" : ""
+    //             grid += `<div><h2>${title} bac, anul ${(dir.match(dateReg)[0])}</h2>${files}</div>`
+    //         }
+    //      }
+    // }
+    const addVariant = (variant, folderPath) => {
+        return `<div class='variant-container'><a href='${folderPath + variant.file}'>${variant.name}</a><a href='${folderPath + variant.barem}'>${variant.barem.split('.')[1][0].toLocaleUpperCase() + variant.barem.split('.')[1].substring(1)}</a></div>`;
+    };
+    const addSections = (sections, year) => {
+        return `<h2>${sections.name}</h2>
+                <div class='section-list'>
+                    ${sections.variants.map(variant => addVariant(variant, `subiecte/file/${year}/${sections.folderPath}/`)).join('\n')}
+                </div>`;
+    };
+    const subjectFormat = (year, sections) => {
+        return `<div class='subject-container'>
+            <h1>${year}</h1>
+            <section class='subject-list'>
+                ${sections.map(section => addSections(section, year)).join('\n')}
+            </section>
+        </div>`;
+    };
+    const mainDir = path_1.default.join(server_1.rootDirName, 'server', 'data', 'formatedSubjects');
     if (mainDir) {
-        const dateReg = /20\d*/g;
-        for (const dir of fs_1.default.readdirSync(mainDir).sort((a, b) => a.includes('.') || b.includes('.') ? 0 : parseInt(b.match(dateReg)[0]) - parseInt(a.match(dateReg)[0]))) {
-            if (dir.includes('.'))
-                continue;
-            let files = '';
-            for (const file of fs_1.default.readdirSync(path_1.default.join(mainDir, dir)))
-                files += `<a href='subiecte/file/${path_1.default.join(dir, file)}'>${file.replace(`E_d_Informatica_${dir.match(dateReg)[0]}_sp_`, '')
-                    .replace(`E_d_informatica_${dir.match(dateReg)[0]}_sp_`, '')
-                    .replace('.pdf', '').replaceAll('_', ' ')
-                    .replace('bar', 'barem').replace('var', 'varianta')
-                    .replace('MI', 'Mate info').replace('SN', 'Stiinte ale naturii')
-                    .replace('LRO', 'in Romana').replace('LMA', 'in Maghiara')
-                    .replace('C', 'C++')}</a><br>`;
-            if (dir.match(dateReg) != undefined) {
-                const title = dir.includes('model') ? "Modele" : dir.includes('ses_speciala') ? "Sesiune Speciala" : dir.includes('ses_iunie') || dir.includes('_iul') || dir.includes('_iun') ? "Sesiunea iunie-iulie" : "";
-                grid += `<div><h2>${title} bac, anul ${(dir.match(dateReg)[0])}</h2>${files}</div>`;
+        for (const dir of fs_1.default.readdirSync(mainDir)) {
+            const sections = [];
+            for (const section of fs_1.default.readdirSync(path_1.default.join(mainDir, dir))) {
+                const variants = [];
+                const varBarem = new Map();
+                var globalBarem = undefined;
+                for (const variant of fs_1.default.readdirSync(path_1.default.join(mainDir, dir, section))) {
+                    const name = variant.split('.')[0];
+                    // if(name == '$GLOBAL')
+                    // if(varBarem.has(name))  
+                    //   variants.push({name: formatName(varBarem.get(name)), file: formatName(varBarem.get(name))+'.pdf', barem: formatName(varBarem.get(name))+'.barem.pdf'})
+                    // else if(variant.split('.')[1] != 'pdf')
+                    // {
+                    //   varBarem.set(name, variant)
+                    // // variants.push({name, file: varBarem.get(name).split('.')[0]+'.pdf', barem: varBarem.get(name).split('.')[0]+'.barem.pdf'})
+                    // }
+                    if (name == '$GLOBAL') {
+                        globalBarem = variant;
+                        continue;
+                    }
+                    if (variant.split('.')[1] == 'pdf')
+                        if (varBarem.has(name))
+                            varBarem.get(name).file = formatName(variant);
+                        else
+                            varBarem.set(name, { name: formatName(variant, true), file: formatName(variant), barem: globalBarem });
+                    else if (varBarem.has(name))
+                        varBarem.get(name).barem = formatName(variant);
+                    else
+                        varBarem.set(name, { name: formatName(variant, true), file: undefined, barem: globalBarem || formatName(variant) });
+                }
+                for (const val of varBarem.values())
+                    variants.push(val);
+                sections.push({ name: unformatName(section), variants, folderPath: section });
             }
+            grid += subjectFormat(dir, sections);
         }
     }
     let html = `
     <head>
     <meta charset="UTF-8">
     <meta name="description" content="Subiectele de informatica de la bacaulerautul de clasa a 12-a.">
-    <meta name="keywords" content="bac, bacalaureat, subiecte info, subiecte, mateinfo,2025,2026,2024,probleme,probleme info">
+    <meta name="keywords" content="bac, bacalaureat, subiecte info, subiecte, mateinfo,2025,2026,2024,2023,2022,2021,2020,2019,2018,probleme,probleme info">
     <meta name="author" content="Radu Bitere">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Subiecte Bac</title>
+    <title>Subiecte Bacalaureat</title>
+
+    <meta name="google-adsense-account" content="ca-pub-8688715521861715">
+
+    <meta property="og:title" content="Intelegeinfo" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://intelegeinfo.ro/" />
+    <meta property="og:image" content="https://intelegeinfo.ro/media/colaboration-demo.png" />
+    <meta property="og:description" content="Editorul colaborativ de cod online creat de elevi, pentru elevi." />
+
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/guides.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/subjects.css">
     
     </head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D9ZPLVG5XF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-    <style>
-    #grid
-    {
-        display: flex;
-        gap: 50px;
-        flex-wrap: wrap;
-        padding: 50px;
-        justify-content: space-between;
-        font-family: Poppins;
+      gtag('config', 'G-D9ZPLVG5XF');
+    </script>
 
+    <header2>
+            <h2>Intelegeinfo</h2>
+            <nav>
+                <ul>
+                    <li><a href="/">Pornire</a></li>
+                    <li><a href="/editor">Editor</a></li>
+                    <li><a href="/guides">Resurse</a></li>
+                    <li><a href="/subiecte">Subiecte</a></li>
+                </ul>
+            </nav>
+        </header2>
 
-        :any-link
-        {
-        color: black;
-        }
-    }
-    </style>
-
-
+        
     <div id='grid'>
     ${grid}
     </div>
@@ -77,9 +223,29 @@ router.get('/', async (req, res) => {
     `;
     res.status(200).send(html);
 });
+const formatName = (filename, split = false) => {
+    const params = (split ? filename.split('.')[0] : filename)
+        .replaceAll(' ', '_')
+        .split('_');
+    if (['m', 's'].includes(filename[0]))
+        return `${params[0] == 'm' ? 'MI - ' : 'SI - '} Varianta ${params[2]}`;
+    else
+        return (split ? filename.split('.')[0] : filename).replaceAll(' ', '_');
+};
+const unformatName = (filename) => {
+    const params = filename
+        .replaceAll('_', ' ')
+        .split(' ');
+    if (['MI', 'SI'].includes(filename.substring(0, 1)))
+        return `${params[0] == 'MI' ? 'm' : 's'}_var_${params[4]}`;
+    else
+        return filename.replaceAll('_', ' ');
+};
 router.use('/pdf', express_1.default.static(path_1.default.join(server_1.rootDirName, 'server', 'libs', 'pdf')));
-router.get('/file/:dir/:name', (req, res) => {
+router.get('/file/:year/:sub/:file', (req, res) => {
     // res.sendFile(path.join(rootDirName, 'server', 'data', 'subiecte', req.params.dir, req.params.name))
+    const dir = path_1.default.join(req.params.year, req.params.sub, unformatName(req.params.file));
+    console.log(req.url, dir);
     try {
         if (!req.headers['referer'])
             throw 'no referer';
@@ -94,7 +260,7 @@ router.get('/file/:dir/:name', (req, res) => {
             </head>
             <body>
               <iframe
-                src="/subiecte/pdf/web/viewer.html?file=${path_1.default.relative('./subiecte/pdf/web/', path_1.default.join('subiecte', 'file', req.params.dir, req.params.name))}"
+                src="/subiecte/pdf/web/viewer.html?file=${path_1.default.relative('./subiecte/pdf/web/', path_1.default.join('subiecte', 'file', path_1.default.join(req.params.year, req.params.sub, req.params.file)))}"
                 width="100%"
                 height="100%"
                 style="border: none;">
@@ -106,6 +272,6 @@ router.get('/file/:dir/:name', (req, res) => {
             throw 'not iframe';
     }
     catch (err) {
-        res.status(200).sendFile(path_1.default.join(server_1.rootDirName, 'server', 'data', 'subiecte', req.params.dir, req.params.name));
+        res.status(200).sendFile(path_1.default.join(server_1.rootDirName, 'server', 'data', 'formatedSubjects', dir));
     }
 });

@@ -1704,6 +1704,53 @@ bash `.trim().replaceAll('\n', "")
   
 
 }
+
+
+async function executeProblemChecker(problemId): Promise<void> {
+return new Promise<void>((resolve, reject) => {  
+            prisma.problem.findUnique({
+            where: {
+                id: problemId
+            },
+
+            }).then(problem => {
+                buildAndRunCppSandbox(clientSession.getClientFilesPath(), clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
+                    //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
+                    if(res == null) return resolve()
+                        
+                    try {
+                        const timeLimit = problem.averageTimeLimit
+                        const memoryLimit =  problem.averageMemLimit
+
+                        await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
+
+                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError)
+                        
+
+                    }
+                    catch(err)
+                    {
+                        console.error("Failed to run docker commands: " + err)
+                        onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`)
+                        reject(err)
+                    }
+                }).catch(reject);
+            }).catch(reject)
+        
+        
+        
+        
+
+    
+
+        
+        
+})
+
+    
+}
+clientSession.executeProblemChecker = executeProblemChecker
+
 async function onClosedProgram(code,time, message, error?)
     {
         let notes: string = "";
@@ -2218,7 +2265,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     
                  if(!clientObj.permissions.canEdit) break;
                     handleCommand(command, clients); // pass all the clients in the session
-                            
+                    
+                    
+                    
 
                     async function handleCommand(command: string, sockets: Map<UUID, WebSocket>) {
                         const filePath = path.join(rootDirName, "cache", sessionId);
@@ -2316,54 +2365,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     
                             }
                             
-                            async function executeProblemChecker(problemId): Promise<void> {
-                                return new Promise<void>((resolveExectute, reject) => {
-                                        // const filePath = path.join(rootDirName, "cache", sessionId, "main.exe");
-                                    function runProgram(): Promise<void>[]
-                                    {
-                                    const mainPromise = new Promise<void>((resolve, reject) => {  
-                                         prisma.problem.findUnique({
-                                            where: {
-                                                id: problemId
-                                            },
-
-                                         }).then(problem => {
-                                            buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
-                                                //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
-                                                if(res == null) return resolve()
-                                                    
-                                                try {
-                                                    const timeLimit = problem.averageTimeLimit
-                                                    const memoryLimit =  problem.averageMemLimit
-
-                                                    await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
-
-                                                    testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError)
-                                                    
-
-                                                }
-                                                catch(err)
-                                                {
-                                                    console.error("Failed to run docker commands: " + err)
-                                                    onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`)
-                                                    reject(err)
-                                                }
-                                            });
-                                         })
-                                        
-                                       })
-                                       
-                                       return [spawnPromise, mainPromise]
-
-                                  }
-
-                                        runProgram()[1].then(resolveExectute)
-                                        .catch(err => {})
-                                        
-                                })
-                                
-                                    
-                            }
+                            
 
                             // execute code normally.
                             if(getProcessFromMap()) // check if program is running

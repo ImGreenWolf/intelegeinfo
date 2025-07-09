@@ -138,6 +138,33 @@ exports.router.post('/create', (req, res) => {
         res.status(500).send(err);
     }
 });
+exports.router.get('/:sessionId/test/:problemId', (req, res) => {
+    try {
+        const data = req.body;
+        const tests = data.tests;
+        if (!req.params.sessionId)
+            throw 'invalid session id';
+        const session = server_1.sessionMap.get(req.params.sessionId);
+        if (!session)
+            throw 'couldnt find session';
+        // const client = session.clientsMap.get(data.clientId)
+        // if(!client)
+        //     {
+        //         console.error('couldnt find client', session.clientsMap)
+        //         throw 'Couldnt find client'
+        //     } 
+        if (!data.name)
+            throw 'invalid name';
+        if (!session.executeProblemChecker)
+            throw 'No problem checker...';
+        session.executeProblemChecker(req.params.problemId).then(() => res.status(200).send({ result: true }))
+            .catch((err) => res.status(500).send({ err, result: false }));
+        // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
+    }
+    catch (err) {
+        res.status(500).send(err);
+    }
+});
 exports.router.get('/random', async (req, res) => {
     const length = await dbClient_1.default.problem.count();
     const problem = await dbClient_1.default.problem.findUnique({
@@ -146,5 +173,11 @@ exports.router.get('/random', async (req, res) => {
         }
     });
     res.send(problem);
+});
+exports.router.get('/page', async (req, res) => {
+    const problems = await dbClient_1.default.problem.findMany({
+        take: 10
+    });
+    res.send(problems);
 });
 exports.default = exports.router;

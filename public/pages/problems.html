@@ -31,7 +31,7 @@
     <script>
         async function fetchDirectory() {
             try {
-                const response = await fetch('/getProblems'); // Adjust the endpoint as needed
+                const response = await fetch('/editor/problem/page'); // Adjust the endpoint as needed
                 if (!response.ok) {
                     throw new Error('Failed to fetch directory data');
                 }
@@ -51,7 +51,16 @@
             }
         }
 
-        fetchDirectory();
+        // fetchDirectory();
+
+        async function test(problemId)
+        {
+            const sessionId = new URLSearchParams(location.search).get('sessionId')
+            const res = await fetch(`../editor/problem/${sessionId}/test/${problemId}`)
+            console.log(res.body)
+        }
+
+        test(1)
     </script>
 </body>
 </html>

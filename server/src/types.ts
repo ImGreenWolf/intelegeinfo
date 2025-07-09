@@ -131,6 +131,8 @@ export class EditorSession {
     qrCode;
 
     editorOptions: EditorOptions = {editorPermission: EditorPermission.Everyone, enableChat: true, enableVoice: false}
+
+    executeProblemChecker: (problemId) => Promise<void>;
     public makeSessionPublic(options: EditorOptions)
     {
         this.isPublic = true

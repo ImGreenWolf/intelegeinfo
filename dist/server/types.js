@@ -132,6 +132,7 @@ class EditorSession {
     joinCode;
     qrCode;
     editorOptions = { editorPermission: EditorPermission.Everyone, enableChat: true, enableVoice: false };
+    executeProblemChecker;
     makeSessionPublic(options) {
         this.isPublic = true;
         this.editorOptions = options;

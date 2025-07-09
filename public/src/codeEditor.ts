@@ -689,7 +689,7 @@ chatWindow.addTab(function () {
 }())
 // chatWindow.addTab(new EditorWindowTab('chat', createNode('a', {className: "file-tab", innerText: "Subiecte"}), createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})))
 export const windows = [codeWindow, chatWindow]
-updateCatalouge()
+
 
 
 
@@ -3435,7 +3435,7 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
 
 
       writeOutput(messageJson.body, messageJson);
-
+      updateCatalouge(wsSessionId)
 
       if(!document.cookie.includes(sessionCookieName+'='))
         document.cookie=sessionCookieName+'='
