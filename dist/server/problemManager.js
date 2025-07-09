@@ -116,18 +116,18 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
                 outputBuffer += data.toString();
                 console.log('Test output: ' + data.toString());
             });
+            // program.on('close', (code) => {
+            //     console.log('finished test with code ' + code)
+            //     if(code != 0)
+            //         reject()
+            //     else if(outputBuffer.trim() === expectedStoud.trim())
+            //         resolve()
+            // })
             program.on('close', (code) => {
                 console.log('finished test with code ' + code);
                 if (code != 0)
                     reject();
-                if (outputBuffer === expectedStoud)
-                    resolve();
-            });
-            program.on('exit', (code) => {
-                console.log('finished test with code ' + code);
-                if (code != 0)
-                    reject();
-                else if (outputBuffer === expectedStoud)
+                else if (outputBuffer.trim() === expectedStoud.trim())
                     resolve();
                 else
                     reject();
