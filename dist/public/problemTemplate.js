@@ -5,12 +5,12 @@ export async function test(sessionId, problemId) {
     const output = document.getElementById('output');
     const json = await res.json();
     const elems = [];
+    if (!(json.result && res.ok))
+        throw 'Invalid response';
+    output.innerHTML = '';
     for (const result of json.result) {
         const test = result.value;
         elems.push(createNode('div', { innerText: `#${test.index}: ${test.status} - Score: ${test.score}` }));
     }
-    if (json.result && res.ok)
-        output.replaceChildren(...elems);
-    else
-        output.replaceChildren(...elems);
+    output.replaceChildren(...elems);
 }
