@@ -11,5 +11,5 @@ export async function test(sessionId, problemId) {
     if (json.result && res.ok)
         output.append(...elems);
     else
-        output.innerText = 'Some test failed..';
+        output.append(...elems);
 }

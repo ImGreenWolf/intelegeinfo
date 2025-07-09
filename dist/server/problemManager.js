@@ -119,11 +119,11 @@ function testProblem(tests, clientObj, clientSession, res) {
             program.on('close', (code) => {
                 console.log('finished test with code ' + code);
                 if (code != 0)
-                    reject({ status: "Program returned non-zero status code!", error: true });
+                    resolve({ status: "Program returned non-zero status code!", error: true });
                 else if (outputBuffer.trim() === expectedStoud.trim())
                     resolve({ status: "Corect.", error: false });
                 else
-                    reject({ status: "Programul nu a returnat rezultatul corect!", error: true });
+                    resolve({ status: "Programul nu a returnat rezultatul corect!", error: true });
             });
         }));
     });
