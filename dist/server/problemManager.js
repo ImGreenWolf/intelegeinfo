@@ -132,7 +132,7 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
             });
         }));
     });
-    return Promise.allSettled(promises);
+    return Promise.all(promises);
 }
 const express_1 = __importDefault(require("express"));
 const server_1 = require("./server");

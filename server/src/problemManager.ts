@@ -169,7 +169,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
         
     })
 
-    return Promise.allSettled(promises)
+    return Promise.all(promises)
 }
 
 

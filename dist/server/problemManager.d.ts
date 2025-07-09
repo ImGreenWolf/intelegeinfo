@@ -6,6 +6,6 @@ export type ProblemTest = {
     dataOut: string;
 };
 export declare function createProblem(name: any, author: any, description: any, category: any, requirement: any, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject): Promise<void>;
-export declare function testProblem(tests: ProblemTest[], clientObj: ClientObject, clientSession: any, res: any, onSucces: (index: any, clientObj: any) => void, onFail: (index: any, clientObj: any) => void): Promise<PromiseSettledResult<any>[]>;
+export declare function testProblem(tests: ProblemTest[], clientObj: ClientObject, clientSession: any, res: any, onSucces: (index: any, clientObj: any) => void, onFail: (index: any, clientObj: any) => void): Promise<any[]>;
 export declare const router: import("express-serve-static-core").Router;
 export default router;
