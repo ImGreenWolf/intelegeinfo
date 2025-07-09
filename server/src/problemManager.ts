@@ -123,25 +123,31 @@ export async function createProblem(name, author, description, category, require
 
 export function testProblem(tests:  ProblemTest[], clientObj,clientSession,res,onSucces: (index, clientObj) => void, onFail: (index, clientObj) => void)
 {
+    const promises = []
     tests.forEach(async (test, i) => 
     {
-        const stdin = test.dataIn
-        const expectedStoud = test.dataOut
-        let outputBuffer = ''
-        const program = await clientObj.openFile.editorMode.execute(res, clientObj, clientSession)
-        program.stdin.write(stdin)
+        promises.push(new Promise<void>(async (resolve, reject) => {
+            const stdin = test.dataIn
+            const expectedStoud = test.dataOut
+            let outputBuffer = ''
+            const program = await clientObj.openFile.editorMode.execute(res, clientObj, clientSession)
+            program.stdin.write(stdin)
+            
+            program.stdout.addListener('data', (data) => {
+                outputBuffer += data.toString()
+            })
 
-        program.stdout.addListener('data', (data) => {
-            outputBuffer += data.toString()
-        })
-
-        program.on('close', (code) => {
-            if(code != 0)
-                return onFail(i, clientObj)
-            if(outputBuffer === expectedStoud)
-                onSucces(i, clientObj)
-        })
+            program.on('close', (code) => {
+                if(code != 0)
+                    reject()
+                if(outputBuffer === expectedStoud)
+                    resolve()
+            })
+        }))
+        
     })
+
+    return Promise.allSettled(promises)
 }
 
 

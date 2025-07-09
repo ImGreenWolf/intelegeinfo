@@ -95,22 +95,26 @@ async function createProblem(name, author, description, category, requirement, t
     });
 }
 function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
+    const promises = [];
     tests.forEach(async (test, i) => {
-        const stdin = test.dataIn;
-        const expectedStoud = test.dataOut;
-        let outputBuffer = '';
-        const program = await clientObj.openFile.editorMode.execute(res, clientObj, clientSession);
-        program.stdin.write(stdin);
-        program.stdout.addListener('data', (data) => {
-            outputBuffer += data.toString();
-        });
-        program.on('close', (code) => {
-            if (code != 0)
-                return onFail(i, clientObj);
-            if (outputBuffer === expectedStoud)
-                onSucces(i, clientObj);
-        });
+        promises.push(new Promise(async (resolve, reject) => {
+            const stdin = test.dataIn;
+            const expectedStoud = test.dataOut;
+            let outputBuffer = '';
+            const program = await clientObj.openFile.editorMode.execute(res, clientObj, clientSession);
+            program.stdin.write(stdin);
+            program.stdout.addListener('data', (data) => {
+                outputBuffer += data.toString();
+            });
+            program.on('close', (code) => {
+                if (code != 0)
+                    reject();
+                if (outputBuffer === expectedStoud)
+                    resolve();
+            });
+        }));
     });
+    return Promise.allSettled(promises);
 }
 const express_1 = __importDefault(require("express"));
 const server_1 = require("./server");
