@@ -1347,16 +1347,18 @@ bash `.trim().replaceAll('\n', "");
             return new Promise((resolve, reject) => {
                 console.log(problemId);
                 dbClient_1.default.problem.findFirst({}).then(problem => {
+                    if (!problem)
+                        throw 'Problem with id ' + problemId + ' is invalid!';
                     console.log(problem);
                     buildAndRunCppSandbox(path_1.default.join(exports.rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                         if (res == null)
                             return resolve();
                         try {
-                            const timeLimit = problem.averageTimeLimit;
-                            const memoryLimit = problem.averageMemLimit;
+                            // const timeLimit = problem.averageTimeLimit || 0
+                            // const memoryLimit =  problem.averageMemLimit || 0
                             await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
-                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, resolve, reject);
+                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, problemManager_1.handleSucces, problemManager_1.handleExecError);
                         }
                         catch (err) {
                             console.error("Failed to run docker commands: " + err);
@@ -1364,7 +1366,7 @@ bash `.trim().replaceAll('\n', "");
                             reject(err);
                         }
                     }).catch(reject);
-                }).catch(reject);
+                }).catch((err) => reject(err + 'ababababa'));
             });
         }
         clientSession.executeProblemChecker = executeProblemChecker;

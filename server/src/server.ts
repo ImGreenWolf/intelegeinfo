@@ -1713,18 +1713,20 @@ return new Promise<void>((resolve, reject) => {
             
 
             }).then(problem => {
+                if(!problem)
+                    throw 'Problem with id ' + problemId + ' is invalid!'
                 console.log(problem)
                 buildAndRunCppSandbox(path.join(rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                     //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                     if(res == null) return resolve()
                         
                     try {
-                        const timeLimit = problem.averageTimeLimit
-                        const memoryLimit =  problem.averageMemLimit
+                        // const timeLimit = problem.averageTimeLimit || 0
+                        // const memoryLimit =  problem.averageMemLimit || 0
 
                         await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
 
-                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, resolve, reject)
+                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError)
                         
 
                     }
@@ -1735,7 +1737,7 @@ return new Promise<void>((resolve, reject) => {
                         reject(err)
                     }
                 }).catch(reject);
-            }).catch(reject)
+            }).catch((err) => reject(err+ 'ababababa'))
           
 })
 
