@@ -124,9 +124,11 @@ export async function createProblem(name, author, description, category, require
 export function testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession,res,onSucces: (index, clientObj) => void, onFail: (index, clientObj) => void)
 {
     const promises = []
+    console.log('starting tests')
     tests.forEach(async (test, i) => 
     {
         promises.push(new Promise<void>(async (resolve, reject) => {
+            console.log('running test #' + i)
             const stdin = test.dataIn
             const expectedStoud = test.dataOut
             let outputBuffer = ''
@@ -138,6 +140,7 @@ export function testProblem(tests:  ProblemTest[], clientObj: ClientObject,clien
             })
 
             program.on('close', (code) => {
+                console.log('finished test with code ' + code)
                 if(code != 0)
                     reject()
                 if(outputBuffer === expectedStoud)
