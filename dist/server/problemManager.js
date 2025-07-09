@@ -127,8 +127,10 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
                 console.log('finished test with code ' + code);
                 if (code != 0)
                     reject();
-                if (outputBuffer === expectedStoud)
+                else if (outputBuffer === expectedStoud)
                     resolve();
+                else
+                    reject();
             });
         }));
     });

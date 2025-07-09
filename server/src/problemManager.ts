@@ -162,8 +162,10 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 console.log('finished test with code ' + code)
                 if(code != 0)
                     reject()
-                if(outputBuffer === expectedStoud)
+                else if(outputBuffer === expectedStoud)
                     resolve()
+                else
+                    reject()
             })
         }))
         
