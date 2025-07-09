@@ -1361,7 +1361,12 @@ bash `.trim().replaceAll('\n', "");
                             await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
                             console.log('compile finished');
                             (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, problemManager_1.handleSucces, problemManager_1.handleExecError)
-                                .then(() => resolve()).catch(reject);
+                                .then(() => resolve()).catch(reject)
+                                .finally(() => {
+                                replicateFunction((clientWs, id, clientObj) => {
+                                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, clientId: clientId }); // Send GDB output to the client
+                                });
+                            });
                         }
                         catch (err) {
                             console.error("Failed to run docker commands: " + err);

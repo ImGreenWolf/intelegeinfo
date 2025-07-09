@@ -150,15 +150,6 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 console.log('Test output: ' + data.toString())
             })
 
-            // program.on('close', (code) => {
-            //     console.log('finished test with code ' + code)
-
-            //     if(code != 0)
-            //         reject()
-            //     else if(outputBuffer.trim() === expectedStoud.trim())
-            //         resolve()
-            // })
-
             program.on('close', (code) => {
                 console.log('finished test with code ' + code)
                 
@@ -177,12 +168,11 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
 }
 
 
-import express, { Request, Response } from 'express';
+import express from 'express';
 import { sessionMap } from "./server";
 import { execSync, spawn } from "child_process";
 import path from "path";
 import { Readable } from "stream";
-import { WritableStream } from "stream/web";
 export const router = express.Router();
 
 

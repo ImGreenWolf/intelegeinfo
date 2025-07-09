@@ -1729,6 +1729,11 @@ return new Promise<void>((resolve, reject) => {
 
                         testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError)
                         .then(() => resolve()).catch(reject)
+                        .finally(() => {
+                            replicateFunction((clientWs,id, clientObj) => {
+                                clientObj.sendMessage({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, clientId: clientId});  // Send GDB output to the client
+                            });
+                        })
                         
 
                     }
