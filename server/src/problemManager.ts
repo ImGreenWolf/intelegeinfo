@@ -154,11 +154,11 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 console.log('finished test with code ' + code)
                 
                 if(code != 0)
-                    resolve({status: "Program returned non-zero status code!", error: true})
+                    resolve({status: "Program returned non-zero status code!", error: true, index: i})
                 else if(outputBuffer.trim() === expectedStoud.trim())
-                    resolve({status: "Corect.", error: false})
+                    resolve({status: "Corect.", error: false, index: i})
                 else
-                    resolve({status: "Programul nu a returnat rezultatul corect!", error: true})
+                    resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i})
             })
         }))
         

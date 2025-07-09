@@ -10,7 +10,7 @@ export async function test(sessionId, problemId)
     for(const result of json.result)
     {
         
-        elems.push(createNode('div', {innerText: result.status}))
+        elems.push(createNode('div', {innerText: `#${result.index}: ${result.status}`}))
     }
     if(json.result && res.ok)
         output!.append(...elems)
