@@ -21,6 +21,7 @@ class ProblemCreator {
 export type ProblemTest = {
     dataIn: string,
     dataOut: string,
+    score: number
 }
 
 export async function createProblem(name, author, description, category, requirement, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
@@ -91,7 +92,7 @@ export async function createProblem(name, author, description, category, require
     })
     Promise.allSettled(testPromises)
     .catch(err => {
-        console.error('Test failed.')
+        console.error('Test failed.', err)
     })
     .then(() => {
         // if(i !== tests.length)
@@ -128,12 +129,10 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
     tests.forEach(async (test, i) => 
     {
         promises.push(new Promise<Record<string, any> | undefined>(async (resolve, reject) => {
-            console.log('running test #' + i)
             const stdin = test.dataIn
             const expectedStoud = test.dataOut
             let outputBuffer = ''
             const program = await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
-            console.log('started program')
 
             const pipeStream = new Readable()
             
@@ -141,30 +140,26 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 pipeStream.pipe(program.stdin)
                 pipeStream.push(stdin)
                 pipeStream.push(null)
-            
-                console.log('wrote stdin', stdin)
             })
   
             program.stdout.addListener('data', (data) => {
                 outputBuffer += data.toString()
-                console.log('Test output: ' + data.toString())
             })
 
             program.on('close', (code) => {
-                console.log('finished test with code ' + code)
                 
                 if(code != 0)
-                    resolve({status: "Program returned non-zero status code!", error: true, index: i})
+                    resolve({status: "Program returned non-zero status code!", error: true, index: i, score: 0})
                 else if(outputBuffer.trim() === expectedStoud.trim())
-                    resolve({status: "Corect.", error: false, index: i})
+                    resolve({status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length})
                 else
-                    resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i})
+                    resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0})
             })
         }))
         
     })
 
-    return Promise.all(promises)
+    return Promise.allSettled(promises)
 }
 
 

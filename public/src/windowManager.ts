@@ -686,7 +686,7 @@ export function updateCatalouge(sessionId)
     [
         createEditorTab('Subiecte', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})),
         createEditorTab('Pbinfo', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: 'https://www.pbinfo.ro/'}, {name: 'allow', value: "encrypted-media"}]})),
-         createEditorTab('Probleme', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problems.html?sessionId='+sessionId}]}))
+        createEditorTab('Probleme', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problems.html?sessionId='+sessionId}]}))
     ]
 
 

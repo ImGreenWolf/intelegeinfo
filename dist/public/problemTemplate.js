@@ -6,7 +6,7 @@ export async function test(sessionId, problemId) {
     const json = await res.json();
     const elems = [];
     for (const result of json.result) {
-        elems.push(createNode('div', { innerText: `#${result.index}: ${result.status}` }));
+        elems.push(createNode('div', { innerText: `#${result.index}: ${result.status} - Score: ${result.score}` }));
     }
     if (json.result && res.ok)
         output.append(...elems);
