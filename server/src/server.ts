@@ -1706,8 +1706,8 @@ bash `.trim().replaceAll('\n', "")
 }
 
 
-async function executeProblemChecker(problemId): Promise<void> {
-return new Promise<void>((resolve, reject) => { 
+async function executeProblemChecker(problemId) {
+return new Promise<Record<string, any> | undefined>((resolve, reject) => { 
     console.log(problemId) 
             prisma.problem.findFirst({
             
@@ -1718,7 +1718,7 @@ return new Promise<void>((resolve, reject) => {
                 console.log(problem)
                 buildAndRunCppSandbox(path.join(rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                     //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
-                    if(res == null) return resolve()
+                    if(res == null) return resolve(undefined)
                         
                     try {
                         // const timeLimit = problem.averageTimeLimit || 0
@@ -1727,8 +1727,8 @@ return new Promise<void>((resolve, reject) => {
                         await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
                         console.log('compile finished')
 
-                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError)
-                        .then(() => resolve()).catch(reject)
+                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res)
+                        .then(resolve).catch(reject)
                         .finally(() => {
                             replicateFunction((clientWs,id, clientObj) => {
                                 clientObj.sendMessage({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, clientId: clientId});  // Send GDB output to the client

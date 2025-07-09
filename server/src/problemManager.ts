@@ -121,13 +121,13 @@ export async function createProblem(name, author, description, category, require
     
 }
 
-export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession,res,onSucces: (index, clientObj) => void, onFail: (index, clientObj) => void)
+export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession,res): Promise<Array<Record<string, any> | undefined>>
 {
     const promises = []
     console.log('starting tests')
     tests.forEach(async (test, i) => 
     {
-        promises.push(new Promise<void>(async (resolve, reject) => {
+        promises.push(new Promise<Record<string, any> | undefined>(async (resolve, reject) => {
             console.log('running test #' + i)
             const stdin = test.dataIn
             const expectedStoud = test.dataOut
@@ -154,11 +154,11 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 console.log('finished test with code ' + code)
                 
                 if(code != 0)
-                    reject()
+                    reject({status: "Program returned non-zero status code!", error: true})
                 else if(outputBuffer.trim() === expectedStoud.trim())
-                    resolve()
+                    resolve({status: "Corect.", error: false})
                 else
-                    reject()
+                    reject({status: "Programul nu a returnat rezultatul corect!", error: true})
             })
         }))
         
@@ -221,7 +221,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
         if(!session.executeProblemChecker)
             throw 'No problem checker...'
         session.executeProblemChecker(req.params.problemId)
-        .then(() =>  res.status(200).send({result: true}))
+        .then((result) =>  res.status(200).send({result}))
         .catch((err) =>  res.status(500).send({err: err || true, result: 'sksksksk'}))
        
         
@@ -259,6 +259,7 @@ router.get('/page', async (req, res) => {
     res.send(problems)
 })
 import fs from 'fs';
+import { error } from "node:console";
 router.get('/:sessionId/details/:id', async (req, res) => {
     const id = parseInt(req.params.id)
     const sessionId = req.params.sessionId as UUID

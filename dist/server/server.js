@@ -1353,15 +1353,15 @@ bash `.trim().replaceAll('\n', "");
                     buildAndRunCppSandbox(path_1.default.join(exports.rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                         if (res == null)
-                            return resolve();
+                            return resolve(undefined);
                         try {
                             // const timeLimit = problem.averageTimeLimit || 0
                             // const memoryLimit =  problem.averageMemLimit || 0
                             console.log('starting compile');
                             await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
                             console.log('compile finished');
-                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, problemManager_1.handleSucces, problemManager_1.handleExecError)
-                                .then(() => resolve()).catch(reject)
+                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res)
+                                .then(resolve).catch(reject)
                                 .finally(() => {
                                 replicateFunction((clientWs, id, clientObj) => {
                                     clientObj.sendMessage({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, clientId: clientId }); // Send GDB output to the client

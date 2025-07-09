@@ -73,7 +73,7 @@ export declare class EditorSession {
     joinCode: number;
     qrCode: any;
     editorOptions: EditorOptions;
-    executeProblemChecker: (problemId: any) => Promise<void>;
+    executeProblemChecker: (problemId: any) => Promise<Record<string, any>>;
     makeSessionPublic(options: EditorOptions): void;
     constructor(sessionId?: UUID);
     toJSON(): any;

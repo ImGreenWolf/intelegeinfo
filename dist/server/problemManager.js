@@ -94,7 +94,7 @@ async function createProblem(name, author, description, category, requirement, t
         });
     });
 }
-function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
+function testProblem(tests, clientObj, clientSession, res) {
     const promises = [];
     console.log('starting tests');
     tests.forEach(async (test, i) => {
@@ -119,11 +119,11 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
             program.on('close', (code) => {
                 console.log('finished test with code ' + code);
                 if (code != 0)
-                    reject();
+                    reject({ status: "Program returned non-zero status code!", error: true });
                 else if (outputBuffer.trim() === expectedStoud.trim())
-                    resolve();
+                    resolve({ status: "Corect.", error: false });
                 else
-                    reject();
+                    reject({ status: "Programul nu a returnat rezultatul corect!", error: true });
             });
         }));
     });
@@ -172,7 +172,7 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
         if (!session.executeProblemChecker)
             throw 'No problem checker...';
         session.executeProblemChecker(req.params.problemId)
-            .then(() => res.status(200).send({ result: true }))
+            .then((result) => res.status(200).send({ result }))
             .catch((err) => res.status(500).send({ err: err || true, result: 'sksksksk' }));
         // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
     }
