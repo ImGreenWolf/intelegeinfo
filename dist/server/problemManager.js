@@ -105,8 +105,10 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
             let outputBuffer = '';
             const program = await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession);
             console.log('started program');
+            const pipeStream = new node_stream_1.Writable();
+            pipeStream.write(stdin);
             program.addListener('spawn', () => {
-                program.stdin.write(stdin);
+                program.stdin.pipe(pipeStream);
                 console.log('wrote stdin', stdin);
             });
             program.stdout.addListener('data', (data) => {
