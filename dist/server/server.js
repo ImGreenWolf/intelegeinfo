@@ -99,7 +99,7 @@ app.post('/github/onpull', (req, res) => {
         console.log(commits[0].message);
         console.log(digest);
         if (crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = (0, child_process_2.execSync)('cd ' + exports.rootDirName + ' && git fetch origin && git reset --hard origin/main', { timeout: 2000 });
+            const output = (0, child_process_2.execSync)('cd ' + exports.rootDirName + ' && git fetch origin && git reset --hard origin/staging', { timeout: 2000 });
             res.status(200).send('pull succesful! data: ' + output.toString() ? output.toString() : '');
             console.log('pulled! data: ' + output.toString() ? output.toString() : '');
         }
