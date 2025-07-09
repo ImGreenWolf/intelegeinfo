@@ -167,7 +167,7 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
         if (!session.executeProblemChecker)
             throw 'No problem checker...';
         session.executeProblemChecker(req.params.problemId)
-            .then((result) => res.status(200).send({ result: result.value }))
+            .then((result) => res.status(200).send({ result }))
             .catch((err) => res.status(500).send({ err: err || true, result: 'sksksksk' }));
         // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
     }
