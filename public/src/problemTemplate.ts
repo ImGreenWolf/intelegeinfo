@@ -13,9 +13,9 @@ export async function test(sessionId, problemId)
         elems.push(createNode('div', {innerText: `#${test.index}: ${test.status} - Score: ${test.score}`}))
     }
     if(json.result && res.ok)
-        output!.append(...elems)
+        output!.replaceChildren(...elems)
     else
-       output!.append(...elems)
+       output!.replaceChildren(...elems)
 }
 
  
