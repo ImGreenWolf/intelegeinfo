@@ -1707,13 +1707,13 @@ bash `.trim().replaceAll('\n', "")
 
 
 async function executeProblemChecker(problemId): Promise<void> {
-return new Promise<void>((resolve, reject) => {  
-            prisma.problem.findUnique({
-            where: {
-                id: problemId
-            },
+return new Promise<void>((resolve, reject) => { 
+    console.log(problemId) 
+            prisma.problem.findFirst({
+            
 
             }).then(problem => {
+                console.log(problem)
                 buildAndRunCppSandbox(clientSession.getClientFilesPath(), clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                     //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                     if(res == null) return resolve()
@@ -1736,15 +1736,7 @@ return new Promise<void>((resolve, reject) => {
                     }
                 }).catch(reject);
             }).catch(reject)
-        
-        
-        
-        
-
-    
-
-        
-        
+          
 })
 
     

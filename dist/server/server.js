@@ -1345,11 +1345,9 @@ bash `.trim().replaceAll('\n', "");
         }
         async function executeProblemChecker(problemId) {
             return new Promise((resolve, reject) => {
-                dbClient_1.default.problem.findUnique({
-                    where: {
-                        id: problemId
-                    },
-                }).then(problem => {
+                console.log(problemId);
+                dbClient_1.default.problem.findFirst({}).then(problem => {
+                    console.log(problem);
                     buildAndRunCppSandbox(clientSession.getClientFilesPath(), clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                         if (res == null)

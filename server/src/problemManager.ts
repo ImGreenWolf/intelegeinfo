@@ -183,8 +183,6 @@ router.post('/create', (req, res) => {
 
 router.get('/:sessionId/test/:problemId', (req, res) => {
     try {
-        const data = req.body
-        const tests: ProblemTest[] = data.tests
         if(!req.params.sessionId)
             throw 'invalid session id'
 
@@ -198,18 +196,16 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
         //         console.error('couldnt find client', session.clientsMap)
         //         throw 'Couldnt find client'
         //     } 
-        if(!data.name)
-            throw 'invalid name'
         if(!session.executeProblemChecker)
             throw 'No problem checker...'
         session.executeProblemChecker(req.params.problemId).then(() =>  res.status(200).send({result: true}))
-        .catch((err) =>  res.status(500).send({err, result: false}))
+        .catch((err) =>  res.status(500).send({err: err || true, result: 'sksksksk'}))
         // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
        
     }
     catch(err)
     {
-        res.status(500).send(err)
+        res.status(500).send({err, result: false})
     }
     
 })
