@@ -111,6 +111,7 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
             });
             program.stdout.addListener('data', (data) => {
                 outputBuffer += data.toString();
+                console.log('Test output: ' + data.toString());
             });
             program.on('close', (code) => {
                 console.log('finished test with code ' + code);

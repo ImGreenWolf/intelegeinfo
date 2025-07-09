@@ -121,7 +121,7 @@ export async function createProblem(name, author, description, category, require
     
 }
 
-export function testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession,res,onSucces: (index, clientObj) => void, onFail: (index, clientObj) => void)
+export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession,res,onSucces: (index, clientObj) => void, onFail: (index, clientObj) => void)
 {
     const promises = []
     console.log('starting tests')
@@ -142,6 +142,7 @@ export function testProblem(tests:  ProblemTest[], clientObj: ClientObject,clien
   
             program.stdout.addListener('data', (data) => {
                 outputBuffer += data.toString()
+                console.log('Test output: ' + data.toString())
             })
 
             program.on('close', (code) => {
