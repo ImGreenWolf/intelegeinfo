@@ -104,14 +104,22 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
             const expectedStoud = test.dataOut;
             let outputBuffer = '';
             const program = await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession);
-            console.log('started program', program);
+            console.log('started program');
             program.addListener('spawn', () => {
                 program.stdin.write(stdin);
+                console.log('wrote stdin', stdin);
             });
             program.stdout.addListener('data', (data) => {
                 outputBuffer += data.toString();
             });
             program.on('close', (code) => {
+                console.log('finished test with code ' + code);
+                if (code != 0)
+                    reject();
+                if (outputBuffer === expectedStoud)
+                    resolve();
+            });
+            program.on('exit', (code) => {
                 console.log('finished test with code ' + code);
                 if (code != 0)
                     reject();
@@ -163,8 +171,9 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
         //     } 
         if (!session.executeProblemChecker)
             throw 'No problem checker...';
-        session.executeProblemChecker(req.params.problemId).then(() => res.status(200).send({ result: true }))
-            .catch((err) => res.status(500).send({ err: err || true, result: 'sksksksk' }));
+        session.executeProblemChecker(req.params.problemId)
+            .catch((err) => res.status(500).send({ err: err || true, result: 'sksksksk' }))
+            .then(() => res.status(200).send({ result: true }));
         // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
     }
     catch (err) {
