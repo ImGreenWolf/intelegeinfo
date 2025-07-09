@@ -101,7 +101,7 @@ function testProblem(tests, clientObj, clientSession, res, onSucces, onFail) {
             const stdin = test.dataIn;
             const expectedStoud = test.dataOut;
             let outputBuffer = '';
-            const program = await clientObj.openFile.editorMode.execute(res, clientObj, clientSession);
+            const program = await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession);
             program.stdin.write(stdin);
             program.stdout.addListener('data', (data) => {
                 outputBuffer += data.toString();

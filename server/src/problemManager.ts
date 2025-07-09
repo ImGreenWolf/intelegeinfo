@@ -121,7 +121,7 @@ export async function createProblem(name, author, description, category, require
     
 }
 
-export function testProblem(tests:  ProblemTest[], clientObj,clientSession,res,onSucces: (index, clientObj) => void, onFail: (index, clientObj) => void)
+export function testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession,res,onSucces: (index, clientObj) => void, onFail: (index, clientObj) => void)
 {
     const promises = []
     tests.forEach(async (test, i) => 
@@ -130,7 +130,7 @@ export function testProblem(tests:  ProblemTest[], clientObj,clientSession,res,o
             const stdin = test.dataIn
             const expectedStoud = test.dataOut
             let outputBuffer = ''
-            const program = await clientObj.openFile.editorMode.execute(res, clientObj, clientSession)
+            const program = await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
             program.stdin.write(stdin)
             
             program.stdout.addListener('data', (data) => {
