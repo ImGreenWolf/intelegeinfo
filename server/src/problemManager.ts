@@ -133,6 +133,7 @@ export function testProblem(tests:  ProblemTest[], clientObj: ClientObject,clien
             const expectedStoud = test.dataOut
             let outputBuffer = ''
             const program = await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
+            console.log('started program', program)
             program.stdin.write(stdin)
             
             program.stdout.addListener('data', (data) => {
