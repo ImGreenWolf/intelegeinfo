@@ -1348,7 +1348,7 @@ bash `.trim().replaceAll('\n', "");
                 console.log(problemId);
                 dbClient_1.default.problem.findFirst({}).then(problem => {
                     console.log(problem);
-                    buildAndRunCppSandbox(clientSession.getClientFilesPath(), clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                    buildAndRunCppSandbox(path_1.default.join(exports.rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
                         //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                         if (res == null)
                             return resolve();

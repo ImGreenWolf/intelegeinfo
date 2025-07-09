@@ -1714,7 +1714,7 @@ return new Promise<void>((resolve, reject) => {
 
             }).then(problem => {
                 console.log(problem)
-                buildAndRunCppSandbox(clientSession.getClientFilesPath(), clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
+                buildAndRunCppSandbox(path.join(rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                     //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                     if(res == null) return resolve()
                         
