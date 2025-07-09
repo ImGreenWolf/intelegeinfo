@@ -9,8 +9,8 @@ export async function test(sessionId, problemId)
     const elems: HTMLElement[] = [];
     for(const result of json.result)
     {
-        
-        elems.push(createNode('div', {innerText: `#${result.index}: ${result.status} - Score: ${result.score}`}))
+        const test = result.value
+        elems.push(createNode('div', {innerText: `#${test.index}: ${test.status} - Score: ${test.score}`}))
     }
     if(json.result && res.ok)
         output!.append(...elems)
