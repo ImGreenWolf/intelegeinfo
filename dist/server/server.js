@@ -1356,7 +1356,7 @@ bash `.trim().replaceAll('\n', "");
                             const timeLimit = problem.averageTimeLimit;
                             const memoryLimit = problem.averageMemLimit;
                             await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
-                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, problemManager_1.handleSucces, problemManager_1.handleExecError);
+                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res, resolve, reject);
                         }
                         catch (err) {
                             console.error("Failed to run docker commands: " + err);

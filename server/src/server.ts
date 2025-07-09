@@ -1724,7 +1724,7 @@ return new Promise<void>((resolve, reject) => {
 
                         await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
 
-                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, handleSucces, handleExecError)
+                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res, resolve, reject)
                         
 
                     }
