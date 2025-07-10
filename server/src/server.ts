@@ -1716,9 +1716,9 @@ return new Promise<PromiseSettledResult<Array<{status: string, error: boolean, i
                 if(!problem)
                     throw 'Problem with id ' + problemId + ' is invalid!'
                 console.log(problem)
-                if(true)
+                if(false)
                 {
-                     testProblem(problem.tests as ProblemTest[], clientObj,clientSession)
+                     testProblem(problem.tests as ProblemTest[], clientObj,clientSession, undefined)
                         .then(resolve).catch(reject)
                         .finally(() => {
                             replicateFunction((clientWs,id, clientObj) => {
@@ -1737,7 +1737,7 @@ return new Promise<PromiseSettledResult<Array<{status: string, error: boolean, i
                         await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
                         console.log('compile finished')
 
-                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession)
+                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession, res)
                         .then(resolve).catch(reject)
                         .finally(() => {
                             replicateFunction((clientWs,id, clientObj) => {

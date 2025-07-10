@@ -122,20 +122,20 @@ export async function createProblem(name, author, description, category, require
     
 }
 
-export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession): Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number} | undefined>>[]>
+export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession, res): Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number} | undefined>>[]>
 {
     const promises = []
     console.log('starting tests')
 
-    execSync(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`)
-    console.log('finished compile')
+    // execSync(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`)
+    // console.log('finished compile')
     tests.forEach(async (test, i) => 
     {
         promises.push(new Promise<Record<string, any> | undefined>(async (resolve, reject) => {
             const stdin = test.dataIn
             const expectedStoud = test.dataOut
             let outputBuffer = ''
-            const program = spawn(`${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000}) //await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
+            const program = false ? spawn(`${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000}) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
 
             const pipeStream = new Readable()
             

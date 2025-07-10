@@ -94,17 +94,17 @@ async function createProblem(name, author, description, category, requirement, t
         });
     });
 }
-function testProblem(tests, clientObj, clientSession) {
+function testProblem(tests, clientObj, clientSession, res) {
     const promises = [];
     console.log('starting tests');
-    (0, child_process_1.execSync)(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`);
-    console.log('finished compile');
+    // execSync(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`)
+    // console.log('finished compile')
     tests.forEach(async (test, i) => {
         promises.push(new Promise(async (resolve, reject) => {
             const stdin = test.dataIn;
             const expectedStoud = test.dataOut;
             let outputBuffer = '';
-            const program = (0, child_process_1.spawn)(`${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, { stdio: 'pipe', shell: true, timeout: 5000 }); //await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
+            const program = false ? (0, child_process_1.spawn)(`${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, { stdio: 'pipe', shell: true, timeout: 5000 }) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession);
             const pipeStream = new stream_1.Readable();
             program.addListener('spawn', () => {
                 pipeStream.pipe(program.stdin);

@@ -1350,8 +1350,8 @@ bash `.trim().replaceAll('\n', "");
                     if (!problem)
                         throw 'Problem with id ' + problemId + ' is invalid!';
                     console.log(problem);
-                    if (true) {
-                        (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession)
+                    if (false) {
+                        (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, undefined)
                             .then(resolve).catch(reject)
                             .finally(() => {
                             replicateFunction((clientWs, id, clientObj) => {
@@ -1370,7 +1370,7 @@ bash `.trim().replaceAll('\n', "");
                                 console.log('starting compile');
                                 await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
                                 console.log('compile finished');
-                                (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession)
+                                (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res)
                                     .then(resolve).catch(reject)
                                     .finally(() => {
                                     replicateFunction((clientWs, id, clientObj) => {
