@@ -1707,7 +1707,7 @@ bash `.trim().replaceAll('\n', "")
 
 
 async function executeProblemChecker(problemId) {
-return new Promise<Record<string, any> | undefined>((resolve, reject) => { 
+return new Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number} | undefined>>[]>((resolve, reject) => { 
     console.log(problemId) 
             prisma.problem.findFirst({
             
@@ -1716,6 +1716,16 @@ return new Promise<Record<string, any> | undefined>((resolve, reject) => {
                 if(!problem)
                     throw 'Problem with id ' + problemId + ' is invalid!'
                 console.log(problem)
+                if(true)
+                {
+                     testProblem(problem.tests as ProblemTest[], clientObj,clientSession)
+                        .then(resolve).catch(reject)
+                        .finally(() => {
+                            replicateFunction((clientWs,id, clientObj) => {
+                                clientObj.sendMessage({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, clientId: clientId});  // Send GDB output to the client
+                            });
+                        })
+                } else
                 buildAndRunCppSandbox(path.join(rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                     //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                     if(res == null) return resolve(undefined)
@@ -1727,7 +1737,7 @@ return new Promise<Record<string, any> | undefined>((resolve, reject) => {
                         await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
                         console.log('compile finished')
 
-                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession,res)
+                        testProblem(problem.tests as ProblemTest[], clientObj,clientSession)
                         .then(resolve).catch(reject)
                         .finally(() => {
                             replicateFunction((clientWs,id, clientObj) => {

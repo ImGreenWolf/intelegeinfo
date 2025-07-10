@@ -28,6 +28,8 @@ export class ClientObject {
     lastOpenFile: EditorFile | undefined
     webcamid: number
     editorPermission: EditorPermission = EditorPermission.Everyone
+
+    clientData: UserNoPassword
     // EditorSessionObject: EditorSession
     public constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {
         this.sessionId = sessionId;
@@ -39,6 +41,7 @@ export class ClientObject {
         {
             this.displayName = user.username;
             this.color = user.userColor
+            this.clientData = user
         } 
         else
         {
@@ -132,7 +135,7 @@ export class EditorSession {
 
     editorOptions: EditorOptions = {editorPermission: EditorPermission.Everyone, enableChat: true, enableVoice: false}
 
-    executeProblemChecker: (problemId) => Promise<Record<string, any>>;
+    executeProblemChecker: (problemId) => Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number} | undefined>>[]>;
     public makeSessionPublic(options: EditorOptions)
     {
         this.isPublic = true

@@ -61,6 +61,7 @@ class ClientObject {
     lastOpenFile;
     webcamid;
     editorPermission = EditorPermission.Everyone;
+    clientData;
     // EditorSessionObject: EditorSession
     constructor(sessionId, EditorSession, WebSocket, displayName, user) {
         this.sessionId = sessionId;
@@ -71,6 +72,7 @@ class ClientObject {
         if (user) {
             this.displayName = user.username;
             this.color = user.userColor;
+            this.clientData = user;
         }
         else {
             const displayNames = EditorSession.clientsDisplayNames;

@@ -38,6 +38,7 @@ model User {
   password String 
   loginMethod String @default("local")
   projects Project[]
+  solves Solve[]
 }
 
 enum Role {
@@ -87,6 +88,19 @@ model Problem {
   averageTimeLimit Float
   averageMemLimit Float
   category String?
-  solves Int @default(0)
+  solves Solve[]
+}
+
+model Solve {
+  id Int @id @default(autoincrement())
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int 
+  problem Problem  @relation(fields: [problemid], references: [id]) 
+  problemid Int
+
+  sourceCode String
+  uploadedAt DateTime @default(now())
+  score Int
 }
 

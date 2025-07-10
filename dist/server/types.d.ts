@@ -20,6 +20,7 @@ export declare class ClientObject {
     lastOpenFile: EditorFile | undefined;
     webcamid: number;
     editorPermission: EditorPermission;
+    clientData: UserNoPassword;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: string | Record<string, any>, type?: WebSocketMessageType): void;
     getFile(name: any): EditorFile;
@@ -73,7 +74,12 @@ export declare class EditorSession {
     joinCode: number;
     qrCode: any;
     editorOptions: EditorOptions;
-    executeProblemChecker: (problemId: any) => Promise<Record<string, any>>;
+    executeProblemChecker: (problemId: any) => Promise<PromiseSettledResult<Array<{
+        status: string;
+        error: boolean;
+        index: number;
+        score: number;
+    } | undefined>>[]>;
     makeSessionPublic(options: EditorOptions): void;
     constructor(sessionId?: UUID);
     toJSON(): any;

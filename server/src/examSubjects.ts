@@ -171,14 +171,14 @@ router.get('/', async (req, res) => {
                   }
                 if(variant.split('.')[1] == 'pdf')
                   if(varBarem.has(name))
-                    varBarem.get(name).file = formatName(variant)
+                    varBarem.get(name).file = formatName(variant).replaceAll(' ','_')
                   else
-                    varBarem.set(name, {name: formatName(variant, true), file: formatName(variant), barem: globalBarem})
+                    varBarem.set(name, {name: formatName(variant, true), file: formatName(variant).replaceAll(' ','_'), barem: globalBarem})
                 else
                   if(varBarem.has(name))
                     varBarem.get(name).barem = formatName(variant)
                   else
-                  varBarem.set(name, {name: formatName(variant, true), file: undefined, barem: globalBarem || formatName(variant)})
+                    varBarem.set(name, {name: formatName(variant, true), file: undefined, barem: globalBarem || formatName(variant).replaceAll(' ','_')})
                 
                 
                
@@ -266,7 +266,7 @@ const formatName = (filename: string, split=false) => {
       .replaceAll(' ','_')
       .split('_')
       if(['m','s'].includes(filename[0]))
-        return `${params[0] == 'm' ? 'MI - ' : 'SI - '} Varianta ${params[2]}`
+        return `${params[0] == 'm' ? 'MI -' : 'SI -'} Varianta ${params[2]}`
       else
         return (split ? filename.split('.')[0] : filename).replaceAll(' ','_')
     }
@@ -275,8 +275,8 @@ const formatName = (filename: string, split=false) => {
       const params =  filename
       .replaceAll('_',' ')
       .split(' ')
-      if(['MI','SI'].includes(filename.substring(0, 1)))
-        return `${params[0] == 'MI' ? 'm' : 's'}_var_${params[4]}`
+      if(['MI','SI'].includes(filename.substring(0, 2)))
+        return `${params[0] == 'MI' ? 'm' : 's'}_var_${params[3]}`
       else
         return filename.replaceAll('_',' ')
     }

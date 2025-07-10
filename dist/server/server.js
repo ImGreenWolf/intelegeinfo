@@ -1350,30 +1350,40 @@ bash `.trim().replaceAll('\n', "");
                     if (!problem)
                         throw 'Problem with id ' + problemId + ' is invalid!';
                     console.log(problem);
-                    buildAndRunCppSandbox(path_1.default.join(exports.rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
-                        //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
-                        if (res == null)
-                            return resolve(undefined);
-                        try {
-                            // const timeLimit = problem.averageTimeLimit || 0
-                            // const memoryLimit =  problem.averageMemLimit || 0
-                            console.log('starting compile');
-                            await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
-                            console.log('compile finished');
-                            (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, res)
-                                .then(resolve).catch(reject)
-                                .finally(() => {
-                                replicateFunction((clientWs, id, clientObj) => {
-                                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, clientId: clientId }); // Send GDB output to the client
-                                });
+                    if (true) {
+                        (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession)
+                            .then(resolve).catch(reject)
+                            .finally(() => {
+                            replicateFunction((clientWs, id, clientObj) => {
+                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, clientId: clientId }); // Send GDB output to the client
                             });
-                        }
-                        catch (err) {
-                            console.error("Failed to run docker commands: " + err);
-                            onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
-                            reject(err);
-                        }
-                    }).catch(reject);
+                        });
+                    }
+                    else
+                        buildAndRunCppSandbox(path_1.default.join(exports.rootDirName, "cache", sessionId), clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
+                            if (res == null)
+                                return resolve(undefined);
+                            try {
+                                // const timeLimit = problem.averageTimeLimit || 0
+                                // const memoryLimit =  problem.averageMemLimit || 0
+                                console.log('starting compile');
+                                await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
+                                console.log('compile finished');
+                                (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession)
+                                    .then(resolve).catch(reject)
+                                    .finally(() => {
+                                    replicateFunction((clientWs, id, clientObj) => {
+                                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, clientId: clientId }); // Send GDB output to the client
+                                    });
+                                });
+                            }
+                            catch (err) {
+                                console.error("Failed to run docker commands: " + err);
+                                onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
+                                reject(err);
+                            }
+                        }).catch(reject);
                 }).catch((err) => reject(err + 'ababababa'));
             });
         }

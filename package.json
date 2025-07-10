@@ -36,6 +36,7 @@
     "node-gyp": "^11.2.0",
     "node-notifier": "^10.0.1",
     "nodemailer": "^7.0.2",
+    "openai": "^5.8.3",
     "ora": "^8.2.0",
     "pdf2html": "^4.2.0",
     "peer": "^1.0.2",

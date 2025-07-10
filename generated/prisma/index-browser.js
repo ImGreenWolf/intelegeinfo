@@ -184,8 +184,16 @@ exports.Prisma.ProblemScalarFieldEnum = {
   tests: 'tests',
   averageTimeLimit: 'averageTimeLimit',
   averageMemLimit: 'averageMemLimit',
-  category: 'category',
-  solves: 'solves'
+  category: 'category'
+};
+
+exports.Prisma.SolveScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  problemid: 'problemid',
+  sourceCode: 'sourceCode',
+  uploadedAt: 'uploadedAt',
+  score: 'score'
 };
 
 exports.Prisma.SortOrder = {
@@ -224,7 +232,8 @@ exports.Prisma.ModelName = {
   Code: 'Code',
   RefreshToken: 'RefreshToken',
   Guide: 'Guide',
-  Problem: 'Problem'
+  Problem: 'Problem',
+  Solve: 'Solve'
 };
 
 /**
