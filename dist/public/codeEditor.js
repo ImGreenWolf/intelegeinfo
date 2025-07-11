@@ -877,29 +877,6 @@ export function toggleCamera() {
 export function beautifyEditor() {
     if (codeWindow.editor)
         beautify.beautify(codeWindow.editor.session);
-    // fetch('problem/create', {
-    //   method: 'POST',
-    //   headers: { "Content-Type": "application/json" },
-    //   body:
-    //   `
-    //       {
-    //     "name": "test",
-    //     "clientId": "${wsClientId}",
-    //     "sessionId": "${wsSessionId}",
-    //     "tests":
-    //     [
-    //         {
-    //             "dataIn": "1 2",
-    //             "dataOut": "2 4"
-    //         },
-    //         {
-    //             "dataIn": "2 4",
-    //             "dataOut": "4 8"
-    //         }
-    //     ]
-    // }
-    //   `
-    // })
 }
 export function undo() {
     codeWindow.getEditor().session.getUndoManager().redo(codeWindow.getEditor().session);
@@ -2583,7 +2560,7 @@ ws.onmessage = (event) => {
             if (sessionData)
                 updatePermissions(sessionData);
             writeOutput(messageJson.body, messageJson);
-            updateCatalouge(wsSessionId);
+            updateCatalouge(wsSessionId, wsClientId);
             if (!document.cookie.includes(sessionCookieName + '='))
                 document.cookie = sessionCookieName + '=';
             setTimeout(() => {

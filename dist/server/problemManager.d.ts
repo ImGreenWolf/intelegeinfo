@@ -6,12 +6,24 @@ export type ProblemTest = {
     dataOut: string;
     score: number;
 };
-export declare function createProblem(name: any, author: any, description: any, category: any, requirement: any, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject): Promise<void>;
+export declare function createProblem({ name, author, description, difficulty, tags, category, requirement }: {
+    name: any;
+    author: any;
+    description: any;
+    difficulty: any;
+    tags: any;
+    category: any;
+    requirement: any;
+}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject): Promise<void>;
 export declare function testProblem(tests: ProblemTest[], clientObj: ClientObject, clientSession: any, res: any): Promise<PromiseSettledResult<Array<{
     status: string;
     error: boolean;
     index: number;
     score: number;
+    result?: {
+        input: string;
+        output: string;
+    };
 } | undefined>>[]>;
 export declare const router: import("express-serve-static-core").Router;
 export default router;

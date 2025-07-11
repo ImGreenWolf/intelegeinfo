@@ -4,16 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        form 
+        {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            gap: 1em;
+            color: white;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
-    <form action="/submit" method="post">
+    <form id="form">
         <label for="pname">Numele Problemei</label>
-        <input type="text" id="pname" name="pname">
+        <input type="text" id="pname" name="name">
+        <label for="pname">Autor</label>
+        <input type="text" id="author" name="author">
+        <label for="pname">Categorie</label>
+        <input type="text" id="category" name="category">
+        <label for="pname">Dificultate</label>
+        <select id="difficulty" name="difficulty">
+            <option value="Easy">Usor</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Greu</option>
+            <option value="Competition">Concurs</option>
+        </select>
+        <label for="pname">Taguri (separate prin ,)</label>
+        <input type="text" id="tags" name="tags">
+        <label for="pname">Restrictii si precizari</label>
+        <input type="text" id="requirement" name="requirement">
+
         <label for="description">Cerinta</label>
         <textarea id="description" name="description"></textarea>
+        <input type="checkbox" id="auto-output">
+        <button type="button" onclick="addTest()">+</button>
+        <ul id="tests">
+
+        </ul>
         <input type="submit" value="Submit">
     </form>
 
+<script>
+    function addTest()
+    {
+        const elem = document.createElement('textarea')
+        document.getElementById('tests').appendChild(elem)
+    }
+    document.getElementById('form').onsubmit = (ev) => {
+        ev.preventDefault()
+        const formData = new FormData(document.getElementById('form'))
 
+        const clientId = new URLSearchParams(location.search).get('clientId')
+        const sessionId = new URLSearchParams(location.search).get('sessionId')
+
+
+        const tests = []
+        for(const elem of document.getElementById('tests').children)
+            tests.push({dataIn: elem.value})
+
+        
+        const data = Object.fromEntries(formData.entries());
+
+        const json = 
+        {
+            ...data,
+            clientId,
+            sessionId,
+            tests
+        }
+
+
+        console.log(json)
+        fetch('../editor/problem/create', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(json),
+        
+        
+        })
+    }
+</script>
 </body>
 </html>

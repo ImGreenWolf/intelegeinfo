@@ -184,7 +184,10 @@ exports.Prisma.ProblemScalarFieldEnum = {
   tests: 'tests',
   averageTimeLimit: 'averageTimeLimit',
   averageMemLimit: 'averageMemLimit',
-  category: 'category'
+  category: 'category',
+  sourceCode: 'sourceCode',
+  difficulty: 'difficulty',
+  tags: 'tags'
 };
 
 exports.Prisma.SolveScalarFieldEnum = {
@@ -224,6 +227,13 @@ exports.Prisma.JsonNullValueFilter = {
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   ADMIN: 'ADMIN'
+};
+
+exports.Difficulty = exports.$Enums.Difficulty = {
+  Easy: 'Easy',
+  Medium: 'Medium',
+  Hard: 'Hard',
+  Competition: 'Competition'
 };
 
 exports.Prisma.ModelName = {

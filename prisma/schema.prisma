@@ -88,8 +88,19 @@ model Problem {
   averageTimeLimit Float
   averageMemLimit Float
   category String?
+  sourceCode String?
+  difficulty Difficulty?
+  tags String[]
   solves Solve[]
 }
+
+enum Difficulty {
+  Easy
+  Medium
+  Hard
+  Competition
+}
+
 
 model Solve {
   id Int @id @default(autoincrement())

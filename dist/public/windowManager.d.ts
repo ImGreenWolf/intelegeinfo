@@ -30,7 +30,7 @@ export declare class EditorWindowTab {
     onOpenTab(elem: any): void;
     remove(): void;
 }
-export declare function updateCatalouge(sessionId: any): void;
+export declare function updateCatalouge(sessionId: any, clientId: any): void;
 export declare function createEditorTab(name: any, content: any, disableDrag?: any): EditorWindowTab;
 export declare function showDefaultScreen(): Promise<void>;
 declare var Tooltip: any;

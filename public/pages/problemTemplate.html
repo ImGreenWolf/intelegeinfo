@@ -47,14 +47,29 @@
 
   span {
     font-size: 1.15em;
-    color: green;
+    
     margin-inline: 0.25em;
+  }
+  .good,.perfect
+  {
+    color: green;
+  }
+  .bad
+  {
+    color: rgb(160, 20, 20);
+  }
+  .decent
+  {
+    color: rgb(206, 154, 44);
   }
 </style>
 
 <body>
-
-<h2>${json.name}</h2>
+<div>
+  ${html.solvesUI}
+</div>
+<h2>${json.name} 
+  <div>${json.difficulty}</div></h2>
 <p>${json.description}</p>
 <h2>Exemplu</h2>
 <p>date de intrare</p>
@@ -64,7 +79,10 @@
 <div>
 <button class="openProblem" onclick="window.problem.test(`${sessionId}`, `${json.id}`)">Testeaza</button>
 <button class="openProblem" onclick="window.problem.evaluate(`${sessionId}`, `${json.id}`)">Evaluate</button>
-    <div id="output"></div>
+    <div id="output">
+
+    </div>
+    <div><span id="final-score"></span></div>
 </div>
 
 

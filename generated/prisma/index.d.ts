@@ -60,11 +60,25 @@ export namespace $Enums {
 
 export type Role = (typeof Role)[keyof typeof Role]
 
+
+export const Difficulty: {
+  Easy: 'Easy',
+  Medium: 'Medium',
+  Hard: 'Hard',
+  Competition: 'Competition'
+};
+
+export type Difficulty = (typeof Difficulty)[keyof typeof Difficulty]
+
 }
 
 export type Role = $Enums.Role
 
 export const Role: typeof $Enums.Role
+
+export type Difficulty = $Enums.Difficulty
+
+export const Difficulty: typeof $Enums.Difficulty
 
 /**
  * ##  Prisma Client ʲˢ
@@ -6944,6 +6958,8 @@ export namespace Prisma {
     averageTimeLimit: number | null
     averageMemLimit: number | null
     category: string | null
+    sourceCode: string | null
+    difficulty: $Enums.Difficulty | null
   }
 
   export type ProblemMaxAggregateOutputType = {
@@ -6958,6 +6974,8 @@ export namespace Prisma {
     averageTimeLimit: number | null
     averageMemLimit: number | null
     category: string | null
+    sourceCode: string | null
+    difficulty: $Enums.Difficulty | null
   }
 
   export type ProblemCountAggregateOutputType = {
@@ -6974,6 +6992,9 @@ export namespace Prisma {
     averageTimeLimit: number
     averageMemLimit: number
     category: number
+    sourceCode: number
+    difficulty: number
+    tags: number
     _all: number
   }
 
@@ -7006,6 +7027,8 @@ export namespace Prisma {
     averageTimeLimit?: true
     averageMemLimit?: true
     category?: true
+    sourceCode?: true
+    difficulty?: true
   }
 
   export type ProblemMaxAggregateInputType = {
@@ -7020,6 +7043,8 @@ export namespace Prisma {
     averageTimeLimit?: true
     averageMemLimit?: true
     category?: true
+    sourceCode?: true
+    difficulty?: true
   }
 
   export type ProblemCountAggregateInputType = {
@@ -7036,6 +7061,9 @@ export namespace Prisma {
     averageTimeLimit?: true
     averageMemLimit?: true
     category?: true
+    sourceCode?: true
+    difficulty?: true
+    tags?: true
     _all?: true
   }
 
@@ -7139,6 +7167,9 @@ export namespace Prisma {
     averageTimeLimit: number
     averageMemLimit: number
     category: string | null
+    sourceCode: string | null
+    difficulty: $Enums.Difficulty | null
+    tags: string[]
     _count: ProblemCountAggregateOutputType | null
     _avg: ProblemAvgAggregateOutputType | null
     _sum: ProblemSumAggregateOutputType | null
@@ -7174,6 +7205,9 @@ export namespace Prisma {
     averageTimeLimit?: boolean
     averageMemLimit?: boolean
     category?: boolean
+    sourceCode?: boolean
+    difficulty?: boolean
+    tags?: boolean
     solves?: boolean | Problem$solvesArgs<ExtArgs>
     _count?: boolean | ProblemCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["problem"]>
@@ -7192,6 +7226,9 @@ export namespace Prisma {
     averageTimeLimit?: boolean
     averageMemLimit?: boolean
     category?: boolean
+    sourceCode?: boolean
+    difficulty?: boolean
+    tags?: boolean
   }, ExtArgs["result"]["problem"]>
 
   export type ProblemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -7208,6 +7245,9 @@ export namespace Prisma {
     averageTimeLimit?: boolean
     averageMemLimit?: boolean
     category?: boolean
+    sourceCode?: boolean
+    difficulty?: boolean
+    tags?: boolean
   }, ExtArgs["result"]["problem"]>
 
   export type ProblemSelectScalar = {
@@ -7224,9 +7264,12 @@ export namespace Prisma {
     averageTimeLimit?: boolean
     averageMemLimit?: boolean
     category?: boolean
+    sourceCode?: boolean
+    difficulty?: boolean
+    tags?: boolean
   }
 
-  export type ProblemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "author" | "positiveRatings" | "negativeRatings" | "description" | "requirement" | "tests" | "averageTimeLimit" | "averageMemLimit" | "category", ExtArgs["result"]["problem"]>
+  export type ProblemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "author" | "positiveRatings" | "negativeRatings" | "description" | "requirement" | "tests" | "averageTimeLimit" | "averageMemLimit" | "category" | "sourceCode" | "difficulty" | "tags", ExtArgs["result"]["problem"]>
   export type ProblemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     solves?: boolean | Problem$solvesArgs<ExtArgs>
     _count?: boolean | ProblemCountOutputTypeDefaultArgs<ExtArgs>
@@ -7253,6 +7296,9 @@ export namespace Prisma {
       averageTimeLimit: number
       averageMemLimit: number
       category: string | null
+      sourceCode: string | null
+      difficulty: $Enums.Difficulty | null
+      tags: string[]
     }, ExtArgs["result"]["problem"]>
     composites: {}
   }
@@ -7690,6 +7736,9 @@ export namespace Prisma {
     readonly averageTimeLimit: FieldRef<"Problem", 'Float'>
     readonly averageMemLimit: FieldRef<"Problem", 'Float'>
     readonly category: FieldRef<"Problem", 'String'>
+    readonly sourceCode: FieldRef<"Problem", 'String'>
+    readonly difficulty: FieldRef<"Problem", 'Difficulty'>
+    readonly tags: FieldRef<"Problem", 'String[]'>
   }
     
 
@@ -9338,7 +9387,10 @@ export namespace Prisma {
     tests: 'tests',
     averageTimeLimit: 'averageTimeLimit',
     averageMemLimit: 'averageMemLimit',
-    category: 'category'
+    category: 'category',
+    sourceCode: 'sourceCode',
+    difficulty: 'difficulty',
+    tags: 'tags'
   };
 
   export type ProblemScalarFieldEnum = (typeof ProblemScalarFieldEnum)[keyof typeof ProblemScalarFieldEnum]
@@ -9497,6 +9549,20 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Difficulty'
+   */
+  export type EnumDifficultyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Difficulty'>
+    
+
+
+  /**
+   * Reference to a field of type 'Difficulty[]'
+   */
+  export type ListEnumDifficultyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Difficulty[]'>
     
   /**
    * Deep Input Types
@@ -9850,6 +9916,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatFilter<"Problem"> | number
     averageMemLimit?: FloatFilter<"Problem"> | number
     category?: StringNullableFilter<"Problem"> | string | null
+    sourceCode?: StringNullableFilter<"Problem"> | string | null
+    difficulty?: EnumDifficultyNullableFilter<"Problem"> | $Enums.Difficulty | null
+    tags?: StringNullableListFilter<"Problem">
     solves?: SolveListRelationFilter
   }
 
@@ -9867,6 +9936,9 @@ export namespace Prisma {
     averageTimeLimit?: SortOrder
     averageMemLimit?: SortOrder
     category?: SortOrderInput | SortOrder
+    sourceCode?: SortOrderInput | SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    tags?: SortOrder
     solves?: SolveOrderByRelationAggregateInput
   }
 
@@ -9887,6 +9959,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatFilter<"Problem"> | number
     averageMemLimit?: FloatFilter<"Problem"> | number
     category?: StringNullableFilter<"Problem"> | string | null
+    sourceCode?: StringNullableFilter<"Problem"> | string | null
+    difficulty?: EnumDifficultyNullableFilter<"Problem"> | $Enums.Difficulty | null
+    tags?: StringNullableListFilter<"Problem">
     solves?: SolveListRelationFilter
   }, "id">
 
@@ -9904,6 +9979,9 @@ export namespace Prisma {
     averageTimeLimit?: SortOrder
     averageMemLimit?: SortOrder
     category?: SortOrderInput | SortOrder
+    sourceCode?: SortOrderInput | SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    tags?: SortOrder
     _count?: ProblemCountOrderByAggregateInput
     _avg?: ProblemAvgOrderByAggregateInput
     _max?: ProblemMaxOrderByAggregateInput
@@ -9928,6 +10006,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatWithAggregatesFilter<"Problem"> | number
     averageMemLimit?: FloatWithAggregatesFilter<"Problem"> | number
     category?: StringNullableWithAggregatesFilter<"Problem"> | string | null
+    sourceCode?: StringNullableWithAggregatesFilter<"Problem"> | string | null
+    difficulty?: EnumDifficultyNullableWithAggregatesFilter<"Problem"> | $Enums.Difficulty | null
+    tags?: StringNullableListFilter<"Problem">
   }
 
   export type SolveWhereInput = {
@@ -10363,6 +10444,9 @@ export namespace Prisma {
     averageTimeLimit: number
     averageMemLimit: number
     category?: string | null
+    sourceCode?: string | null
+    difficulty?: $Enums.Difficulty | null
+    tags?: ProblemCreatetagsInput | string[]
     solves?: SolveCreateNestedManyWithoutProblemInput
   }
 
@@ -10380,6 +10464,9 @@ export namespace Prisma {
     averageTimeLimit: number
     averageMemLimit: number
     category?: string | null
+    sourceCode?: string | null
+    difficulty?: $Enums.Difficulty | null
+    tags?: ProblemCreatetagsInput | string[]
     solves?: SolveUncheckedCreateNestedManyWithoutProblemInput
   }
 
@@ -10396,6 +10483,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatFieldUpdateOperationsInput | number
     averageMemLimit?: FloatFieldUpdateOperationsInput | number
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
     solves?: SolveUpdateManyWithoutProblemNestedInput
   }
 
@@ -10413,6 +10503,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatFieldUpdateOperationsInput | number
     averageMemLimit?: FloatFieldUpdateOperationsInput | number
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
     solves?: SolveUncheckedUpdateManyWithoutProblemNestedInput
   }
 
@@ -10430,6 +10523,9 @@ export namespace Prisma {
     averageTimeLimit: number
     averageMemLimit: number
     category?: string | null
+    sourceCode?: string | null
+    difficulty?: $Enums.Difficulty | null
+    tags?: ProblemCreatetagsInput | string[]
   }
 
   export type ProblemUpdateManyMutationInput = {
@@ -10445,6 +10541,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatFieldUpdateOperationsInput | number
     averageMemLimit?: FloatFieldUpdateOperationsInput | number
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
   }
 
   export type ProblemUncheckedUpdateManyInput = {
@@ -10461,6 +10560,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatFieldUpdateOperationsInput | number
     averageMemLimit?: FloatFieldUpdateOperationsInput | number
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
   }
 
   export type SolveCreateInput = {
@@ -10932,6 +11034,21 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type EnumDifficultyNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Difficulty | EnumDifficultyFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDifficultyNullableFilter<$PrismaModel> | $Enums.Difficulty | null
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type ProblemCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -10946,6 +11063,9 @@ export namespace Prisma {
     averageTimeLimit?: SortOrder
     averageMemLimit?: SortOrder
     category?: SortOrder
+    sourceCode?: SortOrder
+    difficulty?: SortOrder
+    tags?: SortOrder
   }
 
   export type ProblemAvgOrderByAggregateInput = {
@@ -10968,6 +11088,8 @@ export namespace Prisma {
     averageTimeLimit?: SortOrder
     averageMemLimit?: SortOrder
     category?: SortOrder
+    sourceCode?: SortOrder
+    difficulty?: SortOrder
   }
 
   export type ProblemMinOrderByAggregateInput = {
@@ -10982,6 +11104,8 @@ export namespace Prisma {
     averageTimeLimit?: SortOrder
     averageMemLimit?: SortOrder
     category?: SortOrder
+    sourceCode?: SortOrder
+    difficulty?: SortOrder
   }
 
   export type ProblemSumOrderByAggregateInput = {
@@ -11032,6 +11156,16 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type EnumDifficultyNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Difficulty | EnumDifficultyFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDifficultyNullableWithAggregatesFilter<$PrismaModel> | $Enums.Difficulty | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumDifficultyNullableFilter<$PrismaModel>
+    _max?: NestedEnumDifficultyNullableFilter<$PrismaModel>
   }
 
   export type ProblemScalarRelationFilter = {
@@ -11210,6 +11344,10 @@ export namespace Prisma {
     set: InputJsonValue[]
   }
 
+  export type ProblemCreatetagsInput = {
+    set: string[]
+  }
+
   export type SolveCreateNestedManyWithoutProblemInput = {
     create?: XOR<SolveCreateWithoutProblemInput, SolveUncheckedCreateWithoutProblemInput> | SolveCreateWithoutProblemInput[] | SolveUncheckedCreateWithoutProblemInput[]
     connectOrCreate?: SolveCreateOrConnectWithoutProblemInput | SolveCreateOrConnectWithoutProblemInput[]
@@ -11235,6 +11373,15 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NullableEnumDifficultyFieldUpdateOperationsInput = {
+    set?: $Enums.Difficulty | null
+  }
+
+  export type ProblemUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type SolveUpdateManyWithoutProblemNestedInput = {
@@ -11458,6 +11605,13 @@ export namespace Prisma {
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
+
+  export type NestedEnumDifficultyNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Difficulty | EnumDifficultyFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDifficultyNullableFilter<$PrismaModel> | $Enums.Difficulty | null
+  }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -11496,6 +11650,16 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedEnumDifficultyNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Difficulty | EnumDifficultyFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDifficultyNullableWithAggregatesFilter<$PrismaModel> | $Enums.Difficulty | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumDifficultyNullableFilter<$PrismaModel>
+    _max?: NestedEnumDifficultyNullableFilter<$PrismaModel>
   }
 
   export type UserCreateWithoutProjectsInput = {
@@ -11769,6 +11933,9 @@ export namespace Prisma {
     averageTimeLimit: number
     averageMemLimit: number
     category?: string | null
+    sourceCode?: string | null
+    difficulty?: $Enums.Difficulty | null
+    tags?: ProblemCreatetagsInput | string[]
   }
 
   export type ProblemUncheckedCreateWithoutSolvesInput = {
@@ -11785,6 +11952,9 @@ export namespace Prisma {
     averageTimeLimit: number
     averageMemLimit: number
     category?: string | null
+    sourceCode?: string | null
+    difficulty?: $Enums.Difficulty | null
+    tags?: ProblemCreatetagsInput | string[]
   }
 
   export type ProblemCreateOrConnectWithoutSolvesInput = {
@@ -11858,6 +12028,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatFieldUpdateOperationsInput | number
     averageMemLimit?: FloatFieldUpdateOperationsInput | number
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
   }
 
   export type ProblemUncheckedUpdateWithoutSolvesInput = {
@@ -11874,6 +12047,9 @@ export namespace Prisma {
     averageTimeLimit?: FloatFieldUpdateOperationsInput | number
     averageMemLimit?: FloatFieldUpdateOperationsInput | number
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
   }
 
   export type ProjectCreateManyUserInput = {

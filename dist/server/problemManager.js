@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,7 +42,6 @@ exports.handleExecError = handleExecError;
 exports.createProblem = createProblem;
 exports.testProblem = testProblem;
 const dbClient_1 = __importDefault(require("./dbClient"));
-const node_stream_1 = require("node:stream");
 function handleSucces(index, clientObj) {
     clientObj.sendMessage({ index, succes: true });
 }
@@ -20,7 +52,7 @@ const problemCreator = new Map();
 class ProblemCreator {
     editorSession;
 }
-async function createProblem(name, author, description, category, requirement, tests, editorSession, clientObj) {
+async function createProblem({ name, author, description, difficulty, tags, category, requirement }, tests, editorSession, clientObj) {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
     //     console.error('no running container')
@@ -29,14 +61,14 @@ async function createProblem(name, author, description, category, requirement, t
     let i = 0;
     // testProblem(tests, clientObj, editorSession, imgName, () => i++, (index) => console.error('failed test ', index))
     let testPromises = [];
-    (0, child_process_1.execSync)(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`);
+    const testFile = clientObj.openFile[0];
+    (0, child_process_1.execSync)(`g++ -O0 ${testFile.filePath} -o ${path_1.default.dirname(testFile.filePath)}/${testFile.name.split('.')[0]}.exe`);
     tests.forEach(async (test, i) => {
         testPromises.push(new Promise((resolve, reject) => {
             const stdin = test.dataIn.toString();
-            const expectedStoud = test.dataOut.toString();
+            const expectedStoud = test.dataOut ? test.dataOut : undefined;
             let outputBuffer = '';
-            const input = new node_stream_1.Writable();
-            const program = (0, child_process_1.spawn)(`${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, { stdio: 'pipe', shell: true, timeout: 5000 });
+            const program = (0, child_process_1.spawn)(`${path_1.default.dirname(testFile.filePath)}/${testFile.name.split('.')[0]}.exe`, { stdio: 'pipe', shell: true, timeout: 5000 });
             program.on('spawn', () => {
                 console.log('test started');
                 program.stdin.write(stdin);
@@ -60,10 +92,12 @@ async function createProblem(name, author, description, category, requirement, t
                 console.log('test finished', outputBuffer);
                 if (code != 0 && code)
                     reject(console.error('failed runtime error ', code, 'on test ' + i));
+                if (expectedStoud === undefined)
+                    resolve(outputBuffer);
                 if (outputBuffer === expectedStoud) {
                     console.log('passed test', i, "Given input:", stdin, 'output:', expectedStoud);
                     i++;
-                    resolve();
+                    resolve(expectedStoud);
                 }
                 else
                     reject(console.error('failed test ', i, 'Expected output:', expectedStoud, 'actual output: ', outputBuffer));
@@ -74,10 +108,17 @@ async function createProblem(name, author, description, category, requirement, t
         .catch(err => {
         console.error('Test failed.', err);
     })
-        .then(() => {
+        .then((output) => {
         // if(i !== tests.length)
         //     {console.error('some tests failed', i, "out of", tests.length)
         //     return }
+        tests.forEach((val, index) => {
+            //@ts-ignore
+            if (output[index].value)
+                //@ts-ignore
+                tests[index].dataOut = output[index].value;
+        });
+        const sourceCode = testFile.content;
         dbClient_1.default.problem.create({
             data: {
                 name: name || "unnamed",
@@ -86,6 +127,9 @@ async function createProblem(name, author, description, category, requirement, t
                 description,
                 requirement,
                 tests,
+                difficulty,
+                tags: tags.split(',').map(val => val.trim()),
+                sourceCode,
                 averageMemLimit: 0,
                 averageTimeLimit: 0
             }
@@ -97,14 +141,15 @@ async function createProblem(name, author, description, category, requirement, t
 function testProblem(tests, clientObj, clientSession, res) {
     const promises = [];
     console.log('starting tests');
-    // execSync(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`)
+    if (process.env.NODE_ENV == "development")
+        (0, child_process_1.execSync)(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`);
     // console.log('finished compile')
     tests.forEach(async (test, i) => {
         promises.push(new Promise(async (resolve, reject) => {
             const stdin = test.dataIn;
             const expectedStoud = test.dataOut;
             let outputBuffer = '';
-            const program = false ? (0, child_process_1.spawn)(`${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, { stdio: 'pipe', shell: true, timeout: 5000 }) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession);
+            const program = process.env.NODE_ENV == "development" ? (0, child_process_1.spawn)(`${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, { stdio: 'pipe', shell: true, timeout: 5000 }) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession);
             const pipeStream = new stream_1.Readable();
             program.addListener('spawn', () => {
                 pipeStream.pipe(program.stdin);
@@ -122,7 +167,7 @@ function testProblem(tests, clientObj, clientSession, res) {
                 else if (outputBuffer.trim() === expectedStoud.trim())
                     resolve({ status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length });
                 else
-                    resolve({ status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0 });
+                    resolve({ status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0, result: (i <= 2 ? { input: stdin, output: outputBuffer, expectedOutput: expectedStoud } : undefined) }); // TODO Determine if i should leave expected output
             });
         }));
     });
@@ -142,13 +187,11 @@ exports.router.post('/create', (req, res) => {
         if (!session)
             throw 'couldnt find session';
         const client = session.clientsMap.get(data.clientId);
-        if (!client) {
-            console.error('couldnt find client', session.clientsMap);
-            return;
-        }
+        if (!client)
+            throw 'couldnt find client';
         if (!data.name)
             throw 'invalid name';
-        createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client);
+        createProblem(data, tests, session, client);
         res.status(200).send(tests[0].dataIn);
     }
     catch (err) {
@@ -198,7 +241,7 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
                         }
                     }
                 }
-            }).then(problem => res.status(200).send({ results: testResults }));
+            }).then(problem => res.status(200).send({ results: testResults, score }));
         });
         // .catch((err) =>  res.status(500).send({error: err || true, result: false}))
         // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
@@ -223,26 +266,43 @@ exports.router.get('/page', async (req, res) => {
     res.send(problems);
 });
 const fs_1 = __importDefault(require("fs"));
+const users = __importStar(require("./usersManager"));
+// import cookieParser from "cookie-parser";
 exports.router.get('/:sessionId/details/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const sessionId = req.params.sessionId;
+    const userId = users.getClientId(req.cookies.token);
     if (!id)
         throw 'invalid id';
     const problem = await dbClient_1.default.problem.findUnique({
         where: {
             id
+        },
+        include: {
+            solves: {
+                take: 5,
+                orderBy: {
+                    uploadedAt: "desc"
+                },
+                where: {
+                    userId: userId ? userId : 0
+                },
+            },
+            _count: {
+                select: { solves: true }
+            }
         }
     });
+    if (!problem)
+        throw 'couldnt find problem.';
     let fileBuffer = fs_1.default.readFileSync(path_1.default.join(server_1.rootDirName, 'public', 'pages', 'problemTemplate.html')).toString();
     if (fileBuffer === undefined)
         throw 'File buffer is invalid';
     const serverSideReplace = (template, data) => template.replace(/\${(\w*|.*)}/g, (_, key) => {
-        console.log(key, data[key]);
         const params = key.split('.');
         const reg = /(.*)\[(\d*)\]/;
         for (let i = 0; i < params.length; i++) {
             const param = params[i];
-            console.log(param.match(reg));
             if (param) {
                 const match = param.match(reg);
                 if (match) {
@@ -251,14 +311,14 @@ exports.router.get('/:sessionId/details/:id', async (req, res) => {
                 }
             }
         }
-        console.log(params);
         let buffer = data[params[0]];
         let i = 1;
         while (i < params.length)
             buffer = buffer[params[i++]];
         return buffer;
     });
-    res.send(serverSideReplace(fileBuffer, { json: problem, sessionId }));
+    const solvesUI = problem.solves ? problem.solves.map(solve => `<div><span class="${['bad', 'decent', 'good', 'perfect'][Math.round(solve.score / 25) - (solve.score == 0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}`).join('\n') : '';
+    res.send(serverSideReplace(fileBuffer, { json: { ...problem, difficulty: problem.difficulty ? problem.difficulty : '' }, sessionId, html: { solvesUI } }));
 });
 exports.default = exports.router;
 const openai_1 = __importDefault(require("openai"));
@@ -430,3 +490,20 @@ const codeMentorFeedback = {
     },
     "strict": true
 };
+function dateDeltaToString(date) {
+    const delta = new Date();
+    const now = date;
+    console.log(date.getTime(), Date.now(), Date.now() - date.getTime(), delta.toDateString());
+    if (delta.getUTCFullYear() - now.getUTCFullYear() >= 1)
+        return `${delta.getUTCFullYear() - now.getUTCFullYear()} years ago`;
+    else if (delta.getUTCMonth() - now.getUTCMonth() >= 1)
+        return `${delta.getUTCMonth() - now.getUTCMonth()} months ago`;
+    else if (delta.getDay() - now.getDay() >= 1)
+        return `${delta.getDay() - now.getDay()} days ago`;
+    else if (delta.getHours() - now.getHours() >= 1)
+        return `${delta.getHours() - now.getHours()} hours ago`;
+    else if (delta.getMinutes() - now.getMinutes() >= 1)
+        return `${delta.getMinutes() - now.getMinutes()} minutes ago`;
+    else
+        return `${delta.getSeconds() - now.getSeconds()} seconds ago`;
+}

@@ -24,7 +24,7 @@ export type ProblemTest = {
     score: number
 }
 
-export async function createProblem(name, author, description, category, requirement, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
+export async function createProblem({name, author, description, difficulty, tags, category, requirement}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
 {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
@@ -34,22 +34,22 @@ export async function createProblem(name, author, description, category, require
     // await clientObj.openFile.editorMode.compile(imgName, clientObj.openFile, false)
     let i = 0;
     // testProblem(tests, clientObj, editorSession, imgName, () => i++, (index) => console.error('failed test ', index))
-    let testPromises: Promise<void>[] = []
-    execSync(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`)
+    let testPromises: Promise<string>[] = []
+    const testFile = clientObj.openFile[0]
+    execSync(`g++ -O0 ${testFile.filePath} -o ${path.dirname(testFile.filePath)}/${testFile.name.split('.')[0]}.exe`)
     
     tests.forEach(async (test, i) => 
     {
-        testPromises.push(new Promise<void>((resolve, reject) => {
+        testPromises.push(new Promise((resolve, reject) => {
             const stdin = test.dataIn.toString()
-            const expectedStoud = test.dataOut.toString()
+            const expectedStoud = test.dataOut ? test.dataOut : undefined
             let outputBuffer = '';
             
                 
                 
 
-            const input = new Writable()
            
-            const program = spawn(`${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000})
+            const program = spawn(`${path.dirname(testFile.filePath)}/${testFile.name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000})
             program.on('spawn', () => {
                 console.log('test started')
                 program.stdin.write(stdin)
@@ -78,11 +78,14 @@ export async function createProblem(name, author, description, category, require
                 if(code != 0 && code)
                     reject(console.error('failed runtime error ', code, 'on test ' +i))
 
+                if(expectedStoud === undefined)
+                    resolve(outputBuffer)
+
                 if(outputBuffer === expectedStoud)
                 {
                     console.log('passed test',i,"Given input:",stdin,'output:',expectedStoud)
                     i++
-                    resolve()
+                    resolve(expectedStoud)
                 }
                 else 
                 reject(console.error('failed test ', i, 'Expected output:',expectedStoud,'actual output: ', outputBuffer))
@@ -94,11 +97,17 @@ export async function createProblem(name, author, description, category, require
     .catch(err => {
         console.error('Test failed.', err)
     })
-    .then(() => {
+    .then((output) => {
         // if(i !== tests.length)
         //     {console.error('some tests failed', i, "out of", tests.length)
         //     return }
-
+        tests.forEach((val, index) => {
+            //@ts-ignore
+            if((output as PromiseSettledResult<string>[])[index].value)
+            //@ts-ignore
+            tests[index].dataOut = (output as PromiseSettledResult<string>[])[index].value
+        })
+        const sourceCode = testFile.content;
         prisma.problem.create({
             data: {
                 name: name || "unnamed",
@@ -107,6 +116,9 @@ export async function createProblem(name, author, description, category, require
                 description,
                 requirement,
                 tests,
+                difficulty,
+                tags: (tags as string).split(',').map(val => val.trim()),
+                sourceCode, 
                 averageMemLimit: 0,
                 averageTimeLimit: 0
             }
@@ -122,12 +134,14 @@ export async function createProblem(name, author, description, category, require
     
 }
 
-export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession, res): Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number} | undefined>>[]>
+export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession, res):
+ Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number,  result?: {input: string, output: string}} | undefined>>[]>
 {
     const promises = []
     console.log('starting tests')
 
-    // execSync(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`)
+    if(process.env.NODE_ENV=="development")
+        execSync(`g++ -O0 ${clientObj.openFile[0].filePath} -o ${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`)
     // console.log('finished compile')
     tests.forEach(async (test, i) => 
     {
@@ -135,7 +149,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
             const stdin = test.dataIn
             const expectedStoud = test.dataOut
             let outputBuffer = ''
-            const program = false ? spawn(`${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000}) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
+            const program = process.env.NODE_ENV=="development" ? spawn(`${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000}) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
 
             const pipeStream = new Readable()
             
@@ -157,7 +171,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 else if(outputBuffer.trim() === expectedStoud.trim())
                     resolve({status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length})
                 else
-                    resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0})
+                    resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0, result: (i <= 2 ? {input: stdin, output: outputBuffer, expectedOutput: expectedStoud} : undefined)}) // TODO Determine if i should leave expected output
             })
         }))
         
@@ -185,13 +199,12 @@ router.post('/create', (req, res) => {
             throw 'couldnt find session'
         const client = session.clientsMap.get(data.clientId)
         if(!client)
-            {
-                console.error('couldnt find client', session.clientsMap)
-                return;
-            } 
-            if(!data.name)
-                throw 'invalid name'
-        createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
+            throw 'couldnt find client'
+
+        if(!data.name)
+            throw 'invalid name'
+
+        createProblem(data, tests, session, client)
         res.status(200).send(tests[0].dataIn)
     }
     catch(err)
@@ -230,11 +243,11 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
             let score = 0;
             for(const testResult of testResults) 
                 if (testResult.status === "fulfilled" && testResult.value) 
-                    {
-                        const result = testResult.value;
-                        //@ts-ignore
-                            score += result.score;
-                    }
+                {
+                    const result = testResult.value;
+                    //@ts-ignore
+                        score += result.score;
+                }
                 
             prisma.problem.update({
                 where: {
@@ -251,7 +264,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
                         }
                     }
                 }
-            }).then(problem => res.status(200).send({results: testResults}))
+            }).then(problem => res.status(200).send({results: testResults, score}))
             
                 
             
@@ -295,17 +308,41 @@ router.get('/page', async (req, res) => {
 })
 import fs from 'fs';
 import { error } from "node:console";
+import * as users from './usersManager'
+// import cookieParser from "cookie-parser";
 router.get('/:sessionId/details/:id', async (req, res) => {
     const id = parseInt(req.params.id)
     const sessionId = req.params.sessionId as UUID
+    const userId = users.getClientId(req.cookies.token)
     if(!id)
         throw 'invalid id';
     const problem = await prisma.problem.findUnique({
         where: {
             id
+        },
+        include:
+        {
+            solves:
+            {
+                take: 5,
+                orderBy:
+                {
+                    uploadedAt: "desc"
+                },
+                where:
+                {
+                    userId: userId ? userId : 0
+                },
+                
+            },
+            _count: {
+                select: {solves: true}
+            }
         }
     })
-
+    if(!problem)
+        throw 'couldnt find problem.'
+    
     let fileBuffer = fs.readFileSync(path.join(rootDirName, 'public', 'pages', 'problemTemplate.html')).toString()
 
     if(fileBuffer === undefined)
@@ -314,12 +351,10 @@ router.get('/:sessionId/details/:id', async (req, res) => {
     const serverSideReplace = (template: string, data) =>
         template.replace(/\${(\w*|.*)}/g, (_,key: string) => 
         {
-            console.log(key, data[key])
             const params = key.split('.')
             const reg = /(.*)\[(\d*)\]/
             for(let i=0; i<params.length;i++ ) {
                 const param = params[i];
-                console.log(param.match(reg))
                 if(param)
                 {
                     const match = param.match(reg)
@@ -332,7 +367,6 @@ router.get('/:sessionId/details/:id', async (req, res) => {
                 }
                 
             }
-            console.log(params)
             let buffer = data[params[0]]
             let i = 1;
             while(i<params.length)
@@ -340,8 +374,11 @@ router.get('/:sessionId/details/:id', async (req, res) => {
             
             return buffer;
         })
+    
+    
+    const solvesUI = problem.solves ? problem.solves.map(solve => `<div><span class="${['bad', 'decent','good', 'perfect'][Math.round(solve.score/25)- (solve.score==0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}`).join('\n') : ''
 
-    res.send(serverSideReplace(fileBuffer, {json: problem, sessionId}))
+    res.send(serverSideReplace(fileBuffer, {json: {...problem, difficulty: problem.difficulty ? problem.difficulty : ''}, sessionId, html: {solvesUI}}))
 })
 
 
@@ -349,6 +386,7 @@ router.get('/:sessionId/details/:id', async (req, res) => {
 export default router
 
 import OpenAI from "openai";
+import { Prisma } from "../../generated/prisma";
 
 
 router.get('/:sessionId/details/:id/evaluate', async (req, res) => {
@@ -538,3 +576,23 @@ const codeMentorFeedback = {
   },
   "strict": true
 };
+
+function dateDeltaToString(date: Date)
+{
+    
+    const delta = new Date() 
+    const now = date
+    console.log(date.getTime(), Date.now(), Date.now() - date.getTime(), delta.toDateString())
+    if(delta.getUTCFullYear() - now.getUTCFullYear()>=1)
+        return `${delta.getUTCFullYear()  - now.getUTCFullYear()} years ago`
+    else if(delta.getUTCMonth() -  now.getUTCMonth()>= 1)
+        return `${delta.getUTCMonth() -now.getUTCMonth()} months ago`
+    else if(delta.getDay() - now.getDay()>= 1)
+        return `${delta.getDay() - now.getDay()} days ago`
+    else if(delta.getHours() - now.getHours()>= 1)
+        return `${delta.getHours() - now.getHours()} hours ago`
+    else if(delta.getMinutes() - now.getMinutes()>= 1)
+        return `${delta.getMinutes() - now.getMinutes()} minutes ago`
+    else
+        return `${delta.getSeconds() - now.getSeconds()} seconds ago`
+}

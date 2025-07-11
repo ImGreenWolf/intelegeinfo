@@ -1346,11 +1346,14 @@ bash `.trim().replaceAll('\n', "");
         async function executeProblemChecker(problemId) {
             return new Promise((resolve, reject) => {
                 console.log(problemId);
-                dbClient_1.default.problem.findFirst({}).then(problem => {
+                dbClient_1.default.problem.findUnique({
+                    where: {
+                        id: problemId
+                    }
+                }).then(problem => {
                     if (!problem)
                         throw 'Problem with id ' + problemId + ' is invalid!';
-                    console.log(problem);
-                    if (false) {
+                    if (process.env.NODE_ENV == 'development') {
                         (0, problemManager_1.testProblem)(problem.tests, clientObj, clientSession, undefined)
                             .then(resolve).catch(reject)
                             .finally(() => {

@@ -1707,16 +1707,18 @@ bash `.trim().replaceAll('\n', "")
 
 
 async function executeProblemChecker(problemId) {
-return new Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number} | undefined>>[]>((resolve, reject) => { 
+return new Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number, result?: {input: string, output: string}} | undefined>>[]>((resolve, reject) => { 
     console.log(problemId) 
-            prisma.problem.findFirst({
-            
-
+            prisma.problem.findUnique({
+                where:
+                {
+                    id: problemId
+                }
             }).then(problem => {
                 if(!problem)
                     throw 'Problem with id ' + problemId + ' is invalid!'
-                console.log(problem)
-                if(false)
+
+                if(process.env.NODE_ENV == 'development')
                 {
                      testProblem(problem.tests as ProblemTest[], clientObj,clientSession, undefined)
                         .then(resolve).catch(reject)
