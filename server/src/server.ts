@@ -1707,7 +1707,7 @@ bash `.trim().replaceAll('\n', "")
 
 
 async function executeProblemChecker(problemId) {
-return new Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number, result?: {input: string, output: string}} | undefined>>[]>((resolve, reject) => { 
+return new Promise<PromiseSettledResult<{status: string, error: boolean, index: number, score: number, time?: number ,result?: {input: string, output: string}} | undefined>[]>((resolve, reject) => { 
     console.log(problemId) 
             prisma.problem.findUnique({
                 where:

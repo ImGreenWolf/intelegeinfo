@@ -113,5 +113,6 @@ model Solve {
   sourceCode String
   uploadedAt DateTime @default(now())
   score Int
+  time Int
 }
 

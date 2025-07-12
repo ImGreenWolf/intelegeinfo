@@ -20,7 +20,7 @@ export async function test(sessionId, problemId)
 
         output!.replaceChildren(...elems)
 
-        document.getElementById('final-score')!.innerHTML = json.score;
+        document.getElementById('final-score')!.innerHTML = `${json.solve.score} - Time: ${json.solve.time}`;
         document.getElementById('final-score')!.className = ['bad', 'decent','good', 'perfect'][Math.round(json.score/25)- (json.score==0 ? 0 : 1)]
         console.log(Math.round(json.score/25)- json.score==0 ? 0 : 1, Math.round(json.score/25), json.score==0 ? 0 : 1)
 }

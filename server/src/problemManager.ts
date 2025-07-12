@@ -21,7 +21,8 @@ class ProblemCreator {
 export type ProblemTest = {
     dataIn: string,
     dataOut: string,
-    score: number
+    score: number,
+    time: number,
 }
 
 export async function createProblem({name, author, description, difficulty, tags, category, requirement}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
@@ -34,7 +35,7 @@ export async function createProblem({name, author, description, difficulty, tags
     // await clientObj.openFile.editorMode.compile(imgName, clientObj.openFile, false)
     let i = 0;
     // testProblem(tests, clientObj, editorSession, imgName, () => i++, (index) => console.error('failed test ', index))
-    let testPromises: Promise<string>[] = []
+    let testPromises: Promise<{output: string, time?: number}>[] = []
     const testFile = clientObj.openFile[0]
     execSync(`g++ -O0 ${testFile.filePath} -o ${path.dirname(testFile.filePath)}/${testFile.name.split('.')[0]}.exe`)
     
@@ -48,14 +49,14 @@ export async function createProblem({name, author, description, difficulty, tags
                 
                 
 
-           
+            let startDate = undefined;
             const program = spawn(`${path.dirname(testFile.filePath)}/${testFile.name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000})
             program.on('spawn', () => {
                 console.log('test started')
                 program.stdin.write(stdin)
                 program.stdin.end()
                 // program.stdin.pipe(input)
-
+                startDate = Date.now()
                 // input.pipe(program.stdin)
                 //  input.write(stdin)
                 program.stdin.on('drain', () => console.log('drain stdin'))
@@ -79,13 +80,13 @@ export async function createProblem({name, author, description, difficulty, tags
                     reject(console.error('failed runtime error ', code, 'on test ' +i))
 
                 if(expectedStoud === undefined)
-                    resolve(outputBuffer)
+                    resolve({output: expectedStoud, time: startDate? Date.now() - startDate : undefined})
 
                 if(outputBuffer === expectedStoud)
                 {
                     console.log('passed test',i,"Given input:",stdin,'output:',expectedStoud)
                     i++
-                    resolve(expectedStoud)
+                    resolve({output: expectedStoud, time: startDate? Date.now() - startDate : undefined})
                 }
                 else 
                 reject(console.error('failed test ', i, 'Expected output:',expectedStoud,'actual output: ', outputBuffer))
@@ -101,11 +102,20 @@ export async function createProblem({name, author, description, difficulty, tags
         // if(i !== tests.length)
         //     {console.error('some tests failed', i, "out of", tests.length)
         //     return }
+        let time = 0;
+        let timeIndex = 0
         tests.forEach((val, index) => {
             //@ts-ignore
-            if((output as PromiseSettledResult<string>[])[index].value)
+            const value = (output)[index].value
+            if(value)
             //@ts-ignore
-            tests[index].dataOut = (output as PromiseSettledResult<string>[])[index].value
+            tests[index].dataOut = value.output
+            tests[index].time = value.time ? value.time : -1
+            if(value.time)
+            {
+                time += value.time;
+                timeIndex++;
+            }
         })
         const sourceCode = testFile.content;
         prisma.problem.create({
@@ -120,7 +130,7 @@ export async function createProblem({name, author, description, difficulty, tags
                 tags: (tags as string).split(',').map(val => val.trim()),
                 sourceCode, 
                 averageMemLimit: 0,
-                averageTimeLimit: 0
+                averageTimeLimit: time/timeIndex
             }
         }).then(problem => {
             console.log(problem)
@@ -135,7 +145,7 @@ export async function createProblem({name, author, description, difficulty, tags
 }
 
 export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession, res):
- Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number,  result?: {input: string, output: string}} | undefined>>[]>
+ Promise<PromiseSettledResult<{status: string, error: boolean, index: number, score: number, time?: number,  result?: {input: string, output: string}} | undefined>[]>
 {
     const promises = []
     console.log('starting tests')
@@ -152,12 +162,14 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
             const program = process.env.NODE_ENV=="development" ? spawn(`${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000}) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
 
             const pipeStream = new Readable()
-            
+            let startTime;
             program.addListener('spawn', () => {
                 pipeStream.pipe(program.stdin)
                 pipeStream.push(stdin)
                 pipeStream.push(null)
                 console.log("Test started")
+
+                startTime = Date.now()
             })
   
             program.stdout.addListener('data', (data) => {
@@ -169,7 +181,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 if(code != 0)
                     resolve({status: "Program returned non-zero status code!", error: true, index: i, score: 0})
                 else if(outputBuffer.trim() === expectedStoud.trim())
-                    resolve({status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length})
+                    resolve({status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length, time: startTime ? startTime - Date.now() : undefined})
                 else
                     resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0, result: (i <= 2 ? {input: stdin, output: outputBuffer, expectedOutput: expectedStoud} : undefined)}) // TODO Determine if i should leave expected output
             })
@@ -241,14 +253,25 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
             // testResults is an array of PromiseSettledResult objects
             console.log('Testing finished, results:', testResults)
             let score = 0;
+            let time = 0;
+            let timeIndex = 0;
             for(const testResult of testResults) 
                 if (testResult.status === "fulfilled" && testResult.value) 
                 {
                     const result = testResult.value;
-                    //@ts-ignore
                         score += result.score;
+                    if(result.time)
+                    {
+                        time += result.time;
+                        timeIndex++;
+                    }
                 }
-                
+            const solve = {
+                userId: client.clientData.id,
+                score: score,
+                sourceCode: client.openFile[0].content,
+                time: time ? time/timeIndex : -1
+            }
             prisma.problem.update({
                 where: {
                     id: problemId
@@ -258,13 +281,12 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
                     solves: {
                         create:
                         {
-                            userId: client.clientData.id,
-                            score: score,
-                            sourceCode: client.openFile[0].content,
+                            ...solve
                         }
                     }
-                }
-            }).then(problem => res.status(200).send({results: testResults, score}))
+                },
+                
+            }).then(problem => res.status(200).send({results: testResults, solve}))
             
                 
             

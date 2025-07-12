@@ -135,7 +135,7 @@ export class EditorSession {
 
     editorOptions: EditorOptions = {editorPermission: EditorPermission.Everyone, enableChat: true, enableVoice: false}
 
-    executeProblemChecker: (problemId) => Promise<PromiseSettledResult<Array<{status: string, error: boolean, index: number, score: number} | undefined>>[]>;
+    executeProblemChecker: (problemId) => Promise<PromiseSettledResult<{status: string, error: boolean, index: number, score: number, time?: number} | undefined>[]>;
     public makeSessionPublic(options: EditorOptions)
     {
         this.isPublic = true
