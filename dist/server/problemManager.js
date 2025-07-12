@@ -177,7 +177,7 @@ function testProblem(tests, clientObj, clientSession, res) {
                 if (code != 0)
                     resolve({ status: "Program returned non-zero status code!", error: true, index: i, score: 0 });
                 else if (outputBuffer.trim() === expectedStoud.trim())
-                    resolve({ status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length, time: startTime ? startTime - Date.now() : undefined });
+                    resolve({ status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length, time: startTime ? Date.now() - startTime : undefined });
                 else
                     resolve({ status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0, result: (i <= 2 ? { input: stdin, output: outputBuffer, expectedOutput: expectedStoud } : undefined) }); // TODO Determine if i should leave expected output
             });
