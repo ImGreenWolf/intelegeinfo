@@ -5,6 +5,7 @@ export type ProblemTest = {
     dataIn: string;
     dataOut: string;
     score: number;
+    time: number;
 };
 export declare function createProblem({ name, author, description, difficulty, tags, category, requirement }: {
     name: any;
@@ -15,15 +16,16 @@ export declare function createProblem({ name, author, description, difficulty, t
     category: any;
     requirement: any;
 }, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject): Promise<void>;
-export declare function testProblem(tests: ProblemTest[], clientObj: ClientObject, clientSession: any, res: any): Promise<PromiseSettledResult<Array<{
+export declare function testProblem(tests: ProblemTest[], clientObj: ClientObject, clientSession: any, res: any): Promise<PromiseSettledResult<{
     status: string;
     error: boolean;
     index: number;
     score: number;
+    time?: number;
     result?: {
         input: string;
         output: string;
     };
-} | undefined>>[]>;
+} | undefined>[]>;
 export declare const router: import("express-serve-static-core").Router;
 export default router;

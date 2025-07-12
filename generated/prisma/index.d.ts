@@ -332,8 +332,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.9.0
-   * Query Engine version: 81e4af48011447c3cc503a190e86995b66d2a28e
+   * Prisma Client JS version: 6.11.1
+   * Query Engine version: f40f79ec31188888a2e33acda0ecc8fd10a853a9
    */
   export type PrismaVersion = {
     client: string
@@ -8186,6 +8186,7 @@ export namespace Prisma {
     userId: number | null
     problemid: number | null
     score: number | null
+    time: number | null
   }
 
   export type SolveSumAggregateOutputType = {
@@ -8193,6 +8194,7 @@ export namespace Prisma {
     userId: number | null
     problemid: number | null
     score: number | null
+    time: number | null
   }
 
   export type SolveMinAggregateOutputType = {
@@ -8202,6 +8204,7 @@ export namespace Prisma {
     sourceCode: string | null
     uploadedAt: Date | null
     score: number | null
+    time: number | null
   }
 
   export type SolveMaxAggregateOutputType = {
@@ -8211,6 +8214,7 @@ export namespace Prisma {
     sourceCode: string | null
     uploadedAt: Date | null
     score: number | null
+    time: number | null
   }
 
   export type SolveCountAggregateOutputType = {
@@ -8220,6 +8224,7 @@ export namespace Prisma {
     sourceCode: number
     uploadedAt: number
     score: number
+    time: number
     _all: number
   }
 
@@ -8229,6 +8234,7 @@ export namespace Prisma {
     userId?: true
     problemid?: true
     score?: true
+    time?: true
   }
 
   export type SolveSumAggregateInputType = {
@@ -8236,6 +8242,7 @@ export namespace Prisma {
     userId?: true
     problemid?: true
     score?: true
+    time?: true
   }
 
   export type SolveMinAggregateInputType = {
@@ -8245,6 +8252,7 @@ export namespace Prisma {
     sourceCode?: true
     uploadedAt?: true
     score?: true
+    time?: true
   }
 
   export type SolveMaxAggregateInputType = {
@@ -8254,6 +8262,7 @@ export namespace Prisma {
     sourceCode?: true
     uploadedAt?: true
     score?: true
+    time?: true
   }
 
   export type SolveCountAggregateInputType = {
@@ -8263,6 +8272,7 @@ export namespace Prisma {
     sourceCode?: true
     uploadedAt?: true
     score?: true
+    time?: true
     _all?: true
   }
 
@@ -8359,6 +8369,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt: Date
     score: number
+    time: number
     _count: SolveCountAggregateOutputType | null
     _avg: SolveAvgAggregateOutputType | null
     _sum: SolveSumAggregateOutputType | null
@@ -8387,6 +8398,7 @@ export namespace Prisma {
     sourceCode?: boolean
     uploadedAt?: boolean
     score?: boolean
+    time?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["solve"]>
@@ -8398,6 +8410,7 @@ export namespace Prisma {
     sourceCode?: boolean
     uploadedAt?: boolean
     score?: boolean
+    time?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["solve"]>
@@ -8409,6 +8422,7 @@ export namespace Prisma {
     sourceCode?: boolean
     uploadedAt?: boolean
     score?: boolean
+    time?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["solve"]>
@@ -8420,9 +8434,10 @@ export namespace Prisma {
     sourceCode?: boolean
     uploadedAt?: boolean
     score?: boolean
+    time?: boolean
   }
 
-  export type SolveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "problemid" | "sourceCode" | "uploadedAt" | "score", ExtArgs["result"]["solve"]>
+  export type SolveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "problemid" | "sourceCode" | "uploadedAt" | "score" | "time", ExtArgs["result"]["solve"]>
   export type SolveInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
@@ -8449,6 +8464,7 @@ export namespace Prisma {
       sourceCode: string
       uploadedAt: Date
       score: number
+      time: number
     }, ExtArgs["result"]["solve"]>
     composites: {}
   }
@@ -8880,6 +8896,7 @@ export namespace Prisma {
     readonly sourceCode: FieldRef<"Solve", 'String'>
     readonly uploadedAt: FieldRef<"Solve", 'DateTime'>
     readonly score: FieldRef<"Solve", 'Int'>
+    readonly time: FieldRef<"Solve", 'Int'>
   }
     
 
@@ -9402,7 +9419,8 @@ export namespace Prisma {
     problemid: 'problemid',
     sourceCode: 'sourceCode',
     uploadedAt: 'uploadedAt',
-    score: 'score'
+    score: 'score',
+    time: 'time'
   };
 
   export type SolveScalarFieldEnum = (typeof SolveScalarFieldEnum)[keyof typeof SolveScalarFieldEnum]
@@ -10021,6 +10039,7 @@ export namespace Prisma {
     sourceCode?: StringFilter<"Solve"> | string
     uploadedAt?: DateTimeFilter<"Solve"> | Date | string
     score?: IntFilter<"Solve"> | number
+    time?: IntFilter<"Solve"> | number
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     problem?: XOR<ProblemScalarRelationFilter, ProblemWhereInput>
   }
@@ -10032,6 +10051,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    time?: SortOrder
     user?: UserOrderByWithRelationInput
     problem?: ProblemOrderByWithRelationInput
   }
@@ -10046,6 +10066,7 @@ export namespace Prisma {
     sourceCode?: StringFilter<"Solve"> | string
     uploadedAt?: DateTimeFilter<"Solve"> | Date | string
     score?: IntFilter<"Solve"> | number
+    time?: IntFilter<"Solve"> | number
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     problem?: XOR<ProblemScalarRelationFilter, ProblemWhereInput>
   }, "id">
@@ -10057,6 +10078,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    time?: SortOrder
     _count?: SolveCountOrderByAggregateInput
     _avg?: SolveAvgOrderByAggregateInput
     _max?: SolveMaxOrderByAggregateInput
@@ -10074,6 +10096,7 @@ export namespace Prisma {
     sourceCode?: StringWithAggregatesFilter<"Solve"> | string
     uploadedAt?: DateTimeWithAggregatesFilter<"Solve"> | Date | string
     score?: IntWithAggregatesFilter<"Solve"> | number
+    time?: IntWithAggregatesFilter<"Solve"> | number
   }
 
   export type ProjectCreateInput = {
@@ -10569,6 +10592,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
     user: UserCreateNestedOneWithoutSolvesInput
     problem: ProblemCreateNestedOneWithoutSolvesInput
   }
@@ -10580,12 +10604,14 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
   }
 
   export type SolveUpdateInput = {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
     user?: UserUpdateOneRequiredWithoutSolvesNestedInput
     problem?: ProblemUpdateOneRequiredWithoutSolvesNestedInput
   }
@@ -10597,6 +10623,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
   }
 
   export type SolveCreateManyInput = {
@@ -10606,12 +10633,14 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
   }
 
   export type SolveUpdateManyMutationInput = {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
   }
 
   export type SolveUncheckedUpdateManyInput = {
@@ -10621,6 +10650,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -11180,6 +11210,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    time?: SortOrder
   }
 
   export type SolveAvgOrderByAggregateInput = {
@@ -11187,6 +11218,7 @@ export namespace Prisma {
     userId?: SortOrder
     problemid?: SortOrder
     score?: SortOrder
+    time?: SortOrder
   }
 
   export type SolveMaxOrderByAggregateInput = {
@@ -11196,6 +11228,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    time?: SortOrder
   }
 
   export type SolveMinOrderByAggregateInput = {
@@ -11205,6 +11238,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    time?: SortOrder
   }
 
   export type SolveSumOrderByAggregateInput = {
@@ -11212,6 +11246,7 @@ export namespace Prisma {
     userId?: SortOrder
     problemid?: SortOrder
     score?: SortOrder
+    time?: SortOrder
   }
 
   export type UserCreateNestedOneWithoutProjectsInput = {
@@ -11767,6 +11802,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
     problem: ProblemCreateNestedOneWithoutSolvesInput
   }
 
@@ -11776,6 +11812,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
   }
 
   export type SolveCreateOrConnectWithoutUserInput = {
@@ -11841,12 +11878,14 @@ export namespace Prisma {
     sourceCode?: StringFilter<"Solve"> | string
     uploadedAt?: DateTimeFilter<"Solve"> | Date | string
     score?: IntFilter<"Solve"> | number
+    time?: IntFilter<"Solve"> | number
   }
 
   export type SolveCreateWithoutProblemInput = {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
     user: UserCreateNestedOneWithoutSolvesInput
   }
 
@@ -11856,6 +11895,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
   }
 
   export type SolveCreateOrConnectWithoutProblemInput = {
@@ -12065,6 +12105,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
   }
 
   export type ProjectUpdateWithoutUserInput = {
@@ -12091,6 +12132,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
     problem?: ProblemUpdateOneRequiredWithoutSolvesNestedInput
   }
 
@@ -12100,6 +12142,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
   }
 
   export type SolveUncheckedUpdateManyWithoutUserInput = {
@@ -12108,6 +12151,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
   }
 
   export type SolveCreateManyProblemInput = {
@@ -12116,12 +12160,14 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    time?: number
   }
 
   export type SolveUpdateWithoutProblemInput = {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
     user?: UserUpdateOneRequiredWithoutSolvesNestedInput
   }
 
@@ -12131,6 +12177,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
   }
 
   export type SolveUncheckedUpdateManyWithoutProblemInput = {
@@ -12139,6 +12186,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    time?: IntFieldUpdateOperationsInput | number
   }
 
 

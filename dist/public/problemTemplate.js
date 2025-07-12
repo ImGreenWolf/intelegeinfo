@@ -12,7 +12,7 @@ export async function test(sessionId, problemId) {
         elems.push(createNode('div', { htmlSting: `#${test.index}: ${test.status} - Score: <span class="${test.score != 0 ? 'good' : 'bad'}">${test.score}</span>` + (test.result !== undefined ? `<div>Input: ${test.result.input}; Output: ${test.result.output}</div>` : '') }));
     }
     output.replaceChildren(...elems);
-    document.getElementById('final-score').innerHTML = json.score;
+    document.getElementById('final-score').innerHTML = `${json.solve.score} - Time: ${json.solve.time}`;
     document.getElementById('final-score').className = ['bad', 'decent', 'good', 'perfect'][Math.round(json.score / 25) - (json.score == 0 ? 0 : 1)];
     console.log(Math.round(json.score / 25) - json.score == 0 ? 0 : 1, Math.round(json.score / 25), json.score == 0 ? 0 : 1);
 }
