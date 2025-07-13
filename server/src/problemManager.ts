@@ -43,23 +43,22 @@ export async function createProblem({name, author, description, difficulty, tags
     {
         testPromises.push(new Promise((resolve, reject) => {
             const stdin = test.dataIn.toString()
-            const expectedStoud = test.dataOut ? test.dataOut : undefined
+            const expectedStoud = test.dataOut !==undefined ? test.dataOut : undefined
             let outputBuffer = '';
             
                 
-                
+            const pipeStream = new Readable()
 
             let startDate = undefined;
             const program = spawn(`${path.dirname(testFile.filePath)}/${testFile.name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000})
             program.on('spawn', () => {
                 console.log('test started')
-                program.stdin.write(stdin)
-                program.stdin.end()
+                pipeStream.pipe(program.stdin)
+                pipeStream.push(stdin)
+                pipeStream.push(null)
                 // program.stdin.pipe(input)
                 startDate = Date.now()
-                // input.pipe(program.stdin)
-                //  input.write(stdin)
-                program.stdin.on('drain', () => console.log('drain stdin'))
+
             })
             
 
@@ -80,8 +79,8 @@ export async function createProblem({name, author, description, difficulty, tags
                     reject(console.error('failed runtime error ', code, 'on test ' +i))
 
                 if(expectedStoud === undefined)
-                    resolve({output: expectedStoud, time: startDate? Date.now() - startDate : undefined})
-
+                    resolve({output: outputBuffer, time: startDate? Date.now() - startDate : undefined})
+                else
                 if(outputBuffer === expectedStoud)
                 {
                     console.log('passed test',i,"Given input:",stdin,'output:',expectedStoud)
@@ -550,7 +549,13 @@ const codeMentorFeedback = {
           },
          "score_reasons": {
             "type": "array",
-            "description": "Breakdown the final score to show the user how it was given. Make sure they add up to the final score.",
+            "description": `Breakdown the final score into 4 categories (or add one or two if you think it's necesary):
+            Functionality (Correctness: Does it meet all the problem requirements?, Are edge cases handled properly?),
+            Efficiency (Is the algorithm optimized for time and space, if the problem specifies it?, Are there unnecessary computations or memory allocations? Does the program scale well with large inputs?),
+            Algorithmic Complexity (Is the algorithm well-chosen for the problem (e.g., not brute force when a better solution exists)?,
+                Does the implementation demonstrate understanding of algorithmic principles?,
+                Is the solution optimal or near-optimal in terms of time and space complexity?),
+             Code Quality (: Are meaningful variable and function names used?, Is the code well-organized and easy to read?), to show the user how it was given. Make sure they add up to the final score.`,
             "items": 
             {
                 "type": "object",
