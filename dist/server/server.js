@@ -1305,8 +1305,8 @@ exports.wss.addListener('connection', async (ws, req) => {
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
--m ${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB \
---cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")} \
+${process.env.DISABLE_CONTAINER_LIMITS ? `-m ${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB \
+--cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")}` : ''} \
 -di \
 --rm \
 ${clientObj.openFile[0].editorMode.runParams(clientObj)} \
