@@ -4077,7 +4077,7 @@ function onRun() {
   outputConsoles.push(activeConsole)
 
   
-  gtag('event', 'screen_view', {
+  gtag('event', 'program_run', {
         'app_name': 'myAppName',
         'screen_name': 'Home'
       });
