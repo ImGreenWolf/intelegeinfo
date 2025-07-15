@@ -1,7 +1,6 @@
 @use 'theme';
 @use 'sass:color';
-
-
+@use 'toolbox';
 
 
 @keyframes flicker {
@@ -2156,6 +2155,7 @@ mini-dock
         // transition-duration: 0.2s;
         font-family: Poppins,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         opacity: 0.1;
+        font-size: 0.75em;
     }
 
     #new,#home

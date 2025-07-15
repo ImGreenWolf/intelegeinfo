@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <!-- <style>
+        .toolbar-container 
+        {
+            min-width: 300px;
+            min-height: 80px;
+            background-color: rgb(51, 51, 51);
+            padding: 0.5em;
+            color: white;
+            border-radius: 1.5em;
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-template-rows: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+            --highlight: rgb(77, 77, 77);
+            --shadow: rgb(36, 36, 36);
+
+            background-image: 
+                linear-gradient(275deg, var(--shadow), var(--highlight)),
+                url(../media/noise.svg);
+            background-blend-mode: soft-light;
+             background-size: auto, 100px;
+            box-shadow: 10px 10px 1em 1em rgba(0, 0, 0, 0.35),
+            10px 10px 0.5em 0.5em rgba(0, 0, 0, 0.25),
+            0 0 1em -0.25em rgba(0, 0, 0, 0.397),
+            inset 3px 3px 3px -5px white,
+            inset 3px -3px 8px -7px rgba(255, 255, 255, 0.61);
+
+            /* min-width: 80px;
+            min-height: 300px; */
+             flex-direction: row;
+            /* position: relative; */
+            
+             &::before
+             {
+                content: "Intelegeinfo";
+                position: absolute;
+                display: block;
+                top: -0.15lh;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgb(29, 29, 29);
+                background-image: 
+                    url(../media/noise.svg);
+                background-size: 100px;
+                background-position: 0 0;
+                background-blend-mode: soft-light;
+                border-radius: 1em 1em 0 0;
+                padding: 0.25em 1em;
+                font-size: 10px;
+                color: rgba(116, 116, 116, 0.555);
+                font-family: Poppins;
+                text-shadow: 1px 1px 1px black;
+             }
+        }
+
+        
+
+
+        .inner-toolbar
+        {
+            border-radius: 1em;
+            padding: 0.25em;
+            display: flex;
+            flex-direction: inherit;
+            justify-content: space-between;
+            gap: 0.1em;
+            background-color: rgb(12, 12, 12);
+
+            box-shadow: inset 0 0 0.1em 0.1em var(--inner-shadow);
+
+
+            --highlight: rgb(77, 77, 77);
+            --foreground: rgb(48, 48, 48);
+            --shadow: rgb(36, 36, 36);
+            --sides: rgb(32, 32, 32);
+            --bottom: rgb(19, 19, 19);
+            --highlight-shadow: rgba(255, 255, 255, 0.301);
+            --inner-shadow : rgba(255, 255, 255, 0.096);
+
+            .toolbar-text-container,
+            .toolbar-button-container 
+            {
+                 background-color: rgb(12, 12, 12);
+                /* box-shadow: inset 5px -15px 20px -25px var(--highlight-shadow); */
+                background-blend-mode: hard-light;
+                aspect-ratio: 1;
+                border-radius: 1.15em;
+                display: grid;
+                padding: 0.15em;
+                transition-duration: 0.2s;
+
+                box-shadow: 2px 3px 5px -2px var(--inner-shadow);
+            }
+
+            .toolbar-text-container div
+            {
+                transition-duration: 0.2s;
+                aspect-ratio: 1;
+                border-radius: 1em;
+                display: grid;
+                padding: 0.25em;
+                
+                /* border: 2px solid black; */
+                box-sizing: border-box;
+                box-shadow: inset 0 -10px 10px -10px black,
+                inset 0 -20px 2px -20px var(--highlight-shadow);
+                
+                background-image:
+                    conic-gradient(
+                        var(--shadow) 10%,
+                        var(--highlight) 15%,
+                        var(--sides) 20%,
+                        var(--bottom),
+                        var(--bottom),
+                        var(--sides) 80%,
+                        var(--highlight) 85%,
+                        var(--shadow) 90%),
+                    url(../media/noise.svg);
+                background-blend-mode: hard-light;
+                background-size: auto, 100px;
+                position: relative;
+
+                &::before
+                {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    --offset: 0.4em;
+                    top: var(--offset);
+                    left: var(--offset);
+                    right:var(--offset);
+                    bottom: var(--offset);
+                    
+                    border-radius: 1em;
+                    filter: blur(0.3px);
+                    background-image:
+                    conic-gradient( from 45deg,
+                        var(--shadow) 10%,
+                        var(--sides) 25%,
+                        var(--sides) 35%,
+                        var(--bottom),
+                        var(--bottom),
+                        var(--sides) 65%,
+                        var(--highlight) 75%,
+                        var(--shadow) 90%),
+                    radial-gradient(ellipse at 50% 0%, rgba(0, 0, 0, 0) 75%, rgba(255, 255, 255, 0.719));
+
+                    background-blend-mode: hard-light;
+                }
+
+                a 
+                {
+                    transition-duration: 0.2s;
+                    
+                    background-image: 
+                        linear-gradient(275deg, var(--bottom), var(--foreground)),
+                        radial-gradient(ellipse at 95% 95%, rgb(255, 255, 255), transparent 40%),
+                        url(../media/noise.svg),
+                        radial-gradient(rgb(212, 212, 212), rgb(134, 134, 134))
+                        ;
+
+                    background-position: 0 0, 0 0, center, 0 0;
+                    background-repeat: no-repeat,repeat, repeat;
+                    background-size: auto, auto, 65px;
+                    background-blend-mode: hard-light, multiply, multiply;
+
+                    box-shadow: inset -3px -3px 7px -5px var(--highlight-shadow);
+
+                    border-radius: 0.75em;
+                    /* border: 1px solid var( --highlight); */
+
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    position: relative;
+
+                    padding: 0.25em;
+                    font-family: Poppins;
+                    
+                    
+                }
+            }
+
+
+
+            .toolbar-button-container 
+            {
+                &:hover div
+                {
+                    transform: scale(0.98);
+                }
+                &:active div
+                {
+                    transition-duration: 0.075s;
+                    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                    transform: scale(0.95);   
+                    opacity: 0.95;
+                }
+
+                div 
+                {
+                    transition-duration: 0.2s;
+                    aspect-ratio: 1;
+                    border-radius: 1em;
+                    display: grid;
+                    padding: 0.5em;
+                    
+                    /* border: 2px solid black; */
+                    box-sizing: border-box;
+                    box-shadow: inset 0 -10px 10px -10px black,
+                    inset 0 -20px 2px -20px var(--highlight-shadow);
+                    
+                    background-image:
+                        conic-gradient(
+                            var(--shadow) 10%,
+                            var(--highlight) 15%,
+                            var(--sides) 20%,
+                            var(--bottom),
+                            var(--bottom),
+                            var(--sides) 80%,
+                            var(--highlight) 85%,
+                            var(--shadow) 90%),
+                        url(../media/noise.svg);
+                    background-blend-mode: hard-light;
+                    background-size: auto, 100px;
+                    position: relative;
+
+                    &::before
+                    {
+                        content: "";
+                        display: block;
+                        position: absolute;
+                        --offset: 0.4em;
+                        top: var(--offset);
+                        left: var(--offset);
+                        right:var(--offset);
+                        bottom: var(--offset);
+                       
+                        border-radius: 0.85em;
+                        filter: blur(0.3px);
+                        background-image:
+                        conic-gradient( from 45deg,
+                            var(--shadow) 10%,
+                            var(--sides) 25%,
+                            var(--sides) 35%,
+                            var(--bottom),
+                            var(--bottom),
+                            var(--sides) 65%,
+                            var(--highlight) 75%,
+                            var(--shadow) 90%),
+                        radial-gradient(ellipse at 50% 0%, rgba(0, 0, 0, 0) 75%, rgba(255, 255, 255, 0.719));
+
+                        background-blend-mode: hard-light;
+                    }
+
+                    a 
+                    {
+                        transition-duration: 0.2s;
+                        
+                        background-image: 
+                            linear-gradient(275deg, var(--bottom), var(--foreground)),
+                            url(../media/./icons/home.svg),
+                            radial-gradient(ellipse at 95% 95%, rgb(255, 255, 255), transparent 40%),
+                            url(../media/noise.svg),
+                             radial-gradient(rgba(85, 85, 85, 0.466), white 75%)
+                           ;
+
+                        background-position: 0 0, center, 0 0, center, 0 0;
+                        background-repeat: no-repeat, no-repeat,repeat, repeat;
+                        background-size: auto, 50%, auto, 65px;
+                        background-blend-mode: hard-light, hard-light, multiply, multiply;
+
+                        box-shadow: inset -3px -3px 7px -5px var(--highlight-shadow);
+
+                        border-radius: 0.75em;
+                        /* border: 1px solid var( --highlight); */
+
+                        /* display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        text-align: center; */
+                        position: relative;
+
+                        padding: 0.25em;
+                        font-family: Poppins;
+                        
+                        
+                    }
+                }
+             }
+        }
+
+        .toolblox
+        {
+            --highlight: hsl(32, 90%, 35%);
+            --foreground: hsl(39, 90%,20%);
+            --shadow: hsl(30, 90%,10%);
+            --sides: hsl(30, 50%,10%);
+            --bottom: hsl(30, 90%,20%);
+        }
+    </style> -->
+
+    <link rel="stylesheet" href="../css/codeEditor.css">
+    <style>
+        body 
+        {
+            background-color: rgb(22,22,22);
+        }
+        .toolbar-container 
+        {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .toolbar-button-container  
+        {
+            
+            div
+            {
+                transform-style: preserve-3d;
+                backface-visibility: hidden;
+                
+            }
+           
+            &:hover div
+            {
+                transition-duration: 0.5s;
+                transform: rotateY(-.5turn);
+            }
+            
+        }
+        .backface
+        {
+             backface-visibility: hidden;
+             transform: rotateY(.5turn) translateZ(-5px);
+             position: absolute !important;
+             width: 100%;
+             height: 100%;
+             top: 0;
+             left: 0;
+             margin: 0;
+             padding: 0;
+             background-color: black;
+             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            border-radius: 1em;
+            font-family: Poppins;
+            
+        }
+        
+    </style>
+</head>
+<body>
+    
+    
+
+
+    <div class="toolbar-container">
+        <div class="inner-toolbar">
+
+            <div class="toolbar-button-container">
+                <div>
+                    <a style="--link: url(../media/icons/home.svg)">
+                        
+                    </a>
+                   
+                    <p class="backface">
+                        Home
+                    </p>
+                </div>
+            </div>
+
+            <div class="toolbar-button-container">
+                <div>
+                    <a style="--link: url(../media/icons/home.svg)"> 
+                        
+                    </a>
+                </div>
+            </div>
+
+            <div class="toolbar-button-container">
+                <div>
+                    <a style="--link: url(../media/icons/home.svg)">
+                        
+                    </a>
+                </div>
+            </div>
+
+            <div class="toolbar-button-container toolbox">
+                <div>
+                    <a style="--link: url(../media/icons/action_key.svg)">
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+       
+    </div>
+</body>
+</html>

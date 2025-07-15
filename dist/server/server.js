@@ -1305,7 +1305,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
-${process.env.DISABLE_CONTAINER_LIMITS ? `-m ${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB \
+${process.env.DISABLE_CONTAINER_LIMITS == 'false' ? `-m ${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB \
 --cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")}` : ''} \
 -di \
 --rm \

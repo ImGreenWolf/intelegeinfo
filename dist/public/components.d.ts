@@ -27,6 +27,9 @@ export declare function createNode<K extends keyof HTMLElementTagNameMap>(tag: K
 export declare class Dock extends IElement {
     render(): HTMLDivElement;
 }
+export declare class Toolbox extends IElement {
+    render(): HTMLElement;
+}
 export declare class Pixelated extends IElement {
     canvas: HTMLCanvasElement | undefined;
     render({ x, y, spacingX, spacingY, pointSize, innerVignette, outerVignette, timeScale, hover, trasnlate, power, offset, manualAngle, animatedAnglePow, useMouseAngle, randomness }: {

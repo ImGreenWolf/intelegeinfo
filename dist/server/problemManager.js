@@ -116,15 +116,14 @@ async function createProblem({ name, author, description, difficulty, tags, cate
         let time = 0;
         let timeIndex = 0;
         tests.forEach((val, index) => {
-            //@ts-ignore
             const value = (output)[index].value;
-            if (value)
-                //@ts-ignore
+            if (value) {
                 tests[index].dataOut = value.output;
-            tests[index].time = value.time ? value.time : -1;
-            if (value.time) {
-                time += value.time;
-                timeIndex++;
+                tests[index].time = value.time ? value.time : -1;
+                if (value.time) {
+                    time += value.time;
+                    timeIndex++;
+                }
             }
         });
         const sourceCode = testFile.content;

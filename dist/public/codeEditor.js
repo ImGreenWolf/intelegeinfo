@@ -2,7 +2,7 @@
 // import QRCode from 'qrcode'
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
-import { createNode, Dock, EditorCanvas, LoadingThrobber } from "./components.js";
+import { createNode, EditorCanvas, LoadingThrobber, Toolbox } from "./components.js";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 import { cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updateCatalouge } from "./windowManager.js";
@@ -476,7 +476,7 @@ let cameraEnabled = false;
 let videoStream;
 const variableArrayIndexes = [];
 export const editorSessions = new Map();
-const ClientDock = inIframe ? undefined : new Dock();
+const ClientDock = inIframe ? undefined : new Toolbox(); //Dock()
 const DockElement = inIframe ? undefined : ClientDock.render();
 let microphone;
 let microphonePaused = true;
@@ -3074,6 +3074,10 @@ function onRun() {
     // if(currentFileName.toLowerCase().includes("gui"))
     //   displaynoVNC(activeConsole.element)
     outputConsoles.push(activeConsole);
+    gtag('event', 'screen_view', {
+        'app_name': 'myAppName',
+        'screen_name': 'Home'
+    });
     // TODO Add separate input area for interactive console.
 }
 function spawnConsole() {

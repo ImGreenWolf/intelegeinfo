@@ -188,6 +188,54 @@ export class Dock extends IElement {
         return base;
     }
 }
+export class Toolbox extends IElement {
+    render() {
+        const buttons = [
+            createButton('home.svg', { href: '/' }),
+            createButton('person_add.svg', { href: '/signup' }),
+            createButton('account_box.svg', { href: '/login' }),
+            createButton('action_key.svg', { onclick: () => {
+                    window.editor.joinsession();
+                }, class: "toolbox" }),
+        ];
+        function createButton(icon, options) {
+            return createNode('div', { html: [createNode('div', { html: [createNode('a', { css: `--link: url(../media/icons/${icon});`, attributes: options.href ? [{ name: 'href', value: options.href }] : undefined })] })], className: 'toolbar-button-container ' + options.class, onclick: options.onclick });
+        }
+        const innerToolbox = createNode('div', { html: buttons, className: 'inner-toolbar' });
+        const hideButton = createButton('button', {
+            class: "hide-button",
+            onclick: () => {
+                toobloxContainer.classList.toggle('hidden');
+                hideButton.classList.toggle('closed');
+            }
+        });
+        const toobloxContainer = createNode('div', { className: 'toolbar-container', html: [innerToolbox] });
+        const toolboxArea = createNode('div', { html: [hideButton, toobloxContainer], className: "toolbox-area" });
+        // setTimeout(() => {
+        //     const buttons = [
+        //         createButton('play_arrow.svg', {onclick: () => {
+        //             window.editor.sendDebugCommand('execute')
+        //         }, class: "toolbox"}),
+        //     ]
+        //     const editorControls = createNode('div', {html: buttons, className: 'inner-toolbar'})
+        //      toobloxContainer.prepend(editorControls)
+        //      editorControls.animate([
+        //             {maxWidth: '0', overflow: 'hidden'},
+        //             {maxWidth: '80px', overflow: 'initial'}
+        //         ], {
+        //             duration: 300,
+        //         })
+        //     for(const button of buttons)
+        //         button.animate([
+        //             {opacity: '0'},
+        //             {opacity: '100%'}
+        //         ], {
+        //             duration: 300
+        //         })
+        // }, 1000);
+        return toolboxArea;
+    }
+}
 export class Pixelated extends IElement {
     canvas;
     async render({ x = 1000, y = 500, spacingX = 10, spacingY = 10, pointSize = 2, innerVignette = 1, outerVignette = 1, timeScale = 0.5, hover = false, trasnlate = 1, power = 1, offset = 10, manualAngle = 0, animatedAnglePow = 1, useMouseAngle = 0, randomness = 1 }) {

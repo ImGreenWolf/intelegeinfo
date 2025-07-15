@@ -1,5 +1,4 @@
 import { UUID } from "crypto";
-
 declare global {
     interface Window {
         editor: any
@@ -232,6 +231,69 @@ export class Dock extends IElement {
             })
         return base
         
+    }
+}
+
+export class Toolbox extends IElement {
+
+    render(): HTMLElement {
+
+
+        const buttons = [
+            createButton('home.svg', {href: '/'}),
+            createButton('person_add.svg', {href: '/signup'}),
+            createButton('account_box.svg', {href: '/login'}),
+            createButton('action_key.svg', {onclick: () => {
+                window.editor.joinsession()
+            }, class: "toolbox"}),
+        ]
+
+        function createButton( icon, options: {href?, onclick?: () => void, class?})
+        {
+
+            return createNode('div', {html: [createNode('div', {html: [createNode('a', {css: `--link: url(../media/icons/${icon});`, attributes: options.href ? [{name: 'href', value: options.href}] : undefined})]})], className: 'toolbar-button-container '+ options.class, onclick: options.onclick})
+        }
+        const innerToolbox = createNode('div', {html: buttons, className: 'inner-toolbar'})
+        const hideButton = createButton('button', {
+            class: "hide-button",
+            onclick: () => {
+            toobloxContainer.classList.toggle('hidden')
+            hideButton.classList.toggle('closed')
+        }})
+        const toobloxContainer = createNode('div', {className: 'toolbar-container', html: [innerToolbox]})
+
+        const toolboxArea = createNode('div', {html: [hideButton,toobloxContainer], className: "toolbox-area"})
+        // setTimeout(() => {
+        //     const buttons = [
+        //         createButton('play_arrow.svg', {onclick: () => {
+        //             window.editor.sendDebugCommand('execute')
+        //         }, class: "toolbox"}),
+        //     ]
+
+        
+        //     const editorControls = createNode('div', {html: buttons, className: 'inner-toolbar'})
+        //      toobloxContainer.prepend(editorControls)
+        //      editorControls.animate([
+        //             {maxWidth: '0', overflow: 'hidden'},
+        //             {maxWidth: '80px', overflow: 'initial'}
+        //         ], {
+        //             duration: 300,
+                    
+        //         })
+
+        //     for(const button of buttons)
+        //         button.animate([
+        //             {opacity: '0'},
+        //             {opacity: '100%'}
+        //         ], {
+        //             duration: 300
+        //         })
+
+        // }, 1000);
+
+        return toolboxArea;
+
+       
     }
 }
 

@@ -12,7 +12,7 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated } from "./components.js";
+import { createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated, Toolbox } from "./components.js";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 
@@ -23,6 +23,7 @@ const inIframe = window.self !== window.top;
 
 //  import * as Ace from "ace-builds";
 declare const ace: typeof Ace;
+declare const gtag: any
 import modelist from "ace-builds/src-noconflict/ext-modelist";
 // import { Callback } from "ioredis";
 // import { EditorSession } from "../../server/types";
@@ -635,7 +636,7 @@ export const editorSessions: Map<string, FileEditorSession> = new Map<
   string,
   FileEditorSession
 >();
-const ClientDock = inIframe ? undefined : new Dock()
+const ClientDock = inIframe ? undefined : new Toolbox() //Dock()
 const DockElement = inIframe ? undefined : ClientDock!.render() 
 let microphone: HTMLElement | undefined
 let microphonePaused: boolean = true;
@@ -4076,7 +4077,10 @@ function onRun() {
   outputConsoles.push(activeConsole)
 
   
-
+  gtag('event', 'screen_view', {
+        'app_name': 'myAppName',
+        'screen_name': 'Home'
+      });
 
   // TODO Add separate input area for interactive console.
 }

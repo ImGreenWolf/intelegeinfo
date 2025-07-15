@@ -1648,7 +1648,7 @@ const runCommand =
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
-${process.env.DISABLE_CONTAINER_LIMITS ? `-m ${256*parseInt(process.env.CONT_MEM_MUlTI||"1")}MB \
+${process.env.DISABLE_CONTAINER_LIMITS == 'false' ? `-m ${256*parseInt(process.env.CONT_MEM_MUlTI||"1")}MB \
 --cpus=${0.25*parseInt(process.env.CONT_MEM_MUlTI||"1")}` : ''} \
 -di \
 --rm \
@@ -1667,10 +1667,10 @@ bash `.trim().replaceAll('\n', "")
     const childProcess = spawn(runCommand, { shell: true, stdio: 'pipe'});
     clientSession.sessionContainer = {process: childProcess as ChildProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
 
-     childProcess?.on("spawn", () => {
-        console.log("Docker container spawned")
-            
+    childProcess?.on("spawn", () => {
+        console.log("Docker container spawned")     
     })
+    
     childProcess.stdout.on('data', data => {
         console.log("CONTAINER ID:" + data.toString())
         setTimeout(async () => {
