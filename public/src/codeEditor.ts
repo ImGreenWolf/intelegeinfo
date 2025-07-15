@@ -2194,7 +2194,9 @@ export function copySessionLink() {
     session = {code: data.code, img: data.qrsvg};
     document.getElementById('data.code')!.innerText = data.code;
     (document.getElementById('data.qrurl')! as HTMLImageElement).src = data.qrsvg;
+      gtag('event', 'session_share', {
 
+      });
     // const shareContainer = document.createElement('div')
     // shareContainer.classList.add('share-container');
   
@@ -4078,8 +4080,7 @@ function onRun() {
 
   
   gtag('event', 'program_run', {
-        'app_name': 'myAppName',
-        'screen_name': 'Home'
+        'extension': currentFileName?.split('.').at(-1),
       });
 
   // TODO Add separate input area for interactive console.
