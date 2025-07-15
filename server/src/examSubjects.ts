@@ -266,7 +266,7 @@ const formatName = (filename: string, split=false) => {
       .replaceAll(' ','_')
       .split('_')
       if(['m','s'].includes(filename[0]))
-        return `${params[0] == 'm' ? 'MI -' : 'SI -'} Varianta ${params[2]}`
+        return `${params[0] == 'm' ? 'MI -' : 'SN -'} Varianta ${params[2]}`
       else
         return (split ? filename.split('.')[0] : filename).replaceAll(' ','_')
     }
@@ -275,7 +275,7 @@ const formatName = (filename: string, split=false) => {
       const params =  filename
       .replaceAll('_',' ')
       .split(' ')
-      if(['MI','SI'].includes(filename.substring(0, 2)))
+      if(['MI','SN'].includes(filename.substring(0, 2)))
         return `${params[0] == 'MI' ? 'm' : 's'}_var_${params[3]}`
       else
         return filename.replaceAll('_',' ')
