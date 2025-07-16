@@ -52,9 +52,10 @@ export async function onSignedIn({ email, username, loginMethod, firstName, last
     }
   })
   // .then((user) => {
-      if(!user) throw({ error: 'Failed to create user' });
+      if(!user) throw { error: 'Failed to create user' };
       onLoggedIn(user, res, req)
-      return({message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod, user})
+      console.log('created account', username)
+      return {message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod, user}
 
 
       

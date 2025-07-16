@@ -248,7 +248,19 @@ router.get('/callback', async (req, res) => {
                 res.send('Account was not created with google. Try logging in with a different method!');
         }
         else {
-            signup.onSignedIn({ email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, '', req);
+            try {
+                const json = await signup.onSignedIn({ email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, '', req);
+                res.send(`
+            Te-ai logat cu sucess cu emailul ${json.email}.
+            Salut ${json.user.username}.
+            <a href='/profile'>Profil</a>
+            <a href='/editor'>Editor</a>
+          `);
+            }
+            catch (err) {
+                res.send('Am intampinat o erroare! Ne cerem scuze.. Eroare: ' + err);
+                return;
+            }
             //       fetch('https://intelegeinfo.ro/signup',  {
             //         method: 'POST',
             //         headers: {'Content-Type': 'application/json'},
