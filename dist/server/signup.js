@@ -28,7 +28,7 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 
 //       { expiresIn: '1h' }
 //     );
 //   }
-function onSignedIn({ email, username, loginMethod, firstName, lastName }, res, password, req) {
+function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }, res, password, req) {
     dbClient_1.default.user.create({
         data: {
             firstName,
@@ -38,6 +38,8 @@ function onSignedIn({ email, username, loginMethod, firstName, lastName }, res, 
             password,
             loginMethod,
             userColor: (0, types_1.randomHexColor)(),
+            picture: profile,
+            emailValidated: loginMethod == 'google',
         }
     }).then((user) => {
         if (!user)

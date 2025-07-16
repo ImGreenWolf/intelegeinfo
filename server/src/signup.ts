@@ -31,7 +31,7 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 //   }
 
 
-export function onSignedIn({ email, username, loginMethod, firstName, lastName}, res:Response, password: string, req)
+export function onSignedIn({ email, username, loginMethod, firstName, lastName, profile}, res:Response, password: string, req)
 {
   prisma.user.create({
     data: {
@@ -42,6 +42,8 @@ export function onSignedIn({ email, username, loginMethod, firstName, lastName},
       password,
       loginMethod,
       userColor: randomHexColor(),
+      picture: profile,
+      emailValidated: loginMethod == 'google',
     }
   }).then((user) => {
       if(!user) res.status(400).json({ error: 'Failed to create user' });

@@ -77,14 +77,13 @@ function onLoggedIn(user, res, req) {
         res.cookie('token', token, {
             httpOnly: true,
             secure, // Set to true in production (HTTPS)
-            maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days //1 hour
+            maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
         });
     else
         res.cookie('token', token, {
             httpOnly: true,
             secure, // Set to true in production (HTTPS)
         });
-    // res.redirect('../editor')
 }
 // Routes
 router.post('/', (req, res) => {
@@ -249,7 +248,7 @@ router.get('/callback', async (req, res) => {
                 res.send('Account was not created with google. Try logging in with a different method!');
         }
         else {
-            signup.onSignedIn({ email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name }, req, '', req);
+            signup.onSignedIn({ email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, req, '', req);
             //       fetch('https://intelegeinfo.ro/signup',  {
             //         method: 'POST',
             //         headers: {'Content-Type': 'application/json'},
