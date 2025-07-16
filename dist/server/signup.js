@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.onSignedIn = onSignedIn;
 exports.prepareEncrPassForDB = prepareEncrPassForDB;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
@@ -27,8 +28,7 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 
 //       { expiresIn: '1h' }
 //     );
 //   }
-function onSignedIn(params, res, password, req) {
-    const { email, username, loginMethod, firstName, lastName } = params;
+function onSignedIn({ email, username, loginMethod, firstName, lastName }, res, password, req) {
     dbClient_1.default.user.create({
         data: {
             firstName,
@@ -43,7 +43,7 @@ function onSignedIn(params, res, password, req) {
         if (!user)
             res.status(400).json({ error: 'Failed to create user' });
         (0, login_1.onLoggedIn)(user, res, req);
-        res.json({ message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id });
+        res.json({ message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod });
     }).catch(reason => {
         res.status(400).json({ error: 'Failed to create user: ' + reason });
     });

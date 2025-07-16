@@ -294,7 +294,7 @@ router.get('/callback', async (req:any, res:any) => {
       
         
        
-        fetch('http://intelegeinfo.ro/signup',  {
+        fetch('https://intelegeinfo.ro/signup',  {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({email: userInfo.email, password:  'google' , name: userInfo.name, loginMethod: 'google' })
