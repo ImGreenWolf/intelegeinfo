@@ -1,5 +1,4 @@
 import { Response } from 'express';
-import { UserNoPassword } from './usersManager';
 declare const router: import("express-serve-static-core").Router;
 export declare function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }: {
     email: any;
@@ -14,7 +13,6 @@ export declare function onSignedIn({ email, username, loginMethod, firstName, la
     email: any;
     id: any;
     loginMethod: any;
-    user: UserNoPassword;
 }>;
 export declare function prepareEncrPassForDB(password: string): string;
 export default router;

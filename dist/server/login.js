@@ -199,7 +199,13 @@ router.get('/callback', async (req, res) => {
                     //     maxAge: 3600000, // 1 hour
                     //   });
                     onLoggedIn(userExists, res, req);
-                    res.send('Hello ' + userExists.username + `<script>setTimeout(() => {location.href='/editor'}, 2000)</script>`);
+                    res.send(`
+            Te-ai logat cu sucess cu emailul ${userExists.email}.
+            Salut ${userExists.username}.
+            <a href='/profile'>Profil</a>
+            <a href='/editor'>Editor</a>
+          `);
+                    // res.send('Hello ' + userExists.username + `<script>setTimeout(() => {location.href='/editor'}, 2000)</script>`)
                 }
                 else {
                     res.send(`
@@ -250,12 +256,6 @@ router.get('/callback', async (req, res) => {
         else {
             try {
                 const json = await signup.onSignedIn({ email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, '', req);
-                res.send(`
-            Te-ai logat cu sucess cu emailul ${json.email}.
-            Salut ${json.user.username}.
-            <a href='/profile'>Profil</a>
-            <a href='/editor'>Editor</a>
-          `);
             }
             catch (err) {
                 res.send('Am intampinat o erroare! Ne cerem scuze.. Eroare: ' + err);

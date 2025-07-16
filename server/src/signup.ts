@@ -32,7 +32,7 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 //   }
 
 
-export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile}, res:Response, password: string, req): Promise<{message, redirect, email, id, loginMethod, user: UserNoPassword}>
+export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile}, res:Response, password: string, req): Promise<{message, redirect, email, id, loginMethod}>
 {
    const user = await prisma.user.create({
     data: {
@@ -55,7 +55,7 @@ export async function onSignedIn({ email, username, loginMethod, firstName, last
       if(!user) throw { error: 'Failed to create user' };
       onLoggedIn(user, res, req)
       console.log('created account', username)
-      return {message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod, user}
+      return {message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod}
 
 
       
