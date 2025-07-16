@@ -291,7 +291,7 @@ router.get('/callback', async (req:any, res:any) => {
     {
 
       
-        signup.onSignedIn({email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, req, '', req )
+        signup.onSignedIn({email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, res, '', req )
        
   //       fetch('https://intelegeinfo.ro/signup',  {
   //         method: 'POST',

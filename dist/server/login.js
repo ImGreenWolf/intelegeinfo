@@ -248,7 +248,7 @@ router.get('/callback', async (req, res) => {
                 res.send('Account was not created with google. Try logging in with a different method!');
         }
         else {
-            signup.onSignedIn({ email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, req, '', req);
+            signup.onSignedIn({ email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, '', req);
             //       fetch('https://intelegeinfo.ro/signup',  {
             //         method: 'POST',
             //         headers: {'Content-Type': 'application/json'},
