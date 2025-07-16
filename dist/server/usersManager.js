@@ -205,7 +205,10 @@ exports.router.get('/profilePicture/:id', (req, res) => {
             id
         }
     }).then(user => {
-        res.status(200).sendFile(path_1.default.join(__dirname, `../../server/users/pfp/${user.picture}.png`));
+        if (user.picture.startsWith('http'))
+            res.status(200).redirect(user.picture);
+        else
+            res.status(200).sendFile(path_1.default.join(__dirname, `../../server/users/pfp/${user.picture}.png`));
     }).catch(err => {
         res.status(500).send('failed: ' + err);
     });

@@ -227,6 +227,9 @@ router.get('/profilePicture/:id', (req, res) => {
             id
         }
     }).then(user => {
+        if(user.picture.startsWith('http'))
+            res.status(200).redirect(user.picture)
+        else
         res.status(200).sendFile(path.join(__dirname,`../../server/users/pfp/${user.picture}.png`))
     }).catch(err => {
         res.status(500).send('failed: '+ err)
