@@ -71,8 +71,8 @@ function onLoggedIn(user, res, req) {
     if (!user)
         throw 'Invalid user';
     let token = createToken(user);
-    let secure = false; //req.secure;
-    let keepLoggedIn = req.body.keepLoggedIn || false;
+    let secure = req.secure;
+    let keepLoggedIn = req.body ? (req.body.keepLoggedIn || false) : false;
     if (keepLoggedIn)
         res.cookie('token', token, {
             httpOnly: true,
@@ -255,7 +255,7 @@ router.get('/callback', async (req, res) => {
             //         headers: {'Content-Type': 'application/json'},
             //         body: JSON.stringify({email: userInfo.email, password:  'google' , name: userInfo.name, loginMethod: 'google' })
             //       }).then(signRes =>{
-            //         res.send('Created account! Hello ' + signRes.json().then(jres => {jres.name}))
+            //         res.send('Created account! Hello ' + await signRes.json().jres.name))
             // //         res.send(`
             // //           <h>Please set a password for your account.</h>
             // //           <form action='/login/createGoogleAcc' method="POST" id="loginForm">
