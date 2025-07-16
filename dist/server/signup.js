@@ -28,8 +28,8 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 
 //       { expiresIn: '1h' }
 //     );
 //   }
-function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }, res, password, req) {
-    dbClient_1.default.user.create({
+async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }, res, password, req) {
+    const user = await dbClient_1.default.user.create({
         data: {
             firstName,
             lastName,
@@ -40,15 +40,19 @@ function onSignedIn({ email, username, loginMethod, firstName, lastName, profile
             userColor: (0, types_1.randomHexColor)(),
             picture: profile,
             emailValidated: loginMethod == 'google',
+        },
+        omit: {
+            password: true
         }
-    }).then((user) => {
-        if (!user)
-            res.status(400).json({ error: 'Failed to create user' });
-        (0, login_1.onLoggedIn)(user, res, req);
-        res.json({ message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod });
-    }).catch(reason => {
-        res.status(400).json({ error: 'Failed to create user: ' + reason });
     });
+    // .then((user) => {
+    if (!user)
+        throw ({ error: 'Failed to create user' });
+    (0, login_1.onLoggedIn)(user, res, req);
+    return ({ message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod, user });
+    // }).catch(reason => {
+    //  return({ error: 'Failed to create user: ' + reason});
+    // })
 }
 function createUser(params, res, password, req) {
     const { email, name, loginMethod, } = params;
@@ -58,11 +62,11 @@ function createUser(params, res, password, req) {
         }
     }).then((user) => {
         if (!user)
-            onSignedIn(params, res, password, req);
+            res.send(onSignedIn(params, res, password, req));
         else
             return res.status(400).json({ error: 'An account with this email already exists! Try logging in!' });
     }).catch((reason) => {
-        onSignedIn(params, res, password, req);
+        res.send(onSignedIn(params, res, password, req));
     });
 }
 function prepareEncrPassForDB(password) {

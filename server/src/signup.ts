@@ -10,6 +10,7 @@ import prisma from './dbClient';
 import {onLoggedIn} from "./login"
 import path from 'path';
 import { randomHexColor } from './types';
+import { UserNoPassword } from './usersManager';
 
 
 const router = express.Router();
@@ -31,9 +32,9 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 //   }
 
 
-export function onSignedIn({ email, username, loginMethod, firstName, lastName, profile}, res:Response, password: string, req)
+export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile}, res:Response, password: string, req): Promise<{message, redirect, email, id, loginMethod, user: UserNoPassword}>
 {
-  prisma.user.create({
+   const user = await prisma.user.create({
     data: {
       firstName, 
       lastName,
@@ -44,19 +45,24 @@ export function onSignedIn({ email, username, loginMethod, firstName, lastName, 
       userColor: randomHexColor(),
       picture: profile,
       emailValidated: loginMethod == 'google',
+    },
+    omit:
+    {
+      password: true
     }
-  }).then((user) => {
-      if(!user) res.status(400).json({ error: 'Failed to create user' });
+  })
+  // .then((user) => {
+      if(!user) throw({ error: 'Failed to create user' });
       onLoggedIn(user, res, req)
-      res.json({message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod})
+      return({message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod, user})
 
 
       
 
 
-  }).catch(reason => {
-    res.status(400).json({ error: 'Failed to create user: ' + reason});
-  })
+  // }).catch(reason => {
+  //  return({ error: 'Failed to create user: ' + reason});
+  // })
 }
 
 
@@ -70,12 +76,12 @@ function createUser(params:any, res: Response, password: string, req)
       email
     }       
 }).then((user) => {
-  if(!user) onSignedIn(params, res, password, req)
+  if(!user) res.send(onSignedIn(params, res, password, req))
     else return res.status(400).json({ error: 'An account with this email already exists! Try logging in!'});
 
 }).catch((reason) => 
     {
-      onSignedIn(params, res, password, req)
+      res.send(onSignedIn(params, res, password, req))
     
     })
 }
