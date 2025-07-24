@@ -491,7 +491,7 @@ class EditorFile {
     async openFile(clientObj, shared, closedFileName) {
         try {
             const data = fs_1.default.readFileSync(this.filePath).toString();
-            if (clientObj.openFileName.findIndex(name => name == closedFileName) != -1) {
+            if (clientObj.openFileName.findIndex(name => name == closedFileName) == -1) {
                 clientObj.openFile.push(this);
                 clientObj.openFileName.push(this.name);
             }
