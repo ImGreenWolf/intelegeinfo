@@ -197,7 +197,7 @@ function postsRequest(guideEntries,req,res, error?)
         justify-content: start;
         position: relative;
         // font-size: 0.5rem;
-        padding: 5em;
+        padding: 10em;
         li 
         {
             max-width: 200px;
