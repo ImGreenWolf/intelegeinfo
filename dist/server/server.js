@@ -339,6 +339,7 @@ function onServerStart() {
             console.log('Started turn server');
         console.log(stdout);
     });
+    (0, child_process_1.exec)('docker image prune -f -a');
 }
 const https = __importStar(require("https"));
 const http = __importStar(require("http"));

@@ -1751,6 +1751,8 @@ export function createFile(fileName = "untitled.txt", fileContent, index) {
 }
 export function closeDefaultScreen(createdFileElement) {
     const elem = windows[0].tabs.find(val => val.name == 'Hello!');
+    if (!elem)
+        return;
     if (elem)
         elem.content.animate([
             { opacity: "100%", filter: "blur(0)" },
@@ -3120,6 +3122,8 @@ function startProgram() {
     if (activeConsole || processRunning)
         return;
     activeConsole = spawnConsole();
+    if (activeConsole?.noVNC)
+        activeConsole?.noVNC?.remove();
 }
 function onExit() {
     codeWindow.getEditor().setReadOnly(false);
@@ -3127,8 +3131,6 @@ function onExit() {
     codeWindow.getEditor().session.removeMarker(lastDebugId);
     document.getElementById('buttons')?.classList.remove('executing');
     document.getElementById('execute-control').innerText = "Executa Programul";
-    if (activeConsole?.noVNC)
-        activeConsole?.noVNC?.remove();
     activeConsole?.compileMessage?.remove();
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';

@@ -2322,6 +2322,8 @@ export function createFile(fileName: string = "untitled.txt", fileContent?, inde
 export function closeDefaultScreen(createdFileElement)
 {
   const elem = windows[0].tabs.find(val => val.name == 'Hello!')
+  if(!elem)
+    return
   if(elem)
   (elem.content as HTMLElement).animate([
         { opacity:"100%", filter: "blur(0)"},
@@ -4138,6 +4140,9 @@ function startProgram()
   if(activeConsole || processRunning)
     return
   activeConsole = spawnConsole()
+
+    if(activeConsole?.noVNC)
+    activeConsole?.noVNC?.remove()
 }
 
 function onExit() {
@@ -4147,8 +4152,7 @@ function onExit() {
   document.getElementById('buttons')?.classList.remove('executing')
   document.getElementById('execute-control')!.innerText = "Executa Programul"
 
-  if(activeConsole?.noVNC)
-    activeConsole?.noVNC?.remove()
+
 
   activeConsole?.compileMessage?.remove()
 

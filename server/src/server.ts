@@ -423,6 +423,8 @@ function onServerStart()
             console.log('Started turn server')
         console.log(stdout)
     })
+
+    exec('docker image prune -f -a')
 }
 
 import * as https from 'https'
