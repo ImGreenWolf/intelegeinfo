@@ -15,7 +15,7 @@ declare class Python extends EditorMode {
     static defaultText: string;
     static dockerFile: string;
     vcam: ChildProcess;
-    onBuild(res: any, clientSession: EditorSession): Promise<number>;
+    onBuild(res: any, clientSession: EditorSession, clientObj: ClientObject): Promise<number>;
     receiveWebCam(rawData: any): void;
     execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Promise<import("child_process").ChildProcessWithoutNullStreams>;
     compile(res: any): void;

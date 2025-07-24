@@ -23,7 +23,7 @@ class EditorMode {
     onSpawn(sessionObj) {
         return;
     }
-    onBuild(res, clientSession) {
+    onBuild(res, clientSession, clientObj) {
         return 0;
     }
     startDebugging(res, clientObj, sessionObj) {

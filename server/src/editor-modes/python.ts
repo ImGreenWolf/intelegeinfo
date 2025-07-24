@@ -60,7 +60,7 @@ CMD bash `
 
 
 
-async onBuild(res, clientSession: EditorSession): Promise<number> {
+async onBuild(res, clientSession: EditorSession, clientObj: ClientObject): Promise<number> {
   return new Promise((resolve) => {
         console.log('spawn gui')
         const proc = spawn('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
@@ -165,9 +165,9 @@ async onBuild(res, clientSession: EditorSession): Promise<number> {
         pid = parseInt(data);
 
           
-           this.vcam = spawn('python3', ['camera.py'], {stdio: 'pipe'})
+           this.vcam = spawn('python3', ['camera.py'], {stdio: 'pipe', env: {INDEX: clientObj.webcamid.toString()}})
 
-
+            
                this.vcam.stdout.on('data', (data) => {
             console.log('[this.vcam stdout]', data.toString());
             });

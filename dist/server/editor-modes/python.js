@@ -88,7 +88,7 @@ CMD bash `;
     //     export DISPLAY=:1 && fluxbox & \
     //     python3 gui_app.py & \
     //     x11vnc -display :1 -rfbport 5900 -rfbunixpath /vnc/vnc.sock -forever -nopw -shared"`.trim()
-    async onBuild(res, clientSession) {
+    async onBuild(res, clientSession, clientObj) {
         return new Promise((resolve) => {
             console.log('spawn gui');
             const proc = (0, child_process_1.spawn)('docker', ['exec', '-i', '-e', 'DISPLAY=:1', res.imageName, 'sh', '-c', `
@@ -174,7 +174,7 @@ CMD bash `;
                 }
                 else
                     pid = parseInt(data);
-                this.vcam = (0, child_process_1.spawn)('python3', ['camera.py'], { stdio: 'pipe' });
+                this.vcam = (0, child_process_1.spawn)('python3', ['camera.py'], { stdio: 'pipe', env: { INDEX: clientObj.webcamid.toString() } });
                 this.vcam.stdout.on('data', (data) => {
                     console.log('[this.vcam stdout]', data.toString());
                 });

@@ -19,7 +19,7 @@ declare abstract class EditorMode {
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<any>;
     shouldRebuild(sessionObj: EditorSession, clientObj: ClientObject): boolean;
     onSpawn(sessionObj: EditorSession): void;
-    onBuild(res: any, clientSession: EditorSession): Promise<number> | number;
+    onBuild(res: any, clientSession: EditorSession, clientObj: ClientObject): Promise<number> | number;
     startDebugging(res: any, clientObj: any, sessionObj: any): DebugProcess;
     sendError(err: string, fatal?: boolean): void;
     constructor();

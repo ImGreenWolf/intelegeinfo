@@ -34,7 +34,7 @@ abstract class EditorMode {
     {
         return;
     }
-    onBuild(res, clientSession: EditorSession): Promise<number> | number
+    onBuild(res, clientSession: EditorSession, clientObj: ClientObject): Promise<number> | number
     {
         return 0;
     }
