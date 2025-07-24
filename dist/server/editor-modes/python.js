@@ -56,7 +56,7 @@ class Python extends BaseEditorMode_1.default {
         this.hasGUI = clientObj.openFileName[0].toLowerCase().includes("gui");
         let buffer = '';
         if (clientObj.webcamid)
-            buffer += '--device=/dev/video${clientObj.webcamid}:/dev/video0';
+            buffer += `--device=/dev/video${clientObj.webcamid}:/dev/video0`;
         if (this.hasGUI)
             return buffer + ` -v "/tmp/vnc-${clientObj.sessionId}:/app/vnc"`;
         else
