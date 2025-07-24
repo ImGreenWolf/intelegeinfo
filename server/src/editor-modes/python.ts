@@ -164,21 +164,24 @@ async onBuild(res, clientSession: EditorSession, clientObj: ClientObject): Promi
         } else
         pid = parseInt(data);
 
-          
-           this.vcam = spawn('python3', ['camera.py'], {stdio: 'pipe', env: {INDEX: clientObj.webcamid.toString()}})
+            if( clientObj.webcamid)
+            {
+              this.vcam = spawn('python3', ['camera.py'], {stdio: 'pipe', env: {INDEX: clientObj.webcamid.toString()}})
 
             
-               this.vcam.stdout.on('data', (data) => {
-            console.log('[this.vcam stdout]', data.toString());
-            });
+                this.vcam.stdout.on('data', (data) => {
+              console.log('[this.vcam stdout]', data.toString());
+              });
 
-            this.vcam.stderr.on('data', (data) => {
-            console.error('[this.vcam stderr]', data.toString());
-            });
+              this.vcam.stderr.on('data', (data) => {
+              console.error('[this.vcam stderr]', data.toString());
+              });
 
-            this.vcam.on('exit', (code) => {
-            console.log(`[this.vcam exit] Process exited with code ${code}`);
-            });
+              this.vcam.on('exit', (code) => {
+              console.log(`[this.vcam exit] Process exited with code ${code}`);
+              });
+            }
+           
         })
 
 

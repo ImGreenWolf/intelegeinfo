@@ -174,16 +174,18 @@ CMD bash `;
                 }
                 else
                     pid = parseInt(data);
-                this.vcam = (0, child_process_1.spawn)('python3', ['camera.py'], { stdio: 'pipe', env: { INDEX: clientObj.webcamid.toString() } });
-                this.vcam.stdout.on('data', (data) => {
-                    console.log('[this.vcam stdout]', data.toString());
-                });
-                this.vcam.stderr.on('data', (data) => {
-                    console.error('[this.vcam stderr]', data.toString());
-                });
-                this.vcam.on('exit', (code) => {
-                    console.log(`[this.vcam exit] Process exited with code ${code}`);
-                });
+                if (clientObj.webcamid) {
+                    this.vcam = (0, child_process_1.spawn)('python3', ['camera.py'], { stdio: 'pipe', env: { INDEX: clientObj.webcamid.toString() } });
+                    this.vcam.stdout.on('data', (data) => {
+                        console.log('[this.vcam stdout]', data.toString());
+                    });
+                    this.vcam.stderr.on('data', (data) => {
+                        console.error('[this.vcam stderr]', data.toString());
+                    });
+                    this.vcam.on('exit', (code) => {
+                        console.log(`[this.vcam exit] Process exited with code ${code}`);
+                    });
+                }
             });
             setTimeout(() => {
                 resolve(proc.pid || 0);
