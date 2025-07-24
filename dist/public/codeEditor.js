@@ -1143,10 +1143,6 @@ function onFileCreate(fileName, index = 0) {
         const session = editorSessions.get(fileName);
         const file = new FileElement(fileName, session.editor, index);
         //open newly created file
-        if (namePrompt?.innerText == fileName) {
-            openFile(namePrompt.innerText);
-            namePrompt.innerText = "";
-        }
         if (!session.fileElement) {
             const newSession = {
                 editor: session.editor,
@@ -1157,14 +1153,14 @@ function onFileCreate(fileName, index = 0) {
             if (client)
                 client.editorSession[file.parentWindow.index] = newSession;
         }
-    }
-    else {
-        const file = new FileElement(fileName, undefined, index);
-        //open newly created file
         if (namePrompt?.innerText == fileName) {
             openFile(namePrompt.innerText);
             namePrompt.innerText = "";
         }
+    }
+    else {
+        const file = new FileElement(fileName, undefined, index);
+        //open newly created file
         const newSession = {
             editor: undefined,
             fileName: fileName,
@@ -1173,6 +1169,10 @@ function onFileCreate(fileName, index = 0) {
         editorSessions.set(fileName, newSession);
         if (client)
             client.editorSession[index] = newSession;
+        if (namePrompt?.innerText == fileName) {
+            openFile(namePrompt.innerText);
+            namePrompt.innerText = "";
+        }
     }
     closeDefaultScreen(editorSessions.get(fileName)?.fileElement);
     // FileContainer.innerHTML += `<span>${fileName}</span>`
