@@ -1546,7 +1546,7 @@ bash `.trim().replaceAll('\n', "");
                                 video.stdout.pipe(process.stdout);
                                 video.stderr.pipe(process.stdout);
                                 video.on('close', data => console.log('added camera. ' + data.toString()));
-                                console.log('added camera');
+                                console.log('added camera', clientObj.webcamid);
                             }
                             else
                                 clientObj.openFile[0].editorMode.receiveWebCam(messageJSON.buffer);

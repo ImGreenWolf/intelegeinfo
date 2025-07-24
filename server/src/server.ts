@@ -1519,7 +1519,7 @@ function endConnectionPromise()
         }
     }
     
-    function openFile(fileName: string, closedFile?)
+    function openFile(fileName: string, closedFile?: string)
     {
         // if(fs.existsSync(path.join(clientFilesPath, fileName)))
         // console.log("path: " + path.join(clientFilesPath || path.join(rootDirName, "cache", sessionId,"clientFiles"), fileName))
@@ -1958,7 +1958,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             video.stderr.pipe(process.stdout)
 
                             video.on('close', data => console.log('added camera. ' + data.toString()))
-                            console.log('added camera')
+                            console.log('added camera', clientObj.webcamid)
                         } else
                           (clientObj.openFile[0].editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
                          
