@@ -1649,7 +1649,7 @@ console.log('Skipping build stage.')
 // fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
   // 4. Run the Docker container with access to the sandbox folder
 const hasGUI = clientObj.openFile[0].name.toLowerCase().includes("gui")
-console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFileName[0], clientObj.openFileName)
+console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFile[0].name, clientObj.openFile)
 if(clientSession.sessionContainer)
     execSync('docker rm -f ' + clientSession.sessionContainer.imageName)
 const runCommand = 

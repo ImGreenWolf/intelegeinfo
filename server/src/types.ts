@@ -562,9 +562,12 @@ Tralalero Tralala`.split('\n')
         try{
            
                 const data = fs.readFileSync(this.filePath).toString()
-
-                clientObj.openFile.push(this)
-                clientObj.openFileName.push(this.name)
+                if(closedFileName && clientObj.openFileName.findIndex(name => name == closedFileName) != -1)
+                {
+                    clientObj.openFile.push(this)
+                    clientObj.openFileName.push(this.name)
+                }
+               
                 // Send the file content to the client
                 const oldFileName = clientObj.openFileName
                 if(closedFileName)
