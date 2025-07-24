@@ -500,11 +500,12 @@ class EditorFile {
             clientObj.openFileName.push(this.name);
             // Send the file content to the client
             const oldFileName = clientObj.openFileName;
-            if (closedFileName) {
-                const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName);
-                clientObj.openFile.splice(closedFileIndex, 1);
-                clientObj.openFileName.splice(closedFileIndex, 1);
-            }
+            // if(closedFileName)
+            // {
+            //     const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName)
+            //     clientObj.openFile.splice(closedFileIndex,1)
+            //     clientObj.openFileName.splice(closedFileIndex,1)
+            // }
             this.session.replicateFunction((cws, id, obj) => {
                 if (obj.openFileName == oldFileName)
                     cws.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeSelection, body: null }));

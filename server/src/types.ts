@@ -576,12 +576,12 @@ Tralalero Tralala`.split('\n')
                
                 // Send the file content to the client
                 const oldFileName = clientObj.openFileName
-                if(closedFileName)
-                {
-                    const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName)
-                    clientObj.openFile.splice(closedFileIndex,1)
-                    clientObj.openFileName.splice(closedFileIndex,1)
-                }
+                // if(closedFileName)
+                // {
+                //     const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName)
+                //     clientObj.openFile.splice(closedFileIndex,1)
+                //     clientObj.openFileName.splice(closedFileIndex,1)
+                // }
               
 
                 this.session.replicateFunction((cws, id, obj) => {
