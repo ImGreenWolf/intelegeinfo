@@ -116,7 +116,6 @@ body, html {
 }
 .background * {
   animation: fadedown 2s;
-  animation-delay: 0.25s;
   animation-fill-mode: both;
 }
 
