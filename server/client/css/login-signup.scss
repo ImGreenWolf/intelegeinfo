@@ -172,8 +172,9 @@ form div
     animation-fill-mode: both;
 }
 
-@for $i from 1 through 3 {
-  form div:nth-child(#{$i}) {
+@for $i from 1 through 4 {
+  form div:nth-child(#{$i}),
+  form .inline div:nth-child(#{$i}) {
     animation-duration: calc(#{$i} * 600ms);
     animation-delay: calc(#{$i}* 100ms);
   }

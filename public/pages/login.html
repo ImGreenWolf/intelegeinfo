@@ -58,7 +58,7 @@
         </div>
 
         <div class="login-method-container">
-          <button onclick="loginWithGoogle()" class="google login-method">Login with Google</button>
+          <button onclick="loginWithGoogle()"  type="button" class="google login-method">Login with Google</button>
         </div>
       
       </div>
@@ -136,15 +136,6 @@
 
     async function loginWithGoogle()
     {
-      // await fetch('/login/google', {
-      //   method: 'GET',
-      //   referrerPolicy: "same-origin",
-      //   mode: "no-cors"
-      // }).then(res => {
-
-      //   res.redirected
-      // })
-
       window.location.href = ('login/google')
     }
 
