@@ -1299,7 +1299,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     const imageName = `session-container-${sessionId}`;
                     // fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
                     // 4. Run the Docker container with access to the sandbox folder
-                    const hasGUI = clientObj.openFileName[0].toLowerCase().includes("gui");
+                    const hasGUI = clientObj.openFile[0].name.toLowerCase().includes("gui");
                     console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFileName[0], clientObj.openFileName);
                     if (clientSession.sessionContainer)
                         (0, child_process_2.execSync)('docker rm -f ' + clientSession.sessionContainer.imageName);
