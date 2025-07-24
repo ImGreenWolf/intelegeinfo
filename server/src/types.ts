@@ -566,9 +566,10 @@ Tralalero Tralala`.split('\n')
                 if(closedFileIndex != -1)
                 {
                    
-                    clientObj.openFile.splice(closedFileIndex,1)
-                    clientObj.openFileName.splice(closedFileIndex,1)
+                    clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == closedFileName),1)
+                    clientObj.openFileName.splice(clientObj.openFileName.findIndex(name => name == closedFileName),1)
                 }
+
                     clientObj.openFile.push(this)
                     clientObj.openFileName.push(this.name)
                 
