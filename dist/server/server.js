@@ -1332,7 +1332,7 @@ bash `.trim().replaceAll('\n', "");
                             replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'container-spawn' }, types_1.WebSocketMessageType.ExecuteStatus));
                             if (hasGUI && clientSession.displayServer == 0) // doesnt have display server
                              {
-                                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession);
+                                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj);
                             }
                             resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
                         }, 1000);

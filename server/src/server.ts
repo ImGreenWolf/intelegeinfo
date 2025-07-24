@@ -1690,7 +1690,7 @@ bash `.trim().replaceAll('\n', "")
 
             if(hasGUI && clientSession.displayServer == 0) // doesnt have display server
             {
-                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession)
+                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj)
                
             }
                 
