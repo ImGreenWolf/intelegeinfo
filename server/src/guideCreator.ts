@@ -41,7 +41,7 @@ const htmlHead = (title='intelege info', desc?, keywords?) => `<head>
             <h2>Intelegeinfo</h2>
             <nav>
                 <ul>
-                    <li><a href="/">Pornire</a></li>
+                    <li><a href="/">Acasa</a></li>
                     <li><a href="/editor">Editor</a></li>
                     <li><a href="/guides">Resurse</a></li>
                     <li><a href="/subiecte">Subiecte</a></li>
