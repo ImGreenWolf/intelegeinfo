@@ -126,25 +126,25 @@ form div {
 }
 
 form div:nth-child(1),
-form .inline div:nth-child(1) {
+form .inline:nth-child(1) div {
   animation-duration: calc(1 * 600ms);
   animation-delay: calc(1 * 100ms);
 }
 
 form div:nth-child(2),
-form .inline div:nth-child(2) {
+form .inline:nth-child(2) div {
   animation-duration: calc(2 * 600ms);
   animation-delay: calc(2 * 100ms);
 }
 
 form div:nth-child(3),
-form .inline div:nth-child(3) {
+form .inline:nth-child(3) div {
   animation-duration: calc(3 * 600ms);
   animation-delay: calc(3 * 100ms);
 }
 
 form div:nth-child(4),
-form .inline div:nth-child(4) {
+form .inline:nth-child(4) div {
   animation-duration: calc(4 * 600ms);
   animation-delay: calc(4 * 100ms);
 }

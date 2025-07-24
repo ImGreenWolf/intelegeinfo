@@ -174,7 +174,7 @@ form div
 
 @for $i from 1 through 4 {
   form div:nth-child(#{$i}),
-  form .inline div:nth-child(#{$i}) {
+  form .inline:nth-child(#{$i}) div {
     animation-duration: calc(#{$i} * 600ms);
     animation-delay: calc(#{$i}* 100ms);
   }
