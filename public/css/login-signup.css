@@ -1,13 +1,13 @@
 @keyframes fadein {
   from {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(15px) scale(0.97);
   }
 }
 @keyframes fadedown {
   from {
     opacity: 0;
-    transform: translateY(-15px);
+    transform: translateY(-35px) scale(0.98);
   }
 }
 body, html {
@@ -121,32 +121,78 @@ body, html {
 }
 
 form div {
-  animation: fadein 1s;
+  animation: fadein 0.75s;
   animation-fill-mode: both;
 }
 
-form div:nth-child(1),
-form .inline:nth-child(1) div {
+form .input-container div:nth-child(1),
+form .input-container div:nth-child(1) div,
+form *:nth-child(1) {
   animation-duration: calc(1 * 600ms);
   animation-delay: calc(1 * 100ms);
 }
 
-form div:nth-child(2),
-form .inline:nth-child(2) div {
+form .input-container div:nth-child(2),
+form .input-container div:nth-child(2) div,
+form *:nth-child(2) {
   animation-duration: calc(2 * 600ms);
   animation-delay: calc(2 * 100ms);
 }
 
-form div:nth-child(3),
-form .inline:nth-child(3) div {
+form .input-container div:nth-child(3),
+form .input-container div:nth-child(3) div,
+form *:nth-child(3) {
   animation-duration: calc(3 * 600ms);
   animation-delay: calc(3 * 100ms);
 }
 
-form div:nth-child(4),
-form .inline:nth-child(4) div {
+form .input-container div:nth-child(4),
+form .input-container div:nth-child(4) div,
+form *:nth-child(4) {
   animation-duration: calc(4 * 600ms);
   animation-delay: calc(4 * 100ms);
+}
+
+form .input-container div:nth-child(5),
+form .input-container div:nth-child(5) div,
+form *:nth-child(5) {
+  animation-duration: calc(5 * 600ms);
+  animation-delay: calc(5 * 100ms);
+}
+
+form .input-container div:nth-child(6),
+form .input-container div:nth-child(6) div,
+form *:nth-child(6) {
+  animation-duration: calc(6 * 600ms);
+  animation-delay: calc(6 * 100ms);
+}
+
+form .input-container div:nth-child(7),
+form .input-container div:nth-child(7) div,
+form *:nth-child(7) {
+  animation-duration: calc(7 * 600ms);
+  animation-delay: calc(7 * 100ms);
+}
+
+form .input-container div:nth-child(8),
+form .input-container div:nth-child(8) div,
+form *:nth-child(8) {
+  animation-duration: calc(8 * 600ms);
+  animation-delay: calc(8 * 100ms);
+}
+
+form .input-container div:nth-child(9),
+form .input-container div:nth-child(9) div,
+form *:nth-child(9) {
+  animation-duration: calc(9 * 600ms);
+  animation-delay: calc(9 * 100ms);
+}
+
+form .input-container div:nth-child(10),
+form .input-container div:nth-child(10) div,
+form *:nth-child(10) {
+  animation-duration: calc(10 * 600ms);
+  animation-delay: calc(10 * 100ms);
 }
 
 form {
@@ -206,8 +252,8 @@ input:not([type=checkbox]) {
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
-  border: 2px solid white;
-  background-image: url(https://www.svgrepo.com/show/4356/right-arrow.svg);
+  border: 2px solid rgb(180, 180, 180);
+  transition-duration: 0.25s;
   background-repeat: no-repeat;
   background-size: 1lh;
   background-position: calc(100% - 1lh) center;
@@ -216,6 +262,7 @@ input:not([type=checkbox]) {
 
 input:focus {
   outline: none;
+  border-color: white;
 }
 
 .input-wrapper {
@@ -280,7 +327,7 @@ input:focus {
 }
 
 .input-wrapper:has(input:is(:-webkit-autofill, :autofill))::after {
-  transform: translate(-50%, -100%) !important;
+  transform: translate(-25%, -100%) !important;
 }
 
 label {

@@ -5,14 +5,14 @@ $bg-color: theme.$background-highlight-color;
 @keyframes fadein {
     from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translateY(15px) scale(0.97);
     }
 }
 
 @keyframes fadedown {
     from {
         opacity: 0;
-        transform: translateY(-15px);
+        transform: translateY(-35px) scale(0.98);
     }
 }
 
@@ -168,13 +168,14 @@ body, html
 // animation
 form div
 {
-    animation: fadein 1s;
+    animation: fadein 0.75s;
     animation-fill-mode: both;
 }
 
-@for $i from 1 through 4 {
-  form div:nth-child(#{$i}),
-  form .inline:nth-child(#{$i}) div {
+@for $i from 1 through 10 {
+  form .input-container div:nth-child(#{$i}),
+  form .input-container div:nth-child(#{$i}) div,
+  form *:nth-child(#{$i}) {
     animation-duration: calc(#{$i} * 600ms);
     animation-delay: calc(#{$i}* 100ms);
   }
@@ -248,8 +249,9 @@ input:not([type=checkbox])
     font-size: 1rem;
     width: 100%;
     box-sizing: border-box;
-    border: 2px solid white;
-    background-image: url(https://www.svgrepo.com/show/4356/right-arrow.svg);
+    border: 2px solid rgb(180, 180, 180);
+    transition-duration: 0.25s;
+    // background-image: url(https://www.svgrepo.com/show/4356/right-arrow.svg);
     background-repeat: no-repeat;
     background-size: 1lh;
     background-position: calc(100% - 1lh) center;
@@ -259,6 +261,7 @@ input:not([type=checkbox])
 input:focus
 {
     outline: none;
+    border-color: white;
 }
 .input-wrapper
 {
@@ -334,7 +337,7 @@ input:focus
 }
 .input-wrapper:has(input:is(:-webkit-autofill, :autofill))::after
 {
-    transform: translate(-50%, -100%) !important;
+    transform: translate(-25%, -100%) !important;
 }
 
 
