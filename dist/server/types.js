@@ -109,7 +109,7 @@ var EditorPermission;
     EditorPermission[EditorPermission["Everyone"] = 0] = "Everyone";
 })(EditorPermission || (exports.EditorPermission = EditorPermission = {}));
 function EditorOptionsToPermissions(options, client) {
-    return { isHost: client.isHost, canChat: options.enableChat, canEdit: client.editorPermission >= EditorPermission.Everyone, canVoice: options.enableVoice };
+    return { isHost: client.isHost, canChat: options.enableChat, canEdit: client.editorPermission >= options.editorPermission, canVoice: options.enableVoice };
 }
 class EditorSession {
     sessionId;
@@ -369,6 +369,7 @@ Tralalero Tralala`.split('\n');
             newClient.permissions.isHost = true;
         }
         else {
+            newClient.editorPermission = EditorPermission.Everyone;
             newClient.permissions = EditorOptionsToPermissions(this.editorOptions, newClient);
         }
         this.clientsSockets.set(newClient.clientId, ws);

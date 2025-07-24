@@ -27,6 +27,12 @@ export declare function createNode<K extends keyof HTMLElementTagNameMap>(tag: K
 export declare class Dock extends IElement {
     render(): HTMLDivElement;
 }
+export declare function createButton(icon: any, options: {
+    href?: any;
+    onclick?: () => void;
+    class?: any;
+    style?: any;
+}): HTMLDivElement;
 export declare class Toolbox extends IElement {
     render(): HTMLElement;
 }

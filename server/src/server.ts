@@ -46,11 +46,19 @@ interface ResponseWRaw extends IncomingMessage
     rawBody: Buffer
 }
 app.use(compression())
+
 app.use(express.json({
     verify: (req, res, buf) => {
         (req as ResponseWRaw).rawBody = buf; // Save raw body
     }
 }));
+
+function templateManager(req,res,next)
+{
+    
+}
+
+
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', Metrics)
 app.use('/subiecte', examSubjects)
@@ -1516,10 +1524,10 @@ function endConnectionPromise()
         console.log('Sent open file')
         const file = clientSession.files.find(file => file.name == fileName)
         if(!file)
-            {
-                console.error(new Error('Couldnt find file ' + fileName))
-                return;
-            }
+        {
+            console.error(new Error('Couldnt find file ' + fileName))
+            return;
+        }
 
         
         file.openFile(clientObj, shared, closedFile).then((fileContent) => onOpenFile(closedFile, fileName, fileContent))
@@ -2192,7 +2200,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     clientObj.getFile(fileName).changeContent(messageJSON.body)
                         // replicate changes to others
                     replicateFunction((thisclientWs, localClientId, thisClientObj) => {
-                        if(clientObj.checkClientsFileOpen(thisClientObj))
+                        if(clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
                             thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId,delta: messageJSON.delta, fileName, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId}))
                         }, clientObj)
                     
@@ -2239,11 +2247,19 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
 
                     */
-                    if(!clientObj.permissions.canEdit) break;
-                    const commandType: FileManagementCommands = messageJSON.command;
                     
-
+                    const commandType: FileManagementCommands = messageJSON.command;
+                    // Let only open command through
+                    if(!clientObj.permissions.canEdit && commandType !== FileManagementCommands.Open) break;
+                    
                     switch (commandType) {
+
+
+                     case FileManagementCommands.Open:
+                        
+                        openFile(messageJSON.body, messageJSON.closedFile)
+                        console.log('clientId', clientId, 'sessionid', sessionId)
+                    break;
                         case FileManagementCommands.Create:
                             new EditorFile(clientSession, messageJSON.name, messageJSON.body)
 
@@ -2266,11 +2282,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         
                     break;
 
-                    case FileManagementCommands.Open:
-                        
-                        openFile(messageJSON.body, messageJSON.closedFile)
-                        console.log('clientId', clientId, 'sessionid', sessionId)
-                    break;
+                   
                     }
                     break;
                 
@@ -2872,3 +2884,4 @@ process.on('unhandledRejection', (reason: any, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
   // application specific logging, throwing an error, or other logic here
 });
+

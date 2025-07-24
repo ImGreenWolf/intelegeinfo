@@ -27,8 +27,9 @@ const htmlHead = (title = 'intelege info', desc, keywords) => `<head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/guides.css">
-    
+   
     </head>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D9ZPLVG5XF"></script>
@@ -40,19 +41,18 @@ const htmlHead = (title = 'intelege info', desc, keywords) => `<head>
   gtag('config', 'G-D9ZPLVG5XF');
 </script>
 
-    <header>
-            <div class="horizontal">
-                    
-                <h1><a href="/">ÎnțelegeInfo</a></h1>
-                <div id="colab-container">
-
-                </div>
-            </div>
-
-            <div class="vertical">
-                
-            </div>
-        </header>
+    <header2>
+            <h2>Intelegeinfo</h2>
+            <nav>
+                <ul>
+                    <li><a href="/">Pornire</a></li>
+                    <li><a href="/editor">Editor</a></li>
+                    <li><a href="/guides">Resurse</a></li>
+                    <li><a href="/subiecte">Subiecte</a></li>
+                </ul>
+            </nav>
+            
+        </header2>
     
     `;
 router.use('/guideCreator', express_1.default.static(path_1.default.join(rootDirName, "/public", "problems", "guideCreator.html")));
@@ -350,25 +350,26 @@ router.get('/post/:name', (req, res) => {
         res.status(500).send('Error: ' + err);
     });
 });
-router.get('/', (req, res) => {
-    dbClient_1.default.guide.findMany({
-        take: 10,
-        orderBy: {
-            createdAt: "desc"
-        }
-    }).then(guides => {
-        let guideEntries = '';
-        for (const guide of guides)
-            guideEntries += `<li><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`;
-        const html = `${htmlHead('Resurse')}
-    <content>
-    <ul style="font-family: Poppins">
-    ${guideEntries}
-    </ul>
-    </content>`;
-        res.send(html);
-    }).catch(err => {
-        res.status(500).json({ error: 'Failed listing projects: ' + err });
-    });
-});
+// router.get('/', (req: Request, res: Response) => {
+//     prisma.guide.findMany({
+//        take: 10,
+//        orderBy: {
+//         createdAt: "desc"
+//        }
+//     }).then(guides => {
+//         let guideEntries = '';
+//         for(const guide of guides)
+//             guideEntries += `<li><a href="guides/post/${encodeURI(guide.name)}">${guide.name}</a></li>`
+//         const html = 
+//     `${htmlHead('Resurse')}
+//     <content>
+//     <ul style="font-family: Poppins">
+//     ${guideEntries}
+//     </ul>
+//     </content>`
+//     res.send(html)
+//     }).catch(err => {
+//         res.status(500).json({ error: 'Failed listing projects: ' + err });
+//     })
+// })
 exports.default = router;

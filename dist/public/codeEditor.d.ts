@@ -92,7 +92,8 @@ declare class SessionClient {
     clientId: UUID;
     color: any;
     displayName: any;
-    constructor(clientId: any, displayName: any, color: any);
+    canEdit: boolean;
+    constructor(clientId: any, displayName: any, color: any, canEdit: any);
 }
 export declare let client: SessionClient | undefined;
 export declare let clients: Map<UUID, SessionClient>;

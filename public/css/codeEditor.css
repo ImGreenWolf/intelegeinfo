@@ -7,6 +7,7 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  grid-area: sidebar;
 }
 
 .hide-button {
@@ -24,8 +25,6 @@
 }
 
 .toolbar-container {
-  min-width: 300px;
-  min-height: 80px;
   background-color: rgb(37, 37, 37);
   padding: 0.5em;
   color: white;
@@ -91,16 +90,21 @@
   background-color: rgb(12, 12, 12);
   /* box-shadow: inset 5px -15px 20px -25px var(--highlight-shadow); */
   background-blend-mode: hard-light;
-  aspect-ratio: 1;
   min-width: 70px;
+  min-height: 70px;
   border-radius: 1.15em;
   display: grid;
   padding: 0.15em;
   transition-duration: 0.2s;
   box-shadow: 1px 2px 3px -2px var(--inner-shadow), 0 2px 6px -3px var(--glow), 0 5px 2px -5px var(--glow);
 }
+.inner-toolbar:not(:last-child) {
+  margin-right: 0.5em;
+}
 .inner-toolbar .toolbar-button-container:hover div {
-  transform: scale(102%);
+  transform: scale(103%);
+}
+.inner-toolbar .toolbar-button-container.active div {
   box-shadow: inset 0 -10px 10px -10px black, inset 0 -20px 4px -20px var(--highlight-shadow), inset 0 20px 4px -20px var(--highlight-shadow), 0 0 5px 1px var(--active);
 }
 .inner-toolbar .toolbar-button-container:active div {
@@ -111,7 +115,6 @@
 }
 .inner-toolbar .toolbar-button-container div {
   transition-duration: 0.2s;
-  aspect-ratio: 1;
   border-radius: 1em;
   display: grid;
   box-sizing: content-box;
@@ -145,10 +148,10 @@
   transition-duration: 0.2s;
   --link: url(../media/icons/home.svg);
   background-image: linear-gradient(275deg, var(--bottom), var(--foreground)), var(--link), var(--link), radial-gradient(ellipse at 95% 95%, rgb(255, 255, 255), transparent 40%), url(../media/noise.svg), radial-gradient(rgba(85, 85, 85, 0.466), white 75%);
-  background-position: 0 0, center, 52% 52%, 0 0, center, 0 0;
+  background-position: 0 0, center, calc(50% + 1px) calc(50% + 1px), 0 0, center, 0 0;
   background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat;
-  background-size: auto, 50%, 50% auto, 65px, auto;
-  background-blend-mode: hard-light, difference, hard-light, multiply, multiply;
+  background-size: auto, 25px, 25px, auto, 65px, auto;
+  background-blend-mode: hard-light, lighten, difference, multiply, multiply;
   box-shadow: inset -3px -3px 7px -5px var(--highlight-shadow);
   border-radius: 0.75em;
   /* border: 1px solid var( --highlight); */
@@ -161,7 +164,8 @@
   font-family: Poppins;
 }
 
-.toolbox {
+.toolbox,
+.run {
   --highlight: hsl(32, 90%, 35%);
   --foreground: hsl(39, 90%,20%);
   --shadow: hsl(30, 90%,10%);
@@ -169,6 +173,13 @@
   --bottom: hsl(30, 90%,20%);
   --glow: hsla(32, 90%, 35%, 0.5);
   --active: hsla(32, 90%, 35%, 1) ;
+}
+
+.run {
+  width: 100px;
+}
+.run div {
+  background-image: conic-gradient(var(--shadow) 14.5833333333%, var(--highlight) 16.6666666667%, var(--sides) 29.1666666667%, var(--bottom), var(--bottom), var(--sides) 70.8333333333%, var(--highlight) 83.3333333333%, var(--shadow) 85.4166666667%), url(../media/noise.svg) !important;
 }
 
 @keyframes flicker {
@@ -306,9 +317,9 @@
 
 .container {
   display: grid;
-  grid-template-columns: minmax(400px, auto) minmax(400px, 1fr) max-content;
-  grid-template-rows: auto 1fr 50px auto;
-  grid-template-areas: "header header header" "main output sidebar" "buttons output sidebar";
+  grid-template-columns: minmax(500px, auto) minmax(400px, 1fr) max-content;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: "header header" "main output" "sidebar sidebar";
   overflow: visible;
   padding: 1rem;
   min-height: 50%;
@@ -321,6 +332,10 @@
   min-width: 100%;
   max-width: 100%;
   width: 50dvw;
+}
+
+.buttons {
+  display: none !important;
 }
 
 /* .container>div:not(.header)
@@ -1783,6 +1798,7 @@ form label {
   height: 10px;
   aspect-ratio: 1;
   position: relative;
+  box-shadow: inset 1px -2px 2.25px 0px rgba(0, 0, 0, 0.3215686275);
 }
 .throbber-container.queue .throbber-elem {
   position: absolute;

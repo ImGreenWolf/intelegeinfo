@@ -12,7 +12,7 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated, Toolbox } from "./components.js";
+import { createButton, createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated, Toolbox } from "./components.js";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 
@@ -589,11 +589,12 @@ class SessionClient {
   clientId: UUID;
   color;
   displayName;
-  
-  constructor(clientId, displayName, color) {
+  canEdit: boolean
+  constructor(clientId, displayName, color, canEdit) {
     this.clientId = clientId;
     this.color = color;
     this.displayName = displayName;
+    this.canEdit = canEdit
   }
 }
 
@@ -2336,6 +2337,31 @@ export function closeDefaultScreen(createdFileElement)
   
     createdFileElement.openTab()
       elem?.element.remove()
+
+    const buttons = [
+        createButton('play_arrow.svg', {onclick: () => {
+            window.editor.sendDebugCommand('execute')
+        }, class: "run"}),
+    ]
+
+
+    const editorControls = createNode('div', {html: buttons, className: 'inner-toolbar'})
+      DockElement!.children[1].prepend(editorControls)
+      editorControls.animate([
+            {maxWidth: '0', overflow: 'hidden'},
+            {maxWidth: '80px', overflow: 'initial'}
+        ], {
+            duration: 150,
+            
+        })
+
+    for(const button of buttons)
+        button.animate([
+            {opacity: '0'},
+            {opacity: '100%'}
+        ], {
+            duration: 150
+        })
 }
 
 export function openFile(fileName: string = "main.cpp") {
@@ -3067,10 +3093,13 @@ function onRemoteClientJoin(rclient: HandshakeMessage['users'][number])
       // if(fileName.split('.')[1] != 'cpp')
       
       newSession.setMode(aceModes.getModeForPath(fileName).mode);
-      if(client?.editorSession[index].fileElement?.parentWindow.createEditor().session)
-        client?.editorSession[index].fileElement?.parentWindow.createEditor().session.destroy()
-      client?.editorSession[index].fileElement?.parentWindow.createEditor().setSession(newSession);
-       
+      const editor = client!.editorSession[index].fileElement!.parentWindow.createEditor()
+
+      if(editor.session)
+        editor.session.destroy()
+     editor.setSession(newSession);
+      
+        editor.setReadOnly(!client!.canEdit)
       const session: FileEditorSession =
       {
         editor: newSession,
@@ -3088,7 +3117,7 @@ function onRemoteClientJoin(rclient: HandshakeMessage['users'][number])
     if(!file.editor)
       file.editor =  ace.createEditSession(fileContent);
     
-
+    
     console.log("File already opened: ", fileName, "current session: ", editorSessions.get(fileName)!);
     // let session = editorSessions.get(fileName)!;
     switch(fileName.split('.').at(-1))
@@ -3117,8 +3146,11 @@ function onRemoteClientJoin(rclient: HandshakeMessage['users'][number])
         
         file.editor!.setMode(aceModes.getModeForPath(fileName).mode);
         file.fileElement!.parentWindow.setActiveFile(file.fileElement!) // we need to set the active tab before changing sessions!!
-        if(file.fileElement!.parentWindow.createEditor().session)
-          file.fileElement!.parentWindow.createEditor().setSession(editorSessions.get(fileName)!.editor)
+        const editor = file.fileElement!.parentWindow.createEditor()
+        if(editor.session)
+         editor.setSession(editorSessions.get(fileName)!.editor)
+        
+        editor.setReadOnly(!client!.canEdit)
       } 
     if (fileContent.toString() != editorSessions.get(fileName)!.editor!.getValue()) {
       isRemoteChange = true;  // must add this to prevent sending on changed event
@@ -3132,7 +3164,7 @@ function onRemoteClientJoin(rclient: HandshakeMessage['users'][number])
 function onOpenFile(fileName, fileContent, client: SessionClient ) {
   
   console.log('opening file:',editorSessions, client);
-
+  
   if (!editorSessions.has(fileName)) 
     createFileSession(fileName, fileContent, 0)
   else 
@@ -3146,7 +3178,7 @@ function onOpenFile(fileName, fileContent, client: SessionClient ) {
 }
 
 function createClient(clientId, displayName, color, session: FileEditorSession[]) {
-  const client = new SessionClient(clientId,displayName, color)
+  const client = new SessionClient(clientId,displayName, color, true)
   client.editorSession = session
   clients.set(clientId,client)
   console.log("Created client: ", client, clients)
@@ -3377,7 +3409,8 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
       // console.log(ClientOptions)
       // }
       function updatePermissions(newPermissions) {
-          if(!newPermissions.canEdit)
+          if(!newPermissions.canEdit && codeWindow)
+            if(codeWindow.editor)
             codeWindow.getEditor().setReadOnly(true)
           if(!newPermissions.canChat)
             document.getElementById('console')?.setAttribute('disabled','true')
@@ -3400,6 +3433,7 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
       {
         updatePermissions(sessionData)
         return;
+        // update session permissions
       }
 
 
@@ -3436,11 +3470,12 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
         {
           if(!client)
           {
-            client = new SessionClient(wsClientId, messageJson.displayName, messageJson.color)
+            // create local client
+            client = new SessionClient(wsClientId, messageJson.displayName, messageJson.color, sessionData.canEdit)
             if(rclient.openFile.length == 0)
               showDefaultScreen()
             else
-            client.editorSession![0] = {fileName: rclient.openFile[0], editor: undefined, fileElement: undefined}
+              client.editorSession![0] = {fileName: rclient.openFile[0], editor: undefined, fileElement: undefined}
             clients.set(wsClientId, client)
             
           }
@@ -4473,6 +4508,8 @@ export function onFileSessionUpdated(newFileName, client: SessionClient) {
         console.log(elem.parentWindow)
         elem.parentWindow.previousActiveTab?.element.classList.remove('open-file')
         elem.parentWindow.setActiveFile(elem)
+
+        
         // elem.parentWindow.activeTab = elem
         // elem.parentWindow.activeTab?.element.classList.add('open-file')
     }

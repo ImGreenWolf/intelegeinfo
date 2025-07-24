@@ -188,19 +188,19 @@ export class Dock extends IElement {
         return base;
     }
 }
+export function createButton(icon, options) {
+    return createNode('div', { html: [createNode('div', { html: [createNode('a', { css: `--link: url(../media/icons/${icon});`, attributes: options.href ? [{ name: 'href', value: options.href }] : undefined })] })], className: 'toolbar-button-container ' + options.class, onclick: options.onclick, css: options.style });
+}
 export class Toolbox extends IElement {
     render() {
         const buttons = [
             createButton('home.svg', { href: '/' }),
             createButton('person_add.svg', { href: '/signup' }),
-            createButton('account_box.svg', { href: '/login' }),
+            createButton('passkey.svg', { href: '/login' }),
             createButton('action_key.svg', { onclick: () => {
                     window.editor.joinsession();
                 }, class: "toolbox" }),
         ];
-        function createButton(icon, options) {
-            return createNode('div', { html: [createNode('div', { html: [createNode('a', { css: `--link: url(../media/icons/${icon});`, attributes: options.href ? [{ name: 'href', value: options.href }] : undefined })] })], className: 'toolbar-button-container ' + options.class, onclick: options.onclick });
-        }
         const innerToolbox = createNode('div', { html: buttons, className: 'inner-toolbar' });
         const hideButton = createButton('button', {
             class: "hide-button",

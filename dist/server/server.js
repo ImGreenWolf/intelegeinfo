@@ -80,6 +80,8 @@ app.use(express_1.default.json({
         req.rawBody = buf; // Save raw body
     }
 }));
+function templateManager(req, res, next) {
+}
 app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', metrics_1.default);
 app.use('/subiecte', examSubjects_1.default);
@@ -1771,7 +1773,7 @@ bash `.trim().replaceAll('\n', "");
                         clientObj.getFile(fileName).changeContent(messageJSON.body);
                         // replicate changes to others
                         replicateFunction((thisclientWs, localClientId, thisClientObj) => {
-                            if (clientObj.checkClientsFileOpen(thisClientObj))
+                            if (clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
                                 thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, delta: messageJSON.delta, fileName, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId }));
                         }, clientObj);
                         break;
@@ -1811,10 +1813,15 @@ bash `.trim().replaceAll('\n', "");
     
     
                         */
-                        if (!clientObj.permissions.canEdit)
-                            break;
                         const commandType = messageJSON.command;
+                        // Let only open command through
+                        if (!clientObj.permissions.canEdit && commandType !== types_3.FileManagementCommands.Open)
+                            break;
                         switch (commandType) {
+                            case types_3.FileManagementCommands.Open:
+                                openFile(messageJSON.body, messageJSON.closedFile);
+                                console.log('clientId', clientId, 'sessionid', sessionId);
+                                break;
                             case types_3.FileManagementCommands.Create:
                                 new types_2.EditorFile(clientSession, messageJSON.name, messageJSON.body);
                                 break;
@@ -1831,10 +1838,6 @@ bash `.trim().replaceAll('\n', "");
                                 if (!clientObj.permissions.canEdit)
                                     break;
                                 clientSession.files.find(file => file.name == messageJSON.name).rename(messageJSON.newName, clientObj);
-                                break;
-                            case types_3.FileManagementCommands.Open:
-                                openFile(messageJSON.body, messageJSON.closedFile);
-                                console.log('clientId', clientId, 'sessionid', sessionId);
                                 break;
                         }
                         break;

@@ -169,11 +169,16 @@
     .container {
         // max-width: 100%;
         grid-template-columns: auto minmax(20%, auto) auto 1fr;
-        grid-template-rows:  1fr auto;
+        grid-template-rows:  20px auto;
         grid-template-areas:
-            'header main buttons output'
-            'header sidebar sidebar sidebar';
+            'header main main output'
+            'sidebar main main output';
         gap: 10px;
+
+        &:has(.hidden) mini-dock
+        {
+            display: none;
+        }
     }
     .buttons
     {
@@ -184,6 +189,41 @@
         align-items: stretch;
         // gap: 1px;
         
+    }
+    mini-dock 
+    {
+        justify-content: center;
+        h2 
+        {
+             display: none;
+        }
+       
+    }
+    .toolbar-container 
+    {
+        // min-width: 80px;
+        // min-height: 300px;
+        flex-direction: column;
+        &::before
+        {
+            content: "";
+            display: none;
+        }
+        .run
+        {
+            width: 75px;
+            // height: 150px;
+        }
+        .inner-toolbar:not(:last-child)
+        {
+            margin-bottom: 0.5em;
+            margin-right: 0;
+        }
+        .toolbar-button-container
+        {
+                    min-width: 50px;
+             min-height: 50px;
+        }
     }
     #dock
     {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login Page</title>
+  <title>Login</title>
   <link rel="stylesheet" href="../css/login-signup.css">
   <link rel="stylesheet" href="../css/main.css">
 
@@ -13,49 +13,79 @@
     
 </head>
 <body>
-  <header>
-    <div class="horizontal">
-            
-        <h1><a href="/">ÎnțelegeInfo</a></h1>
-        <div id="colab-container">
+  
 
+<div class="container">
+      <a class="home" href="/"></a>
+  <form id="loginForm">
+
+    <div class="welcome-container">
+      <h2>Bine ai revenit!</h2>
+      <!-- <p>Introduce emailul si parola pentru a te loga in cont!</p> -->
+    </div>
+    
+    <div class="interaction-area">
+      
+      <div class="input-container">
+        <div class="input-wrapper" text="email">
+          <input type="email" name="email" required id="email" placeholder="" autocomplete="email">
+        </div>
+        <div class="input-wrapper" text="parola">
+          <input type="password" name="password" required id="password" class="animhidden"  placeholder="" autocomplete="current-password">
+         </div>
+        <input type="hidden" name='loginMethod' value="local">
+        <div class="login-options">
+          <label for="keepLoggedIn">Tine-ma minte<input type="checkbox" name="keepLoggedIn"></label>
+          <a href="/reset-password">Resetaza-ti parola</a>
+        </div>
+        
+      </div>
+      <!-- <hl class="dashed"></hl> -->
+      <div class="button-container">
+
+          <p id="message"></p>
+          <button type="submit">Login</button>
+          <div class="signup-options">
+            <span>Nu ai cont deja?</span> <a href="./signup">Creaza-ti unul aici!</a>
+          </div>
+        
+
+        
+        <div class="login-method-break">
+          <hl></hl>
+          <span>or</span>
+          <hl></hl>
         </div>
 
-    
-    </div>
-
-    <div class="vertical">
-        
-    </div>
-</header>
-
-<div>
-  <form id="loginForm">
-    <h2>Login</h2>
-
-    <div class="input-container">
-      <input type="email" name="email" required id="email" placeholder="email.." autocomplete="email">
-      <input type="password" name="password" required id="password" class="animhidden"  placeholder="password.." autocomplete="current-password">
-      <input type="hidden" name='loginMethod' value="local">
-      <label for="keepLoggedIn">Remember me<input type="checkbox" name="keepLoggedIn"></label>
+        <div class="login-method-container">
+          <button onclick="loginWithGoogle()" class="google login-method">Login with Google</button>
+        </div>
+      
+      </div>
       
     </div>
 
-    <div class="button-container">
-
-      <div>
-        <button type="submit">Login</button>
-        <a href="./signup">or create an account instead</a>
-      </div>
-      <p id="message"></p>
-      <div class="login-method-container">
-        <button onclick="loginWithGoogle()" class="google login-method">Login with Google</button>
-      </div>
-    
+    <div class="footer">
+      <p>Toate drepturile rezervate &SmallCircle; 2025 &copy;</p>
+      <a href="../privacy.html">Politica de confidentialitate</a>
     </div>
+
   </form>
-
-
+  <div class="background">
+    <div class="background-image">
+    
+      <h1>Salveaza-ti proiectele, rezolva probleme, si bucura-te de cea mai buna experienta</h1>
+      <p>Intra in cont pentru a-ti accesa proiectele, sa poti rezolva toate probleme de informatica disponibile, sa-ti personalizezi experienta si multe altele!</p>
+      <div class="image-position">
+       <img src="../media/colaboration-demo.png" >
+       <!-- <img src="../media/autocompletion-demo.png" > -->
+      </div>
+     
+     
+    </div>
+    
+  </div>
+  
   
 </div>
 

@@ -55,6 +55,10 @@
                     <li><a href="/subiecte">Subiecte</a></li>
                 </ul>
             </nav>
+            <div>
+                <a href="signup">Sign up</a>
+                <a href="login">Log in</a>
+            </div>
         </header2>
         <div style="position: relative; width: 100%;">
             
@@ -240,7 +244,7 @@
                     </div>
                     <div class="bento-text">
                         <h2>Programe cu interfata</h2>
-                        <p>Creaza aplicatii cu interfata (GUI) si interactioneaza in timp real.</p>
+                        <p>Creaza aplicatii cu interfata (GUI) si interactioneaza cu ele in timp real. Creaza aplicatii in orice limbaj. </p>
                     </div>
                 </section>
 
@@ -403,7 +407,8 @@
             
             function updateCarousel(timestamp)
             {
-               
+                if(!startTime)
+                startTime=timestamp
                 delta = timestamp - startTime
                 const carouselWidth = carousel.clientWidth
                 
@@ -413,7 +418,7 @@
                     
                     elem.style.left = (offset +  (carouselWidth+300)/carousel.children.length*i++ + 300/2)%(carouselWidth+300)-300 + 'px' 
                 }
-                offset += 1
+                offset += delta * 0.1
                 startTime=timestamp
                 if(carousel.checkVisibility())
                 requestAnimationFrame(updateCarousel)
@@ -499,5 +504,8 @@
     // });
 </script>
 </body>
+
+
+<link rel="prefetch" href="editor" />
 </html>
 

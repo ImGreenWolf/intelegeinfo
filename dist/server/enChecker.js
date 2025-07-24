@@ -80,7 +80,13 @@ function check() {
     console.clear();
     // checkURL('pagina principala', 'https://www.evaluare.edu.ro/')
     // checkURL('info', 'http://localhost:3000')
-    checkURL('pagina principala', 'https://www.evaluare.edu.ro/').then(send => {
+    // checkURL('pagina principala', 'https://www.evaluare.edu.ro/').then(send => {
+    //     if(!send || hasBeenAnnounced)
+    //         return;
+    //     hasBeenAnnounced=true
+    //     sendEmail()
+    // })
+    checkURL('admitere', 'https://admitere.edu.ro/').then(send => {
         if (!send || hasBeenAnnounced)
             return;
         hasBeenAnnounced = true;
@@ -98,27 +104,8 @@ function sendEmail() {
         var mailOptions = {
             from: 'noreply@intelegeinfo.ro',
             to: email,
-            subject: "THEY'RE HEREEEEE!! 🥹🥹",
-            html: `<pre style="font-family: Arial"><p>Holiii Ancus, se pare ca au venit rezultatele 🥹
-(cred, stiu doar ca s-a modificat pagina pe care se publica)</p>
-    
-    Anyway, IM WISHING YOU GOOD LUCKKK JKJJAKJS
-    I KNOW YOU WONT BE DISAPOINTED 💖💖💖
-    Just know that I love ya no matter what
-    si te astept sa ma chemi sa-mi iei teds MUAH HEHEHEHEHEH
-    
-    <img src='https://media.tenor.com/pmwfSUfWhC4AAAAM/dog.gif'>
-    :3
-
-
-    <a clicktracking="off" href='https://www.evaluare.edu.ro/'>Siteul evaluare.edu.ro</a> 🦐
-    
-
-<i>From your bf with love,
-who will always be proud of ya,
-Raducu <3</i>
-
-</pre>`,
+            subject: "Admitere liceu",
+            html: `S-a publicat admiterea!`,
         };
         // var mailOptions = {
         //     from: 'noreply@intelegeinfo.ro',

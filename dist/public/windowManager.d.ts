@@ -7,7 +7,7 @@ export declare class EditorWindow {
     contentContainer: HTMLElement;
     activeTab: EditorWindowTab | undefined;
     previousActiveTab: EditorWindowTab | undefined;
-    editor: Ace.Editor | undefined;
+    editor: Ace.Editor | undefined | null;
     index: number;
     tabs: EditorWindowTab[];
     tooltip: TokenTooltip | undefined;

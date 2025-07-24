@@ -184,7 +184,7 @@ router.get('/callback', async (req:any, res:any) => {
   const code = req.query.code as string;
 
   if (!code) {
-    return res.status(400).send('Missing authorization code');
+    return res.status(400).send('Missing authorization code. Refresh the page!');
   }
   
 

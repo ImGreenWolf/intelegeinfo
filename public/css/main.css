@@ -198,10 +198,10 @@ header2 {
   color: white;
   display: grid;
   align-self: center;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 2lh;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   justify-items: center;
   position: fixed;
   top: 0;
@@ -223,8 +223,32 @@ header2::before {
   display: block;
 }
 header2 h2 {
-  position: absolute;
   left: 3em;
+}
+header2 div {
+  right: 15em;
+  box-sizing: content-box;
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+header2 div a {
+  color: gray;
+  transition-duration: 0.25s;
+  cursor: pointer;
+}
+header2 div a:nth-child(2) {
+  border-radius: 1lh;
+  background-color: white;
+  color: black;
+  padding: 0.25em 0.75em;
+  border: 2px solid rgba(255, 255, 255, 0.678);
+}
+header2 div a:hover {
+  opacity: 0.5;
+}
+header2 div a:any-link {
+  text-decoration: none;
 }
 header2 nav {
   justify-self: center;
@@ -294,7 +318,8 @@ header2 nav ul li:hover {
     transform: none;
     grid-column: 1/-1;
   }
-  header2 h2 {
+  header2 h2,
+  header2 div {
     display: none;
   }
 }

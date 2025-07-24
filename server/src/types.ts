@@ -107,7 +107,7 @@ export interface ClientPermissions
 }
 function EditorOptionsToPermissions(options, client: ClientObject)
 {
-    return {isHost: client.isHost, canChat: options.enableChat, canEdit:  client.editorPermission >= EditorPermission.Everyone, canVoice: options.enableVoice}
+    return {isHost: client.isHost, canChat: options.enableChat, canEdit:  client.editorPermission >= options.editorPermission, canVoice: options.enableVoice}
 }
 export class EditorSession {
     sessionId: UUID;
@@ -413,6 +413,7 @@ Tralalero Tralala`.split('\n')
         }
         else
         {
+            newClient.editorPermission = EditorPermission.Everyone
             newClient.permissions = EditorOptionsToPermissions( this.editorOptions,newClient)
         }
         

@@ -160,7 +160,7 @@ router.get('/google', (_req, res) => {
 router.get('/callback', async (req, res) => {
     const code = req.query.code;
     if (!code) {
-        return res.status(400).send('Missing authorization code');
+        return res.status(400).send('Missing authorization code. Refresh the page!');
     }
     try {
         // Step 3: Exchange code for access token

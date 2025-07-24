@@ -93,9 +93,12 @@
 @media screen and (((max-aspect-ratio: 2/1) or (orientation: landscape)) and (max-height: 500px)) {
   .container {
     grid-template-columns: auto minmax(20%, auto) auto 1fr;
-    grid-template-rows: 1fr auto;
-    grid-template-areas: "header main buttons output" "header sidebar sidebar sidebar";
+    grid-template-rows: 20px auto;
+    grid-template-areas: "header main main output" "sidebar main main output";
     gap: 10px;
+  }
+  .container:has(.hidden) mini-dock {
+    display: none;
   }
   .buttons {
     flex-direction: column;
@@ -103,6 +106,30 @@
     justify-content: flex-start;
     align-content: stretch;
     align-items: stretch;
+  }
+  mini-dock {
+    justify-content: center;
+  }
+  mini-dock h2 {
+    display: none;
+  }
+  .toolbar-container {
+    flex-direction: column;
+  }
+  .toolbar-container::before {
+    content: "";
+    display: none;
+  }
+  .toolbar-container .run {
+    width: 75px;
+  }
+  .toolbar-container .inner-toolbar:not(:last-child) {
+    margin-bottom: 0.5em;
+    margin-right: 0;
+  }
+  .toolbar-container .toolbar-button-container {
+    min-width: 50px;
+    min-height: 50px;
   }
   #dock {
     min-width: 75px !important;

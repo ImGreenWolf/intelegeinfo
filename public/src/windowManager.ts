@@ -1,4 +1,4 @@
-import  Ace  from "ace-builds";
+import  Ace, { EditSession }  from "ace-builds";
 import { client, CompileError, compileErrorObjs, createFile, dirtyFile, displayBlankEditor, displayMessagePopup, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, onFileSessionUpdated, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
 import { createNode } from "./components.js";
 declare const ace: typeof Ace;
@@ -14,7 +14,7 @@ export class EditorWindow {
     contentContainer: HTMLElement
     activeTab: EditorWindowTab | undefined
     previousActiveTab: EditorWindowTab | undefined
-    editor: Ace.Editor | undefined
+    editor: Ace.Editor | undefined | null
     index: number
     tabs: EditorWindowTab[] = []
     tooltip: TokenTooltip | undefined = undefined
@@ -59,26 +59,15 @@ export class EditorWindow {
 
             
             
-            const data = ev.dataTransfer.getData("application/x-moz-node") as HTMLElement;
+            // const data = ev.dataTransfer.getData("application/x-moz-node") as HTMLElement;
             
             elem.classList.remove(draggedIdName)
             
             if(!draggedTab)
                 throw 'no dragged tab'
             console.log(draggedTab!.parentWindow, window)
+            const prevWindow = draggedTab.parentWindow
             
-            if(draggedTab.parentWindow)
-                if(draggedTab.parentWindow.tabs.findIndex(val => val.name != draggedTab?.name) != -1)
-                    draggedTab.parentWindow.tabs.find(val => val.name != draggedTab?.name)!.openTab(ev) // open another tab
-                else
-                {
-                    // if there are no other tabs, open default content
-                    draggedTab!.parentWindow.destroyEditor()
-                    client!.editorSession![draggedTab!.parentWindow.index].editor = undefined
-                    // showDefaultScreen()
-                    
-                    // displayBlankEditor(draggedTab!.parentWindow.index)
-                }
             window.addTab(draggedTab)
             
             // client!.editorSession![window.index].editor! =  client!.editorSession![draggedTab!.parentWindow.index].editor!
@@ -86,7 +75,22 @@ export class EditorWindow {
             // openFile(draggedTab.name)
             draggedTab.openTab()
             // window.tabs.push(draggedTab)
-            
+            if(prevWindow)
+                if(prevWindow.tabs.findIndex(val => val.name != draggedTab?.name) != -1)
+                    prevWindow.tabs.find(val => val.name != draggedTab?.name)!.openTab(ev) // open another tab
+                else
+                {
+                    // if there are no other tabs, open default content
+                    // prevWindow.destroyEditor()
+                    // client!.editorSession![draggedTab!.parentWindow.index].editor = undefined
+                    window.editor = prevWindow.editor
+                    prevWindow.editor?.container.remove()
+                    prevWindow.editor = null
+                    // client!.editorSession!.splice(draggedTab!.parentWindow.index,1)
+                    // showDefaultScreen()
+                    
+                    // displayBlankEditor(draggedTab!.parentWindow.index)
+                }
             if(!editorSessions.has(draggedTab.name))
                 throw 'couldnt find editor session for dragged tab'
             
@@ -99,19 +103,23 @@ export class EditorWindow {
     }
     public destroyEditor()
     {
-         if(this.editor)
+         if(!this.editor)
+            console.error(new Error('Editor isnt valid'))
+        else
         {
-            this.editor.destroy()
+             this.editor.destroy()
             this.editor.container.remove()
             this.editor =undefined
         }
+           
+        
     }
 
     public createEditor(newSession?)
     {
         if(!this.editor)
         {
-            console.log('creating new editor')
+            console.log('creating new editor', newSession)
             const editor = createNode('div', {id: 'editor', className: 'editor'})
             this.contentContainer.appendChild(editor)
             this.editor = ace.edit(editor, {
