@@ -67,13 +67,13 @@ function createToken(user) {
         role: user.role,
     }, privateKeyPem, { algorithm: 'RS256', expiresIn: 1000000 });
 }
-function onLoggedIn(user, res, req) {
+function onLoggedIn(user, res, req, shouldkeepLoggedIn = false) {
     if (!user)
         throw 'Invalid user';
     let token = createToken(user);
     const secure = req.secure;
     const httpOnly = false;
-    let keepLoggedIn = req.body ? (req.body.keepLoggedIn || false) : false;
+    let keepLoggedIn = req.body ? (req.body.keepLoggedIn || shouldkeepLoggedIn) : shouldkeepLoggedIn;
     if (keepLoggedIn)
         res.cookie('token', token, {
             httpOnly,
@@ -199,7 +199,7 @@ router.get('/callback', async (req, res) => {
                     //     secure: false, // Set to true in production (HTTPS)
                     //     maxAge: 3600000, // 1 hour
                     //   });
-                    onLoggedIn(userExists, res, req);
+                    onLoggedIn(userExists, res, req, true);
                     res.send(`
             Te-ai logat cu sucess cu emailul ${userExists.email}.
             Salut ${userExists.username}.
@@ -324,7 +324,7 @@ router.post('/createGoogleAcc', (req, res) => {
             password
         }
     }).then(user => {
-        onLoggedIn(user, res, req);
+        onLoggedIn(user, res, req, true);
         res.json({ message: 'good' });
     }).catch(err => {
         res.json({ error: err });
