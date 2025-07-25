@@ -1772,19 +1772,21 @@ export function closeDefaultScreen(createdFileElement) {
     const elem = windows[0].tabs.find(val => val.name == 'Hello!');
     if (!elem)
         return;
-    if (elem)
-        elem.content.animate([
-            { opacity: "100%", filter: "blur(0)" },
-            { opacity: "0%", filter: "blur(10px)" },
-        ], {
-            duration: 500,
-            delay: Math.random() * 200 + 50,
-            easing: "cubic-bezier(.2, .88, .5, .99)"
-        }).onfinish = () => {
-            elem.remove();
-        };
+    elem.content.animate([
+        { opacity: "100%", filter: "blur(0)" },
+        { opacity: "0%", filter: "blur(10px)" },
+    ], {
+        duration: 500,
+        delay: Math.random() * 200 + 50,
+        easing: "cubic-bezier(.2, .88, .5, .99)"
+    }).onfinish = () => {
+        elem.remove();
+    };
     createdFileElement.openTab();
     elem?.element.remove();
+    addButtons();
+}
+function addButtons() {
     const buttons = [
         createButton('play_arrow.svg', { onclick: () => {
                 window.editor.sendDebugCommand('execute');
@@ -2640,8 +2642,10 @@ ws.onmessage = (event) => {
                         client = new SessionClient(wsClientId, messageJson.displayName, messageJson.color, sessionData.canEdit);
                         if (rclient.openFile.length == 0)
                             showDefaultScreen();
-                        else
+                        else {
                             client.editorSession[0] = { fileName: rclient.openFile[0], editor: undefined, fileElement: undefined };
+                            addButtons();
+                        }
                         clients.set(wsClientId, client);
                     }
                 }

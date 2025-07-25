@@ -2350,9 +2350,9 @@ export function closeDefaultScreen(createdFileElement)
 {
   const elem = windows[0].tabs.find(val => val.name == 'Hello!')
   if(!elem)
-    return
-  if(elem)
-  (elem.content as HTMLElement).animate([
+    return;
+ 
+     (elem.content as HTMLElement).animate([
         { opacity:"100%", filter: "blur(0)"},
         { opacity: "0%",  filter: "blur(10px)"},
       ],
@@ -2366,6 +2366,13 @@ export function closeDefaultScreen(createdFileElement)
   
     createdFileElement.openTab()
       elem?.element.remove()
+
+      addButtons()
+}
+
+function addButtons()
+{
+
 
     const buttons = [
         createButton('play_arrow.svg', {onclick: () => {
@@ -3517,7 +3524,10 @@ break;
             if(rclient.openFile.length == 0)
               showDefaultScreen()
             else
+            {
               client.editorSession![0] = {fileName: rclient.openFile[0], editor: undefined, fileElement: undefined}
+              addButtons()
+            }
             clients.set(wsClientId, client)
             
           }
