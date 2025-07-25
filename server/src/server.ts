@@ -1927,6 +1927,23 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
 
             switch (type) {
+                case WebSocketMessageType.Utilities:
+
+                    switch (messageJSON.util) {
+                        case 'transpile':
+                            const target = messageJSON.target
+                            if(!messageJSON.fileName)
+                                break;
+                            const targetMode = EditorModes.modes.find(mode => mode.name === target || mode.extension.includes(target))
+                            if(targetMode)
+                                transpileCode(clientObj, clientObj.openFile.find(file => file.name === messageJSON.fileName), targetMode).then(val => {
+                            ws.send(JSON.stringify({type: WebSocketMessageType.Utilities, util: messageJSON.util, response: val, fileName: messageJSON.fileName}))
+                            })
+                                
+                        break;
+                    }
+
+                break;
                 case WebSocketMessageType.RTC:
                     // for(const cws of clientSession.clients.values())
                     //     cws.CWebSocket.send(JSON.stringify({...messageJSON, calerId: clientId}))
@@ -2279,7 +2296,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     break;
                     case FileManagementCommands.Rename:
                         if(!clientObj.permissions.canEdit) break;
-                         clientSession.files.find(file => file.name == messageJSON.name).rename(messageJSON.newName, clientObj)
+                        const file = clientSession.files.find(file => file.name == messageJSON.name)
+                        file.rename(messageJSON.newName, clientObj)
+
+                        //  const targetMode = EditorModes.modes.find(mode => mode.extension.includes(messageJSON.newName.split('.').at(-1)))
+                        //     if(targetMode)
+                        //         transpileCode(clientObj, file, targetMode).then(val => {
+                        //             ws.send(JSON.stringify({type: WebSocketMessageType.Utilities, util: 'transpile', response: val, fileName: messageJSON.newName}))
+                        //         })
                        
                         
                     break;
@@ -2843,6 +2867,7 @@ import { run } from "googleapis/build/src/apis/run";
 import e from "express";
 import { JsonArray } from "../../generated/prisma/runtime/library";
 import DebugProcess from "./editor-modes/ProcessTypes";
+import { transpileCode } from "./aiIntegration";
 
 
 

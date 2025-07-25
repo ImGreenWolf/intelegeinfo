@@ -100,11 +100,12 @@ export declare class EditorFile {
     session: EditorSession;
     filePath: any;
     editorMode: EditorMode;
+    private updateFilePath;
     constructor(session: EditorSession, name: string, content?: any, options?: {
         abstract?: boolean;
     }, onCreate?: (this: EditorFile) => void);
     delete(clientObj: ClientObject): void;
-    rename(newName: any, clientObj: any): void;
+    rename(newName: any, clientObj: ClientObject): void;
     openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;
     changeContent(content: any): void;
 }

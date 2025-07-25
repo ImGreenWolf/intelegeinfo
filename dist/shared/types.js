@@ -21,6 +21,7 @@ var WebSocketMessageType;
     WebSocketMessageType["WebCam"] = "webcam";
     WebSocketMessageType["Canvas"] = "canvas";
     WebSocketMessageType["RTC"] = "rtc";
+    WebSocketMessageType["Utilities"] = "utils";
 })(WebSocketMessageType || (exports.WebSocketMessageType = WebSocketMessageType = {}));
 var ConsoleMessageType;
 (function (ConsoleMessageType) {

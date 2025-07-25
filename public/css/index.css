@@ -1,3 +1,9 @@
+@keyframes spread {
+  from {
+    left: 0%;
+    opacity: 1;
+  }
+}
 body {
   font-family: Poppins;
 }
@@ -223,12 +229,87 @@ footer nav :any-link {
   transform: scale(97%);
 }
 
-a.button {
-  background-color: rgba(48, 77, 172, 0.158);
-  backdrop-filter: blur(2px);
-  color: white;
-  padding: 0.5lh;
+@property --percent {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes herobutton {
+  0% {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+  22.5% {
+    opacity: 0.5;
+  }
+  45%, 55% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  77.5% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+}
+@keyframes herobutton-bottom {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  40%, 60% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+.glowButton-wrapper {
+  padding: 1px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 2lh;
   font-size: 1.2em;
+}
+
+.glowButton-highlight {
+  left: -50px;
+  right: -50px;
+  transform: translateX(-50%);
+  height: 100px;
+  background-image: radial-gradient(closest-side, white, rgba(0, 0, 0, 0));
+  opacity: 0.5;
+  position: absolute;
+  border-radius: 50%;
+  background-size: 100px 100px;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+.glowButton-highlight:nth-child(1) {
+  top: -50px;
+  animation: herobutton 15s infinite alternate linear;
+}
+.glowButton-highlight:nth-child(2) {
+  animation: herobutton-bottom 15s infinite alternate linear;
+  bottom: -50px;
+}
+
+a.button {
+  background-color: rgb(11, 15, 20);
+  color: white;
+  position: relative;
+  z-index: 2;
+  padding: 0.75lh 1lh;
   min-width: 300px;
   display: flex;
   justify-content: center;
@@ -236,21 +317,22 @@ a.button {
   align-items: center;
   transition-duration: 0.3s;
   text-rendering: auto;
-  border-radius: 15px;
+  border-radius: 2lh;
   font-family: Poppins;
   font-weight: 600;
   text-shadow: 2px 2px 5px black;
   box-shadow: 0 40px 30px 0px rgb(22, 22, 22);
-  border: 3px solid rgb(63, 63, 63);
+  border: 1px solid rgb(63, 63, 63);
   border-top-color: rgba(68.1454545455, 99.65, 202.8545454545, 0.158);
   border-bottom-color: rgba(49.1127272727, 78.785, 175.9872727273, 0.158);
   border-left-color: rgba(68.1454545455, 99.65, 202.8545454545, 0.158);
   border-right-color: rgba(49.1127272727, 78.785, 175.9872727273, 0.158);
-  box-shadow: 0 0 10px 10px inset rgba(68.1454545455, 99.65, 202.8545454545, 0.158);
+  box-shadow: 0 0 20px 10px inset rgb(1.9516129032, 2.6612903226, 3.5483870968);
 }
 a.button:hover {
-  border: 3px solid rgba(147.8909090909, 165.95, 225.1090909091, 0.158);
-  backdrop-filter: blur(1px);
+  border-color: rgba(147.8909090909, 165.95, 225.1090909091, 0.158);
+  background-color: rgb(38.1451612903, 52.0161290323, 69.3548387097);
+  box-shadow: 0 0 20px 10px inset rgb(20.0483870968, 27.3387096774, 36.4516129032);
 }
 
 .main-container h {
@@ -406,6 +488,9 @@ h1.center {
   text-align: center;
 }
 
+#guides.visible ul li {
+  animation: spread 1s reverse both cubic-bezier(0.895, 0.03, 0.685, 0.22);
+}
 #guides ul {
   display: grid;
   gap: 2em;
@@ -415,6 +500,7 @@ h1.center {
   position: relative;
   grid-auto-flow: column;
   padding: 0;
+  min-height: 350px;
 }
 #guides ul li {
   max-width: 200px;
@@ -422,6 +508,7 @@ h1.center {
   min-width: 25px;
   max-height: 200px;
   height: 100%;
+  position: relative;
   min-height: 25px;
   aspect-ratio: 1;
   background-color: rgb(26, 28, 31);
@@ -442,18 +529,28 @@ h1.center {
 }
 #guides li:nth-child(1) {
   transform: translateY(calc(8.104534588px + 3em)) rotate(-6.1873399172deg);
+  left: calc(250% - 1 * 200px);
+  opacity: 0;
 }
 #guides li:nth-child(2) {
   transform: translateY(calc(-6.2422025482px + 3em)) rotate(-2.6261465608deg);
+  left: calc(250% - 2 * 200px);
+  opacity: 0;
 }
 #guides li:nth-child(3) {
   transform: translateY(calc(-14.849887449px + 3em)) rotate(-2.5278605641deg);
+  left: calc(250% - 3 * 200px);
+  opacity: 0;
 }
 #guides li:nth-child(4) {
   transform: translateY(calc(-9.804654313px + 3em)) rotate(5.471720394deg);
+  left: calc(250% - 4 * 200px);
+  opacity: 0;
 }
 #guides li:nth-child(5) {
   transform: translateY(calc(4.2549327819px + 3em)) rotate(3.2752455476deg);
+  left: calc(250% - 5 * 200px);
+  opacity: 0;
 }
 
 #features {
@@ -481,6 +578,15 @@ h1.center {
   gap: 2em;
   justify-content: center;
 }
+@keyframes bentofadein {
+  from {
+    transform: scale(1.05) translateY(-100px);
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 #features .content-list .bento-card {
   display: block;
   box-sizing: content-box;
@@ -491,6 +597,10 @@ h1.center {
   flex-direction: column;
   overflow: hidden;
   --color: rgb(25,25,25);
+  opacity: 0;
+}
+#features .content-list .bento-card.visible {
+  animation: bentofadein 1s both;
 }
 #features .content-list .bento-card .bento-image {
   position: relative;
@@ -625,6 +735,48 @@ h1.center {
 }
 :any-link {
   color: white;
+}
+
+.motives-section {
+  width: 100%;
+  background-color: rgb(11, 15, 20);
+}
+.motives-section > div {
+  min-height: 50px;
+}
+.motives-section > div button {
+  padding: 1em;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  align-self: center;
+  line-height: 0;
+  border: 3px solid rgba(48, 77, 172, 0.158);
+}
+.motives-section > div span {
+  max-width: 75%;
+  display: flex;
+  align-items: center;
+  gap: 3em;
+  margin: 1em auto;
+}
+.motives-section > div .tray {
+  max-height: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  background-color: white;
+  color: black;
+  box-shadow: inset 5px 5px 20px 10px rgba(0, 0, 0, 0.267);
+  padding-inline: 15%;
+  transition-duration: 1s;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.motives-section > div.open .tray {
+  opacity: 1;
+  max-height: 800px;
+  height: 800px;
 }
 
 @media screen and ((max-aspect-ratio: 2/3) or (max-width: 1600px)) {

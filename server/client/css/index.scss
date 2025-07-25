@@ -2,8 +2,13 @@
 @use 'sass:color';
 @use 'sass:math';
 
-$hero-shadow: rgb(11, 15, 20);
-
+$hero-shadow: theme.$background-highlight-color;
+@keyframes spread {
+        from {
+            left: 0%;
+            opacity: 1;
+        }
+    }
 body
 {
     font-family: Poppins;
@@ -430,14 +435,105 @@ footer
     
 }
 
+@property --percent {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+$size: 100px;
+$glow-opacity: 0.5;
+@keyframes herobutton {
+    0% {
+        transform: translateX(#{-1 * $size});
+        opacity: 0;    
+    }
+    22.5%
+    {
+        opacity: $glow-opacity;
+    }
+    45%, 55% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    77.5%
+    {
+        opacity: $glow-opacity;
+    }
+    100% {
+        transform: translateX(#{-1 * $size});
+        opacity: 0;    
+    }
+}
+
+@keyframes herobutton-bottom {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+        // background-image: conic-gradient(from var(--percent) at 50% 50%, black, white, black, black);
+    }
+    20%
+    {
+        opacity: $glow-opacity;
+    }
+    40%, 60% {
+        opacity: 0;
+        transform: translateX(#{-1 * $size});
+
+    }
+    80%
+    {
+        opacity: $glow-opacity;
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100%);
+        // background-image: conic-gradient(from var(--percent) at 50% 50%, black, white, black, black);
+    }
+}
+
+.glowButton-wrapper
+{
+    padding: 1px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 2lh;
+    font-size: 1.2em;
+}
+.glowButton-highlight
+{
+    $time: 15s;
+    left: #{-0.5 * $size};
+    right:  #{-0.5 * $size};
+    transform: translateX(-50%);
+    height: $size;
+    background-image: radial-gradient(closest-side, white, rgba(0, 0, 0, 0));
+    opacity: $glow-opacity;
+    position: absolute;
+    border-radius: 50%;
+    background-size: #{1 * $size} #{1 * $size};
+    background-repeat: no-repeat;
+    z-index: 1;
+    &:nth-child(1)
+    {
+        top: #{$size/-2};
+        animation: herobutton $time infinite alternate linear;
+    }
+    &:nth-child(2)
+    {
+        animation: herobutton-bottom $time infinite alternate linear;
+        bottom: #{$size/-2};
+        // animation-delay: #{$time/2};
+    }
+}
 a.button
     {
         // background-color: theme.$main-button-color;
-        background-color: theme.$highlight-color;
-        backdrop-filter: blur(2px);
+        background-color: theme.$background-highlight-color;
         color: theme.$text-color;
-        padding: 0.5lh;
-        font-size: 1.2em;
+        position: relative;
+        z-index: 2;
+        padding: 0.75lh 1lh;
         min-width: 300px;
         // width: 100%;
         display: flex;
@@ -446,24 +542,26 @@ a.button
         align-items: center;
         transition-duration: 0.3s;
         text-rendering: auto;
-        border-radius: 15px;
+        border-radius: 2lh;
         font-family: Poppins;
         font-weight: 600;
         text-shadow: 2px 2px 5px black;
         box-shadow: 0 40px 30px 0px rgb(22, 22, 22);
-        border: 3px solid rgb(63, 63, 63);
+        border: 1px solid rgb(63, 63, 63);
         border-top-color: color.adjust($color: theme.$highlight-color, $lightness: 10% * theme.$dark-theme);
         border-bottom-color: color.adjust($color: theme.$highlight-color, $lightness: 1% * theme.$dark-theme);
         border-left-color: color.adjust($color: theme.$highlight-color, $lightness: 10% * theme.$dark-theme);
         border-right-color: color.adjust($color: theme.$highlight-color, $lightness: 1% * theme.$dark-theme);
 
-        box-shadow: 0 0 10px 10px inset color.adjust($color: theme.$highlight-color, $lightness: 10%);
+        box-shadow: 0 0 20px 10px inset color.adjust($color: theme.$background-highlight-color, $lightness: -5%);
 
         &:hover
         {
-            border: 3px solid color.adjust($color: theme.$highlight-color, $lightness: 30%);
-            backdrop-filter: blur(1px);
+            border-color: color.adjust($color: theme.$highlight-color, $lightness: 30%);
+            background-color: color.adjust($color: theme.$background-highlight-color, $lightness: 15%);
+            box-shadow: 0 0 20px 10px inset color.adjust($color: theme.$background-highlight-color, $lightness: 5%);
         }
+
     }
 .main-container h
 {
@@ -653,6 +751,10 @@ h1.center
 }
 #guides
 {
+    &.visible ul li
+    {
+            animation: spread 1s reverse both cubic-bezier(0.895, 0.03, 0.685, 0.22);
+    }
 
     ul
     {
@@ -665,6 +767,7 @@ h1.center
         grid-auto-flow: column;
         // font-size: 0.5rem;
         padding: 0;
+        min-height: 350px;
         
         li 
         {
@@ -673,7 +776,8 @@ h1.center
             min-width: 25px;
             max-height: 200px;
             height: 100%;
-            
+            position: relative;
+           
             min-height: 25px;
             aspect-ratio: 1;
             background-color: rgb(26, 28, 31);;
@@ -692,6 +796,7 @@ h1.center
                 font-size: 0.75em
             }
             
+            
         }
 
         
@@ -702,10 +807,14 @@ h1.center
         }
     }
 
+    
     @for $i from 1 through 5 {
         li:nth-child(#{$i}) {
             transform: translateY(calc(15px * math.cos($i) + 3em)) rotate(calc(-5deg * math.sin($i) + 2deg * math.cos($i * 3)));
+            left: calc(250% - #{$i} * 200px);
+            opacity: 0;
         }
+
     }
 
 
@@ -747,6 +856,16 @@ h1.center
     // min-height: 1600px;
     justify-content: center;
     // grid-auto-flow: column;
+    @keyframes bentofadein {
+        from {
+            transform: scale(1.05) translateY(-100px);
+            opacity: 0;
+        }
+        to 
+        {
+            opacity: 1;
+        }
+    }
     .bento-card
     {
         display: block;
@@ -759,6 +878,11 @@ h1.center
         // justify-content: space-between;
         overflow: hidden;
         --color: rgb(25,25,25);
+        &.visible
+        {
+            animation: bentofadein 1s both;
+        }
+        opacity: 0;
         // background-image: url(/media/noise.svg);
         .bento-image 
         {
@@ -940,6 +1064,54 @@ h1.center
 :any-link
 {
     color: theme.$text-color;
+}
+
+
+.motives-section
+{
+    width: 100%;
+    background-color: theme.$background-highlight-color;
+    &>div {
+
+        min-height: 50px;
+        button {
+            padding: 1em;
+            border-radius: 50%;
+            aspect-ratio: 1;
+            align-self: center;
+            line-height: 0;
+            border: 3px solid theme.$highlight-color;
+        }
+        span {
+            max-width: 75%;
+            display: flex;
+            align-items: center;
+            gap: 3em;
+            margin: 1em auto;
+        }
+        .tray {
+            max-height: 0;
+            height: 0;
+            overflow: hidden;   
+            opacity: 0;
+            background-color: white;
+            color: black;
+            box-shadow: inset 5px 5px 20px 10px rgba(0, 0, 0, 0.267);
+            padding-inline: 15%;
+            transition-duration: 1s;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        &.open .tray
+        {
+            // height: unset;
+            opacity: 1;
+            max-height: 800px;
+            height: 800px;
+        }
+    }
 }
 
 

@@ -355,6 +355,16 @@ exports.router.get('/listProjects', server_1.authMiddleware, (req, res) => {
             res.status(401).send(err); //json({message: 'error: ' + err})
     });
 });
+exports.router.get('/picture', async (req, res) => {
+    const id = getIdFromJWT(req);
+    if (id) {
+        const user = await getUserData(id);
+        if (user.picture.startsWith('http'))
+            res.status(200).redirect(user.picture);
+        else
+            res.status(200).sendFile(path_1.default.join(rootDirName, `/server/users/pfp/${user.picture}.png`));
+    }
+});
 //  const callbackMap: Map<string, number> = new Map();
 //  function createToken(user: any) {
 //      return jwt.sign({

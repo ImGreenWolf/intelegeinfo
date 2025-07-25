@@ -73,7 +73,8 @@ export declare enum WebSocketMessageType {
     MouseUpdate = "MouseUpdate",
     WebCam = "webcam",
     Canvas = "canvas",
-    RTC = "rtc"
+    RTC = "rtc",
+    Utilities = "utils"
 }
 export declare enum ConsoleMessageType {
     UserChat = "chat",
@@ -129,6 +130,7 @@ declare class FileElement extends EditorWindowTab {
         duration: number;
         easing: string;
     };
+    nameElement: any;
     constructor(fileName: string, session: any, index?: number);
     getDragText: () => string | undefined;
     openTab(ev: MouseEvent): void;
@@ -137,7 +139,7 @@ declare class FileElement extends EditorWindowTab {
     remove(): void;
 }
 export declare function createFileNamePrompt(): void;
-export declare function awaitFileNamePrompt(): Promise<string>;
+export declare function awaitFileNamePrompt(fileName?: string): Promise<string>;
 export declare function toggleConsoleDebugProgram(elem: HTMLElement): void;
 export declare function onConsoleInput(elem: HTMLTextAreaElement, ev?: Event): void;
 export declare function saveProject(): void;

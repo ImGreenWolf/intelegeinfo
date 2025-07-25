@@ -90,7 +90,7 @@ body, html {
     left: 0;
     right: 0;
     display: block;
-    background-image: linear-gradient(transparent, rgb(13, 16, 26) 40%);
+    background-image: linear-gradient(transparent, rgb(11, 15, 20) 40%);
   }
 }
 .background-image img img {
@@ -100,7 +100,7 @@ body, html {
 }
 
 .background {
-  background-color: rgb(13, 16, 26);
+  background-color: rgb(11, 15, 20);
   display: flex;
   justify-content: center;
   align-items: center;

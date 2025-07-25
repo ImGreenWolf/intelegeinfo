@@ -212,6 +212,16 @@ header2 {
   box-shadow: 0 5px 20px 10px rgba(0, 0, 0, 0.3);
   background-image: linear-gradient(30deg, rgba(28, 35, 58, 0.29), rgba(39, 49, 77, 0.301), rgba(23, 21, 59, 0.288)), linear-gradient(rgba(0, 0, 0, 0.692), rgba(0, 0, 0, 0.507));
 }
+header2 .profile img {
+  border-radius: 50%;
+  border: 2px solid whitesmoke;
+  padding: 1px;
+}
+header2 .profile,
+header2 .profile img {
+  width: 30px;
+  height: 30px;
+}
 header2::before {
   content: "";
   position: absolute;

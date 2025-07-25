@@ -1518,6 +1518,20 @@ bash `.trim().replaceAll('\n', "");
                 //         console.log(getThisClientSession())
                 //     }
                 switch (type) {
+                    case types_1.WebSocketMessageType.Utilities:
+                        switch (messageJSON.util) {
+                            case 'transpile':
+                                const target = messageJSON.target;
+                                if (!messageJSON.fileName)
+                                    break;
+                                const targetMode = EditorModes.modes.find(mode => mode.name === target || mode.extension.includes(target));
+                                if (targetMode)
+                                    (0, aiIntegration_1.transpileCode)(clientObj, clientObj.openFile.find(file => file.name === messageJSON.fileName), targetMode).then(val => {
+                                        ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.Utilities, util: messageJSON.util, response: val, fileName: messageJSON.fileName }));
+                                    });
+                                break;
+                        }
+                        break;
                     case types_1.WebSocketMessageType.RTC:
                         // for(const cws of clientSession.clients.values())
                         //     cws.CWebSocket.send(JSON.stringify({...messageJSON, calerId: clientId}))
@@ -1838,7 +1852,13 @@ bash `.trim().replaceAll('\n', "");
                             case types_3.FileManagementCommands.Rename:
                                 if (!clientObj.permissions.canEdit)
                                     break;
-                                clientSession.files.find(file => file.name == messageJSON.name).rename(messageJSON.newName, clientObj);
+                                const file = clientSession.files.find(file => file.name == messageJSON.name);
+                                file.rename(messageJSON.newName, clientObj);
+                                //  const targetMode = EditorModes.modes.find(mode => mode.extension.includes(messageJSON.newName.split('.').at(-1)))
+                                //     if(targetMode)
+                                //         transpileCode(clientObj, file, targetMode).then(val => {
+                                //             ws.send(JSON.stringify({type: WebSocketMessageType.Utilities, util: 'transpile', response: val, fileName: messageJSON.newName}))
+                                //         })
                                 break;
                         }
                         break;
@@ -2261,6 +2281,7 @@ function windowsPathToDocker(path) {
 }
 const child_process_2 = require("child_process");
 const gdbUtilities_1 = require("./gdbUtilities");
+const aiIntegration_1 = require("./aiIntegration");
 // server.on("connection", (socket) => {
 //             server.getConnections(function(error, count) {
 //                 if(error)

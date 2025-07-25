@@ -71,17 +71,18 @@ function onLoggedIn(user, res, req) {
     if (!user)
         throw 'Invalid user';
     let token = createToken(user);
-    let secure = req.secure;
+    const secure = req.secure;
+    const httpOnly = false;
     let keepLoggedIn = req.body ? (req.body.keepLoggedIn || false) : false;
     if (keepLoggedIn)
         res.cookie('token', token, {
-            httpOnly: true,
+            httpOnly,
             secure, // Set to true in production (HTTPS)
             maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
         });
     else
         res.cookie('token', token, {
-            httpOnly: true,
+            httpOnly,
             secure, // Set to true in production (HTTPS)
         });
 }

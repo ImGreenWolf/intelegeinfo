@@ -242,11 +242,22 @@ export class Toolbox extends IElement {
 
     render(): HTMLElement {
 
-
+        const loggedIn = false;
+        const username = '';
+        const loggedinbuttons = 
+        loggedIn ?
+        [
+            createButton('notebook-svgrepo-com.svg', {onclick: () => window.editor.listProjects()}),
+            createButton('passkey.svg', {href: '/profile'})
+        ] 
+        :
+        [
+            createButton('person_add.svg', {href: '/signup'}),
+            createButton('passkey.svg', {href: '/login'})
+        ]   
         const buttons = [
             createButton('home.svg', {href: '/'}),
-            createButton('person_add.svg', {href: '/signup'}),
-            createButton('passkey.svg', {href: '/login'}),
+            ...loggedinbuttons,
             createButton('action_key.svg', {onclick: () => {
                 window.editor.joinsession()
             }, class: "toolbox"}),

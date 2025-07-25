@@ -453,13 +453,15 @@ Tralalero Tralala`.split('\n')
     session: EditorSession;
     filePath 
     editorMode: EditorMode
-    
+    private updateFilePath() {
+        this.filePath = path.join(this.session.getClientFilesPath(), this.name)
+    }
     constructor(session: EditorSession, name: string, content=undefined, options?: {abstract?: boolean}, onCreate?: (this: EditorFile)=> void) {
         this.name = name;
-
-       
         this.session = session
-        this.filePath = path.join(this.session.getClientFilesPath(), this.name)
+        this.updateFilePath()
+        
+        
         // const mode =  getEditorMode(this.name).constructor
         const editorModeClass = getEditorMode(this.name)
         this.editorMode = new (editorModeClass as any)
@@ -533,7 +535,7 @@ Tralalero Tralala`.split('\n')
         }
     }
 
-    public rename(newName,clientObj)
+    public rename(newName,clientObj: ClientObject)
     {
         try {
             fs.rename(this.filePath, path.join(this.session.getClientFilesPath(), newName), () => {
@@ -544,16 +546,19 @@ Tralalero Tralala`.split('\n')
                         name: this.name,
                         newName: newName
                     }))
-                }, clientObj)
-
+                })
+                const index = clientObj.openFileName.findIndex(name => name === this.name)
+                clientObj.openFileName[index] = newName
                 this.name = newName
+
+                this.updateFilePath()
             })
         }
         catch(err)
         {
-            clientObj.replicateFunction((localws, id, localObj) => {
-                localObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: err})
-            } )
+            
+                clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: err})
+            
         }
     }
 

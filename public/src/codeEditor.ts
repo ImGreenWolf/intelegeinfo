@@ -12,7 +12,7 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { createButton, createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated, Toolbox } from "./components.js";
+import { createButton, createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated, Toolbox } from "./components";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 
@@ -563,6 +563,7 @@ export enum WebSocketMessageType {
   WebCam = 'webcam',
   Canvas = 'canvas',
   RTC = 'rtc',
+  Utilities = 'utils'
 }
 
 export enum ConsoleMessageType {
@@ -1369,28 +1370,38 @@ export function displayBlankEditor(index)
 }
 
 function renameFile(fileName: string, newName?: string) {
+  return new Promise<void>((resolve, reject) => {
+
+  
   if(!editorSessions.has(fileName)) return false;
   if(newName)
   {
     codeWindow.getEditor().session.setMode(aceModes.getModeForPath(newName).mode);
-    editorSessions.get(fileName)!.fileElement!.fileElem.innerText = newName;
+    editorSessions.get(fileName)!.fileElement!.nameElement.innerText = newName;
     if(!editorSessions.get(fileName) || editorSessions.has(newName))
       return;
+    editorSessions.get(fileName)!.fileElement!.name = newName
+    editorSessions.get(fileName)!.fileName = newName
+    const index = client!.editorSession.findIndex(val => val.fileName == fileName)
+    client!.editorSession[index]! = editorSessions.get(fileName)!
     editorSessions.set(newName, editorSessions.get(fileName)!)
+
+
     // editorSessions.get(fileName)?.fileElement?.Users.forEach(user => {
     //   clients.get(user.id)?.editorSession 
     // })
     
     editorSessions.delete(fileName)
+    resolve()
   }
     
   else
   { 
      editorSessions.get(fileName)!.fileElement!.fileElem.style.display = 'none';
-    awaitFileNamePrompt().then(name => {
+    awaitFileNamePrompt(fileName).then(name => {
       
-      editorSessions.get(fileName)!.fileElement!.fileElem.style.display = 'block';
-      editorSessions.get(fileName)!.fileElement!.fileElem.innerText = name; 
+      editorSessions.get(fileName)!.fileElement!.fileElem.style.display = '';
+      // editorSessions.get(fileName)!.fileElement!.fileElem.innerText = name; 
       codeWindow.getEditor().session.setMode(aceModes.getModeForPath(name).mode);
       ws.send(JSON.stringify({
         type: WebSocketMessageType.FileManagement,
@@ -1398,11 +1409,11 @@ function renameFile(fileName: string, newName?: string) {
         name: fileName,
         newName: name
       }));
+      resolve()
     })
   }
- 
-  
-  return true;
+})
+
 }
 interface User {
     name,
@@ -1417,8 +1428,11 @@ class FileElement extends EditorWindowTab
   fileElem: HTMLSpanElement
   usersContainer: HTMLDivElement
   animOptions = {duration: 200, easing: "ease-in"}
+  nameElement
   constructor(fileName:string, session, index?: number) {
-    super(fileName, createNode('span', {className: "file-tab", htmlSting: `<p>${fileName}</p>`}),  session,[codeWindow, chatWindow][index!=undefined ? index : 0])
+    const nameElement = createNode('p', {innerText: fileName})
+    super(fileName, createNode('span', {className: "file-tab", html: [nameElement]}),  session,[codeWindow, chatWindow][index!=undefined ? index : 0])
+    this.nameElement = nameElement
     this.fileElem = this.element  //document.createElement("span"); 
     // this.fileElem.className = "file-tab";
     // this.fileElem.innerText = fileName;
@@ -1446,7 +1460,16 @@ class FileElement extends EditorWindowTab
       }
       renameButton.innerText = "Rename"
       contextMenu.appendChild(renameButton);
-
+      
+      contextMenu.appendChild(createNode('button', {innerText: 'Transpile', onclick: () => {
+        displayMessagePopup('Schimba extensia fisierului pentru a transpila codul.')
+        editorSessions.get(fileName)!.fileElement!.fileElem.style.display = 'none';
+        awaitFileNamePrompt(fileName).then(name => {
+          
+          editorSessions.get(fileName)!.fileElement!.fileElem.style.display = '';
+          ws.send(JSON.stringify({type: WebSocketMessageType.Utilities, util: 'transpile', target: name.split('.').at(-1), fileName}))
+        })
+      }}))
       contextMenu.id = 'context-menu'
       contextMenu.style.position = 'absolute'
       contextMenu.style.top = ev.y + "px";
@@ -1608,11 +1631,11 @@ export function createFileNamePrompt() {
 }
 
 
-export function awaitFileNamePrompt() {
+export function awaitFileNamePrompt(fileName = '') {
   return new Promise<string>((resolve, reject) => {
       if (!namePrompt) return;
     namePrompt.style.display = "";
-    namePrompt.innerText = "";
+    namePrompt.innerText = fileName;
     namePrompt.focus();
 
     namePrompt.onblur = () => {
@@ -3190,10 +3213,23 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
   console.log("Created client: ", client, clients)
 }
 
-
+function getEditorSession(fileName)
+{
+  return editorSessions.get(fileName)!//client?.editorSession.find(file => file.fileName === fileName)!
+}
 
   switch (messageJson.type) {
+  case WebSocketMessageType.Utilities:
 
+  switch (messageJson.util) {
+    case 'transpile':
+        const target = getEditorSession(messageJson.fileName)
+        target.editor?.setValue(messageJson.response)
+            
+    break;
+}
+
+break;
     case WebSocketMessageType.RTC:
       // if(eventJson.end)
       // {
@@ -3894,13 +3930,13 @@ function createClient(clientId, displayName, color, session: FileEditorSession[]
           // remote open meaning another user opened a file
           if(!messageJson.body)
           {
-            if(messageJson.clientId == wsClientId)
-              // if(messageJson.oldFileName !== fileName)
-            {
-              return
-              // client!.editorSession = {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor};
-              //  return onFileSessionUpdated(messageJson.fileName, client!)
-            }
+            // if(messageJson.clientId == wsClientId)
+            //   // if(messageJson.oldFileName !== fileName)
+            // {
+            //   return
+            //   // client!.editorSession = {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor};
+            //   //  return onFileSessionUpdated(messageJson.fileName, client!)
+            // }
                
               // else return
             // add and remove activity markers, it calls even for own user

@@ -55,10 +55,40 @@
                     <li><a href="/subiecte">Subiecte</a></li>
                 </ul>
             </nav>
-            <div>
+            <div id="login-container">
                 <a href="signup">Sign up</a>
                 <a href="login">Log in</a>
             </div>
+            <script>
+                function getCookie(cname) {
+                    let name = cname + "=";
+                    let decodedCookie = decodeURIComponent(document.cookie);
+                    let ca = decodedCookie.split(';');
+                    for(let i = 0; i <ca.length; i++) {
+                        let c = ca[i];
+                        while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                        }
+                        if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                        }
+                    }
+                    return undefined;
+                }
+
+                if(getCookie('token'))
+                {
+                    console.log(getCookie('token'))
+                    const cont = document.getElementById('login-container')
+                    const profilePage = document.createElement('a')
+                    profilePage.href = '/profile'
+                    const profile = document.createElement('img')
+                    profile.src = '/user/picture'
+                    profilePage.classList.add('profile')
+                    profilePage.appendChild(profile)
+                    cont.replaceChildren(profilePage)
+                }
+            </script>
         </header2>
         <div style="position: relative; width: 100%;">
             
@@ -66,7 +96,12 @@
                 <div id="text-container">
                     <h class="logo-font">Intelegeinfo</h>
                     <div class="ridge-gradient openEditor">
-                        <a href="/editor" class="button">Deschide Editorul</a>
+                        <div class="glowButton-wrapper">
+                            <div class="glowButton-highlight"></div>
+                            <div class="glowButton-highlight"></div>
+                            <a href="/editor" class="button">Deschide Editorul</a>
+                        </div>
+                        
                     </div>
                     <p>Editorul colaborativ de cod online creat de elevi, pentru elevi.</p>
                 </div>
@@ -221,6 +256,111 @@
             <img src="media/logos/html-logo.webp" alt="python logo">
             <img src="media/logos/css-logo.png" alt="python logo">
         </section>
+
+        <section class="motives-section">
+            <h1 class="center">De ce intelegeinfo?</h1>
+            <div>
+                <span><h1>Pentru profesori</h1><button onclick="this.parentElement.parentElement.classList.toggle('open')">&downarrow;</button></span>
+                <div class="tray">
+                    <ul>
+                        <li>
+                            <h2>Elevii nu mai trebuie să instaleze nimic</h2>
+                            Totul se face în browser - pe laptop, tabletă sau chiar telefon. Nu mai pierzi ore întregi cu instalări, compilatoare, medii de lucru sau drivere.
+                            </li>
+                        <li>
+                            <h2>Poți vedea codul elevilor în timp real</h2>
+                            Fiecare editor are un link si cod unic - elevii îți dau acces și vezi imediat ce scriu,
+                             le poți corecta sau explica live. Practic, e ca un Google Docs pentru programare.
+                            </li>
+                        <li>
+                            <h2>Colaborare și lucru în echipă</h2>
+                            Poți pune elevii în perechi sau echipe să lucreze la aceeași problemă.
+                             Toți pot edita și discuta pe chat. Astfel isi dezvoltă abilități de colaborare, logică și comunicare.
+                            </li>
+                        <li>
+                            <h2>Ideal pentru predare hibridă sau online</h2>
+                            Dacă unii elevi sunt acasă sau predai online, platforma permite lucru colaborativ, codare sincronă și explicații live.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                 <span><h1>Pentru meditatori</h1><button onclick="this.parentElement.parentElement.classList.toggle('open')">&downarrow;</button></span>
+                <div class="tray">
+                    <ul>
+                        <li>
+                            <h2>Lucrezi direct în browser, fără instalări</h2>
+                                Elevul deschide un link, scrie cod, rulează și vede rezultatul. Totul funcționează din prima,
+                                 indiferent dacă are Windows, Mac sau Chromebook.
+                                Nu mai pierzi timp cu instalarea Code::Blocks, DevC++ sau Visual Studio.
+                            </li>
+                            <li>
+                                <h2>Poți corecta sau completa codul împreună cu elevul</h2>
+                                Platforma e colaborativă: tu și elevul scrieți în același editor, în timp real. 
+                                Ca în Google Docs, dar pentru cod. Ideal dacă elevul are dificultăți - vezi exact ce face și intervii pe loc.                            </li>
+                            <li>
+                            <h2>Debugger vizual - explici clar ce se întâmplă</h2>
+                                Are un executant pas cu pas care arată:
+                                <ul>
+                                    <li>unde se află programul în execuție,</li>
+                                    <li>valorile variabilelor,</li>
+                                    <li>cum intră/iese din funcții sau bucle.</li>
+                                </ul>
+                                Poți explica recursivitate, apeluri de funcții, algoritmi mult mai ușor.
+                            </li>
+                        <li>
+                            <h2>Poți preda și de pe telefon sau tabletă</h2>
+                                Tu sau elevul puteți edita codul inclusiv de pe telefon. Dacă ai lecții rapide sau de corectat cod la distanță, e super practic.
+                        </li>
+                        <li>
+                            <h2>Poți preda și de pe telefon sau tabletă</h2>
+                                Tu sau elevul puteți edita codul inclusiv de pe telefon. Dacă ai lecții rapide sau de corectat cod la distanță, e super practic.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                 <span><h1>Pentru elevi</h1><button onclick="this.parentElement.parentElement.classList.toggle('open')">&downarrow;</button></span>
+                <div class="tray">
+                    <ul>
+                        <li>
+                            <h2>Scrii cod C++ sau Python direct în browser</h2>
+                            Nu trebuie să instalezi nimic! Functioneaza pe aproape orice calculator, laptop sau telefon.
+                             Tot ce ai de făcut e să intri pe intelegeinfo.ro/editor și să începi să scrii codul tau!
+                        </li>
+                        <li>
+                            <h2>Înveți mai ușor cu explicații vizuale</h2>
+                                Platforma are un debugger vizual care îți arată:
+                            <ul>
+                                <li> cum se execută codul pas cu pas</li>
+                                <li> ce valori au variabilele</li>
+                                <li> cum funcționează buclele, funcțiile, recursivitatea</li>
+                            </ul>
+                                E perfect ca să înțelegi algoritmii, nu doar să-i copiezi.
+                        </li>
+                        <li>
+                            <h2> Poți colabora cu prietenii sau colegii</h2>
+                           
+                            Vrei să lucrați împreună la o temă sau un proiect? Trimite colegului link-ul tău și scrieți cod în același editor, ca pe Google Docs.
+
+                             Fiecare vede ce face celălalt, în timp real.
+                        </li>
+                        <li>
+                            <h2>Funcționează și pe telefon</h2>
+                                Ai avut o idee? Deschizi platforma pe telefon și scrii cod mai usor ca niciodata!
+                                 Poți chiar să trimiți link-ul prin WhatsApp sau email.
+                        </li>
+                        <li>
+                            <h2>Nu vrei sa ti faci cont? Nu-i problemă!</h2>
+                            Poți folosi site-ul fără să te loghezi, dar dacă îți faci un cont, poți salva proiectele tale și să le reiei oricând.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
         <section class="content-container" id="features">
             <h1>Ce ofera editorul?</h1>
             <div class="content-list">
@@ -428,6 +568,28 @@
             }, 16*30);
             }
             requestAnimationFrame(updateCarousel)
+
+
+            const options = {
+                rootMargin: "0px",
+                scrollMargin: "20px",
+                threshold: 0.15,
+            };
+            const callback = (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting)
+                    entry.target.classList.add('visible')
+                else if(false)
+                    entry.target.classList.remove('visible')
+                })}
+            const observer = new IntersectionObserver(callback, options);
+
+            const targets = [...document.querySelectorAll(".bento-card"), ...document.querySelectorAll("#guides")];
+            console.log(targets)
+            for(const target of targets)
+                observer.observe(target);
+            
+            
     </script>
     <script type="module">
     // Get the iframe element we want to track mouse movements on

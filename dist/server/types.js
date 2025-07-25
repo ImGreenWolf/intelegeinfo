@@ -400,10 +400,13 @@ class EditorFile {
     session;
     filePath;
     editorMode;
+    updateFilePath() {
+        this.filePath = path_1.default.join(this.session.getClientFilesPath(), this.name);
+    }
     constructor(session, name, content = undefined, options, onCreate) {
         this.name = name;
         this.session = session;
-        this.filePath = path_1.default.join(this.session.getClientFilesPath(), this.name);
+        this.updateFilePath();
         // const mode =  getEditorMode(this.name).constructor
         const editorModeClass = getEditorMode(this.name);
         this.editorMode = new editorModeClass;
@@ -478,14 +481,15 @@ class EditorFile {
                         name: this.name,
                         newName: newName
                     }));
-                }, clientObj);
+                });
+                const index = clientObj.openFileName.findIndex(name => name === this.name);
+                clientObj.openFileName[index] = newName;
                 this.name = newName;
+                this.updateFilePath();
             });
         }
         catch (err) {
-            clientObj.replicateFunction((localws, id, localObj) => {
-                localObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Notification, body: err });
-            });
+            clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Notification, body: err });
         }
     }
     async openFile(clientObj, shared, closedFileName) {

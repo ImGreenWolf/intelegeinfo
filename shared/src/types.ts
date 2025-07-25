@@ -16,7 +16,8 @@ export enum WebSocketMessageType {
     MouseUpdate = "MouseUpdate",
     WebCam = 'webcam',
     Canvas = 'canvas',
-    RTC = 'rtc'
+    RTC = 'rtc',
+    Utilities = 'utils'
 }
 
 export enum ConsoleMessageType {
