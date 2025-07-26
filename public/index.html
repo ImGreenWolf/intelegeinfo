@@ -83,8 +83,11 @@
                     const profilePage = document.createElement('a')
                     profilePage.href = '/profile'
                     const profile = document.createElement('img')
+                    const profilebg = document.createElement('img')
                     profile.src = '/user/picture'
+                    profilebg.src = '/user/picture'
                     profilePage.classList.add('profile')
+                    profilePage.appendChild(profilebg)
                     profilePage.appendChild(profile)
                     cont.replaceChildren(profilePage)
                 }
@@ -96,7 +99,7 @@
                 <div id="text-container">
                     <h class="logo-font">Intelegeinfo</h>
                     <div class="ridge-gradient openEditor">
-                        <div class="glowButton-wrapper">
+                        <div class="glowButton-wrapper" style="width: 400px;">
                             <div class="glowButton-highlight"></div>
                             <div class="glowButton-highlight"></div>
                             <a href="/editor" class="button">Deschide Editorul</a>
@@ -162,22 +165,19 @@
                
                 <h1 style="grid-column: 1 / -1; font-size: 1lh; text-align: center;">Editeaza cod alaturi de profesori si prieteni!</h1>
                 
-                <div class="text">
-                    <h1>Colaboreaza</h1>
-                    <p>Creaza programe alaturi de colegi sau profesori.</p>
+               <div style="display: flex; flex-direction: column; gap: 3em; font-size: 0.9em;">
+                Scopul principal al platformei intelegeinfo este sa ajute elevii sa-si dezvolte cunostiintele si abilitatiile in domeniul programarii.
+                In opinia mea, cel mai usor mod de a invata informatica este sa scrii cod de unul singur si sa aplici teoria pe care o inveti,
+                dar uneori ai nevoie si de indrumare de la un profesor sau mentor, ca sa te invete notiuniile de baza sau sa te ajuta sa stapanesti ce nu stii
+                foarte bine inca, sau sa iti unesti fortele cu un coleg sau prieten pentru a descifra o problema - fiecare are o abordare diferita, din care poti
+                invata, si aplica pe cont propriu.
+
+                <div class="glowButton-wrapper" style="--border-radius: 1lh; width: 300px;">
+                            <div class="glowButton-highlight"></div>
+                            <div class="glowButton-highlight"></div>
+                            <a href="/editor" class="button">Incepe să exersezi</a>
                 </div>
-                <div class="text">
-                    <h1>Editeaza</h1>
-                    <p>Editeaza-ti codul de oriunde, oricand, in C++ sau Python.</p>
-                </div>
-                <div class="text">
-                    <h1>Descopera</h1>
-                    <p>Dezvolta-ti cunostiintele cu resursele noastre!</p>
-                </div>
-                <div class="text">
-                    <h1>Debug</h1>
-                    <p>Intelege cum se executa programul tau.</p>
-                </div>
+               </div>
                 <div id="mockup-container">
                     <img src="media/demo_desktop.png" alt="Editor on desktop" id="desktop">
                     <img src="media/demo-phone.png" alt="Editor on phone" id="phone">
@@ -244,7 +244,7 @@
             </script>
         </section>
          
-        <section class="language-carusel-infinate" id="carousel" style="position: relative;">
+        <section class="language-carusel-infinate page-mask" id="carousel" style="position: relative;">
             <img src="media/logos/c++-logo.png" alt="c++ logo" class="available">
             <img src="media/logos/python-logo.webp" alt="python logo" class="available">
             <img src="media/logos/js-logo.png" alt="c++ logo" class="available">

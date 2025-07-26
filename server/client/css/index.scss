@@ -222,6 +222,7 @@ footer
 {
     position: relative;
     // width: 100%;
+    max-width: 100vw;
     // margin-top: 500px;
     // height: calc(100vh - 75px);
     display: grid;
@@ -242,17 +243,17 @@ footer
     box-shadow: 0px -50px 50px 100px $hero-shadow, 0px 20px 50px 100px $hero-shadow;;
     // background-image: linear-gradient(transparent, black);
     background-color: $hero-shadow;
-    // height: 800px;
+    min-height: 800px;
     width: 100%;
     // bottom: 0;
     position: relative;
     z-index: 101;
     display: grid;
-    grid-template-rows: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     grid-template-columns: 1fr 1fr;
     gap: 3em;
-    column-gap: 10em;
-    padding: 0 10em;
+    column-gap: 20em;
+    padding: 0 5vw;
     box-sizing: border-box;
     justify-content: center;
     align-items: start;
@@ -343,8 +344,11 @@ footer
     display: grid;
     grid-template-rows: auto auto;
     align-content: stretch;
-    height: 400px;
+    // height: 400px;
     justify-items: center;
+        gap: 3em;
+    align-items: center;
+    justify-content: start;
     /* left: 50%;
     transform: translate(-50%, -50%); */
     /* top: 50%; */
@@ -497,8 +501,11 @@ $glow-opacity: 0.5;
     padding: 1px;
     overflow: hidden;
     position: relative;
-    border-radius: 2lh;
+    --border-radius: 2lh;
+    border-radius:var(--border-radius);
     font-size: 1.2em;
+    min-width: 200px;
+    width: 100%;
 }
 .glowButton-highlight
 {
@@ -534,7 +541,7 @@ a.button
         position: relative;
         z-index: 2;
         padding: 0.75lh 1lh;
-        min-width: 300px;
+
         // width: 100%;
         display: flex;
         justify-content: center;
@@ -542,7 +549,7 @@ a.button
         align-items: center;
         transition-duration: 0.3s;
         text-rendering: auto;
-        border-radius: 2lh;
+        border-radius: var(--border-radius);
         font-family: Poppins;
         font-weight: 600;
         text-shadow: 2px 2px 5px black;
@@ -753,7 +760,7 @@ h1.center
 {
     &.visible ul li
     {
-            animation: spread 1s reverse both cubic-bezier(0.895, 0.03, 0.685, 0.22);
+            animation: spread 1s reverse forwards cubic-bezier(0.895, 0.03, 0.685, 0.22);
     }
 
     ul
@@ -970,7 +977,10 @@ h1.center
         }
     }
  }
-
+.page-mask
+{
+     mask-image: linear-gradient(90deg, transparent 15%, white 30%, white 70%, transparent 85%);
+}
  .language-carusel-infinate
  {
     display: block;
@@ -979,7 +989,7 @@ h1.center
     max-height: 125px;
     min-height: 50px;
     padding: 20px;
-    mask-image: linear-gradient(90deg, transparent 15%, white 30%, white 70%, transparent 85%);
+   
     &::after
     {
         // box-shadow: inset 0 0 20px 20px theme.$background-color;
@@ -1073,7 +1083,8 @@ h1.center
     background-color: theme.$background-highlight-color;
     &>div {
 
-        min-height: 50px;
+        min-height: 30px;
+        position: relative;
         button {
             padding: 1em;
             border-radius: 50%;
@@ -1087,13 +1098,51 @@ h1.center
             display: flex;
             align-items: center;
             gap: 3em;
-            margin: 1em auto;
+            margin: 0.5em auto;
+
+            h1,h2 
+            {
+                transition-duration: 0.25s;
+                transition-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+                &:hover
+                {
+                    letter-spacing: 0.1em;
+                }
+            }
         }
+        @keyframes trayOpenOverlay {
+            from {
+                left: 0;
+                right: 100%;
+                bottom: 100%;
+            }
+            50% {
+                left: 50%;
+                right: 0;
+                bottom: 0;
+                opacity: 1;
+            }
+            to {
+                left: 100%;
+                right: 0;
+                bottom: 0;
+            }
+        }
+
+        @keyframes trayOpen {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
         .tray {
             max-height: 0;
             height: 0;
             overflow: hidden;   
-            opacity: 0;
+            // opacity: 0;
             background-color: white;
             color: black;
             box-shadow: inset 5px 5px 20px 10px rgba(0, 0, 0, 0.267);
@@ -1101,15 +1150,39 @@ h1.center
             transition-duration: 1s;
             display: flex;
             justify-content: center;
-            flex-direction: column;
+            flex-direction: column;     
+            position: relative;
+            filter: blur(4px);
+           
         }
-
+        
         &.open .tray
         {
-            // height: unset;
             opacity: 1;
             max-height: 800px;
             height: 800px;
+            filter: blur(0px);
+            
+        }
+
+        &::after
+        {
+            content: '';
+            width: 0;
+            left: 0;
+            display: block;
+            position: absolute;
+            bottom: 0;
+            border-bottom: 2px solid transparent;
+            transition: 0.32s;
+            margin: auto;
+        }
+        &:hover::after,
+        .open::after
+        {
+            
+            border-bottom: 2px solid rgb(255, 255, 255);
+            width: 100%;
         }
     }
 }
@@ -1210,7 +1283,7 @@ h1.center
         & li:last-child {
             position: absolute;
             top: 50%;
-            left: 50%;
+            left: 50% !important;
             transform: translate(-50%, -50%) rotate(3deg) scale(0.75);
             box-shadow: 2px 2px 10px 10px rgba(0, 0, 0, 0.274);
         }
@@ -1221,15 +1294,25 @@ h1.center
     .main-container h
     {
         font-size: 10dvw;
+        
     }
     #editor-container
     {
-                max-width: 90vw;
+        max-width: 90vw;
+    }
+    .glowButton-wrapper
+    {
+        max-width: 250px;
     }
     .display-shadow {
         column-gap: 10px;
         grid-template-columns: 1fr;
-        padding: 0;
+        grid-template-rows: auto 1fr 1fr;
+        // padding: 0;
+        align-content: center;
+        // font-size: 10px;
+        max-width: 100vw;
+        
     }
 
     #editor-tabs-container
