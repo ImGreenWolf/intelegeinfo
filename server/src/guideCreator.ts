@@ -200,10 +200,9 @@ function postsRequest(guideEntries,req,res, error?)
         padding: 10em;
         li 
         {
-            max-width: 200px;
-            min-width: 50px;
-            max-height: 200px;
-            min-height: 50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 1em;
             aspect-ratio: 1;
             background-color: rgb(26, 28, 31);;
             padding: 1.5em;

@@ -107,5 +107,23 @@ code .ace_cursor, pre .ace_cursor {
     font-size: 0.9em !important;
   }
 
+  div#guides ul
+  {
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
+    justify-content: center;
+    align-items: center;
+    justify-items: stretch;
+    padding: 2em;
+    padding-top: 5em;
+    box-sizing: border-box;
+    li 
+    {
+        // width: 100%;
+        max-width: 100%;
+        height: 200px;
+    }
+  }
+
 }
 

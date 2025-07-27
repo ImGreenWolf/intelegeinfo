@@ -756,6 +756,7 @@ h1.center {
   cursor: pointer;
   min-height: 30px;
   position: relative;
+  border-bottom: 1px solid rgba(85, 85, 85, 0.466);
 }
 .motives-section > div button {
   padding: 1em;
