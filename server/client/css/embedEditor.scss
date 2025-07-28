@@ -13,7 +13,10 @@
         "main buttons"
         "output buttons";
 }
-
+.buttons
+{
+    display: flex !important;
+}
 
 #output-container
 {

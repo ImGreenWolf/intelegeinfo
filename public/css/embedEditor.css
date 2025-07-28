@@ -2048,6 +2048,10 @@ form#codeForm {
   grid-template-areas: "main buttons" "output buttons";
 }
 
+.buttons {
+  display: flex !important;
+}
+
 #output-container {
   grid-template-rows: 1fr;
 }

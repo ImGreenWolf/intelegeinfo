@@ -2284,7 +2284,7 @@ export function copySessionLink() {
           sessionCodeNode.innerText = data.code;
           sessionCodeNode.classList.add('session-code');
           if(DockElement)
-          DockElement.getElementsByTagName('div')[0].prepend(createNode('h2', {innerText: data.code, css: "font-size: 1em"}))
+          DockElement.getElementsByClassName('toolbar-container')[0].prepend(createNode('h2', {innerText: data.code, css: "font-size: 1em; align-self: center; margin-inline: 1em; color: gray; font-family: 'Poppins';"}))
           // document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'))
           // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
           if(!window.location.search.includes("session=") && startedSessionId!=undefined)
@@ -4155,11 +4155,13 @@ function onRun() {
   if(document.getElementById('console-input'))
     document.getElementById('console-input')?.remove();
 
-  if(!activeConsole)
-     activeConsole = spawnConsole()
-  
+  if(!activeConsole) 
+    {
+      activeConsole = spawnConsole()
+      activeConsole.element.parentElement!.scrollTop =activeConsole.element.parentElement!.scrollHeight;
+    }
+
   activeConsole.compileMessage?.remove()
-  activeConsole.stdin
   
     // if(currentFileName.toLowerCase().includes("gui"))
   //   displaynoVNC(activeConsole.element)
@@ -4190,7 +4192,7 @@ function startProgram()
   if(activeConsole || processRunning)
     return
   activeConsole = spawnConsole()
-
+  activeConsole.element.parentElement!.scrollTop =activeConsole.element.parentElement!.scrollHeight;
     if(activeConsole?.noVNC)
     activeConsole?.noVNC?.remove()
 }
