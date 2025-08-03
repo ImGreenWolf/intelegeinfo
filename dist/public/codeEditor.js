@@ -1825,6 +1825,9 @@ function addButtons() {
         createButton('pest_control.svg', { onclick: () => {
                 window.editor.sendDebugCommand('-exec-run');
             }, class: "debug" }),
+        createButton('step_over.svg', { onclick: () => {
+                window.editor.sendDebugCommand('-exec-next');
+            }, class: "debug" })
     ];
     const editorControls = createNode('div', { html: buttons, className: 'inner-toolbar' });
     DockElement.children[1].prepend(editorControls);
