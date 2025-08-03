@@ -2335,7 +2335,8 @@ function parseText(file, req) {
             const filePath = match.split(":")[1];
             if (!filePath)
                 throw 'invalid file path';
-            text = text.replaceAll(key, fs_1.default.readFileSync(path_1.default.resolve(exports.rootDirName, 'public', filePath)).toString());
+            const file = fs_1.default.readFileSync(path_1.default.resolve(exports.rootDirName, 'public', filePath)).toString();
+            text = text.replaceAll(key, parseText(file, req));
         }
     }
     return text;
