@@ -2413,6 +2413,9 @@ function addButtons()
         createButton('play_arrow.svg', {onclick: () => {
             window.editor.sendDebugCommand('execute')
         }, class: "run"}),
+         createButton('play_arrow.svg', {onclick: () => {
+            window.editor.sendDebugCommand('-exec-run')
+        }, class: "run"}),
     ]
 
 

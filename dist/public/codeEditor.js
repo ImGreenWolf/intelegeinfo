@@ -1822,6 +1822,9 @@ function addButtons() {
         createButton('play_arrow.svg', { onclick: () => {
                 window.editor.sendDebugCommand('execute');
             }, class: "run" }),
+        createButton('play_arrow.svg', { onclick: () => {
+                window.editor.sendDebugCommand('-exec-run');
+            }, class: "run" }),
     ];
     const editorControls = createNode('div', { html: buttons, className: 'inner-toolbar' });
     DockElement.children[1].prepend(editorControls);
