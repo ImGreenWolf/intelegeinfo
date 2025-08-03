@@ -238,12 +238,13 @@ router.get('/callback', async (req:any, res:any) => {
 
         onLoggedIn(userExists, res, req, true)
          
-        res.send(`
-            Te-ai logat cu sucess cu emailul ${userExists.email}.
-            Salut ${userExists.username}.
-            <a href='/profile'>Profil</a>
-            <a href='/editor'>Editor</a>
-          `)
+        res.redirect('/')
+        // send(`
+        //     Te-ai logat cu sucess cu emailul ${userExists.email}.
+        //     Salut ${userExists.username}.
+        //     <a href='/profile'>Profil</a>
+        //     <a href='/editor'>Editor</a>
+        //   `)
         // res.send('Hello ' + userExists.username + `<script>setTimeout(() => {location.href='/editor'}, 2000)</script>`)
 
         }else
