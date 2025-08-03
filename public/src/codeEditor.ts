@@ -34,6 +34,7 @@ import path from "path";
 const AceRange = ace.require("ace/range").Range;
 const aceModes: typeof modelist = ace.require("ace/ext/modelist");
 const sessionCookieName = 'editor_session_id'
+let openMenu: any | null = null;
 //  const msgMap: Map<Number, WSMessage> = new Map();
 
 
@@ -970,7 +971,30 @@ interface GhostManager {
 //
 
 const byteSize = (str: string) => new Blob([str]).size;
+function checkIsOpen(id)
+{
+  if(openMenu)
+      if(openMenu.menuid == id)
+        return true
+}
+function onOpenMenu(id:string, elem?): boolean
+{
+  if(!id)
+    throw 'invalid id on open menu.'
 
+  if(openMenu)
+    openMenu.remove()
+  if(elem)
+  {
+    
+    openMenu = elem
+    openMenu.menuid = id
+    
+  }
+  else
+    openMenu = null
+  return false
+}
 
 export function displayMessagePopup(message)
 {
@@ -1793,6 +1817,8 @@ function loadProject(id:number)
 
 export function listProjects()
 {
+  if(checkIsOpen('projects'))
+    return onOpenMenu("projects")
   if(!wsSessionId) return;
   fetch('/user/listProjects', {
     method: "GET",
@@ -1814,6 +1840,7 @@ export function listProjects()
     const closeButton = document.createElement('button');
     closeButton.onclick = function (this, ev) {
       container.remove();
+      onOpenMenu("projects")
     }
     closeButton.innerText = 'x';
     container.appendChild(closeButton)
@@ -1851,6 +1878,7 @@ export function listProjects()
 
     container.appendChild(newProjButton)
     document.body.appendChild(container)
+    onOpenMenu("projects",container)
 
   })
   // .catch(err => {
@@ -2052,9 +2080,11 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
   }
 }
 
+
 export function joinsession()
 {
-      
+    if(checkIsOpen('join'))
+      return onOpenMenu("join")
     const shareContainer = document.createElement('div')
     shareContainer.classList.add('share-container');
     
@@ -2092,6 +2122,7 @@ export function joinsession()
     document.body.appendChild(shareContainer)
     shareContainer.appendChild(createNode('button', {css: 'position: absolute; top: 20px; left: 20px;', innerText: 'x',onclick(ev) {
       shareContainer.remove()
+      onOpenMenu("join")
     },}))
     const script = document.createElement('script')
     const file = "/client/scripts/emailCodeVerificationClient.js";
@@ -2104,6 +2135,8 @@ export function joinsession()
     const codeInput: HTMLInputElement = document.getElementById('code') as HTMLInputElement;
 
     codeInput.oninput = onCodeInput
+
+    onOpenMenu("join", shareContainer)
     function onCodeInput()
     {
         if(codeInput!.value.length>=6)
@@ -2148,7 +2181,8 @@ export function joinsession()
 export function copySessionLink() {
   const clientId = wsSessionId;
   let sessionLink: string;
-
+  if(checkIsOpen('share'))
+    return onOpenMenu("share")
 
     sessionLink = window.location.origin + window.location.pathname + `?session=${clientId}`;
 
@@ -2198,9 +2232,10 @@ export function copySessionLink() {
     
   
     document.body.appendChild(shareContainer)
-
+    onOpenMenu("share", shareContainer)
     document.getElementById('close-share-session')!.onclick = function (this, ev) {
       shareContainer.remove();
+      onOpenMenu("share")
       // shareContainer.animate()
     }
 

@@ -854,9 +854,6 @@ h1.center {
   #mockup-container img {
     height: 400px !important;
   }
-  header2 nav {
-    max-width: 30em;
-  }
   #features .content-list {
     grid-template-areas: "a a a c" "b g g d" "e f f d";
     grid-template-columns: 250px 50px 250px 300px;

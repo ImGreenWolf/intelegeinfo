@@ -251,7 +251,7 @@ header2
     color: white;
     display: grid;
     align-self: center;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 2lh;
     align-items: center;
     justify-content: center;
@@ -260,7 +260,7 @@ header2
     top: 0;
     left: 0;
     right: 0;
-    padding: 1em 2em;
+    padding: 1em 5em;
     z-index: 200;
     box-shadow: 0 5px 20px 10px rgba(0, 0, 0, 0.3);
     background-image: linear-gradient(30deg,rgba(28, 35, 58, 0.29), rgba(39, 49, 77, 0.301), rgba(23, 21, 59, 0.288)), linear-gradient(rgba(0, 0, 0, 0.692), rgba(0, 0, 0, 0.507));;
@@ -306,17 +306,24 @@ header2
         // position: absolute;
         left: 3em;
     }
-    div 
+    .header-buttons-container
     {
-      // position: absolute;
-      right: 15em;
-      box-sizing: content-box;
+      // box-sizing: content-box;
+      height: 1.5lh;
       display: flex;
-      gap: 1em;
-      align-items: center;
+      gap: 2em;
+      align-items: stretch;
+
+      text-align: center;
+      #login-container
+      {
+        display: flex;
+        align-items: center;
+        gap: 1em;
+      }
       a 
       {
-        color: gray;
+        color: white;
         transition-duration: 0.25s;
         cursor: pointer;
         &:nth-child(2)
@@ -324,8 +331,13 @@ header2
           border-radius: 1lh;
           background-color: white;
           color: black;
-          padding: 0.25em 0.75em;
+          padding: 0em 0.75em;
           border: 2px solid rgba(255, 255, 255, 0.678);
+          height: 100%;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
+
         }
         &:hover
         {
@@ -383,6 +395,7 @@ header2
             li:first-child
             {
                 border-radius: 1lh 0 0 1lh;
+                padding-left: 1.5lh;
                 &:hover
                 {
                      box-shadow: inset -5px 0px 20px -10px rgb(108 114 119 / 30%);
@@ -391,6 +404,8 @@ header2
             li:last-child
             {
                 border-radius: 0 1lh 1lh 0;
+                padding-right: 1.5lh;
+                box-sizing: content-box;
                 &:hover
                 {
                      box-shadow: inset 5px 0px 20px -10px rgb(108 114 119 / 30%);
@@ -407,6 +422,79 @@ header2
         }
     } 
 }
+
+.lang-dropdown
+{
+    // outline: 1px solid red;
+    border-radius: 1lh;
+    background-color: theme.$background-color;
+    position: relative;
+    // padding: 0.25lh 0.25lh;
+    transition-duration: 0.4s;
+    display: flex;
+    align-items: center;
+    // min-width: 100px;
+    &.open 
+    {
+        border-radius: 0.5lh 0.5lh 0.25lh 0.25lh;
+    }
+}
+
+.lang-dropdown li
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    padding: 0.25em 1em;
+    transition-duration: inherit;
+    cursor: pointer;
+    span
+    {
+        display: inline-block;
+        width: 0.5lh;
+        height: 0.5lh;
+        border-radius: 50%;
+    overflow: hidden;
+        background-size: contain;
+        background-position: center;
+    }
+    &:hover
+    {
+        opacity: 0.75;
+    }
+}
+.lang-dropdown #selected-container li
+{
+    justify-content: flex-start;
+    &::after
+    {
+        content: "▾";
+        display: inline-block;
+        margin: auto;
+    }
+}
+.lang-dropdown .options-container
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    bottom: -0.1lh;
+    left: 0;
+    right: 0;
+    transform: translateY(100%);
+    background-color: inherit;
+    border-radius: 0.25lh 0.25lh 0.5lh 0.5lh;
+    transition-duration: inherit;
+    
+}
+.lang-dropdown:not(.open) .options-container
+{
+    // display: none;
+    opacity: 0;
+}
+
 
 
  @media screen and (max-width: 1024px){
@@ -426,11 +514,25 @@ header2
     header2
     {
       font-size: 12px;
+      
         nav 
         {
             justify-self: center;
             transform: none;
             grid-column: 1/-1;
+          
+            .home 
+            {
+              background: url(/favicon.ico) no-repeat;
+              background-position: 50% .45lh;
+              background-size: 1lh;
+              padding: 0 1lh;
+              width: 50px;
+              a
+              {
+                display: none;
+              }
+            }
         }
 
         h2,

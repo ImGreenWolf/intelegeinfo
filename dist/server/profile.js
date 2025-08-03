@@ -43,6 +43,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const users = __importStar(require("./usersManager"));
+const server_1 = require("./server");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use((0, cookie_parser_1.default)());
@@ -121,7 +122,7 @@ router.use('/', (req, res) => {
                     params.projectsList += `<div class="project"><a href="/editor?save=${project.fileUUID}">${project.name}</a><button>x</button></div>`;
                 }
                 parseUserInfoInFile(userId, "public/pages/profile.html", params).then(file => {
-                    res.send(file);
+                    res.send((0, server_1.parseText)(file, req));
                 }).catch(err => {
                     if (err.userNoExist) {
                         res.clearCookie('token').status(401).json({ error: "Couldnt find account" });

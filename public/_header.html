@@ -1,0 +1,104 @@
+<header2>
+            <h2>Intelegeinfo</h2>
+            <nav>
+                <ul>
+                    <li class="home"><a href="/">^{%header.home}</a></li>
+                    <li><a href="/editor">^{%header.editor}</a></li>
+                    <li><a href="/guides">^{%header.resources}</a></li>
+                    <li><a href="/subiecte">^{%header.subjects}</a></li>
+                </ul>
+            </nav>
+            <div class="header-buttons-container">
+                <div id="login-container">
+                    <a href="signup">Sign up</a>
+                    <a href="login">Log in</a>
+                </div>
+                <div class="lang-dropdown" id="lang-selector">
+                    <div id="selected-container">
+                    </div>
+                    <div class="options-container">
+                        <li value="ro-RO"><span style="background-image: url(media/flags/ro-RO.svg);"></span>ro</li>
+                        <li value="en-US"><span style="background-image: url(media/flags/en-US.svg);"></span>us</li>
+                    </div>
+                    
+                </div>
+            </div>
+            <script>
+                function getCookie(cname) {
+                    let name = cname + "=";
+                    let decodedCookie = decodeURIComponent(document.cookie);
+                    let ca = decodedCookie.split(';');
+                    for(let i = 0; i <ca.length; i++) {
+                        let c = ca[i];
+                        while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                        }
+                        if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                        }
+                    }
+                    return "";
+                }
+                const langSel = document.getElementById('lang-selector')
+                console.log(getCookie('ii_lang'), typeof  getCookie('ii_lang'),navigator.language)
+                function setValueByName(lang)
+                {   
+                    const option = langSel.querySelector('[value=' + lang + ']')
+                    document.getElementById('selected-container').replaceChildren((option ? option : langSel.querySelector(`[value=ro-RO]`)).cloneNode(true)) 
+                }
+                if(getCookie('ii_lang') == undefined || getCookie('ii_lang') == "undefined")
+                    setValueByName( navigator.language ? navigator.language : 'en-US')
+                else
+                    setValueByName(getCookie('ii_lang') )
+                
+                langSel.onclick =
+                (ev) => {
+                    
+                    langSel.classList.toggle('open')
+                }
+                langSel.querySelector('.options-container').onclick =
+                (ev) => {
+                    
+                    document.getElementById('selected-container').replaceChildren(ev.target.cloneNode(true)) 
+                    langSel.value = ev.target.attributes['value'].value
+                    langSel.dispatchEvent(new Event('change'))
+                }
+
+                langSel.onchange = 
+                (ev) => {
+                    document.cookie = 'ii_lang='+ev.target.value
+                    location.reload()
+                }
+                function getCookie(cname) {
+                    let name = cname + "=";
+                    let decodedCookie = decodeURIComponent(document.cookie);
+                    let ca = decodedCookie.split(';');
+                    for(let i = 0; i <ca.length; i++) {
+                        let c = ca[i];
+                        while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                        }
+                        if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                        }
+                    }
+                    return undefined;
+                }
+
+                if(getCookie('token'))
+                {
+                    console.log(getCookie('token'))
+                    const cont = document.getElementById('login-container')
+                    const profilePage = document.createElement('a')
+                    profilePage.href = '/profile'
+                    const profile = document.createElement('img')
+                    const profilebg = document.createElement('img')
+                    profile.src = '/user/picture'
+                    profilebg.src = '/user/picture'
+                    profilePage.classList.add('profile')
+                    profilePage.appendChild(profilebg)
+                    profilePage.appendChild(profile)
+                    cont.replaceChildren(profilePage)
+                }
+            </script>
+        </header2>

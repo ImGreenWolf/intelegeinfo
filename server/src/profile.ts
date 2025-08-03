@@ -7,6 +7,7 @@ import prisma from "./dbClient";
 import { Project, User } from "../../generated/prisma";
 import * as users from './usersManager'
 import path from "path";
+import { parseText } from "./server";
 const router = express.Router();
 router.use(bodyParser.json());
 router.use(cookieParser())
@@ -112,7 +113,7 @@ router.use('/', (req, res) => {
                     }
 
                     parseUserInfoInFile(userId, "public/pages/profile.html", params).then(file => {
-                        res.send(file)
+                        res.send(parseText(file, req))
                         
                     }).catch(err => {
                         if(err.userNoExist)

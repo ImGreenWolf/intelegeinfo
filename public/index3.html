@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Compilator si Debugger C++, Python, Javascript + more; Intelege informatica mai usor folosing acest compilator! Vizualizeaza variabilele, vectorii si matricele in timp ce codul tau se excuta si altele!">
+    <meta name="keywords" content="C++, info, cpp, clasa a 9 a, clasa a 9-a, scoala, edu, educatie,intelege info, understand programing, programare, prog, vizualizare">
+    <meta name="author" content="Radu Bitere">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Intelegeinfo | Editorul colaborativ de cod online creat de elevi, pentru elevi</title>
+    
+    <meta name="google-adsense-account" content="ca-pub-8688715521861715">
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8688715521861715"
+     crossorigin="anonymous"></script> -->
+  
+
+    <meta property="og:title" content="Intelegeinfo" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://intelegeinfo.ro/" />
+    <meta property="og:image" content="https://intelegeinfo.ro/media/colaboration-demo.png" />
+    <meta property="og:description" content="Editorul colaborativ de cod online creat de elevi, pentru elevi." />
+
+    <script type="text/javascript" data-cmp-ab="1" src="https://cdn.consentmanager.net/delivery/autoblocking/61408bd652335.js" data-cmp-host="a.delivery.consentmanager.net" data-cmp-cdn="cdn.consentmanager.net" data-cmp-codesrc="16"></script>
+
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D9ZPLVG5XF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D9ZPLVG5XF');
+</script>
+<link rel="stylesheet" href="/css/codeEditor.css">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/index.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Teachers:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+<body>
+    <div id="fill">
+            
+        </div>
+    <div id="body-content">
+        <header2>
+            <h2>Intelegeinfo</h2>
+            <nav>
+                <ul>
+                    <li class="home"><a href="/">Acasa</a></li>
+                    <li><a href="/editor">Editor</a></li>
+                    <li><a href="/guides">Resurse</a></li>
+                    <li><a href="/subiecte">Subiecte</a></li>
+                </ul>
+            </nav>
+            <div id="login-container">
+                <a href="signup">Sign up</a>
+                <a href="login">Log in</a>
+            </div>
+            <script>
+                function getCookie(cname) {
+                    let name = cname + "=";
+                    let decodedCookie = decodeURIComponent(document.cookie);
+                    let ca = decodedCookie.split(';');
+                    for(let i = 0; i <ca.length; i++) {
+                        let c = ca[i];
+                        while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                        }
+                        if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                        }
+                    }
+                    return undefined;
+                }
+
+                if(getCookie('token'))
+                {
+                    console.log(getCookie('token'))
+                    const cont = document.getElementById('login-container')
+                    const profilePage = document.createElement('a')
+                    profilePage.href = '/profile'
+                    const profile = document.createElement('img')
+                    const profilebg = document.createElement('img')
+                    profile.src = '/user/picture'
+                    profilebg.src = '/user/picture'
+                    profilePage.classList.add('profile')
+                    profilePage.appendChild(profilebg)
+                    profilePage.appendChild(profile)
+                    cont.replaceChildren(profilePage)
+                }
+            </script>
+        </header2>
+        <div style="position: relative; width: 100%;">
+            
+            <div class="main-container">
+                <div id="text-container">
+                    <h class="logo-font">Intelegeinfo</h>
+                    <div class="ridge-gradient openEditor">
+                        <div class="glowButton-wrapper" style="width: 400px;">
+                            <div class="glowButton-highlight"></div>
+                            <div class="glowButton-highlight"></div>
+                            <a href="/editor" class="button">Deschide Editorul</a>
+                        </div>
+                        
+                    </div>
+                    <p>Editorul colaborativ de cod online creat de elevi, pentru elevi.</p>
+                </div>
+                <div id="editor-container">
+                <div class="cursor-container display-cursor path-1"><div class="cursor"></div></div>
+                <div class="cursor-container display-cursor path-2"><div class="cursor"></div></div>
+                        <div class="shadow inset"></div>
+                        <div id="editor-tabs">
+                            <div  class="editor-tabs-container">  
+                                <div  id="editor-tabs-container" class="file-scroller">     
+                                    <span class="file-tab" id="active-open-file"><p>main.cpp</p><div class="file-users-container"><div style="background-color: green;"></div><div style="background-color: rgb(0, 110, 255)"></div></div></span>
+                                    <span class="file-tab"><p>python.py</p><div class="file-users-container"><div style="background-color: red;"></div></div></span>
+                                    <span class="file-tab"><p>matrici.png</p><div class="file-users-container"></div></span>
+
+                                </div>              
+                                <div class="ridge-gradient inset-button black circle">
+                                    <button class="create-file" id="createFile" onclick="window.editor.createFileNamePrompt()" aria-label="create new file"></button>
+                                </div>
+                            </div>
+                            <div id="session-controls" class="controls">                   
+                                <div class="slide-out-display">
+                                    <div class="ridge-gradient inset-button black circle">
+                                        <button onclick="document.getElementById('slide-out').classList.toggle('enabled')" id="slide-out-button">&ltri;</button>
+                                    </div>
+                                    <div class="slide-out-container" id="slide-out">
+                                        <button onclick="window.editor.toggleCamera()" id="toggle-camera">📷</button>
+                                        <button onclick="window.editor.beautifyEditor()">Beautify</button>
+                                        <button onclick="window.editor.redo()" id="editor-undo">&circlearrowright;</button>
+                                        <button onclick="window.editor.undo()" id="editor-redo">&circlearrowleft;</button>
+                                        <button onclick="window.editor.downloadEditorFiles()" id="editor-download">&DownArrowBar;</button> 
+                                    </div>
+                                    <vl></vl>
+                                </div>
+                                <div class="ridge-gradient inset-button black">
+                                    <button class="share-session" id="share" onclick="window.editor.copySessionLink()">share</button>
+                                </div>
+                                <div class="ridge-gradient inset-button black">
+                                    <button class="share-session" id="saveProject" onclick="window.editor.saveProject()">save</button>
+                                </div>
+                                
+                            </div>
+                        </div>
+ <div id="display-editor">    #include &lt;iostream&gt;
+    using namespace std;
+
+    int main()
+    {
+        int n,i;
+        cin >> n;
+        for(i=0;i&lt;n;i++)
+            cout &gt;&gt; "Hello world";
+        return 0;
+    }</div>
+                </div>
+
+            </div>
+            <div class="display-shadow">
+               
+                <h1 style="grid-column: 1 / -1; font-size: 1lh; text-align: center;">Editeaza cod alaturi de profesori si prieteni!</h1>
+                
+               <div style="display: flex; flex-direction: column; gap: 3em; font-size: 0.9em;">
+                Scopul principal al platformei intelegeinfo este sa ajute elevii sa-si dezvolte cunostiintele si abilitatiile in domeniul programarii.
+                In opinia mea, cel mai usor mod de a invata informatica este sa scrii cod de unul singur si sa aplici teoria pe care o inveti,
+                dar uneori ai nevoie si de indrumare de la un profesor sau mentor, ca sa te invete notiuniile de baza sau sa te ajuta sa stapanesti ce nu stii
+                foarte bine inca, sau sa iti unesti fortele cu un coleg sau prieten pentru a descifra o problema - fiecare are o abordare diferita, din care poti
+                invata, si aplica pe cont propriu.
+
+                <div class="glowButton-wrapper" style="--border-radius: 1lh; width: 300px;">
+                            <div class="glowButton-highlight"></div>
+                            <div class="glowButton-highlight"></div>
+                            <a href="/editor" class="button">Incepe să exersezi</a>
+                </div>
+               </div>
+                <div id="mockup-container">
+                    <img src="media/demo_desktop.png" alt="Editor on desktop" id="desktop">
+                    <img src="media/demo-phone.png" alt="Editor on phone" id="phone">
+                </div>
+
+               
+              
+                <div id="graphic" style="grid-column: 1/-1; align-self: flex-end;">
+
+                </div>
+            </div>
+        </div>
+        
+        <!-- <div id="problem" class="content-container">
+            <h1>Poti rezolva aceasta problema?</h1> aici vom avea o problema random pe care o poti rezolva, probabil o s-o mut in shadow container
+            
+            <div>
+                <div>
+                    <div class="problem-requirement">Scrie un program c++ care sa citeasca de la tastatura un numar n, iar apoi n numere naturale, iar apoi sa afiseze media aritmetica a acelor numere.</div>
+                    <div class="problem-requirement">Scrie un program c++ care sa citeasca de la tastatura un numar n, iar apoi n numere naturale, iar apoi sa afiseze media aritmetica a acelor numere.</div>
+                </div>
+           
+            </div>
+
+             <script>
+                for(const elem of document.getElementsByClassName('problem-requirement'))
+                fetch('/editor/problem/random').then(async problem => {
+                    const json = await problem.json()
+                    elem.innerHTML = 
+`
+<h2>${json.name}</h2>
+<p>${json.description}</p>
+<h2>Exemplu</h2>
+<p>date de intrare</p>
+<samp>${json.tests[0].dataIn}</samp>
+<p>date de iesire</p>
+<samp>${json.tests[0].dataOut}</samp>
+<a class="openProblem" href="/editor">Incepe sa rezolvi</a>`
+
+
+                document.getElementById('openProblem').setAttribute('href', `/editor?problem=${encodeURI(json.name)}`)
+                })
+                
+            </script>
+        </div> -->
+
+        <section id="guides" class="content-container">
+            <h1 class="center">Descopera cele mai populare resurse</h1>
+            <script type="module">
+
+                fetch('/guides/posts').then(res => {
+                    return res.json();
+                })
+                .then(data => {
+                    if(data.error)
+                        return console.error()
+                    const list = document.createElement('ul')
+                    document.getElementById('guides').appendChild(list)
+                    for(const post of data)
+                    {
+                        list.innerHTML += `<li>${post.html}</li>`
+                    }
+                })
+            </script>
+        </section>
+         
+        <section class="language-carusel-infinate page-mask" id="carousel" style="position: relative;">
+            <img src="media/logos/c++-logo.png" alt="c++ logo" class="available">
+            <img src="media/logos/python-logo.webp" alt="python logo" class="available">
+            <img src="media/logos/js-logo.png" alt="c++ logo" class="available">
+            <img src="media/logos/ts-logo.svg" alt="python logo">
+            <img src="media/logos/node.js-logo.webp" alt="c++ logo">
+            <img src="media/logos/java-logo.webp" alt="python logo">
+            <img src="media/logos/Go-logo.png" alt="c++ logo">
+            <img src="media/logos/C-logo.png" alt="python logo">
+            <img src="media/logos/html-logo.webp" alt="python logo">
+            <img src="media/logos/css-logo.png" alt="python logo">
+        </section>
+
+        <section class="motives-section">
+            <h1 class="center">De ce intelegeinfo?</h1>
+            <div onclick="this.classList.toggle('open')">
+                <span><h1>Pentru profesori</h1><button>&downarrow;</button></span>
+                <div class="tray">
+                    <ul>
+                        <li>
+                            <h2>Elevii nu mai trebuie să instaleze nimic</h2>
+                            Totul se face în browser - pe laptop, tabletă sau chiar telefon. Nu mai pierzi ore întregi cu instalări, compilatoare, medii de lucru sau drivere.
+                            </li>
+                        <li>
+                            <h2>Poți vedea codul elevilor în timp real</h2>
+                            Fiecare editor are un link si cod unic - elevii îți dau acces și vezi imediat ce scriu,
+                             le poți corecta sau explica live. Practic, e ca un Google Docs pentru programare.
+                            </li>
+                        <li>
+                            <h2>Colaborare și lucru în echipă</h2>
+                            Poți pune elevii în perechi sau echipe să lucreze la aceeași problemă.
+                             Toți pot edita și discuta pe chat. Astfel isi dezvoltă abilități de colaborare, logică și comunicare.
+                            </li>
+                        <li>
+                            <h2>Ideal pentru predare hibridă sau online</h2>
+                            Dacă unii elevi sunt acasă sau predai online, platforma permite lucru colaborativ, codare sincronă și explicații live.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div onclick="this.classList.toggle('open')">
+                 <span><h1>Pentru meditatori</h1><button>&downarrow;</button></span>
+                <div class="tray">
+                    <ul>
+                        <li>
+                            <h2>Lucrezi direct în browser, fără instalări</h2>
+                                Elevul deschide un link, scrie cod, rulează și vede rezultatul. Totul funcționează din prima,
+                                 indiferent dacă are Windows, Mac sau Chromebook.
+                                Nu mai pierzi timp cu instalarea Code::Blocks, DevC++ sau Visual Studio.
+                            </li>
+                            <li>
+                                <h2>Poți corecta sau completa codul împreună cu elevul</h2>
+                                Platforma e colaborativă: tu și elevul scrieți în același editor, în timp real. 
+                                Ca în Google Docs, dar pentru cod. Ideal dacă elevul are dificultăți - vezi exact ce face și intervii pe loc.                            </li>
+                            <li>
+                            <h2>Debugger vizual - explici clar ce se întâmplă</h2>
+                                Are un executant pas cu pas care arată:
+                                <ul>
+                                    <li>unde se află programul în execuție,</li>
+                                    <li>valorile variabilelor,</li>
+                                    <li>cum intră/iese din funcții sau bucle.</li>
+                                </ul>
+                                Poți explica recursivitate, apeluri de funcții, algoritmi mult mai ușor.
+                            </li>
+                        <li>
+                            <h2>Poți preda și de pe telefon sau tabletă</h2>
+                                Tu sau elevul puteți edita codul inclusiv de pe telefon. Dacă ai lecții rapide sau de corectat cod la distanță, e super practic.
+                        </li>
+                        <li>
+                            <h2>Poți preda și de pe telefon sau tabletă</h2>
+                                Tu sau elevul puteți edita codul inclusiv de pe telefon. Dacă ai lecții rapide sau de corectat cod la distanță, e super practic.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div onclick="this.classList.toggle('open')">
+                 <span><h1>Pentru elevi</h1><button>&downarrow;</button></span>
+                <div class="tray">
+                    <ul>
+                        <li>
+                            <h2>Scrii cod C++ sau Python direct în browser</h2>
+                            Nu trebuie să instalezi nimic! Functioneaza pe aproape orice calculator, laptop sau telefon.
+                             Tot ce ai de făcut e să intri pe intelegeinfo.ro/editor și să începi să scrii codul tau!
+                        </li>
+                        <li>
+                            <h2>Înveți mai ușor cu explicații vizuale</h2>
+                                Platforma are un debugger vizual care îți arată:
+                            <ul>
+                                <li> cum se execută codul pas cu pas</li>
+                                <li> ce valori au variabilele</li>
+                                <li> cum funcționează buclele, funcțiile, recursivitatea</li>
+                            </ul>
+                                E perfect ca să înțelegi algoritmii, nu doar să-i copiezi.
+                        </li>
+                        <li>
+                            <h2> Poți colabora cu prietenii sau colegii</h2>
+                           
+                            Vrei să lucrați împreună la o temă sau un proiect? Trimite colegului link-ul tău și scrieți cod în același editor, ca pe Google Docs.
+
+                             Fiecare vede ce face celălalt, în timp real.
+                        </li>
+                        <li>
+                            <h2>Funcționează și pe telefon</h2>
+                                Ai avut o idee? Deschizi platforma pe telefon și scrii cod mai usor ca niciodata!
+                                 Poți chiar să trimiți link-ul prin WhatsApp sau email.
+                        </li>
+                        <li>
+                            <h2>Nu vrei sa ti faci cont? Nu-i problemă!</h2>
+                            Poți folosi site-ul fără să te loghezi, dar dacă îți faci un cont, poți salva proiectele tale și să le reiei oricând.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div  onclick="this.classList.toggle('open')">
+                 <span><h1>Pentru scoli</h1><button>&downarrow;</button></span>
+                <div class="tray">
+                    <ul>
+                        <li>
+                            <h2>Ajută toți elevii, indiferent de nivel</h2>
+                            Elevii de orice clasă pot învăța pas cu pas: începători, medii, olimpici.
+
+                            Codul se vede în execuție: funcții, bucle, recursivitate - totul este vizual.
+
+                            Pot lucra singuri sau în echipe, la teme sau proiecte.
+
+                            Se reduce decalajul între elevii buni și cei care abia încep.
+                        </li>
+
+                        <li>
+                            <h2>Zero costuri, zero instalări</h2>
+                            Funcționează 100% în browser, pe orice dispozitiv: PC, laptop, tabletă.
+
+                            Nu trebuie instalat niciun program sau licență.
+
+                            Se poate folosi imediat, inclusiv în laboratoare vechi.
+
+                            Economisești bani și timp. Ideal pentru orice școală, indiferent de buget.
+                        </li>
+
+                        <li>
+                            <h2>Perfect pentru BAC, olimpiadă și pregătire universitară</h2>
+                            Suport complet pentru C++ și Python.
+
+                            Include STL, iostream, și funcții compatibile cu cerințele de la BAC sau olimpiade.
+
+                            Se pot rula subiecte BAC, simula examene, corecta instant.
+                        </li>
+
+                        <li>
+                            <h2>Respectă GDPR și confidențialitatea</h2>
+                            Nu cere cont obligatoriu - se poate folosi anonim.
+
+                            Datele colectate (dacă se salvează proiecte) sunt doar: nume, e-mail.
+
+                            Nu afișează reclame agresive și nu stochează date sensibile.
+
+                            Platforma e sigură și potrivită pentru uz educațional, fără riscuri.
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-container" id="features">
+            <h1>Ce ofera editorul?</h1>
+            <div class="content-list">
+
+                <section class="bento-card" style="grid-area: a;">
+                    <div class="bento-image">
+                        
+                        <img src="media/colaboration-demo.png"  alt="colaboration demo">
+                    </div>
+                    <div class="bento-text">
+                        <h2>Colaborare</h2>
+                        <p>Creeaze alaturi de colegii sau elevii tai, in timp real. Cu intelegeinfo poti explica mai usor si mai vizual codul tau,
+                        sau sa scrii in chat.</p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: b; --color: rgb(28,28,28)">
+                    <div class="bento-image">
+                        
+                        <img src="media/gui-demo.png"  alt="graphical interface demo">
+                    </div>
+                    <div class="bento-text">
+                        <h2>Programe cu interfata</h2>
+                        <p>Creaza aplicatii cu interfata (GUI) si interactioneaza cu ele in timp real. Creaza aplicatii in orice limbaj. </p>
+                    </div>
+                </section>
+
+                
+                <section class="bento-card" style="grid-area: c;">
+                    <div class="bento-image">
+                        
+                        <img src="media/debugger-demo.png"  alt="debugger demo">
+                    </div>
+                    <div class="bento-text">
+                        <h2>Debugger</h2>
+                        <p>Afla cum se executa programul tau, valorile variabilelor, adresele de memorie, si multe alte informatii despre acesta.</p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: g; --color: rgb(19,19,19)">
+                    <div class="bento-image">
+                        
+                        <img>
+                    </div>
+                    <div class="bento-text">
+                        <h2>Intelegeinfo.ro</h2>
+                        <p>Oferim o platforma pe care elevii pot invata si intelege informatica, limbajele de programare si conceptele de baza, alaturi de mentori
+                            si profesori.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: e; --color: rgb(20,20,20)">
+                    <div class="bento-image">
+                        
+                        <img>
+                    </div>
+                    <div class="bento-text">
+                        <h2>Partajare</h2>
+                        <p>Arata-le profesoriilor si colegiilor proiectele tale.</p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: d; --color: rgb(26,26,26)">
+                    <div class="bento-image">
+                        
+                        <img src="media/autocompletion-demo.png" alt="autocompletion demo">
+                    </div>
+                    <div class="bento-text">
+                        <h2>Autocompletare</h2>
+                        <p>Scrie cod mai repede, dar de asemenea, intelegeinfo iti ofera documentatie direct in editor, ca sa poti intelege ce face
+                            fiecare functie, sau ce proprietati are un obiect.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="bento-card" style="grid-area: f; --color: rgb(27,27,27)">
+                    <div class="bento-image">
+                        
+                        <img>
+                    </div>
+                    <div class="bento-text">
+                        <h2>Camera video si microfon</h2>
+                        <p>Integreaza camera video in programul tau, si foloseste-o ca pe camera de pe dispozitivul tau.</p>
+                    </div>
+                </section>  
+        </div>   
+        </section>
+
+    <section id="editor-demo"> 
+        <h1>Incearca editorul!</h1>    
+        <div>
+            <button onclick="window.startIframes(this)"><p style="font-size: 3rem; padding: 0; margin: 0;">&triangleright;</p> Porneste editorul</button>
+            <iframe seamless width="600" height="500" class="demoEditorFrame" title="editor demo editor left"></iframe>
+            <iframe seamless width="600" height="500" class="demoEditorFrame" title="editor demo editor right"></iframe>
+        </div>
+    </section>
+
+    <footer>
+            <h2>Intelegeinfo</h2>
+            <nav>
+                
+                    <a href="/">Pornire</a>
+                    <a href="/editor">Editor</a>
+                    <a href="/guides">Resurse</a>
+
+                
+                    <a href="/tos.html">Termeni si conditii</a>
+                    <a href="/privacy.html">Privacy Policy</a>
+                    <a href="/cookies.html">Cookies</a>
+                    
+                    <p>office@intelegeinfo.ro</p>
+                </ul>
+            </nav>
+        </footer>
+
+    <script async>
+            function loadScript( url, callback ) {
+    var script = document.createElement( "script" )
+    script.type = "text/javascript";
+    script.async = true;
+    if(script.readyState) {  // only required for IE <9
+        script.onreadystatechange = function() {
+        if ( script.readyState === "loaded" || script.readyState === "complete" ) {
+            script.onreadystatechange = null;
+            callback();
+        }
+        };
+    } else {  //Others
+        script.onload = function() {
+        callback();
+        };
+    }
+
+    script.src = url;
+    document.getElementsByTagName( "head" )[0].appendChild( script );
+    }
+                let renderIndex = 0;
+        loadScript('/ace-builds-master/src-noconflict/ace.js', function() {
+        // alert('script ready!'); 
+            loadScript('https://www.unpkg.com/ace-builds@latest/src-noconflict/ext-language_tools.js', () => loadScript('ace-builds-master/src-noconflict/ext-modelist.js', () => {
+
+                let editor = ace.edit('display-editor', {
+                    hasCssTransforms: true,
+                    mode: "ace/mode/c_cpp",
+
+                })
+                 const editorText = editor.session.getValue();
+                 editor.session.setValue('');
+                editor.setTheme("ace/theme/twilight");
+                editor.renderer.on('afterRender', function editorLoaded() {
+                    // Your code...
+                    if(renderIndex++ <2)
+                    return;
+                    editor.renderer.off('afterRender', editorLoaded)
+                    document.getElementById('display-editor').classList.add('loaded')
+                let newText = "";
+                let i=0;
+                const introTyping = setInterval(() => {
+                    newText += editorText[i++]
+                    if(i-1>=editorText.length) return clearInterval(introTyping)
+                    editor.session.setValue(newText)
+                }, 40);
+                    // editor.renderer.off('afterRender', this)
+                });
+                                
+                
+              
+
+                editor.on("focus", (change) =>
+            {
+                clearInterval(introTyping)
+                openEditor()
+            })
+            }))
+        });
+     
+    </script>
+    <script>
+            const carousel = document.getElementById('carousel')
+            let offset = 0;
+            let startTime = undefined;
+            let delta = 0;
+            
+            function updateCarousel(timestamp)
+            {
+                if(!startTime)
+                startTime=timestamp
+                delta = timestamp - startTime
+                const carouselWidth = carousel.clientWidth
+                
+                let i=0
+                for(const elem of carousel.children)
+                {
+                    
+                    elem.style.left = (offset +  (carouselWidth+300)/carousel.children.length*i++ + 300/2)%(carouselWidth+300)-300 + 'px' 
+                }
+                offset += delta * 0.1
+                startTime=timestamp
+                if(carousel.checkVisibility())
+                requestAnimationFrame(updateCarousel)
+            else
+            setTimeout(() => {
+                requestAnimationFrame(updateCarousel)
+            }, 16*30);
+            }
+            requestAnimationFrame(updateCarousel)
+
+
+            const options = {
+                rootMargin: "0px",
+                scrollMargin: "20px",
+                threshold: 0.15,
+            };
+            const callback = (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting)
+                    entry.target.classList.add('visible')
+                else if(false)
+                    entry.target.classList.remove('visible')
+                })}
+            const observer = new IntersectionObserver(callback, options);
+
+            const targets = [...document.querySelectorAll(".bento-card"), ...document.querySelectorAll("#guides")];
+            console.log(targets)
+            for(const target of targets)
+                observer.observe(target);
+            
+            
+    </script>
+    <script type="module">
+    // Get the iframe element we want to track mouse movements on
+    var iframes = document.getElementsByClassName('demoEditorFrame');
+
+    // Run it through the function to setup bubbling
+    const pageSessionUuid = crypto.randomUUID()
+    window.startIframes = startIframes
+    function startIframes(target) {
+        target.remove()
+        for(const myIframe of iframes)
+        {
+            myIframe.src = `./embed/editor?session=${pageSessionUuid}&isPublic=true`
+            // bubbleIframeMouseMove(myIframe);
+        }
+    }
+
+
+    </script>
+    <script>
+        function openEditor(text)
+        {
+            location.href += "editor"
+        }
+    </script>
+    <script>
+        let k=0;
+        const fill = document.getElementById('fill')
+        const cont = document.getElementsByClassName('main-container')[0]
+            // requestAnimationFrame(update)
+            function htmlEntities(str) {
+                return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+            
+            // addEventListener("resize", () => requestAnimationFrame(update))
+        function update()
+                {
+
+                    const chars = `1 2 3 4 5 6 6 7 8 9 0 q w e r t y u i o p a s d f g h j k l z x c v b n m &percnt; &amp; ! @ # $ ^ *`
+                    const colors = 'rgb(13, 65, 33);rgb(21, 71, 55);rgb(22, 78, 60)'.split(';')
+                    const chrs = chars.split(' ')
+                    let text = '';
+                    const w = document.body.clientWidth // window.innerWidth
+                    const h = cont.clientHeight//document.body.clientHeight //window.innerHeight
+                    console.log(h)
+                    const fontSize = parseInt(window.getComputedStyle(fill, null).getPropertyValue('font-size'))
+                    const charsnr = w*h/fontSize/10
+                    const colorRatio = 2
+                    for(let i=0;i<Math.floor(charsnr/colorRatio);i++)
+                        {
+                            text += `<span style="color:${colors[Math.floor(Math.random() * colors.length)]}">`
+                            for(let j=0;j<Math.floor(colorRatio);j++)
+                                text += chrs[Math.floor(Math.random() * chrs.length)]
+                            text += "</span>"
+                        }
+                    
+                    fill.innerHTML = text
+                    
+                }
+    </script>
+
+
+<script src="https://unpkg.com/lenis@1.3.4/dist/lenis.min.js"></script> 
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.3.4/dist/lenis.css">
+<script>
+    // Initialize Lenis
+    const lenis = new Lenis({
+    autoRaf: true,
+    });
+
+    // // Listen for the scroll event and log the event data
+    // lenis.on('scroll', (e) => {
+    // console.log(e);
+    // });
+</script>
+</body>
+
+
+<link rel="prefetch" href="editor" />
+</html>
+

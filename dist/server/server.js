@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
+exports.parseText = parseText;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
 const child_process_1 = require("child_process");
@@ -172,7 +173,7 @@ app.get('/editor/cpp_worker.js', (req, res) => {
 app.get('/editor/worker-base.js', (req, res) => {
     res.sendFile(path_1.default.join(exports.rootDirName, 'public', 'ace-builds-master', 'src-noconflict', 'worker-base.js.js'));
 });
-app.use(express_1.default.static("public"));
+// app.use(express.static("public"));
 app.use("/guides", guideCreator_1.default);
 app.use('/shared/src/', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'shared')));
 app.get('/editor/sharesession', (req, res) => {
@@ -2299,6 +2300,69 @@ const aiIntegration_1 = require("./aiIntegration");
 //                     console.log(new Date().toLocaleTimeString() + " $   " + count);
 //             });
 // })
+app.use(parseHTML);
+let translation = undefined;
+fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'server', 'data', 'translations.json'), (err, data) => {
+    if (err)
+        throw err;
+    translation = JSON.parse(data.toString());
+    console.log('translations loaded, bytes:', data.byteLength);
+});
+function parseText(file, req) {
+    if (!translation)
+        throw 'invalid translation json';
+    const matches = file.matchAll(/\^{[%&](.*)}/g);
+    let text = file;
+    const locale = function () {
+        const accLang = req.cookies.ii_lang ? req.cookies.ii_lang : req.headers["accept-language"];
+        return accLang.split(',').map(param => param.split(';')[0]);
+    }()[0];
+    for (const matchobj of matches) {
+        const match = matchobj[1];
+        const key = matchobj[0];
+        if (key.startsWith('^{%')) {
+            if (!translation[match])
+                continue;
+            const expr = translation[match][locale] ? translation[match][locale] : translation[match]['en-US'] ? translation[match]['en-US'] : '';
+            if (expr != '' && expr !== undefined)
+                text = text.replaceAll(key, expr);
+            else if (translation[match]['ro-RO'])
+                text = text.replaceAll(key, translation[match]['ro-RO']);
+            else
+                console.error('invalid translation id', match);
+        }
+        else if (key.startsWith('^{&file:')) {
+            const filePath = match.split(":")[1];
+            if (!filePath)
+                throw 'invalid file path';
+            text = text.replaceAll(key, fs_1.default.readFileSync(path_1.default.resolve(exports.rootDirName, 'public', filePath)).toString());
+        }
+    }
+    return text;
+}
+function parseHTML(req, res, next) {
+    const filePath = req.path.endsWith('/') || req.path.endsWith('\\') ? 'index.html' : req.path;
+    const fullPath = path_1.default.join(exports.rootDirName, 'public', filePath);
+    const ext = filePath.split('.').at(-1) ? filePath.split('.').at(-1) : 'text';
+    if (ext != 'html') {
+        res.sendFile(fullPath);
+        return;
+    }
+    // fs.createReadStream(fullPath) // use read streams
+    try {
+        fs_1.default.readFile(fullPath, (err, file) => {
+            if (err)
+                throw err;
+            res.contentType(ext).send(parseText(file.toString(), req));
+        });
+    }
+    catch (err) {
+        console.error(err);
+        // res.statusCode(404).send(err)
+        res.sendFile(fullPath);
+        return;
+    }
+}
 app.use(handle404);
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);

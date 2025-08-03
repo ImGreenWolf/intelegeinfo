@@ -9,6 +9,7 @@ import { cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updat
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
 const sessionCookieName = 'editor_session_id';
+let openMenu = null;
 //  const msgMap: Map<Number, WSMessage> = new Map();
 // function getCompiledCode() {
 //   return fetch("/getCompiledCode", {
@@ -716,6 +717,24 @@ let marker; //selection marker
 ///
 //
 const byteSize = (str) => new Blob([str]).size;
+function checkIsOpen(id) {
+    if (openMenu)
+        if (openMenu.menuid == id)
+            return true;
+}
+function onOpenMenu(id, elem) {
+    if (!id)
+        throw 'invalid id on open menu.';
+    if (openMenu)
+        openMenu.remove();
+    if (elem) {
+        openMenu = elem;
+        openMenu.menuid = id;
+    }
+    else
+        openMenu = null;
+    return false;
+}
 export function displayMessagePopup(message) {
     function createPopup(classList, innerHTML) {
         if (!innerHTML)
@@ -1332,6 +1351,8 @@ function loadProject(id) {
     });
 }
 export function listProjects() {
+    if (checkIsOpen('projects'))
+        return onOpenMenu("projects");
     if (!wsSessionId)
         return;
     fetch('/user/listProjects', {
@@ -1352,6 +1373,7 @@ export function listProjects() {
         const closeButton = document.createElement('button');
         closeButton.onclick = function (ev) {
             container.remove();
+            onOpenMenu("projects");
         };
         closeButton.innerText = 'x';
         container.appendChild(closeButton);
@@ -1386,6 +1408,7 @@ export function listProjects() {
         };
         container.appendChild(newProjButton);
         document.body.appendChild(container);
+        onOpenMenu("projects", container);
     });
     // .catch(err => {
     //   displayMessagePopup('nigger ' + err)
@@ -1533,6 +1556,8 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
     }
 }
 export function joinsession() {
+    if (checkIsOpen('join'))
+        return onOpenMenu("join");
     const shareContainer = document.createElement('div');
     shareContainer.classList.add('share-container');
     shareContainer.innerHTML =
@@ -1566,6 +1591,7 @@ export function joinsession() {
     document.body.appendChild(shareContainer);
     shareContainer.appendChild(createNode('button', { css: 'position: absolute; top: 20px; left: 20px;', innerText: 'x', onclick(ev) {
             shareContainer.remove();
+            onOpenMenu("join");
         }, }));
     const script = document.createElement('script');
     const file = "/client/scripts/emailCodeVerificationClient.js";
@@ -1576,6 +1602,7 @@ export function joinsession() {
     const form = document.getElementById('codeForm');
     const codeInput = document.getElementById('code');
     codeInput.oninput = onCodeInput;
+    onOpenMenu("join", shareContainer);
     function onCodeInput() {
         if (codeInput.value.length >= 6)
             submit();
@@ -1607,6 +1634,8 @@ export function joinsession() {
 export function copySessionLink() {
     const clientId = wsSessionId;
     let sessionLink;
+    if (checkIsOpen('share'))
+        return onOpenMenu("share");
     sessionLink = window.location.origin + window.location.pathname + `?session=${clientId}`;
     // if (navigator.clipboard) {
     //   navigator.clipboard.writeText(sessionLink).then(() => {
@@ -1651,8 +1680,10 @@ export function copySessionLink() {
     
     `;
     document.body.appendChild(shareContainer);
+    onOpenMenu("share", shareContainer);
     document.getElementById('close-share-session').onclick = function (ev) {
         shareContainer.remove();
+        onOpenMenu("share");
         // shareContainer.animate()
     };
     document.getElementById('createSessionForm').onsubmit = function (ev) {

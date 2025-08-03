@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @view-transition {
   navigation: auto;
 }
@@ -198,7 +199,7 @@ header2 {
   color: white;
   display: grid;
   align-self: center;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: 2lh;
   align-items: center;
   justify-content: center;
@@ -207,7 +208,7 @@ header2 {
   top: 0;
   left: 0;
   right: 0;
-  padding: 1em 2em;
+  padding: 1em 5em;
   z-index: 200;
   box-shadow: 0 5px 20px 10px rgba(0, 0, 0, 0.3);
   background-image: linear-gradient(30deg, rgba(28, 35, 58, 0.29), rgba(39, 49, 77, 0.301), rgba(23, 21, 59, 0.288)), linear-gradient(rgba(0, 0, 0, 0.692), rgba(0, 0, 0, 0.507));
@@ -245,29 +246,38 @@ header2::before {
 header2 h2 {
   left: 3em;
 }
-header2 div {
-  right: 15em;
-  box-sizing: content-box;
+header2 .header-buttons-container {
+  height: 1.5lh;
   display: flex;
-  gap: 1em;
-  align-items: center;
+  gap: 2em;
+  align-items: stretch;
+  text-align: center;
 }
-header2 div a {
-  color: gray;
+header2 .header-buttons-container #login-container {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+header2 .header-buttons-container a {
+  color: white;
   transition-duration: 0.25s;
   cursor: pointer;
 }
-header2 div a:nth-child(2) {
+header2 .header-buttons-container a:nth-child(2) {
   border-radius: 1lh;
   background-color: white;
   color: black;
-  padding: 0.25em 0.75em;
+  padding: 0em 0.75em;
   border: 2px solid rgba(255, 255, 255, 0.678);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
 }
-header2 div a:hover {
+header2 .header-buttons-container a:hover {
   opacity: 0.5;
 }
-header2 div a:any-link {
+header2 .header-buttons-container a:any-link {
   text-decoration: none;
 }
 header2 nav {
@@ -305,12 +315,15 @@ header2 nav ul :any-link {
 }
 header2 nav ul li:first-child {
   border-radius: 1lh 0 0 1lh;
+  padding-left: 1.5lh;
 }
 header2 nav ul li:first-child:hover {
   box-shadow: inset -5px 0px 20px -10px rgba(108, 114, 119, 0.3);
 }
 header2 nav ul li:last-child {
   border-radius: 0 1lh 1lh 0;
+  padding-right: 1.5lh;
+  box-sizing: content-box;
 }
 header2 nav ul li:last-child:hover {
   box-shadow: inset 5px 0px 20px -10px rgba(108, 114, 119, 0.3);
@@ -320,6 +333,67 @@ header2 nav ul li:hover {
   z-index: 1;
   margin: 0 5px;
   box-shadow: inset 0px 0px 20px -10px rgba(108, 114, 119, 0.3);
+}
+
+.lang-dropdown {
+  border-radius: 1lh;
+  background-color: rgb(20, 20, 20);
+  position: relative;
+  transition-duration: 0.4s;
+  display: flex;
+  align-items: center;
+}
+.lang-dropdown.open {
+  border-radius: 0.5lh 0.5lh 0.25lh 0.25lh;
+}
+
+.lang-dropdown li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 0.25em 1em;
+  transition-duration: inherit;
+  cursor: pointer;
+}
+.lang-dropdown li span {
+  display: inline-block;
+  width: 0.5lh;
+  height: 0.5lh;
+  border-radius: 50%;
+  overflow: hidden;
+  background-size: contain;
+  background-position: center;
+}
+.lang-dropdown li:hover {
+  opacity: 0.75;
+}
+
+.lang-dropdown #selected-container li {
+  justify-content: flex-start;
+}
+.lang-dropdown #selected-container li::after {
+  content: "▾";
+  display: inline-block;
+  margin: auto;
+}
+
+.lang-dropdown .options-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  bottom: -0.1lh;
+  left: 0;
+  right: 0;
+  transform: translateY(100%);
+  background-color: inherit;
+  border-radius: 0.25lh 0.25lh 0.5lh 0.5lh;
+  transition-duration: inherit;
+}
+
+.lang-dropdown:not(.open) .options-container {
+  opacity: 0;
 }
 
 @media screen and (max-width: 1024px) {
@@ -337,6 +411,16 @@ header2 nav ul li:hover {
     justify-self: center;
     transform: none;
     grid-column: 1/-1;
+  }
+  header2 nav .home {
+    background: url(/favicon.ico) no-repeat;
+    background-position: 50% 0.45lh;
+    background-size: 1lh;
+    padding: 0 1lh;
+    width: 50px;
+  }
+  header2 nav .home a {
+    display: none;
   }
   header2 h2,
   header2 div {

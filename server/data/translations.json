@@ -1,0 +1,238 @@
+{
+  "header.home": {
+    "ro-RO": "Acasa",
+    "en-US": "Home"
+  },
+  "header.editor": {
+    "ro-RO": "Editor",
+    "en-US": "Editor"
+  },
+  "header.resources": {
+    "ro-RO": "Resurse",
+    "en-US": "Resources"
+  },
+  "header.subjects": {
+    "ro-RO": "Subiecte",
+    "en-US": "Subjects"
+  },
+  "main.cta": {
+    "ro-RO": "Deschide Editorul",
+    "en-US": "Open Editor"
+  },
+  "main.shortDescription": {
+    "ro-RO": "Editorul colaborativ de cod online creat de elevi, pentru elevi.",
+    "en-US": "The online colaborative code editor, made by students for students."
+  },
+  "display.title": {
+    "ro-RO": "Editeaza cod alaturi de profesori si prieteni!",
+    "en-US": "Edit code alongside teachers and friends!"
+  },
+  "display.cta": {
+    "ro-RO": "Incepe sa exersezi",
+    "en-US": "Start exercising"
+  },
+  "guides.title": {
+    "ro-RO": "Descopera cele mai populare resurse",
+    "en-US": "Explore the most popular resources"
+  },
+  "display.body": {
+    "ro-RO": "Scopul principal al platformei intelegeinfo este sa ajute elevii sa-si dezvolte cunostiintele si abilitatiile in domeniul programarii.\n                In opinia mea, cel mai usor mod de a invata informatica este sa scrii cod de unul singur si sa aplici teoria pe care o inveti,\n                dar uneori ai nevoie si de indrumare de la un profesor sau mentor, ca sa te invete notiuniile de baza sau sa te ajuta sa stapanesti ce nu stii\n                foarte bine inca, sau sa iti unesti fortele cu un coleg sau prieten pentru a descifra o problema - fiecare are o abordare diferita, din care poti\n                invata, si aplica pe cont propriu.",
+    "en-US": "The main goal of intelegeinfo is to help students develop their knowledge and skills in the field of programming. In my opinion, the easiest way to learn computer science is by writing code on your own and applying the theory you learn, but sometimes you also need guidance from a teacher or mentor to help you understand the basics or to master the things you're not yet confident in. You can also team up with a classmate or friend to solve a problem together   everyone has a different approach, from which you can learn and later apply independently."
+  },
+  "motives.title": {
+    "ro-RO": "De ce intelegeinfo?",
+    "en-US": "Why intelegeinfo?"
+  },
+  "motives.teachers": {
+    "ro-RO": "Pentru profesori",
+    "en-US": "For teachers"
+  },
+  "motives.teachers.1.title": {
+    "ro-RO": "Elevii nu mai trebuie sa instaleze nimic",
+    "en-US": ""
+  },
+  "motives.teachers.1.body": {
+    "ro-RO": "Totul se face in browser - pe laptop, tableta sau chiar telefon. Nu mai pierzi ore  intregi cu instalari, compilatoare, medii de lucru sau drivere.",
+    "en-US": ""
+  },
+  "motives.teachers.2.title": {
+    "ro-RO": "Poti vedea codul elevilor  in timp real",
+    "en-US": ""
+  },
+  "motives.teachers.2.body": {
+    "ro-RO": "Fiecare editor are un link si cod unic - elevii  iti dau acces si vezi imediat ce scriu,\n                             le poti corecta sau explica live. Practic, e ca un Google Docs pentru programare.",
+    "en-US": ""
+  },
+  "motives.teachers.3.title": {
+    "ro-RO": "Colaborare si lucru in echipa",
+    "en-US": ""
+  },
+  "motives.teachers.3.body": {
+    "ro-RO": "Poti pune elevii in perechi sau echipe sa lucreze la aceeasi problema.\n                             Toti pot edita si discuta pe chat. Astfel isi dezvolta abilitati de colaborare, logica si comunicare.",
+    "en-US": ""
+  },
+  "motives.teachers.4.title": {
+    "ro-RO": "Ideal pentru predare hibrid? sau online",
+    "en-US": ""
+  },
+  "motives.teachers.4.body": {
+    "ro-RO": "Daca unii elevi sunt acasa sau predai online, platforma permite lucru colaborativ, codare sincrona si explicatii live.",
+    "en-US": ""
+  },
+  "motives.tutoring": {
+    "ro-RO": "Pentru meditatori",
+    "en-US": "For tutors"
+  },
+  "motives.tutoring.1.title": {
+    "ro-RO": "Lucrezi direct in browser, fara instalari",
+    "en-US": ""
+  },
+  "motives.tutoring.1.body": {
+    "ro-RO": "Elevul deschide un link, scrie cod, ruleaza si vede rezultatul. Totul funcaioneaza din prima,\n                                 indiferent daca are Windows, Mac sau Chromebook.\n                                Nu mai pierzi timp cu instalarea Code::Blocks, DevC++ sau Visual Studio.",
+    "en-US": ""
+  },
+  "motives.tutoring.2.title": {
+    "ro-RO": "Po?i corecta sau completa codul  mpreun? cu elevul",
+    "en-US": ""
+  },
+  "motives.tutoring.2.body": {
+    "ro-RO": "Platforma e colaborativ?: tu si elevul scrieti in acelasi editor, in timp real. \n                            Ca in Google Docs, dar pentru cod. Ideal daca elevul are dificultati - vezi exact ce face si intervii pe loc.",
+    "en-US": ""
+  },
+  "motives.tutoring.3.title": {
+    "ro-RO": "Debugger vizual - explici clar ce se intampla",
+    "en-US": ""
+  },
+  "motives.tutoring.3.body": {
+    "ro-RO": "Are un executant pas cu pas care arata:\n                                <ul>\n                                    <li>unde se afla programul in executie,</li>\n                                    <li>valorile variabilelor,</li>\n                                    <li>cum intra/iese din functii sau bucle.</li>\n                                </ul>\n                                Poti explica recursivitate, apeluri de functii, algoritmi mult mai usor.",
+    "en-US": ""
+  },
+  "motives.tutoring.4.title": {
+    "ro-RO": "Po?i preda ?i de pe telefon sau tablet?",
+    "en-US": ""
+  },
+  "motives.tutoring.4.body": {
+    "ro-RO": "Tu sau elevul puteti edita codul inclusiv de pe telefon. Daca ai lectii rapide sau de corectat cod la distanta, e super practic.",
+    "en-US": ""
+  },
+  "motives.tutoring.5.title": {
+    "ro-RO": "Poti preda si de pe telefon sau tablet?",
+    "en-US": ""
+  },
+  "motives.tutoring.5.body": {
+    "ro-RO": "Tu sau elevul puteti edita codul inclusiv de pe telefon. Daca ai lectii rapide sau de corectat cod la distanta, e super practic.",
+    "en-US": ""
+  },
+  "motives.students": {
+    "ro-RO": "Pentru elevi",
+    "en-US": "For students"
+  },
+  "motives.students.1.title": {
+    "ro-RO": "Scrii cod C++ sau Python direct in browser",
+    "en-US": ""
+  },
+  "motives.students.1.body": {
+    "ro-RO": "Nu trebuie sa instalezi nimic! Functioneaza pe aproape orice calculator, laptop sau telefon.\n                             Tot ce ai de facut e sa intri pe intelegeinfo.ro/editor si sa incepi sa scrii codul tau!",
+    "en-US": ""
+  },
+  "motives.students.2.title": {
+    "ro-RO": "Inveti mai usor cu explicatii vizuale",
+    "en-US": ""
+  },
+  "motives.students.2.body": {
+    "ro-RO": "Platforma are un debugger vizual care iti arata:\n                                <ul>\n                                    <li> cum se executa codul pas cu pas</li>\n                                    <li> ce valori au variabilele</li>\n                                    <li> cum functioneaza buclele, functiile, recursivitatea</li>\n                                </ul>\n                                E perfect ca sa  intelegi algoritmii - nu doar sa-i copiezi.",
+    "en-US": ""
+  },
+  "motives.students.3.title": {
+    "ro-RO": "Poti colabora cu prietenii sau colegii",
+    "en-US": ""
+  },
+  "motives.students.3.body": {
+    "ro-RO": "Vrei sa lucrati  impreuna la o tema sau un proiect? Trimite colegului link-ul tau si scrieti cod in acelasi editor, ca pe Google Docs.\nFiecare vede ce face celalalt, in timp real.",
+    "en-US": ""
+  },
+  "motives.students.4.title": {
+    "ro-RO": "Functioneaz? si pe telefon",
+    "en-US": ""
+  },
+  "motives.students.4.body": {
+    "ro-RO": "Ai avut o idee? Deschizi platforma pe telefon si scrii cod mai usor ca niciodata!\nPoti chiar sa trimiti link-ul prin WhatsApp sau email.",
+    "en-US": ""
+  },
+  "motives.students.5.title": {
+    "ro-RO": "Nu vrei sa ti faci cont? Nu-i problem?!",
+    "en-US": ""
+  },
+  "motives.students.5.body": {
+    "ro-RO": "Poti folosi site-ul fara sa te loghezi, dar daca iti faci un cont, poti salva proiectele tale si sa le reiei oricand.",
+    "en-US": ""
+  },
+  "motives.schools": {
+    "ro-RO": "Pentru scoli",
+    "en-US": "For schools"
+  },
+  "motives.schools.1.title": {
+    "ro-RO": "Ajuta toti elevii, indiferent de nivel",
+    "en-US": ""
+  },
+  "motives.schools.1.body": {
+    "ro-RO": "Elevii de orice clasa pot invata pas cu pas:  incepatori, medii, olimpici.\n Codul se vede  n executie: functii, bucle, recursivitate - totul este vizual.\nPot lucra singuri sau in echipe, la teme sau proiecte.\nSe reduce decalajul intre elevii buni Si cei care abia incep.",
+    "en-US": ""
+  },
+  "motives.schools.2.title": {
+    "ro-RO": "Zero costuri, zero instalari",
+    "en-US": ""
+  },
+  "motives.schools.2.body": {
+    "ro-RO": "Functioneaz? 100% in browser, pe orice dispozitiv: PC, laptop, tablet?.\nNu trebuie instalat niciun program sau licenta.\nSe poate folosi imediat, inclusiv in laboratoare vechi.\nEconomiseiti bani si timp. Ideal pentru orice scoala, indiferent de buget.",
+    "en-US": ""
+  },
+  "motives.schools.3.title": {
+    "ro-RO": "Perfect pentru BAC, olimpiada si pregatire universitar?",
+    "en-US": ""
+  },
+  "motives.schools.3.body": {
+    "ro-RO": "Suport complet pentru C++, Javascript si Python.\nInclude STL, iostream, si functii compatibile cu cerintele de la BAC sau olimpiade.\n Se pot rula subiecte BAC, simula examene, corecta instant.",
+    "en-US": ""
+  },
+  "motives.schools.4.title": {
+    "ro-RO": "Respecta GDPR si confidentialitatea",
+    "en-US": ""
+  },
+  "motives.schools.4.body": {
+    "ro-RO": "Nu cere cont obligatoriu - se poate folosi anonim.\nDatele colectate (daca se salveaza proiecte) sunt doar: nume, e-mail.\nNu afiaeaza reclame agresive si nu stocheaza date sensibile.\nPlatforma e sigura si potrivita pentru uz educational, fara riscuri.",
+    "en-US": ""
+  },
+  "features.title": {
+    "ro-RO": "Ce ofera editorul?",
+    "en-US": "What does the editor offer?"
+  },
+  "features.colab.title": {
+    "ro-RO": "Colaborare",
+    "en-US": "Colaboration"
+  },
+  "features.colab.body": {
+    "ro-RO": "Creaza programe alaturi de colegii sau elevii tai, in timp real. Cu intelegeinfo poti explica mai usor si mai vizual codul tau, si chiar sa comunici prin chat sau voce",
+    "en-US": "Write programs alongside your classmates or you pupils in real time. With intelegeinfo you can easily explain and visualise your code, aswell  as comunicating through chat and voice."
+  },
+  "demo.title": {
+    "ro-RO": "Incearca editorul!",
+    "en-US": "Try out the editor!"
+  },
+  "demo.cta": {
+    "ro-RO": "Porneste editorul",
+    "en-US": "Start the editor"
+  },
+  "footer.tos": {
+    "ro-RO": "Termeni si conditii",
+    "en-US": "Terms & Conditions"
+  },
+  "footer.privacy": {
+    "ro-RO": "Politica de confidetialitate",
+    "en-US": "Privacy Policy"
+  },
+  "footer.cookies": {
+    "ro-RO": "Cookies",
+    "en-US": "Cookies"
+  }
+}

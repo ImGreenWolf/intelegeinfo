@@ -1192,6 +1192,7 @@ h1.center
 
 
 
+
  @media screen and ((max-aspect-ratio: 2/3) or (max-width: 1600px)) {
     #mockup-container
     {
@@ -1206,10 +1207,10 @@ h1.center
         }
     }   
 
-    header2 nav
-    {
-        max-width:30em;
-    }
+    // header2 nav
+    // {
+    //     max-width:30em;
+    // }
 
     #features .content-list {
         grid-template-areas: 

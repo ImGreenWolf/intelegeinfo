@@ -11,3 +11,4 @@ export declare let clients: Map<UUID, WebSocket>;
 export declare let runningProcesses: Map<UUID, ChildProcess>;
 export declare let sessionMap: Map<UUID, EditorSession>;
 export declare const wss: WebSocket.Server<typeof WebSocket, typeof http.IncomingMessage>;
+export declare function parseText(file: any, req: any): any;
