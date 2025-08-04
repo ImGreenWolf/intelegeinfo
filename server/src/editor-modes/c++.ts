@@ -136,7 +136,8 @@ int main() {
         
         onResponse: (response) => void;
         addDataListener: (onDataFunc: typeof this.onResponse) => void = (func) => {
-
+            console.log('ADDED DATA LISTENER')
+            this.removeDataListener(func)
             this.process.stdout?.on("data", func);
         }
         removeDataListener: (onDataFunc: typeof this.onResponse) => void = (func) => {

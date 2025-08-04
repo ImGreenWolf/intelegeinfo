@@ -2480,7 +2480,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     if(!getThisClientSession().process) console.error('Invalid session while starting debug process')
                                     printClientConsoleDebug("started debugging process.")
                                
-                                    queueCommand(getProcessFromMap() as DebugProcess,'-break-insert 1\n', sessionId);
+                                    queueCommand(getProcessFromMap(),'-break-insert 1\n', sessionId);
                                        
                                     // clientSession.gdbProcess.stdout.on('data', (data) => {
                                     //     console.log("GDB Data: " + data.toString())
