@@ -1101,15 +1101,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                     // Check if the full response has arrived
                     if (gdbBuffer.includes("(gdb)")) {
                         // We have everything, remove listener
-                        childProcess.stdout.removeListener("data", onData);
-                        // const resMap: Map<string, string> = new Map();
-                        //     if(gdbBuffer.includes("frame="))
-                        // {
-                        // gdbBuffer.toString().split('\n')[0].split(',').forEach((pair) => {
-                        //     if(pair.includes("="))
-                        //         resMap.set(pair.split('=')[0].replace("{", ""),
-                        //      pair.split('=')[1].replace("}", "").replace("{", "").replaceAll('"', ""))
-                        // })
+                        // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
+                        childProcess.kill();
                         gdbBuffer.toString().split('\n').forEach(element => {
                             if (element != '') {
                                 const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
@@ -1152,12 +1145,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                 };
                 if (true) //childProcess && childProcess.stdin && childProcess.stdout
                  {
-                    // Use .on instead of .once, because GDB output can be split
-                    childProcess.stdout?.on("data", onData);
-                    // console.log('command')
-                    // Send the command
-                    // childProcess.stdin?.write(""+'\n');
-                    childProcess.stdin?.write(command + '\n');
+                    // childProcess.stdout?.on("data", onData);
+                    // childProcess.stdin?.write(command+'\n');
+                    childProcess.onResponse = onData;
+                    childProcess.sendCommand(command);
                 }
                 else
                     console.error("GDB process not found for session " + sessionId);
@@ -1962,6 +1953,14 @@ bash `.trim().replaceAll('\n', "");
                                             buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
                                                 mode = "debug"; //set mode to debug
                                                 try {
+                                                    clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal) => {
+                                                        // printClientConsoleError(err)
+                                                        if (fatal) {
+                                                            // closeProcess(clientSession.process)
+                                                            onClosedProgram(-1, 0, `<span class="console-error">Compile error: ${err}</span>`);
+                                                            return;
+                                                        }
+                                                    };
                                                     replicateFunction((clientWs) => {
                                                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
                                                     });
@@ -1972,7 +1971,7 @@ bash `.trim().replaceAll('\n', "");
                                                     });
                                                     clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession);
                                                     if (!clientSession.gdbProcess)
-                                                        return;
+                                                        throw 'invalid debug process';
                                                     addProcessToMap(sessionId, clientSession.gdbProcess);
                                                 }
                                                 catch (err) {

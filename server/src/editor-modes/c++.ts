@@ -129,8 +129,11 @@ int main() {
 }
  class CPPDebugger extends DebugProcess
     {
-        sendCommand: (string: any) => void;
-        onResponse: () => string;
+        sendCommand: (command: string) => void = (command) => {
+
+            this.process.stdin?.write(command+'\n');
+        }
+        onResponse: (response) => void;
         kill: () => void;
         addListener: (ev: any, func: (code: any) => void) => void 
         = function (ev, func) {
@@ -141,14 +144,14 @@ int main() {
             }
             return func
         }
-        public process: ChildProcess
+        process: ChildProcess
 
         constructor(res, clientObj) {
             super()
 
             this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
-
-            
+            console.log('Spawned debug process with id', this.process.pid)
+            this.process.stdout?.on("data", this.onResponse);
         }
     }
 

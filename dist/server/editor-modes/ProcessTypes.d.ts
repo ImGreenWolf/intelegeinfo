@@ -1,6 +1,6 @@
 declare abstract class DebugProcess {
     abstract sendCommand: (string: any) => void;
-    abstract onResponse: () => string;
+    abstract onResponse: (response: any) => void;
     abstract kill: () => void;
     abstract addListener: (ev: any, func: (code: any) => void) => void;
     killed: boolean;

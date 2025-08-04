@@ -18,8 +18,8 @@ declare class CppMode extends EditorMode {
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<string>;
 }
 declare class CPPDebugger extends DebugProcess {
-    sendCommand: (string: any) => void;
-    onResponse: () => string;
+    sendCommand: (command: string) => void;
+    onResponse: (response: any) => void;
     kill: () => void;
     addListener: (ev: any, func: (code: any) => void) => void;
     process: ChildProcess;

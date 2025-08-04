@@ -1385,7 +1385,7 @@ function endConnectionPromise()
        
 
     // debug mode only for now
-    async function executeCommand( childProcess: ChildProcess, command: string, sessionId: UUID): Promise<void> {
+    async function executeCommand( childProcess: DebugProcess, command: string, sessionId: UUID): Promise<void> {
         return new Promise((resolve, reject) => {
             let gdbBuffer = "";
             console.log("GDB Command to execute: " + command)
@@ -1394,17 +1394,8 @@ function endConnectionPromise()
                 // Check if the full response has arrived
                 if (gdbBuffer.includes("(gdb)")) {
                     // We have everything, remove listener
-                    (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
-                    
-                    // const resMap: Map<string, string> = new Map();
-                //     if(gdbBuffer.includes("frame="))
-                // {
-                    // gdbBuffer.toString().split('\n')[0].split(',').forEach((pair) => {
-                    //     if(pair.includes("="))
-                    //         resMap.set(pair.split('=')[0].replace("{", ""),
-                    //      pair.split('=')[1].replace("}", "").replace("{", "").replaceAll('"', ""))
-                    // })
-
+                    // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
+                    childProcess.kill()
                     gdbBuffer.toString().split('\n').forEach(element => {
                         if(element!='')
                         {
@@ -1467,12 +1458,11 @@ function endConnectionPromise()
            
             if(true)//childProcess && childProcess.stdin && childProcess.stdout
             {
-            // Use .on instead of .once, because GDB output can be split
-            childProcess.stdout?.on("data", onData);
-                        // console.log('command')
-            // Send the command
-            // childProcess.stdin?.write(""+'\n');
-            childProcess.stdin?.write(command+'\n');
+                
+                // childProcess.stdout?.on("data", onData);
+                // childProcess.stdin?.write(command+'\n');
+                childProcess.onResponse = onData
+                childProcess.sendCommand(command)
             } else console.error("GDB process not found for session " + sessionId);
 
         });
@@ -1480,8 +1470,8 @@ function endConnectionPromise()
     
     let CommandQueue = Promise.resolve();
 
-    function queueCommand(process: ChildProcess,command: string, sessionId: UUID): Promise<void> {
-        CommandQueue = CommandQueue.then(() => executeCommand(process, command, sessionId)).catch((err) =>
+    function queueCommand(process: ChildProcess | DebugProcess,command: string, sessionId: UUID): Promise<void> {
+        CommandQueue = CommandQueue.then(() => executeCommand(process as DebugProcess, command, sessionId)).catch((err) =>
         {
             printClientConsoleError("failed to queue debugger command: " + err)
         })
@@ -2456,7 +2446,16 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                
                                     mode="debug"; //set mode to debug
                                     try {
-                                                                
+                                        clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal)  => {
+                                            // printClientConsoleError(err)
+                                            if(fatal)
+                                            {
+                                                // closeProcess(clientSession.process)
+                                                onClosedProgram(-1, 0, `<span class="console-error">Compile error: ${err}</span>`)
+                                                return
+                                            }
+                                                    
+                                        }      
                                         replicateFunction((clientWs) => {
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
                                         });
@@ -2470,7 +2469,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                                         clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession)
                                         if(!clientSession.gdbProcess)
-                                            return;
+                                            throw 'invalid debug process'
+
                                         addProcessToMap(sessionId, clientSession.gdbProcess);
                                     } catch (err){
                                         printClientConsoleError("docker error: " + err)
@@ -2479,7 +2479,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     if(!getThisClientSession().process) console.error('Invalid session while starting debug process')
                                     printClientConsoleDebug("started debugging process.")
                                
-                                    queueCommand(getProcessFromMap() as ChildProcess,'-break-insert 1\n', sessionId);
+                                    queueCommand(getProcessFromMap() as DebugProcess,'-break-insert 1\n', sessionId);
                                        
                                     // clientSession.gdbProcess.stdout.on('data', (data) => {
                                     //     console.log("GDB Data: " + data.toString())
@@ -2628,7 +2628,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             console.log('queue command')
                             // executeCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId).catch(err => console.error('queue command err: ' + err))
                             
-                                executeCommand(getProcessFromMap() as ChildProcess,command,sessionId).then(() => {
+                                executeCommand(getProcessFromMap() as DebugProcess,command,sessionId).then(() => {
 
                                 console.log('COMMAND')
                             }).catch(err => console.error('queue command err: ' + err))
