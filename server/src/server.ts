@@ -1387,10 +1387,11 @@ function endConnectionPromise()
     // debug mode only for now
     async function executeCommand( childProcess: DebugProcess, command: string, sessionId: UUID): Promise<void> {
         return new Promise((resolve, reject) => {
-            let gdbBuffer = "";
+            
             console.log("GDB Command to execute: " + command)
             const onData = (data: Buffer) => {
-                gdbBuffer += data.toString();
+                
+                gdbBuffer = data.toString();
                 console.log(data.toString())
                 // Check if the full response has arrived
                 if(!gdbBuffer.toString())

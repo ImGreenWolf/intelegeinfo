@@ -1094,10 +1094,9 @@ exports.wss.addListener('connection', async (ws, req) => {
         // debug mode only for now
         async function executeCommand(childProcess, command, sessionId) {
             return new Promise((resolve, reject) => {
-                let gdbBuffer = "";
                 console.log("GDB Command to execute: " + command);
                 const onData = (data) => {
-                    gdbBuffer += data.toString();
+                    gdbBuffer = data.toString();
                     console.log(data.toString());
                     // Check if the full response has arrived
                     if (!gdbBuffer.toString())
