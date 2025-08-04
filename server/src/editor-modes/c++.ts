@@ -154,7 +154,7 @@ int main() {
         constructor(res, clientObj) {
             super()
 
-            this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=dap", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+            this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "set pagination off", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
             console.log('Spawned debug process with id', this.process.pid)
             
         }
