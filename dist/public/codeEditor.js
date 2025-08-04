@@ -2142,27 +2142,35 @@ ws.onmessage = (event) => {
             const variablesSection = document.getElementById("variables");
             let unprocVariables;
             const variablesString = JSON.stringify(eventJson.variables);
+            writeOutput("", eventJson.variables, false, ConsoleMessageType.Info);
             // const textToVar = data
             //   .split("(gdb)")
             //   .pop()
             //   ?.replace(/\n/g, ";")
             //   .match(/(?<!\w\S)(\b\w+)\s*=.*/g);
-            if (eventJson.variables != undefined) {
-                //if we have variables in the chunk
-                variables = parseMIDebuggerOutput(eventJson, {
-                    onNewVariable: (variable) => {
-                        if (variable.type != "array")
-                            return;
-                        createDisplayVector(variable);
-                        //console.log("created display vector")
-                    },
-                    onArrayIndexChange: (variableName, changes, changed) => {
-                        updateDisplayVectorElement(new Variable(variableName, changes.new, "array"), changes.index, changed);
-                        // console.log(changes.updatedIndices)
-                    },
-                });
-                console.log(variables);
-            }
+            // if (eventJson.variables!=undefined) {
+            //   //if we have variables in the chunk
+            //   variables = parseMIDebuggerOutput(eventJson, {
+            //     onNewVariable: (variable) => {
+            //       if (variable.type != "array") return;
+            //       createDisplayVector(variable);
+            //       //console.log("created display vector")
+            //     },
+            //     onArrayIndexChange: (
+            //       variableName: any,
+            //       changes: { new: any; index: any },
+            //       changed: boolean
+            //     ) => {
+            //       updateDisplayVectorElement(
+            //         new Variable(variableName, changes.new, "array"),
+            //         changes.index,
+            //         changed
+            //       );
+            //       // console.log(changes.updatedIndices)
+            //     },
+            //   });
+            //   console.log(variables)
+            // }
             // set variables
             maxValue = 0;
             for (let index = 0; index < variables.length; index++) {
