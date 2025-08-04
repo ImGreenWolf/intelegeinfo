@@ -1399,10 +1399,9 @@ function endConnectionPromise()
                     gdbBuffer.toString().split('(gdb)').forEach(element => {
                         if(element!='')
                         {
-                             const gdbOutput = parseGDBString(gdbBuffer.toString());
+                             const gdbOutput = parseGDBString(element);
                              console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
-                    // console.log(gdbOutput.json);
-                
+                    
                     const response: {
                         error: boolean;
                         input: string | boolean;

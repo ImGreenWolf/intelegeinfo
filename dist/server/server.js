@@ -1105,9 +1105,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                         // childProcess.kill()
                         gdbBuffer.toString().split('(gdb)').forEach(element => {
                             if (element != '') {
-                                const gdbOutput = (0, gdbUtilities_1.parseGDBString)(gdbBuffer.toString());
+                                const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
                                 console.log(JSON.stringify(gdbOutput.json), gdbOutput.err);
-                                // console.log(gdbOutput.json);
                                 const response = {
                                     error: gdbOutput.err ? gdbOutput.err : undefined,
                                     input: false,
