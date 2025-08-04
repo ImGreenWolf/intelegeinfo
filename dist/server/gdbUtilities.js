@@ -4,6 +4,7 @@ exports.parseGDBString = parseGDBString;
 /**
  * Parses a GDB/MI output string into a JSON object.
  * Handles nested structures, arrays, and quoted strings.
+ * If the first argument doesn't have a name, adds "message" as the key.
  * Returns { json } on success, or { err, json: string } on failure.
  */
 function parseGDBString(gdbString) {
@@ -102,6 +103,24 @@ function parseGDBString(gdbString) {
         }
         else {
             // Otherwise, parse as key-value pairs
+            let firstKeyIsMessage = false;
+            // Check if the first argument has a name
+            let tempIdx = idx;
+            while (input[tempIdx] === ' ' || input[tempIdx] === ',')
+                tempIdx++;
+            let keyEnd = tempIdx;
+            while (keyEnd < input.length && input[keyEnd] !== '=' && input[keyEnd] !== ',' && input[keyEnd] !== '{' && input[keyEnd] !== '[')
+                keyEnd++;
+            // If the first token is not followed by '=', treat it as a message
+            if (input[keyEnd] !== '=') {
+                const message = input.slice(tempIdx, keyEnd).trim();
+                result["message"] = message;
+                idx = keyEnd;
+                // Skip comma if present
+                while (input[idx] === ' ' || input[idx] === ',')
+                    idx++;
+                firstKeyIsMessage = true;
+            }
             while (idx < input.length) {
                 while (input[idx] === ' ' || input[idx] === ',')
                     idx++;
@@ -109,6 +128,8 @@ function parseGDBString(gdbString) {
                 let keyEnd = idx;
                 while (keyEnd < input.length && input[keyEnd] !== '=')
                     keyEnd++;
+                if (keyEnd >= input.length)
+                    break;
                 const key = input.slice(idx, keyEnd).trim();
                 idx = keyEnd + 1;
                 // Parse value
