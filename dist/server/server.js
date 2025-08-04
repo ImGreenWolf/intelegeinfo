@@ -1105,7 +1105,6 @@ exports.wss.addListener('connection', async (ws, req) => {
                     if (gdbBuffer.includes("(gdb)")) {
                         // We have everything, remove listener
                         // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
-                        childProcess.removeDataListener(onData);
                         gdbBuffer.toString().split('\n').forEach(element => {
                             if (element.trim() != '') {
                                 const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
@@ -1153,6 +1152,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                  {
                     // childProcess.stdout?.on("data", onData);
                     // childProcess.stdin?.write(command+'\n');
+                    childProcess.removeDataListener(onData);
                     childProcess.addDataListener(onData);
                     childProcess.sendCommand(command);
                 }

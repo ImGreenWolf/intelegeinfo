@@ -1399,7 +1399,7 @@ function endConnectionPromise()
                 if (gdbBuffer.includes("(gdb)")) {
                     // We have everything, remove listener
                     // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
-                    childProcess.removeDataListener(onData)
+                    
                     gdbBuffer.toString().split('\n').forEach(element => {
                         if(element.trim()!='')
                         {
@@ -1454,7 +1454,7 @@ function endConnectionPromise()
                    
                     });
                     
-
+                    
                     // }
                     if(command === '-exec-quit' && childProcess)
                         closeProcess(childProcess)
@@ -1468,6 +1468,7 @@ function endConnectionPromise()
                 
                 // childProcess.stdout?.on("data", onData);
                 // childProcess.stdin?.write(command+'\n');
+                childProcess.removeDataListener(onData)
                 childProcess.addDataListener(onData)
                 childProcess.sendCommand(command)
             } else console.error("GDB process not found for session " + sessionId);
