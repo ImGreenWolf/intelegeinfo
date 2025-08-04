@@ -1109,6 +1109,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
                                 if (JSON.stringify(gdbOutput.json) == '{}')
                                     return;
+                                if (gdbOutput.err)
+                                    return;
                                 console.log(JSON.stringify(gdbOutput.json), gdbOutput.err);
                                 const response = {
                                     error: gdbOutput.err ? gdbOutput.err : undefined,
