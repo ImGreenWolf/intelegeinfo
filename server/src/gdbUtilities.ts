@@ -3,6 +3,7 @@
  * Handles nested structures, arrays, and quoted strings.
  * If the first argument doesn't have a name, adds "message" as the key.
  * Returns { json } on success, or { err, json: string } on failure.
+ * If the message is "warning", returns { err, json }.
  */
 export function parseGDBString(gdbString: string) {
     // Remove escaped quotes and trim whitespace
@@ -90,8 +91,6 @@ export function parseGDBString(gdbString: string) {
             [result, idx] = parseArray(input, 1);
         } else {
             // Otherwise, parse as key-value pairs
-            let firstKeyIsMessage = false;
-            // Check if the first argument has a name
             let tempIdx = idx;
             while (input[tempIdx] === ' ' || input[tempIdx] === ',') tempIdx++;
             let keyEnd = tempIdx;
@@ -103,7 +102,6 @@ export function parseGDBString(gdbString: string) {
                 idx = keyEnd;
                 // Skip comma if present
                 while (input[idx] === ' ' || input[idx] === ',') idx++;
-                firstKeyIsMessage = true;
             }
             while (idx < input.length) {
                 while (input[idx] === ' ' || input[idx] === ',') idx++;
@@ -119,6 +117,10 @@ export function parseGDBString(gdbString: string) {
                 idx = next;
                 while (input[idx] === ' ' || input[idx] === ',') idx++;
             }
+        }
+        // If the message is "warning", treat as error
+        if (result.message && result.message.toLowerCase() === "warning") {
+            return { err: "warning", json: result };
         }
         return { json: result };
     } catch (err) {
