@@ -1104,8 +1104,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                         // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                         // childProcess.kill()
                         gdbBuffer.toString().replaceAll('(gdb)', '').split('\n').forEach(element => {
-                            if (element != '') {
+                            if (element.trim() != '') {
                                 const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
+                                if (JSON.stringify(gdbOutput.json) == '{}')
+                                    return;
                                 console.log(JSON.stringify(gdbOutput.json), gdbOutput.err);
                                 const response = {
                                     error: gdbOutput.err ? gdbOutput.err : undefined,

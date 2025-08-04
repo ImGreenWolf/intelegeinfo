@@ -1397,9 +1397,11 @@ function endConnectionPromise()
                     // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                     // childProcess.kill()
                     gdbBuffer.toString().replaceAll('(gdb)', '').split('\n').forEach(element => {
-                        if(element!='')
+                        if(element.trim()!='')
                         {
                              const gdbOutput = parseGDBString(element);
+                             if(JSON.stringify(gdbOutput.json) == '{}')
+                                return;
                              console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
                     
                     const response: {
