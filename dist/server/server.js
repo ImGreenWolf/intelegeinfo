@@ -1103,40 +1103,41 @@ exports.wss.addListener('connection', async (ws, req) => {
                         // We have everything, remove listener
                         // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                         // childProcess.kill()
-                        gdbBuffer.toString().split('\n').forEach(element => {
-                            if (element != '') {
-                                const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
-                                console.log(JSON.stringify(gdbOutput.json), gdbOutput.err);
-                                // console.log(gdbOutput.json);
-                                const response = {
-                                    error: gdbOutput.err ? gdbOutput.err : undefined,
-                                    input: false,
-                                    type: types_1.WebSocketMessageType.Output,
-                                    messageType: types_1.ConsoleMessageType.DebugProgram,
-                                    clientId: clientId,
-                                    body: gdbOutput.json ? gdbOutput.json : undefined,
-                                    raw: gdbBuffer,
-                                    message: 'next', //command.toString(),
-                                    msgId: clientSession.gdbProcess?.pid || -1,
-                                    line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
-                                    variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined
-                                };
-                                getThisClientSession()?.clientsMap.forEach((client, id) => {
-                                    //send response to all clients 
-                                    const clientSocket = exports.clients.get(client.clientId);
-                                    if (!clientSocket) {
-                                        //sessions.delete(sessionId);
-                                        if (getThisClientSession()?.clientsMap.has(clientId))
-                                            console.error("Client not found in session while manually replicating to client  " + sessionId);
-                                        else
-                                            getThisClientSession()?.clientsMap.delete(client.clientId);
-                                        exports.clients.delete(client.clientId);
-                                        return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
-                                    }
-                                    clientSocket?.send(JSON.stringify(response));
-                                });
+                        // gdbBuffer.toString().split('\n').forEach(element => {
+                        //     if(element!='')
+                        //     {
+                        const gdbOutput = (0, gdbUtilities_1.parseGDBString)(gdbBuffer.toString());
+                        console.log(JSON.stringify(gdbOutput.json), gdbOutput.err);
+                        // console.log(gdbOutput.json);
+                        const response = {
+                            error: gdbOutput.err ? gdbOutput.err : undefined,
+                            input: false,
+                            type: types_1.WebSocketMessageType.Output,
+                            messageType: types_1.ConsoleMessageType.DebugProgram,
+                            clientId: clientId,
+                            body: gdbOutput.json ? gdbOutput.json : undefined,
+                            raw: gdbBuffer,
+                            message: 'next', //command.toString(),
+                            msgId: clientSession.gdbProcess?.pid || -1,
+                            line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                            variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined
+                        };
+                        getThisClientSession()?.clientsMap.forEach((client, id) => {
+                            //send response to all clients 
+                            const clientSocket = exports.clients.get(client.clientId);
+                            if (!clientSocket) {
+                                //sessions.delete(sessionId);
+                                if (getThisClientSession()?.clientsMap.has(clientId))
+                                    console.error("Client not found in session while manually replicating to client  " + sessionId);
+                                else
+                                    getThisClientSession()?.clientsMap.delete(client.clientId);
+                                exports.clients.delete(client.clientId);
+                                return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
                             }
+                            clientSocket?.send(JSON.stringify(response));
                         });
+                        // }
+                        // });
                         // }
                         if (command === '-exec-quit' && childProcess)
                             closeProcess(childProcess);

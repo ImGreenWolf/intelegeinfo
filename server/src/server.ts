@@ -1396,10 +1396,10 @@ function endConnectionPromise()
                     // We have everything, remove listener
                     // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                     // childProcess.kill()
-                    gdbBuffer.toString().split('\n').forEach(element => {
-                        if(element!='')
-                        {
-                             const gdbOutput = parseGDBString(element);
+                    // gdbBuffer.toString().split('\n').forEach(element => {
+                    //     if(element!='')
+                    //     {
+                             const gdbOutput = parseGDBString(gdbBuffer.toString());
                              console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
                     // console.log(gdbOutput.json);
                 
@@ -1443,9 +1443,9 @@ function endConnectionPromise()
                             } 
                         clientSocket?.send(JSON.stringify(response));
                     });
-                        }
+                        // }
                    
-                    });
+                    // });
                     
 
                     // }
