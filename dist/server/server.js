@@ -1111,7 +1111,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                     return;
                                 // if( gdbOutput.ignore)
                                 //     return
-                                console.log(JSON.stringify(gdbOutput.json), gdbOutput.err);
+                                //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
                                 const response = {
                                     error: gdbOutput.err ? gdbOutput.err : undefined,
                                     input: false,
