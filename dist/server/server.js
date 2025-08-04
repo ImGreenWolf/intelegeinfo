@@ -1147,7 +1147,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                  {
                     // childProcess.stdout?.on("data", onData);
                     // childProcess.stdin?.write(command+'\n');
-                    childProcess.onResponse = onData;
+                    childProcess.addDataListener(onData);
                     childProcess.sendCommand(command);
                 }
                 else
