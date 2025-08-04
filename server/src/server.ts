@@ -1392,7 +1392,7 @@ function endConnectionPromise()
             const onData = (data: Buffer) => {
                 
                 gdbBuffer = data.toString();
-                console.log(data.toString())
+                console.log(data.toString(), gdbBuffer)
                 // Check if the full response has arrived
                 if(!gdbBuffer.toString())
                     return
