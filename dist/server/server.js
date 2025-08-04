@@ -1116,7 +1116,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                             clientId: clientId,
                             body: gdbOutput.json ? gdbOutput.json : undefined,
                             raw: gdbBuffer,
-                            message: 'next', //command.toString(),
+                            message: 'next', //deprecated - remove
                             msgId: clientSession.gdbProcess?.pid || -1,
                             line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
                             variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined
@@ -2298,6 +2298,7 @@ const aiIntegration_1 = require("./aiIntegration");
 // })
 app.use(parseHTML);
 let translation = undefined;
+const defaultLang = 'ro-RO';
 fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'server', 'data', 'translations.json'), (err, data) => {
     if (err)
         throw err;
@@ -2311,6 +2312,8 @@ function parseText(file, req) {
     let text = file;
     const locale = function () {
         const accLang = req.cookies.ii_lang ? req.cookies.ii_lang : req.headers["accept-language"];
+        if (!accLang)
+            return defaultLang;
         return accLang.split(',').map(param => param.split(';')[0]);
     }()[0];
     for (const matchobj of matches) {
@@ -2319,11 +2322,11 @@ function parseText(file, req) {
         if (key.startsWith('^{%')) {
             if (!translation[match])
                 continue;
-            const expr = translation[match][locale] ? translation[match][locale] : translation[match]['en-US'] ? translation[match]['en-US'] : '';
+            const expr = translation[match][locale] ? translation[match][locale] : translation[match][defaultLang] ? translation[match][defaultLang] : '';
             if (expr != '' && expr !== undefined)
                 text = text.replaceAll(key, expr);
-            else if (translation[match]['ro-RO'])
-                text = text.replaceAll(key, translation[match]['ro-RO']);
+            else if (translation[match][defaultLang])
+                text = text.replaceAll(key, translation[match][defaultLang]);
             else
                 console.error('invalid translation id', match);
         }
