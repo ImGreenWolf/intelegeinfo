@@ -1461,7 +1461,7 @@ function endConnectionPromise()
                 
                 // childProcess.stdout?.on("data", onData);
                 // childProcess.stdin?.write(command+'\n');
-                childProcess.onResponse = onData
+                childProcess.addDataListener(onData)
                 childProcess.sendCommand(command)
             } else console.error("GDB process not found for session " + sessionId);
 

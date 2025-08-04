@@ -108,6 +108,9 @@ class CPPDebugger extends ProcessTypes_1.default {
         this.process.stdin?.write(command + '\n');
     };
     onResponse;
+    addDataListener = (func) => {
+        this.process.stdout?.on("data", func);
+    };
     kill;
     addListener = function (ev, func) {
         switch (ev) {
@@ -121,7 +124,6 @@ class CPPDebugger extends ProcessTypes_1.default {
         super();
         this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
-        this.process.stdout?.on("data", this.onResponse);
     }
 }
 exports.default = CppMode;

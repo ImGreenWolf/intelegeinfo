@@ -133,7 +133,12 @@ int main() {
 
             this.process.stdin?.write(command+'\n');
         }
+        
         onResponse: (response) => void;
+        addDataListener: (onDataFunc: typeof this.onResponse) => void = (func) => {
+
+            this.process.stdout?.on("data", func);
+        }
         kill: () => void;
         addListener: (ev: any, func: (code: any) => void) => void 
         = function (ev, func) {
@@ -151,7 +156,7 @@ int main() {
 
             this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
             console.log('Spawned debug process with id', this.process.pid)
-            this.process.stdout?.on("data", this.onResponse);
+            
         }
     }
 

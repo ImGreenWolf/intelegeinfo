@@ -20,6 +20,7 @@ declare class CppMode extends EditorMode {
 declare class CPPDebugger extends DebugProcess {
     sendCommand: (command: string) => void;
     onResponse: (response: any) => void;
+    addDataListener: (onDataFunc: typeof this.onResponse) => void;
     kill: () => void;
     addListener: (ev: any, func: (code: any) => void) => void;
     process: ChildProcess;
