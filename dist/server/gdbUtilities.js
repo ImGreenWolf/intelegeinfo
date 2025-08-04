@@ -60,6 +60,8 @@ function parseGDBString(gdbString) {
     // key=''
     if (string.includes('~'))
         return { json: '"message: "' + string };
+    if (string.includes('^error'))
+        return { json: '"errror: "' + string };
     for (let index = 0; index < string.length; index++) {
         const element = string[index];
         if ((element == ',' || element == ' ' || element == '=' || ['}', ']'].includes(element) || ['{', '['].includes(element) || index + 1 == string.length) && buffer != '') {
