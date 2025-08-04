@@ -1109,7 +1109,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
                                 if (JSON.stringify(gdbOutput.json) == '{}')
                                     return;
-                                if (gdbOutput.err)
+                                if (gdbOutput.ignore)
                                     return;
                                 console.log(JSON.stringify(gdbOutput.json), gdbOutput.err);
                                 const response = {

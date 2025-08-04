@@ -7,6 +7,7 @@ exports.parseGDBString = parseGDBString;
  * If the first argument doesn't have a name, adds "message" as the key.
  * Returns { json } on success, or { err, json: string } on failure.
  * If the message is "warning", returns { err, json }.
+ * If the message is "library-loaded", returns { ignore: true, json }.
  */
 function parseGDBString(gdbString) {
     // Remove escaped quotes and trim whitespace
@@ -141,6 +142,11 @@ function parseGDBString(gdbString) {
         // If the message is "warning", treat as error
         if (result.message && result.message.toLowerCase() === "warning") {
             return { err: "warning", json: result };
+        }
+        // If the message is "library-loaded" or the key "" is "library-loaded", ignore
+        if ((result.message && result.message.toLowerCase() === "library-loaded") ||
+            (typeof result[""] === "string" && result[""].toLowerCase() === "library-loaded")) {
+            return { ignore: true, json: result };
         }
         return { json: result };
     }

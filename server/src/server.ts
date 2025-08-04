@@ -1403,7 +1403,7 @@ function endConnectionPromise()
                              const gdbOutput = parseGDBString(element);
                              if(JSON.stringify(gdbOutput.json) == '{}')
                                 return;
-                            if( gdbOutput.err)
+                            if( gdbOutput.ignore)
                                 return
                              console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
                     
