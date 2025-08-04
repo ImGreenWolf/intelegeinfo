@@ -1,7 +1,7 @@
 
     export function parseGDBString(gdbString: string)
     {
-        const string = gdbString//.replaceAll(" ",'');
+        const string = gdbString.replaceAll('\\"','"')//.replaceAll(" ",'');
         let buffer: string = '';
         let jsonDepth: number = 0;
         let key: string = '';

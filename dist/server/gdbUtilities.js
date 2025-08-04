@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseGDBString = parseGDBString;
 function parseGDBString(gdbString) {
-    const string = gdbString; //.replaceAll(" ",'');
+    const string = gdbString.replaceAll('\\"', '"'); //.replaceAll(" ",'');
     let buffer = '';
     let jsonDepth = 0;
     let key = '';
