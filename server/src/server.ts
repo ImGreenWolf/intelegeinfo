@@ -1396,7 +1396,7 @@ function endConnectionPromise()
                     // We have everything, remove listener
                     // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                     // childProcess.kill()
-                    gdbBuffer.toString().split('(gdb)').forEach(element => {
+                    gdbBuffer.toString().split('\n').forEach(element => {
                         if(element!='')
                         {
                              const gdbOutput = parseGDBString(element);
