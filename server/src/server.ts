@@ -1385,7 +1385,7 @@ function endConnectionPromise()
        const onData = (data: Buffer) => {
                 
                 gdbBuffer = data.toString();
-                console.log(data.toString(), gdbBuffer)
+                console.log(gdbBuffer)
                 // Check if the full response has arrived
                 if(!gdbBuffer.toString())
                     return
@@ -1394,7 +1394,7 @@ function endConnectionPromise()
                     // We have everything, remove listener
                     // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                     
-                    gdbBuffer.toString().split('\n').forEach(element => {
+                    gdbBuffer.split('\n').forEach(element => {
                         if(element.trim()!='')
                         {
                              const gdbOutput = parseGDBString(element);
