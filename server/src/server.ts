@@ -1382,14 +1382,7 @@ function endConnectionPromise()
    }
 
 
-       
-
-    // debug mode only for now
-    async function executeCommand( childProcess: DebugProcess, command: string, sessionId: UUID): Promise<void> {
-        return new Promise((resolve, reject) => {
-            
-            console.log("GDB Command to execute: " + command)
-            const onData = (data: Buffer) => {
+       const onData = (data: Buffer) => {
                 
                 gdbBuffer = data.toString();
                 console.log(data.toString(), gdbBuffer)
@@ -1457,22 +1450,20 @@ function endConnectionPromise()
                     
                     
                     // }
-                    if(command === '-exec-quit' && childProcess)
+                    
+                }
+            };
+
+    // debug mode only for now
+    async function executeCommand( childProcess: DebugProcess, command: string, sessionId: UUID): Promise<void> {
+        return new Promise((resolve, reject) => {
+            
+            console.log("GDB Command to execute: " + command)
+            childProcess.sendCommand(command)
+            if(command === '-exec-quit' && childProcess)
                         closeProcess(childProcess)
     
                     resolve(); 
-                }
-            };
-           
-            if(true)//childProcess && childProcess.stdin && childProcess.stdout
-            {
-                
-                // childProcess.stdout?.on("data", onData);
-                // childProcess.stdin?.write(command+'\n');
-                childProcess.removeDataListener(onData)
-                childProcess.addDataListener(onData)
-                childProcess.sendCommand(command)
-            } else console.error("GDB process not found for session " + sessionId);
 
         });
     }
@@ -2477,6 +2468,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         });
 
                                         clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession)
+                                        clientSession.gdbProcess.addDataListener(onData)
                                         if(!clientSession.gdbProcess)
                                             throw 'invalid debug process'
 

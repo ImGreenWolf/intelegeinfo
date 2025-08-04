@@ -109,7 +109,7 @@ class CPPDebugger extends ProcessTypes_1.default {
     };
     onResponse;
     addDataListener = (func) => {
-        this.process.stdout?.once("data", func);
+        this.process.stdout?.on("data", func);
     };
     removeDataListener = (func) => {
         this.process.stdout?.off("data", func);
