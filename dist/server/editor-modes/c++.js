@@ -122,7 +122,7 @@ class CPPDebugger extends ProcessTypes_1.default {
     process;
     constructor(res, clientObj) {
         super();
-        this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+        this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=dap", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
     }
 }
