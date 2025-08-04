@@ -1104,7 +1104,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         // We have everything, remove listener
                         // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                         // childProcess.kill()
-                        gdbBuffer.toString().replaceAll('(gdb)', '').split('\n').forEach(element => {
+                        gdbBuffer.toString().split('(gdb)').forEach(element => {
                             if (element.trim() != '') {
                                 const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
                                 if (JSON.stringify(gdbOutput.json) == '{}')
