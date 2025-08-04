@@ -1113,7 +1113,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                     type: types_1.WebSocketMessageType.Output,
                                     messageType: types_1.ConsoleMessageType.DebugProgram,
                                     clientId: clientId,
-                                    body: gdbOutput.json ? gdbOutput.json : undefined,
+                                    body: JSON.parse(gdbOutput.json) ? JSON.parse(gdbOutput.json) : undefined,
                                     raw: gdbBuffer,
                                     message: 'next', //command.toString(),
                                     msgId: clientSession.gdbProcess?.pid || -1,

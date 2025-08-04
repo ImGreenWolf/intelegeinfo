@@ -1420,7 +1420,7 @@ function endConnectionPromise()
                         type: WebSocketMessageType.Output,
                         messageType: ConsoleMessageType.DebugProgram,
                         clientId: clientId,
-                        body: gdbOutput.json ? gdbOutput.json : undefined,
+                        body: JSON.parse(gdbOutput.json) ? JSON.parse(gdbOutput.json) : undefined,
                         raw: gdbBuffer,
                         message: 'next', //command.toString(),
                         msgId: clientSession.gdbProcess?.pid || -1,
