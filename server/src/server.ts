@@ -1390,7 +1390,7 @@ function endConnectionPromise()
                 if(!buffer.toString())
                     return
 
-                if (buffer.includes("(gdb)")) {
+                if (true) {
                     // We have everything, remove listener
                     // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                     

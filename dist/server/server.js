@@ -1097,7 +1097,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             // Check if the full response has arrived
             if (!buffer.toString())
                 return;
-            if (buffer.includes("(gdb)")) {
+            if (true) {
                 // We have everything, remove listener
                 // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                 for (const element of buffer.split('\n')) {
