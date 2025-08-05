@@ -1978,6 +1978,7 @@ bash `.trim().replaceAll('\n', "");
                                                     console.error('Invalid session while starting debug process');
                                                 printClientConsoleDebug("started debugging process.");
                                                 queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
+                                                queueCommand(getProcessFromMap(), '-exec-run\n', sessionId);
                                                 // clientSession.gdbProcess.stdout.on('data', (data) => {
                                                 //     console.log("GDB Data: " + data.toString())
                                                 // })

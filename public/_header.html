@@ -39,8 +39,9 @@
                     }
                     return "";
                 }
+
                 const langSel = document.getElementById('lang-selector')
-                console.log(getCookie('ii_lang'), typeof  getCookie('ii_lang'),navigator.language)
+                console.log(navigator.language, getCookie('ii_lang'))
                 function setValueByName(lang)
                 {   
                     const option = langSel.querySelector('[value=' + lang + ']')

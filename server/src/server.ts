@@ -2481,7 +2481,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     printClientConsoleDebug("started debugging process.")
                                
                                     queueCommand(getProcessFromMap(),'-break-insert 1\n', sessionId);
-                                       
+                                    queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);   
                                     // clientSession.gdbProcess.stdout.on('data', (data) => {
                                     //     console.log("GDB Data: " + data.toString())
                                     // })
