@@ -2177,11 +2177,11 @@ ws.onmessage = (event) => {
                 const debugLineText = session.getLine(debugLine - 1);
                 const pos = { row: debugLine - 1, column: debugLineText.length };
                 // Match `if` and `while`
-                for (const match of data.matchAll(conditionRegex)) {
+                for (const match of debugLineText.matchAll(conditionRegex)) {
                     conditions.push(match[1].trim());
                 }
                 // Match `for` loops (only the 2nd part — the condition)
-                for (const match of data.matchAll(forRegex)) {
+                for (const match of debugLineText.matchAll(forRegex)) {
                     conditions.push(match[2].trim());
                 }
                 // setTimeout(() => {
