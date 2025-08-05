@@ -1394,12 +1394,12 @@ function endConnectionPromise()
                     // We have everything, remove listener
                     // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                     
-                    buffer.split('\n').forEach(element => {
+                    for(const element of buffer.split('\n')) {
                         if(element.trim()!='')
                         {
                              const gdbOutput = parseGDBString(element);
                              if(JSON.stringify(gdbOutput.json) == '{}')
-                                return;
+                                continue;
 
                             if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')
                                {
@@ -1409,6 +1409,7 @@ function endConnectionPromise()
                                 replicateFunction((clientWs) => {
                                     clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: "gdb", clientId: clientId}));  // Send GDB output to the client
                                     });
+                                    return;
                                }
                             // if( gdbOutput.ignore)
                             //     return
@@ -1456,7 +1457,7 @@ function endConnectionPromise()
                     });
                         }
                    
-                    });
+                    };
                     
                     
                     // }

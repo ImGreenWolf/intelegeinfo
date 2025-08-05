@@ -1100,17 +1100,18 @@ exports.wss.addListener('connection', async (ws, req) => {
             if (buffer.includes("(gdb)")) {
                 // We have everything, remove listener
                 // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
-                buffer.split('\n').forEach(element => {
+                for (const element of buffer.split('\n')) {
                     if (element.trim() != '') {
                         const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
                         if (JSON.stringify(gdbOutput.json) == '{}')
-                            return;
+                            continue;
                         if (gdbOutput.json['exit-code'] != undefined || gdbOutput.json.reason == 'exited-normally') {
                             closeProcess(clientSession.process);
                             printClientConsoleInfo("Closed debug session!");
                             replicateFunction((clientWs) => {
                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, body: "gdb", clientId: clientId })); // Send GDB output to the client
                             });
+                            return;
                         }
                         // if( gdbOutput.ignore)
                         //     return
@@ -1143,7 +1144,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                             clientSocket?.send(JSON.stringify(response));
                         });
                     }
-                });
+                }
+                ;
                 // }
             }
         };
