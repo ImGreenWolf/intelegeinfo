@@ -76,7 +76,6 @@ class javascript extends EditorMode {
  class JSDebugger extends DebugProcess
     {
         sendCommand: (string: any) => void;
-        onResponse: () => string;
         kill: () => void = () =>
         {
             this.session.disconnect()
@@ -88,6 +87,12 @@ class javascript extends EditorMode {
         {
             func(0)
         }
+        addDataListener = (onDataFunc: typeof this.onResponse) => {
+           
+        };
+        removeDataListener = (onDataFunc: typeof this.onResponse) => {
+            
+        };
 
         session = new inspector.Session();
 
@@ -119,9 +124,9 @@ class javascript extends EditorMode {
             });
 
             session.on('Debugger.paused', msg => {
-            console.log("Paused at breakpoint:", msg.params.callFrames[0].location);
-            // You can inspect variables here
-            session.post('Debugger.resume'); // Continue execution
+                console.log("Paused at breakpoint:", msg.params.callFrames[0].location);
+                // You can inspect variables here
+                session.post('Debugger.resume'); // Continue execution
             });
         }
     }

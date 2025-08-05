@@ -108,7 +108,6 @@ class CPPDebugger extends ProcessTypes_1.default {
     sendCommand = (command) => {
         this.process.stdin?.write(command + '\n');
     };
-    onResponse;
     addDataListener = (func) => {
         console.log('ADDED DATA LISTENER');
         this.removeDataListener(func);

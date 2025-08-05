@@ -63,7 +63,6 @@ class javascript extends BaseEditorMode_1.default {
 }
 class JSDebugger extends ProcessTypes_1.default {
     sendCommand;
-    onResponse;
     kill = () => {
         this.session.disconnect();
         this.session.removeAllListeners();
@@ -71,6 +70,10 @@ class JSDebugger extends ProcessTypes_1.default {
     };
     addListener = function (ev, func) {
         func(0);
+    };
+    addDataListener = (onDataFunc) => {
+    };
+    removeDataListener = (onDataFunc) => {
     };
     session = new inspector_1.default.Session();
     constructor(clientObj, sessionObj) {

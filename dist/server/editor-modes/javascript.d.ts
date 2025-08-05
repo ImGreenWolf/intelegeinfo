@@ -21,9 +21,10 @@ declare class javascript extends EditorMode {
 }
 declare class JSDebugger extends DebugProcess {
     sendCommand: (string: any) => void;
-    onResponse: () => string;
     kill: () => void;
     addListener: (ev: any, func: (code: any) => void) => void;
+    addDataListener: (onDataFunc: typeof this.onResponse) => void;
+    removeDataListener: (onDataFunc: typeof this.onResponse) => void;
     session: inspector.Session;
     constructor(clientObj: ClientObject, sessionObj: any);
 }
