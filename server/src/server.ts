@@ -2611,7 +2611,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 //     process.stdout.write('data: ' + chunk);
                                 // });
                             }
-                            else  await queueCommand(getProcessFromMap() as ChildProcess,command, sessionId);// gdbProcess.stdin.write(message + "\n");
+                            else  await queueCommand(getProcessFromMap() as ChildProcess,'-exec-quit', sessionId);// gdbProcess.stdin.write(message + "\n");
                                 
                                 
                 

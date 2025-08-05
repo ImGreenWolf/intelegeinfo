@@ -2082,7 +2082,7 @@ bash `.trim().replaceAll('\n', "");
                                         // });
                                     }
                                     else
-                                        await queueCommand(getProcessFromMap(), command, sessionId); // gdbProcess.stdin.write(message + "\n");
+                                        await queueCommand(getProcessFromMap(), '-exec-quit', sessionId); // gdbProcess.stdin.write(message + "\n");
                                 }
                                 else if (command === "-exec-quit") {
                                     closeProcess(clientSession.process);
