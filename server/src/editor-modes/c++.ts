@@ -3,7 +3,7 @@ import EditorMode from "./BaseEditorMode";
 import { ClientObject, EditorFile, EditorSession } from "../types";
 import path from "path";
 import DebugProcess from "./ProcessTypes";
-import { WebSocketMessageType } from "../../../shared/src/types";
+import { WebSocketMessageType } from "../../../dist/shared/types";
 class CppMode extends EditorMode {
 
     static name = 'C++'

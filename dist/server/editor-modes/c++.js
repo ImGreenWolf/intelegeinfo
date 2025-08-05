@@ -7,7 +7,7 @@ const child_process_1 = require("child_process");
 const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 const ProcessTypes_1 = __importDefault(require("./ProcessTypes"));
-const types_1 = require("../../../shared/src/types");
+const types_1 = require("../../../dist/shared/types");
 class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
     static logoSrc = 'c++-logo.png';
