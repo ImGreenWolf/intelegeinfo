@@ -1402,7 +1402,14 @@ function endConnectionPromise()
                                 return;
 
                             if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')
-                               return closeProcess(getProcessFromMap(clientSession))
+                               {
+
+                                closeProcess(clientSession.process)
+                                printClientConsoleInfo("Closed debug session!")
+                                replicateFunction((clientWs) => {
+                                    clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: "gdb", clientId: clientId}));  // Send GDB output to the client
+                                    });
+                               }
                             // if( gdbOutput.ignore)
                             //     return
                             //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)

@@ -1105,8 +1105,13 @@ exports.wss.addListener('connection', async (ws, req) => {
                         const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
                         if (JSON.stringify(gdbOutput.json) == '{}')
                             return;
-                        if (gdbOutput.json['exit-code'] != undefined || gdbOutput.json.reason == 'exited-normally')
-                            return closeProcess(getProcessFromMap(clientSession));
+                        if (gdbOutput.json['exit-code'] != undefined || gdbOutput.json.reason == 'exited-normally') {
+                            closeProcess(clientSession.process);
+                            printClientConsoleInfo("Closed debug session!");
+                            replicateFunction((clientWs) => {
+                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, body: "gdb", clientId: clientId })); // Send GDB output to the client
+                            });
+                        }
                         // if( gdbOutput.ignore)
                         //     return
                         //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
