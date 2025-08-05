@@ -1401,8 +1401,8 @@ function endConnectionPromise()
                              if(JSON.stringify(gdbOutput.json) == '{}')
                                 return;
 
-                            if(gdbOutput.json['exit-code']!=undefined)
-                               closeProcess(getProcessFromMap(clientSession))
+                            if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')
+                               return closeProcess(getProcessFromMap(clientSession))
                             // if( gdbOutput.ignore)
                             //     return
                             //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
@@ -1426,7 +1426,7 @@ function endConnectionPromise()
                         messageType: ConsoleMessageType.DebugProgram,
                         clientId: clientId,
                         body: gdbOutput.json ? gdbOutput.json : undefined,
-                        raw: buffer,
+                        raw: element,
                         message: 'next', //deprecated - remove
                         msgId: clientSession.gdbProcess?.pid || -1,
                         line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,

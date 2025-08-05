@@ -1105,7 +1105,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
                         if (JSON.stringify(gdbOutput.json) == '{}')
                             return;
-                        if (gdbOutput.json['exit-code'] != undefined)
+                        if (gdbOutput.json['exit-code'] != undefined || gdbOutput.json.reason == 'exited-normally')
                             closeProcess(getProcessFromMap(clientSession));
                         // if( gdbOutput.ignore)
                         //     return
@@ -1117,7 +1117,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                             messageType: types_1.ConsoleMessageType.DebugProgram,
                             clientId: clientId,
                             body: gdbOutput.json ? gdbOutput.json : undefined,
-                            raw: buffer,
+                            raw: element,
                             message: 'next', //deprecated - remove
                             msgId: clientSession.gdbProcess?.pid || -1,
                             line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
