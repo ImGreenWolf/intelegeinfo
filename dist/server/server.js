@@ -1092,19 +1092,21 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
         }
         const onData = (data) => {
-            gdbBuffer = data.toString();
-            console.log(gdbBuffer);
+            const buffer = data.toString();
+            console.log(buffer);
             // Check if the full response has arrived
-            if (!gdbBuffer.toString())
+            if (!buffer.toString())
                 return;
-            if (gdbBuffer.includes("(gdb)")) {
+            if (buffer.includes("(gdb)")) {
                 // We have everything, remove listener
                 // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
-                gdbBuffer.split('\n').forEach(element => {
+                buffer.split('\n').forEach(element => {
                     if (element.trim() != '') {
                         const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
                         if (JSON.stringify(gdbOutput.json) == '{}')
                             return;
+                        if (gdbOutput.json['exit-code'] != undefined)
+                            closeProcess(getProcessFromMap(clientSession));
                         // if( gdbOutput.ignore)
                         //     return
                         //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
@@ -1115,7 +1117,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                             messageType: types_1.ConsoleMessageType.DebugProgram,
                             clientId: clientId,
                             body: gdbOutput.json ? gdbOutput.json : undefined,
-                            raw: gdbBuffer,
+                            raw: buffer,
                             message: 'next', //deprecated - remove
                             msgId: clientSession.gdbProcess?.pid || -1,
                             line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,

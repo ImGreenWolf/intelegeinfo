@@ -116,7 +116,9 @@ class CPPDebugger extends ProcessTypes_1.default {
     removeDataListener = (func) => {
         this.process.stdout?.off("data", func);
     };
-    kill;
+    kill = (code) => {
+        this.process.kill(code);
+    };
     addListener = function (ev, func) {
         switch (ev) {
             case 'close':

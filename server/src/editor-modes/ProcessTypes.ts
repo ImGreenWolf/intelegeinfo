@@ -4,7 +4,7 @@ abstract class DebugProcess {
     abstract addDataListener: (onDataFunc: typeof this.onResponse) => void
     abstract removeDataListener: (onDataFunc: typeof this.onResponse) => void
     
-    abstract kill: () => void
+    abstract kill: (signal) => void
     abstract addListener: (ev: any, func: (code: any) => void) => void 
     killed = false
     pid = Math.floor(Math.random() * 1000)

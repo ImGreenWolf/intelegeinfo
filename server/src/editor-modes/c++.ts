@@ -144,7 +144,9 @@ int main() {
 
             this.process.stdout?.off("data", func);
         }
-        kill: () => void;
+        kill: (code) => void = (code) => {
+            this.process.kill(code)
+        };
         addListener: (ev: any, func: (code: any) => void) => void 
         = function (ev, func) {
             switch (ev) 
