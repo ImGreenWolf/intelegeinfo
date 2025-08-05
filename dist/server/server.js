@@ -1113,17 +1113,23 @@ exports.wss.addListener('connection', async (ws, req) => {
                         //     return
                         //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
                         const response = {
-                            error: gdbOutput.err ? gdbOutput.err : undefined,
-                            input: false,
-                            type: types_1.WebSocketMessageType.Output,
-                            messageType: types_1.ConsoleMessageType.DebugProgram,
-                            clientId: clientId,
-                            body: gdbOutput.json ? gdbOutput.json : undefined,
-                            raw: element,
-                            message: 'next', //deprecated - remove
-                            msgId: clientSession.gdbProcess?.pid || -1,
+                            type: types_1.WebSocketMessageType.Debug,
+                            state: "running",
+                            json: gdbOutput ? gdbOutput.json : undefined,
                             line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
-                            variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined
+                            variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined,
+                            raw: element
+                            // error: gdbOutput.err ? gdbOutput.err : undefined,
+                            // input: false,
+                            // type: WebSocketMessageType.Output,
+                            // messageType: ConsoleMessageType.DebugProgram,
+                            // clientId: clientId,
+                            // body: gdbOutput.json ? gdbOutput.json : undefined,
+                            // raw: element,
+                            // message: 'next', //deprecated - remove
+                            // msgId: clientSession.gdbProcess?.pid || -1,
+                            // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                            // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
                         };
                         getThisClientSession()?.clientsMap.forEach((client, id) => {
                             //send response to all clients 
@@ -2144,8 +2150,8 @@ bash `.trim().replaceAll('\n', "");
             try {
                 return await new Promise((resolve, reject) => {
                     if (process) {
-                        if (!process.killed && process) {
-                            process.kill(9);
+                        if (!process.killed) {
+                            process.kill(0);
                             process.addListener(('close'), (code) => {
                                 onClosedProcess();
                                 resolve();

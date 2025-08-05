@@ -56,7 +56,8 @@ type DebugMessageRunning = {
   state: 'running'// | 'end';
   line: number;
   variables?: any[];
-  json: Record<string, any>;
+  body: Record<string, any>;
+  raw?: string
 }
 type DebugMessageEnd = {
   type:  WebSocketMessageType.Debug;

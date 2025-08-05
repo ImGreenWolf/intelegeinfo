@@ -1412,30 +1412,24 @@ function endConnectionPromise()
                             //     return
                             //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
                     
-                    const response: {
-                        error: boolean;
-                        input: string | boolean;
-                        type: WebSocketMessageType,
-                        messageType: ConsoleMessageType,
-                        clientId: UUID,
-                        body: string;
-                        raw: string;
-                        message: string;
-                        msgId: number;
-                        line: number;
-                        variables: any[];
-                    } = {
-                        error: gdbOutput.err ? gdbOutput.err : undefined,
-                        input: false,
-                        type: WebSocketMessageType.Output,
-                        messageType: ConsoleMessageType.DebugProgram,
-                        clientId: clientId,
-                        body: gdbOutput.json ? gdbOutput.json : undefined,
-                        raw: element,
-                        message: 'next', //deprecated - remove
-                        msgId: clientSession.gdbProcess?.pid || -1,
+                    const response: WebSocketMessage = {
+                        type:WebSocketMessageType.Debug,
+                        state: "running",
+                        json: gdbOutput ? gdbOutput.json : undefined,
                         line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
-                        variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
+                        variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined,
+                        raw: element
+                        // error: gdbOutput.err ? gdbOutput.err : undefined,
+                        // input: false,
+                        // type: WebSocketMessageType.Output,
+                        // messageType: ConsoleMessageType.DebugProgram,
+                        // clientId: clientId,
+                        // body: gdbOutput.json ? gdbOutput.json : undefined,
+                        // raw: element,
+                        // message: 'next', //deprecated - remove
+                        // msgId: clientSession.gdbProcess?.pid || -1,
+                        // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                        // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
                     };
                     getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
                         //send response to all clients 
