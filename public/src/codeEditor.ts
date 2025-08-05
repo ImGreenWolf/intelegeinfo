@@ -3301,7 +3301,7 @@ break;
         break;
       }
       else 
-      handleOutput(messageJson);
+        writeOutput(data, messageJson);
     
       if(messageJson.message === 'end')
         cleanDebug()
@@ -3315,10 +3315,10 @@ break;
           const cmdBut = document.getElementById("buttons");
           cmdBut?.classList.remove("debug-control");
           cmdBut?.classList.remove("execute-control");
-          writeOutput('Ended debug session', messageJson, ConsoleMessageType.Debug)
+          writeOutput('Ended debug session', null, ConsoleMessageType.Debug)
           break
         case "start":
-          writeOutput('Started debug session', messageJson, ConsoleMessageType.Debug)
+          writeOutput('Started debug session', null, ConsoleMessageType.Debug)
           break;
         case "running":
           handleOutput(messageJson);
