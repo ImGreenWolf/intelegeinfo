@@ -2081,8 +2081,14 @@ bash `.trim().replaceAll('\n', "");
                                         //     process.stdout.write('data: ' + chunk);
                                         // });
                                     }
-                                    else
-                                        await queueCommand(getProcessFromMap(), '-exec-quit', sessionId); // gdbProcess.stdin.write(message + "\n");
+                                    else {
+                                        closeProcess(clientSession.process);
+                                        //  onClosedProcess()//.then(() => {
+                                        printClientConsoleInfo("Closed process");
+                                        replicateFunction((clientWs) => {
+                                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, body: "gdb", clientId: clientId })); // Send GDB output to the client
+                                        });
+                                    } // else  await queueCommand(getProcessFromMap() as ChildProcess,'-exec-quit', sessionId);// gdbProcess.stdin.write(message + "\n");
                                 }
                                 else if (command === "-exec-quit") {
                                     closeProcess(clientSession.process);

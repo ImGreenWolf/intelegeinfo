@@ -2611,7 +2611,16 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 //     process.stdout.write('data: ' + chunk);
                                 // });
                             }
-                            else  await queueCommand(getProcessFromMap() as ChildProcess,'-exec-quit', sessionId);// gdbProcess.stdin.write(message + "\n");
+                            else {
+                            closeProcess(clientSession.process)
+                            //  onClosedProcess()//.then(() => {
+                                printClientConsoleInfo("Closed process")
+                                replicateFunction((clientWs) => {
+                                    clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: "gdb", clientId: clientId}));  // Send GDB output to the client
+                                    });
+                           
+                            
+                        }// else  await queueCommand(getProcessFromMap() as ChildProcess,'-exec-quit', sessionId);// gdbProcess.stdin.write(message + "\n");
                                 
                                 
                 
