@@ -2494,9 +2494,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     queueCommand(getProcessFromMap(),'-break-insert 1\n', sessionId);
                                     queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);  
 
-                                    replicateFunction((clientWs, id, clientObj) => {
-                                        clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
-                                    });
+                                    
 
                                 })
                                 else 

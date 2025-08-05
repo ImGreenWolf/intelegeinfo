@@ -7,6 +7,7 @@ const child_process_1 = require("child_process");
 const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 const ProcessTypes_1 = __importDefault(require("./ProcessTypes"));
+const types_1 = require("../../../shared/src/types");
 class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
     static logoSrc = 'c++-logo.png';
@@ -79,8 +80,8 @@ int main() {
             }
         });
     }
-    startDebugging(res, clientObj) {
-        return new CPPDebugger(res, clientObj);
+    startDebugging(res, clientObj, clientSession) {
+        return new CPPDebugger(res, clientObj, clientSession);
     }
     checkCodeSyntax = (sessionObj, file) => {
         return new Promise((resolve, reject) => {
@@ -118,6 +119,9 @@ class CPPDebugger extends ProcessTypes_1.default {
     };
     kill = (code) => {
         this.process.kill(code);
+        this.clientSession.replicateFunction((clientWs, id, clientObj) => {
+            clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "end", code }); // Send GDB output to the client
+        });
     };
     addListener = function (ev, func) {
         switch (ev) {
@@ -127,10 +131,15 @@ class CPPDebugger extends ProcessTypes_1.default {
         return func;
     };
     process;
-    constructor(res, clientObj) {
+    clientSession;
+    constructor(res, clientObj, clientSession) {
         super();
+        this.clientSession = clientSession;
         this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
+        clientSession.replicateFunction((clientWs, id, clientObj) => {
+            clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
+        });
     }
 }
 exports.default = CppMode;

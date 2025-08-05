@@ -1,8 +1,9 @@
 import { ChildProcess, execSync, spawn } from "child_process";
 import EditorMode from "./BaseEditorMode";
-import { EditorFile, EditorSession } from "../types";
+import { ClientObject, EditorFile, EditorSession } from "../types";
 import path from "path";
 import DebugProcess from "./ProcessTypes";
+import { WebSocketMessageType } from "../../../shared/src/types";
 class CppMode extends EditorMode {
 
     static name = 'C++'
@@ -93,8 +94,8 @@ int main() {
         })
     }
 
-    startDebugging(res, clientObj) {
-        return new CPPDebugger(res, clientObj)
+    startDebugging(res, clientObj, clientSession) {
+        return new CPPDebugger(res, clientObj, clientSession)
     }
 
     checkCodeSyntax = (sessionObj: EditorSession, file: EditorFile): Promise<string> =>
@@ -146,6 +147,9 @@ int main() {
         }
         kill: (code) => void = (code) => {
             this.process.kill(code)
+            this.clientSession.replicateFunction((clientWs, id, clientObj) => {
+                clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "end", code});  // Send GDB output to the client
+            });
         };
         addListener: (ev: any, func: (code: any) => void) => void 
         = function (ev, func) {
@@ -156,14 +160,19 @@ int main() {
             }
             return func
         }
+
         process: ChildProcess
+        clientSession: EditorSession
 
-        constructor(res, clientObj) {
+        constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
-
+            this.clientSession = clientSession
             this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
             console.log('Spawned debug process with id', this.process.pid)
-            
+
+            clientSession.replicateFunction((clientWs, id, clientObj) => {
+                clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
+            });
         }
     }
 

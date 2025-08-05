@@ -1,6 +1,6 @@
 import { ChildProcess } from "child_process";
 import EditorMode from "./BaseEditorMode";
-import { EditorFile, EditorSession } from "../types";
+import { ClientObject, EditorFile, EditorSession } from "../types";
 import DebugProcess from "./ProcessTypes";
 declare class CppMode extends EditorMode {
     static name: string;
@@ -14,7 +14,7 @@ declare class CppMode extends EditorMode {
     constructor();
     execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
     compile(res: any, file: EditorFile, isDebugging?: boolean): Promise<void>;
-    startDebugging(res: any, clientObj: any): CPPDebugger;
+    startDebugging(res: any, clientObj: any, clientSession: any): CPPDebugger;
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<string>;
 }
 declare class CPPDebugger extends DebugProcess {
@@ -25,6 +25,7 @@ declare class CPPDebugger extends DebugProcess {
     kill: (code: any) => void;
     addListener: (ev: any, func: (code: any) => void) => void;
     process: ChildProcess;
-    constructor(res: any, clientObj: any);
+    clientSession: EditorSession;
+    constructor(res: any, clientObj: ClientObject, clientSession: EditorSession);
 }
 export default CppMode;
