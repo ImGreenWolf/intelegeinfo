@@ -2403,27 +2403,32 @@ export function closeDefaultScreen(createdFileElement)
     createdFileElement.openTab()
       elem?.element.remove()
 
-      addButtons()
-}
-
-function addButtons()
-{
-
-
-    const buttons = [
-        createButton('play_arrow.svg', {onclick: () => {
+      addButtons([createButton('play_arrow.svg', {onclick: () => {
             window.editor.sendDebugCommand('execute')
         }, class: "run"}),
          createButton('pest_control.svg', {onclick: () => {
             window.editor.sendDebugCommand('-exec-run')
-        }, class: "debug"}),
-         createButton('step_over.svg', {onclick: () => {
-            window.editor.sendDebugCommand('-exec-next')
-        }, class: "debug"})
-    ]
+        }, class: "debug"})])
+}
+
+function addButtons(buttons, id?)
+{
 
 
-    const editorControls = createNode('div', {html: buttons, className: 'inner-toolbar'})
+    // const buttons = [
+    //     createButton('play_arrow.svg', {onclick: () => {
+    //         window.editor.sendDebugCommand('execute')
+    //     }, class: "run"}),
+    //      createButton('pest_control.svg', {onclick: () => {
+    //         window.editor.sendDebugCommand('-exec-run')
+    //     }, class: "debug"}),
+    //      createButton('step_over.svg', {onclick: () => {
+    //         window.editor.sendDebugCommand('-exec-next')
+    //     }, class: "debug"})
+    // ]
+
+
+    const editorControls = createNode('div', {html: buttons, className: 'inner-toolbar', id})
       DockElement!.children[1].prepend(editorControls)
       editorControls.animate([
             {maxWidth: '0', overflow: 'hidden'},
@@ -2938,6 +2943,7 @@ ws.onmessage = (event) => {
 
         const regex =
           /(\b(?<=^(\d)+(?=\s)?\s*)(\w*)(\[(\w|\d)\]))|(?<=[(-/])(\w*)(\[(\w|\d)\])/g;
+        if(eventJson.variables)
         if (eventJson.variables.match(regex) != null)
           eventJson.variables.match(regex).forEach((variable: { indexes: any[] }) => {
             const vararr = regex.exec(eventJson.variables);
@@ -3316,9 +3322,15 @@ break;
           cmdBut?.classList.remove("debug-control");
           cmdBut?.classList.remove("execute-control");
           writeOutput('Ended debug session', null, ConsoleMessageType.Debug)
+          document.getElementById('debug-exec-controls')?.remove()
           break
         case "start":
           writeOutput('Started debug session', null, ConsoleMessageType.Debug)
+
+          addButtons([createButton('step_over.svg', {onclick: () => {
+            window.editor.sendDebugCommand('-exec-next')
+        }, class: "debug"})], 'debug-exec-controls')
+
           break;
         case "running":
           handleOutput(messageJson);
@@ -3529,7 +3541,12 @@ break;
             else
             {
               client.editorSession![0] = {fileName: rclient.openFile[0], editor: undefined, fileElement: undefined}
-              addButtons()
+              addButtons([createButton('play_arrow.svg', {onclick: () => {
+            window.editor.sendDebugCommand('execute')
+        }, class: "run"}),
+         createButton('pest_control.svg', {onclick: () => {
+            window.editor.sendDebugCommand('-exec-run')
+        }, class: "debug"})])
             }
             clients.set(wsClientId, client)
             

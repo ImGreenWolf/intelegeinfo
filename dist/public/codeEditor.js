@@ -1816,21 +1816,26 @@ export function closeDefaultScreen(createdFileElement) {
     };
     createdFileElement.openTab();
     elem?.element.remove();
-    addButtons();
-}
-function addButtons() {
-    const buttons = [
-        createButton('play_arrow.svg', { onclick: () => {
+    addButtons([createButton('play_arrow.svg', { onclick: () => {
                 window.editor.sendDebugCommand('execute');
             }, class: "run" }),
         createButton('pest_control.svg', { onclick: () => {
                 window.editor.sendDebugCommand('-exec-run');
-            }, class: "debug" }),
-        createButton('step_over.svg', { onclick: () => {
-                window.editor.sendDebugCommand('-exec-next');
-            }, class: "debug" })
-    ];
-    const editorControls = createNode('div', { html: buttons, className: 'inner-toolbar' });
+            }, class: "debug" })]);
+}
+function addButtons(buttons, id) {
+    // const buttons = [
+    //     createButton('play_arrow.svg', {onclick: () => {
+    //         window.editor.sendDebugCommand('execute')
+    //     }, class: "run"}),
+    //      createButton('pest_control.svg', {onclick: () => {
+    //         window.editor.sendDebugCommand('-exec-run')
+    //     }, class: "debug"}),
+    //      createButton('step_over.svg', {onclick: () => {
+    //         window.editor.sendDebugCommand('-exec-next')
+    //     }, class: "debug"})
+    // ]
+    const editorControls = createNode('div', { html: buttons, className: 'inner-toolbar', id });
     DockElement.children[1].prepend(editorControls);
     editorControls.animate([
         { maxWidth: '0', overflow: 'hidden' },
@@ -2207,35 +2212,36 @@ ws.onmessage = (event) => {
                     }
                 // }, 50);
                 const regex = /(\b(?<=^(\d)+(?=\s)?\s*)(\w*)(\[(\w|\d)\]))|(?<=[(-/])(\w*)(\[(\w|\d)\])/g;
-                if (eventJson.variables.match(regex) != null)
-                    eventJson.variables.match(regex).forEach((variable) => {
-                        const vararr = regex.exec(eventJson.variables);
-                        if (!vararr)
-                            return;
-                        let varName = vararr[3];
-                        if (!varName)
-                            varName = vararr[6];
-                        let varIndex = vararr[5];
-                        if (!varIndex)
-                            varIndex = vararr[8];
-                        console.log(variables);
-                        const indexCode = varIndex.charCodeAt(0);
-                        if (variables.find((vari) => vari.varname === varIndex)) {
-                            const index = variables.find((vari) => vari.varname === varIndex).value;
-                            if (variable.indexes.length > indexCode)
+                if (eventJson.variables)
+                    if (eventJson.variables.match(regex) != null)
+                        eventJson.variables.match(regex).forEach((variable) => {
+                            const vararr = regex.exec(eventJson.variables);
+                            if (!vararr)
                                 return;
-                            variable.indexes[indexCode] = index;
-                            //console.log(index)
-                            //document.getElementById(varName).children[index].classList.add("active-vector-element");
-                            removePrevActiveElem(index, varName, varIndex); // TODO remove +1
-                            const vectorElem = document.getElementById(varName);
-                            vectorElem.children[index].style.outlineColor =
-                                "#" +
-                                    Math.floor((16777215 % (varIndex.charCodeAt(0) / 100)) * 16777215).toString(16);
-                            //document.getElementById(varName).setAttribute("activeIndex", index);
-                            //getDisplayVectorElement(makeVariableRefByName(varName), index).parentElement.setAttribute("activeIndex", index);
-                        }
-                    });
+                            let varName = vararr[3];
+                            if (!varName)
+                                varName = vararr[6];
+                            let varIndex = vararr[5];
+                            if (!varIndex)
+                                varIndex = vararr[8];
+                            console.log(variables);
+                            const indexCode = varIndex.charCodeAt(0);
+                            if (variables.find((vari) => vari.varname === varIndex)) {
+                                const index = variables.find((vari) => vari.varname === varIndex).value;
+                                if (variable.indexes.length > indexCode)
+                                    return;
+                                variable.indexes[indexCode] = index;
+                                //console.log(index)
+                                //document.getElementById(varName).children[index].classList.add("active-vector-element");
+                                removePrevActiveElem(index, varName, varIndex); // TODO remove +1
+                                const vectorElem = document.getElementById(varName);
+                                vectorElem.children[index].style.outlineColor =
+                                    "#" +
+                                        Math.floor((16777215 % (varIndex.charCodeAt(0) / 100)) * 16777215).toString(16);
+                                //document.getElementById(varName).setAttribute("activeIndex", index);
+                                //getDisplayVectorElement(makeVariableRefByName(varName), index).parentElement.setAttribute("activeIndex", index);
+                            }
+                        });
             }
         }
         // if (data[0] == data.match(/^(\d)(?=\s)?/gm)) {
@@ -2506,9 +2512,13 @@ ws.onmessage = (event) => {
                     cmdBut?.classList.remove("debug-control");
                     cmdBut?.classList.remove("execute-control");
                     writeOutput('Ended debug session', null, ConsoleMessageType.Debug);
+                    document.getElementById('debug-exec-controls')?.remove();
                     break;
                 case "start":
                     writeOutput('Started debug session', null, ConsoleMessageType.Debug);
+                    addButtons([createButton('step_over.svg', { onclick: () => {
+                                window.editor.sendDebugCommand('-exec-next');
+                            }, class: "debug" })], 'debug-exec-controls');
                     break;
                 case "running":
                     handleOutput(messageJson);
@@ -2656,7 +2666,12 @@ ws.onmessage = (event) => {
                             showDefaultScreen();
                         else {
                             client.editorSession[0] = { fileName: rclient.openFile[0], editor: undefined, fileElement: undefined };
-                            addButtons();
+                            addButtons([createButton('play_arrow.svg', { onclick: () => {
+                                        window.editor.sendDebugCommand('execute');
+                                    }, class: "run" }),
+                                createButton('pest_control.svg', { onclick: () => {
+                                        window.editor.sendDebugCommand('-exec-run');
+                                    }, class: "debug" })]);
                         }
                         clients.set(wsClientId, client);
                     }
