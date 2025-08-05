@@ -1109,13 +1109,15 @@ exports.wss.addListener('connection', async (ws, req) => {
                             closeProcess(clientSession.process);
                             return;
                         }
+                        if (!['stopped', 'done'].some(val => gdbOutput.json.message && gdbOutput.json.message.includes(val)))
+                            return;
                         // if( gdbOutput.ignore)
                         //     return
                         //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
                         const response = {
                             type: types_1.WebSocketMessageType.Debug,
                             state: "running",
-                            json: gdbOutput ? gdbOutput.json : undefined,
+                            body: gdbOutput ? gdbOutput.json : undefined,
                             line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
                             variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined,
                             raw: element

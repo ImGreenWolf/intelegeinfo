@@ -1401,13 +1401,15 @@ function endConnectionPromise()
                              if(JSON.stringify(gdbOutput.json) == '{}')
                                 continue;
 
-                            if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')
-                               {
+                        if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')
+                            {
 
-                                closeProcess(clientSession.process)
+                            closeProcess(clientSession.process)
 
-                                    return;
-                               }
+                                return;
+                            }
+                        if(!['stopped', 'done'].some(val => gdbOutput.json.message && gdbOutput.json.message.includes(val)))
+                            continue
                             // if( gdbOutput.ignore)
                             //     return
                             //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
@@ -1415,7 +1417,7 @@ function endConnectionPromise()
                     const response: WebSocketMessage = {
                         type:WebSocketMessageType.Debug,
                         state: "running",
-                        json: gdbOutput ? gdbOutput.json : undefined,
+                        body: gdbOutput ? gdbOutput.json : undefined,
                         line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
                         variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined,
                         raw: element
