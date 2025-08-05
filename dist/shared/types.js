@@ -22,6 +22,7 @@ var WebSocketMessageType;
     WebSocketMessageType["Canvas"] = "canvas";
     WebSocketMessageType["RTC"] = "rtc";
     WebSocketMessageType["Utilities"] = "utils";
+    WebSocketMessageType["Debug"] = "debug";
 })(WebSocketMessageType || (exports.WebSocketMessageType = WebSocketMessageType = {}));
 var ConsoleMessageType;
 (function (ConsoleMessageType) {

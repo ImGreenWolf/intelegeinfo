@@ -26,14 +26,16 @@ import { type WebSocketMessageType , type ConsoleMessageType} from "./types";
 // };
 type KnownTypes = DefinedWebSocketMessage['type']; 
 
-type DefinedWebSocketMessage = HandshakeMessage //| ColabDataMessage | CompileResultMessage
-
 type WebSocketMessage = DefinedWebSocketMessage | UnknownMessage;
 
 type UnknownMessage = {
   type: Exclude<WebSocketMessageType, KnownTypes>;
   [key: string]: any;
 };
+
+//  ‼️ ADD NEW MESSAGES HERE ‼️
+type DefinedWebSocketMessage =  HandshakeMessage | DebugMessageRunning | DebugMessageEnd | DebugMessageStart
+
 
 type HandshakeMessage = {
     type: WebSocketMessageType.Handshake;
@@ -49,6 +51,22 @@ type HandshakeMessage = {
     users: {displayName: string, clientId: UUID, openFile: string[], color: string}[];
 };
 
+type DebugMessageRunning = {
+  type:  WebSocketMessageType.Debug;
+  state: 'running'// | 'end';
+  line: number;
+  variables?: any[];
+  json: Record<string, any>;
+}
+type DebugMessageEnd = {
+  type:  WebSocketMessageType.Debug;
+  state: 'end';
+  code: number;
+}
+type DebugMessageStart = {
+  type:  WebSocketMessageType.Debug;
+  state: 'start';
+}
 // type ColabDataMessage = {
 //     type: WebSocketMessageType.ColabData;
 //     // other fields

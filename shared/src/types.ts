@@ -17,7 +17,8 @@ export enum WebSocketMessageType {
     WebCam = 'webcam',
     Canvas = 'canvas',
     RTC = 'rtc',
-    Utilities = 'utils'
+    Utilities = 'utils',
+    Debug = 'debug'
 }
 
 export enum ConsoleMessageType {

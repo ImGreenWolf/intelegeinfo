@@ -1,17 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 import { UUID } from "crypto";
-import WebSocket, { WebSocket as WSWebSocket } from 'ws';
+import WebSocket from 'ws';
 import { ChildProcess } from 'child_process';
 import { WSMessage } from '../../shared/src/types'
-import { ConsoleMessageType, WebSocketMessageType } from '../../dist/shared/types';
+import { ConsoleMessageType, WebSocketMessageType} from '../../dist/shared/types';
 import { User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import { CppMode } from './editor-modes';
 import fs from 'fs'
-import { FileManagementCommands } from '../../dist/shared/types'
+import { FileManagementCommands} from '../../dist/shared/types'
 import path from 'path';
 import { rootDirName } from './server';
+import { WebSocketMessage } from "../../shared/src/messageTypes"
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
     sessionId: UUID;
@@ -56,7 +57,7 @@ export class ClientObject {
         
       }
 
-    public sendMessage(message:string|Record<string, any>, type?: WebSocketMessageType)
+    public sendMessage(message: WebSocketMessage | string | Record<string, any>, type?: WebSocketMessageType)
     {
         if(type && typeof message != 'string')
             this.CWebSocket.send(JSON.stringify({type, ...message}))

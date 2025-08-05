@@ -5,6 +5,7 @@ import { WSMessage } from '../../shared/src/types';
 import { WebSocketMessageType } from '../../dist/shared/types';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
+import { WebSocketMessage } from "../../shared/src/messageTypes";
 export declare class ClientObject {
     sessionId: UUID;
     clientId: UUID;
@@ -22,7 +23,7 @@ export declare class ClientObject {
     editorPermission: EditorPermission;
     clientData: UserNoPassword;
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
-    sendMessage(message: string | Record<string, any>, type?: WebSocketMessageType): void;
+    sendMessage(message: WebSocketMessage | string | Record<string, any>, type?: WebSocketMessageType): void;
     getFile(name: any): EditorFile;
     getFilesName(): any[];
     checkClientsFileOpen(otherClient: any): boolean;

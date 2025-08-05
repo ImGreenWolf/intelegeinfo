@@ -1985,15 +1985,12 @@ bash `.trim().replaceAll('\n', "");
                                                 }
                                                 if (!getThisClientSession().process)
                                                     console.error('Invalid session while starting debug process');
-                                                printClientConsoleDebug("started debugging process.");
+                                                // printClientConsoleDebug("started debugging process.")
                                                 queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
                                                 queueCommand(getProcessFromMap(), '-exec-run\n', sessionId);
-                                                // clientSession.gdbProcess.stdout.on('data', (data) => {
-                                                //     console.log("GDB Data: " + data.toString())
-                                                // })
-                                                // clientSession.gdbProcess.stderr.on('data', (derr) => {
-                                                //     console.error("GDB Error: " + derr.toString())
-                                                // }) 
+                                                replicateFunction((clientWs, id, clientObj) => {
+                                                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
+                                                });
                                             });
                                         else {
                                             clientSession.process = clientSession.gdbProcess = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession);

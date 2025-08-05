@@ -417,6 +417,7 @@ export var WebSocketMessageType;
     WebSocketMessageType["Canvas"] = "canvas";
     WebSocketMessageType["RTC"] = "rtc";
     WebSocketMessageType["Utilities"] = "utils";
+    WebSocketMessageType["Debug"] = "debug";
 })(WebSocketMessageType || (WebSocketMessageType = {}));
 export var ConsoleMessageType;
 (function (ConsoleMessageType) {
@@ -2127,50 +2128,15 @@ ws.onmessage = (event) => {
     // console.log(msgMap)
     // console.log(eventJson)
     function handleOutput(eventJson) {
-        if (eventJson.message != 'info locals' && eventJson.messageType != ConsoleMessageType.DebugProgram)
-            writeOutput(data, eventJson);
+        // if(eventJson.message != 'info locals' && eventJson.messageType != ConsoleMessageType.DebugProgram)
+        //   writeOutput(data, eventJson);
         const session = codeWindow.getEditor().getSession();
-        const doc = session.getDocument();
-        const text = doc.getValue();
-        async function asyncExecuteCommand(command, cmdId) {
-            return await fetch("/requestValue?value=" + command + "&cmdId=" + cmdId, {
-                cache: "no-store",
-            });
-        }
         // handle variables
         if (eventJson.variables != undefined) {
             const variablesSection = document.getElementById("variables");
             let unprocVariables;
             const variablesString = JSON.stringify(eventJson.variables);
-            writeOutput("", eventJson.variables, false, ConsoleMessageType.Info);
-            // const textToVar = data
-            //   .split("(gdb)")
-            //   .pop()
-            //   ?.replace(/\n/g, ";")
-            //   .match(/(?<!\w\S)(\b\w+)\s*=.*/g);
-            // if (eventJson.variables!=undefined) {
-            //   //if we have variables in the chunk
-            //   variables = parseMIDebuggerOutput(eventJson, {
-            //     onNewVariable: (variable) => {
-            //       if (variable.type != "array") return;
-            //       createDisplayVector(variable);
-            //       //console.log("created display vector")
-            //     },
-            //     onArrayIndexChange: (
-            //       variableName: any,
-            //       changes: { new: any; index: any },
-            //       changed: boolean
-            //     ) => {
-            //       updateDisplayVectorElement(
-            //         new Variable(variableName, changes.new, "array"),
-            //         changes.index,
-            //         changed
-            //       );
-            //       // console.log(changes.updatedIndices)
-            //     },
-            //   });
-            //   console.log(variables)
-            // }
+            // writeOutput("", eventJson.variables, false, ConsoleMessageType.Info)
             // set variables
             maxValue = 0;
             for (let index = 0; index < variables.length; index++) {
@@ -2223,33 +2189,27 @@ ws.onmessage = (event) => {
                 if (playbackSpeed < 4)
                     // dont bother if speed is too high.
                     for (const condition of conditions) {
-                        asyncExecuteCommand(condition, cmdId++)
-                            .then(function (response) {
-                            return response.json();
-                        })
-                            .then(function (data) {
-                            const exprValue = data.body.toString();
-                            if (parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]) === cmdId &&
-                                !Number.isNaN(parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]))) {
-                                buffer += (exprValue.replace(exprValue.match(/\$\d*/), condition) +
-                                    "; ")
-                                    .replace("(gdb)", "")
-                                    .replace("\n", "");
+                        const exprValue = eventJson.variables;
+                        if (parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]) === cmdId &&
+                            !Number.isNaN(parseInt(exprValue.match(/(?<=\$)\d*/)?.[0]))) {
+                            buffer += (exprValue.replace(exprValue.match(/\$\d*/), condition) +
+                                "; ")
+                                .replace("(gdb)", "")
+                                .replace("\n", "");
+                            console.log(buffer);
+                            if (i++ == conditions.length) {
+                                // wait to buffer all values
+                                //renderer.setGhostText("   " + buffer, pos); // TODO reimplement
                                 console.log(buffer);
-                                if (i++ == conditions.length) {
-                                    // wait to buffer all values
-                                    //renderer.setGhostText("   " + buffer, pos); // TODO reimplement
-                                    console.log(buffer);
-                                    buffer = "";
-                                }
-                            } //else renderer.setGhostText("   " + buffer, pos); // TODO reimplement
-                        });
+                                buffer = "";
+                            }
+                        } //else renderer.setGhostText("   " + buffer, pos); // TODO reimplement
                     }
                 // }, 50);
                 const regex = /(\b(?<=^(\d)+(?=\s)?\s*)(\w*)(\[(\w|\d)\]))|(?<=[(-/])(\w*)(\[(\w|\d)\])/g;
-                if (data.match(regex) != null)
-                    data.match(regex).forEach((variable) => {
-                        const vararr = regex.exec(data);
+                if (eventJson.variables.match(regex) != null)
+                    eventJson.variables.match(regex).forEach((variable) => {
+                        const vararr = regex.exec(eventJson.variables);
                         if (!vararr)
                             return;
                         let varName = vararr[3];
@@ -2278,9 +2238,9 @@ ws.onmessage = (event) => {
                     });
             }
         }
-        if (data[0] == data.match(/^(\d)(?=\s)?/gm)) {
-            setDebugLineStyle(debugLine);
-        }
+        // if (data[0] == data.match(/^(\d)(?=\s)?/gm)) {
+        //   setDebugLineStyle(debugLine);
+        // }
     }
     function enableVoice() {
         if (microphone)
@@ -2534,26 +2494,32 @@ ws.onmessage = (event) => {
                 break;
             }
             else
-                // writeOutput(data, eventJson)
                 handleOutput(messageJson);
             if (messageJson.message === 'end')
                 cleanDebug();
             break;
+        case WebSocketMessageType.Debug:
+            switch (messageJson.state) {
+                case "end":
+                    cleanDebug();
+                    const cmdBut = document.getElementById("buttons");
+                    cmdBut?.classList.remove("debug-control");
+                    cmdBut?.classList.remove("execute-control");
+                    break;
+                case "start":
+                    writeOutput(data, 'Started debug session', ConsoleMessageType.DebugProgram);
+                    break;
+                case "running":
+                    handleOutput(messageJson);
+            }
+            break;
         case WebSocketMessageType.End:
-            if (messageJson.body === "gdb") {
-                cleanDebug();
-                const cmdBut = document.getElementById("buttons");
-                cmdBut?.classList.remove("debug-control");
-                cmdBut?.classList.remove("execute-control");
-            }
-            else {
-                if (data)
-                    writeOutput(data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time + "</span>ms" + (messageJson.notes != "" && messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>" : "" + "</span>"), messageJson);
-                else if (messageJson.sandbox)
-                    activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox));
-                else
-                    writeOutput("Forced closed program." + (messageJson.notes != "" && messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>" : "" + "</span>"), messageJson);
-            }
+            if (data)
+                writeOutput(data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time + "</span>ms" + (messageJson.notes != "" && messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>" : "" + "</span>"), messageJson);
+            else if (messageJson.sandbox)
+                activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox));
+            else
+                writeOutput("Forced closed program." + (messageJson.notes != "" && messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>" : "" + "</span>"), messageJson);
             onExit();
             break;
         case WebSocketMessageType.MouseUpdate:

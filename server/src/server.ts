@@ -2489,17 +2489,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     }
 
                                     if(!getThisClientSession().process) console.error('Invalid session while starting debug process')
-                                    printClientConsoleDebug("started debugging process.")
+                                    // printClientConsoleDebug("started debugging process.")
                                
                                     queueCommand(getProcessFromMap(),'-break-insert 1\n', sessionId);
-                                    queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);   
-                                    // clientSession.gdbProcess.stdout.on('data', (data) => {
-                                    //     console.log("GDB Data: " + data.toString())
-                                    // })
+                                    queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);  
 
-                                    // clientSession.gdbProcess.stderr.on('data', (derr) => {
-                                    //     console.error("GDB Error: " + derr.toString())
-                                    // }) 
+                                    replicateFunction((clientWs, id, clientObj) => {
+                                        clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
+                                    });
 
                                 })
                                 else 
