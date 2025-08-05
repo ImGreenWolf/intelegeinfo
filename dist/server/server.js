@@ -1106,7 +1106,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         if (JSON.stringify(gdbOutput.json) == '{}')
                             return;
                         if (gdbOutput.json['exit-code'] != undefined || gdbOutput.json.reason == 'exited-normally')
-                            closeProcess(getProcessFromMap(clientSession));
+                            return closeProcess(getProcessFromMap(clientSession));
                         // if( gdbOutput.ignore)
                         //     return
                         //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
