@@ -2505,9 +2505,10 @@ ws.onmessage = (event) => {
                     const cmdBut = document.getElementById("buttons");
                     cmdBut?.classList.remove("debug-control");
                     cmdBut?.classList.remove("execute-control");
+                    writeOutput('Ended debug session', messageJson, ConsoleMessageType.Debug);
                     break;
                 case "start":
-                    writeOutput(data, 'Started debug session', ConsoleMessageType.DebugProgram);
+                    writeOutput('Started debug session', messageJson, ConsoleMessageType.Debug);
                     break;
                 case "running":
                     handleOutput(messageJson);

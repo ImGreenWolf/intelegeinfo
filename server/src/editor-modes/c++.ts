@@ -146,6 +146,7 @@ int main() {
         }
         kill: (code) => void = (code) => {
             this.process.kill(code)
+            this.killed = true
             this.clientSession.replicateFunction((clientWs, id, clientObj) => {
                 clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "end", code});  // Send GDB output to the client
             });

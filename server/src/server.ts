@@ -1405,10 +1405,7 @@ function endConnectionPromise()
                                {
 
                                 closeProcess(clientSession.process)
-                                printClientConsoleInfo("Closed debug session!")
-                                replicateFunction((clientWs) => {
-                                    clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: "gdb", clientId: clientId}));  // Send GDB output to the client
-                                    });
+
                                     return;
                                }
                             // if( gdbOutput.ignore)
@@ -2620,10 +2617,6 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             else {
                             closeProcess(clientSession.process)
                             //  onClosedProcess()//.then(() => {
-                                printClientConsoleInfo("Closed process")
-                                replicateFunction((clientWs) => {
-                                    clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: "gdb", clientId: clientId}));  // Send GDB output to the client
-                                    });
                            
                             
                         }// else  await queueCommand(getProcessFromMap() as ChildProcess,'-exec-quit', sessionId);// gdbProcess.stdin.write(message + "\n");
@@ -2633,11 +2626,6 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         } else if(command==="-exec-quit") {
                             closeProcess(clientSession.process)
                             //  onClosedProcess()//.then(() => {
-                                printClientConsoleInfo("Closed process")
-                                replicateFunction((clientWs) => {
-                                    clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: "gdb", clientId: clientId}));  // Send GDB output to the client
-                                    });
-                           
                             
                         } else if(clientSession.gdbProcess!=undefined)
                         {
@@ -2699,14 +2687,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         //   fs.unlinkSync(filePath)
     }
 
-    async function closeProcess(process: DebugProcess | ChildProcess | undefined, processId?: UUID): Promise<void>
+    async function closeProcess(process: DebugProcess | ChildProcess, processId?: UUID): Promise<void>
     {
         try {
             return await new Promise<void>((resolve, reject) => {
                 if (process) {
 
-                    if (!process.killed && process) {
-                        process.kill(9);
+                    if (!process.killed) {
+                        process.kill(0);
                         
                         process.addListener(('close'), (code) => {
 

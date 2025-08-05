@@ -118,6 +118,7 @@ class CPPDebugger extends ProcessTypes_1.default {
     };
     kill = (code) => {
         this.process.kill(code);
+        this.killed = true;
         this.clientSession.replicateFunction((clientWs, id, clientObj) => {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "end", code }); // Send GDB output to the client
         });
