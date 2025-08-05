@@ -1408,8 +1408,8 @@ function endConnectionPromise()
 
                                 return;
                             }
-                        if(!['stopped', 'done'].some(val => gdbOutput.json.message && gdbOutput.json.message.includes(val)))
-                            continue
+                        // if(!['stopped', 'done'].some(val => gdbOutput.json.message && gdbOutput.json.message.includes(val)))
+                        //     continue
                             // if( gdbOutput.ignore)
                             //     return
                             //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
