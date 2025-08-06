@@ -432,6 +432,12 @@ header2 nav ul li:hover {
   header2 .header-buttons-container {
     flex-direction: row-reverse;
   }
+  header2 .header-buttons-container .profile img,
+  header2 .header-buttons-container .profile {
+    width: 25px;
+    height: 25px;
+    margin: auto;
+  }
   header2 h2,
   header2 div {
     display: none;

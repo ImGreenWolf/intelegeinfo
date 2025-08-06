@@ -539,10 +539,18 @@ header2
                 display: none;
               }
             }
+           
         }
         .header-buttons-container
         {
               flex-direction: row-reverse;
+            .profile img,
+            .profile
+            {
+              width: 25px;
+              height: 25px;
+              margin: auto;
+            }
         }
 
         h2,
