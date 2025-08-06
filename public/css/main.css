@@ -262,6 +262,7 @@ header2 .header-buttons-container a {
   color: white;
   transition-duration: 0.25s;
   cursor: pointer;
+  text-wrap: nowrap;
 }
 header2 .header-buttons-container a:nth-child(2) {
   border-radius: 1lh;
@@ -407,11 +408,16 @@ header2 nav ul li:hover {
   }
   header2 {
     font-size: 12px;
+    grid-template-columns: 1fr auto;
+    padding: 1em 8em;
   }
   header2 nav {
     justify-self: center;
     transform: none;
     grid-column: 1/-1;
+  }
+  header2 nav li {
+    padding: 0.75em 0.25em !important;
   }
   header2 nav .home {
     background: url(/favicon.ico) no-repeat;
@@ -422,6 +428,9 @@ header2 nav ul li:hover {
   }
   header2 nav .home a {
     display: none;
+  }
+  header2 .header-buttons-container {
+    flex-direction: row-reverse;
   }
   header2 h2,
   header2 div {
