@@ -38,13 +38,14 @@ body {
   gap: 0.5em;
   font-size: 0.5em;
 }
-#guides ul.posts li span {
+#guides ul.posts li span, #guides ul.posts li button {
   background-color: rgb(32, 32, 32);
   border-radius: 1lh;
   padding: 0 1em;
   line-height: 2em;
   font-size: 0.6em;
   font-weight: 200;
+  color: white;
 }
 #guides ul.posts li > a {
   box-sizing: content-box;
@@ -89,6 +90,13 @@ ul.tags li {
   list-style: none;
   text-align: center;
   cursor: pointer;
+  color: white;
+}
+ul.tags li a {
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  left: -10px;
 }
 ul.tags li:hover {
   background-color: rgb(31, 31, 31);

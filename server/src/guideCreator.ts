@@ -271,7 +271,7 @@ async function getPosts(req: Request): Promise<{guideEntries: any, err?: string}
                 `
                 <a href="guides/post/${encodeURI(guide.name)}">
                     <div>
-                        ${hasPermission ? `<button onclick="open(guides/guideCreator/load/${encodeURI(guide.name)})"> Edit </button>` : ''}
+                        ${hasPermission ? `<button onclick="event.preventDefault(); window.location.href = '/guides/guideCreator/load/${encodeURI(guide.name)}'"> Edit </button>` : ''}
                         ${term ?guide.tags.map(gtag => `<span>${gtag.name}</span>`).join(' ') : guide.guideTags.map(gtag => `<span>${gtag.tag.name}</span>`).join(' ')}
                     </div>
                     <h2>${guide.name}</h2>
