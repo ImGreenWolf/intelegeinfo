@@ -186,7 +186,7 @@ export class IIWebRTC
       
 
           
-        // this.polite = isHost
+        this.polite = isHost
         // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc?session="+sessionId
         // const signaler = new WebSocket(WSUrl) // 
 

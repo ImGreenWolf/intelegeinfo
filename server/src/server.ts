@@ -513,10 +513,6 @@ let meter = tx2.counter('users')
 //   timeframe : 60*60
 // })
 
-    server.on('connection', listener => {
-        // meter.mark()
-        meter.inc(1)
-    })
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
  
@@ -713,6 +709,9 @@ function compileFile(clientId, sessionId): Promise<any>
 
 const baseUrl = 'https://intelegeinfo.ro'
 wss.addListener('connection', async (ws: WebSocket, req) => {
+
+    meter.reset()
+    meter.inc(wss.clients.size)
 
     let sessionId: UUID;
     let clientId: UUID;

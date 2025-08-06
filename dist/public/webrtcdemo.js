@@ -139,7 +139,7 @@ export class IIWebRTC {
                 { urls: "stun:stun1.l.google.com:5349" },
             ]
         };
-        // this.polite = isHost
+        this.polite = isHost;
         // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc?session="+sessionId
         // const signaler = new WebSocket(WSUrl) // 
         if (!signaler.OPEN)

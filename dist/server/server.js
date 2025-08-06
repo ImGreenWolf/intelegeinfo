@@ -413,10 +413,6 @@ let meter = tx2_1.default.counter('users');
 //   samples   : 60,
 //   timeframe : 60*60
 // })
-exports.server.on('connection', listener => {
-    // meter.mark()
-    meter.inc(1);
-});
 //  server.on('upgrade', function upgrade(request, socket, head) {
 //   })
 //     let redisClient = new Redis({
@@ -559,6 +555,8 @@ function compileFile(clientId, sessionId) {
 }
 const baseUrl = 'https://intelegeinfo.ro';
 exports.wss.addListener('connection', async (ws, req) => {
+    meter.reset();
+    meter.inc(exports.wss.clients.size);
     let sessionId;
     let clientId;
     let clientObj;

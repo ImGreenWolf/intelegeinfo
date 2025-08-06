@@ -486,6 +486,8 @@ export class EditorWindowTab {
         if (!this.content)
             throw 'File tab content is undifined.';
         const elem = this.content;
+        if (!this.parentWindow)
+            windows[1].addTab(this);
         if (elem.outerHTML)
             this.onOpenTab(elem);
     }
@@ -533,8 +535,9 @@ export function updateCatalouge(sessionId, clientId) {
         createEditorTab('Subiecte', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] })),
         createEditorTab('Pbinfo', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://www.pbinfo.ro/' }, { name: 'allow', value: "encrypted-media" }] })),
         createEditorTab('Probleme', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problems.html?sessionId=' + sessionId }] })),
-        createEditorTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] })),
     ];
+    if (false) // TODO check if user is admin
+        tabs.push(createEditorTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] })));
     for (const tab of tabs) {
         tab.element.ondragend = () => {
             catalouge?.parentElement?.classList.remove('open');
