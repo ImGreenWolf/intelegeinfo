@@ -507,68 +507,7 @@ server.on('listening', onServerStart)
 });
 //@ts-ignore
 let meter = tx2.counter('users')
-// .meter({
-//   name      : 'users/hour',
-//   samples   : 60,
-//   timeframe : 60*60
-// })
 
-//  server.on('upgrade', function upgrade(request, socket, head) {
-//   })
- 
-
-//     let redisClient = new Redis({
-//         host: "host.docker.internal",
-//         port: 6379
-//       });
-// redisClient.connect().catch(console.error)
-
-// // Initialize store.
-// let redisStore = new RedisStore({
-//   client: redisClient,
-//   prefix: "myapp:",
-// })
-
-// // Initialize session storage.
-// app.use(
-//   session({
-//     store: redisStore,
-//     resave: false, // required: force lightweight session keep alive (touch)
-//     saveUninitialized: false, // recommended: only save session when data exists
-//     secret: "keyboard cat",
-//   }),
-// )
-
-
-
-  
-
-// redisClient.hmset('sessionMap', {Dog: 'wuff wuff'}, (err, reply) => {
-//     if(err) {
-//       console.error(err);
-//     } else {
-//       console.log(reply);
-//     }
-//   });
-
-//   redisClient.hgetall('sessionMap', (err, object )=>
-//   {
-//     if(!object) return;
-//     //  runningProcesses = object;
-//      console.log(object)
-// })
-// redisClient.hgetall('sessionMap', (err, object )=>
-// {
-//     if(!object) return;
-//     // clients = object
-//     console.log(object)
-// })
-// redisClient.hgetall('sessionMap', (err, object )=>
-// {
-//     if(!object) return;
-//     // sessionMap = object
-//     console.log(object)
-// })
 let shared: SharedStateManager
 const isShared = false;
 if(isShared) {
@@ -622,96 +561,26 @@ function cleanUp() {
 
 
 
-    
 
-
-function getClientFilesPath(sessionId)
+function getClientFilesPath(sessionId) // DEPRECATED
 {
     return path.join(rootDirName, "cache", sessionId,"clientFiles");
 }
     
 
-function compileFile(clientId, sessionId): Promise<any>
+
+function updateUserMeter()
 {
-
-    return new Promise<any>((resolve, reject) => {
-
-
-        // const clientId = req.body.clientId;
-    // const sessionId = req.body.sessionId; 
-    const editorSession = isShared ? shared.getSession(sessionId) || sessionMap.get(sessionId): sessionMap.get(sessionId);
     
-    // const code = req.body.code;
-    const exeFile = path.join(rootDirName, "cache", sessionId);
-    const filePath = path.join(exeFile,"clientFiles");//            path.join(rootDirName, "cache", sessionId);
-    const codeFile = !["cpp"].includes(path.extname(editorSession?.clientsActiveFile.get(clientId)|| "main.cpp"))? editorSession?.clientsActiveFile.get(clientId) : "main.cpp";
-    if(!editorSession)
-        console.log(new Error("Couldnt retrieve editorSession from memory database"))
-    //fs.writeFileSync(path.join(filePath,"main.cpp"), code);
-    // console.log(path.extname(getThisClientSession()?.clientsActiveFile.get(clientId)||"aaa"));
-   
-    compileProcess = spawn("g++", ["-g", "-O0", path.join(filePath, codeFile || "main.cpp"), "-o", path.join(exeFile,"main.exe")], {
-        windowsHide: true,
-        detached: true,
-    });
-    let errorData = "";
-    
-    const errors: errorObject[] = [];
-    if(compileProcess != null) {
-        
-
-        compileProcess.stdin?.end();
-        compileProcess?.stderr?.on("data", (data: Buffer) => {
-
-            data.toString().split('\n').forEach(errorString => {
-                if(!errorString) return;
-                errorData = errorString.replace((path.resolve(filePath)+'\\'), "")
-                const regex = errorData.match(/((?!:)\d*):((?!:)\d*)/) || [];
-                const column = parseInt(regex[2] || "-1")
-                const row = parseInt(regex[1] || "-1")
-                errors.push({column: column, row: row, error: errorData})
-            });
-            
-//                    data.toString();
-        });
-
-        compileProcess?.stdout?.on("data", (data: Buffer) => {
-
-            console.log("stdout: " + data.toString());
-        });
-
-        compileProcess.on("close", (code: number) => {
-            if (code === 0) {
-               resolve({ success: true , fileName: codeFile});
-            } else {//if(code===1) {
-                //const correctedString = errorData.replace((path.resolve(filePath)+'\\'), "")
-                
-            
-                // console.log((path.resolve(filePath)+'\\'))
-                reject({errors}); //|| "Compilation failed" 
-            // } else
-            // {
-            //     res.json({ error: errorData || "Program exited with non-normal code: "+code });
-
-            }
-            
-        });
-
-    }
-
-
-
-    })
-    
+    meter.reset()
+    meter.inc(wss.clients.size)
 }
-
 
 
 const baseUrl = 'https://intelegeinfo.ro'
 wss.addListener('connection', async (ws: WebSocket, req) => {
 
-    meter.reset()
-    meter.inc(wss.clients.size)
+    updateUserMeter()
 
     let sessionId: UUID;
     let clientId: UUID;
@@ -2793,6 +2662,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     // Handle WebSocket disconnection
     ws.addEventListener("close", () => {
+        updateUserMeter()
         onCloseSession();
         console.log("Client " + clientId + " disconnected");
     });
