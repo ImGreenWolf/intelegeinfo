@@ -72,7 +72,7 @@
     "en-US": ""
   },
   "motives.teachers.4.title": {
-    "ro-RO": "Ideal pentru predare hibrid? sau online",
+    "ro-RO": "Ideal pentru predare hibrid sau online",
     "en-US": ""
   },
   "motives.teachers.4.body": {
@@ -92,11 +92,11 @@
     "en-US": ""
   },
   "motives.tutoring.2.title": {
-    "ro-RO": "Po?i corecta sau completa codul  mpreun? cu elevul",
+    "ro-RO": "Poti corecta sau completa codul impreuna cu elevul",
     "en-US": ""
   },
   "motives.tutoring.2.body": {
-    "ro-RO": "Platforma e colaborativ?: tu si elevul scrieti in acelasi editor, in timp real. \n                            Ca in Google Docs, dar pentru cod. Ideal daca elevul are dificultati - vezi exact ce face si intervii pe loc.",
+    "ro-RO": "Platforma e colaborativa: tu si elevul scrieti in acelasi editor, in timp real. \n                            Ca in Google Docs, dar pentru cod. Ideal daca elevul are dificultati - vezi exact ce face si intervii pe loc.",
     "en-US": ""
   },
   "motives.tutoring.3.title": {
@@ -108,7 +108,7 @@
     "en-US": ""
   },
   "motives.tutoring.4.title": {
-    "ro-RO": "Po?i preda ?i de pe telefon sau tablet?",
+    "ro-RO": "Poti preda si de pe telefon sau tableta",
     "en-US": ""
   },
   "motives.tutoring.4.body": {
@@ -116,7 +116,7 @@
     "en-US": ""
   },
   "motives.tutoring.5.title": {
-    "ro-RO": "Poti preda si de pe telefon sau tablet?",
+    "ro-RO": "Poti preda si de pe telefon sau tableta",
     "en-US": ""
   },
   "motives.tutoring.5.body": {
@@ -148,7 +148,7 @@
     "en-US": ""
   },
   "motives.students.3.body": {
-    "ro-RO": "Vrei sa lucrati  impreuna la o tema sau un proiect? Trimite colegului link-ul tau si scrieti cod in acelasi editor, ca pe Google Docs.\nFiecare vede ce face celalalt, in timp real.",
+    "ro-RO": "Vrei sa lucrati impreuna la o tema sau un proiect? Trimite colegului link-ul tau si scrieti cod in acelasi editor, ca pe Google Docs.\nFiecare vede ce face celalalt, in timp real.",
     "en-US": ""
   },
   "motives.students.4.title": {
@@ -160,7 +160,7 @@
     "en-US": ""
   },
   "motives.students.5.title": {
-    "ro-RO": "Nu vrei sa ti faci cont? Nu-i problem?!",
+    "ro-RO": "Nu vrei sa ti faci cont? Nu-i problema!",
     "en-US": ""
   },
   "motives.students.5.body": {
@@ -184,11 +184,11 @@
     "en-US": ""
   },
   "motives.schools.2.body": {
-    "ro-RO": "Functioneaz? 100% in browser, pe orice dispozitiv: PC, laptop, tablet?.\nNu trebuie instalat niciun program sau licenta.\nSe poate folosi imediat, inclusiv in laboratoare vechi.\nEconomiseiti bani si timp. Ideal pentru orice scoala, indiferent de buget.",
+    "ro-RO": "Functioneaza 100% in browser, pe orice dispozitiv: PC, laptop, tableta.\nNu trebuie instalat niciun program sau licenta.\nSe poate folosi imediat, inclusiv in laboratoare vechi.\nEconomiseiti bani si timp. Ideal pentru orice scoala, indiferent de buget.",
     "en-US": ""
   },
   "motives.schools.3.title": {
-    "ro-RO": "Perfect pentru BAC, olimpiada si pregatire universitar?",
+    "ro-RO": "Perfect pentru BAC, olimpiada si pregatire universitara",
     "en-US": ""
   },
   "motives.schools.3.body": {
