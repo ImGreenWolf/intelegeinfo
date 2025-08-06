@@ -797,10 +797,30 @@ h1.center
             background-image: linear-gradient(45deg, rgb(26, 28, 31), rgb(28 30 32), rgb(18 19 21));
             box-shadow: inset 6px 5px 18px -10px #ffffff33,
             1px 1px 20px 20px rgba(0, 0, 0, 0.274);
-
+            a 
+            {
+                            text-decoration: none;
+            }
             div
             {
                 font-size: 0.75em
+            }
+            div 
+            {
+                display: flex;
+                gap: 0.5em;
+                font-size: 0.75em;
+                overflow: hidden;
+            }
+            span 
+            {
+
+                background-color: rgb(32,32,32);
+                border-radius: 1lh;
+                padding: 0 1em;
+                line-height: 2em;
+                font-size: 0.75em;
+                font-weight: 200;
             }
             
             

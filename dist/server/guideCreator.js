@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const server_1 = require("./server");
+const usersManager_1 = require("./usersManager");
 // import { rootDirName } from './server';
 // import rootDirName from "./server"
 const rootDirName = path_1.default.resolve("./");
@@ -76,7 +77,7 @@ router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
             display: flex;
             justify-content: space-around;
             min-height: 100vh;
-            margin-top: 20px;
+            margin-top: 100px;
         }
         #preview {
             max-width: 100%;
@@ -128,6 +129,7 @@ ${htmlHead(guide.name, guide.description, guide.category)}
         content.oninput = (ev) => {
             preview.innerHTML = ev.target.value;
         }
+        
     </script>
 </body>
 </html>`;
@@ -137,84 +139,196 @@ ${htmlHead(guide.name, guide.description, guide.category)}
     });
 });
 router.get('/', (req, res) => {
-    getPosts().then(json => postsRequest(json.guideEntries, req, res, json.err));
+    getPosts(req).then(json => postsRequest(json.guideEntries, req, res, json.err));
 });
 router.get('/posts', (req, res) => {
-    getPosts().then(json => res.send(json.guideEntries));
+    getPosts(req).then(json => res.send(json.guideEntries));
 });
-async function getPosts() {
+async function getPosts(req) {
     return new Promise((resolve, reject) => {
-        dbClient_1.default.guide.findMany({
-            take: 10,
-            orderBy: {
-                visits: 'desc'
+        const unparsedTags = req.query.tags;
+        const tags = unparsedTags ? unparsedTags.split(',').map(tag => tag.trim()) : [];
+        const search = req.query.search ? decodeURI(req.query.search) : undefined;
+        const term = search ? sanitizeSearchTerm(search) : undefined;
+        function sanitizeSearchTerm(term) {
+            return term.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        }
+        const promise = term && term.length > 2 && !term.includes(' ') ? dbClient_1.default.$queryRaw `
+          SELECT
+            g.*,
+            t."id" AS "tagId",
+            t."name" AS "tagName",
+            ts_rank(
+            setweight(to_tsvector('english', coalesce(g."name", '')), 'A') ||
+            setweight(to_tsvector('english', coalesce(g."description", '')), 'B') ||
+            setweight(to_tsvector('english', coalesce(t."name", '')), 'C'),
+            plainto_tsquery('english', ${term})
+            ) AS rank
+        FROM "Guide" g
+        LEFT JOIN LATERAL (
+            SELECT
+            t."id",
+            t."name"
+            FROM "GuideTag" gt
+            JOIN "Tag" t ON t."id" = gt."tagId"
+            WHERE gt."guideId" = g."id"
+            LIMIT 5
+        ) t ON true
+        WHERE
+            g."description" ILIKE '%' || ${term} || '%'
+            OR g."name" ILIKE '%' || ${term} || '%'
+            OR t."name" ILIKE '%' || ${term} || '%'
+            OR to_tsvector('english', g."description") @@ plainto_tsquery('english', ${term})
+            OR to_tsvector('english', g."name") @@ plainto_tsquery('english', ${term})
+            OR to_tsvector('english', coalesce(t."name", '')) @@ plainto_tsquery('english', ${term})
+        ORDER BY rank DESC
+        LIMIT 10;
+        `
+            :
+                dbClient_1.default.guide.findMany({
+                    take: 10,
+                    orderBy: {
+                        visits: 'desc',
+                    },
+                    include: {
+                        guideTags: {
+                            include: {
+                                tag: true
+                            },
+                            take: 5
+                        }
+                    },
+                    where: {
+                        guideTags: unparsedTags ? {
+                            some: {
+                                tag: {
+                                    name: {
+                                        in: tags
+                                    }
+                                }
+                            }
+                        } : undefined,
+                        // description: search ? {
+                        //     contains: search,
+                        //     mode: 'insensitive'
+                        // } : undefined
+                    }
+                });
+        promise.then(guides => {
+            let res = guides;
+            if (term) {
+                const guidess = {};
+                for (const row of guides) {
+                    const guideId = row.id;
+                    if (!guidess[guideId]) {
+                        guidess[guideId] = {
+                            ...row,
+                            tags: []
+                        };
+                    }
+                    if (row.tagId) {
+                        guidess[guideId].tags.push({
+                            id: row.tagId,
+                            name: row.tagName
+                        });
+                    }
+                }
+                // Final array
+                res = Object.values(guidess);
             }
-        }).then(guides => {
             let guideEntries = [];
-            for (const guide of guides)
-                guideEntries.push({ name: guide.name, html: `<a href="guides/post/${encodeURI(guide.name)}"><h2>${guide.name}</h2></a>
+            for (const guide of res)
+                guideEntries.push({ name: guide.name, url: `guides/post/${encodeURI(guide.name)}`, html: `<a href="guides/post/${encodeURI(guide.name)}">
+            <div>${term ? guide.tags.map(gtag => `<span>${gtag.name}</span>`).join(' ') : guide.guideTags.map(gtag => `<span>${gtag.tag.name}</span>`).join(' ')}</div>
+            <h2>${guide.name}</h2>
             <div>${guide.description || guide.content.substring(0, 100)}..</div>
-            <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} viz</p>
+            <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} 👁 ${guide.positiveRatings} ↑</p>
+            </a>
             `
                 });
             resolve({ guideEntries });
         }).catch(err => reject({ guideEntries: undefined, err }));
     });
 }
-function postsRequest(guideEntries, req, res, error) {
+async function postsRequest(guideEntries, req, res, error) {
+    const tags = await dbClient_1.default.tag.findMany({
+        take: 6
+    });
     let text = `
     ${htmlHead('Resurse', 'Descopera resursele intelegeinfo!')}
-    <style>
-    body
-    {
-        background-color: rgb(20,20,20);
-        font-family: Poppins;
-    }
-    #guides
-    {
-
-    ul
-    {
-        display: grid;
-        grid-auto-flow: column;
-        gap: 1.5em;
-        color: rgb(255, 255, 255);
-        justify-content: start;
-        position: relative;
-        // font-size: 0.5rem;
-        padding: 10em;
-        li 
-        {
-            width: 200px;
-            height: 200px;
-            border-radius: 1em;
-            aspect-ratio: 1;
-            background-color: rgb(26, 28, 31);;
-            padding: 1.5em;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            cursor: pointer;
-            list-style: none;
-            div
-            {
-                font-size: 0.75em
-            }
-            
-        }
-
-        :any-link
-        {
-            color: rgb(255, 255, 255)
-        }
-    }
-}
-    </style>
-    <div id='guides'><ul>
+    <link rel="stylesheet" href="/css/resources.css">
+    <div id='guides'>
+        <div>
+            <h2>Resurse</h2>
+            <ul class="posts">
+    
 `;
     if (!error || guideEntries) {
         for (const guide of guideEntries)
-            text += "<li>" + guide.html + "</li>\n";
-        text += '</ul></div>';
+            text += `<li>${guide.html}</li>\n`;
+        text += `</ul></div>
+        
+        <vl></vl>
+        <div class='side'>
+            <h5>Cauta</h5>
+            <input type="text" id="search-input">
+            <h5>Filtreaza</h5>
+            <ul class="tags">${tags ? tags.map(tag => `<li>${tag.name}</li>`).join('\n') : ''}</ul>
+        </div></div>
+
+        <script>
+        const params = new URLSearchParams(location.search);
+        let debouncer
+        document.getElementById('search-input').oninput = (ev) => {
+            if(debouncer)
+                clearTimeout(debouncer)
+            debouncer = setTimeout(() => {
+
+                const text = ev.target.value
+
+                if(ev.target.value.length <= 2 && text.length != 0)
+                    return;
+                if(text.length == 0)
+                    params.delete("search")
+                else
+                    params.set("search", text)
+                updateGuides(params)
+            }, 100)
+            
+        }
+        function updateGuides(params)
+        {
+            fetch('guides/posts?' + encodeURI(params.toString())).then(async val => {
+                val.text().then(res => {
+                    const json = JSON.parse(res)
+                    let html = ''
+                    if(json.length == 0)
+                        html = '<p style="color: gray">Nu am gasit niciun rezultat!</p>'
+                    else
+                        for(const guide of json)
+                            html += \`<li>\${guide.html}</li>\`;
+                    document.getElementsByClassName('posts')[0].innerHTML = html
+                })
+                
+            })
+        }
+        for(const tag of document.getElementsByClassName('tags')[0].children)
+        {
+            tag.onclick = (ev) => {
+                const text = ev.target.innerText
+                if(params.has("tags", text))
+                    params.delete("tags")
+                else
+                    params.set("tags", text)
+                // if(window.location.search)
+                //     if(window.location.search.includes(text))
+                //     {
+                //         params.delete("tags")
+                //     }
+                updateGuides(params)
+            }
+        }
+        </script>`;
         res.send(text);
     }
     else
@@ -223,6 +337,11 @@ function postsRequest(guideEntries, req, res, error) {
 // POST handler for form submission
 router.post('/submit', (req, res) => {
     const { gname, content, description, category } = req.body; //  TODO replace category with enum
+    const tags = category.split(',').map(tag => tag.trim());
+    if (!(0, usersManager_1.getIdFromJWT)(req)) {
+        res.status(401).send('Please login before publishing.');
+        return;
+    }
     dbClient_1.default.guide.update({
         where: {
             name: gname,
@@ -232,29 +351,84 @@ router.post('/submit', (req, res) => {
             description,
             category,
             updatedAt: new Date(),
-            author: "Radu" // TODO Replace with user name
+            guideTags: {
+                deleteMany: {},
+                create: tags.map(tagName => ({
+                    tag: {
+                        connectOrCreate: {
+                            where: { name: tagName },
+                            create: { name: tagName }
+                        }
+                    }
+                }))
+            },
+            author: {
+                connect: {
+                    id: (0, usersManager_1.getIdFromJWT)(req)
+                }
+            }
         }
     }).then(guide => {
         res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
-    }).catch(() => {
+    }).catch((err) => {
+        console.log(err);
         try {
             dbClient_1.default.guide.create({
                 data: {
                     name: gname,
                     content,
                     description,
-                    category,
+                    guideTags: {
+                        create: tags ? tags.map(tagName => ({
+                            tag: {
+                                connectOrCreate: {
+                                    where: { name: tagName },
+                                    create: { name: tagName }
+                                }
+                            }
+                        })) : []
+                    },
+                    author: {
+                        connect: {
+                            id: (0, usersManager_1.getIdFromJWT)(req)
+                        }
+                    }
                 }
             }).then((guide) => {
                 res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
             }).catch(err => {
-                res.status(500).send('Failed to create problem: ' + err);
+                res.status(500).send("Failed to create guide. Please make sure you're logged in. Otherwise submit a bug report");
+                console.error("Guide error:", err);
             });
         }
         catch (error) {
             console.error('Error creating problem:', error);
             res.status(500).send('Failed to upload');
         }
+    });
+});
+router.get('/post/:name/like', (req, res) => {
+    dbClient_1.default.guide.update({
+        where: {
+            name: decodeURI(req.params.name)
+        },
+        data: {
+            positiveRatings: { increment: 1 }
+        }
+    }).then(val => {
+        res.send(val.positiveRatings);
+    });
+});
+router.get('/post/:name/deslike', (req, res) => {
+    dbClient_1.default.guide.update({
+        where: {
+            name: decodeURI(req.params.name)
+        },
+        data: {
+            negativeRatings: { increment: 1 }
+        }
+    }).then(val => {
+        res.send('succes');
     });
 });
 router.get('/post/:name', (req, res) => {
@@ -274,6 +448,8 @@ router.get('/post/:name', (req, res) => {
             if (value.content.includes("REDIRECT TO PAGE"))
                 res.redirect("../.." + value.content.substring(("REDIRECT TO PAGE").length, value.content.indexOf(';')).trim());
             else
+                //                        <button onclick="fetch('${value.name}/like')">like</button>
+                // <button onclick="fetch('${value.name}/deslike')">deslike</button>
                 res.send(htmlHead(value.name, value.description, value.category) +
                     `
               
@@ -282,6 +458,7 @@ router.get('/post/:name', (req, res) => {
                   <div id="article-head">
                     <h1>${value.name}</h1>
                     <div style="display: flex; gap: 1em;">
+
                         <p>Vizualizari ${value.visits}</p>
                         <p>Postat ${new Date(value.createdAt).toLocaleString("ro-RO", options)}</p>
                     </div>

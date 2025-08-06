@@ -8,6 +8,7 @@ generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
   binaryTargets = ["native", "linux-musl"]
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -39,6 +40,8 @@ model User {
   loginMethod String @default("local")
   projects Project[]
   solves Solve[]
+
+  Guide Guide[] // guides written by user
 }
 
 enum Role {
@@ -65,13 +68,30 @@ model Guide {
   name String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  author String @default("Anonim")
+  author User @relation(fields: [authorId], references: [id])
+  authorId Int
   positiveRatings Int @default(0)
   negativeRatings Int @default(0)
   content String
   description String?
   category String?
   visits Int @default(0)
+  guideTags GuideTag[]
+}
+
+model Tag {
+  id Int @id @default(autoincrement())
+  name String @unique
+  guideTags GuideTag[]
+}
+
+model GuideTag {
+  guideId Int
+  tagId Int
+  guide Guide @relation(fields: [guideId], references: [id])
+  tag Tag @relation(fields: [tagId], references: [id])
+
+  @@id([guideId, tagId])
 }
 
 model Problem {

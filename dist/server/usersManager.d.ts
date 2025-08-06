@@ -13,15 +13,15 @@ export declare function getUserData(id: number): Promise<UserNoPassword>;
 export declare function getIdFromJWT(req: any): number;
 export declare function addProject(id: number, data: any): Promise<{
     id: number;
+    createdAt: Date;
+    email: string;
     username: string;
     firstName: string;
     lastName: string;
-    email: string;
     emailValidated: boolean;
     userColor: string;
     picture: string;
     role: import("../../generated/prisma").$Enums.Role;
-    createdAt: Date;
     password: string;
     loginMethod: string;
 }>;

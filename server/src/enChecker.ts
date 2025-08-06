@@ -64,7 +64,7 @@ async function checkURL(name, url): Promise<boolean>
     }
     let transporter
     const emails = ['radubitere5@gmail.com', 'ancastoica1997@gmail.com']
-    
+
  async function updateTransporter() {
     transporter = nodemailer.createTransport({
         host: 'antares.webyouridea.ro', 
@@ -84,7 +84,6 @@ async function checkURL(name, url): Promise<boolean>
 
 updateTransporter()
 check()
-
 
 setInterval(() => {
     

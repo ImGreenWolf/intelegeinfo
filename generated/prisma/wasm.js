@@ -162,13 +162,23 @@ exports.Prisma.GuideScalarFieldEnum = {
   name: 'name',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  author: 'author',
+  authorId: 'authorId',
   positiveRatings: 'positiveRatings',
   negativeRatings: 'negativeRatings',
   content: 'content',
   description: 'description',
   category: 'category',
   visits: 'visits'
+};
+
+exports.Prisma.TagScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+};
+
+exports.Prisma.GuideTagScalarFieldEnum = {
+  guideId: 'guideId',
+  tagId: 'tagId'
 };
 
 exports.Prisma.ProblemScalarFieldEnum = {
@@ -215,15 +225,65 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.ProjectOrderByRelevanceFieldEnum = {
+  name: 'name',
+  fileUUID: 'fileUUID'
+};
+
+exports.Prisma.UserOrderByRelevanceFieldEnum = {
+  username: 'username',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  userColor: 'userColor',
+  picture: 'picture',
+  password: 'password',
+  loginMethod: 'loginMethod'
+};
+
+exports.Prisma.CodeOrderByRelevanceFieldEnum = {
+  code: 'code',
+  value: 'value'
+};
+
+exports.Prisma.RefreshTokenOrderByRelevanceFieldEnum = {
+  code: 'code',
+  hmac: 'hmac'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.GuideOrderByRelevanceFieldEnum = {
+  name: 'name',
+  content: 'content',
+  description: 'description',
+  category: 'category'
+};
+
+exports.Prisma.TagOrderByRelevanceFieldEnum = {
+  name: 'name'
 };
 
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.ProblemOrderByRelevanceFieldEnum = {
+  name: 'name',
+  author: 'author',
+  description: 'description',
+  category: 'category',
+  sourceCode: 'sourceCode',
+  tags: 'tags'
+};
+
+exports.Prisma.SolveOrderByRelevanceFieldEnum = {
+  sourceCode: 'sourceCode'
 };
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
@@ -243,6 +303,8 @@ exports.Prisma.ModelName = {
   Code: 'Code',
   RefreshToken: 'RefreshToken',
   Guide: 'Guide',
+  Tag: 'Tag',
+  GuideTag: 'GuideTag',
   Problem: 'Problem',
   Solve: 'Solve'
 };

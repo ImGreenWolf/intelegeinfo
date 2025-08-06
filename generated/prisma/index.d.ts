@@ -39,6 +39,16 @@ export type RefreshToken = $Result.DefaultSelection<Prisma.$RefreshTokenPayload>
  */
 export type Guide = $Result.DefaultSelection<Prisma.$GuidePayload>
 /**
+ * Model Tag
+ * 
+ */
+export type Tag = $Result.DefaultSelection<Prisma.$TagPayload>
+/**
+ * Model GuideTag
+ * 
+ */
+export type GuideTag = $Result.DefaultSelection<Prisma.$GuideTagPayload>
+/**
  * Model Problem
  * 
  */
@@ -254,6 +264,26 @@ export class PrismaClient<
     * ```
     */
   get guide(): Prisma.GuideDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tag`: Exposes CRUD operations for the **Tag** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Tags
+    * const tags = await prisma.tag.findMany()
+    * ```
+    */
+  get tag(): Prisma.TagDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.guideTag`: Exposes CRUD operations for the **GuideTag** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GuideTags
+    * const guideTags = await prisma.guideTag.findMany()
+    * ```
+    */
+  get guideTag(): Prisma.GuideTagDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.problem`: Exposes CRUD operations for the **Problem** model.
@@ -719,6 +749,8 @@ export namespace Prisma {
     Code: 'Code',
     RefreshToken: 'RefreshToken',
     Guide: 'Guide',
+    Tag: 'Tag',
+    GuideTag: 'GuideTag',
     Problem: 'Problem',
     Solve: 'Solve'
   };
@@ -739,7 +771,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "project" | "user" | "code" | "refreshToken" | "guide" | "problem" | "solve"
+      modelProps: "project" | "user" | "code" | "refreshToken" | "guide" | "tag" | "guideTag" | "problem" | "solve"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1113,6 +1145,154 @@ export namespace Prisma {
           }
         }
       }
+      Tag: {
+        payload: Prisma.$TagPayload<ExtArgs>
+        fields: Prisma.TagFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TagFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TagFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          findFirst: {
+            args: Prisma.TagFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TagFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          findMany: {
+            args: Prisma.TagFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>[]
+          }
+          create: {
+            args: Prisma.TagCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          createMany: {
+            args: Prisma.TagCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TagCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>[]
+          }
+          delete: {
+            args: Prisma.TagDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          update: {
+            args: Prisma.TagUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          deleteMany: {
+            args: Prisma.TagDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TagUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TagUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>[]
+          }
+          upsert: {
+            args: Prisma.TagUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TagPayload>
+          }
+          aggregate: {
+            args: Prisma.TagAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTag>
+          }
+          groupBy: {
+            args: Prisma.TagGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TagGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TagCountArgs<ExtArgs>
+            result: $Utils.Optional<TagCountAggregateOutputType> | number
+          }
+        }
+      }
+      GuideTag: {
+        payload: Prisma.$GuideTagPayload<ExtArgs>
+        fields: Prisma.GuideTagFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GuideTagFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GuideTagFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>
+          }
+          findFirst: {
+            args: Prisma.GuideTagFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GuideTagFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>
+          }
+          findMany: {
+            args: Prisma.GuideTagFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>[]
+          }
+          create: {
+            args: Prisma.GuideTagCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>
+          }
+          createMany: {
+            args: Prisma.GuideTagCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GuideTagCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>[]
+          }
+          delete: {
+            args: Prisma.GuideTagDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>
+          }
+          update: {
+            args: Prisma.GuideTagUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>
+          }
+          deleteMany: {
+            args: Prisma.GuideTagDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GuideTagUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GuideTagUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>[]
+          }
+          upsert: {
+            args: Prisma.GuideTagUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideTagPayload>
+          }
+          aggregate: {
+            args: Prisma.GuideTagAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGuideTag>
+          }
+          groupBy: {
+            args: Prisma.GuideTagGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GuideTagGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GuideTagCountArgs<ExtArgs>
+            result: $Utils.Optional<GuideTagCountAggregateOutputType> | number
+          }
+        }
+      }
       Problem: {
         payload: Prisma.$ProblemPayload<ExtArgs>
         fields: Prisma.ProblemFieldRefs
@@ -1350,6 +1530,8 @@ export namespace Prisma {
     code?: CodeOmit
     refreshToken?: RefreshTokenOmit
     guide?: GuideOmit
+    tag?: TagOmit
+    guideTag?: GuideTagOmit
     problem?: ProblemOmit
     solve?: SolveOmit
   }
@@ -1448,11 +1630,13 @@ export namespace Prisma {
   export type UserCountOutputType = {
     projects: number
     solves: number
+    Guide: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | UserCountOutputTypeCountProjectsArgs
     solves?: boolean | UserCountOutputTypeCountSolvesArgs
+    Guide?: boolean | UserCountOutputTypeCountGuideArgs
   }
 
   // Custom InputTypes
@@ -1478,6 +1662,75 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSolvesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SolveWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGuideArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuideWhereInput
+  }
+
+
+  /**
+   * Count Type GuideCountOutputType
+   */
+
+  export type GuideCountOutputType = {
+    guideTags: number
+  }
+
+  export type GuideCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guideTags?: boolean | GuideCountOutputTypeCountGuideTagsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * GuideCountOutputType without action
+   */
+  export type GuideCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideCountOutputType
+     */
+    select?: GuideCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * GuideCountOutputType without action
+   */
+  export type GuideCountOutputTypeCountGuideTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuideTagWhereInput
+  }
+
+
+  /**
+   * Count Type TagCountOutputType
+   */
+
+  export type TagCountOutputType = {
+    guideTags: number
+  }
+
+  export type TagCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guideTags?: boolean | TagCountOutputTypeCountGuideTagsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TagCountOutputType without action
+   */
+  export type TagCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TagCountOutputType
+     */
+    select?: TagCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TagCountOutputType without action
+   */
+  export type TagCountOutputTypeCountGuideTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuideTagWhereInput
   }
 
 
@@ -2868,6 +3121,7 @@ export namespace Prisma {
     loginMethod?: boolean
     projects?: boolean | User$projectsArgs<ExtArgs>
     solves?: boolean | User$solvesArgs<ExtArgs>
+    Guide?: boolean | User$GuideArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2920,6 +3174,7 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | User$projectsArgs<ExtArgs>
     solves?: boolean | User$solvesArgs<ExtArgs>
+    Guide?: boolean | User$GuideArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2930,6 +3185,7 @@ export namespace Prisma {
     objects: {
       projects: Prisma.$ProjectPayload<ExtArgs>[]
       solves: Prisma.$SolvePayload<ExtArgs>[]
+      Guide: Prisma.$GuidePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3340,6 +3596,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     projects<T extends User$projectsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     solves<T extends User$solvesArgs<ExtArgs> = {}>(args?: Subset<T, User$solvesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SolvePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Guide<T extends User$GuideArgs<ExtArgs> = {}>(args?: Subset<T, User$GuideArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuidePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3814,6 +4071,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SolveScalarFieldEnum | SolveScalarFieldEnum[]
+  }
+
+  /**
+   * User.Guide
+   */
+  export type User$GuideArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guide
+     */
+    select?: GuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guide
+     */
+    omit?: GuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
+    where?: GuideWhereInput
+    orderBy?: GuideOrderByWithRelationInput | GuideOrderByWithRelationInput[]
+    cursor?: GuideWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuideScalarFieldEnum | GuideScalarFieldEnum[]
   }
 
   /**
@@ -5813,6 +6094,7 @@ export namespace Prisma {
 
   export type GuideAvgAggregateOutputType = {
     id: number | null
+    authorId: number | null
     positiveRatings: number | null
     negativeRatings: number | null
     visits: number | null
@@ -5820,6 +6102,7 @@ export namespace Prisma {
 
   export type GuideSumAggregateOutputType = {
     id: number | null
+    authorId: number | null
     positiveRatings: number | null
     negativeRatings: number | null
     visits: number | null
@@ -5830,7 +6113,7 @@ export namespace Prisma {
     name: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    author: string | null
+    authorId: number | null
     positiveRatings: number | null
     negativeRatings: number | null
     content: string | null
@@ -5844,7 +6127,7 @@ export namespace Prisma {
     name: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    author: string | null
+    authorId: number | null
     positiveRatings: number | null
     negativeRatings: number | null
     content: string | null
@@ -5858,7 +6141,7 @@ export namespace Prisma {
     name: number
     createdAt: number
     updatedAt: number
-    author: number
+    authorId: number
     positiveRatings: number
     negativeRatings: number
     content: number
@@ -5871,6 +6154,7 @@ export namespace Prisma {
 
   export type GuideAvgAggregateInputType = {
     id?: true
+    authorId?: true
     positiveRatings?: true
     negativeRatings?: true
     visits?: true
@@ -5878,6 +6162,7 @@ export namespace Prisma {
 
   export type GuideSumAggregateInputType = {
     id?: true
+    authorId?: true
     positiveRatings?: true
     negativeRatings?: true
     visits?: true
@@ -5888,7 +6173,7 @@ export namespace Prisma {
     name?: true
     createdAt?: true
     updatedAt?: true
-    author?: true
+    authorId?: true
     positiveRatings?: true
     negativeRatings?: true
     content?: true
@@ -5902,7 +6187,7 @@ export namespace Prisma {
     name?: true
     createdAt?: true
     updatedAt?: true
-    author?: true
+    authorId?: true
     positiveRatings?: true
     negativeRatings?: true
     content?: true
@@ -5916,7 +6201,7 @@ export namespace Prisma {
     name?: true
     createdAt?: true
     updatedAt?: true
-    author?: true
+    authorId?: true
     positiveRatings?: true
     negativeRatings?: true
     content?: true
@@ -6017,7 +6302,7 @@ export namespace Prisma {
     name: string
     createdAt: Date
     updatedAt: Date
-    author: string
+    authorId: number
     positiveRatings: number
     negativeRatings: number
     content: string
@@ -6050,13 +6335,16 @@ export namespace Prisma {
     name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    author?: boolean
+    authorId?: boolean
     positiveRatings?: boolean
     negativeRatings?: boolean
     content?: boolean
     description?: boolean
     category?: boolean
     visits?: boolean
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    guideTags?: boolean | Guide$guideTagsArgs<ExtArgs>
+    _count?: boolean | GuideCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["guide"]>
 
   export type GuideSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6064,13 +6352,14 @@ export namespace Prisma {
     name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    author?: boolean
+    authorId?: boolean
     positiveRatings?: boolean
     negativeRatings?: boolean
     content?: boolean
     description?: boolean
     category?: boolean
     visits?: boolean
+    author?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["guide"]>
 
   export type GuideSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6078,13 +6367,14 @@ export namespace Prisma {
     name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    author?: boolean
+    authorId?: boolean
     positiveRatings?: boolean
     negativeRatings?: boolean
     content?: boolean
     description?: boolean
     category?: boolean
     visits?: boolean
+    author?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["guide"]>
 
   export type GuideSelectScalar = {
@@ -6092,7 +6382,7 @@ export namespace Prisma {
     name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    author?: boolean
+    authorId?: boolean
     positiveRatings?: boolean
     negativeRatings?: boolean
     content?: boolean
@@ -6101,17 +6391,31 @@ export namespace Prisma {
     visits?: boolean
   }
 
-  export type GuideOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "author" | "positiveRatings" | "negativeRatings" | "content" | "description" | "category" | "visits", ExtArgs["result"]["guide"]>
+  export type GuideOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "authorId" | "positiveRatings" | "negativeRatings" | "content" | "description" | "category" | "visits", ExtArgs["result"]["guide"]>
+  export type GuideInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    author?: boolean | UserDefaultArgs<ExtArgs>
+    guideTags?: boolean | Guide$guideTagsArgs<ExtArgs>
+    _count?: boolean | GuideCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type GuideIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type GuideIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    author?: boolean | UserDefaultArgs<ExtArgs>
+  }
 
   export type $GuidePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Guide"
-    objects: {}
+    objects: {
+      author: Prisma.$UserPayload<ExtArgs>
+      guideTags: Prisma.$GuideTagPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
       createdAt: Date
       updatedAt: Date
-      author: string
+      authorId: number
       positiveRatings: number
       negativeRatings: number
       content: string
@@ -6512,6 +6816,8 @@ export namespace Prisma {
    */
   export interface Prisma__GuideClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    author<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    guideTags<T extends Guide$guideTagsArgs<ExtArgs> = {}>(args?: Subset<T, Guide$guideTagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6545,7 +6851,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Guide", 'String'>
     readonly createdAt: FieldRef<"Guide", 'DateTime'>
     readonly updatedAt: FieldRef<"Guide", 'DateTime'>
-    readonly author: FieldRef<"Guide", 'String'>
+    readonly authorId: FieldRef<"Guide", 'Int'>
     readonly positiveRatings: FieldRef<"Guide", 'Int'>
     readonly negativeRatings: FieldRef<"Guide", 'Int'>
     readonly content: FieldRef<"Guide", 'String'>
@@ -6569,6 +6875,10 @@ export namespace Prisma {
      */
     omit?: GuideOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
+    /**
      * Filter, which Guide to fetch.
      */
     where: GuideWhereUniqueInput
@@ -6587,6 +6897,10 @@ export namespace Prisma {
      */
     omit?: GuideOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
+    /**
      * Filter, which Guide to fetch.
      */
     where: GuideWhereUniqueInput
@@ -6604,6 +6918,10 @@ export namespace Prisma {
      * Omit specific fields from the Guide
      */
     omit?: GuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
     /**
      * Filter, which Guide to fetch.
      */
@@ -6653,6 +6971,10 @@ export namespace Prisma {
      */
     omit?: GuideOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
+    /**
      * Filter, which Guide to fetch.
      */
     where?: GuideWhereInput
@@ -6701,6 +7023,10 @@ export namespace Prisma {
      */
     omit?: GuideOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
+    /**
      * Filter, which Guides to fetch.
      */
     where?: GuideWhereInput
@@ -6744,6 +7070,10 @@ export namespace Prisma {
      */
     omit?: GuideOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
+    /**
      * The data needed to create a Guide.
      */
     data: XOR<GuideCreateInput, GuideUncheckedCreateInput>
@@ -6777,6 +7107,10 @@ export namespace Prisma {
      */
     data: GuideCreateManyInput | GuideCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6791,6 +7125,10 @@ export namespace Prisma {
      * Omit specific fields from the Guide
      */
     omit?: GuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
     /**
      * The data needed to update a Guide.
      */
@@ -6843,6 +7181,10 @@ export namespace Prisma {
      * Limit how many Guides to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6857,6 +7199,10 @@ export namespace Prisma {
      * Omit specific fields from the Guide
      */
     omit?: GuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
     /**
      * The filter to search for the Guide to update in case it exists.
      */
@@ -6884,6 +7230,10 @@ export namespace Prisma {
      */
     omit?: GuideOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
+    /**
      * Filter which Guide to delete.
      */
     where: GuideWhereUniqueInput
@@ -6904,6 +7254,30 @@ export namespace Prisma {
   }
 
   /**
+   * Guide.guideTags
+   */
+  export type Guide$guideTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    where?: GuideTagWhereInput
+    orderBy?: GuideTagOrderByWithRelationInput | GuideTagOrderByWithRelationInput[]
+    cursor?: GuideTagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuideTagScalarFieldEnum | GuideTagScalarFieldEnum[]
+  }
+
+  /**
    * Guide without action
    */
   export type GuideDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6915,6 +7289,2140 @@ export namespace Prisma {
      * Omit specific fields from the Guide
      */
     omit?: GuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Tag
+   */
+
+  export type AggregateTag = {
+    _count: TagCountAggregateOutputType | null
+    _avg: TagAvgAggregateOutputType | null
+    _sum: TagSumAggregateOutputType | null
+    _min: TagMinAggregateOutputType | null
+    _max: TagMaxAggregateOutputType | null
+  }
+
+  export type TagAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type TagSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type TagMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+  }
+
+  export type TagMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+  }
+
+  export type TagCountAggregateOutputType = {
+    id: number
+    name: number
+    _all: number
+  }
+
+
+  export type TagAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type TagSumAggregateInputType = {
+    id?: true
+  }
+
+  export type TagMinAggregateInputType = {
+    id?: true
+    name?: true
+  }
+
+  export type TagMaxAggregateInputType = {
+    id?: true
+    name?: true
+  }
+
+  export type TagCountAggregateInputType = {
+    id?: true
+    name?: true
+    _all?: true
+  }
+
+  export type TagAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Tag to aggregate.
+     */
+    where?: TagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tags to fetch.
+     */
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Tags
+    **/
+    _count?: true | TagCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TagAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TagSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TagMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TagMaxAggregateInputType
+  }
+
+  export type GetTagAggregateType<T extends TagAggregateArgs> = {
+        [P in keyof T & keyof AggregateTag]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTag[P]>
+      : GetScalarType<T[P], AggregateTag[P]>
+  }
+
+
+
+
+  export type TagGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithAggregationInput | TagOrderByWithAggregationInput[]
+    by: TagScalarFieldEnum[] | TagScalarFieldEnum
+    having?: TagScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TagCountAggregateInputType | true
+    _avg?: TagAvgAggregateInputType
+    _sum?: TagSumAggregateInputType
+    _min?: TagMinAggregateInputType
+    _max?: TagMaxAggregateInputType
+  }
+
+  export type TagGroupByOutputType = {
+    id: number
+    name: string
+    _count: TagCountAggregateOutputType | null
+    _avg: TagAvgAggregateOutputType | null
+    _sum: TagSumAggregateOutputType | null
+    _min: TagMinAggregateOutputType | null
+    _max: TagMaxAggregateOutputType | null
+  }
+
+  type GetTagGroupByPayload<T extends TagGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TagGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TagGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TagGroupByOutputType[P]>
+            : GetScalarType<T[P], TagGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TagSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    guideTags?: boolean | Tag$guideTagsArgs<ExtArgs>
+    _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tag"]>
+
+  export type TagSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+  }, ExtArgs["result"]["tag"]>
+
+  export type TagSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+  }, ExtArgs["result"]["tag"]>
+
+  export type TagSelectScalar = {
+    id?: boolean
+    name?: boolean
+  }
+
+  export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name", ExtArgs["result"]["tag"]>
+  export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guideTags?: boolean | Tag$guideTagsArgs<ExtArgs>
+    _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type TagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $TagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Tag"
+    objects: {
+      guideTags: Prisma.$GuideTagPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      name: string
+    }, ExtArgs["result"]["tag"]>
+    composites: {}
+  }
+
+  type TagGetPayload<S extends boolean | null | undefined | TagDefaultArgs> = $Result.GetResult<Prisma.$TagPayload, S>
+
+  type TagCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TagFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TagCountAggregateInputType | true
+    }
+
+  export interface TagDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Tag'], meta: { name: 'Tag' } }
+    /**
+     * Find zero or one Tag that matches the filter.
+     * @param {TagFindUniqueArgs} args - Arguments to find a Tag
+     * @example
+     * // Get one Tag
+     * const tag = await prisma.tag.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TagFindUniqueArgs>(args: SelectSubset<T, TagFindUniqueArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Tag that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TagFindUniqueOrThrowArgs} args - Arguments to find a Tag
+     * @example
+     * // Get one Tag
+     * const tag = await prisma.tag.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TagFindUniqueOrThrowArgs>(args: SelectSubset<T, TagFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Tag that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagFindFirstArgs} args - Arguments to find a Tag
+     * @example
+     * // Get one Tag
+     * const tag = await prisma.tag.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TagFindFirstArgs>(args?: SelectSubset<T, TagFindFirstArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Tag that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagFindFirstOrThrowArgs} args - Arguments to find a Tag
+     * @example
+     * // Get one Tag
+     * const tag = await prisma.tag.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TagFindFirstOrThrowArgs>(args?: SelectSubset<T, TagFindFirstOrThrowArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Tags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Tags
+     * const tags = await prisma.tag.findMany()
+     * 
+     * // Get first 10 Tags
+     * const tags = await prisma.tag.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tagWithIdOnly = await prisma.tag.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TagFindManyArgs>(args?: SelectSubset<T, TagFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Tag.
+     * @param {TagCreateArgs} args - Arguments to create a Tag.
+     * @example
+     * // Create one Tag
+     * const Tag = await prisma.tag.create({
+     *   data: {
+     *     // ... data to create a Tag
+     *   }
+     * })
+     * 
+     */
+    create<T extends TagCreateArgs>(args: SelectSubset<T, TagCreateArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Tags.
+     * @param {TagCreateManyArgs} args - Arguments to create many Tags.
+     * @example
+     * // Create many Tags
+     * const tag = await prisma.tag.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TagCreateManyArgs>(args?: SelectSubset<T, TagCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Tags and returns the data saved in the database.
+     * @param {TagCreateManyAndReturnArgs} args - Arguments to create many Tags.
+     * @example
+     * // Create many Tags
+     * const tag = await prisma.tag.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Tags and only return the `id`
+     * const tagWithIdOnly = await prisma.tag.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TagCreateManyAndReturnArgs>(args?: SelectSubset<T, TagCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Tag.
+     * @param {TagDeleteArgs} args - Arguments to delete one Tag.
+     * @example
+     * // Delete one Tag
+     * const Tag = await prisma.tag.delete({
+     *   where: {
+     *     // ... filter to delete one Tag
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TagDeleteArgs>(args: SelectSubset<T, TagDeleteArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Tag.
+     * @param {TagUpdateArgs} args - Arguments to update one Tag.
+     * @example
+     * // Update one Tag
+     * const tag = await prisma.tag.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TagUpdateArgs>(args: SelectSubset<T, TagUpdateArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Tags.
+     * @param {TagDeleteManyArgs} args - Arguments to filter Tags to delete.
+     * @example
+     * // Delete a few Tags
+     * const { count } = await prisma.tag.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TagDeleteManyArgs>(args?: SelectSubset<T, TagDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Tags
+     * const tag = await prisma.tag.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TagUpdateManyArgs>(args: SelectSubset<T, TagUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Tags and returns the data updated in the database.
+     * @param {TagUpdateManyAndReturnArgs} args - Arguments to update many Tags.
+     * @example
+     * // Update many Tags
+     * const tag = await prisma.tag.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Tags and only return the `id`
+     * const tagWithIdOnly = await prisma.tag.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TagUpdateManyAndReturnArgs>(args: SelectSubset<T, TagUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Tag.
+     * @param {TagUpsertArgs} args - Arguments to update or create a Tag.
+     * @example
+     * // Update or create a Tag
+     * const tag = await prisma.tag.upsert({
+     *   create: {
+     *     // ... data to create a Tag
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Tag we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TagUpsertArgs>(args: SelectSubset<T, TagUpsertArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagCountArgs} args - Arguments to filter Tags to count.
+     * @example
+     * // Count the number of Tags
+     * const count = await prisma.tag.count({
+     *   where: {
+     *     // ... the filter for the Tags we want to count
+     *   }
+     * })
+    **/
+    count<T extends TagCountArgs>(
+      args?: Subset<T, TagCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TagCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Tag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TagAggregateArgs>(args: Subset<T, TagAggregateArgs>): Prisma.PrismaPromise<GetTagAggregateType<T>>
+
+    /**
+     * Group by Tag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TagGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TagGroupByArgs['orderBy'] }
+        : { orderBy?: TagGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TagGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTagGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Tag model
+   */
+  readonly fields: TagFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Tag.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    guideTags<T extends Tag$guideTagsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$guideTagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Tag model
+   */
+  interface TagFieldRefs {
+    readonly id: FieldRef<"Tag", 'Int'>
+    readonly name: FieldRef<"Tag", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Tag findUnique
+   */
+  export type TagFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tag to fetch.
+     */
+    where: TagWhereUniqueInput
+  }
+
+  /**
+   * Tag findUniqueOrThrow
+   */
+  export type TagFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tag to fetch.
+     */
+    where: TagWhereUniqueInput
+  }
+
+  /**
+   * Tag findFirst
+   */
+  export type TagFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tag to fetch.
+     */
+    where?: TagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tags to fetch.
+     */
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Tags.
+     */
+    cursor?: TagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tags.
+     */
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag findFirstOrThrow
+   */
+  export type TagFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tag to fetch.
+     */
+    where?: TagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tags to fetch.
+     */
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Tags.
+     */
+    cursor?: TagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tags.
+     */
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag findMany
+   */
+  export type TagFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter, which Tags to fetch.
+     */
+    where?: TagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tags to fetch.
+     */
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Tags.
+     */
+    cursor?: TagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tags.
+     */
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag create
+   */
+  export type TagCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Tag.
+     */
+    data: XOR<TagCreateInput, TagUncheckedCreateInput>
+  }
+
+  /**
+   * Tag createMany
+   */
+  export type TagCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Tags.
+     */
+    data: TagCreateManyInput | TagCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Tag createManyAndReturn
+   */
+  export type TagCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * The data used to create many Tags.
+     */
+    data: TagCreateManyInput | TagCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Tag update
+   */
+  export type TagUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Tag.
+     */
+    data: XOR<TagUpdateInput, TagUncheckedUpdateInput>
+    /**
+     * Choose, which Tag to update.
+     */
+    where: TagWhereUniqueInput
+  }
+
+  /**
+   * Tag updateMany
+   */
+  export type TagUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Tags.
+     */
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyInput>
+    /**
+     * Filter which Tags to update
+     */
+    where?: TagWhereInput
+    /**
+     * Limit how many Tags to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Tag updateManyAndReturn
+   */
+  export type TagUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * The data used to update Tags.
+     */
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyInput>
+    /**
+     * Filter which Tags to update
+     */
+    where?: TagWhereInput
+    /**
+     * Limit how many Tags to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Tag upsert
+   */
+  export type TagUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Tag to update in case it exists.
+     */
+    where: TagWhereUniqueInput
+    /**
+     * In case the Tag found by the `where` argument doesn't exist, create a new Tag with this data.
+     */
+    create: XOR<TagCreateInput, TagUncheckedCreateInput>
+    /**
+     * In case the Tag was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TagUpdateInput, TagUncheckedUpdateInput>
+  }
+
+  /**
+   * Tag delete
+   */
+  export type TagDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    /**
+     * Filter which Tag to delete.
+     */
+    where: TagWhereUniqueInput
+  }
+
+  /**
+   * Tag deleteMany
+   */
+  export type TagDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Tags to delete
+     */
+    where?: TagWhereInput
+    /**
+     * Limit how many Tags to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Tag.guideTags
+   */
+  export type Tag$guideTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    where?: GuideTagWhereInput
+    orderBy?: GuideTagOrderByWithRelationInput | GuideTagOrderByWithRelationInput[]
+    cursor?: GuideTagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuideTagScalarFieldEnum | GuideTagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag without action
+   */
+  export type TagDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model GuideTag
+   */
+
+  export type AggregateGuideTag = {
+    _count: GuideTagCountAggregateOutputType | null
+    _avg: GuideTagAvgAggregateOutputType | null
+    _sum: GuideTagSumAggregateOutputType | null
+    _min: GuideTagMinAggregateOutputType | null
+    _max: GuideTagMaxAggregateOutputType | null
+  }
+
+  export type GuideTagAvgAggregateOutputType = {
+    guideId: number | null
+    tagId: number | null
+  }
+
+  export type GuideTagSumAggregateOutputType = {
+    guideId: number | null
+    tagId: number | null
+  }
+
+  export type GuideTagMinAggregateOutputType = {
+    guideId: number | null
+    tagId: number | null
+  }
+
+  export type GuideTagMaxAggregateOutputType = {
+    guideId: number | null
+    tagId: number | null
+  }
+
+  export type GuideTagCountAggregateOutputType = {
+    guideId: number
+    tagId: number
+    _all: number
+  }
+
+
+  export type GuideTagAvgAggregateInputType = {
+    guideId?: true
+    tagId?: true
+  }
+
+  export type GuideTagSumAggregateInputType = {
+    guideId?: true
+    tagId?: true
+  }
+
+  export type GuideTagMinAggregateInputType = {
+    guideId?: true
+    tagId?: true
+  }
+
+  export type GuideTagMaxAggregateInputType = {
+    guideId?: true
+    tagId?: true
+  }
+
+  export type GuideTagCountAggregateInputType = {
+    guideId?: true
+    tagId?: true
+    _all?: true
+  }
+
+  export type GuideTagAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuideTag to aggregate.
+     */
+    where?: GuideTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuideTags to fetch.
+     */
+    orderBy?: GuideTagOrderByWithRelationInput | GuideTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GuideTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuideTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuideTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GuideTags
+    **/
+    _count?: true | GuideTagCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GuideTagAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GuideTagSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GuideTagMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GuideTagMaxAggregateInputType
+  }
+
+  export type GetGuideTagAggregateType<T extends GuideTagAggregateArgs> = {
+        [P in keyof T & keyof AggregateGuideTag]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGuideTag[P]>
+      : GetScalarType<T[P], AggregateGuideTag[P]>
+  }
+
+
+
+
+  export type GuideTagGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuideTagWhereInput
+    orderBy?: GuideTagOrderByWithAggregationInput | GuideTagOrderByWithAggregationInput[]
+    by: GuideTagScalarFieldEnum[] | GuideTagScalarFieldEnum
+    having?: GuideTagScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GuideTagCountAggregateInputType | true
+    _avg?: GuideTagAvgAggregateInputType
+    _sum?: GuideTagSumAggregateInputType
+    _min?: GuideTagMinAggregateInputType
+    _max?: GuideTagMaxAggregateInputType
+  }
+
+  export type GuideTagGroupByOutputType = {
+    guideId: number
+    tagId: number
+    _count: GuideTagCountAggregateOutputType | null
+    _avg: GuideTagAvgAggregateOutputType | null
+    _sum: GuideTagSumAggregateOutputType | null
+    _min: GuideTagMinAggregateOutputType | null
+    _max: GuideTagMaxAggregateOutputType | null
+  }
+
+  type GetGuideTagGroupByPayload<T extends GuideTagGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GuideTagGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GuideTagGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GuideTagGroupByOutputType[P]>
+            : GetScalarType<T[P], GuideTagGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GuideTagSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    guideId?: boolean
+    tagId?: boolean
+    guide?: boolean | GuideDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guideTag"]>
+
+  export type GuideTagSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    guideId?: boolean
+    tagId?: boolean
+    guide?: boolean | GuideDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guideTag"]>
+
+  export type GuideTagSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    guideId?: boolean
+    tagId?: boolean
+    guide?: boolean | GuideDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guideTag"]>
+
+  export type GuideTagSelectScalar = {
+    guideId?: boolean
+    tagId?: boolean
+  }
+
+  export type GuideTagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"guideId" | "tagId", ExtArgs["result"]["guideTag"]>
+  export type GuideTagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guide?: boolean | GuideDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }
+  export type GuideTagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guide?: boolean | GuideDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }
+  export type GuideTagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guide?: boolean | GuideDefaultArgs<ExtArgs>
+    tag?: boolean | TagDefaultArgs<ExtArgs>
+  }
+
+  export type $GuideTagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GuideTag"
+    objects: {
+      guide: Prisma.$GuidePayload<ExtArgs>
+      tag: Prisma.$TagPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      guideId: number
+      tagId: number
+    }, ExtArgs["result"]["guideTag"]>
+    composites: {}
+  }
+
+  type GuideTagGetPayload<S extends boolean | null | undefined | GuideTagDefaultArgs> = $Result.GetResult<Prisma.$GuideTagPayload, S>
+
+  type GuideTagCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GuideTagFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GuideTagCountAggregateInputType | true
+    }
+
+  export interface GuideTagDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GuideTag'], meta: { name: 'GuideTag' } }
+    /**
+     * Find zero or one GuideTag that matches the filter.
+     * @param {GuideTagFindUniqueArgs} args - Arguments to find a GuideTag
+     * @example
+     * // Get one GuideTag
+     * const guideTag = await prisma.guideTag.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GuideTagFindUniqueArgs>(args: SelectSubset<T, GuideTagFindUniqueArgs<ExtArgs>>): Prisma__GuideTagClient<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GuideTag that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GuideTagFindUniqueOrThrowArgs} args - Arguments to find a GuideTag
+     * @example
+     * // Get one GuideTag
+     * const guideTag = await prisma.guideTag.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GuideTagFindUniqueOrThrowArgs>(args: SelectSubset<T, GuideTagFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GuideTagClient<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GuideTag that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideTagFindFirstArgs} args - Arguments to find a GuideTag
+     * @example
+     * // Get one GuideTag
+     * const guideTag = await prisma.guideTag.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GuideTagFindFirstArgs>(args?: SelectSubset<T, GuideTagFindFirstArgs<ExtArgs>>): Prisma__GuideTagClient<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GuideTag that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideTagFindFirstOrThrowArgs} args - Arguments to find a GuideTag
+     * @example
+     * // Get one GuideTag
+     * const guideTag = await prisma.guideTag.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GuideTagFindFirstOrThrowArgs>(args?: SelectSubset<T, GuideTagFindFirstOrThrowArgs<ExtArgs>>): Prisma__GuideTagClient<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GuideTags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideTagFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GuideTags
+     * const guideTags = await prisma.guideTag.findMany()
+     * 
+     * // Get first 10 GuideTags
+     * const guideTags = await prisma.guideTag.findMany({ take: 10 })
+     * 
+     * // Only select the `guideId`
+     * const guideTagWithGuideIdOnly = await prisma.guideTag.findMany({ select: { guideId: true } })
+     * 
+     */
+    findMany<T extends GuideTagFindManyArgs>(args?: SelectSubset<T, GuideTagFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GuideTag.
+     * @param {GuideTagCreateArgs} args - Arguments to create a GuideTag.
+     * @example
+     * // Create one GuideTag
+     * const GuideTag = await prisma.guideTag.create({
+     *   data: {
+     *     // ... data to create a GuideTag
+     *   }
+     * })
+     * 
+     */
+    create<T extends GuideTagCreateArgs>(args: SelectSubset<T, GuideTagCreateArgs<ExtArgs>>): Prisma__GuideTagClient<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GuideTags.
+     * @param {GuideTagCreateManyArgs} args - Arguments to create many GuideTags.
+     * @example
+     * // Create many GuideTags
+     * const guideTag = await prisma.guideTag.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GuideTagCreateManyArgs>(args?: SelectSubset<T, GuideTagCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GuideTags and returns the data saved in the database.
+     * @param {GuideTagCreateManyAndReturnArgs} args - Arguments to create many GuideTags.
+     * @example
+     * // Create many GuideTags
+     * const guideTag = await prisma.guideTag.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GuideTags and only return the `guideId`
+     * const guideTagWithGuideIdOnly = await prisma.guideTag.createManyAndReturn({
+     *   select: { guideId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GuideTagCreateManyAndReturnArgs>(args?: SelectSubset<T, GuideTagCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a GuideTag.
+     * @param {GuideTagDeleteArgs} args - Arguments to delete one GuideTag.
+     * @example
+     * // Delete one GuideTag
+     * const GuideTag = await prisma.guideTag.delete({
+     *   where: {
+     *     // ... filter to delete one GuideTag
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GuideTagDeleteArgs>(args: SelectSubset<T, GuideTagDeleteArgs<ExtArgs>>): Prisma__GuideTagClient<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GuideTag.
+     * @param {GuideTagUpdateArgs} args - Arguments to update one GuideTag.
+     * @example
+     * // Update one GuideTag
+     * const guideTag = await prisma.guideTag.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GuideTagUpdateArgs>(args: SelectSubset<T, GuideTagUpdateArgs<ExtArgs>>): Prisma__GuideTagClient<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GuideTags.
+     * @param {GuideTagDeleteManyArgs} args - Arguments to filter GuideTags to delete.
+     * @example
+     * // Delete a few GuideTags
+     * const { count } = await prisma.guideTag.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GuideTagDeleteManyArgs>(args?: SelectSubset<T, GuideTagDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuideTags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideTagUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GuideTags
+     * const guideTag = await prisma.guideTag.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GuideTagUpdateManyArgs>(args: SelectSubset<T, GuideTagUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuideTags and returns the data updated in the database.
+     * @param {GuideTagUpdateManyAndReturnArgs} args - Arguments to update many GuideTags.
+     * @example
+     * // Update many GuideTags
+     * const guideTag = await prisma.guideTag.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GuideTags and only return the `guideId`
+     * const guideTagWithGuideIdOnly = await prisma.guideTag.updateManyAndReturn({
+     *   select: { guideId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GuideTagUpdateManyAndReturnArgs>(args: SelectSubset<T, GuideTagUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one GuideTag.
+     * @param {GuideTagUpsertArgs} args - Arguments to update or create a GuideTag.
+     * @example
+     * // Update or create a GuideTag
+     * const guideTag = await prisma.guideTag.upsert({
+     *   create: {
+     *     // ... data to create a GuideTag
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GuideTag we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GuideTagUpsertArgs>(args: SelectSubset<T, GuideTagUpsertArgs<ExtArgs>>): Prisma__GuideTagClient<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GuideTags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideTagCountArgs} args - Arguments to filter GuideTags to count.
+     * @example
+     * // Count the number of GuideTags
+     * const count = await prisma.guideTag.count({
+     *   where: {
+     *     // ... the filter for the GuideTags we want to count
+     *   }
+     * })
+    **/
+    count<T extends GuideTagCountArgs>(
+      args?: Subset<T, GuideTagCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GuideTagCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GuideTag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideTagAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GuideTagAggregateArgs>(args: Subset<T, GuideTagAggregateArgs>): Prisma.PrismaPromise<GetGuideTagAggregateType<T>>
+
+    /**
+     * Group by GuideTag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideTagGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GuideTagGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GuideTagGroupByArgs['orderBy'] }
+        : { orderBy?: GuideTagGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GuideTagGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGuideTagGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GuideTag model
+   */
+  readonly fields: GuideTagFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GuideTag.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GuideTagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    guide<T extends GuideDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GuideDefaultArgs<ExtArgs>>): Prisma__GuideClient<$Result.GetResult<Prisma.$GuidePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    tag<T extends TagDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TagDefaultArgs<ExtArgs>>): Prisma__TagClient<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GuideTag model
+   */
+  interface GuideTagFieldRefs {
+    readonly guideId: FieldRef<"GuideTag", 'Int'>
+    readonly tagId: FieldRef<"GuideTag", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GuideTag findUnique
+   */
+  export type GuideTagFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideTag to fetch.
+     */
+    where: GuideTagWhereUniqueInput
+  }
+
+  /**
+   * GuideTag findUniqueOrThrow
+   */
+  export type GuideTagFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideTag to fetch.
+     */
+    where: GuideTagWhereUniqueInput
+  }
+
+  /**
+   * GuideTag findFirst
+   */
+  export type GuideTagFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideTag to fetch.
+     */
+    where?: GuideTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuideTags to fetch.
+     */
+    orderBy?: GuideTagOrderByWithRelationInput | GuideTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuideTags.
+     */
+    cursor?: GuideTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuideTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuideTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuideTags.
+     */
+    distinct?: GuideTagScalarFieldEnum | GuideTagScalarFieldEnum[]
+  }
+
+  /**
+   * GuideTag findFirstOrThrow
+   */
+  export type GuideTagFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideTag to fetch.
+     */
+    where?: GuideTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuideTags to fetch.
+     */
+    orderBy?: GuideTagOrderByWithRelationInput | GuideTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuideTags.
+     */
+    cursor?: GuideTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuideTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuideTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuideTags.
+     */
+    distinct?: GuideTagScalarFieldEnum | GuideTagScalarFieldEnum[]
+  }
+
+  /**
+   * GuideTag findMany
+   */
+  export type GuideTagFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideTags to fetch.
+     */
+    where?: GuideTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuideTags to fetch.
+     */
+    orderBy?: GuideTagOrderByWithRelationInput | GuideTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GuideTags.
+     */
+    cursor?: GuideTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuideTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuideTags.
+     */
+    skip?: number
+    distinct?: GuideTagScalarFieldEnum | GuideTagScalarFieldEnum[]
+  }
+
+  /**
+   * GuideTag create
+   */
+  export type GuideTagCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GuideTag.
+     */
+    data: XOR<GuideTagCreateInput, GuideTagUncheckedCreateInput>
+  }
+
+  /**
+   * GuideTag createMany
+   */
+  export type GuideTagCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GuideTags.
+     */
+    data: GuideTagCreateManyInput | GuideTagCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GuideTag createManyAndReturn
+   */
+  export type GuideTagCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * The data used to create many GuideTags.
+     */
+    data: GuideTagCreateManyInput | GuideTagCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GuideTag update
+   */
+  export type GuideTagUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GuideTag.
+     */
+    data: XOR<GuideTagUpdateInput, GuideTagUncheckedUpdateInput>
+    /**
+     * Choose, which GuideTag to update.
+     */
+    where: GuideTagWhereUniqueInput
+  }
+
+  /**
+   * GuideTag updateMany
+   */
+  export type GuideTagUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GuideTags.
+     */
+    data: XOR<GuideTagUpdateManyMutationInput, GuideTagUncheckedUpdateManyInput>
+    /**
+     * Filter which GuideTags to update
+     */
+    where?: GuideTagWhereInput
+    /**
+     * Limit how many GuideTags to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuideTag updateManyAndReturn
+   */
+  export type GuideTagUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * The data used to update GuideTags.
+     */
+    data: XOR<GuideTagUpdateManyMutationInput, GuideTagUncheckedUpdateManyInput>
+    /**
+     * Filter which GuideTags to update
+     */
+    where?: GuideTagWhereInput
+    /**
+     * Limit how many GuideTags to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GuideTag upsert
+   */
+  export type GuideTagUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GuideTag to update in case it exists.
+     */
+    where: GuideTagWhereUniqueInput
+    /**
+     * In case the GuideTag found by the `where` argument doesn't exist, create a new GuideTag with this data.
+     */
+    create: XOR<GuideTagCreateInput, GuideTagUncheckedCreateInput>
+    /**
+     * In case the GuideTag was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GuideTagUpdateInput, GuideTagUncheckedUpdateInput>
+  }
+
+  /**
+   * GuideTag delete
+   */
+  export type GuideTagDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
+    /**
+     * Filter which GuideTag to delete.
+     */
+    where: GuideTagWhereUniqueInput
+  }
+
+  /**
+   * GuideTag deleteMany
+   */
+  export type GuideTagDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuideTags to delete
+     */
+    where?: GuideTagWhereInput
+    /**
+     * Limit how many GuideTags to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuideTag without action
+   */
+  export type GuideTagDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideTag
+     */
+    select?: GuideTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuideTag
+     */
+    omit?: GuideTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideTagInclude<ExtArgs> | null
   }
 
 
@@ -9379,7 +11887,7 @@ export namespace Prisma {
     name: 'name',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    author: 'author',
+    authorId: 'authorId',
     positiveRatings: 'positiveRatings',
     negativeRatings: 'negativeRatings',
     content: 'content',
@@ -9389,6 +11897,22 @@ export namespace Prisma {
   };
 
   export type GuideScalarFieldEnum = (typeof GuideScalarFieldEnum)[keyof typeof GuideScalarFieldEnum]
+
+
+  export const TagScalarFieldEnum: {
+    id: 'id',
+    name: 'name'
+  };
+
+  export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+  export const GuideTagScalarFieldEnum: {
+    guideId: 'guideId',
+    tagId: 'tagId'
+  };
+
+  export type GuideTagScalarFieldEnum = (typeof GuideTagScalarFieldEnum)[keyof typeof GuideTagScalarFieldEnum]
 
 
   export const ProblemScalarFieldEnum: {
@@ -9450,12 +11974,67 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+  export const ProjectOrderByRelevanceFieldEnum: {
+    name: 'name',
+    fileUUID: 'fileUUID'
+  };
+
+  export type ProjectOrderByRelevanceFieldEnum = (typeof ProjectOrderByRelevanceFieldEnum)[keyof typeof ProjectOrderByRelevanceFieldEnum]
+
+
+  export const UserOrderByRelevanceFieldEnum: {
+    username: 'username',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    email: 'email',
+    userColor: 'userColor',
+    picture: 'picture',
+    password: 'password',
+    loginMethod: 'loginMethod'
+  };
+
+  export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+
+
+  export const CodeOrderByRelevanceFieldEnum: {
+    code: 'code',
+    value: 'value'
+  };
+
+  export type CodeOrderByRelevanceFieldEnum = (typeof CodeOrderByRelevanceFieldEnum)[keyof typeof CodeOrderByRelevanceFieldEnum]
+
+
+  export const RefreshTokenOrderByRelevanceFieldEnum: {
+    code: 'code',
+    hmac: 'hmac'
+  };
+
+  export type RefreshTokenOrderByRelevanceFieldEnum = (typeof RefreshTokenOrderByRelevanceFieldEnum)[keyof typeof RefreshTokenOrderByRelevanceFieldEnum]
+
+
   export const NullsOrder: {
     first: 'first',
     last: 'last'
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const GuideOrderByRelevanceFieldEnum: {
+    name: 'name',
+    content: 'content',
+    description: 'description',
+    category: 'category'
+  };
+
+  export type GuideOrderByRelevanceFieldEnum = (typeof GuideOrderByRelevanceFieldEnum)[keyof typeof GuideOrderByRelevanceFieldEnum]
+
+
+  export const TagOrderByRelevanceFieldEnum: {
+    name: 'name'
+  };
+
+  export type TagOrderByRelevanceFieldEnum = (typeof TagOrderByRelevanceFieldEnum)[keyof typeof TagOrderByRelevanceFieldEnum]
 
 
   export const JsonNullValueFilter: {
@@ -9465,6 +12044,25 @@ export namespace Prisma {
   };
 
   export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const ProblemOrderByRelevanceFieldEnum: {
+    name: 'name',
+    author: 'author',
+    description: 'description',
+    category: 'category',
+    sourceCode: 'sourceCode',
+    tags: 'tags'
+  };
+
+  export type ProblemOrderByRelevanceFieldEnum = (typeof ProblemOrderByRelevanceFieldEnum)[keyof typeof ProblemOrderByRelevanceFieldEnum]
+
+
+  export const SolveOrderByRelevanceFieldEnum: {
+    sourceCode: 'sourceCode'
+  };
+
+  export type SolveOrderByRelevanceFieldEnum = (typeof SolveOrderByRelevanceFieldEnum)[keyof typeof SolveOrderByRelevanceFieldEnum]
 
 
   /**
@@ -9606,6 +12204,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
+    _relevance?: ProjectOrderByRelevanceInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -9662,6 +12261,7 @@ export namespace Prisma {
     loginMethod?: StringFilter<"User"> | string
     projects?: ProjectListRelationFilter
     solves?: SolveListRelationFilter
+    Guide?: GuideListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -9679,6 +12279,8 @@ export namespace Prisma {
     loginMethod?: SortOrder
     projects?: ProjectOrderByRelationAggregateInput
     solves?: SolveOrderByRelationAggregateInput
+    Guide?: GuideOrderByRelationAggregateInput
+    _relevance?: UserOrderByRelevanceInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -9699,6 +12301,7 @@ export namespace Prisma {
     loginMethod?: StringFilter<"User"> | string
     projects?: ProjectListRelationFilter
     solves?: SolveListRelationFilter
+    Guide?: GuideListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -9754,6 +12357,7 @@ export namespace Prisma {
     value?: SortOrder
     iat?: SortOrder
     exp?: SortOrder
+    _relevance?: CodeOrderByRelevanceInput
   }
 
   export type CodeWhereUniqueInput = Prisma.AtLeast<{
@@ -9801,6 +12405,7 @@ export namespace Prisma {
     hmac?: SortOrder
     iat?: SortOrder
     exp?: SortOrder
+    _relevance?: RefreshTokenOrderByRelevanceInput
   }
 
   export type RefreshTokenWhereUniqueInput = Prisma.AtLeast<{
@@ -9841,13 +12446,15 @@ export namespace Prisma {
     name?: StringFilter<"Guide"> | string
     createdAt?: DateTimeFilter<"Guide"> | Date | string
     updatedAt?: DateTimeFilter<"Guide"> | Date | string
-    author?: StringFilter<"Guide"> | string
+    authorId?: IntFilter<"Guide"> | number
     positiveRatings?: IntFilter<"Guide"> | number
     negativeRatings?: IntFilter<"Guide"> | number
     content?: StringFilter<"Guide"> | string
     description?: StringNullableFilter<"Guide"> | string | null
     category?: StringNullableFilter<"Guide"> | string | null
     visits?: IntFilter<"Guide"> | number
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    guideTags?: GuideTagListRelationFilter
   }
 
   export type GuideOrderByWithRelationInput = {
@@ -9855,13 +12462,16 @@ export namespace Prisma {
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    author?: SortOrder
+    authorId?: SortOrder
     positiveRatings?: SortOrder
     negativeRatings?: SortOrder
     content?: SortOrder
     description?: SortOrderInput | SortOrder
     category?: SortOrderInput | SortOrder
     visits?: SortOrder
+    author?: UserOrderByWithRelationInput
+    guideTags?: GuideTagOrderByRelationAggregateInput
+    _relevance?: GuideOrderByRelevanceInput
   }
 
   export type GuideWhereUniqueInput = Prisma.AtLeast<{
@@ -9872,13 +12482,15 @@ export namespace Prisma {
     NOT?: GuideWhereInput | GuideWhereInput[]
     createdAt?: DateTimeFilter<"Guide"> | Date | string
     updatedAt?: DateTimeFilter<"Guide"> | Date | string
-    author?: StringFilter<"Guide"> | string
+    authorId?: IntFilter<"Guide"> | number
     positiveRatings?: IntFilter<"Guide"> | number
     negativeRatings?: IntFilter<"Guide"> | number
     content?: StringFilter<"Guide"> | string
     description?: StringNullableFilter<"Guide"> | string | null
     category?: StringNullableFilter<"Guide"> | string | null
     visits?: IntFilter<"Guide"> | number
+    author?: XOR<UserScalarRelationFilter, UserWhereInput>
+    guideTags?: GuideTagListRelationFilter
   }, "id" | "name">
 
   export type GuideOrderByWithAggregationInput = {
@@ -9886,7 +12498,7 @@ export namespace Prisma {
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    author?: SortOrder
+    authorId?: SortOrder
     positiveRatings?: SortOrder
     negativeRatings?: SortOrder
     content?: SortOrder
@@ -9908,13 +12520,102 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Guide"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Guide"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Guide"> | Date | string
-    author?: StringWithAggregatesFilter<"Guide"> | string
+    authorId?: IntWithAggregatesFilter<"Guide"> | number
     positiveRatings?: IntWithAggregatesFilter<"Guide"> | number
     negativeRatings?: IntWithAggregatesFilter<"Guide"> | number
     content?: StringWithAggregatesFilter<"Guide"> | string
     description?: StringNullableWithAggregatesFilter<"Guide"> | string | null
     category?: StringNullableWithAggregatesFilter<"Guide"> | string | null
     visits?: IntWithAggregatesFilter<"Guide"> | number
+  }
+
+  export type TagWhereInput = {
+    AND?: TagWhereInput | TagWhereInput[]
+    OR?: TagWhereInput[]
+    NOT?: TagWhereInput | TagWhereInput[]
+    id?: IntFilter<"Tag"> | number
+    name?: StringFilter<"Tag"> | string
+    guideTags?: GuideTagListRelationFilter
+  }
+
+  export type TagOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    guideTags?: GuideTagOrderByRelationAggregateInput
+    _relevance?: TagOrderByRelevanceInput
+  }
+
+  export type TagWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    name?: string
+    AND?: TagWhereInput | TagWhereInput[]
+    OR?: TagWhereInput[]
+    NOT?: TagWhereInput | TagWhereInput[]
+    guideTags?: GuideTagListRelationFilter
+  }, "id" | "name">
+
+  export type TagOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    _count?: TagCountOrderByAggregateInput
+    _avg?: TagAvgOrderByAggregateInput
+    _max?: TagMaxOrderByAggregateInput
+    _min?: TagMinOrderByAggregateInput
+    _sum?: TagSumOrderByAggregateInput
+  }
+
+  export type TagScalarWhereWithAggregatesInput = {
+    AND?: TagScalarWhereWithAggregatesInput | TagScalarWhereWithAggregatesInput[]
+    OR?: TagScalarWhereWithAggregatesInput[]
+    NOT?: TagScalarWhereWithAggregatesInput | TagScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Tag"> | number
+    name?: StringWithAggregatesFilter<"Tag"> | string
+  }
+
+  export type GuideTagWhereInput = {
+    AND?: GuideTagWhereInput | GuideTagWhereInput[]
+    OR?: GuideTagWhereInput[]
+    NOT?: GuideTagWhereInput | GuideTagWhereInput[]
+    guideId?: IntFilter<"GuideTag"> | number
+    tagId?: IntFilter<"GuideTag"> | number
+    guide?: XOR<GuideScalarRelationFilter, GuideWhereInput>
+    tag?: XOR<TagScalarRelationFilter, TagWhereInput>
+  }
+
+  export type GuideTagOrderByWithRelationInput = {
+    guideId?: SortOrder
+    tagId?: SortOrder
+    guide?: GuideOrderByWithRelationInput
+    tag?: TagOrderByWithRelationInput
+  }
+
+  export type GuideTagWhereUniqueInput = Prisma.AtLeast<{
+    guideId_tagId?: GuideTagGuideIdTagIdCompoundUniqueInput
+    AND?: GuideTagWhereInput | GuideTagWhereInput[]
+    OR?: GuideTagWhereInput[]
+    NOT?: GuideTagWhereInput | GuideTagWhereInput[]
+    guideId?: IntFilter<"GuideTag"> | number
+    tagId?: IntFilter<"GuideTag"> | number
+    guide?: XOR<GuideScalarRelationFilter, GuideWhereInput>
+    tag?: XOR<TagScalarRelationFilter, TagWhereInput>
+  }, "guideId_tagId">
+
+  export type GuideTagOrderByWithAggregationInput = {
+    guideId?: SortOrder
+    tagId?: SortOrder
+    _count?: GuideTagCountOrderByAggregateInput
+    _avg?: GuideTagAvgOrderByAggregateInput
+    _max?: GuideTagMaxOrderByAggregateInput
+    _min?: GuideTagMinOrderByAggregateInput
+    _sum?: GuideTagSumOrderByAggregateInput
+  }
+
+  export type GuideTagScalarWhereWithAggregatesInput = {
+    AND?: GuideTagScalarWhereWithAggregatesInput | GuideTagScalarWhereWithAggregatesInput[]
+    OR?: GuideTagScalarWhereWithAggregatesInput[]
+    NOT?: GuideTagScalarWhereWithAggregatesInput | GuideTagScalarWhereWithAggregatesInput[]
+    guideId?: IntWithAggregatesFilter<"GuideTag"> | number
+    tagId?: IntWithAggregatesFilter<"GuideTag"> | number
   }
 
   export type ProblemWhereInput = {
@@ -9958,6 +12659,7 @@ export namespace Prisma {
     difficulty?: SortOrderInput | SortOrder
     tags?: SortOrder
     solves?: SolveOrderByRelationAggregateInput
+    _relevance?: ProblemOrderByRelevanceInput
   }
 
   export type ProblemWhereUniqueInput = Prisma.AtLeast<{
@@ -10054,6 +12756,7 @@ export namespace Prisma {
     time?: SortOrder
     user?: UserOrderByWithRelationInput
     problem?: ProblemOrderByWithRelationInput
+    _relevance?: SolveOrderByRelevanceInput
   }
 
   export type SolveWhereUniqueInput = Prisma.AtLeast<{
@@ -10165,6 +12868,7 @@ export namespace Prisma {
     loginMethod?: string
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -10182,6 +12886,7 @@ export namespace Prisma {
     loginMethod?: string
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUpdateInput = {
@@ -10198,6 +12903,7 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -10215,6 +12921,7 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -10363,13 +13070,14 @@ export namespace Prisma {
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    author?: string
     positiveRatings?: number
     negativeRatings?: number
     content: string
     description?: string | null
     category?: string | null
     visits?: number
+    author: UserCreateNestedOneWithoutGuideInput
+    guideTags?: GuideTagCreateNestedManyWithoutGuideInput
   }
 
   export type GuideUncheckedCreateInput = {
@@ -10377,26 +13085,28 @@ export namespace Prisma {
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    author?: string
+    authorId: number
     positiveRatings?: number
     negativeRatings?: number
     content: string
     description?: string | null
     category?: string | null
     visits?: number
+    guideTags?: GuideTagUncheckedCreateNestedManyWithoutGuideInput
   }
 
   export type GuideUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    author?: StringFieldUpdateOperationsInput | string
     positiveRatings?: IntFieldUpdateOperationsInput | number
     negativeRatings?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     visits?: IntFieldUpdateOperationsInput | number
+    author?: UserUpdateOneRequiredWithoutGuideNestedInput
+    guideTags?: GuideTagUpdateManyWithoutGuideNestedInput
   }
 
   export type GuideUncheckedUpdateInput = {
@@ -10404,13 +13114,14 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    author?: StringFieldUpdateOperationsInput | string
+    authorId?: IntFieldUpdateOperationsInput | number
     positiveRatings?: IntFieldUpdateOperationsInput | number
     negativeRatings?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     visits?: IntFieldUpdateOperationsInput | number
+    guideTags?: GuideTagUncheckedUpdateManyWithoutGuideNestedInput
   }
 
   export type GuideCreateManyInput = {
@@ -10418,7 +13129,7 @@ export namespace Prisma {
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    author?: string
+    authorId: number
     positiveRatings?: number
     negativeRatings?: number
     content: string
@@ -10431,7 +13142,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    author?: StringFieldUpdateOperationsInput | string
     positiveRatings?: IntFieldUpdateOperationsInput | number
     negativeRatings?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
@@ -10445,13 +13155,83 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    author?: StringFieldUpdateOperationsInput | string
+    authorId?: IntFieldUpdateOperationsInput | number
     positiveRatings?: IntFieldUpdateOperationsInput | number
     negativeRatings?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     visits?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TagCreateInput = {
+    name: string
+    guideTags?: GuideTagCreateNestedManyWithoutTagInput
+  }
+
+  export type TagUncheckedCreateInput = {
+    id?: number
+    name: string
+    guideTags?: GuideTagUncheckedCreateNestedManyWithoutTagInput
+  }
+
+  export type TagUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    guideTags?: GuideTagUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    guideTags?: GuideTagUncheckedUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagCreateManyInput = {
+    id?: number
+    name: string
+  }
+
+  export type TagUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type GuideTagCreateInput = {
+    guide: GuideCreateNestedOneWithoutGuideTagsInput
+    tag: TagCreateNestedOneWithoutGuideTagsInput
+  }
+
+  export type GuideTagUncheckedCreateInput = {
+    guideId: number
+    tagId: number
+  }
+
+  export type GuideTagUpdateInput = {
+    guide?: GuideUpdateOneRequiredWithoutGuideTagsNestedInput
+    tag?: TagUpdateOneRequiredWithoutGuideTagsNestedInput
+  }
+
+  export type GuideTagUncheckedUpdateInput = {
+    guideId?: IntFieldUpdateOperationsInput | number
+    tagId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuideTagCreateManyInput = {
+    guideId: number
+    tagId: number
+  }
+
+  export type GuideTagUpdateManyMutationInput = {
+
+  }
+
+  export type GuideTagUncheckedUpdateManyInput = {
+    guideId?: IntFieldUpdateOperationsInput | number
+    tagId?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProblemCreateInput = {
@@ -10675,6 +13455,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
     mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
   }
@@ -10693,6 +13474,12 @@ export namespace Prisma {
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type ProjectOrderByRelevanceInput = {
+    fields: ProjectOrderByRelevanceFieldEnum | ProjectOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
   }
 
   export type ProjectCountOrderByAggregateInput = {
@@ -10756,6 +13543,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
     mode?: QueryMode
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
@@ -10801,12 +13589,28 @@ export namespace Prisma {
     none?: SolveWhereInput
   }
 
+  export type GuideListRelationFilter = {
+    every?: GuideWhereInput
+    some?: GuideWhereInput
+    none?: GuideWhereInput
+  }
+
   export type ProjectOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type SolveOrderByRelationAggregateInput = {
     _count?: SortOrder
+  }
+
+  export type GuideOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserOrderByRelevanceInput = {
+    fields: UserOrderByRelevanceFieldEnum | UserOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
   }
 
   export type UserCountOrderByAggregateInput = {
@@ -10880,6 +13684,12 @@ export namespace Prisma {
     _max?: NestedEnumRoleFilter<$PrismaModel>
   }
 
+  export type CodeOrderByRelevanceInput = {
+    fields: CodeOrderByRelevanceFieldEnum | CodeOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
   export type CodeCountOrderByAggregateInput = {
     code?: SortOrder
     value?: SortOrder
@@ -10899,6 +13709,12 @@ export namespace Prisma {
     value?: SortOrder
     iat?: SortOrder
     exp?: SortOrder
+  }
+
+  export type RefreshTokenOrderByRelevanceInput = {
+    fields: RefreshTokenOrderByRelevanceFieldEnum | RefreshTokenOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
   }
 
   export type RefreshTokenCountOrderByAggregateInput = {
@@ -10933,8 +13749,15 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type GuideTagListRelationFilter = {
+    every?: GuideTagWhereInput
+    some?: GuideTagWhereInput
+    none?: GuideTagWhereInput
   }
 
   export type SortOrderInput = {
@@ -10942,12 +13765,22 @@ export namespace Prisma {
     nulls?: NullsOrder
   }
 
+  export type GuideTagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GuideOrderByRelevanceInput = {
+    fields: GuideOrderByRelevanceFieldEnum | GuideOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
   export type GuideCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    author?: SortOrder
+    authorId?: SortOrder
     positiveRatings?: SortOrder
     negativeRatings?: SortOrder
     content?: SortOrder
@@ -10958,6 +13791,7 @@ export namespace Prisma {
 
   export type GuideAvgOrderByAggregateInput = {
     id?: SortOrder
+    authorId?: SortOrder
     positiveRatings?: SortOrder
     negativeRatings?: SortOrder
     visits?: SortOrder
@@ -10968,7 +13802,7 @@ export namespace Prisma {
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    author?: SortOrder
+    authorId?: SortOrder
     positiveRatings?: SortOrder
     negativeRatings?: SortOrder
     content?: SortOrder
@@ -10982,7 +13816,7 @@ export namespace Prisma {
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    author?: SortOrder
+    authorId?: SortOrder
     positiveRatings?: SortOrder
     negativeRatings?: SortOrder
     content?: SortOrder
@@ -10993,6 +13827,7 @@ export namespace Prisma {
 
   export type GuideSumOrderByAggregateInput = {
     id?: SortOrder
+    authorId?: SortOrder
     positiveRatings?: SortOrder
     negativeRatings?: SortOrder
     visits?: SortOrder
@@ -11009,11 +13844,81 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
     mode?: QueryMode
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type TagOrderByRelevanceInput = {
+    fields: TagOrderByRelevanceFieldEnum | TagOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type TagCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type TagAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type TagMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type TagMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type TagSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type GuideScalarRelationFilter = {
+    is?: GuideWhereInput
+    isNot?: GuideWhereInput
+  }
+
+  export type TagScalarRelationFilter = {
+    is?: TagWhereInput
+    isNot?: TagWhereInput
+  }
+
+  export type GuideTagGuideIdTagIdCompoundUniqueInput = {
+    guideId: number
+    tagId: number
+  }
+
+  export type GuideTagCountOrderByAggregateInput = {
+    guideId?: SortOrder
+    tagId?: SortOrder
+  }
+
+  export type GuideTagAvgOrderByAggregateInput = {
+    guideId?: SortOrder
+    tagId?: SortOrder
+  }
+
+  export type GuideTagMaxOrderByAggregateInput = {
+    guideId?: SortOrder
+    tagId?: SortOrder
+  }
+
+  export type GuideTagMinOrderByAggregateInput = {
+    guideId?: SortOrder
+    tagId?: SortOrder
+  }
+
+  export type GuideTagSumOrderByAggregateInput = {
+    guideId?: SortOrder
+    tagId?: SortOrder
   }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -11077,6 +13982,12 @@ export namespace Prisma {
     hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
     hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
     isEmpty?: boolean
+  }
+
+  export type ProblemOrderByRelevanceInput = {
+    fields: ProblemOrderByRelevanceFieldEnum | ProblemOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
   }
 
   export type ProblemCountOrderByAggregateInput = {
@@ -11203,6 +14114,12 @@ export namespace Prisma {
     isNot?: ProblemWhereInput
   }
 
+  export type SolveOrderByRelevanceInput = {
+    fields: SolveOrderByRelevanceFieldEnum | SolveOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
   export type SolveCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -11293,6 +14210,13 @@ export namespace Prisma {
     connect?: SolveWhereUniqueInput | SolveWhereUniqueInput[]
   }
 
+  export type GuideCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<GuideCreateWithoutAuthorInput, GuideUncheckedCreateWithoutAuthorInput> | GuideCreateWithoutAuthorInput[] | GuideUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: GuideCreateOrConnectWithoutAuthorInput | GuideCreateOrConnectWithoutAuthorInput[]
+    createMany?: GuideCreateManyAuthorInputEnvelope
+    connect?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+  }
+
   export type ProjectUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
@@ -11305,6 +14229,13 @@ export namespace Prisma {
     connectOrCreate?: SolveCreateOrConnectWithoutUserInput | SolveCreateOrConnectWithoutUserInput[]
     createMany?: SolveCreateManyUserInputEnvelope
     connect?: SolveWhereUniqueInput | SolveWhereUniqueInput[]
+  }
+
+  export type GuideUncheckedCreateNestedManyWithoutAuthorInput = {
+    create?: XOR<GuideCreateWithoutAuthorInput, GuideUncheckedCreateWithoutAuthorInput> | GuideCreateWithoutAuthorInput[] | GuideUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: GuideCreateOrConnectWithoutAuthorInput | GuideCreateOrConnectWithoutAuthorInput[]
+    createMany?: GuideCreateManyAuthorInputEnvelope
+    connect?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -11343,6 +14274,20 @@ export namespace Prisma {
     deleteMany?: SolveScalarWhereInput | SolveScalarWhereInput[]
   }
 
+  export type GuideUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<GuideCreateWithoutAuthorInput, GuideUncheckedCreateWithoutAuthorInput> | GuideCreateWithoutAuthorInput[] | GuideUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: GuideCreateOrConnectWithoutAuthorInput | GuideCreateOrConnectWithoutAuthorInput[]
+    upsert?: GuideUpsertWithWhereUniqueWithoutAuthorInput | GuideUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: GuideCreateManyAuthorInputEnvelope
+    set?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+    disconnect?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+    delete?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+    connect?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+    update?: GuideUpdateWithWhereUniqueWithoutAuthorInput | GuideUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: GuideUpdateManyWithWhereWithoutAuthorInput | GuideUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: GuideScalarWhereInput | GuideScalarWhereInput[]
+  }
+
   export type ProjectUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
@@ -11371,8 +14316,148 @@ export namespace Prisma {
     deleteMany?: SolveScalarWhereInput | SolveScalarWhereInput[]
   }
 
+  export type GuideUncheckedUpdateManyWithoutAuthorNestedInput = {
+    create?: XOR<GuideCreateWithoutAuthorInput, GuideUncheckedCreateWithoutAuthorInput> | GuideCreateWithoutAuthorInput[] | GuideUncheckedCreateWithoutAuthorInput[]
+    connectOrCreate?: GuideCreateOrConnectWithoutAuthorInput | GuideCreateOrConnectWithoutAuthorInput[]
+    upsert?: GuideUpsertWithWhereUniqueWithoutAuthorInput | GuideUpsertWithWhereUniqueWithoutAuthorInput[]
+    createMany?: GuideCreateManyAuthorInputEnvelope
+    set?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+    disconnect?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+    delete?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+    connect?: GuideWhereUniqueInput | GuideWhereUniqueInput[]
+    update?: GuideUpdateWithWhereUniqueWithoutAuthorInput | GuideUpdateWithWhereUniqueWithoutAuthorInput[]
+    updateMany?: GuideUpdateManyWithWhereWithoutAuthorInput | GuideUpdateManyWithWhereWithoutAuthorInput[]
+    deleteMany?: GuideScalarWhereInput | GuideScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutGuideInput = {
+    create?: XOR<UserCreateWithoutGuideInput, UserUncheckedCreateWithoutGuideInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGuideInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GuideTagCreateNestedManyWithoutGuideInput = {
+    create?: XOR<GuideTagCreateWithoutGuideInput, GuideTagUncheckedCreateWithoutGuideInput> | GuideTagCreateWithoutGuideInput[] | GuideTagUncheckedCreateWithoutGuideInput[]
+    connectOrCreate?: GuideTagCreateOrConnectWithoutGuideInput | GuideTagCreateOrConnectWithoutGuideInput[]
+    createMany?: GuideTagCreateManyGuideInputEnvelope
+    connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+  }
+
+  export type GuideTagUncheckedCreateNestedManyWithoutGuideInput = {
+    create?: XOR<GuideTagCreateWithoutGuideInput, GuideTagUncheckedCreateWithoutGuideInput> | GuideTagCreateWithoutGuideInput[] | GuideTagUncheckedCreateWithoutGuideInput[]
+    connectOrCreate?: GuideTagCreateOrConnectWithoutGuideInput | GuideTagCreateOrConnectWithoutGuideInput[]
+    createMany?: GuideTagCreateManyGuideInputEnvelope
+    connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+  }
+
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type UserUpdateOneRequiredWithoutGuideNestedInput = {
+    create?: XOR<UserCreateWithoutGuideInput, UserUncheckedCreateWithoutGuideInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGuideInput
+    upsert?: UserUpsertWithoutGuideInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGuideInput, UserUpdateWithoutGuideInput>, UserUncheckedUpdateWithoutGuideInput>
+  }
+
+  export type GuideTagUpdateManyWithoutGuideNestedInput = {
+    create?: XOR<GuideTagCreateWithoutGuideInput, GuideTagUncheckedCreateWithoutGuideInput> | GuideTagCreateWithoutGuideInput[] | GuideTagUncheckedCreateWithoutGuideInput[]
+    connectOrCreate?: GuideTagCreateOrConnectWithoutGuideInput | GuideTagCreateOrConnectWithoutGuideInput[]
+    upsert?: GuideTagUpsertWithWhereUniqueWithoutGuideInput | GuideTagUpsertWithWhereUniqueWithoutGuideInput[]
+    createMany?: GuideTagCreateManyGuideInputEnvelope
+    set?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    disconnect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    delete?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    update?: GuideTagUpdateWithWhereUniqueWithoutGuideInput | GuideTagUpdateWithWhereUniqueWithoutGuideInput[]
+    updateMany?: GuideTagUpdateManyWithWhereWithoutGuideInput | GuideTagUpdateManyWithWhereWithoutGuideInput[]
+    deleteMany?: GuideTagScalarWhereInput | GuideTagScalarWhereInput[]
+  }
+
+  export type GuideTagUncheckedUpdateManyWithoutGuideNestedInput = {
+    create?: XOR<GuideTagCreateWithoutGuideInput, GuideTagUncheckedCreateWithoutGuideInput> | GuideTagCreateWithoutGuideInput[] | GuideTagUncheckedCreateWithoutGuideInput[]
+    connectOrCreate?: GuideTagCreateOrConnectWithoutGuideInput | GuideTagCreateOrConnectWithoutGuideInput[]
+    upsert?: GuideTagUpsertWithWhereUniqueWithoutGuideInput | GuideTagUpsertWithWhereUniqueWithoutGuideInput[]
+    createMany?: GuideTagCreateManyGuideInputEnvelope
+    set?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    disconnect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    delete?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    update?: GuideTagUpdateWithWhereUniqueWithoutGuideInput | GuideTagUpdateWithWhereUniqueWithoutGuideInput[]
+    updateMany?: GuideTagUpdateManyWithWhereWithoutGuideInput | GuideTagUpdateManyWithWhereWithoutGuideInput[]
+    deleteMany?: GuideTagScalarWhereInput | GuideTagScalarWhereInput[]
+  }
+
+  export type GuideTagCreateNestedManyWithoutTagInput = {
+    create?: XOR<GuideTagCreateWithoutTagInput, GuideTagUncheckedCreateWithoutTagInput> | GuideTagCreateWithoutTagInput[] | GuideTagUncheckedCreateWithoutTagInput[]
+    connectOrCreate?: GuideTagCreateOrConnectWithoutTagInput | GuideTagCreateOrConnectWithoutTagInput[]
+    createMany?: GuideTagCreateManyTagInputEnvelope
+    connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+  }
+
+  export type GuideTagUncheckedCreateNestedManyWithoutTagInput = {
+    create?: XOR<GuideTagCreateWithoutTagInput, GuideTagUncheckedCreateWithoutTagInput> | GuideTagCreateWithoutTagInput[] | GuideTagUncheckedCreateWithoutTagInput[]
+    connectOrCreate?: GuideTagCreateOrConnectWithoutTagInput | GuideTagCreateOrConnectWithoutTagInput[]
+    createMany?: GuideTagCreateManyTagInputEnvelope
+    connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+  }
+
+  export type GuideTagUpdateManyWithoutTagNestedInput = {
+    create?: XOR<GuideTagCreateWithoutTagInput, GuideTagUncheckedCreateWithoutTagInput> | GuideTagCreateWithoutTagInput[] | GuideTagUncheckedCreateWithoutTagInput[]
+    connectOrCreate?: GuideTagCreateOrConnectWithoutTagInput | GuideTagCreateOrConnectWithoutTagInput[]
+    upsert?: GuideTagUpsertWithWhereUniqueWithoutTagInput | GuideTagUpsertWithWhereUniqueWithoutTagInput[]
+    createMany?: GuideTagCreateManyTagInputEnvelope
+    set?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    disconnect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    delete?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    update?: GuideTagUpdateWithWhereUniqueWithoutTagInput | GuideTagUpdateWithWhereUniqueWithoutTagInput[]
+    updateMany?: GuideTagUpdateManyWithWhereWithoutTagInput | GuideTagUpdateManyWithWhereWithoutTagInput[]
+    deleteMany?: GuideTagScalarWhereInput | GuideTagScalarWhereInput[]
+  }
+
+  export type GuideTagUncheckedUpdateManyWithoutTagNestedInput = {
+    create?: XOR<GuideTagCreateWithoutTagInput, GuideTagUncheckedCreateWithoutTagInput> | GuideTagCreateWithoutTagInput[] | GuideTagUncheckedCreateWithoutTagInput[]
+    connectOrCreate?: GuideTagCreateOrConnectWithoutTagInput | GuideTagCreateOrConnectWithoutTagInput[]
+    upsert?: GuideTagUpsertWithWhereUniqueWithoutTagInput | GuideTagUpsertWithWhereUniqueWithoutTagInput[]
+    createMany?: GuideTagCreateManyTagInputEnvelope
+    set?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    disconnect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    delete?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+    update?: GuideTagUpdateWithWhereUniqueWithoutTagInput | GuideTagUpdateWithWhereUniqueWithoutTagInput[]
+    updateMany?: GuideTagUpdateManyWithWhereWithoutTagInput | GuideTagUpdateManyWithWhereWithoutTagInput[]
+    deleteMany?: GuideTagScalarWhereInput | GuideTagScalarWhereInput[]
+  }
+
+  export type GuideCreateNestedOneWithoutGuideTagsInput = {
+    create?: XOR<GuideCreateWithoutGuideTagsInput, GuideUncheckedCreateWithoutGuideTagsInput>
+    connectOrCreate?: GuideCreateOrConnectWithoutGuideTagsInput
+    connect?: GuideWhereUniqueInput
+  }
+
+  export type TagCreateNestedOneWithoutGuideTagsInput = {
+    create?: XOR<TagCreateWithoutGuideTagsInput, TagUncheckedCreateWithoutGuideTagsInput>
+    connectOrCreate?: TagCreateOrConnectWithoutGuideTagsInput
+    connect?: TagWhereUniqueInput
+  }
+
+  export type GuideUpdateOneRequiredWithoutGuideTagsNestedInput = {
+    create?: XOR<GuideCreateWithoutGuideTagsInput, GuideUncheckedCreateWithoutGuideTagsInput>
+    connectOrCreate?: GuideCreateOrConnectWithoutGuideTagsInput
+    upsert?: GuideUpsertWithoutGuideTagsInput
+    connect?: GuideWhereUniqueInput
+    update?: XOR<XOR<GuideUpdateToOneWithWhereWithoutGuideTagsInput, GuideUpdateWithoutGuideTagsInput>, GuideUncheckedUpdateWithoutGuideTagsInput>
+  }
+
+  export type TagUpdateOneRequiredWithoutGuideTagsNestedInput = {
+    create?: XOR<TagCreateWithoutGuideTagsInput, TagUncheckedCreateWithoutGuideTagsInput>
+    connectOrCreate?: TagCreateOrConnectWithoutGuideTagsInput
+    upsert?: TagUpsertWithoutGuideTagsInput
+    connect?: TagWhereUniqueInput
+    update?: XOR<XOR<TagUpdateToOneWithWhereWithoutGuideTagsInput, TagUpdateWithoutGuideTagsInput>, TagUncheckedUpdateWithoutGuideTagsInput>
   }
 
   export type ProblemCreatetestsInput = {
@@ -11497,6 +14582,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
@@ -11549,6 +14635,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
@@ -11610,6 +14697,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
@@ -11624,6 +14712,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
@@ -11710,6 +14799,7 @@ export namespace Prisma {
     password: string
     loginMethod?: string
     solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
@@ -11726,6 +14816,7 @@ export namespace Prisma {
     password: string
     loginMethod?: string
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -11757,6 +14848,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -11773,6 +14865,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type ProjectCreateWithoutUserInput = {
@@ -11822,6 +14915,43 @@ export namespace Prisma {
 
   export type SolveCreateManyUserInputEnvelope = {
     data: SolveCreateManyUserInput | SolveCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GuideCreateWithoutAuthorInput = {
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    positiveRatings?: number
+    negativeRatings?: number
+    content: string
+    description?: string | null
+    category?: string | null
+    visits?: number
+    guideTags?: GuideTagCreateNestedManyWithoutGuideInput
+  }
+
+  export type GuideUncheckedCreateWithoutAuthorInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    positiveRatings?: number
+    negativeRatings?: number
+    content: string
+    description?: string | null
+    category?: string | null
+    visits?: number
+    guideTags?: GuideTagUncheckedCreateNestedManyWithoutGuideInput
+  }
+
+  export type GuideCreateOrConnectWithoutAuthorInput = {
+    where: GuideWhereUniqueInput
+    create: XOR<GuideCreateWithoutAuthorInput, GuideUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type GuideCreateManyAuthorInputEnvelope = {
+    data: GuideCreateManyAuthorInput | GuideCreateManyAuthorInput[]
     skipDuplicates?: boolean
   }
 
@@ -11881,6 +15011,301 @@ export namespace Prisma {
     time?: IntFilter<"Solve"> | number
   }
 
+  export type GuideUpsertWithWhereUniqueWithoutAuthorInput = {
+    where: GuideWhereUniqueInput
+    update: XOR<GuideUpdateWithoutAuthorInput, GuideUncheckedUpdateWithoutAuthorInput>
+    create: XOR<GuideCreateWithoutAuthorInput, GuideUncheckedCreateWithoutAuthorInput>
+  }
+
+  export type GuideUpdateWithWhereUniqueWithoutAuthorInput = {
+    where: GuideWhereUniqueInput
+    data: XOR<GuideUpdateWithoutAuthorInput, GuideUncheckedUpdateWithoutAuthorInput>
+  }
+
+  export type GuideUpdateManyWithWhereWithoutAuthorInput = {
+    where: GuideScalarWhereInput
+    data: XOR<GuideUpdateManyMutationInput, GuideUncheckedUpdateManyWithoutAuthorInput>
+  }
+
+  export type GuideScalarWhereInput = {
+    AND?: GuideScalarWhereInput | GuideScalarWhereInput[]
+    OR?: GuideScalarWhereInput[]
+    NOT?: GuideScalarWhereInput | GuideScalarWhereInput[]
+    id?: IntFilter<"Guide"> | number
+    name?: StringFilter<"Guide"> | string
+    createdAt?: DateTimeFilter<"Guide"> | Date | string
+    updatedAt?: DateTimeFilter<"Guide"> | Date | string
+    authorId?: IntFilter<"Guide"> | number
+    positiveRatings?: IntFilter<"Guide"> | number
+    negativeRatings?: IntFilter<"Guide"> | number
+    content?: StringFilter<"Guide"> | string
+    description?: StringNullableFilter<"Guide"> | string | null
+    category?: StringNullableFilter<"Guide"> | string | null
+    visits?: IntFilter<"Guide"> | number
+  }
+
+  export type UserCreateWithoutGuideInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    password: string
+    loginMethod?: string
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutGuideInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    password: string
+    loginMethod?: string
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutGuideInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGuideInput, UserUncheckedCreateWithoutGuideInput>
+  }
+
+  export type GuideTagCreateWithoutGuideInput = {
+    tag: TagCreateNestedOneWithoutGuideTagsInput
+  }
+
+  export type GuideTagUncheckedCreateWithoutGuideInput = {
+    tagId: number
+  }
+
+  export type GuideTagCreateOrConnectWithoutGuideInput = {
+    where: GuideTagWhereUniqueInput
+    create: XOR<GuideTagCreateWithoutGuideInput, GuideTagUncheckedCreateWithoutGuideInput>
+  }
+
+  export type GuideTagCreateManyGuideInputEnvelope = {
+    data: GuideTagCreateManyGuideInput | GuideTagCreateManyGuideInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutGuideInput = {
+    update: XOR<UserUpdateWithoutGuideInput, UserUncheckedUpdateWithoutGuideInput>
+    create: XOR<UserCreateWithoutGuideInput, UserUncheckedCreateWithoutGuideInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGuideInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGuideInput, UserUncheckedUpdateWithoutGuideInput>
+  }
+
+  export type UserUpdateWithoutGuideInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGuideInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type GuideTagUpsertWithWhereUniqueWithoutGuideInput = {
+    where: GuideTagWhereUniqueInput
+    update: XOR<GuideTagUpdateWithoutGuideInput, GuideTagUncheckedUpdateWithoutGuideInput>
+    create: XOR<GuideTagCreateWithoutGuideInput, GuideTagUncheckedCreateWithoutGuideInput>
+  }
+
+  export type GuideTagUpdateWithWhereUniqueWithoutGuideInput = {
+    where: GuideTagWhereUniqueInput
+    data: XOR<GuideTagUpdateWithoutGuideInput, GuideTagUncheckedUpdateWithoutGuideInput>
+  }
+
+  export type GuideTagUpdateManyWithWhereWithoutGuideInput = {
+    where: GuideTagScalarWhereInput
+    data: XOR<GuideTagUpdateManyMutationInput, GuideTagUncheckedUpdateManyWithoutGuideInput>
+  }
+
+  export type GuideTagScalarWhereInput = {
+    AND?: GuideTagScalarWhereInput | GuideTagScalarWhereInput[]
+    OR?: GuideTagScalarWhereInput[]
+    NOT?: GuideTagScalarWhereInput | GuideTagScalarWhereInput[]
+    guideId?: IntFilter<"GuideTag"> | number
+    tagId?: IntFilter<"GuideTag"> | number
+  }
+
+  export type GuideTagCreateWithoutTagInput = {
+    guide: GuideCreateNestedOneWithoutGuideTagsInput
+  }
+
+  export type GuideTagUncheckedCreateWithoutTagInput = {
+    guideId: number
+  }
+
+  export type GuideTagCreateOrConnectWithoutTagInput = {
+    where: GuideTagWhereUniqueInput
+    create: XOR<GuideTagCreateWithoutTagInput, GuideTagUncheckedCreateWithoutTagInput>
+  }
+
+  export type GuideTagCreateManyTagInputEnvelope = {
+    data: GuideTagCreateManyTagInput | GuideTagCreateManyTagInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GuideTagUpsertWithWhereUniqueWithoutTagInput = {
+    where: GuideTagWhereUniqueInput
+    update: XOR<GuideTagUpdateWithoutTagInput, GuideTagUncheckedUpdateWithoutTagInput>
+    create: XOR<GuideTagCreateWithoutTagInput, GuideTagUncheckedCreateWithoutTagInput>
+  }
+
+  export type GuideTagUpdateWithWhereUniqueWithoutTagInput = {
+    where: GuideTagWhereUniqueInput
+    data: XOR<GuideTagUpdateWithoutTagInput, GuideTagUncheckedUpdateWithoutTagInput>
+  }
+
+  export type GuideTagUpdateManyWithWhereWithoutTagInput = {
+    where: GuideTagScalarWhereInput
+    data: XOR<GuideTagUpdateManyMutationInput, GuideTagUncheckedUpdateManyWithoutTagInput>
+  }
+
+  export type GuideCreateWithoutGuideTagsInput = {
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    positiveRatings?: number
+    negativeRatings?: number
+    content: string
+    description?: string | null
+    category?: string | null
+    visits?: number
+    author: UserCreateNestedOneWithoutGuideInput
+  }
+
+  export type GuideUncheckedCreateWithoutGuideTagsInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authorId: number
+    positiveRatings?: number
+    negativeRatings?: number
+    content: string
+    description?: string | null
+    category?: string | null
+    visits?: number
+  }
+
+  export type GuideCreateOrConnectWithoutGuideTagsInput = {
+    where: GuideWhereUniqueInput
+    create: XOR<GuideCreateWithoutGuideTagsInput, GuideUncheckedCreateWithoutGuideTagsInput>
+  }
+
+  export type TagCreateWithoutGuideTagsInput = {
+    name: string
+  }
+
+  export type TagUncheckedCreateWithoutGuideTagsInput = {
+    id?: number
+    name: string
+  }
+
+  export type TagCreateOrConnectWithoutGuideTagsInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutGuideTagsInput, TagUncheckedCreateWithoutGuideTagsInput>
+  }
+
+  export type GuideUpsertWithoutGuideTagsInput = {
+    update: XOR<GuideUpdateWithoutGuideTagsInput, GuideUncheckedUpdateWithoutGuideTagsInput>
+    create: XOR<GuideCreateWithoutGuideTagsInput, GuideUncheckedCreateWithoutGuideTagsInput>
+    where?: GuideWhereInput
+  }
+
+  export type GuideUpdateToOneWithWhereWithoutGuideTagsInput = {
+    where?: GuideWhereInput
+    data: XOR<GuideUpdateWithoutGuideTagsInput, GuideUncheckedUpdateWithoutGuideTagsInput>
+  }
+
+  export type GuideUpdateWithoutGuideTagsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
+    author?: UserUpdateOneRequiredWithoutGuideNestedInput
+  }
+
+  export type GuideUncheckedUpdateWithoutGuideTagsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authorId?: IntFieldUpdateOperationsInput | number
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TagUpsertWithoutGuideTagsInput = {
+    update: XOR<TagUpdateWithoutGuideTagsInput, TagUncheckedUpdateWithoutGuideTagsInput>
+    create: XOR<TagCreateWithoutGuideTagsInput, TagUncheckedCreateWithoutGuideTagsInput>
+    where?: TagWhereInput
+  }
+
+  export type TagUpdateToOneWithWhereWithoutGuideTagsInput = {
+    where?: TagWhereInput
+    data: XOR<TagUpdateWithoutGuideTagsInput, TagUncheckedUpdateWithoutGuideTagsInput>
+  }
+
+  export type TagUpdateWithoutGuideTagsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TagUncheckedUpdateWithoutGuideTagsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
   export type SolveCreateWithoutProblemInput = {
     sourceCode: string
     uploadedAt?: Date | string
@@ -11937,6 +15362,7 @@ export namespace Prisma {
     password: string
     loginMethod?: string
     projects?: ProjectCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
   }
 
   export type UserUncheckedCreateWithoutSolvesInput = {
@@ -11953,6 +15379,7 @@ export namespace Prisma {
     password: string
     loginMethod?: string
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
   }
 
   export type UserCreateOrConnectWithoutSolvesInput = {
@@ -12026,6 +15453,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     projects?: ProjectUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSolvesInput = {
@@ -12042,6 +15470,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
   }
 
   export type ProblemUpsertWithoutSolvesInput = {
@@ -12108,6 +15537,19 @@ export namespace Prisma {
     time?: number
   }
 
+  export type GuideCreateManyAuthorInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    positiveRatings?: number
+    negativeRatings?: number
+    content: string
+    description?: string | null
+    category?: string | null
+    visits?: number
+  }
+
   export type ProjectUpdateWithoutUserInput = {
     name?: StringFieldUpdateOperationsInput | string
     fileUUID?: StringFieldUpdateOperationsInput | string
@@ -12152,6 +15594,78 @@ export namespace Prisma {
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
     time?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuideUpdateWithoutAuthorInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
+    guideTags?: GuideTagUpdateManyWithoutGuideNestedInput
+  }
+
+  export type GuideUncheckedUpdateWithoutAuthorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
+    guideTags?: GuideTagUncheckedUpdateManyWithoutGuideNestedInput
+  }
+
+  export type GuideUncheckedUpdateManyWithoutAuthorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    visits?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuideTagCreateManyGuideInput = {
+    tagId: number
+  }
+
+  export type GuideTagUpdateWithoutGuideInput = {
+    tag?: TagUpdateOneRequiredWithoutGuideTagsNestedInput
+  }
+
+  export type GuideTagUncheckedUpdateWithoutGuideInput = {
+    tagId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuideTagUncheckedUpdateManyWithoutGuideInput = {
+    tagId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuideTagCreateManyTagInput = {
+    guideId: number
+  }
+
+  export type GuideTagUpdateWithoutTagInput = {
+    guide?: GuideUpdateOneRequiredWithoutGuideTagsNestedInput
+  }
+
+  export type GuideTagUncheckedUpdateWithoutTagInput = {
+    guideId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuideTagUncheckedUpdateManyWithoutTagInput = {
+    guideId?: IntFieldUpdateOperationsInput | number
   }
 
   export type SolveCreateManyProblemInput = {

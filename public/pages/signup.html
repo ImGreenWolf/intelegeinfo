@@ -136,7 +136,7 @@
 
         const result = await response.json();
         document.getElementById("message").textContent = result.message ? result.message : result.error;
-
+        if(result.redirect)
         setTimeout(() => {
           window.location.href = result.redirect + `?id=${result.id}`
         }, 1000);
