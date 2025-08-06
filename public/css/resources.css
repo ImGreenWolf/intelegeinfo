@@ -6,7 +6,8 @@ body {
 }
 
 #guides {
-  width: 75%;
+  width: 100%;
+  max-width: 1024px;
   margin: auto;
   display: grid;
   font-size: 20px;
@@ -32,6 +33,7 @@ body {
   border-bottom: 1px solid rgba(128, 128, 128, 0.178);
   display: flex;
   width: 100%;
+  height: auto;
 }
 #guides ul.posts li div {
   display: flex;
@@ -127,6 +129,20 @@ vl {
 }
 .side input:active {
   outline: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .side {
+    grid-row: 1;
+    position: static;
+  }
+  body {
+    padding: 2em;
+  }
+  #guides {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
 }
 
 /*# sourceMappingURL=resources.css.map */

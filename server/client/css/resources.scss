@@ -8,7 +8,8 @@
 }
 #guides
 {
-    width: 75%;
+    width: 100%;
+    max-width: 1024px;
     margin: auto;
     display: grid;
     font-size: 20px;
@@ -36,6 +37,7 @@
             border-bottom: 1px solid rgba(128, 128, 128, 0.178);;
             display: flex;
             width: 100%;
+            height: auto;
             div 
             {
                 display: flex;
@@ -154,5 +156,22 @@ vl {
     {
         outline: none;
         // border: none;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .side
+    {
+        // display: none;
+        grid-row: 1;
+        position: static;
+    }
+    body {
+        padding: 2em;
+    }
+    #guides 
+    {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
     }
 }
