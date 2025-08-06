@@ -2900,8 +2900,7 @@ import { transpileCode } from "./aiIntegration";
 
 // })
         
-    
-app.use(parseHTML)
+
 
  let translation = undefined;
 const defaultLang = 'ro-RO'
@@ -2960,7 +2959,8 @@ function parseHTML(req,res, next)
     const ext = filePath.split('.').at(-1) ?  filePath.split('.').at(-1) : 'text'
     if(ext != 'html')
     {
-        res.sendFile(fullPath)
+        // res.sendFile(fullPath)
+        next()
         return
     }
     // fs.createReadStream(fullPath) // use read streams
@@ -2968,8 +2968,8 @@ function parseHTML(req,res, next)
 
     try {
         fs.readFile(fullPath, (err, file) => {
-            if(err)
-               throw err;
+            if(err || !file)
+               return next()
 
             res.contentType(ext).send(parseText(file.toString(), req))
         })
@@ -2977,7 +2977,8 @@ function parseHTML(req,res, next)
     {
         console.error(err)
         // res.statusCode(404).send(err)
-        res.sendFile(fullPath)
+        // res.sendFile(fullPath)
+        next()
         return
     }
     
@@ -2985,8 +2986,8 @@ function parseHTML(req,res, next)
     
 
 }
-
-app.use(handle404);
+    
+app.use(parseHTML, express.static('public'),handle404)
 
 
 

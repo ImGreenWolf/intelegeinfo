@@ -2302,7 +2302,6 @@ const aiIntegration_1 = require("./aiIntegration");
 //                     console.log(new Date().toLocaleTimeString() + " $   " + count);
 //             });
 // })
-app.use(parseHTML);
 let translation = undefined;
 const defaultLang = 'ro-RO';
 fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'server', 'data', 'translations.json'), (err, data) => {
@@ -2351,25 +2350,27 @@ function parseHTML(req, res, next) {
     const fullPath = path_1.default.join(exports.rootDirName, 'public', filePath);
     const ext = filePath.split('.').at(-1) ? filePath.split('.').at(-1) : 'text';
     if (ext != 'html') {
-        res.sendFile(fullPath);
+        // res.sendFile(fullPath)
+        next();
         return;
     }
     // fs.createReadStream(fullPath) // use read streams
     try {
         fs_1.default.readFile(fullPath, (err, file) => {
-            if (err)
-                throw err;
+            if (err || !file)
+                return next();
             res.contentType(ext).send(parseText(file.toString(), req));
         });
     }
     catch (err) {
         console.error(err);
         // res.statusCode(404).send(err)
-        res.sendFile(fullPath);
+        // res.sendFile(fullPath)
+        next();
         return;
     }
 }
-app.use(handle404);
+app.use(parseHTML, express_1.default.static('public'), handle404);
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
     // application specific logging, throwing an error, or other logic here
