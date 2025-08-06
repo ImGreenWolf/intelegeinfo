@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { onLoggedIn } from "./login";
 declare const router: import("express-serve-static-core").Router;
 export declare function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }: {
     email: any;
@@ -8,11 +9,14 @@ export declare function onSignedIn({ email, username, loginMethod, firstName, la
     lastName: any;
     profile: any;
 }, res: Response, password: string, req: any): Promise<{
-    message: any;
-    redirect: any;
-    email: any;
-    id: any;
-    loginMethod: any;
+    json: {
+        message: any;
+        redirect: any;
+        email: any;
+        id: any;
+        loginMethod: any;
+    };
+    res: ReturnType<typeof onLoggedIn>;
 }>;
 export declare function prepareEncrPassForDB(password: string): string;
 export default router;

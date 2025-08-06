@@ -32,9 +32,13 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 //   }
 
 
-export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile}, res:Response, password: string, req): Promise<{message, redirect, email, id, loginMethod}>
+export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile}, res:Response, password: string, req):
+ Promise<{json: {message, redirect, email, id, loginMethod}, res: ReturnType<typeof onLoggedIn> }>
 {
-   const user = await prisma.user.create({
+  return new Promise((resolve, reject) => {
+
+  
+   prisma.user.create({
     data: {
       firstName, 
       lastName,
@@ -51,19 +55,17 @@ export async function onSignedIn({ email, username, loginMethod, firstName, last
       password: true
     }
   })
-  // .then((user) => {
-      if(!user) throw { error: 'Failed to create user' };
-      onLoggedIn(user, res, req)
+  .then((user) => {
+      if(!user) reject({ error: 'Failed to create user' })
+     
       console.log('created account', username)
-      return {message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod}
+      resolve({json: {message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod}, res: onLoggedIn(user, res, req)})
 
+  }).catch(reason => {
+   reject({ error: 'Failed to create user: ' + reason});
+  })
 
-      
-
-
-  // }).catch(reason => {
-  //  return({ error: 'Failed to create user: ' + reason});
-  // })
+  })
 }
 
 
@@ -76,14 +78,17 @@ function createUser(params:any, res: Response, password: string, req)
     {
       email
     }       
-}).then((user) => {
-  if(!user) res.send(onSignedIn(params, res, password, req))
+}).then(async(user) => {
+  if(!user) {
+    const result = await onSignedIn(params, res, password, req)
+    result.res.send(result.json)
+  } 
     else return res.status(400).json({ error: 'An account with this email already exists! Try logging in!'});
 
-}).catch((reason) => 
+}).catch(async (reason) => 
     {
-      res.send(onSignedIn(params, res, password, req))
-    
+      const result = await onSignedIn(params, res, password, req)
+      result.res.send(result.json)
     })
 }
 

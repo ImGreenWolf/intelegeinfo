@@ -41,13 +41,13 @@ export function onLoggedIn(user: unknown, res: Response, req: Request, shouldkee
   const httpOnly = false;
   let keepLoggedIn =  req.body ? (req.body.keepLoggedIn || shouldkeepLoggedIn) : shouldkeepLoggedIn;
   if(keepLoggedIn)
-    res.cookie('token', token, {
+    return res.cookie('token', token, {
         httpOnly,
         secure, // Set to true in production (HTTPS)
         maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
       });
   else
-      res.cookie('token', token, {
+      return res.cookie('token', token, {
         httpOnly,
         secure, // Set to true in production (HTTPS)
       });
@@ -90,9 +90,9 @@ router.post('/', (req, res) => {
                   //     maxAge: 3600000, // 1 hour
                   //   });
 
-                  onLoggedIn(user, res, req)
+                  
 
-                  res.status(200).json({ message: 'Login successful! Hello ' + user.username});
+                  onLoggedIn(user, res, req).status(200).json({ message: 'Login successful! Hello ' + user.username});
 
 
 
@@ -300,8 +300,8 @@ router.get('/callback', async (req:any, res:any) => {
     {
 
       try{
-        const json = await signup.onSignedIn({email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, res, '', req )
-        
+        const result = await signup.onSignedIn({email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, res, '', req )
+        result.res.send(result.json)
        
       }
       catch(err)
