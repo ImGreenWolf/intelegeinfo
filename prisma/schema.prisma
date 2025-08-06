@@ -69,7 +69,7 @@ model Guide {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   author User @relation(fields: [authorId], references: [id])
-  authorId Int
+  authorId Int @default(1)
   positiveRatings Int @default(0)
   negativeRatings Int @default(0)
   content String
