@@ -12,7 +12,6 @@ export declare function getJWT(req: any): any;
 export declare function getUserData(id: number): Promise<UserNoPassword>;
 export declare function getIdFromJWT(req: any): number;
 export declare function addProject(id: number, data: any): Promise<{
-    role: import("../../generated/prisma").$Enums.Role;
     id: number;
     username: string;
     firstName: string;
@@ -21,6 +20,7 @@ export declare function addProject(id: number, data: any): Promise<{
     emailValidated: boolean;
     userColor: string;
     picture: string;
+    role: import("../../generated/prisma").$Enums.Role;
     createdAt: Date;
     password: string;
     loginMethod: string;

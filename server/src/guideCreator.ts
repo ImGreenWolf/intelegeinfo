@@ -276,11 +276,11 @@ async function getPosts(req: Request): Promise<{guideEntries: any, err?: string}
                     </div>
                     <h2>${guide.name}</h2>
                     <div>${guide.description || guide.content.substring(0, 100)}..</div>
-                    <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} 👁 ${guide.positiveRatings} ↑</p>
+                    <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} 👁 </p>
                 </a>
                 `
-                
-            
+                // ${guide.positiveRatings} ↑
+                    
             })
             
             resolve({guideEntries})

@@ -12,7 +12,7 @@ import { onLoggedIn } from "./login"
 import * as Profile from './profile'
 import path from "path";
 import * as hmacuUtil from "../../dist/shared/hmacUtils";
-import { authMiddleware, sessionMap } from "./server";
+import { authMiddleware, parseText, sessionMap } from "./server";
 import * as users from './usersManager'
 import { google } from "googleapis";
 const OAuth2 = google.auth.OAuth2;
@@ -303,18 +303,22 @@ router.get('/verifyemail', (req, res) => {
 
      
        await transporter.verify();
+        const fileToSend =  fs.readFileSync(path.join(rootDirName, 'public', 'pages', 'emailVerification.html')).toString()
+        const map = new Map();
+        map.set("firstName", user.firstName);
+        map.set("code", code.toString());
 
-        var mailOptions = {
-            from: 'noreply@intelegeinfo.ro',
+        const result = fileToSend.replace(/\$\{(.*?)\}/g, (...match) => {
+            return map.has(match[1]) ? map.get(match[1]) : `${match[0]}`;
+        });
+
+        var mailOptions: nodemailer.SendMailOptions  = {
+            from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
             to: user.email,
             subject: code.toString() + ' | Verificare Email intelegeinfo',
             // html: callbackFile,
-            text: 
-            `Bine ai venit pe intelegeinfo!
-            ${code.toString()}
-            
-            Spor la codat!`
-            
+            html: result,
+            priority: 'high'
             ,
 
           };
@@ -326,7 +330,7 @@ router.get('/verifyemail', (req, res) => {
                 res.status(500).send({message: "error sending email",error});
             } else {
                 console.log(info)
-                res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail))
+                res.send(parseText(file, req).replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail))
                      }
         })
       })

@@ -971,6 +971,25 @@ interface GhostManager {
 ///
 //
 
+
+export function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+      }
+  }
+  return "";
+}
+
+
+
 const byteSize = (str: string) => new Blob([str]).size;
 function checkIsOpen(id)
 {
@@ -2406,9 +2425,7 @@ export function closeDefaultScreen(createdFileElement)
       addButtons([createButton('play_arrow.svg', {onclick: () => {
             window.editor.sendDebugCommand('execute')
         }, class: "run"}),
-         createButton('pest_control.svg', {onclick: () => {
-            window.editor.sendDebugCommand('-exec-run')
-        }, class: "debug"})])
+         ], 'execution')
 }
 
 function addButtons(buttons, id?)
@@ -3215,7 +3232,19 @@ function onOpenFile(fileName, fileContent, client: SessionClient ) {
 
   if(editorSessions.get(fileName)?.fileElement!.parentWindow.editor)
       editorSessions.get(fileName)?.fileElement!.onOpenTab(editorSessions.get(fileName)!.fileElement!.parentWindow.editor!.container)
-  
+
+
+  if(['cpp','c++'].includes(fileName.split('.').at(-1)))
+    document.getElementById('execution')?.appendChild(createButton('pest_control.svg', {onclick: () => {
+            window.editor.sendDebugCommand('-exec-run')
+        }, class: "debug"}))
+  else
+  {
+    const debug = document.getElementsByClassName('debug')
+    if(debug)
+      for(const debugElem of debug)
+        debugElem.remove()
+  }
 }
 
 function createClient(clientId, displayName, color, session: FileEditorSession[]) {
@@ -3542,11 +3571,9 @@ break;
             {
               client.editorSession![0] = {fileName: rclient.openFile[0], editor: undefined, fileElement: undefined}
               addButtons([createButton('play_arrow.svg', {onclick: () => {
-            window.editor.sendDebugCommand('execute')
-        }, class: "run"}),
-         createButton('pest_control.svg', {onclick: () => {
-            window.editor.sendDebugCommand('-exec-run')
-        }, class: "debug"})])
+                  window.editor.sendDebugCommand('execute')
+              }, class: "run"},),
+              ], 'execution')
             }
             clients.set(wsClientId, client)
             

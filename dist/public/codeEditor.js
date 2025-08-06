@@ -717,6 +717,21 @@ let marker; //selection marker
 ////
 ///
 //
+export function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
 const byteSize = (str) => new Blob([str]).size;
 function checkIsOpen(id) {
     if (openMenu)
@@ -1819,9 +1834,7 @@ export function closeDefaultScreen(createdFileElement) {
     addButtons([createButton('play_arrow.svg', { onclick: () => {
                 window.editor.sendDebugCommand('execute');
             }, class: "run" }),
-        createButton('pest_control.svg', { onclick: () => {
-                window.editor.sendDebugCommand('-exec-run');
-            }, class: "debug" })]);
+    ], 'execution');
 }
 function addButtons(buttons, id) {
     // const buttons = [
@@ -2423,6 +2436,16 @@ ws.onmessage = (event) => {
         onFileSessionUpdated(fileName, client);
         if (editorSessions.get(fileName)?.fileElement.parentWindow.editor)
             editorSessions.get(fileName)?.fileElement.onOpenTab(editorSessions.get(fileName).fileElement.parentWindow.editor.container);
+        if (['cpp', 'c++'].includes(fileName.split('.').at(-1)))
+            document.getElementById('execution')?.appendChild(createButton('pest_control.svg', { onclick: () => {
+                    window.editor.sendDebugCommand('-exec-run');
+                }, class: "debug" }));
+        else {
+            const debug = document.getElementsByClassName('debug');
+            if (debug)
+                for (const debugElem of debug)
+                    debugElem.remove();
+        }
     }
     function createClient(clientId, displayName, color, session) {
         const client = new SessionClient(clientId, displayName, color, true);
@@ -2669,9 +2692,7 @@ ws.onmessage = (event) => {
                             addButtons([createButton('play_arrow.svg', { onclick: () => {
                                         window.editor.sendDebugCommand('execute');
                                     }, class: "run" }),
-                                createButton('pest_control.svg', { onclick: () => {
-                                        window.editor.sendDebugCommand('-exec-run');
-                                    }, class: "debug" })]);
+                            ], 'execution');
                         }
                         clients.set(wsClientId, client);
                     }

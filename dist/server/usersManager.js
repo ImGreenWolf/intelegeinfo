@@ -249,15 +249,20 @@ exports.router.get('/verifyemail', (req, res) => {
             for (const match of user.email.matchAll(/#{(\w*) ?(?:\?)(.*): ?(.*)}|#{(\w*)}/g))
                 censoredEmail = censoredEmail.replace(match[1], "*".repeat(match[1].length)).replace(match[2], "*".repeat(match[2].length));
             await transporter.verify();
+            const fileToSend = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'public', 'pages', 'emailVerification.html')).toString();
+            const map = new Map();
+            map.set("firstName", user.firstName);
+            map.set("code", code.toString());
+            const result = fileToSend.replace(/\$\{(.*?)\}/g, (...match) => {
+                return map.has(match[1]) ? map.get(match[1]) : `${match[0]}`;
+            });
             var mailOptions = {
-                from: 'noreply@intelegeinfo.ro',
+                from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
                 to: user.email,
                 subject: code.toString() + ' | Verificare Email intelegeinfo',
                 // html: callbackFile,
-                text: `Bine ai venit pe intelegeinfo!
-            ${code.toString()}
-            
-            Spor la codat!`,
+                html: result,
+                priority: 'high',
             };
             if (false)
                 res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail));
@@ -268,7 +273,7 @@ exports.router.get('/verifyemail', (req, res) => {
                     }
                     else {
                         console.log(info);
-                        res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail));
+                        res.send((0, server_1.parseText)(file, req).replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail));
                     }
                 });
         });
