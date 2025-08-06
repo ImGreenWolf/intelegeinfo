@@ -135,6 +135,7 @@ vl {
   .side {
     grid-row: 1;
     position: static;
+    font-size: 0.75em;
   }
   body {
     padding: 2em;
