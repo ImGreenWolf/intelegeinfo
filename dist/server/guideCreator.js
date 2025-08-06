@@ -214,7 +214,7 @@ async function getPosts(req) {
                         // } : undefined
                     }
                 });
-        promise.then(guides => {
+        promise.then(async (guides) => {
             let res = guides;
             if (term) {
                 const guidess = {};
@@ -236,15 +236,25 @@ async function getPosts(req) {
                 // Final array
                 res = Object.values(guidess);
             }
+            const id = (0, usersManager_1.getIdFromJWT)(req);
+            const user = id ? await (0, usersManager_1.getUserData)((0, usersManager_1.getIdFromJWT)(req)) : undefined;
+            const hasPermission = user ? user.role == 'ADMIN' : false;
             let guideEntries = [];
             for (const guide of res)
-                guideEntries.push({ name: guide.name, url: `guides/post/${encodeURI(guide.name)}`, html: `<a href="guides/post/${encodeURI(guide.name)}">
-            <div>${term ? guide.tags.map(gtag => `<span>${gtag.name}</span>`).join(' ') : guide.guideTags.map(gtag => `<span>${gtag.tag.name}</span>`).join(' ')}</div>
-            <h2>${guide.name}</h2>
-            <div>${guide.description || guide.content.substring(0, 100)}..</div>
-            <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} 👁 ${guide.positiveRatings} ↑</p>
-            </a>
-            `
+                guideEntries.push({
+                    name: guide.name,
+                    url: `guides/post/${encodeURI(guide.name)}`,
+                    html: `
+                <a href="guides/post/${encodeURI(guide.name)}">
+                    <div>
+                        ${hasPermission ? `<button onclick="open(guides/guideCreator/load/${encodeURI(guide.name)})"> Edit </button>` : ''}
+                        ${term ? guide.tags.map(gtag => `<span>${gtag.name}</span>`).join(' ') : guide.guideTags.map(gtag => `<span>${gtag.tag.name}</span>`).join(' ')}
+                    </div>
+                    <h2>${guide.name}</h2>
+                    <div>${guide.description || guide.content.substring(0, 100)}..</div>
+                    <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} 👁 ${guide.positiveRatings} ↑</p>
+                </a>
+                `
                 });
             resolve({ guideEntries });
         }).catch(err => reject({ guideEntries: undefined, err }));
@@ -263,6 +273,9 @@ async function postsRequest(guideEntries, req, res, error) {
             <ul class="posts">
     
 `;
+    const id = (0, usersManager_1.getIdFromJWT)(req);
+    const user = id ? await (0, usersManager_1.getUserData)((0, usersManager_1.getIdFromJWT)(req)) : undefined;
+    const hasPermission = user ? user.role == 'ADMIN' : false;
     if (!error || guideEntries) {
         for (const guide of guideEntries)
             text += `<li>${guide.html}</li>\n`;
@@ -273,7 +286,7 @@ async function postsRequest(guideEntries, req, res, error) {
             <h5>Cauta</h5>
             <input type="text" id="search-input">
             <h5>Filtreaza</h5>
-            <ul class="tags">${tags ? tags.map(tag => `<li>${tag.name}</li>`).join('\n') : ''}</ul>
+            <ul class="tags">${tags ? tags.map(tag => `<li>${hasPermission ? `<a href="guides/tags/delete/${encodeURI(tag.name)}">-</a>` : ''}${tag.name}</li>`).join('\n') : ''}</ul>
         </div></div>
 
         <script>

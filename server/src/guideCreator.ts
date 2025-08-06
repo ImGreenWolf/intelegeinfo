@@ -157,6 +157,7 @@ router.get('/posts', (req,res) => {
 async function getPosts(req: Request): Promise<{guideEntries: any, err?: string}>
 {
     return new Promise((resolve, reject) => {
+       
         const unparsedTags = req.query.tags as string
         const tags = unparsedTags ? unparsedTags.split(',').map(tag => tag.trim()) : []
         const search = req.query.search ? decodeURI(req.query.search as string) : undefined
@@ -230,7 +231,7 @@ async function getPosts(req: Request): Promise<{guideEntries: any, err?: string}
                 // } : undefined
             } 
         })
-            promise.then(guides  => {
+            promise.then(async guides  => {
             let res = guides
             if(term)
             {
@@ -257,16 +258,29 @@ async function getPosts(req: Request): Promise<{guideEntries: any, err?: string}
                 // Final array
                  res = Object.values(guidess);
             }
+
+            const id = getIdFromJWT(req)
+            const user = id ? await getUserData(getIdFromJWT(req)) : undefined
+            const hasPermission = user ? user.role == 'ADMIN' : false
             let guideEntries = []
             for(const guide of res as any)
-                guideEntries.push({name: guide.name, url: `guides/post/${encodeURI(guide.name)}`, html:
-            `<a href="guides/post/${encodeURI(guide.name)}">
-            <div>${term ?guide.tags.map(gtag => `<span>${gtag.name}</span>`).join(' ') : guide.guideTags.map(gtag => `<span>${gtag.tag.name}</span>`).join(' ')}</div>
-            <h2>${guide.name}</h2>
-            <div>${guide.description || guide.content.substring(0, 100)}..</div>
-            <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} 👁 ${guide.positiveRatings} ↑</p>
-            </a>
-            `
+                guideEntries.push({
+            name: guide.name,
+            url: `guides/post/${encodeURI(guide.name)}`,
+            html: 
+                `
+                <a href="guides/post/${encodeURI(guide.name)}">
+                    <div>
+                        ${hasPermission ? `<button onclick="open(guides/guideCreator/load/${encodeURI(guide.name)})"> Edit </button>` : ''}
+                        ${term ?guide.tags.map(gtag => `<span>${gtag.name}</span>`).join(' ') : guide.guideTags.map(gtag => `<span>${gtag.tag.name}</span>`).join(' ')}
+                    </div>
+                    <h2>${guide.name}</h2>
+                    <div>${guide.description || guide.content.substring(0, 100)}..</div>
+                    <p style="font-size: 0.75em; opacity: 0.75; float: right">${guide.visits} 👁 ${guide.positiveRatings} ↑</p>
+                </a>
+                `
+                
+            
             })
             
             resolve({guideEntries})
@@ -289,6 +303,9 @@ async function postsRequest(guideEntries,req,res, error?)
             <ul class="posts">
     
 `
+    const id = getIdFromJWT(req)
+    const user = id ? await getUserData(getIdFromJWT(req)) : undefined
+    const hasPermission = user ? user.role == 'ADMIN' : false
      
     if(!error || guideEntries)
     {
@@ -301,7 +318,7 @@ async function postsRequest(guideEntries,req,res, error?)
             <h5>Cauta</h5>
             <input type="text" id="search-input">
             <h5>Filtreaza</h5>
-            <ul class="tags">${tags ? tags.map(tag => `<li>${tag.name}</li>`).join('\n') : ''}</ul>
+            <ul class="tags">${tags ? tags.map(tag => `<li>${hasPermission ? `<a href="guides/tags/delete/${encodeURI(tag.name)}">-</a>` : ''}${tag.name}</li>`).join('\n') : ''}</ul>
         </div></div>
 
         <script>
