@@ -1158,8 +1158,9 @@ value {
   border-left: 1em solid transparent;
   padding: 0;
   padding-inline: 0;
+  opacity: 0;
 }
-.output-console-container textarea:active {
+.output-console-container textarea:focus {
   animation: blink 1s infinite;
 }
 .output-console-container::before {
