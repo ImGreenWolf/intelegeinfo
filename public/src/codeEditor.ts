@@ -4321,7 +4321,7 @@ function onRun() {
       activeConsole.element.parentElement!.scrollTop =activeConsole.element.parentElement!.scrollHeight;
     }
 
-  activeConsole.compileMessage?.remove()
+  // activeConsole.compileMessage?.remove()
   
     // if(currentFileName.toLowerCase().includes("gui"))
   //   displaynoVNC(activeConsole.element)
