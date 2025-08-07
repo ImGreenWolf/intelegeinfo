@@ -2156,7 +2156,7 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
             activeConsole!.element.appendChild(textArea)
           }
 
-          textArea.innerText += data
+          textArea.innerHTML += data
             
 
 

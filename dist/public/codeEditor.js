@@ -1612,7 +1612,7 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                         textArea = createNode('pre');
                         activeConsole.element.appendChild(textArea);
                     }
-                    textArea.innerText += data;
+                    textArea.innerHTML += data;
                     break;
                 case ConsoleMessageType.Notification:
                     displayMessagePopup(data);
