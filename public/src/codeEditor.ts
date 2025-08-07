@@ -2172,14 +2172,14 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
 
         break;
         case ConsoleMessageType.Console:
-           textArea = activeConsole?.element.getElementsByTagName('pre')[0]
-          if(!textArea)
+          let textArea2 = activeConsole?.element.getElementsByTagName('pre')[0]
+          if(!textArea2)
           {
-            textArea = createNode('pre')
-            activeConsole!.element.appendChild(textArea)
+            textArea2 = createNode('pre')
+            activeConsole!.element.appendChild(textArea2)
           }
 
-          textArea.innerHTML += data + "\n"
+          textArea2.innerHTML += data + " \n"
         break;
         case ConsoleMessageType.Notification:
           displayMessagePopup(data)
