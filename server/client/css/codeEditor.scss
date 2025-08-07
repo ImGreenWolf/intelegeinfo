@@ -1215,17 +1215,23 @@ value
         outline: none !important;
         border: none;
         border-left: 1em solid transparent;
-        animation: blink 0.25s infinite;
-        // margin: 10px;
-        &::after
+        padding: 0;
+        padding-inline: 0;
+        &:active
         {
-            content: "";
-            width: 10px;
-            height: 100%;
-            background-color: white;
-            display: block;
-            position: relative;
+            animation: blink 1s infinite;
         }
+        
+        // margin: 10px;
+        // &::after
+        // {
+        //     content: "";
+        //     width: 10px;
+        //     height: 100%;
+        //     background-color: white;
+        //     display: block;
+        //     position: relative;
+        // }
     }
     &::before
     {   

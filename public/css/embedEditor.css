@@ -1156,15 +1156,11 @@ value {
   outline: none !important;
   border: none;
   border-left: 1em solid transparent;
-  animation: blink 0.25s infinite;
+  padding: 0;
+  padding-inline: 0;
 }
-.output-console-container textarea::after {
-  content: "";
-  width: 10px;
-  height: 100%;
-  background-color: white;
-  display: block;
-  position: relative;
+.output-console-container textarea:active {
+  animation: blink 1s infinite;
 }
 .output-console-container::before {
   width: 100%;

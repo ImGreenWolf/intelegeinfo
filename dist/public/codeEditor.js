@@ -1949,7 +1949,7 @@ export function openFile(fileName = "main.cpp") {
 // websocket //
 if (document.cookie.includes(sessionCookieName + '=') && !window.location.search.includes('save') && !window.location.search.includes(sessionCookieName)) {
     //   const sesCookie = document.cookie
-    //   document.cookie = sessionCookieName+'=';
+    document.cookie = sessionCookieName + '=';
     //   if(!inIframe)
     //   displayConfirmPopup(`Ai un proiect nesalvat,
     // dorești să-l recuperezi?`, "Da", "Nu").then(res => {
