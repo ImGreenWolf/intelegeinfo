@@ -863,7 +863,6 @@ button:not(.custom-button) {
 #output pre {
   font-family: monospace;
   display: block;
-  margin: 10px;
   animation: text-write 0.05s;
 }
 #output ::selection {
@@ -1137,6 +1136,14 @@ value {
     border-color: #fff;
   }
 }
+@keyframes blink {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #fff;
+  }
+}
 .output-console-container textarea {
   background-color: transparent;
   resize: none;
@@ -1145,7 +1152,11 @@ value {
   height: 1lh;
   display: block;
   color: white;
-  margin: 10px;
+  field-sizing: content;
+  outline: none !important;
+  border: none;
+  border-left: 1em solid transparent;
+  animation: blink 0.25s infinite;
 }
 .output-console-container textarea::after {
   content: "";
