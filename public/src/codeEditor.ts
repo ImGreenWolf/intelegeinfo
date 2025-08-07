@@ -174,8 +174,8 @@ class Console {
   }
   public onProcessStart()
   {
-    if(this.compileMessage)
-      this.compileMessage.remove()
+    // if(this.compileMessage)
+    //   this.compileMessage.remove()
     if(this.consoleInput )
       return
     this.consoleInput = document.createElement('textarea')as HTMLTextAreaElement;
