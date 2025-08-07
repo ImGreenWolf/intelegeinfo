@@ -1619,7 +1619,7 @@ bash `.trim().replaceAll('\n', "");
                         else
                             processInputBuffer += messageJSON.command + "\n";
                         replicateFunction((clientWs) => {
-                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Output, body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client
+                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Console, body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client
                         });
                         break;
                     case types_1.WebSocketMessageType.Chat:

@@ -2863,8 +2863,6 @@ ws.onmessage = (event) => {
                     break;
                 case 'spawn':
                     onRun();
-                    if (activeConsole)
-                        activeConsole.onProcessStart();
                     break;
                 case 'container-spawn':
                     onRun();
