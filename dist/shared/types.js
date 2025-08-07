@@ -34,6 +34,7 @@ var ConsoleMessageType;
     ConsoleMessageType["Output"] = "output";
     ConsoleMessageType["DebugProgram"] = "debugProgram";
     ConsoleMessageType["Notification"] = "notification";
+    ConsoleMessageType["Console"] = "console";
 })(ConsoleMessageType || (exports.ConsoleMessageType = ConsoleMessageType = {}));
 exports.sessionCookieName = 'editor_session_id';
 class WSMessage {

@@ -28,7 +28,8 @@ export declare enum ConsoleMessageType {
     SessionInfo = "session",
     Output = "output",
     DebugProgram = "debugProgram",
-    Notification = "notification"
+    Notification = "notification",
+    Console = "console"
 }
 export declare const sessionCookieName = "editor_session_id";
 export declare class WSMessage {

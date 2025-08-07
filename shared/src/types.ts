@@ -29,7 +29,8 @@ export enum ConsoleMessageType {
     SessionInfo = "session",
     Output = 'output',
     DebugProgram  = "debugProgram",
-    Notification = 'notification'
+    Notification = 'notification',
+    Console = 'console'
 }
 
 export const sessionCookieName = 'editor_session_id'

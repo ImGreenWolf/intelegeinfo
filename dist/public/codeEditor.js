@@ -77,6 +77,7 @@ class Console {
     event = new Event("open");
     compileMessage;
     noVNC;
+    consoleInput;
     constructor() {
         if (outputConsoles.length > 0)
             outputConsoles[outputConsoles.length - 1].callbackCreate(this);
@@ -96,16 +97,11 @@ class Console {
                 // args: ["console"],
                 type: WebSocketMessageType.Console,
             }));
-            //   ws.send(
-            // JSON.stringify({
-            //   command: "execute",
-            //   textMode: this.stdin.join(" "),
-            //   type: WebSocketMessageType.Output,
-            // })
-            // );
         };
         thisConsole.appendChild(resendButton);
         this.element = thisConsole;
+        this.consoleInput = document.createElement('textarea');
+        thisConsole.appendChild(this.consoleInput);
         this.onCompileStart();
     }
     onCompileStart(message = 'Comunicating with server') {
@@ -429,6 +425,7 @@ export var ConsoleMessageType;
     ConsoleMessageType["Output"] = "output";
     ConsoleMessageType["DebugProgram"] = "debugProgram";
     ConsoleMessageType["Notification"] = "notification";
+    ConsoleMessageType["Console"] = "console";
 })(ConsoleMessageType || (ConsoleMessageType = {}));
 class SessionClient {
     cursor;
@@ -1613,6 +1610,14 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                         activeConsole.element.appendChild(textArea);
                     }
                     textArea.innerHTML += data;
+                    break;
+                case ConsoleMessageType.Console:
+                    textArea = activeConsole?.element.getElementsByTagName('pre')[0];
+                    if (!textArea) {
+                        textArea = createNode('pre');
+                        activeConsole.element.appendChild(textArea);
+                    }
+                    textArea.innerHTML += data + "\n";
                     break;
                 case ConsoleMessageType.Notification:
                     displayMessagePopup(data);
@@ -2885,7 +2890,7 @@ ws.onmessage = (event) => {
                         if (messageJson.input == 1) {
                             if (document.getElementById('console-input'))
                                 document.getElementById('console-input')?.remove();
-                            const console = document.createElement('textarea');
+                            const console = activeConsole.consoleInput;
                             console.id = 'console-input';
                             activeConsole?.element.appendChild(console);
                             activeConsole.element.onclick = (ev) => console.focus();
@@ -2893,7 +2898,7 @@ ws.onmessage = (event) => {
                                 if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
                                     e.preventDefault();
                                     submitConsole(console, WebSocketMessageType.Console, activeConsole);
-                                    console.remove();
+                                    // console.remove()
                                 }
                             });
                             console.focus();

@@ -131,11 +131,13 @@ class Console {
   event = new Event("open");
   compileMessage: HTMLDivElement | undefined
   noVNC: HTMLIFrameElement | undefined
+  consoleInput: HTMLTextAreaElement
   constructor () {
     if(outputConsoles.length>0)
       outputConsoles[outputConsoles.length-1].callbackCreate(this)
 
     const thisConsole = document.createElement('div')
+    
   if(outputArea)
     outputArea.appendChild(thisConsole);
     thisConsole.id =  'active-console'
@@ -145,6 +147,7 @@ class Console {
     const resendButton = document.createElement('button');
     resendButton.innerText = '↻'
     resendButton.classList = 'retry-program custom-button'
+
     resendButton.onclick = (ev) => {
       sendDebugCommand("execute")
       ws.send(
@@ -154,19 +157,13 @@ class Console {
           type: WebSocketMessageType.Console,
         })
       );
-    
-    
 
-    //   ws.send(
-    // JSON.stringify({
-    //   command: "execute",
-    //   textMode: this.stdin.join(" "),
-    //   type: WebSocketMessageType.Output,
-    // })
-  // );
     }
     thisConsole.appendChild(resendButton);
     this.element = thisConsole
+     
+    this.consoleInput = document.createElement('textarea')as HTMLTextAreaElement;
+    thisConsole.appendChild(this.consoleInput)
 
     this.onCompileStart()
 
@@ -576,7 +573,8 @@ export enum ConsoleMessageType {
   SessionInfo = "session",
   Output = "output",
   DebugProgram = "debugProgram",
-  Notification = 'notification'
+  Notification = 'notification',
+  Console = 'console'
 }
 
 interface SessionInfo  {
@@ -2160,7 +2158,17 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
             
 
 
-          break;
+        break;
+        case ConsoleMessageType.Console:
+           textArea = activeConsole?.element.getElementsByTagName('pre')[0]
+          if(!textArea)
+          {
+            textArea = createNode('pre')
+            activeConsole!.element.appendChild(textArea)
+          }
+
+          textArea.innerHTML += data + "\n"
+        break;
         case ConsoleMessageType.Notification:
           displayMessagePopup(data)
         break;
@@ -2778,6 +2786,7 @@ ws.onerror = (err) => {
 
 
 import { IIWebRTC } from "./webrtcdemo.js";
+import { R } from "ace-builds-internal/lib/bidiutil";
 
 
 
@@ -2800,6 +2809,7 @@ export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketM
   );
   if(Console)
     Console.sendCommand(sendText)
+
   consoleInput.value = "";
   typingIndicatorDelay = 300;
   onConsoleInput(elem)
@@ -3838,7 +3848,7 @@ break;
               if(document.getElementById('console-input'))
                 document.getElementById('console-input')?.remove();
               
-              const console = document.createElement('textarea')as HTMLTextAreaElement;
+              const console = activeConsole!.consoleInput
               console.id = 'console-input'
               activeConsole?.element.appendChild(console) 
               activeConsole!.element.onclick = (ev) => console.focus()
@@ -3848,7 +3858,7 @@ break;
                   e.preventDefault();
 
                   submitConsole(console, WebSocketMessageType.Console, activeConsole)
-                  console.remove()
+                  // console.remove()
                 }
               });
 

@@ -17,6 +17,7 @@ declare class Console {
     event: Event;
     compileMessage: HTMLDivElement | undefined;
     noVNC: HTMLIFrameElement | undefined;
+    consoleInput: HTMLTextAreaElement;
     constructor();
     onCompileStart(message?: string): void;
     onProcessStart(): void;
@@ -85,7 +86,8 @@ export declare enum ConsoleMessageType {
     SessionInfo = "session",
     Output = "output",
     DebugProgram = "debugProgram",
-    Notification = "notification"
+    Notification = "notification",
+    Console = "console"
 }
 declare class SessionClient {
     cursor: EditorCursor | undefined;
