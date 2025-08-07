@@ -224,17 +224,19 @@ app.post('/editor/startsession/:id', (req, res) => {
         if (!req.body && !id)
             res.status(501);
         if (exports.sessionMap.has(id)) {
-            const { chat, codePermission, voice } = req.body;
+            const { chat, codePermission, voice, sandbox } = req.body;
             if (exports.sessionMap.get(id).isPublic) {
                 exports.sessionMap.get(id).makeSessionPublic({ enableChat: checkboxValue(chat),
                     editorPermission: codePermission,
-                    enableVoice: checkboxValue(voice) });
+                    enableVoice: checkboxValue(voice),
+                    sandboxUsers: checkboxValue(sandbox) });
                 res.status(200);
                 return;
             }
             exports.sessionMap.get(id).makeSessionPublic({ enableChat: checkboxValue(chat),
                 editorPermission: codePermission,
-                enableVoice: checkboxValue(voice) });
+                enableVoice: checkboxValue(voice),
+                sandboxUsers: checkboxValue(sandbox) });
             res.status(201).send('');
         }
         else {
@@ -828,6 +830,19 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
             });
         }
+        function isUserSandboxed(client = clientObj) {
+            return clientSession.editorOptions.sandboxUsers == true && !client.isHost;
+        }
+        function getFilesForClient(client = clientObj) {
+            let files = isUserSandboxed() ?
+                clientSession.files.filter(file => file.linkedUser && file.linkedUser.displayName == client.displayName)
+                :
+                    clientSession.files;
+            return files;
+        }
+        function getFilesNamesForClient(client = clientObj) {
+            return getFilesForClient(client).map(file => { return file.name; });
+        }
         function sendConnectionMessage(isHost, fileContent) {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
             if (!clientSession)
@@ -835,13 +850,13 @@ exports.wss.addListener('connection', async (ws, req) => {
             const session = clientSession.clientsMap.size != 1 ? clientObj.permissions : undefined; //clientObj.isHost
             const welcomeMessage = isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.ro'>intelegeinfo.ro</a>" : !userLoggedIn ?
                 `Bine ai venit pe Intelege Info!
-     Scrie cod, apoi apasa COMPILE si EXECUTE CODE sau ruleaza in DEBUGGER.
-      Invita-ti prietenii sa editeze codul împreună cu tine în timp real apăsând butonul SHARE.`
+     Scrie cod, apoi ruleaza-ti codul apasand butonul mare auriu, sau ruleaza in debugger.
+      Invita-ti elevii sau prietenii să editeze codul împreună cu tine în timp real apăsând butonul SHARE.`
                 :
-                    `Bine ai revenit ${userData?.username} pe Intelege Info!
+                    `Ne pare bine sa te revedem, ${userData?.username}!<br>
         Poti salva codul tau apasand pe butonul save.`;
             // await sendListFiles(clientFilesPath)
-            const files = clientSession.files.map(file => { return file.name; });
+            const files = getFilesNamesForClient();
             const users = clientSession.clients.map(val => { return clientInfo(val); });
             // Send initial message to client
             const message = { type: types_1.WebSocketMessageType.Handshake,
@@ -897,17 +912,18 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
         }
         async function connectionReady(cooperator = false, req) {
-            const session = await new Promise(async (resolve) => {
+            const sessionCheck = await new Promise(async (resolve, reject) => {
                 const urlParams = new URL("ws:/intelegeinfo.ro:8080" + req.url).searchParams;
                 const clientFilesPath = clientSession.getClientFilesPath();
+                const isHost = !cooperator; // added for readability
                 let savedProject;
                 if (urlParams.has("save"))
                     await loadSave(urlParams.get('save'));
                 // printClientConsoleInfo("connected to worker: " + process.pid)
                 //create cache folder for session if its a new one
                 const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
-                if ((!cacheFolderExists && !cooperator && clientSession.files.length == 0)) {
-                    if (clientSession.files.length == 0 && cacheFolderExists && !cooperator && savedProject == undefined) {
+                if ((!cacheFolderExists && isHost && clientSession.files.length == 0)) {
+                    if (clientSession.files.length == 0 && cacheFolderExists && isHost && savedProject == undefined) {
                         fs_1.default.rmSync(clientFilesPath, { recursive: true, force: true });
                         console.log('deteled existing session folder');
                     }
@@ -917,36 +933,32 @@ exports.wss.addListener('connection', async (ws, req) => {
                         console.error("Error creating cache folder:", err);
                         return;
                     }
-                    const defaultFileName = 'main.cpp';
                     const session = sendConnectionMessage(!cooperator, '');
                     resolve(session);
-                    //     new EditorFile(clientSession, defaultFileName, undefined, undefined, function () {
-                    //         this.openFile(clientObj, shared).then((fileContent) => {
-                    //             // const session = sendConnectionMessage(!cooperator, fileContent)
-                    //             // resolve(session)
-                    //         })
-                    // })
-                    // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
-                    //     listFiles(clientFilesPath).then(() => {
-                    //         openFile("main.cpp")
-                    //     })
-                    //     });
                 }
                 else {
                     // load files from existing session
                     console.warn("Cache folder already exists for sessionId " + sessionId);
                     // load project files
-                    if (cacheFolderExists && !cooperator && clientSession.files.length == 0)
+                    if (cacheFolderExists && isHost && clientSession.files.length == 0)
                         clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString(), { abstract: true }); });
                     // const session = sendConnectionMessage(!cooperator, '')
                     if (clientSession.files[0] == undefined) {
                         if (savedProject)
                             openFile(fs_1.default.readdirSync(clientFilesPath)[0]);
                         else
-                            return console.log('no file found in files: ', clientSession.files);
+                            console.log('no file found in files: ', clientSession.files);
+                        const session = sendConnectionMessage(!cooperator, '');
+                        resolve(session);
                     }
-                    else if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, clientSession.files[0].name)))
-                        clientSession.files[0].openFile(clientObj, shared)
+                    else if (!getFilesForClient()[0] && clientSession.editorOptions.sandboxUsers == true) {
+                        const originalName = clientSession.files[0] ? clientSession.files[0].name : 'main.cpp';
+                        new types_2.EditorFile(clientSession, (originalName ? originalName : 'main.cpp'), undefined, { linkedUser: clientObj, autoOpenClient: clientObj });
+                        const session = sendConnectionMessage(!cooperator, '');
+                        resolve(session);
+                    }
+                    else if (fs_1.default.existsSync(path_1.default.join(clientFilesPath, getFilesNamesForClient()[0]))) // not needed? 
+                        getFilesForClient()[0].openFile(clientObj, shared)
                             .then((fileContent) => {
                             const session = sendConnectionMessage(!cooperator, fileContent);
                             console.log('Opened file');
@@ -954,7 +966,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         });
                     // openFile(clientSession.files[0].name) // load first file
                     else
-                        console.error("No default file was found!"); // TODO replace with async function
+                        reject("No default file was found!"); // TODO replace with async function
                     // resolve(session)
                 }
             });
@@ -972,7 +984,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         displayNames.push({ displayName: client.displayName, fileName: client.getFilesName(), clientId: client.clientId, color: client.color });
                 });
                 replicateFunction((clientws) => {
-                    clientws.send(JSON.stringify({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "JOIN", client: clientInfo(clientObj), permissions: session })); // Send GDB output to the client
+                    clientws.send(JSON.stringify({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "JOIN", client: clientInfo(clientObj), permissions: sessionCheck })); // Send GDB output to the client
                 }, clientObj);
                 //    replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN", client: clientInfo(clientObj), permissions: session});
                 ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "LIST", clients: displayNames })); // Send GDB output to the client
@@ -1071,7 +1083,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         function sendListFiles(dir) {
             try {
                 return new Promise((resolve, reject) => {
-                    ws.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_3.FileManagementCommands.List, content: clientSession.files.map(file => { return file.name; }) } })); // Send the list of files to the client
+                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.FileManagement, body: { command: types_3.FileManagementCommands.List, content: getFilesNamesForClient() } }); // Send the list of files to the client
                     resolve();
                     // fs.readdir(dir, (err, files) => {
                     //     if (err) {
@@ -1292,7 +1304,10 @@ bash `.trim().replaceAll('\n', "");
                 }).catch((err) => reject(err + 'ababababa'));
             });
         }
-        clientSession.executeProblemChecker = executeProblemChecker;
+        if (clientSession)
+            clientSession.executeProblemChecker = executeProblemChecker;
+        else
+            console.error('INVALID SESSION WHILE SETTING PROBLEM CHECKER');
         async function onClosedProgram(code, time, message, error) {
             let notes = "";
             processInputBuffer = '';

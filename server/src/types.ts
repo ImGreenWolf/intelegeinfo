@@ -75,7 +75,7 @@ export class ClientObject {
     }
     public checkClientsFileOpen(otherClient)
     {
-        return this.getFilesName().find(val => otherClient.getFilesName().some(other => val === other)) !== -1
+        return this.getFilesName().findIndex(val => otherClient.getFilesName().some(other => val === other)) !== -1
     }
     
   }
@@ -96,7 +96,8 @@ export interface EditorOptions
 {
     enableChat: boolean,
     enableVoice: boolean,
-    editorPermission: EditorPermission
+    editorPermission: EditorPermission,
+    sandboxUsers: boolean
 }
 
 export interface ClientPermissions
@@ -134,7 +135,11 @@ export class EditorSession {
     joinCode: number;
     qrCode;
 
-    editorOptions: EditorOptions = {editorPermission: EditorPermission.Everyone, enableChat: true, enableVoice: false}
+    editorOptions: EditorOptions = {
+        editorPermission: EditorPermission.Everyone,
+        enableChat: true,
+        enableVoice: false,
+        sandboxUsers: false}
 
     executeProblemChecker: (problemId) => Promise<PromiseSettledResult<{status: string, error: boolean, index: number, score: number, time?: number} | undefined>[]>;
     public makeSessionPublic(options: EditorOptions)
@@ -449,17 +454,27 @@ Tralalero Tralala`.split('\n')
   }
 
   export class EditorFile {
-    name;
-    content;
+    name: string;
+    content: string;
     session: EditorSession;
-    filePath 
-    editorMode: EditorMode
+    filePath: string
+    editorMode: EditorMode;
+    linkedUser?: ClientObject | undefined
     private updateFilePath() {
         this.filePath = path.join(this.session.getClientFilesPath(), this.name)
     }
-    constructor(session: EditorSession, name: string, content=undefined, options?: {abstract?: boolean}, onCreate?: (this: EditorFile)=> void) {
-        this.name = name;
+    constructor(session: EditorSession, name: string, content=undefined,
+        options?: {abstract?: boolean /**Doesnt atually create a file on disk, acts just as a variable, use if you already created the file */,
+        autoOpenClient?: ClientObject,
+        linkedUser?: ClientObject}, onCreate?: (this: EditorFile)=> void) {
+
+
+        
         this.session = session
+        if(options && options.linkedUser)
+        this.linkedUser = options.linkedUser
+
+        this.name = this.linkedUser ? this.linkedUser.displayName.replaceAll(' ', '-') + "-" + name :  name;
         this.updateFilePath()
         
         
@@ -494,9 +509,12 @@ Tralalero Tralala`.split('\n')
                     if(onCreate)
                         onCreate.call(this)
                     else
-                    session.replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
-                    });
+                        session.replicateFunction((clientWs) => {
+                            clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
+                        });
+
+                    if(options && options.autoOpenClient)
+                        this.openFile(options.autoOpenClient)
                 }
                    
             });
@@ -568,6 +586,7 @@ Tralalero Tralala`.split('\n')
         try{
            
                 const data = fs.readFileSync(this.filePath).toString()
+                this.content = data
                  const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName)
                 if(closedFileIndex != -1)
                 {
@@ -594,6 +613,7 @@ Tralalero Tralala`.split('\n')
                     if((obj as ClientObject).openFileName == oldFileName)
                         cws.send(JSON.stringify({type: WebSocketMessageType.CodeSelection, body: null}))
                 }, clientObj)
+
                 clientObj.editorMode = getEditorMode(this.name)
                 // clientObj.openFileName = this.name
                 

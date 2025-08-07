@@ -238,22 +238,24 @@ app.post('/editor/startsession/:id', (req, res) => {
         if(!req.body && !id) res.status(501)
         if(sessionMap.has(id))
         {
-            const { chat, codePermission, voice } = req.body
+            const { chat, codePermission, voice, sandbox } = req.body
 
             
             if(sessionMap.get(id).isPublic)
             {
                 sessionMap.get(id).makeSessionPublic({enableChat: checkboxValue(chat), 
-                editorPermission: codePermission as EditorPermission,
-                enableVoice: checkboxValue(voice)
+                    editorPermission: codePermission as EditorPermission,
+                    enableVoice: checkboxValue(voice),
+                    sandboxUsers: checkboxValue(sandbox)
                 })
                 res.status(200)
                 return;
             }
 
             sessionMap.get(id).makeSessionPublic({enableChat: checkboxValue(chat), 
-                editorPermission: codePermission as EditorPermission,
-                enableVoice: checkboxValue(voice)
+                    editorPermission: codePermission as EditorPermission,
+                    enableVoice: checkboxValue(voice),
+                    sandboxUsers: checkboxValue(sandbox)
                 })
             res.status(201).send('')
         }
@@ -1037,6 +1039,28 @@ function endConnectionPromise()
                 });
    }
 
+   function isUserSandboxed(client=clientObj)
+   {
+    return clientSession.editorOptions.sandboxUsers == true && !client.isHost
+   }
+
+   function getFilesForClient(client=clientObj)
+   {
+    
+        
+        let files = isUserSandboxed() ?
+             clientSession.files.filter(file => file.linkedUser && file.linkedUser.displayName == client.displayName)
+             :
+             clientSession.files
+
+        return files
+   }
+
+   function getFilesNamesForClient(client=clientObj): string[]
+   {
+        return getFilesForClient(client).map(file => {return file.name})
+   }
+
     function sendConnectionMessage(isHost, fileContent) 
     {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
@@ -1044,13 +1068,13 @@ function endConnectionPromise()
     const session = clientSession.clientsMap.size!=1 ? clientObj.permissions : undefined; //clientObj.isHost
         const welcomeMessage =  isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.ro'>intelegeinfo.ro</a>" : !userLoggedIn ?
     `Bine ai venit pe Intelege Info!
-     Scrie cod, apoi apasa COMPILE si EXECUTE CODE sau ruleaza in DEBUGGER.
-      Invita-ti prietenii sa editeze codul împreună cu tine în timp real apăsând butonul SHARE.`
+     Scrie cod, apoi ruleaza-ti codul apasand butonul mare auriu, sau ruleaza in debugger.
+      Invita-ti elevii sau prietenii să editeze codul împreună cu tine în timp real apăsând butonul SHARE.`
         :
-        `Bine ai revenit ${userData?.username} pe Intelege Info!
+        `Ne pare bine sa te revedem, ${userData?.username}!<br>
         Poti salva codul tau apasand pe butonul save.`
         // await sendListFiles(clientFilesPath)
-        const files = clientSession.files.map(file => {return file.name})
+        const files = getFilesNamesForClient()
         const users = clientSession.clients.map(val => {return clientInfo(val)})
         // Send initial message to client
 
@@ -1116,94 +1140,93 @@ function endConnectionPromise()
 
     async function connectionReady(cooperator: boolean = false, req: IncomingMessage) 
     {
-        const session = await new Promise<ClientPermissions>(async (resolve) => {
-        const urlParams = new URL("ws:/intelegeinfo.ro:8080"+req.url).searchParams
-        const clientFilesPath = clientSession.getClientFilesPath();
-        let savedProject: Project | undefined;
-        if(urlParams.has("save"))
-           await loadSave(urlParams.get('save'))
+        const sessionCheck = await new Promise<ClientPermissions>(async (resolve, reject) => {
+            const urlParams = new URL("ws:/intelegeinfo.ro:8080"+req.url).searchParams
+            const clientFilesPath = clientSession.getClientFilesPath();
+            const isHost = !cooperator // added for readability
+            let savedProject: Project | undefined;
+            if(urlParams.has("save"))
+            await loadSave(urlParams.get('save'))
+            
+            
         
-           
-    
-       
         
+            
 
-        // printClientConsoleInfo("connected to worker: " + process.pid)
+            // printClientConsoleInfo("connected to worker: " + process.pid)
 
-        //create cache folder for session if its a new one
-        const cacheFolderExists = fs.existsSync(path.join(rootDirName, "cache", sessionId));
+            //create cache folder for session if its a new one
+            const cacheFolderExists = fs.existsSync(path.join(rootDirName, "cache", sessionId));
 
-        
-        if((!cacheFolderExists && !cooperator && clientSession.files.length==0) )
-        {
-
-            if(clientSession.files.length==0 && cacheFolderExists && !cooperator && savedProject == undefined)
+            
+            if((!cacheFolderExists && isHost && clientSession.files.length==0) )
             {
-                fs.rmSync(clientFilesPath, {recursive: true, force: true})
-                console.log('deteled existing session folder')
-            }
 
-            const err = undefined  
-            fs.mkdirSync(clientFilesPath, { recursive: true })
-            if (err) {
-                console.error("Error creating cache folder:", err);
-                return;
-            }
-            const defaultFileName = 'main.cpp'
-            const session = sendConnectionMessage(!cooperator, '')
-            resolve(session)
-                        
-            //     new EditorFile(clientSession, defaultFileName, undefined, undefined, function () {
-            //         this.openFile(clientObj, shared).then((fileContent) => {
-            //             // const session = sendConnectionMessage(!cooperator, fileContent)
-            //             // resolve(session)
-                        
-            //         })
-                    
-            // })
+                if(clientSession.files.length==0 && cacheFolderExists && isHost && savedProject == undefined)
+                {
+                    fs.rmSync(clientFilesPath, {recursive: true, force: true})
+                    console.log('deteled existing session folder')
+                }
 
-                // fs.writeFile(path.join(clientFilesPath, "main.cpp"), defaultText, (err) => {
-                //     listFiles(clientFilesPath).then(() => {
-                //         openFile("main.cpp")
+                const err = undefined  
+                fs.mkdirSync(clientFilesPath, { recursive: true })
+                if (err) {
+                    console.error("Error creating cache folder:", err);
+                    return;
+                }
 
-                //     })
-                //     });
+                const session = sendConnectionMessage(!cooperator, '')
+                resolve(session)
             
-        } else 
-        {
-            // load files from existing session
-            console.warn("Cache folder already exists for sessionId " + sessionId);
-            // load project files
-            if(cacheFolderExists && !cooperator && clientSession.files.length==0)
-                clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString(), {abstract: true})})
-
-            // const session = sendConnectionMessage(!cooperator, '')
-            
-
-            if(clientSession.files[0] == undefined)
+                
+            } else 
             {
-                if(savedProject)
-                    openFile(fs.readdirSync(clientFilesPath)[0])
-                else
-                    return console.log('no file found in files: ', clientSession.files)
-            } 
-            else 
-                if(fs.existsSync(path.join(clientFilesPath, clientSession.files[0].name))) 
-                    clientSession.files[0].openFile(clientObj, shared)
-                    .then((fileContent) => {
-                        const session = sendConnectionMessage(!cooperator, fileContent)
-                        console.log('Opened file')
-                        resolve(session)
-                    })
+                // load files from existing session
+                console.warn("Cache folder already exists for sessionId " + sessionId);
+
+                // load project files
+                if(cacheFolderExists && isHost && clientSession.files.length==0)
+                    clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString(), {abstract: true})})
+
+                // const session = sendConnectionMessage(!cooperator, '')
+                
+
+                if(clientSession.files[0] == undefined)
+                {
+                    if(savedProject)
+                        openFile(fs.readdirSync(clientFilesPath)[0])
+                    else
+                        console.log('no file found in files: ', clientSession.files)
+                    const session = sendConnectionMessage(!cooperator, '')
+                    resolve(session)
+                } 
+                else if(!getFilesForClient()[0] && clientSession.editorOptions.sandboxUsers == true)
+                        
+                            {
+                                const originalName = clientSession.files[0] ? clientSession.files[0].name : 'main.cpp'
+                                
+                                new EditorFile(clientSession,  (originalName ? originalName : 'main.cpp'), undefined, {linkedUser: clientObj, autoOpenClient: clientObj})
+                                const session = sendConnectionMessage(!cooperator, '')
+                                resolve(session)
+                            }
+                    else 
+                    if(fs.existsSync(path.join(clientFilesPath, getFilesNamesForClient()[0]))) // not needed? 
+                        getFilesForClient()[0].openFile(clientObj, shared)
+                        .then((fileContent) => {
+                            const session = sendConnectionMessage(!cooperator, fileContent)
+                            console.log('Opened file')
+                            resolve(session)
+                        })
+
+                        // openFile(clientSession.files[0].name) // load first file
+                else 
                     
-                    // openFile(clientSession.files[0].name) // load first file
-            else 
-                console.error("No default file was found!") // TODO replace with async function
+                    reject("No default file was found!") // TODO replace with async function
+
+                    // resolve(session)
             
-                // resolve(session)
-          
-        }
-           })
+            }
+        })
            
             
 
@@ -1223,7 +1246,7 @@ function endConnectionPromise()
                         displayNames.push({displayName: client.displayName, fileName: client.getFilesName(), clientId: client.clientId, color: client.color});
                })
                replicateFunction((clientws) => {
-                   clientws.send(JSON.stringify({type: WebSocketMessageType.ColabData, colabCommand: "JOIN", client: clientInfo(clientObj), permissions: session}));  // Send GDB output to the client
+                   clientws.send(JSON.stringify({type: WebSocketMessageType.ColabData, colabCommand: "JOIN", client: clientInfo(clientObj), permissions: sessionCheck}));  // Send GDB output to the client
 
                }, clientObj)
             //    replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.ColabData, colabCommand: "JOIN", client: clientInfo(clientObj), permissions: session});
@@ -1355,7 +1378,7 @@ function endConnectionPromise()
         try {
             return new Promise<void>((resolve, reject) => {
 
-                ws.send(JSON.stringify({ type: WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.List, content: clientSession.files.map(file => {return file.name}) } })); // Send the list of files to the client
+                clientObj.sendMessage({ type: WebSocketMessageType.FileManagement, body: { command: FileManagementCommands.List, content: getFilesNamesForClient() } }); // Send the list of files to the client
                 resolve();
 
                 // fs.readdir(dir, (err, files) => {
@@ -1635,7 +1658,10 @@ return new Promise<PromiseSettledResult<{status: string, error: boolean, index: 
 
     
 }
+if(clientSession)
 clientSession.executeProblemChecker = executeProblemChecker
+else
+    console.error('INVALID SESSION WHILE SETTING PROBLEM CHECKER')
 
 async function onClosedProgram(code,time, message, error?)
     {
@@ -2144,9 +2170,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     break;
                         case FileManagementCommands.Create:
                             new EditorFile(clientSession, messageJSON.name, messageJSON.body)
-
-
-                    break;
+                        break;
                     case FileManagementCommands.Delete:
                         if(!clientObj.permissions.canEdit) break;
                         clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj)

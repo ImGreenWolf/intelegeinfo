@@ -25,7 +25,7 @@ export declare class ClientObject {
     constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
     sendMessage(message: WebSocketMessage | string | Record<string, any>, type?: WebSocketMessageType): void;
     getFile(name: any): EditorFile;
-    getFilesName(): any[];
+    getFilesName(): string[];
     checkClientsFileOpen(otherClient: any): boolean;
 }
 interface CommandBuffer {
@@ -40,6 +40,7 @@ export interface EditorOptions {
     enableChat: boolean;
     enableVoice: boolean;
     editorPermission: EditorPermission;
+    sandboxUsers: boolean;
 }
 export interface ClientPermissions {
     canChat: boolean;
@@ -96,14 +97,17 @@ export declare class EditorSession {
     getClientFilesPath(): string;
 }
 export declare class EditorFile {
-    name: any;
-    content: any;
+    name: string;
+    content: string;
     session: EditorSession;
-    filePath: any;
+    filePath: string;
     editorMode: EditorMode;
+    linkedUser?: ClientObject | undefined;
     private updateFilePath;
     constructor(session: EditorSession, name: string, content?: any, options?: {
-        abstract?: boolean;
+        abstract?: boolean /**Doesnt atually create a file on disk, acts just as a variable, use if you already created the file */;
+        autoOpenClient?: ClientObject;
+        linkedUser?: ClientObject;
     }, onCreate?: (this: EditorFile) => void);
     delete(clientObj: ClientObject): void;
     rename(newName: any, clientObj: ClientObject): void;

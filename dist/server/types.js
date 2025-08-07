@@ -98,7 +98,7 @@ class ClientObject {
         return this.openFile.map(val => val.name);
     }
     checkClientsFileOpen(otherClient) {
-        return this.getFilesName().find(val => otherClient.getFilesName().some(other => val === other)) !== -1;
+        return this.getFilesName().findIndex(val => otherClient.getFilesName().some(other => val === other)) !== -1;
     }
 }
 exports.ClientObject = ClientObject;
@@ -133,7 +133,12 @@ class EditorSession {
     isPublic;
     joinCode;
     qrCode;
-    editorOptions = { editorPermission: EditorPermission.Everyone, enableChat: true, enableVoice: false };
+    editorOptions = {
+        editorPermission: EditorPermission.Everyone,
+        enableChat: true,
+        enableVoice: false,
+        sandboxUsers: false
+    };
     executeProblemChecker;
     makeSessionPublic(options) {
         this.isPublic = true;
@@ -400,12 +405,15 @@ class EditorFile {
     session;
     filePath;
     editorMode;
+    linkedUser;
     updateFilePath() {
         this.filePath = path_1.default.join(this.session.getClientFilesPath(), this.name);
     }
     constructor(session, name, content = undefined, options, onCreate) {
-        this.name = name;
         this.session = session;
+        if (options && options.linkedUser)
+            this.linkedUser = options.linkedUser;
+        this.name = this.linkedUser ? this.linkedUser.displayName.replaceAll(' ', '-') + "-" + name : name;
         this.updateFilePath();
         // const mode =  getEditorMode(this.name).constructor
         const editorModeClass = getEditorMode(this.name);
@@ -438,6 +446,8 @@ class EditorFile {
                             session.replicateFunction((clientWs) => {
                                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
                             });
+                        if (options && options.autoOpenClient)
+                            this.openFile(options.autoOpenClient);
                     }
                 });
             else
@@ -495,6 +505,7 @@ class EditorFile {
     async openFile(clientObj, shared, closedFileName) {
         try {
             const data = fs_1.default.readFileSync(this.filePath).toString();
+            this.content = data;
             const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName);
             if (closedFileIndex != -1) {
                 clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == closedFileName), 1);

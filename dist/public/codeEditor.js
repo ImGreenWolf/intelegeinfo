@@ -1008,12 +1008,17 @@ function updateLocalCursor(ev, fromPress) {
             const width = ev.width;
             for (const conn of rtc.values())
                 // if(clients.find(val => val.clientId == conn.thistargetId)?.editorSession?.fileName == client?.editorSession?.fileName)
-                conn.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, width, height, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth, rechHeight, clientId: wsClientId }));
+                conn.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate,
+                    posX, posY, sizeX, sizeY, pointerType, width, height, relPosX: pos.relX, relPosY: pos.relY,
+                    rect: pos.rect, rectWidth, rechHeight, clientId: wsClientId,
+                    openFile: windows.filter(window => window.activeTab && window.activeTab.content && (window.activeTab?.content).doc != undefined).map(window => window.activeTab?.name) }));
         }
         else
             for (const conn of rtc.values())
                 // if(clients.find(val => val.clientId == conn.thistargetId)?.editorSession?.fileName == client?.editorSession?.fileName)
-                conn.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY, pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth, rechHeight, clientId: wsClientId }));
+                conn.send(JSON.stringify({ type: WebSocketMessageType.MouseUpdate, posX, posY, sizeX, sizeY,
+                    pointerType, relPosX: pos.relX, relPosY: pos.relY, rect: pos.rect, rectWidth,
+                    rechHeight, clientId: wsClientId, openFile: windows.filter(fileWindow => fileWindow.activeTab && fileWindow.activeTab.content && (fileWindow.activeTab?.content).doc != undefined).map(window => window.activeTab?.name) }));
     }
 }
 function updateCursor(cursor, eventJson) {
@@ -1025,6 +1030,10 @@ function updateCursor(cursor, eventJson) {
     if (!codeWindow.editor)
         return;
     const relPos = getPixelFromRelativePosition(codeWindow.editor, eventJson.relPosX, eventJson.relPosY, eventJson);
+    if (!eventJson.openFile.some(name => windows.some(val => val.activeTab?.name == name)))
+        cursor.style.display = 'none';
+    else
+        cursor.style.display = 'initial';
     if (sizeX / eventJson.sizeX < 0.7 || sizeY / eventJson.sizeY < 0.7 || sizeX / eventJson.sizeX > 1.3 || sizeY / eventJson.sizeY > 1.3) {
         const scale = 5;
         const mask = Math.max((relPos.x - relPos.rect.width + relPos.rect.left - remSize) / scale + 10, (relPos.y - relPos.rect.height - relPos.rect.top + remSize) / scale + 10);
@@ -1228,40 +1237,47 @@ function onFileCreate(fileName, index = 0) {
     // const command = JSON.parse(messageBodyJson);
     // const fileName = command.content;
     // const index = 0;
-    if (editorSessions.has(fileName)) {
-        const session = editorSessions.get(fileName);
-        const file = new FileElement(fileName, session.editor, index);
-        //open newly created file
-        if (!session.fileElement) {
+    try {
+        if (editorSessions.has(fileName)) {
+            const session = editorSessions.get(fileName);
+            if (!session.editor)
+                throw 'session doesnt have editor session';
+            const file = new FileElement(fileName, session.editor, index);
+            //open newly created file
+            if (!session.fileElement) {
+                const newSession = {
+                    editor: session.editor,
+                    fileName: session.fileName,
+                    fileElement: file
+                };
+                editorSessions.set(fileName, newSession);
+                if (client)
+                    client.editorSession[file.parentWindow.index] = newSession;
+            }
+            if (namePrompt?.innerText == fileName) {
+                openFile(namePrompt.innerText);
+                namePrompt.innerText = "";
+            }
+        }
+        else {
+            const file = new FileElement(fileName, undefined, index);
+            //open newly created file
             const newSession = {
-                editor: session.editor,
-                fileName: session.fileName,
+                editor: undefined,
+                fileName: fileName,
                 fileElement: file
             };
             editorSessions.set(fileName, newSession);
             if (client)
-                client.editorSession[file.parentWindow.index] = newSession;
-        }
-        if (namePrompt?.innerText == fileName) {
-            openFile(namePrompt.innerText);
-            namePrompt.innerText = "";
+                client.editorSession[index] = newSession;
+            if (namePrompt?.innerText == fileName) {
+                openFile(namePrompt.innerText);
+                namePrompt.innerText = "";
+            }
         }
     }
-    else {
-        const file = new FileElement(fileName, undefined, index);
-        //open newly created file
-        const newSession = {
-            editor: undefined,
-            fileName: fileName,
-            fileElement: file
-        };
-        editorSessions.set(fileName, newSession);
-        if (client)
-            client.editorSession[index] = newSession;
-        if (namePrompt?.innerText == fileName) {
-            openFile(namePrompt.innerText);
-            namePrompt.innerText = "";
-        }
+    catch (err) {
+        console.error(err);
     }
     closeDefaultScreen(editorSessions.get(fileName)?.fileElement);
     // FileContainer.innerHTML += `<span>${fileName}</span>`
@@ -1757,6 +1773,9 @@ export function copySessionLink() {
             <option value='1'>Doar cu permisiune</option>
           </select>
       </label>
+
+      <label for="sandbox" title='Daca este pornit, toate persoanele care intră vor avea fisierelelor lor, pe care doar dumneavoastra le veti putea vedea'>
+        Izolează colaboratori <input type="checkbox" name="sandbox"></label>
 
       <p class='info'>Dupa ce ati partajat editorul, sesiunea voastră v-a fi disponibilă orcărei persoane
       care are linkul, codul de 6 cifre sau codul qr.</p>
@@ -2497,8 +2516,10 @@ ws.onmessage = (event) => {
             file.editor.setMode(aceModes.getModeForPath(fileName).mode);
             file.fileElement.parentWindow.setActiveFile(file.fileElement); // we need to set the active tab before changing sessions!!
             const editor = file.fileElement.parentWindow.createEditor();
-            if (editor.session)
+            if (editor.session) {
                 editor.setSession(editorSessions.get(fileName).editor);
+                file.fileElement.content = editor.session;
+            }
             editor.setReadOnly(!client.canEdit);
         }
         if (fileContent.toString() != editorSessions.get(fileName).editor.getValue()) {
@@ -2517,16 +2538,16 @@ ws.onmessage = (event) => {
         onFileSessionUpdated(fileName, client);
         if (editorSessions.get(fileName)?.fileElement.parentWindow.editor)
             editorSessions.get(fileName)?.fileElement.onOpenTab(editorSessions.get(fileName).fileElement.parentWindow.editor.container);
-        if (['cpp', 'c++'].includes(fileName.split('.').at(-1)))
-            document.getElementById('execution')?.appendChild(createButton('pest_control.svg', { onclick: () => {
-                    window.editor.sendDebugCommand('-exec-run');
-                }, class: "debug" }));
-        else {
+        if (!['cpp', 'c++'].includes(fileName.split('.').at(-1))) {
             const debug = document.getElementsByClassName('debug');
             if (debug)
                 for (const debugElem of debug)
                     debugElem.remove();
         }
+        else if (document.getElementsByClassName('debug').length == 0)
+            document.getElementById('execution')?.appendChild(createButton('pest_control.svg', { onclick: () => {
+                    window.editor.sendDebugCommand('-exec-run');
+                }, class: "debug" }));
     }
     function createClient(clientId, displayName, color, session) {
         const client = new SessionClient(clientId, displayName, color, true);
@@ -2750,11 +2771,11 @@ ws.onmessage = (event) => {
                 updatePermissions(sessionData);
             writeOutput(messageJson.body, messageJson);
             updateCatalouge(wsSessionId, wsClientId);
-            if (!document.cookie.includes(sessionCookieName + '='))
-                document.cookie = sessionCookieName + '=';
-            setTimeout(() => {
-                document.cookie = sessionCookieName + '=' + wsSessionId + ';';
-            }, 15000);
+            // if(!document.cookie.includes(sessionCookieName+'='))
+            //   document.cookie=sessionCookieName+'='
+            // setTimeout(() => {
+            //   document.cookie = sessionCookieName+'='+wsSessionId+';' 
+            // }, 15000);
             messageJson.files.forEach((file) => {
                 onFileCreate(file);
             });
@@ -2769,6 +2790,7 @@ ws.onmessage = (event) => {
                         if (rclient.openFile.length == 0)
                             showDefaultScreen();
                         else {
+                            openFile(rclient.openFile[0]);
                             client.editorSession[0] = { fileName: rclient.openFile[0], editor: undefined, fileElement: undefined };
                             addButtons([createButton('play_arrow.svg', { onclick: () => {
                                         window.editor.sendDebugCommand('execute');
@@ -3098,11 +3120,13 @@ ws.onmessage = (event) => {
                         // else return
                         // add and remove activity markers, it calls even for own user
                         if (messageJson.oldFileName !== messageJson.fileName)
-                            if (messageJson.oldFileName !== undefined) {
+                            if (messageJson.oldFileName !== undefined && editorSessions.has(messageJson.oldFileName)) {
                                 console.log('REMOVED USER IN FileManagementCommands.Open', clients.get(messageJson.clientId).editorSession);
                                 //  clients.get(messageJson.clientId)!.editorSession!.fileElement?.removeUser(messageJson.clientId)
                                 editorSessions.get(messageJson.oldFileName).fileElement?.removeUser(messageJson.clientId);
                             }
+                        if (!editorSessions.has(fileName))
+                            return;
                         clients.get(messageJson.clientId).editorSession[editorSessions.get(fileName).fileElement.parentWindow.index] = editorSessions.get(fileName); //{fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor};
                         editorSessions.get(fileName)?.fileElement?.addUser({ name: messageJson.displayName, color: messageJson.color, id: messageJson.clientId }, messageJson.oldFileName);
                         console.log('added user: ', clients.get(messageJson.clientId).editorSession);

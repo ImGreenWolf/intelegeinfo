@@ -141,7 +141,7 @@ declare class FileElement extends EditorWindowTab {
         easing: string;
     };
     nameElement: any;
-    constructor(fileName: string, session: any, index?: number);
+    constructor(fileName: string, session: HTMLElement | Ace.EditSession | undefined, index?: number);
     getDragText: () => string | undefined;
     openTab(ev: MouseEvent): void;
     addUser(user: User, lastFileName: any): void;

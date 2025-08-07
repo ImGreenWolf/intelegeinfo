@@ -22,7 +22,7 @@ export declare class EditorWindow {
 export declare class EditorWindowTab {
     element: HTMLElement;
     parentWindow: EditorWindow;
-    content: Ace.EditSession | HTMLElement;
+    content: Ace.EditSession | HTMLElement | undefined;
     name: string;
     constructor(name: any, element: HTMLElement, content: typeof this.content, parentWindow?: EditorWindow, disableDrag?: boolean);
     getDragText: () => string | undefined;

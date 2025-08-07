@@ -587,7 +587,7 @@ export class EditorWindow {
 export class EditorWindowTab {
     element: HTMLElement;
     parentWindow!: EditorWindow;
-    content: Ace.EditSession | HTMLElement;
+    content: Ace.EditSession | HTMLElement | undefined;
     name: string;
 
     // public onDragEnd: undefined | (() => void)
