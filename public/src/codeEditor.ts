@@ -2146,9 +2146,20 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
 
           break;
         case ConsoleMessageType.Output:
-          if(document.getElementById('active-console'))
-            messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
-          messageGroup.innerHTML += `<pre class="console-program-${message.type == WebSocketMessageType.End ? "return" : message.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
+          // if(document.getElementById('active-console'))
+          //   messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
+          // messageGroup.innerHTML += `<pre class="console-program-${message.type == WebSocketMessageType.End ? "return" : message.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
+          let textArea = activeConsole?.element.getElementsByTagName('pre')[0]
+          if(!textArea)
+          {
+            textArea = createNode('pre')
+            activeConsole!.element.appendChild(textArea)
+          }
+
+          textArea.innerText += data
+            
+
+
           break;
         case ConsoleMessageType.Notification:
           displayMessagePopup(data)
