@@ -380,6 +380,7 @@ header
         justify-items: center;
         text-align: center;
         // margin: auto 0;
+        text-wrap: nowrap;
         font-size: 0.75rem;
         background-color: theme.$button-color;
         border-radius: 0.25em 0.25em 0 0;//1lh;
@@ -482,6 +483,7 @@ header
     text-align: center;
     padding: 0.5em 2em;
     transform: translate(-50%, -50%);
+    font-family: Poppins;
     z-index: 2000;
     background-color: color.adjust($color: theme.$background-color, $alpha: -0.5);
     backdrop-filter: blur(0.5em);
@@ -1126,8 +1128,7 @@ value
     text-shadow: 2px 2px 2px black;
     white-space: pre;
     cursor: pointer;
-    text-decoration: underline;
-    text-decoration-thickness: 0.01px;
+
 }
 @keyframes output-console-container {
     from {transform: scaleX(0); filter: invert(1);}
@@ -1136,20 +1137,21 @@ value
 .output-console-container
 {
     // text-align: center;
-    background-color: theme.$background-color;
+    background-color: rgb(10,10,10);
     padding: 2em;
     position: relative;
-    max-width: 75%;
+    max-width: 100%;
+    width: 85%;
     min-width: 50%;
     z-index: 2;
     transition-duration: 0.2s;
     border-radius: 0.25lh;
     // border: 2px solid theme.$border-color;
     align-self: center;
-    box-shadow: 1px 3px 20px 7px black, 0px -5px 20px 0px rgb(255 255 255 / 12%) inset;;
+    // box-shadow: 1px 3px 20px 7px black, 0px -5px 20px 0px rgb(255 255 255 / 12%) inset;;
     &#active-console
     {
-    animation: output-console-container 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95)
+        // animation: output-console-container 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95)
 
     }
     &>div
@@ -1500,11 +1502,20 @@ pointer-events: none;
     justify-content: center;
     align-content: center;
     box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px #ffffff0a;
+    font-family: 'Poppins';
     & form {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1em;
         
+    }
+    p.info
+    {
+        font-size: 0.75em;
+        line-height: 1em;
+        opacity: 0.5;
+        margin: 0;
+        margin-top: 2em;
     }
     
     #connect-data-inner
@@ -1516,6 +1527,7 @@ pointer-events: none;
         justify-content: center;
         height: 100%;
         transition: 0.2s ease-in-out;
+        
         img 
         {
             width: 75%;
@@ -1562,7 +1574,7 @@ pointer-events: none;
         display: grid;
         grid-template-columns: 1fr 1fr;
         align-items: center;
-        font-family: 'Poppins';
+        
     }
 
     #connect-data-container:not(.created) #connect-data-inner
@@ -1581,7 +1593,7 @@ pointer-events: none;
 
     #connect-data-container:not(.created)::after
     {
-        content: "<- Create session";
+        content: "<- Partajează editorul pentru a primi datele de alăturare";
         font-size: 16px;
         width: 100%;
         padding-right: 8px;
@@ -2377,4 +2389,27 @@ form#codeForm {
      background-repeat: no-repeat;
      background-size: cover;
      background-position: center;
+}
+
+
+.input-popup
+{
+    display: block;
+    padding: 1em 2em;
+    input
+    {
+        background-color: theme.$button-color;
+        border: none;
+        border-radius: 1lh;
+        line-height: 2em;
+        padding-inline: 1em;
+        color: theme.$text-color;;
+        outline: none !important;
+        margin-left: 0.5em;
+    }
+    p {
+        margin-block: 0;
+        margin-top: 1em;
+        width: 100%;
+    }
 }

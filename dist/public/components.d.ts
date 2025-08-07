@@ -23,6 +23,7 @@ export declare function createNode<K extends keyof HTMLElementTagNameMap>(tag: K
         value: string;
     } | undefined)[];
     onclick?: (ev: any) => void;
+    onchange?: (ev: any) => void;
 }): HTMLElementTagNameMap[K];
 export declare class Dock extends IElement {
     render(): HTMLDivElement;

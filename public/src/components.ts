@@ -35,7 +35,11 @@ abstract class IElement {
     
 }
 
-export function createNode<K extends keyof HTMLElementTagNameMap>(tag: K, options?: {innerText?: string, css?: string, className?: string, id?: string, html?: Node[], htmlSting?: string, attributes?: ({name: string, value: string}|undefined)[], onclick?: (ev) => void}): HTMLElementTagNameMap[K]
+export function createNode
+<K extends keyof HTMLElementTagNameMap>
+(tag: K, options?: {innerText?: string, css?: string, className?: string, id?: string, html?: Node[],
+ htmlSting?: string, attributes?: ({name: string, value: string}|undefined)[], onclick?: (ev) => void,
+onchange?: (ev) => void}): HTMLElementTagNameMap[K]
     {  
         const elem = document.createElement(tag)
         if(options)
@@ -59,6 +63,8 @@ export function createNode<K extends keyof HTMLElementTagNameMap>(tag: K, option
                 elem.innerHTML = options.htmlSting;
             if(options.onclick)
                 elem.onclick = options.onclick
+            if(options.onchange)
+                elem.onchange = options.onchange
         }       
         
 

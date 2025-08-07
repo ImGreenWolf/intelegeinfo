@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import forge from 'node-forge';
-import crypto from "crypto";
+import crypto, { randomUUID } from "crypto";
 import express, { Request, Response } from 'express';
 import bodyParser, { text } from 'body-parser';
 // import cookieParser from 'cookie-parser'
@@ -93,15 +93,6 @@ export function getIdFromJWT(req: any)
 export function addProject(id: number, data: any)
 {
     return new Promise<User> ((resolve) => {
-        // prisma.user.findFirstOrThrow({
-        //     where:
-        //     {
-        //         id
-        //     },
-        //     include: {
-        //         projects: true,
-        //       }
-        // }).then(user => {
             prisma.user.update({
                 where: 
                 {
@@ -392,21 +383,22 @@ router.post('/saveProject', authMiddleware, (req, res) => {
     console.log(saveSessionId)
     if(!sessionMap.has(saveSessionId)) return
     // sessionMap.get(saveSessionId).
+    const saveId = randomUUID()
+   if(!users.getIdFromJWT(req)) throw 'not logged in';
+            users.addProject(users.getIdFromJWT(req) as number, {  name: name, fileUUID: saveId}).then(user => {
+                 fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", saveId), {recursive: true}, (() => {
+                    try {
+                        res.status(200).json({message: "sucsess"})
+                    } catch (err: any)
+                    {
+                        if(err.code) res.status(err.code).json({message: err.message})
+                            else res.status(401).json('error: ' + err)
+                    }
+                }))
+            }).catch(err => {
+                res.status(500).json('error: ' + err)
+            })
    
-    fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", saveSessionId), {recursive: true}, (() => {
-        
-        try {
-            if(!users.getIdFromJWT(req)) throw 'not logged in';
-            users.addProject(users.getIdFromJWT(req) as number, {  name: name, fileUUID: saveSessionId});
-            res.status(200).json({message: "sucsess"})
-        } catch (err: any)
-        {
-           if(err.code) res.status(err.code).json({message: err.message})
-        else res.status(401).json('error: ' + err)
-        }
-       
-
-    }))
   });
 
 

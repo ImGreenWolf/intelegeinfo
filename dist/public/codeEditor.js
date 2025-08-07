@@ -777,29 +777,34 @@ export function displayMessagePopup(message) {
     
     `);
 }
-function createPopup(classList, seconds, innerHTML) {
-    return new Promise((resolve, reject) => {
+function createPopup(classList, seconds, innerHTML, keepVisible = false) {
+    function addPopup() {
+        const popup = createNode('div', { className: 'client-popup ' + classList, html: innerHTML });
+        document.body.appendChild(popup);
+        return popup;
+    }
+    if (keepVisible) {
         if (!innerHTML)
             return;
-        const popup = createNode('div', { className: 'client-popup ' + classList, html: innerHTML });
-        // popup.classList.add("client-popup")
-        // if(classList.split[' '])
-        //   for(const classname of classList.split[' '])
-        //     popup.classList.add(classname);
-        // popup.innerHTML = `<button class="client-popup-close">x</button><div>${innerHTML}</div>`;
-        document.body.appendChild(popup);
-        setTimeout(() => {
-            popup.animate([
-                { opacity: "100%", transform: "scale(1) translate(-50%, -50%)" },
-                { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)" },
-            ], {
-                duration: 500,
-            }).addEventListener('finish', () => {
-                popup.remove();
-                reject(popup);
-            });
-        }, 1000 * seconds);
-    });
+        return addPopup();
+    }
+    else
+        return new Promise((resolve, reject) => {
+            if (!innerHTML)
+                return;
+            const popup = addPopup();
+            setTimeout(() => {
+                popup.animate([
+                    { opacity: "100%", transform: "scale(1) translate(-50%, -50%)" },
+                    { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)" },
+                ], {
+                    duration: 500,
+                }).addEventListener('finish', () => {
+                    popup.remove();
+                    reject(popup);
+                });
+            }, 1000 * seconds);
+        });
 }
 export function displayConfirmPopup(message, confirmText = 'Accept', rejectText = 'Cancel') {
     let popup;
@@ -824,6 +829,31 @@ export function displayConfirmPopup(message, confirmText = 'Accept', rejectText 
             }).addEventListener('finish', () => {
                 res.popup.remove();
             });
+    });
+    return promise;
+}
+export function displayInputPopup(message, placeholder = '') {
+    let popup;
+    const promise = new Promise(async (resolve, reject) => {
+        popup = createPopup('input-popup', 10, [
+            createNode('button', { innerText: 'x', onclick: () => { resolve({ ok: false }); } }),
+            createNode('input', { attributes: [{ name: 'type', value: "text" }, { name: 'placeholder', value: placeholder }], onchange(ev) {
+                    resolve({ ok: true, value: ev.target.value });
+                }, }),
+            createNode('p', { innerText: message }),
+        ], true);
+    });
+    promise.then(() => {
+        // if(popup)
+        popup.animate([
+            { opacity: "100%", transform: "translate(-50%, -50%)" },
+            { opacity: "0%", transform: "translate(-50%, 0%)" },
+        ], {
+            duration: 250,
+            // easing: "ease-out"
+        }).addEventListener('finish', () => {
+            popup.remove();
+        });
     });
     return promise;
 }
@@ -1311,34 +1341,54 @@ export function saveProject() {
         return;
     fetch('../user/checkLoggedIn').then(loggedin => {
         if (loggedin.ok) {
-            namePrompt.style.display = "";
-            namePrompt.innerText = "";
-            namePrompt.focus();
-            function handleEnterKey(e) {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    fetch('/user/saveProject', {
-                        method: "POST",
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: namePrompt?.innerText, sessionId: wsSessionId })
-                    }).then(response => {
-                        if (!response.ok)
-                            if (response.status === 401)
-                                displayMessagePopup('Please log in!');
-                        // save was sucsessfull
-                        document.getElementById('active-project-name')?.classList.remove('dirty');
-                        modifiedFile = false;
-                    })
-                        .catch(err => {
-                        displayMessagePopup(err);
-                    });
-                    document.getElementById('saveProject')?.classList.add('saved');
-                    this.style.display = "none";
-                    this.innerText = "";
-                    this.removeEventListener("keypress", handleEnterKey);
-                }
-            }
-            const enterListener = namePrompt.addEventListener("keypress", handleEnterKey);
+            // namePrompt.style.display = "";
+            // namePrompt.innerText = "";
+            // namePrompt.focus();
+            // function handleEnterKey(this: HTMLElement, e: KeyboardEvent) {
+            //   if (e.key === "Enter") {
+            //     e.preventDefault();
+            //     fetch('/user/saveProject', {
+            //       method: "POST",
+            //       headers: {'Content-Type': 'application/json'},
+            //       body: JSON.stringify({name: namePrompt?.innerText, sessionId: wsSessionId})
+            //     }).then(response => {
+            //       if(!response.ok)
+            //         if(response.status === 401)
+            //           displayMessagePopup('Please log in!')
+            //       // save was sucsessfull
+            //       document.getElementById('active-project-name') ?.classList.remove('dirty')
+            //       modifiedFile = false;
+            //     })
+            //     .catch(err => {
+            //       displayMessagePopup(err);
+            //     })
+            //     document.getElementById('saveProject')?.classList.add('saved')
+            //     this.style.display = "none";
+            //     this.innerText = "";
+            //     this.removeEventListener("keypress", handleEnterKey);
+            //   }
+            // }
+            // const enterListener = namePrompt.addEventListener("keypress", handleEnterKey);
+            displayInputPopup('Ce nume vrei sa aiba proiectul tau?', 'nume').then(res => {
+                if (!res.ok)
+                    return;
+                fetch('/user/saveProject', {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: res.value, sessionId: wsSessionId })
+                }).then(response => {
+                    if (!response.ok)
+                        if (response.status === 401)
+                            displayMessagePopup('Please log in!');
+                    // save was sucsessfull
+                    document.getElementById('active-project-name')?.classList.remove('dirty');
+                    modifiedFile = false;
+                })
+                    .catch(err => {
+                    displayMessagePopup(err);
+                });
+                document.getElementById('saveProject')?.classList.add('saved');
+            });
         }
         else {
             if (loggedin.status == 401)
@@ -1404,9 +1454,12 @@ export function listProjects() {
             deleteProject.innerText = 'x';
             deleteProject.classList.add('remove-proj');
             deleteProject.onclick = () => {
-                fetch('../user/removeproject?id=' + project.id).then(res => {
-                    if (res.ok)
-                        projectElem.remove();
+                displayConfirmPopup('Vrei sa stergi acest proiect?', 'Șterge', 'Anulează').then(res => {
+                    if (res.value)
+                        fetch('../user/removeproject?id=' + project.id).then(res => {
+                            if (res.ok)
+                                projectElem.remove();
+                        });
                 });
             };
             button.innerText = project.name;
@@ -1671,16 +1724,25 @@ export function copySessionLink() {
     <form id="createSessionForm">
       <button id='close-share-session'>x</button>
 
-      <label for="chat">Porneste Chat <input type="checkbox" name="chat" checked></label>
-      <label for="voice">Porneste Voce <input type="checkbox" name="voice"></label>
-      <label for="code-permission">Editor Permission 
+      <label for="chat" title='Daca este oprit, persoanele care intră nu vor avea posibilitatea de a vorbi pe chat'>
+        Porneste Chat <input type="checkbox" name="chat" checked></label>
+
+      <label for="voice" title='Daca este pornit, veti putea comunica cu celelalte persoane prin apel vocal'>
+        Porneste Voce <input type="checkbox" name="voice"></label>
+
+      <label for="code-permission" title='Alegeti cine poate edita codul - Oricine, doar tu, sau oricui ii dati permisiunea'>
+        Editare Cod
           <select id='code-permission' name='codePermission'>
-            <option value='0'>Everyone</option>
-            <option value='2'>Only host</option>
-            <option value='1'>Require Permission</option>
+            <option value='0'>Toata lumea</option>
+            <option value='2'>Doar tu</option>
+            <option value='1'>Doar cu permisiune</option>
           </select>
       </label>
-      <button type="submit" id="submit-create-session" style='height: 2lh'>Create Session</button>
+
+      <p class='info'>Dupa ce ati partajat editorul, sesiunea voastră v-a fi disponibilă orcărei persoane
+      care are linkul, codul de 6 cifre sau codul qr.</p>
+
+      <button type="submit" id="submit-create-session" style='height: 2lh'>Partajeaza Editor</button>
       <p id='session-create-error'></p>
     </form>
     <div id='connect-data-container'>
@@ -1688,8 +1750,8 @@ export function copySessionLink() {
         <img id="data.qrurl"> 
         <p>or</p>
         <div class='connect-info'>
-          <p class='code' id="data.code">xxxxxx</p>
-          <button id='copy-link' class='icon' style="background-image: url(../media/icons/link.svg)"></button>
+          <p class='code' id="data.code" title='Codul de 6 cifre, se introduce in butonul portocaliu din bara de unelte de jos'>xxxxxx</p>
+          <button id='copy-link' class='icon' style="background-image: url(../media/icons/link.svg)" title='Copiaza linkul sesiunii de editor'></button>
         </div>
       </div>
     </div>
@@ -1880,14 +1942,14 @@ export function openFile(fileName = "main.cpp") {
 }
 // websocket //
 if (document.cookie.includes(sessionCookieName + '=') && !window.location.search.includes('save') && !window.location.search.includes(sessionCookieName)) {
-    const sesCookie = document.cookie;
-    document.cookie = sessionCookieName + '=';
-    if (!inIframe)
-        displayConfirmPopup(`Ai un proiect nesalvat,
-dorești să-l recuperezi?`, "Da", "Nu").then(res => {
-            if (res.value)
-                document.cookie = sesCookie; //'session=';
-        });
+    //   const sesCookie = document.cookie
+    //   document.cookie = sessionCookieName+'=';
+    //   if(!inIframe)
+    //   displayConfirmPopup(`Ai un proiect nesalvat,
+    // dorești să-l recuperezi?`, "Da", "Nu").then(res => {
+    //     if(res.value)
+    //       document.cookie = sesCookie //'session=';
+    //   })
 }
 export let tooltip = {};
 fetch('/editor/tooltipHints').then(data => data.json().then(json => tooltip = json));

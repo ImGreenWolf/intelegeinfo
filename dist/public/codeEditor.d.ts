@@ -113,6 +113,11 @@ export declare function displayConfirmPopup(message: any, confirmText?: string, 
     value: boolean;
     popup?: HTMLElement;
 }>;
+export declare function displayInputPopup(message: any, placeholder?: string): Promise<{
+    ok: boolean;
+    value?: string;
+    popup?: HTMLElement;
+}>;
 export declare function toggleCamera(): void;
 export declare function beautifyEditor(): void;
 export declare function undo(): void;

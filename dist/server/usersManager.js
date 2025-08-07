@@ -46,6 +46,7 @@ exports.listAllProjects = listAllProjects;
 exports.listProjects = listProjects;
 exports.getClientId = getClientId;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const crypto_1 = require("crypto");
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 // import cookieParser from 'cookie-parser'
@@ -109,15 +110,6 @@ function getIdFromJWT(req) {
 }
 function addProject(id, data) {
     return new Promise((resolve) => {
-        // prisma.user.findFirstOrThrow({
-        //     where:
-        //     {
-        //         id
-        //     },
-        //     include: {
-        //         projects: true,
-        //       }
-        // }).then(user => {
         dbClient_1.default.user.update({
             where: {
                 id
@@ -314,20 +306,24 @@ exports.router.post('/saveProject', server_1.authMiddleware, (req, res) => {
     if (!server_1.sessionMap.has(saveSessionId))
         return;
     // sessionMap.get(saveSessionId).
-    fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", saveSessionId), { recursive: true }, (() => {
-        try {
-            if (!users.getIdFromJWT(req))
-                throw 'not logged in';
-            users.addProject(users.getIdFromJWT(req), { name: name, fileUUID: saveSessionId });
-            res.status(200).json({ message: "sucsess" });
-        }
-        catch (err) {
-            if (err.code)
-                res.status(err.code).json({ message: err.message });
-            else
-                res.status(401).json('error: ' + err);
-        }
-    }));
+    const saveId = (0, crypto_1.randomUUID)();
+    if (!users.getIdFromJWT(req))
+        throw 'not logged in';
+    users.addProject(users.getIdFromJWT(req), { name: name, fileUUID: saveId }).then(user => {
+        fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", saveId), { recursive: true }, (() => {
+            try {
+                res.status(200).json({ message: "sucsess" });
+            }
+            catch (err) {
+                if (err.code)
+                    res.status(err.code).json({ message: err.message });
+                else
+                    res.status(401).json('error: ' + err);
+            }
+        }));
+    }).catch(err => {
+        res.status(500).json('error: ' + err);
+    });
 });
 exports.router.get('/loadProject/:id', server_1.authMiddleware, (req, res) => {
     const id = parseInt(req.params.id);

@@ -40,6 +40,8 @@ export function createNode(tag, options) {
             elem.innerHTML = options.htmlSting;
         if (options.onclick)
             elem.onclick = options.onclick;
+        if (options.onchange)
+            elem.onchange = options.onchange;
     }
     return elem;
 }
