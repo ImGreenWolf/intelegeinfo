@@ -17,10 +17,11 @@ declare class Console {
     event: Event;
     compileMessage: HTMLDivElement | undefined;
     noVNC: HTMLIFrameElement | undefined;
-    consoleInput: HTMLTextAreaElement;
+    consoleInput: HTMLTextAreaElement | undefined;
     constructor();
     onCompileStart(message?: string): void;
     onProcessStart(): void;
+    onProcessEnd(): void;
     callbackCreate(callerConsole: Console): void;
     sendCommand(cmd: string): void;
 }

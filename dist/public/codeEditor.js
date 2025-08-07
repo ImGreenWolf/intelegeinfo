@@ -100,8 +100,6 @@ class Console {
         };
         thisConsole.appendChild(resendButton);
         this.element = thisConsole;
-        this.consoleInput = document.createElement('textarea');
-        thisConsole.appendChild(this.consoleInput);
         this.onCompileStart();
     }
     onCompileStart(message = 'Comunicating with server') {
@@ -111,6 +109,14 @@ class Console {
     onProcessStart() {
         if (this.compileMessage)
             this.compileMessage.remove();
+        this.consoleInput = document.createElement('textarea');
+        this.element.appendChild(this.consoleInput);
+    }
+    onProcessEnd() {
+        if (this.consoleInput)
+            this.consoleInput.remove();
+        this.compileMessage?.remove();
+        this.element.id = '';
     }
     callbackCreate(callerConsole) {
         callerConsole.stdin = this.stdin;
@@ -2891,6 +2897,8 @@ ws.onmessage = (event) => {
                             if (document.getElementById('console-input'))
                                 document.getElementById('console-input')?.remove();
                             const console = activeConsole.consoleInput;
+                            if (!console)
+                                return;
                             console.id = 'console-input';
                             activeConsole?.element.appendChild(console);
                             activeConsole.element.onclick = (ev) => console.focus();
@@ -2898,6 +2906,7 @@ ws.onmessage = (event) => {
                                 if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
                                     e.preventDefault();
                                     submitConsole(console, WebSocketMessageType.Console, activeConsole);
+                                    console.innerText = '';
                                     // console.remove()
                                 }
                             });
@@ -3289,9 +3298,7 @@ function onExit() {
     codeWindow.getEditor().session.removeMarker(lastDebugId);
     document.getElementById('buttons')?.classList.remove('executing');
     document.getElementById('execute-control').innerText = "Executa Programul";
-    activeConsole?.compileMessage?.remove();
-    if (document.getElementById('active-console'))
-        document.getElementById('active-console').id = '';
+    activeConsole?.onProcessEnd();
     activeConsole = undefined;
 }
 function setDebugLineStyle(lineIndex) {

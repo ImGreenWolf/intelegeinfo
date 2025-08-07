@@ -131,7 +131,7 @@ class Console {
   event = new Event("open");
   compileMessage: HTMLDivElement | undefined
   noVNC: HTMLIFrameElement | undefined
-  consoleInput: HTMLTextAreaElement
+  consoleInput: HTMLTextAreaElement | undefined
   constructor () {
     if(outputConsoles.length>0)
       outputConsoles[outputConsoles.length-1].callbackCreate(this)
@@ -161,9 +161,7 @@ class Console {
     }
     thisConsole.appendChild(resendButton);
     this.element = thisConsole
-     
-    this.consoleInput = document.createElement('textarea')as HTMLTextAreaElement;
-    thisConsole.appendChild(this.consoleInput)
+    
 
     this.onCompileStart()
 
@@ -178,7 +176,20 @@ class Console {
   {
     if(this. compileMessage)
       this.compileMessage.remove()
+
+    this.consoleInput = document.createElement('textarea')as HTMLTextAreaElement;
+    this.element.appendChild(this.consoleInput)
   }
+
+  public onProcessEnd()
+  {
+    if(this.consoleInput)
+      this.consoleInput.remove()
+    this.compileMessage?.remove()
+
+    this.element.id = '';
+  }
+
   public callbackCreate(callerConsole: Console) {
     callerConsole.stdin = this.stdin;
   }
@@ -3849,6 +3860,8 @@ break;
                 document.getElementById('console-input')?.remove();
               
               const console = activeConsole!.consoleInput
+              if(!console)
+                return
               console.id = 'console-input'
               activeConsole?.element.appendChild(console) 
               activeConsole!.element.onclick = (ev) => console.focus()
@@ -3858,6 +3871,7 @@ break;
                   e.preventDefault();
 
                   submitConsole(console, WebSocketMessageType.Console, activeConsole)
+                  console.innerText = ''
                   // console.remove()
                 }
               });
@@ -4350,10 +4364,10 @@ function onExit() {
 
 
 
-  activeConsole?.compileMessage?.remove()
+  
+  activeConsole?.onProcessEnd()
 
-  if(document.getElementById('active-console'))
-    document.getElementById('active-console')!.id = '';
+  
   activeConsole = undefined
 }
 
