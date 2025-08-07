@@ -109,6 +109,8 @@ class Console {
     onProcessStart() {
         if (this.compileMessage)
             this.compileMessage.remove();
+        if (this.consoleInput)
+            return;
         this.consoleInput = document.createElement('textarea');
         this.element.appendChild(this.consoleInput);
     }
@@ -2931,6 +2933,8 @@ ws.onmessage = (event) => {
                                 activeConsole.compileMessage.remove();
                             else
                                 activeConsole.compileMessage.children[1].innerHTML = messageJson.body;
+                    if (activeConsole)
+                        activeConsole.onProcessStart();
                     document.getElementById('compile-status').innerText = messageJson.body;
                     document.getElementById('compile-status').style.opacity = '1';
                     setTimeout(() => {
