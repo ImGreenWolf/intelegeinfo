@@ -3840,8 +3840,8 @@ break;
               
               const console = document.createElement('textarea')as HTMLTextAreaElement;
               console.id = 'console-input'
-              document.querySelector('#active-console')?.appendChild(console) 
-
+              activeConsole?.element.appendChild(console) 
+              activeConsole!.element.onclick = (ev) => console.focus()
               console.addEventListener("keypress", (e: KeyboardEvent) => {
                 
                 if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
