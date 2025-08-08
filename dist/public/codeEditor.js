@@ -524,7 +524,7 @@ class DebugWindow {
         const vars = [];
         for (const [varName, varVal] of this.procVariables.entries()) {
             if (Array.isArray(varVal))
-                vars.push(createNode('li', { innerText: `${varName}: ${varVal.map(val => `<span>${val}</span>`).join(' ')}` }));
+                vars.push(createNode('li', { htmlSting: `${varName}: ${varVal.map(val => `<span>${val}</span>`).join(' ')}` }));
             else
                 vars.push(createNode('li', { innerText: `${varName}: ${varVal}` }));
         }
