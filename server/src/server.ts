@@ -2811,7 +2811,8 @@ const defaultLang = 'ro-RO'
  })
 export function parseText(file: string, req)
 {
-    
+    if(!req || !req.cookies)
+        return file;
     if(!translation)
         throw 'invalid translation json'
     const matches = file.matchAll(/\^{[%&](.*)}/g)

@@ -2229,6 +2229,8 @@ fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'server', 'data',
     console.log('translations loaded, bytes:', data.byteLength);
 });
 function parseText(file, req) {
+    if (!req || !req.cookies)
+        return file;
     if (!translation)
         throw 'invalid translation json';
     const matches = file.matchAll(/\^{[%&](.*)}/g);
