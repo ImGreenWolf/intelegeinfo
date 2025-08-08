@@ -36,6 +36,7 @@ model User {
   picture String @default("default")
   role Role @default(USER)
   createdAt DateTime @default(now())
+  activeAt DateTime @default(now())
   password String 
   loginMethod String @default("local")
   projects Project[]

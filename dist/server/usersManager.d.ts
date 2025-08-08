@@ -22,6 +22,7 @@ export declare function addProject(id: number, data: any): Promise<{
     picture: string;
     role: import("../../generated/prisma").$Enums.Role;
     createdAt: Date;
+    activeAt: Date;
     password: string;
     loginMethod: string;
 }>;
