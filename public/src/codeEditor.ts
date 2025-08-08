@@ -174,8 +174,8 @@ class Console {
   }
   public onProcessStart()
   {
-    // if(this.compileMessage)
-    //   this.compileMessage.remove()
+    if(this.compileMessage)
+      this.compileMessage.remove()
     if(this.consoleInput )
       return
     this.consoleInput = document.createElement('textarea')as HTMLTextAreaElement;
@@ -3923,11 +3923,11 @@ break;
           if(activeConsole)
             if( activeConsole.compileMessage)
               if(!messageJson.body)
-                  activeConsole.compileMessage.remove()
+                  activeConsole.onProcessStart()
                 else
                   activeConsole.compileMessage.children[1].innerHTML = messageJson.body
               if(activeConsole)
-          activeConsole.onProcessStart()
+          
          
 
           document.getElementById('compile-status')!.innerText = messageJson.body;
