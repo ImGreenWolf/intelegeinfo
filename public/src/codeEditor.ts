@@ -2179,14 +2179,15 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
           textArea.innerHTML += data
           break;
         case ConsoleMessageType.DebugProgram:
-          const groupDebug = outputArea.querySelector(
-            `.debug-program[msg-id="${msgId}"] .debug-program-container`
-          ) as HTMLElement;
-          if (groupDebug)
-            groupDebug.innerHTML += `<span class="console-debug">${msgText}</span>`;
-          else
-            outputArea.innerHTML += `<div class="debug-program" msg-id="${msgId}"><button onclick="toggleConsoleDebugProgram(this.parentElement)">x</button><div class="debug-program-container"></div></div>`;
-
+          // const groupDebug = outputArea.querySelector(
+          //   `.debug-program[msg-id="${msgId}"] .debug-program-container`
+          // ) as HTMLElement;
+          // if (groupDebug)
+          //   groupDebug.innerHTML += `<span class="console-debug">${msgText}</span>`;
+          // else
+          //   outputArea.innerHTML += `<div class="debug-program" msg-id="${msgId}"><button onclick="toggleConsoleDebugProgram(this.parentElement)">x</button><div class="debug-program-container"></div></div>`;
+          if(textArea)
+          textArea.innerHTML += data
           break;
         case ConsoleMessageType.Output:
           // if(document.getElementById('active-console'))
@@ -4354,7 +4355,7 @@ function onRun() {
     {
       activeConsole = spawnConsole()
       activeConsole.element.parentElement!.scrollTop =activeConsole.element.parentElement!.scrollHeight;
-      
+      console.error('skjskjskjs console')
     }
 
   // activeConsole.compileMessage?.remove()
