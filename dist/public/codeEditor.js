@@ -2645,6 +2645,7 @@ ws.onmessage = (event) => {
                                 window.editor.sendDebugCommand('-exec-next');
                             }, class: "debug" })], 'debug-exec-controls');
                     onRun();
+                    activeConsole?.onProcessStart();
                     break;
                 case "running":
                     handleOutput(messageJson);

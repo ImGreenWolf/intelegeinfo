@@ -3495,7 +3495,8 @@ break;
           addButtons([createButton('step_over.svg', {onclick: () => {
             window.editor.sendDebugCommand('-exec-next')
         }, class: "debug"})], 'debug-exec-controls')
-        onRun()
+         onRun()
+         activeConsole?.onProcessStart()
           break;
         case "running":
           handleOutput(messageJson);
