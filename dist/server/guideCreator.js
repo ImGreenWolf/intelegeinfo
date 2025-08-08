@@ -32,7 +32,7 @@ const htmlHead = (title = 'intelege info', req, desc, keywords) => (0, server_1.
     <link rel="stylesheet" href="/css/guides.css">
    
     </head>
-   
+   <body>
     ^{&file:_header.html}
     
     `, req);
@@ -45,13 +45,7 @@ router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
         }
     }).then(guide => {
         const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-       
- </head>
+<html lang="en-US, en, ro, ro-RO">
     <style>
         #main {
             display: flex;
@@ -86,7 +80,7 @@ router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
         }
     </style>
      
-<body>
+
 ${htmlHead(guide.name, req, guide.description, guide.category)}
     <div id='main'>
         <form action="../../submit" method="post">
@@ -245,7 +239,7 @@ async function postsRequest(guideEntries, req, res, error) {
     const tags = await dbClient_1.default.tag.findMany({
         take: 6
     });
-    let text = `
+    let text = `<head>
     ${htmlHead('Resurse', req, 'Descopera resursele intelegeinfo!')}
     <link rel="stylesheet" href="/css/resources.css">
     <div id='guides'>
@@ -257,7 +251,7 @@ async function postsRequest(guideEntries, req, res, error) {
     const id = (0, usersManager_1.getIdFromJWT)(req);
     const user = id ? await (0, usersManager_1.getUserData)((0, usersManager_1.getIdFromJWT)(req)) : undefined;
     const hasPermission = user ? user.role == 'ADMIN' : false;
-    if (!error || guideEntries) {
+    if (!error && guideEntries) {
         for (const guide of guideEntries)
             text += `<li>${guide.html}</li>\n`;
         text += `</ul></div>
@@ -363,7 +357,7 @@ router.post('/submit', (req, res) => {
             }
         }
     }).then(guide => {
-        res.send(`${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
+        res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
     }).catch((err) => {
         console.log(err);
         try {
@@ -389,7 +383,7 @@ router.post('/submit', (req, res) => {
                     }
                 }
             }).then((guide) => {
-                res.send(`${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
+                res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
             }).catch(err => {
                 res.status(500).send("Failed to create guide. Please make sure you're logged in. Otherwise submit a bug report");
                 console.error("Guide error:", err);
@@ -444,8 +438,9 @@ router.get('/post/:name', (req, res) => {
             else
                 //                        <button onclick="fetch('${value.name}/like')">like</button>
                 // <button onclick="fetch('${value.name}/deslike')">deslike</button>
-                res.send(htmlHead(value.name, req, value.description, value.category) +
-                    `
+                res.send(`
+                <head>${htmlHead(value.name, req, value.description, value.category)} 
+                
               
 
                 <article> 

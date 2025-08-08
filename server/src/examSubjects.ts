@@ -227,21 +227,21 @@ router.get('/', async (req, res) => {
     <link rel="stylesheet" href="/css/subjects.css">
     
     </head>
-    
-    ${parseText('^{&file:_header.html}', req)}
+    <body>
+    ^{&file:_header.html}
 
         
     <div id='grid'>
     ${grid}
     </div>
-    
+    </body>
     
     
     `
 
 
 
-    res.status(200).send(html)
+    res.status(200).send(parseText(html, req))
 })
 
 

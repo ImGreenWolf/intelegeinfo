@@ -193,18 +193,18 @@ router.get('/', async (req, res) => {
     <link rel="stylesheet" href="/css/subjects.css">
     
     </head>
-    
-    ${(0, server_1.parseText)('^{&file:_header.html}', req)}
+    <body>
+    ^{&file:_header.html}
 
         
     <div id='grid'>
     ${grid}
     </div>
-    
+    </body>
     
     
     `;
-    res.status(200).send(html);
+    res.status(200).send((0, server_1.parseText)(html, req));
 });
 const formatName = (filename, split = false) => {
     const params = (split ? filename.split('.')[0] : filename)
