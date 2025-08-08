@@ -132,27 +132,14 @@ class CPPDebugger extends ProcessTypes_1.default {
     };
     process;
     clientSession;
-    inferiorProcess;
     constructor(res, clientObj, clientSession) {
         super();
         this.clientSession = clientSession;
-        this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, 'bash', '-c', 'pts=$(mktemp -u /dev/pts/XXX) &&', "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+        this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
         clientSession.replicateFunction((clientWs, id, clientObj) => {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
         });
-        // this.inferiorProcess = spawn("docker", ['exec', '-it', res.imageName, 'bash', '-c', "tty"], {stdio: 'pipe'})
-        // this.inferiorProcess.on('spawn', () => {
-        // })
-        this.process.stdin.write("shell tty\n");
-        this.process.stdin.write("set inferior-tty /dev/pts/1\n");
-        setTimeout(() => {
-            (0, child_process_1.spawn)("docker", [
-                "exec", "mycontainer",
-                "bash", "-c", "echo 'Hello from Node!' > /dev/pts/1"
-            ]);
-            console.log('wrote output !!!!!!!!!');
-        }, 10000);
     }
 }
 exports.default = CppMode;

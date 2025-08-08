@@ -25,7 +25,6 @@ declare class CPPDebugger extends DebugProcess {
     addListener: (ev: any, func: (code: any) => void) => void;
     process: ChildProcess;
     clientSession: EditorSession;
-    inferiorProcess: ChildProcess;
     constructor(res: any, clientObj: ClientObject, clientSession: EditorSession);
 }
 export default CppMode;
