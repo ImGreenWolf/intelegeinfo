@@ -506,14 +506,27 @@ class DebugWindow {
             return;
         this.procVariables = new Map();
         for (const variable of variables) {
-            this.procVariables.set(variable.name, variable.value);
+            let value = variable.value;
+            if (variable.value.startsWith('{') && variable.value.endsWith('}')) {
+                // is an array
+                const valString = variable.value.substring(1, variable.value.length - 1);
+                if (valString.endsWith('...'))
+                    value = valString.substring(0, valString.length - 3);
+                else
+                    value = valString;
+                value = value.split(',').map(val => val.trim());
+            }
+            this.procVariables.set(variable.name, value);
         }
         this.displayVariables();
     }
     displayVariables() {
         const vars = [];
         for (const [varName, varVal] of this.procVariables.entries()) {
-            vars.push(`<li>${varName}: ${varVal}</li>`);
+            if (Array.isArray(varVal))
+                vars.push(createNode('li', { innerText: `${varName}: ${varVal.map(val => '<span>${val}</span>').join(' ')}` }));
+            else
+                vars.push(createNode('li', { innerText: `${varName}: ${varVal}` }));
         }
         this.varList.replaceChildren(vars.join('\n'));
     }

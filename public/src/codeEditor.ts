@@ -660,10 +660,11 @@ if(DockElement)
 let rtc: Map<UUID, IIWebRTC> = new Map()
 
 
+type DebugVariable = string | number | Array<string | number | object> | object
 
 
 class DebugWindow {
-  procVariables: Map<string, string | number | Array<string | number | object> | object> = new Map()
+  procVariables: Map<string, DebugVariable> = new Map()
   mainContainer: HTMLDivElement 
   varList: HTMLUListElement
   constructor() {
@@ -671,7 +672,7 @@ class DebugWindow {
     this.mainContainer = createNode('div', {html: [this.varList]})
   }
 
-  public updateVariables(variables)
+  public updateVariables(variables: {name: string, value: string}[])
   {
     if(!variables)
       return;
@@ -680,7 +681,21 @@ class DebugWindow {
 
     for(const variable of variables)
     {
-      this.procVariables.set(variable.name, variable.value)
+      let value: DebugVariable = variable.value
+      if(variable.value.startsWith('{') && variable.value.endsWith('}'))
+      {
+        // is an array
+        const valString = variable.value.substring(1, variable.value.length-1)
+         if(valString.endsWith('...'))
+          value = valString.substring(0, valString.length-3)
+        else 
+          value = valString
+
+        value = value.split(',').map(val => val.trim())
+      
+      }
+       
+      this.procVariables.set(variable.name, value)
     }
 
     this.displayVariables()
@@ -688,10 +703,13 @@ class DebugWindow {
 
   private displayVariables()
   {
-    const vars: string[] = []
+    const vars: HTMLElement[] = []
     for(const [varName, varVal] of this.procVariables.entries())
     {
-      vars.push(`<li>${varName}: ${varVal}</li>`)
+      if(Array.isArray(varVal))
+        vars.push(createNode('li', {innerText: `${varName}: ${varVal.map(val => '<span>${val}</span>').join(' ')}`}))
+      else
+        vars.push(createNode('li', {innerText: `${varName}: ${varVal}`}))
     }
     this.varList.replaceChildren(vars.join('\n'))
   }
