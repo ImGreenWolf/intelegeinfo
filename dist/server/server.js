@@ -1628,12 +1628,18 @@ bash `.trim().replaceAll('\n', "");
                         break;
                     case types_1.WebSocketMessageType.Console:
                         if (getProcessFromMap() != undefined) {
-                            if (!getProcessFromMap().stdin)
-                                return;
-                            getProcessFromMap().stdin.write(messageJSON.command + "\n");
-                            dataTimeout = setTimeout(() => {
+                            if (getProcessFromMap().sendCommand) {
+                                getProcessFromMap().sendCommand(messageJSON.command);
                                 replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
-                            }, 200);
+                            }
+                            else {
+                                if (!getProcessFromMap().stdin)
+                                    return;
+                                getProcessFromMap().stdin.write(messageJSON.command + "\n");
+                                dataTimeout = setTimeout(() => {
+                                    replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
+                                }, 200);
+                            }
                         }
                         else
                             processInputBuffer += messageJSON.command + "\n";

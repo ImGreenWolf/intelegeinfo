@@ -2025,12 +2025,21 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 case WebSocketMessageType.Console:
                      if(getProcessFromMap()!=undefined)
                      {
-                        if(!(getProcessFromMap() as ChildProcess).stdin)
+                        if((getProcessFromMap() as DebugProcess).sendCommand)
+                        {
+                            (getProcessFromMap() as DebugProcess).sendCommand(messageJSON.command)
+                             replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
+                        }
+                        else
+                        {   
+                             if(!(getProcessFromMap() as ChildProcess).stdin)
                             return
-                        (getProcessFromMap() as ChildProcess).stdin.write(messageJSON.command + "\n");
-                        dataTimeout = setTimeout(() => {
-                            replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
-                        }, 200);
+                            (getProcessFromMap() as ChildProcess).stdin.write(messageJSON.command + "\n");
+                            dataTimeout = setTimeout(() => {
+                                replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
+                            }, 200);
+                        }
+                       
                      }
                      else
                         processInputBuffer += messageJSON.command + "\n";
