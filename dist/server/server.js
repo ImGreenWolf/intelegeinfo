@@ -1006,18 +1006,27 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
         }
         const onData = (data) => {
-            const buffer = data.toString('utf8');
+            const buffer = sanitizeGdbOutput(data);
             console.log(buffer);
             // Check if the full response has arrived
+            function sanitizeGdbOutput(buf) {
+                // Always work with a Buffer
+                if (!Buffer.isBuffer(buf))
+                    buf = Buffer.from(buf);
+                return buf.toString('utf8')
+                    // Replace NUL with \0
+                    .replace(/\x00/g, '\\0')
+                    // Replace other control chars (except \n, \r, \t) with hex escapes
+                    .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, c => '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0'));
+            }
             if (!buffer)
                 return;
-            if (buffer.indexOf('\0') !== -1)
-                return false;
-            const nonPrint = (buffer.match(/\\\\/g) || []).length;
-            // If more than 1% non-printable, treat as binary
-            console.log(nonPrint, Math.max(1, buffer.length));
-            if (nonPrint / Math.max(1, buffer.length) > 0.01)
-                return;
+            // if (buffer.indexOf('\0') !== -1) return false;
+            // const nonPrint = (buffer.match(/\\\\/g) || []).length;
+            // // If more than 1% non-printable, treat as binary
+            // console.log(nonPrint, Math.max(1, buffer.length))
+            // if(nonPrint / Math.max(1, buffer.length) > 0.01)
+            //     return 
             if (true) {
                 // We have everything, remove listener
                 // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
