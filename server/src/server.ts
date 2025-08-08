@@ -1283,7 +1283,8 @@ function endConnectionPromise()
                 const buffer = data.toString('utf8');
                 console.log(buffer)
                 // Check if the full response has arrived
-                if(!buffer.toString())
+                if (buffer.indexOf('\0') !== -1) return false;
+                if(!buffer)
                     return
 
                 if (true) {
