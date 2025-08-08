@@ -711,7 +711,7 @@ class DebugWindow {
       else
         vars.push(createNode('li', {innerText: `${varName}: ${varVal}`}))
     }
-    this.varList.replaceChildren(vars.join('\n'))
+    this.varList.replaceChildren(...vars)
   }
 }
 
