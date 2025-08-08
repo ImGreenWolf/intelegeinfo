@@ -636,8 +636,7 @@ let activeClientArea = outputArea!
 const outputConsoles: Console[] = [];
 let activeConsole: Console|undefined;
 let contextMenu: HTMLDivElement;
-let parsedCode: ReturnType<typeof parseCode>;
-let stepint;
+let debugWindow: DebugWindow
 let isColabSession=true;
 let lastEventJson;
 let session: SessionInfo | undefined;
@@ -661,6 +660,42 @@ if(DockElement)
 let rtc: Map<UUID, IIWebRTC> = new Map()
 
 
+
+
+class DebugWindow {
+  procVariables: Map<string, string | number | Array<string | number | object> | object> = new Map()
+  mainContainer: HTMLDivElement 
+  varList: HTMLUListElement
+  constructor() {
+    this.varList = createNode('ul')
+    this.mainContainer = createNode('div', {html: [this.varList]})
+  }
+
+  public updateVariables(variables)
+  {
+    if(!variables)
+      return;
+
+    this.procVariables = new Map()
+
+    for(const variable of variables)
+    {
+      this.procVariables.set(variable.name, variable.value)
+    }
+
+    this.displayVariables()
+  }
+
+  private displayVariables()
+  {
+    const vars: string[] = []
+    for(const [varName, varVal] of this.procVariables.entries())
+    {
+      vars.push(`<li>${varName}: ${varVal}</li>`)
+    }
+    this.varList.replaceChildren(vars.join('\n'))
+  }
+}
 
 class CodeWindow extends EditorWindow {
 
@@ -3070,7 +3105,8 @@ ws.onmessage = (event) => {
         for (const match of debugLineText.matchAll(forRegex)) {
           conditions.push(match[2].trim());
         }
-
+        if(debugWindow)
+          debugWindow.updateVariables(eventJson.variables)
         // setTimeout(() => {
         let i = 1;
         if (playbackSpeed < 4)
@@ -3514,6 +3550,8 @@ break;
          
          activeConsole?.onProcessStart()
          writeOutput('Started debug session', null, ConsoleMessageType.Debug)
+        debugWindow = new DebugWindow()
+         windows[1].addTab(createEditorTab('Debug', debugWindow ))
           break;
         case "running":
           handleOutput(messageJson);

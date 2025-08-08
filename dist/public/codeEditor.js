@@ -5,7 +5,7 @@
 import { createButton, createNode, EditorCanvas, LoadingThrobber, Toolbox } from "./components";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
-import { cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updateCatalouge } from "./windowManager.js";
+import { createEditorTab, cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updateCatalouge } from "./windowManager.js";
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
 const sessionCookieName = 'editor_session_id';
@@ -475,8 +475,7 @@ let activeClientArea = outputArea;
 const outputConsoles = [];
 let activeConsole;
 let contextMenu;
-let parsedCode;
-let stepint;
+let debugWindow;
 let isColabSession = true;
 let lastEventJson;
 let session;
@@ -494,6 +493,31 @@ let microphonePaused = true;
 if (DockElement)
     document.getElementsByClassName('container')[0].appendChild(DockElement);
 let rtc = new Map();
+class DebugWindow {
+    procVariables = new Map();
+    mainContainer;
+    varList;
+    constructor() {
+        this.varList = createNode('ul');
+        this.mainContainer = createNode('div', { html: [this.varList] });
+    }
+    updateVariables(variables) {
+        if (!variables)
+            return;
+        this.procVariables = new Map();
+        for (const variable of variables) {
+            this.procVariables.set(variable.name, variable.value);
+        }
+        this.displayVariables();
+    }
+    displayVariables() {
+        const vars = [];
+        for (const [varName, varVal] of this.procVariables.entries()) {
+            vars.push(`<li>${varName}: ${varVal}</li>`);
+        }
+        this.varList.replaceChildren(vars.join('\n'));
+    }
+}
 class CodeWindow extends EditorWindow {
     constructor() {
         super(0, document.getElementById("editor-container"), document.getElementById("editor-tabs-container"), document.getElementById("code-window-container"));
@@ -2318,6 +2342,8 @@ ws.onmessage = (event) => {
                 for (const match of debugLineText.matchAll(forRegex)) {
                     conditions.push(match[2].trim());
                 }
+                if (debugWindow)
+                    debugWindow.updateVariables(eventJson.variables);
                 // setTimeout(() => {
                 let i = 1;
                 if (playbackSpeed < 4)
@@ -2662,6 +2688,8 @@ ws.onmessage = (event) => {
                             }, class: "debug" })], 'debug-exec-controls');
                     activeConsole?.onProcessStart();
                     writeOutput('Started debug session', null, ConsoleMessageType.Debug);
+                    debugWindow = new DebugWindow();
+                    windows[1].addTab(createEditorTab('Debug', debugWindow));
                     break;
                 case "running":
                     handleOutput(messageJson);
