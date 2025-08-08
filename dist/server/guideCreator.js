@@ -18,7 +18,7 @@ const options = {
     day: "numeric",
 };
 const router = express_1.default.Router();
-const htmlHead = (title = 'intelege info', desc, keywords) => `<head>
+const htmlHead = (title = 'intelege info', req, desc, keywords) => (0, server_1.parseText)(`<head>
     <meta charset="UTF-8">
     <meta name="description" content="${desc}">
     <meta name="keywords" content="${keywords}">
@@ -32,30 +32,10 @@ const htmlHead = (title = 'intelege info', desc, keywords) => `<head>
     <link rel="stylesheet" href="/css/guides.css">
    
     </head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-D9ZPLVG5XF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-D9ZPLVG5XF');
-</script>
-
-    <header2>
-            <h2>Intelegeinfo</h2>
-            <nav>
-                <ul>
-                    <li><a href="/">Acasa</a></li>
-                    <li><a href="/editor">Editor</a></li>
-                    <li><a href="/guides">Resurse</a></li>
-                    <li><a href="/subiecte">Subiecte</a></li>
-                </ul>
-            </nav>
-            
-        </header2>
+   
+    ^{&file:_header.html}
     
-    `;
+    `, req);
 router.use('/guideCreator', express_1.default.static(path_1.default.join(rootDirName, "/public", "problems", "guideCreator.html")));
 router.get('/guideCreator/load/', express_1.default.static(path_1.default.join(rootDirName, "/public", "problems", "guideCreator.html")));
 router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
@@ -107,7 +87,7 @@ router.get('/guideCreator/load/:name', server_1.authMiddleware, (req, res) => {
     </style>
      
 <body>
-${htmlHead(guide.name, guide.description, guide.category)}
+${htmlHead(guide.name, req, guide.description, guide.category)}
     <div id='main'>
         <form action="../../submit" method="post">
             <input type="text" name="gname" id="gname" value="${guide.name}">
@@ -266,7 +246,7 @@ async function postsRequest(guideEntries, req, res, error) {
         take: 6
     });
     let text = `
-    ${htmlHead('Resurse', 'Descopera resursele intelegeinfo!')}
+    ${htmlHead('Resurse', req, 'Descopera resursele intelegeinfo!')}
     <link rel="stylesheet" href="/css/resources.css">
     <div id='guides'>
         <div>
@@ -383,7 +363,7 @@ router.post('/submit', (req, res) => {
             }
         }
     }).then(guide => {
-        res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
+        res.send(`${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
     }).catch((err) => {
         console.log(err);
         try {
@@ -409,7 +389,7 @@ router.post('/submit', (req, res) => {
                     }
                 }
             }).then((guide) => {
-                res.send(`${htmlHead(guide.name, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
+                res.send(`${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Uploaded ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
             }).catch(err => {
                 res.status(500).send("Failed to create guide. Please make sure you're logged in. Otherwise submit a bug report");
                 console.error("Guide error:", err);
@@ -464,7 +444,7 @@ router.get('/post/:name', (req, res) => {
             else
                 //                        <button onclick="fetch('${value.name}/like')">like</button>
                 // <button onclick="fetch('${value.name}/deslike')">deslike</button>
-                res.send(htmlHead(value.name, value.description, value.category) +
+                res.send(htmlHead(value.name, req, value.description, value.category) +
                     `
               
 

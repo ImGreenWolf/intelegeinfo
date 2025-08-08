@@ -192,26 +192,8 @@ router.get('/', async (req, res) => {
     <link rel="stylesheet" href="/css/subjects.css">
     
     </head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D9ZPLVG5XF"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-D9ZPLVG5XF');
-    </script>
-
-    <header2>
-            <h2>Intelegeinfo</h2>
-            <nav>
-                <ul>
-                    <li><a href="/">Pornire</a></li>
-                    <li><a href="/editor">Editor</a></li>
-                    <li><a href="/guides">Resurse</a></li>
-                    <li><a href="/subiecte">Subiecte</a></li>
-                </ul>
-            </nav>
-        </header2>
+    
+    ^{&file:_header.html}
 
         
     <div id='grid'>
@@ -221,7 +203,7 @@ router.get('/', async (req, res) => {
     
     
     `;
-    res.status(200).send(html);
+    res.status(200).send((0, server_1.parseText)(html, req));
 });
 const formatName = (filename, split = false) => {
     const params = (split ? filename.split('.')[0] : filename)
