@@ -2644,6 +2644,7 @@ ws.onmessage = (event) => {
                     addButtons([createButton('step_over.svg', { onclick: () => {
                                 window.editor.sendDebugCommand('-exec-next');
                             }, class: "debug" })], 'debug-exec-controls');
+                    onRun();
                     break;
                 case "running":
                     handleOutput(messageJson);
