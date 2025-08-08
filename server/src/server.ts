@@ -1298,6 +1298,8 @@ function endConnectionPromise()
                 
                 if(!buffer)
                     return
+                console.log(buffer)
+                return
                 // if (buffer.indexOf('\0') !== -1) return false;
 
                 // const nonPrint = (buffer.match(/\\\\/g) || []).length;

@@ -1021,6 +1021,8 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
             if (!buffer)
                 return;
+            console.log(buffer);
+            return;
             // if (buffer.indexOf('\0') !== -1) return false;
             // const nonPrint = (buffer.match(/\\\\/g) || []).length;
             // // If more than 1% non-printable, treat as binary
