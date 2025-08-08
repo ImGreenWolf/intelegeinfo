@@ -3495,7 +3495,7 @@ break;
           document.getElementById('debug-exec-controls')?.remove()
           break
         case "start":
-          writeOutput('Started debug session', null, ConsoleMessageType.Debug)
+          // writeOutput('Started debug session', null, ConsoleMessageType.Debug)
           onRun()
           addButtons([createButton('step_over.svg', {onclick: () => {
             window.editor.sendDebugCommand('-exec-next')
