@@ -2987,14 +2987,16 @@ ws.onmessage = (event) => {
                             console.id = 'console-input';
                             activeConsole?.element.appendChild(console);
                             activeConsole.element.onclick = (ev) => console.focus();
-                            console.addEventListener("keypress", (e) => {
+                            const listener = (e) => {
                                 if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
                                     e.preventDefault();
                                     submitConsole(console, WebSocketMessageType.Console, activeConsole);
                                     console.innerText = '';
+                                    console.removeEventListener("keypress", listener);
                                     // console.remove()
                                 }
-                            });
+                            };
+                            console.addEventListener("keypress", listener);
                             console.focus();
                         }
                         session.setAnnotations([]);

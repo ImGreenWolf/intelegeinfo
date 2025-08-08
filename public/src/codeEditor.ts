@@ -205,7 +205,7 @@ export class MultiCursorManager {
   private cursorsPos: Map<string, CursorPosition> = new Map();
   private cursors: Map<string, VisualCursor> = new Map();
   constructor(private editor: Ace.Ace.Editor) {}
-public selectMarker: number | null = null
+  public selectMarker: number | null = null
   addCursor(cursorId: string, position: CursorPosition,color): VisualCursor {
     this.cursorsPos.set(cursorId, position);
 
@@ -3972,17 +3972,20 @@ break;
               console.id = 'console-input'
               activeConsole?.element.appendChild(console) 
               activeConsole!.element.onclick = (ev) => console.focus()
-              console.addEventListener("keypress", (e: KeyboardEvent) => {
+              
+              const listener = (e: KeyboardEvent) => {
                 
                 if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
                   e.preventDefault();
 
                   submitConsole(console, WebSocketMessageType.Console, activeConsole)
                   console.innerText = ''
+                  console.removeEventListener("keypress", listener)
                   // console.remove()
                 }
-              });
+              }
 
+              console.addEventListener("keypress", listener);
               console.focus();
             }
               
