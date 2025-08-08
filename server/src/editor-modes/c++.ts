@@ -175,7 +175,7 @@ int main() {
                 clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
             });
 
-            this.inferiorProcess = spawn("docker", ['exec', '-it', res.imageName, 'bash', '-c', "tty"])
+            this.inferiorProcess = spawn("docker", ['exec', '-it', res.imageName, 'bash', '-c', "tty"], {stdio: 'pipe'})
             this.inferiorProcess.on('spawn', () => {
                 this.process.stdin.write("set inferior-tty /dev/pts/2\n");
             })

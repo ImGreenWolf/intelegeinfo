@@ -141,7 +141,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         clientSession.replicateFunction((clientWs, id, clientObj) => {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
         });
-        this.inferiorProcess = (0, child_process_1.spawn)("docker", ['exec', '-it', res.imageName, 'bash', '-c', "tty"]);
+        this.inferiorProcess = (0, child_process_1.spawn)("docker", ['exec', '-it', res.imageName, 'bash', '-c', "tty"], { stdio: 'pipe' });
         this.inferiorProcess.on('spawn', () => {
             this.process.stdin.write("set inferior-tty /dev/pts/2\n");
         });
