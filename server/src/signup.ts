@@ -93,13 +93,22 @@ function createUser(params:any, res: Response, password: string, req)
 }
 
 
-export function prepareEncrPassForDB(password:string)
+export function prepareEncrPassForDB(password:string, decrypt=true)
 {
-  const decryptedPassword = privateKey.decrypt(
-    forge.util.decode64(password ),
+  const sanitisedPassword = password.trim()
+  if(decrypt==true)
+  {
+      const decryptedPassword = privateKey.decrypt(
+    forge.util.decode64(sanitisedPassword),
     'RSA-OAEP'
   );
   return bcrypt.hashSync(decryptedPassword, 4);
+  }else
+  {
+      return bcrypt.hashSync(sanitisedPassword, 4);
+  }
+
+  
 }
 
 
@@ -111,7 +120,7 @@ router.post('/', (req, res) => {
     if(loginMethod === 'local')
     {
       
-      const hashedPassword = prepareEncrPassForDB(password)
+      const hashedPassword = prepareEncrPassForDB(password, true)
       // TODO: Compare decryptedPassword with stored password hash
       // console.log('Decrypted password:', decryptedPassword);
 

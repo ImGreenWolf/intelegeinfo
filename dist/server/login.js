@@ -313,21 +313,22 @@ router.get('/callback', async (req, res) => {
         res.status(500).send('Authentication failed');
     }
 });
-router.post('/createGoogleAcc', (req, res) => {
-    const userEmail = req.body.email;
-    const password = signup.prepareEncrPassForDB(req.body.password);
-    console.log(userEmail);
-    dbClient_1.default.user.update({
-        where: {
-            email: userEmail
-        },
-        data: {
-            password
-        }
-    }).then(user => {
-        onLoggedIn(user, res, req, true);
-        res.json({ message: 'good' });
-    }).catch(err => {
-        res.json({ error: err });
-    });
-});
+// router.post('/createGoogleAcc',(req, res)=> {
+//   const userEmail = req.body.email;
+//   const password = signup.prepareEncrPassForDB(req.body.password)
+//   console.log(userEmail)
+//   prisma.user.update({
+//     where: {
+//       email: userEmail
+//     },
+//     data:
+//     {
+//       password
+//     }
+//   }).then(user => {
+//     onLoggedIn(user, res, req, true)
+//     res.json({message: 'good'})
+//   }).catch(err => {
+//     res.json({error: err})
+//   })
+// })

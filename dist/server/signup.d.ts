@@ -18,5 +18,5 @@ export declare function onSignedIn({ email, username, loginMethod, firstName, la
     };
     res: ReturnType<typeof onLoggedIn>;
 }>;
-export declare function prepareEncrPassForDB(password: string): string;
+export declare function prepareEncrPassForDB(password: string, decrypt?: boolean): string;
 export default router;

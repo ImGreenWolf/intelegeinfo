@@ -377,24 +377,24 @@ router.get('/callback', async (req:any, res:any) => {
   }
 });
 
-router.post('/createGoogleAcc',(req, res)=> {
-  const userEmail = req.body.email;
-  const password = signup.prepareEncrPassForDB(req.body.password)
-  console.log(userEmail)
-  prisma.user.update({
-    where: {
-      email: userEmail
-    },
-    data:
-    {
-      password
-    }
-  }).then(user => {
-    onLoggedIn(user, res, req, true)
+// router.post('/createGoogleAcc',(req, res)=> {
+//   const userEmail = req.body.email;
+//   const password = signup.prepareEncrPassForDB(req.body.password)
+//   console.log(userEmail)
+//   prisma.user.update({
+//     where: {
+//       email: userEmail
+//     },
+//     data:
+//     {
+//       password
+//     }
+//   }).then(user => {
+//     onLoggedIn(user, res, req, true)
 
-    res.json({message: 'good'})
-  }).catch(err => {
-    res.json({error: err})
-  })
-})
+//     res.json({message: 'good'})
+//   }).catch(err => {
+//     res.json({error: err})
+//   })
+// })
 

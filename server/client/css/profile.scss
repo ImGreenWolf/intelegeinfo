@@ -243,7 +243,7 @@ input[type=color]
     span:has(input[type=color])
     {
         background-color: transparent;
-        background: conic-gradient(red, green, blue, red);
+        background: conic-gradient(in hsl increasing hue, red, green, blue, red);
         border: 2px solid var(--color);
         width: 27px;
         height: 27px;

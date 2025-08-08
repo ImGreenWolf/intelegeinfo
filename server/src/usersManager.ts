@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken"
+import jwt, { Jwt, JwtPayload } from "jsonwebtoken"
 import forge from 'node-forge';
 import crypto, { randomUUID } from "crypto";
 import express, { Request, Response } from 'express';
@@ -15,6 +15,7 @@ import * as hmacuUtil from "../../dist/shared/hmacUtils";
 import { authMiddleware, parseText, sessionMap } from "./server";
 import * as users from './usersManager'
 import { google } from "googleapis";
+import { prepareEncrPassForDB } from "./signup";
 const OAuth2 = google.auth.OAuth2;
 
 const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
@@ -276,7 +277,7 @@ router.get('/verifyemail', (req, res) => {
             censoredEmail = censoredEmail.replace(match[1], "*".repeat(match[1].length)).replace(match[2], "*".repeat(match[2].length))
 
      
-       await transporter.verify();
+        await transporter.verify();
         const fileToSend =  fs.readFileSync(path.join(rootDirName, 'public', 'pages', 'emailVerification.html')).toString()
         const map = new Map();
         map.set("firstName", user.firstName);
@@ -437,10 +438,94 @@ router.post('/saveProject', authMiddleware, (req, res) => {
             })
 
   });
+const passwordPagesPath = path.join(rootDirName, 'public','pages')
+    router.get('/reset-password', async (req, res) => {
+        if(req.query.email)
+        {
+            try {
+                const email = req.query.email as string
+                await transporter.verify(); 
+                const token = jwt.sign(
+                    {email} , privateKeyPem, {algorithm: 'RS256', expiresIn: '1h', issuer: 'intelegeinfo.ro'})
 
-    router.get('/reset-password', (req, res) => {
+                var mailOptions: nodemailer.SendMailOptions  = {
+                    from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
+                    to: email,
+                    subject: 'Resetare Parola Intelegeinfo',
+                    // html: callbackFile,
+                    html: 
+    `
+    <h3>Resetare parola</h3>
+    <p>Aici este linkul tau de resetare a parolei:</p>
+
+    <a href="https://intelegeinfo.ro/user/reset-password?token=${token}">Reseteaza parola</a>
+    
+    <p>Pentru orice intrebare va rugam sa ne contactati la 
+    <a href="mailto://office@intelegeinfo.ro">office@intelegeinfo.ro</a></p>`
+                ,
+
+            };
+            transporter.sendMail(mailOptions, (err, info) => {
+                res.sendFile(path.join(passwordPagesPath,'reset-password-confirm.html'))
+            })
+            }
+            catch(err)
+            {
+                res.send('Am intampinat o problema..')
+                console.error(err)
+            }
+            
+        } else if(req.query.token)
+        {
+            const tokenString = req.query.token as string
+            const token = jwt.verify(tokenString, privateKeyPem)
+            const email = (token as JwtPayload).email
+            if(!token || !email)
+            {
+                res.status(401).send('Nu s-a putut verifica autetincitatea cererii. Incercati sa resetati parola inca o data.')
+                return;
+            }
+            const file = fs.readFileSync(path.join(passwordPagesPath,'reset-password-new.html')).toString()
+           
+            res.contentType('html').send(file.replaceAll('#{email}', email))
+            return
+        } else
+
+        res.sendFile(path.join(passwordPagesPath,'reset-password.html'))
    
-        res.sendFile(path.join(rootDirName, 'public','pages','reset-password.html'))
+  });
+
+
+  router.post('/reset-password', async (req, res) => {
+        
+        if(req.query.token)
+        {
+            const tokenString = req.query.token as string
+            const token = jwt.verify(tokenString, privateKeyPem) as JwtPayload
+            if(!token)
+            {
+                res.status(401).send('Nu s-a putut verifica autetincitatea cererii. Incercati sa resetati parola inca o data.')
+                return;
+            }
+            const {password} = req.body
+            const hashedPassword = prepareEncrPassForDB(password, false)
+            console.log(hashedPassword)
+            prisma.user.update({
+                where: {
+                    email: token.email
+                },
+                data: {
+                    password: hashedPassword
+                }
+            }).then(() => {
+                res.sendFile(path.join(passwordPagesPath,'reset-password-finish.html'))
+            }).catch(err => {
+                res.status(401).send('Am intampinat o problema...')
+                console.error(err)
+                return;
+            })
+            return
+        } 
    
   });
 

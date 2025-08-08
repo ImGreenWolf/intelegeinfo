@@ -60,6 +60,7 @@ const hmacuUtil = __importStar(require("../../dist/shared/hmacUtils"));
 const server_1 = require("./server");
 const users = __importStar(require("./usersManager"));
 const googleapis_1 = require("googleapis");
+const signup_1 = require("./signup");
 const OAuth2 = googleapis_1.google.auth.OAuth2;
 const rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem')) || "supersecretprivatekey";
@@ -342,8 +343,78 @@ exports.router.get('/listProjects', server_1.authMiddleware, (req, res) => {
             res.status(401).send(err); //json({message: 'error: ' + err})
     });
 });
-exports.router.get('/reset-password', (req, res) => {
-    res.sendFile(path_1.default.join(rootDirName, 'public', 'pages', 'reset-password.html'));
+const passwordPagesPath = path_1.default.join(rootDirName, 'public', 'pages');
+exports.router.get('/reset-password', async (req, res) => {
+    if (req.query.email) {
+        try {
+            const email = req.query.email;
+            await transporter.verify();
+            const token = jsonwebtoken_1.default.sign({ email }, privateKeyPem, { algorithm: 'RS256', expiresIn: '1h', issuer: 'intelegeinfo.ro' });
+            var mailOptions = {
+                from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
+                to: email,
+                subject: 'Resetare Parola Intelegeinfo',
+                // html: callbackFile,
+                html: `
+    <h3>Resetare parola</h3>
+    <p>Aici este linkul tau de resetare a parolei:</p>
+
+    <a href="https://intelegeinfo.ro/user/reset-password?token=${token}">Reseteaza parola</a>
+    
+    <p>Pentru orice intrebare va rugam sa ne contactati la 
+    <a href="mailto://office@intelegeinfo.ro">office@intelegeinfo.ro</a></p>`,
+            };
+            transporter.sendMail(mailOptions, (err, info) => {
+                res.sendFile(path_1.default.join(passwordPagesPath, 'reset-password-confirm.html'));
+            });
+        }
+        catch (err) {
+            res.send('Am intampinat o problema..');
+            console.error(err);
+        }
+    }
+    else if (req.query.token) {
+        const tokenString = req.query.token;
+        const token = jsonwebtoken_1.default.verify(tokenString, privateKeyPem);
+        const email = token.email;
+        if (!token || !email) {
+            res.status(401).send('Nu s-a putut verifica autetincitatea cererii. Incercati sa resetati parola inca o data.');
+            return;
+        }
+        const file = fs_1.default.readFileSync(path_1.default.join(passwordPagesPath, 'reset-password-new.html')).toString();
+        res.contentType('html').send(file.replaceAll('#{email}', email));
+        return;
+    }
+    else
+        res.sendFile(path_1.default.join(passwordPagesPath, 'reset-password.html'));
+});
+exports.router.post('/reset-password', async (req, res) => {
+    if (req.query.token) {
+        const tokenString = req.query.token;
+        const token = jsonwebtoken_1.default.verify(tokenString, privateKeyPem);
+        if (!token) {
+            res.status(401).send('Nu s-a putut verifica autetincitatea cererii. Incercati sa resetati parola inca o data.');
+            return;
+        }
+        const { password } = req.body;
+        const hashedPassword = (0, signup_1.prepareEncrPassForDB)(password, false);
+        console.log(hashedPassword);
+        dbClient_1.default.user.update({
+            where: {
+                email: token.email
+            },
+            data: {
+                password: hashedPassword
+            }
+        }).then(() => {
+            res.sendFile(path_1.default.join(passwordPagesPath, 'reset-password-finish.html'));
+        }).catch(err => {
+            res.status(401).send('Am intampinat o problema...');
+            console.error(err);
+            return;
+        });
+        return;
+    }
 });
 exports.router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req);

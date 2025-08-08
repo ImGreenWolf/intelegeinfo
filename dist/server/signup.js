@@ -74,16 +74,22 @@ function createUser(params, res, password, req) {
         result.res.send(result.json);
     });
 }
-function prepareEncrPassForDB(password) {
-    const decryptedPassword = privateKey.decrypt(node_forge_1.default.util.decode64(password), 'RSA-OAEP');
-    return bcryptjs_1.default.hashSync(decryptedPassword, 4);
+function prepareEncrPassForDB(password, decrypt = true) {
+    const sanitisedPassword = password.trim();
+    if (decrypt == true) {
+        const decryptedPassword = privateKey.decrypt(node_forge_1.default.util.decode64(sanitisedPassword), 'RSA-OAEP');
+        return bcryptjs_1.default.hashSync(decryptedPassword, 4);
+    }
+    else {
+        return bcryptjs_1.default.hashSync(sanitisedPassword, 4);
+    }
 }
 // POST Signup
 router.post('/', (req, res) => {
     const { loginMethod, password } = req.body;
     try {
         if (loginMethod === 'local') {
-            const hashedPassword = prepareEncrPassForDB(password);
+            const hashedPassword = prepareEncrPassForDB(password, true);
             // TODO: Compare decryptedPassword with stored password hash
             // console.log('Decrypted password:', decryptedPassword);
             createUser(req.body, res, hashedPassword, req);
