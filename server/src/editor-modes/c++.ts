@@ -163,16 +163,25 @@ int main() {
 
         process: ChildProcess
         clientSession: EditorSession
-
+        inferiorProcess: ChildProcess
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
             this.clientSession = clientSession
             this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
             console.log('Spawned debug process with id', this.process.pid)
 
+
             clientSession.replicateFunction((clientWs, id, clientObj) => {
                 clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
             });
+
+            this.inferiorProcess = spawn("docker", ['exec', '-it', res.imageName, 'bash', '-c', "tty"])
+            this.inferiorProcess.on('spawn', () => {
+                this.process.stdin.write("set inferior-tty /dev/pts/2\n");
+            })
+            setTimeout(() => {
+                this.inferiorProcess.stdin.write('100')
+            }, 10000);
         }
     }
 
