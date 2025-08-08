@@ -3045,7 +3045,8 @@ ws.onmessage = (event) => {
       const variablesString = JSON.stringify(eventJson.variables)
       // writeOutput("", eventJson.variables, false, ConsoleMessageType.Info)
 
-      
+      if(debugWindow)
+          debugWindow.updateVariables(eventJson.variables)
       // set variables
       maxValue = 0;
       for (let index = 0; index < variables.length; index++) {
@@ -3105,8 +3106,7 @@ ws.onmessage = (event) => {
         for (const match of debugLineText.matchAll(forRegex)) {
           conditions.push(match[2].trim());
         }
-        if(debugWindow)
-          debugWindow.updateVariables(eventJson.variables)
+        
         // setTimeout(() => {
         let i = 1;
         if (playbackSpeed < 4)
@@ -3550,8 +3550,12 @@ break;
          
          activeConsole?.onProcessStart()
          writeOutput('Started debug session', null, ConsoleMessageType.Debug)
-        debugWindow = new DebugWindow()
+         if(!debugWindow)
+         {
+           debugWindow = new DebugWindow()
          windows[1].addTab(createEditorTab('Debug', debugWindow.mainContainer ))
+         }
+       
           break;
         case "running":
           handleOutput(messageJson);
