@@ -29,3 +29,21 @@ export declare function addProject(id: number, data: any): Promise<{
 export declare function listAllProjects(userId: any): Promise<any[]>;
 export declare function getClientId(token: string): number;
 export default prisma;
+export declare function activeAtComponent(): {
+    activeAt: Date;
+};
+export declare function updateActiveAtForUser(userId: number): Promise<false | {
+    id: number;
+    username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    emailValidated: boolean;
+    userColor: string;
+    picture: string;
+    role: import("../../generated/prisma").$Enums.Role;
+    createdAt: Date;
+    activeAt: Date;
+    password: string;
+    loginMethod: string;
+}>;

@@ -44,6 +44,8 @@ exports.getIdFromJWT = getIdFromJWT;
 exports.addProject = addProject;
 exports.listAllProjects = listAllProjects;
 exports.getClientId = getClientId;
+exports.activeAtComponent = activeAtComponent;
+exports.updateActiveAtForUser = updateActiveAtForUser;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const crypto_1 = require("crypto");
 const express_1 = __importDefault(require("express"));
@@ -418,13 +420,39 @@ exports.router.post('/reset-password', async (req, res) => {
 exports.router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req);
     if (id) {
-        const user = await getUserData(id);
+        const user = await updateActiveAtForUser(id); //getUserData
+        if (!user)
+            return;
         if (user.picture.startsWith('http'))
             res.status(200).redirect(user.picture);
         else
             res.status(200).sendFile(path_1.default.join(rootDirName, `/server/users/pfp/${user.picture}.png`));
     }
 });
+function activeAtComponent() {
+    return { activeAt: new Date() };
+}
+async function updateActiveAtForUser(userId) {
+    try {
+        if (!userId)
+            return false;
+        return await dbClient_1.default.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                ...activeAtComponent()
+            }
+        });
+    }
+    catch (err) {
+        return await dbClient_1.default.user.findFirst({
+            where: {
+                id: userId
+            }
+        });
+    }
+}
 //  const callbackMap: Map<string, number> = new Map();
 //  function createToken(user: any) {
 //      return jwt.sign({

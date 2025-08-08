@@ -135,7 +135,11 @@ router.use('/', (req, res) => {
     else
         try {
             const userId = users.getClientId(users.getJWT(req));
-            users.getUserData(userId).then(async (user) => {
+            users.updateActiveAtForUser(userId).then(async (user) => {
+                if (!user) {
+                    res.status(401).redirect('/signup');
+                    return;
+                }
                 const params = user;
                 const projects = await users.listAllProjects(userId);
                 if (typeof projects == 'string') {

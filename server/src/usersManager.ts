@@ -533,8 +533,9 @@ const passwordPagesPath = path.join(rootDirName, 'public','pages')
     const id = getIdFromJWT(req)
     if(id)
     {
-        const user = await getUserData(id)
-
+        const user = await updateActiveAtForUser(id) //getUserData
+        if(!user)
+            return
        if(user.picture.startsWith('http'))
             res.status(200).redirect(user.picture)
         else
@@ -542,6 +543,40 @@ const passwordPagesPath = path.join(rootDirName, 'public','pages')
     }
   })
 
+    export function activeAtComponent()
+    {
+        return {activeAt: new Date()}
+    }
+  export async function updateActiveAtForUser(userId: number)
+  {
+    try 
+    {
+        if(!userId)
+        return false
+    return await prisma.user.update(
+        {
+            where: {
+                id: userId
+            },
+            data:
+            {
+                ...activeAtComponent()
+            }
+        }
+    )
+    }
+    catch(err)
+    {
+        return await prisma.user.findFirst(
+        {
+            where: {
+                id: userId
+            }
+        }
+    )
+    }
+    
+  }
 //  const callbackMap: Map<string, number> = new Map();
 
 //  function createToken(user: any) {

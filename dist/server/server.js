@@ -146,12 +146,16 @@ app.use('/editor/components', (req, res) => {
 });
 app.get('/editor', (req, res) => {
     fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'public', 'editor.html'), (err, file) => {
-        let text;
+        let text = file.toString();
         const userId = users.getIdFromJWT(req);
         const logged = userId != undefined;
         if (logged) {
-            users.getUserData(userId).then((userdata) => {
-                text = file.toString().replace('#{login}', ` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`);
+            users.updateActiveAtForUser(userId).then((userdata) => {
+                if (!userdata) {
+                    res.contentType('html').send(text);
+                    return;
+                }
+                text = text.replace('#{login}', ` <li><button class="share-session" onclick="window.editor.listProjects()" id='listProjects'>Projects</button></li>\n<li><a href='/profile'>Hey <p class='user-name'>${userdata?.username}</p><div class='focus-line'></div></a></li>`);
                 text = text.replace(/\*\{(.*)\}/g, '$1');
                 res.contentType('html').send(text.toString());
             });
@@ -492,7 +496,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         ?.split("=")[1];
     let userData;
     let userLoggedIn = false;
-    users.getUserData(users.getClientId(jwtCookie)).then((userdata) => {
+    users.updateActiveAtForUser(users.getClientId(jwtCookie)).then((userdata) => {
         if (userdata) {
             userData = userdata;
             userLoggedIn = true;

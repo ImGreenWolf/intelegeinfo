@@ -124,11 +124,16 @@ router.use('/', (req, res) => {
 
                 const userId =users.getClientId(users.getJWT(req));
                     
-                 users.getUserData(userId as number).then(async user => {
+                 users.updateActiveAtForUser(userId as number).then(async user => {
                     interface webParams extends users.UserNoPassword
                     {
                         projectsList?: string
                     }
+                    if(!user)
+                    {
+                        res.status(401).redirect('/signup')
+                         return
+                    }  
                     
                     const params: webParams = user;
                     const projects = await users.listAllProjects(userId)
