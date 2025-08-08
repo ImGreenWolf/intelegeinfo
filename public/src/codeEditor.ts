@@ -2108,7 +2108,7 @@ function clearGhostMarkers(editor: {
 function writeOutput(data: string, message?: any,manuallScroll?, manualMessageType?: ConsoleMessageType) {
   if (outputArea) {
     const msgText = data
-
+    let textArea;
     if (message && message.messageType) {
       const localmsgId = (message.id as number) || -1;
       msgId = localmsgId;
@@ -2116,14 +2116,14 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
         console.error(new Error("invalid message id: " + message));
       const messageType = manualMessageType? manualMessageType : message.messageType;
       const messageClientId = message.clientId;
-      let textArea;
+      
       if(activeConsole)
       {
-         textArea = activeConsole?.element.getElementsByTagName('pre')[0]
+         textArea = activeConsole.element.getElementsByTagName('pre')[0]
         if(!textArea)
         {
           textArea = createNode('pre')
-          activeConsole!.element.appendChild(textArea)
+          activeConsole.element.appendChild(textArea)
         }
       }
       
@@ -2213,7 +2213,18 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
           break;
       }
     } else {
-      outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${msgText}</pre>`;
+      if(activeConsole)
+      {
+         textArea = activeConsole.element.getElementsByTagName('pre')[0]
+        if(!textArea)
+        {
+          textArea = createNode('pre')
+          activeConsole.element.appendChild(textArea)
+        }
+      }
+      // outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${msgText}</pre>`;
+      if(textArea)
+          textArea.innerHTML += data
     }
     // outputArea.textContent += "\n";
 
@@ -3495,13 +3506,14 @@ break;
           document.getElementById('debug-exec-controls')?.remove()
           break
         case "start":
-          // writeOutput('Started debug session', null, ConsoleMessageType.Debug)
+          
           onRun()
           addButtons([createButton('step_over.svg', {onclick: () => {
             window.editor.sendDebugCommand('-exec-next')
         }, class: "debug"})], 'debug-exec-controls')
          
          activeConsole?.onProcessStart()
+         writeOutput('Started debug session', null, ConsoleMessageType.Debug)
           break;
         case "running":
           handleOutput(messageJson);
