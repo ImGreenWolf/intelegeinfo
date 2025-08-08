@@ -80,8 +80,9 @@ class Console {
     consoleInput;
     constructor() {
         if (outputConsoles.length > 0)
-            outputConsoles[outputConsoles.length - 1].callbackCreate(this);
+            outputConsoles.at(-1).callbackCreate(this);
         const thisConsole = document.createElement('div');
+        outputConsoles.push(this);
         if (outputArea)
             outputArea.appendChild(thisConsole);
         thisConsole.id = 'active-console';
@@ -3299,7 +3300,6 @@ function onRun() {
     // activeConsole.compileMessage?.remove()
     // if(currentFileName.toLowerCase().includes("gui"))
     //   displaynoVNC(activeConsole.element)
-    outputConsoles.push(activeConsole);
     gtag('event', 'program_run', {
         'extension': currentFileName?.split('.').at(-1),
     });

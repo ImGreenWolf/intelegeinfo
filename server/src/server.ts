@@ -2326,13 +2326,15 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                                 // onClosedProcess(sessionId);  // TODO Figure out why this was uncommented
                                 // executeProgram();
-                                closeProcess(clientSession.program,sessionId).then(() => {
-                                    replicateFunction((clientWs) => {
-                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
-                                        });
-                                }).catch(err => replicateFunction((clientWs) => {
-                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: err, clientId: clientId}));  // Send GDB output to the client
-                                        }))
+                                
+                                closeProcess(clientSession.program,sessionId)
+                                // .then(() => {
+                                //     replicateFunction((clientWs) => {
+                                //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
+                                //         });
+                                // }).catch(err => replicateFunction((clientWs) => {
+                                //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: err, clientId: clientId}));  // Send GDB output to the client
+                                //         }))
                         
                             } else executeProgram(); //buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId) //
                     
@@ -2584,7 +2586,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     {
         try {
             return await new Promise<void>((resolve, reject) => {
-                if (process) {
+                if (clientSession.process) {
 
                     if (!process.killed) {
                         process.kill(0);
@@ -2609,7 +2611,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     }
 
                 }
-                resolve()
+                // resolve()
             });
         } catch (err) {
             console.log('caught error while closing process: ' + err);

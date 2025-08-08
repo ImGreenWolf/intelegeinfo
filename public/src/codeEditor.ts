@@ -134,12 +134,12 @@ class Console {
   consoleInput: HTMLTextAreaElement | undefined
   constructor () {
     if(outputConsoles.length>0)
-      outputConsoles[outputConsoles.length-1].callbackCreate(this)
+      outputConsoles.at(-1)!.callbackCreate(this)
 
     const thisConsole = document.createElement('div')
-    
-  if(outputArea)
-    outputArea.appendChild(thisConsole);
+    outputConsoles.push(this)
+    if(outputArea)
+      outputArea.appendChild(thisConsole);
     thisConsole.id =  'active-console'
     thisConsole.className = 'output-console-container'
     thisConsole.innerHTML = "<div class='program-output'></div>"
@@ -3846,7 +3846,7 @@ break;
           onRun()
         break;
         case 'container-spawn':
-        onRun()
+          onRun()
         break;
         default:
           const index = 0 //client?.editorSession.findIndex(file => file.fileName === messageJson.fileName) 
@@ -4350,13 +4350,14 @@ function onRun() {
     {
       activeConsole = spawnConsole()
       activeConsole.element.parentElement!.scrollTop =activeConsole.element.parentElement!.scrollHeight;
+      
     }
 
   // activeConsole.compileMessage?.remove()
   
     // if(currentFileName.toLowerCase().includes("gui"))
   //   displaynoVNC(activeConsole.element)
-  outputConsoles.push(activeConsole)
+
 
   
   gtag('event', 'program_run', {

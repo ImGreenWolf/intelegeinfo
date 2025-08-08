@@ -1862,13 +1862,14 @@ bash `.trim().replaceAll('\n', "");
                                         //  })
                                         // onClosedProcess(sessionId);  // TODO Figure out why this was uncommented
                                         // executeProgram();
-                                        closeProcess(clientSession.program, sessionId).then(() => {
-                                            replicateFunction((clientWs) => {
-                                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId })); // Send GDB output to the client
-                                            });
-                                        }).catch(err => replicateFunction((clientWs) => {
-                                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, body: err, clientId: clientId })); // Send GDB output to the client
-                                        }));
+                                        closeProcess(clientSession.program, sessionId);
+                                        // .then(() => {
+                                        //     replicateFunction((clientWs) => {
+                                        //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
+                                        //         });
+                                        // }).catch(err => replicateFunction((clientWs) => {
+                                        //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: err, clientId: clientId}));  // Send GDB output to the client
+                                        //         }))
                                     }
                                     else
                                         executeProgram(); //buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId) //
@@ -2068,7 +2069,7 @@ bash `.trim().replaceAll('\n', "");
         async function closeProcess(process, processId) {
             try {
                 return await new Promise((resolve, reject) => {
-                    if (process) {
+                    if (clientSession.process) {
                         if (!process.killed) {
                             process.kill(0);
                             process.addListener(('close'), (code) => {
@@ -2086,7 +2087,7 @@ bash `.trim().replaceAll('\n', "");
                             resolve();
                         }
                     }
-                    resolve();
+                    // resolve()
                 });
             }
             catch (err) {
