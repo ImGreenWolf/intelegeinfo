@@ -176,6 +176,7 @@ class Console {
   {
     if(this.compileMessage)
       this.compileMessage.remove()
+
     if(this.consoleInput )
       return
     this.consoleInput = document.createElement('textarea')as HTMLTextAreaElement;
@@ -3926,7 +3927,7 @@ break;
                   activeConsole.onProcessStart()
                 else
                   activeConsole.compileMessage.children[1].innerHTML = messageJson.body
-              if(activeConsole)
+              
           
          
 

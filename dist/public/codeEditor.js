@@ -2955,8 +2955,7 @@ ws.onmessage = (event) => {
                                 activeConsole.onProcessStart();
                             else
                                 activeConsole.compileMessage.children[1].innerHTML = messageJson.body;
-                    if (activeConsole)
-                        document.getElementById('compile-status').innerText = messageJson.body;
+                    document.getElementById('compile-status').innerText = messageJson.body;
                     document.getElementById('compile-status').style.opacity = '1';
                     setTimeout(() => {
                         document.getElementById('compile-status').style.opacity = '0';
