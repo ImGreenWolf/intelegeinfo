@@ -1956,6 +1956,7 @@ mini-dock #joinSession {
   padding: 2em;
   gap: 1em;
   box-shadow: inset 5px 5px 35px -30px rgb(107, 107, 107);
+  font-family: "Poppins";
 }
 .default-screen h1 {
   font-family: Teachers, Poppins, Cambria;
