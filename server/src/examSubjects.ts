@@ -3,9 +3,11 @@ import path from 'path';
 import { parseText, rootDirName } from './server';
 import fs from 'fs';
 import { update } from './subiecteFetcher';
+import cookieParser from 'cookie-parser';
 
 
 const router = express.Router();
+router.use(cookieParser())
 export default router
 enum Sessions {
   IunieIulie = 0,
@@ -14,7 +16,7 @@ enum Sessions {
   Model = 3
 }
 router.get('/', async (req, res) => {
-    const updates = await update()
+    // const updates = await update()
 
     // const mainDir = updates.dir
    
@@ -226,7 +228,7 @@ router.get('/', async (req, res) => {
     
     </head>
     
-    ^{&file:_header.html}
+    ${parseText('^{&file:_header.html}', req)}
 
         
     <div id='grid'>
@@ -239,7 +241,7 @@ router.get('/', async (req, res) => {
 
 
 
-    res.status(200).send(parseText(html, req))
+    res.status(200).send(html)
 })
 
 

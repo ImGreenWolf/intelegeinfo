@@ -7,8 +7,9 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const server_1 = require("./server");
 const fs_1 = __importDefault(require("fs"));
-const subiecteFetcher_1 = require("./subiecteFetcher");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const router = express_1.default.Router();
+router.use((0, cookie_parser_1.default)());
 exports.default = router;
 var Sessions;
 (function (Sessions) {
@@ -18,7 +19,7 @@ var Sessions;
     Sessions[Sessions["Model"] = 3] = "Model";
 })(Sessions || (Sessions = {}));
 router.get('/', async (req, res) => {
-    const updates = await (0, subiecteFetcher_1.update)();
+    // const updates = await update()
     // const mainDir = updates.dir
     let grid = '';
     // grid += subjectFormat(2025, [
@@ -193,7 +194,7 @@ router.get('/', async (req, res) => {
     
     </head>
     
-    ^{&file:_header.html}
+    ${(0, server_1.parseText)('^{&file:_header.html}', req)}
 
         
     <div id='grid'>
@@ -203,7 +204,7 @@ router.get('/', async (req, res) => {
     
     
     `;
-    res.status(200).send((0, server_1.parseText)(html, req));
+    res.status(200).send(html);
 });
 const formatName = (filename, split = false) => {
     const params = (split ? filename.split('.')[0] : filename)

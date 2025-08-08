@@ -2809,7 +2809,7 @@ const defaultLang = 'ro-RO'
     translation = JSON.parse(data.toString())
     console.log('translations loaded, bytes:', data.byteLength)
  })
-export function parseText(file: string, req)
+export function parseText(file: string, req: any )
 {
     if(!req || !req.cookies)
         return file;
