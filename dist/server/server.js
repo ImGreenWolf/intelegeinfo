@@ -1009,9 +1009,13 @@ exports.wss.addListener('connection', async (ws, req) => {
             const buffer = data.toString('utf8');
             console.log(buffer);
             // Check if the full response has arrived
+            if (!buffer)
+                return;
             if (buffer.indexOf('\0') !== -1)
                 return false;
-            if (!buffer)
+            const nonPrint = (buffer.match(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g) || []).length;
+            // If more than 1% non-printable, treat as binary
+            if (nonPrint / Math.max(1, buffer.length) < 0.01)
                 return;
             if (true) {
                 // We have everything, remove listener
