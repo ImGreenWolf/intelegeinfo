@@ -2587,25 +2587,27 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         try {
             return await new Promise<void>((resolve, reject) => {
                 if (clientSession.process) {
-
+                    let timer;
                     if (!process.killed) {
                         process.kill(0);
                         
                         process.addListener(('close'), (code) => {
-
-
+                            if(timer)
+                                clearTimeout(timer)
                             onClosedProcess();
                             resolve();
                             console.log('stopped process')
                         });
 
-                        setTimeout(() => {
+                        timer = setTimeout(() => {
                             onClosedProcess();
                             reject('timed out closing process');
                             
                         }, 3000);
                     }
                     else {
+                        if(timer)
+                                clearTimeout(timer)
                         onClosedProcess();
                         resolve();
                     }

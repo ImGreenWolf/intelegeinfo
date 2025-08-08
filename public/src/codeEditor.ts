@@ -3551,7 +3551,7 @@ break;
          activeConsole?.onProcessStart()
          writeOutput('Started debug session', null, ConsoleMessageType.Debug)
         debugWindow = new DebugWindow()
-         windows[1].addTab(createEditorTab('Debug', debugWindow ))
+         windows[1].addTab(createEditorTab('Debug', debugWindow.mainContainer ))
           break;
         case "running":
           handleOutput(messageJson);
