@@ -4351,12 +4351,7 @@ function onRun() {
   if(document.getElementById('console-input'))
     document.getElementById('console-input')?.remove();
 
-  if(!activeConsole) 
-    {
-      activeConsole = spawnConsole()
-      activeConsole.element.parentElement!.scrollTop =activeConsole.element.parentElement!.scrollHeight;
-      console.error('skjskjskjs console')
-    }
+
 
   // activeConsole.compileMessage?.remove()
   
