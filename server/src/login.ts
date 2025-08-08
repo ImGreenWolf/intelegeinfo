@@ -39,7 +39,7 @@ export function onLoggedIn(user: unknown, res: Response, req: Request, shouldkee
   let token = createToken(user)
   const secure = req.secure;
   const httpOnly = false;
-  let keepLoggedIn =  req.body ? (req.body.keepLoggedIn || shouldkeepLoggedIn) : shouldkeepLoggedIn;
+  let keepLoggedIn =  req.body ? (req.body.keepLoggedIn ? req.body.keepLoggedIn : shouldkeepLoggedIn) : shouldkeepLoggedIn;
   if(keepLoggedIn)
     return res.cookie('token', token, {
         httpOnly,

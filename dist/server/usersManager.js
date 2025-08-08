@@ -274,8 +274,7 @@ exports.router.post('/verifyemail', (req, res) => {
                     emailValidated: true
                 }
             }).then(user => {
-                (0, login_1.onLoggedIn)(user, res, req);
-                res.status(200).json({ sucess: true, redirect: '/' });
+                (0, login_1.onLoggedIn)(user, res, req, true).status(200).json({ sucess: true, redirect: '/' });
             }).catch(err => {
                 res.status(403).send(err);
             });

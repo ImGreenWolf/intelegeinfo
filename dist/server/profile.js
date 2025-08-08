@@ -74,10 +74,13 @@ router.use((0, cookie_parser_1.default)());
 router.post('/update', (req, res) => {
     if (!users.getJWT(req)) {
         res.status(401).json({ error: 'Unauthorized' });
+        return;
     }
     const userId = users.getClientId(users.getJWT(req));
-    if (!req.body)
+    if (!req.body) {
         res.status(500).send('invalid body');
+        return;
+    }
     if (req.body.file)
         var { file } = req.body;
     if (req.body.color)
@@ -93,22 +96,24 @@ router.post('/update', (req, res) => {
                 return;
             });
         }
-        if (color) {
-            var userColor = color.slice(1);
-            if (userColor.length != 6 && color[0] == '#')
-                throw "invalid color";
-        }
-        dbClient_1.default.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                userColor,
-                // picture: file ? file : undefined
+        else {
+            if (color) {
+                var userColor = color.slice(1);
+                if (userColor.length != 6 && color[0] == '#')
+                    throw "invalid color";
             }
-        }).then(value => {
-            res.redirect('/profile');
-        });
+            dbClient_1.default.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    userColor,
+                    // picture: file ? file : undefined
+                }
+            }).then(value => {
+                res.redirect('/profile');
+            });
+        }
     }
     catch (err) {
         res.status(500).send(err);
@@ -121,7 +126,7 @@ router.get('/logout', (req, res) => {
 router.use('/', (req, res) => {
     // const token = req.cookies.token
     if (!users.getJWT(req)) {
-        res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).redirect('/signup');
     }
     if (req.query.logout) {
         res.clearCookie('token');

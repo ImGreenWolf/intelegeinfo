@@ -28,7 +28,7 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 
 //       { expiresIn: '1h' }
 //     );
 //   }
-async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }, res, password, req) {
+async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }, res, password, req, keepLoggedIn = true) {
     return new Promise((resolve, reject) => {
         dbClient_1.default.user.create({
             data: {
@@ -50,7 +50,7 @@ async function onSignedIn({ email, username, loginMethod, firstName, lastName, p
             if (!user)
                 reject({ error: 'Failed to create user' });
             console.log('created account', username);
-            resolve({ json: { message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod }, res: (0, login_1.onLoggedIn)(user, res, req) });
+            resolve({ json: { message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod }, res: (0, login_1.onLoggedIn)(user, res, req, keepLoggedIn ? keepLoggedIn : true) });
         }).catch(reason => {
             reject({ error: 'Failed to create user: ' + reason });
         });
@@ -64,13 +64,13 @@ function createUser(params, res, password, req) {
         }
     }).then(async (user) => {
         if (!user) {
-            const result = await onSignedIn(params, res, password, req);
+            const result = await onSignedIn(params, res, password, req, true);
             result.res.send(result.json);
         }
         else
             return res.status(400).json({ error: 'An account with this email already exists! Try logging in!' });
     }).catch(async (reason) => {
-        const result = await onSignedIn(params, res, password, req);
+        const result = await onSignedIn(params, res, password, req, true);
         result.res.send(result.json);
     });
 }

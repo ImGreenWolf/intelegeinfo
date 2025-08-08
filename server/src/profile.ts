@@ -45,12 +45,17 @@ router.post('/update', (req, res) => {
     if (!users.getJWT(req))  
     {
         res.status(401).json({ error: 'Unauthorized' });
+        return;
     }
 
 
      const userId =users.getClientId(users.getJWT(req));
      if(!req.body)
-        res.status(500).send('invalid body')
+     {
+         res.status(500).send('invalid body')
+         return;
+     }
+       
      if(req.body.file)
         var {file} = req.body
      if(req.body.color)
@@ -67,25 +72,26 @@ router.post('/update', (req, res) => {
                 return;
             })
         }
-        if(color)
-        {
-            var userColor = (color as string).slice(1)
-            if(userColor.length != 6 && color[0] == '#')
-                throw "invalid color"
-        }
-          
-        prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                userColor,
-                // picture: file ? file : undefined
+        else {
+            if(color)
+            {
+                var userColor = (color as string).slice(1)
+                if(userColor.length != 6 && color[0] == '#')
+                    throw "invalid color"
             }
-        }).then(value => {
-            res.redirect('/profile')
-        })
-
+            
+            prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    userColor,
+                    // picture: file ? file : undefined
+                }
+            }).then(value => {
+                res.redirect('/profile')
+            })
+        }
     }
     catch (err)
     {
@@ -107,7 +113,7 @@ router.use('/', (req, res) => {
        
         if (!users.getJWT(req))  
         {
-            res.status(401).json({ error: 'Unauthorized' });
+            res.status(401).redirect('/signup')
         }
         if(req.query.logout) {
             res.clearCookie('token')

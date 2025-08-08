@@ -8,7 +8,7 @@ export declare function onSignedIn({ email, username, loginMethod, firstName, la
     firstName: any;
     lastName: any;
     profile: any;
-}, res: Response, password: string, req: any): Promise<{
+}, res: Response, password: string, req: any, keepLoggedIn?: boolean): Promise<{
     json: {
         message: any;
         redirect: any;

@@ -336,9 +336,8 @@ router.post('/verifyemail', (req, res) => {
                         
                 }
             }).then(user => {
-
-                onLoggedIn(user, res, req)
-                res.status(200).json({sucess: true, redirect: '/'})
+ 
+                onLoggedIn(user, res, req, true).status(200).json({sucess: true, redirect: '/'})
                 
             }).catch(err => {
                 res.status(403).send(err)
