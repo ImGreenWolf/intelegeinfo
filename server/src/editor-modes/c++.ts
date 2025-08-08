@@ -167,7 +167,7 @@ int main() {
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
             this.clientSession = clientSession
-            this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+            this.process = spawn("docker", ["exec", '-i', res.imageName, 'pts=$(mktemp -u /dev/pts/XXX) &&', "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
             console.log('Spawned debug process with id', this.process.pid)
 
 
@@ -175,12 +175,19 @@ int main() {
                 clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
             });
 
-            this.inferiorProcess = spawn("docker", ['exec', '-it', res.imageName, 'bash', '-c', "tty"], {stdio: 'pipe'})
-            this.inferiorProcess.on('spawn', () => {
-                this.process.stdin.write("set inferior-tty /dev/pts/2\n");
-            })
+            // this.inferiorProcess = spawn("docker", ['exec', '-it', res.imageName, 'bash', '-c', "tty"], {stdio: 'pipe'})
+            // this.inferiorProcess.on('spawn', () => {
+
+            // })
+                            this.process.stdin.write("shell tty\n")
+                this.process.stdin.write("set inferior-tty /dev/pts/1\n");
             setTimeout(() => {
-                this.inferiorProcess.stdin.write('100')
+                spawn("docker", [
+                "exec", "mycontainer",
+                "bash", "-c", "echo 'Hello from Node!' > /dev/pts/1"
+            ]);
+
+                console.log('wrote output !!!!!!!!!')
             }, 10000);
         }
     }
