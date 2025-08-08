@@ -1298,8 +1298,7 @@ function endConnectionPromise()
                 
                 if(!buffer)
                     return
-                console.log(buffer)
-                return
+                
                 // if (buffer.indexOf('\0') !== -1) return false;
 
                 // const nonPrint = (buffer.match(/\\\\/g) || []).length;
@@ -1316,7 +1315,7 @@ function endConnectionPromise()
                         if(element.trim()!='')
                         {
                              const gdbOutput = parseGDBString(element);
-                             if(JSON.stringify(gdbOutput.json) == '{}')
+                             if(gdbOutput.json == '{}')
                                 continue;
 
                         if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')

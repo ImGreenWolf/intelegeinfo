@@ -1021,8 +1021,6 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
             if (!buffer)
                 return;
-            console.log(buffer);
-            return;
             // if (buffer.indexOf('\0') !== -1) return false;
             // const nonPrint = (buffer.match(/\\\\/g) || []).length;
             // // If more than 1% non-printable, treat as binary
@@ -1035,7 +1033,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 for (const element of buffer.split('\n')) {
                     if (element.trim() != '') {
                         const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
-                        if (JSON.stringify(gdbOutput.json) == '{}')
+                        if (gdbOutput.json == '{}')
                             continue;
                         if (gdbOutput.json['exit-code'] != undefined || gdbOutput.json.reason == 'exited-normally') {
                             closeProcess(clientSession.process);
