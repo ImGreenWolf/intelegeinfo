@@ -2116,6 +2116,17 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
         console.error(new Error("invalid message id: " + message));
       const messageType = manualMessageType? manualMessageType : message.messageType;
       const messageClientId = message.clientId;
+      let textArea;
+      if(activeConsole)
+      {
+         textArea = activeConsole?.element.getElementsByTagName('pre')[0]
+        if(!textArea)
+        {
+          textArea = createNode('pre')
+          activeConsole!.element.appendChild(textArea)
+        }
+      }
+      
       let messageGroup = outputArea;
       switch (messageType) {
         case ConsoleMessageType.UserChat:
@@ -2163,7 +2174,9 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
           // outputArea.innerHTML += `<span class="console-error" msg-id="${msgId}" id='compile-error'>${msgText}</span>`;
           break;
         case ConsoleMessageType.Debug:
-          outputArea.innerHTML += `<div  msg-id="${msgId}"><pre class="console-debug">${msgText}</pre></div>`;
+          // activeConsole!.element!.innerHTML += `<div  msg-id="${msgId}"><pre class="console-debug">${msgText}</pre></div>`;
+          if(textArea)
+          textArea.innerHTML += data
           break;
         case ConsoleMessageType.DebugProgram:
           const groupDebug = outputArea.querySelector(
@@ -2179,27 +2192,17 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
           // if(document.getElementById('active-console'))
           //   messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
           // messageGroup.innerHTML += `<pre class="console-program-${message.type == WebSocketMessageType.End ? "return" : message.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
-          let textArea = activeConsole?.element.getElementsByTagName('pre')[0]
-          if(!textArea)
-          {
-            textArea = createNode('pre')
-            activeConsole!.element.appendChild(textArea)
-          }
-
+          
+          if(textArea)
           textArea.innerHTML += data
             
 
 
         break;
         case ConsoleMessageType.Console:
-          let textArea2 = activeConsole?.element.getElementsByTagName('pre')[0]
-          if(!textArea2)
-          {
-            textArea2 = createNode('pre')
-            activeConsole!.element.appendChild(textArea2)
-          }
+          if(textArea)
 
-          textArea2.innerHTML += data + " \n"
+          textArea.innerHTML += data + " \n"
         break;
         case ConsoleMessageType.Notification:
           displayMessagePopup(data)
@@ -3492,11 +3495,11 @@ break;
           break
         case "start":
           writeOutput('Started debug session', null, ConsoleMessageType.Debug)
-
+          onRun()
           addButtons([createButton('step_over.svg', {onclick: () => {
             window.editor.sendDebugCommand('-exec-next')
         }, class: "debug"})], 'debug-exec-controls')
-         onRun()
+         
          activeConsole?.onProcessStart()
           break;
         case "running":
@@ -3508,7 +3511,7 @@ break;
         if(data)
           writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time +"</span>ms" + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
         else if(messageJson.sandbox)
-          activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox)!)
+            activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox)!)
           else  writeOutput("Forced closed program." + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
       onExit()
 
@@ -4342,7 +4345,8 @@ function onRun() {
   processRunning = true;
   document.getElementById('buttons')?.classList.add('executing')
   document.getElementById('execute-control')!.innerText = "Opreste Programul"
-
+  if(document.getElementById('debug-exec-controls'))
+    document.getElementById('debug-exec-controls')?.remove()
   if(document.getElementById('console-input'))
     document.getElementById('console-input')?.remove();
 

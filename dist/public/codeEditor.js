@@ -1580,6 +1580,14 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                 console.error(new Error("invalid message id: " + message));
             const messageType = manualMessageType ? manualMessageType : message.messageType;
             const messageClientId = message.clientId;
+            let textArea;
+            if (activeConsole) {
+                textArea = activeConsole?.element.getElementsByTagName('pre')[0];
+                if (!textArea) {
+                    textArea = createNode('pre');
+                    activeConsole.element.appendChild(textArea);
+                }
+            }
             let messageGroup = outputArea;
             switch (messageType) {
                 case ConsoleMessageType.UserChat:
@@ -1616,7 +1624,9 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                     // outputArea.innerHTML += `<span class="console-error" msg-id="${msgId}" id='compile-error'>${msgText}</span>`;
                     break;
                 case ConsoleMessageType.Debug:
-                    outputArea.innerHTML += `<div  msg-id="${msgId}"><pre class="console-debug">${msgText}</pre></div>`;
+                    // activeConsole!.element!.innerHTML += `<div  msg-id="${msgId}"><pre class="console-debug">${msgText}</pre></div>`;
+                    if (textArea)
+                        textArea.innerHTML += data;
                     break;
                 case ConsoleMessageType.DebugProgram:
                     const groupDebug = outputArea.querySelector(`.debug-program[msg-id="${msgId}"] .debug-program-container`);
@@ -1629,20 +1639,12 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                     // if(document.getElementById('active-console'))
                     //   messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
                     // messageGroup.innerHTML += `<pre class="console-program-${message.type == WebSocketMessageType.End ? "return" : message.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
-                    let textArea = activeConsole?.element.getElementsByTagName('pre')[0];
-                    if (!textArea) {
-                        textArea = createNode('pre');
-                        activeConsole.element.appendChild(textArea);
-                    }
-                    textArea.innerHTML += data;
+                    if (textArea)
+                        textArea.innerHTML += data;
                     break;
                 case ConsoleMessageType.Console:
-                    let textArea2 = activeConsole?.element.getElementsByTagName('pre')[0];
-                    if (!textArea2) {
-                        textArea2 = createNode('pre');
-                        activeConsole.element.appendChild(textArea2);
-                    }
-                    textArea2.innerHTML += data + " \n";
+                    if (textArea)
+                        textArea.innerHTML += data + " \n";
                     break;
                 case ConsoleMessageType.Notification:
                     displayMessagePopup(data);
@@ -2642,10 +2644,10 @@ ws.onmessage = (event) => {
                     break;
                 case "start":
                     writeOutput('Started debug session', null, ConsoleMessageType.Debug);
+                    onRun();
                     addButtons([createButton('step_over.svg', { onclick: () => {
                                 window.editor.sendDebugCommand('-exec-next');
                             }, class: "debug" })], 'debug-exec-controls');
-                    onRun();
                     activeConsole?.onProcessStart();
                     break;
                 case "running":
@@ -3291,6 +3293,8 @@ function onRun() {
     processRunning = true;
     document.getElementById('buttons')?.classList.add('executing');
     document.getElementById('execute-control').innerText = "Opreste Programul";
+    if (document.getElementById('debug-exec-controls'))
+        document.getElementById('debug-exec-controls')?.remove();
     if (document.getElementById('console-input'))
         document.getElementById('console-input')?.remove();
     if (!activeConsole) {
