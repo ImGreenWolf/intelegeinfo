@@ -167,7 +167,7 @@ int main() {
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
             this.clientSession = clientSession
-            this.process = spawn("docker", ["exec", '-i', res.imageName, 'pts=$(mktemp -u /dev/pts/XXX) &&', "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+            this.process = spawn("docker", ["exec", '-i', res.imageName, 'bash', '-c', 'pts=$(mktemp -u /dev/pts/XXX) &&', "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
             console.log('Spawned debug process with id', this.process.pid)
 
 

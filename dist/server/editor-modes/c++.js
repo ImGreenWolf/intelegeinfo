@@ -136,7 +136,7 @@ class CPPDebugger extends ProcessTypes_1.default {
     constructor(res, clientObj, clientSession) {
         super();
         this.clientSession = clientSession;
-        this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, 'pts=$(mktemp -u /dev/pts/XXX) &&', "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+        this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, 'bash', '-c', 'pts=$(mktemp -u /dev/pts/XXX) &&', "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
         clientSession.replicateFunction((clientWs, id, clientObj) => {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
