@@ -121,9 +121,9 @@ export function addProject(id: number, data: any)
     
 }
 
- export function listAllProjects(userId): Promise<any>
+ export function listAllProjects(userId)
 {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<any[]>((resolve, reject) => {
         users.default.project.findMany({
             where:
             {
@@ -131,7 +131,7 @@ export function addProject(id: number, data: any)
             }
             
         }).then(projects => {
-            resolve({projects})
+            resolve([...projects])
         }).catch(err => {
             reject(err)
         });
@@ -140,24 +140,7 @@ export function addProject(id: number, data: any)
     
 }
 
-export function listProjects(userId, projects): Promise<any>
-{
-    return new Promise<any>((resolve, reject) => {
-        users.default.project.findMany({
-            where:
-            {
-                userId
-            }
-            
-        }).then(projects => {
-            resolve({projects})
-        }).catch(err => {
-            reject(err)
-        });
-    })
-    
-    
-}
+
 
 
 export function getClientId(token: string)
@@ -453,6 +436,12 @@ router.post('/saveProject', authMiddleware, (req, res) => {
                     else res.status(401).send(err)//json({message: 'error: ' + err})
             })
 
+  });
+
+    router.get('/reset-password', (req, res) => {
+   
+        res.sendFile(path.join(rootDirName, 'public','pages','reset-password.html'))
+   
   });
 
 

@@ -619,7 +619,10 @@ export async function showDefaultScreen() {
         }));
     const languageCarousel = createNode('div', { html: langaugeElements, className: 'language-carousel', id: 'languageCarousel' });
     const container = createNode('div', { className: 'default-screen', html: [
-            createNode('h1', { innerText: 'Creaza un nou proiect' }),
+            createNode('div', { html: [
+                    createNode('h1', { innerText: 'Creaza un nou proiect' }),
+                    createNode('p', { innerText: 'Alege un limbaj in care sa-ti incepi proiectul.' }),
+                ] }),
             languageCarousel,
             createNode('div', { className: 'language-info' })
         ] });

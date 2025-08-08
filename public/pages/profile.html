@@ -15,41 +15,148 @@
     ^{&file:_header.html}
 
     <div class="main-container">
-        <div class="container" id="profile">
-            <div style="height: 100%;">
-                
-                <div class="content-container">
-                    <img src="user/profilePicture/#{id}" class="profile-pic-large">
-                    <h1>Hello #{username}</h1>
-                    <ul>
-                        <button>Detalii cont</button>
-                        <button>Preferinte</button>
-                        <button>Despre</button>
-
-                    </ul>
-                    <div class="info-container">
-                        <div class="email">
-                            <p>email: #{email}</p>
-                            #{emailValidated ? <img title="Emailul este verificat!" src="../media/check-mark-svgrepo-com.svg" class="email-verified"> : <a href="user/verifyemail?id=#{id}">Verify Email</a>}
+        <div class="container" id="profile" style="--accent-color: ##{userColor}">
+            <div style="height: 100%;" class="profile-grid">
+                <h2>Salut #{username}!</h2>
+                <vl style="grid-column: 1; grid-row: 2; border-bottom: 1px solid;"></vl>
+                <ul style="grid-row: 3">
+                    <button onclick="openTab('accDetails')">Detalii cont</button>
+                    <button onclick="openTab('preferences')">Preferinte</button>
+                    <button onclick="openTab('actions')">Actiuni</button>
+                </ul>
+                <vl style="grid-row: 1 / -1; border-left: 1px solid;"></vl>
+                <div id="panel-container">
+                    <div class="content-container open" id="accDetails">
+                        <h1>Detalii cont</h1>
+                        <div class="inline-wrapper">
+                            <img src="user/picture" class="profile-pic-large">
+                            <!-- <input type="file" name="file" id="file" style="display: none;" accept="image/png, image/jpeg"><label for="file">Schimba poza</label>
+                            <button class="warning">Sterge poza</button> -->
                         </div>
                         
-                        <p><a>schimba parola</a></p>
-                        <button onclick="logOut()">Log out</button>
-                        <form action="profile/update" method="post">
-                            <input type="color" name="color" id="color">
-                            <button type="submit">Update</button>
-                        </form>
+                        <div class="info-container">
+
+                            <div style="width: 100%;">
+                                    <p>Username</p>
+                                    <span style="width: 100%; display: block;">#{username}</span>
+                                </div>
+
+                            <div class="inline-wrapper">
+                                <div style="width: 50%;">
+                                    <p>Prenume</p>
+                                    <span style="width: 100%; display: block;">#{firstName}</span>
+                                </div>
+                               <div style="width: 50%;">
+                                    <p>Nume</p>
+                                    <span style="width: 100%; display: block;">#{lastName}</span>
+                               </div>
+                               
+                            </div>
+                            <div class="email inline-wrapper" style="flex-wrap: wrap;">
+                                
+                                <p>Email  #{emailValidated ? <img title="Emailul este verificat!" src="../media/check-mark-svgrepo-com.svg" class="email-verified"> : <a href="user/verifyemail?id=#{id}">Verifica-ti emailul</a>}</p>
+                                <span>#{email}</span>
+                              
+                            </div>
+                            
+                            <a href="/reset-password">schimba parola</a>
+                            
+                           
+                        </div>
                     </div>
+
+                    <div class="content-container" id="actions">
+                        <h1>Actiuni</h1>
+                        <p>Ai creat contul la: <i>#{createdAt}</i></p>
+                        
+                        <div class="inline-wrapper">
+                            <button onclick="logOut()" class="warning">Log out</button>
+                            <button onclick="deleteAccount()" class="bad">Sterge contul</button>
+                        </div>
+                        
+                    </div>
+
+                    <div class="content-container" id="preferences">
+                       <h1>Preferinte</h1>
+                         <!-- <form action="profile/update" method="post">
+                             
+                                <input type="color" name="color" id="color" value="##{userColor}">
+                                <button type="submit">Update</button>
+                            </form> -->
+                            <div class="color-container">
+                                <div>
+                                    <h2 style="margin-block: 0; padding-inline: 0;">Schimba culoarea contului tau</h2>
+                                    <p style="padding-inline: 1em;">Aceasta culoare v-a fi utilizata pentru a te diferentia in sesiuni colaborative</p>
+                                </div>
+                            <div class="color-list" id="color-list">
+                                <span color="##{userColor}"
+                                 style="--color: ##{userColor}" class="selected" id="color-active"></span>
+                                 
+                                <span color="#f3f3f3" style="--color: #f3f3f3"></span>
+                                <span color="#4287f5" style="--color: #4287f5"></span>
+                                <span color="#7842f5" style="--color: #7842f5"></span>
+                                <span color="#bf3e24" style="--color: #bf3e24"></span>
+                                <span color="#84118c" style="--color: #84118c"></span>
+                                <span color="#e3769c" style="--color: #e3769c"></span>
+                                <span color="#b2e376" style="--color: #b2e376"></span>
+                                <span color="#293413" style="--color: #293413"></span>
+                                <span>
+                                    <input type="color" name="color" onchange="this.parentElement.style='--color:'+this.value" value="##{userColor}">
+                                </span>
+                                
+                               
+                            </div>
+                            <button id="color-submit" class="profile-button">Update</button>
+
+
+                             <script>
+                                    let selectedColor = document.getElementById('color-active')
+                                    document.getElementById('color-list').onclick = (ev) => {
+                                        let color = ev.target.getAttribute('color')
+                                        if(!color)
+                                        if(ev.target.value)
+                                            color = ev.target.value
+                                        else 
+                                            return
+
+                                        if(selectedColor)
+                                            selectedColor.classList.remove('selected')
+                                        selectedColor = ev.target
+                                        selectedColor.classList.add('selected')
+                                        
+                                    }
+                                    document.getElementById('color-submit').onclick = (ev) => { 
+                                        color = selectedColor.getAttribute('color') ? selectedColor.getAttribute('color') : selectedColor.value
+                                        if(!selectedColor || !color)
+                                            return
+                                        fetch('profile/update', {
+                                            method: 'POST',
+                                           headers: {
+                                            'Accept': 'application/json',
+                                            'Content-Type': 'application/json'
+                                            },
+                                            body: 
+                                            JSON.stringify({
+                                                color
+                                            })
+                                        }).then(val => {
+                                            location.reload()
+                                        })
+                                    }
+                                </script>
+                            </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
     
         <div class="container">
-            <h1>Prieteni</h1>
-        </div>
-        <div class="container">
             <h1>Proiecte</h1>
-            #{projectsList}
+            <div class="projects-container">
+                #{projectsList}
+            </div>
+            
         </div>
         
     </div>
@@ -76,6 +183,48 @@
         msg.json().then(data => {
             window.location.href = data.redir
         })
+    }
+    function deleteAccount()
+    {
+        if(window.confirm('Sigur vrei sa-ti stergi contul definitiv?'))
+        fetch('profile/update', {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/text',
+            'Content-Type': 'application/json'
+            },
+            body: 
+            JSON.stringify({
+                deleteAccount: true
+            })
+        }).then(async val => {
+            const res = await val.text()
+            window.alert(res)
+            location.href = '/'
+        })
+    
+    }
+    function openTab(open)
+    {
+        for(const panel of document.getElementById('panel-container').children)
+            panel.classList.remove('open')
+
+        document.getElementById(open).classList.add('open')
+    }
+
+    document.getElementById('file').onchange = (ev) => {
+        document.getElementById('pfpform').submit()
+        // const file = ev.target.files[0];
+        // const upload = URL.createObjectURL(file);
+        // console.log(upload)
+        // fetch('profile/update', {
+        //     method: 'POST',
+        //     body: 
+        //     JSON.stringify(
+        //     {
+        //         file: upload
+        //     })
+        // })
     }
 </script>
 </html>

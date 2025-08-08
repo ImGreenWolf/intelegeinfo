@@ -46,23 +46,44 @@ router.post('/update', (req, res) => {
     {
         res.status(401).json({ error: 'Unauthorized' });
     }
+
+
      const userId =users.getClientId(users.getJWT(req));
-    const {color} = req.body
-    console.log(req.body)
-    console.log()
+     if(!req.body)
+        res.status(500).send('invalid body')
+     if(req.body.file)
+        var {file} = req.body
+     if(req.body.color)
+        var {color} = req.body
     try {
-        const userColor = (color as string).slice(1)
-        if(userColor.length != 6 && color[0] == '#')
-            throw "invalid color"
+        if(req.body.deleteAccount)
+        {
+            prisma.user.delete({
+                where: {
+                    id: userId
+                }
+            }).finally(() => {
+                res.clearCookie('token').send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro')
+                return;
+            })
+        }
+        if(color)
+        {
+            var userColor = (color as string).slice(1)
+            if(userColor.length != 6 && color[0] == '#')
+                throw "invalid color"
+        }
+          
         prisma.user.update({
             where: {
                 id: userId
             },
             data: {
-                userColor
+                userColor,
+                // picture: file ? file : undefined
             }
         }).then(value => {
-            res.send('Updated')
+            res.redirect('/profile')
         })
 
     }
@@ -105,13 +126,25 @@ router.use('/', (req, res) => {
                     
                     const params: webParams = user;
                     const projects = await users.listAllProjects(userId)
-
-                    params.projectsList=''
-                    for(const project of projects.projects as Project[])
+                    if(typeof projects == 'string')
                     {
-                        params.projectsList += `<div class="project"><a href="/editor?save=${project.fileUUID}">${project.name}</a><button>x</button></div>`
+                         res.status(500).send('A aparut o problema...')
+                         return
                     }
+                       
+                    console.log(projects)
+                    if(!projects || projects.length == 0)
+                        params.projectsList='<p class="empty-response">Nu ai creat niciun proiect</p>'
+                    else 
+                    {
+                         params.projectsList=''
+                        for(const project of projects as Project[])
+                        {
+                            params.projectsList += `<a class="project" href="/editor?save=${project.fileUUID}"><h3>${project.name}</h3><button>x</button></a>`
+                        }
 
+                    }
+                   
                     parseUserInfoInFile(userId, "public/pages/profile.html", params).then(file => {
                         res.send(parseText(file, req))
                         

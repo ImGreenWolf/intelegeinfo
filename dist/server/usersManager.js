@@ -43,7 +43,6 @@ exports.getUserData = getUserData;
 exports.getIdFromJWT = getIdFromJWT;
 exports.addProject = addProject;
 exports.listAllProjects = listAllProjects;
-exports.listProjects = listProjects;
 exports.getClientId = getClientId;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const crypto_1 = require("crypto");
@@ -134,20 +133,7 @@ function listAllProjects(userId) {
                 userId
             }
         }).then(projects => {
-            resolve({ projects });
-        }).catch(err => {
-            reject(err);
-        });
-    });
-}
-function listProjects(userId, projects) {
-    return new Promise((resolve, reject) => {
-        users.default.project.findMany({
-            where: {
-                userId
-            }
-        }).then(projects => {
-            resolve({ projects });
+            resolve([...projects]);
         }).catch(err => {
             reject(err);
         });
@@ -355,6 +341,9 @@ exports.router.get('/listProjects', server_1.authMiddleware, (req, res) => {
         else
             res.status(401).send(err); //json({message: 'error: ' + err})
     });
+});
+exports.router.get('/reset-password', (req, res) => {
+    res.sendFile(path_1.default.join(rootDirName, 'public', 'pages', 'reset-password.html'));
 });
 exports.router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req);

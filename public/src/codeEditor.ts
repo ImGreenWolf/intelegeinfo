@@ -1936,11 +1936,11 @@ export function listProjects()
     method: "GET",
     headers: {'Content-Type': 'application/json'},
   }).then(response => response.json()).catch(err => {})
-  .then(data => {
+  .then(projects => {
 
     // if(data.error) throw 'unauth'
     try {
-  if(!data.projects) throw "invalid data"
+  if(!projects) throw "invalid data"
     }
     catch
     {
@@ -1960,7 +1960,7 @@ export function listProjects()
     // displayMessagePopup(JSON.stringify(data.projects))
     const listcontainer = document.createElement('ul')
     listcontainer.classList.add('project-list')
-    for(const project of data.projects as Project[])
+    for(const project of projects as Project[])
     {
       const projectElem = listcontainer.appendChild(document.createElement('li'))
       const button = projectElem.appendChild(document.createElement('button'))

@@ -3,10 +3,11 @@
 html, body
 {
     background: none;
-    background-image: url(/media/polygon-scatter-haikei.svg);
+    background-color: theme.$background-color;
     height: 100%;
 }
 
+$border-color: rgba(126, 126, 126, 0.219);
 
 .main-container
 {
@@ -15,22 +16,30 @@ html, body
     height: 100%;
     color: black; //theme.$text-color;
     font-family: Poppins;
-    grid-template-columns: auto auto;
-    align-content: space-between;
-    padding: 200px 50px 50px 50px;
+    grid-template-columns: 2fr 1fr;
+    gap: 2em;
+    grid-template-rows: 1fr;
+    align-content: stretch;
+    // padding: 200px 50px 50px 50px;
+    padding: 1em;
+    padding-top: 7em;
+    
+    // top: 2em;
+    position: relative;
     box-sizing: border-box;
 }
 
 .container 
 {
-    background-color: rgba(228, 228, 228, 0.45);
-    box-shadow: 5px 15px 20px 10px rgba(0, 0, 0, 0.171),
-    5px 10px 20px 10px rgb(255, 255, 255) inset;
-    backdrop-filter: blur(5px);
+    background-color: theme.$background-highlight-color;
+    color: white;
     border-radius: 5px;
-    max-width: 500px;
-    height: 250px;
+    // min-width: 500px;
+    min-height: 250px;
+    height: auto;
+    max-width: 100%;
     padding: 30px;
+    --accent-color: #{theme.$accent-color};
 }   
 
 .email-verified
@@ -40,60 +49,16 @@ html, body
     margin-left: 10px;
     color: green;
 }
-#profile h1
+#profile .content-container h1
 {
-    // height: 200px;
-    display: inline-block;
-    text-align: center;
-    align-self: end;
-    font-family: Oswald;
-    margin: 0;
-    grid-column: 3/ 3;
+  text-decoration: underline;
 
 }
-#profile .content-container
+#profile h2 
 {
-    position: relative;
-    // top: -110px;
-    display: grid;
-    flex-wrap: wrap;
-    grid-template-columns: auto auto 1fr;
-    grid-template-rows: 2lh 1fr;
-    height: 100%; // figure out to use bottom 0 
-    bottom: 0;
-    gap: 30px;
+    padding-inline: 1em;
+    margin-block: 0.25em;
 }
-#profile
-{
-        grid-row: span 2;
-        height: auto;
-        max-width: 700px;
-        .email *
-        {
-            display: inline;
-        }
-        .info-container
-        {
-            grid-column: 3 / 3;
-            // justify-self: center;
-        }
-}
-
-#profile .profile-pic-large
-{
-    margin: -30px 0px 0px -30px;
-    max-width: 200px;
-    border-radius: 50%;
-    padding: 10px;
-    background-color: rgb(255, 255, 255);
-    // transform: translateY(-50%);
-    grid-row: 1 / 2;
-    top: -110px;
-    position: relative;
-    grid-column: 1 / 1;
-
-}
-
 #profile ul 
 {
     grid-row: 2 / 2;
@@ -102,8 +67,264 @@ html, body
     flex-direction: column;
     padding: 0;
     margin-right: 30px;
-    gap: 5px;
+    // gap: 5px;
     button {
         height: 2lh;
+        text-wrap: nowrap;
+        padding-inline: 2em;
+        font-size: 1em;
+        // border: 2px solid gray;
+        border: none;
+        // border-radius: 0.25em;
+        background-color: transparent;
+        color: inherit;
+        font-family: inherit;
+        text-align: start;
+    }
+    button:hover
+    {
+        background-color: rgba(126, 126, 126, 0.082);
+        border-right: 5px solid var(--accent-color);
+    }
+}
+
+.profile-grid
+{
+    display: grid;
+    grid-template-columns: 1fr auto 2fr;
+    grid-template-rows: 1lh auto 1fr;
+    gap: 30px;
+}
+
+vl {
+    border-color: $border-color !important;
+    margin: -15px;
+}
+
+#profile .content-container
+{
+    grid-row: 1/-1;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    width: 75%;
+    margin: auto;
+    height: 100%;
+    a 
+    {
+        color: inherit;
+        display: block;
+    }
+    &:not(.open)
+    {
+        display: none;
+    }
+}
+
+#profile
+{
+        // grid-row: span 2;
+        height: auto;
+        min-width: 700px;
+        width: auto;
+        .email *
+        {
+            display: inline;
+        }
+        .info-container
+        {
+            grid-column: 3 / 3;
+            gap: 1em;
+            display: flex;
+            flex-direction: column;
+            // justify-self: center;
+             span {
+                border-radius: 0.25lh;
+                border: 2px solid $border-color;
+                width: 100%;
+                padding-inline: 1em;
+                line-height: 2.5em;
+                box-sizing: border-box;
+                color: gray;
+                font-weight: 300;
+            }
+        }
+       
+}
+.inline-wrapper
+{
+    display: flex;
+    // align-content: center;
+    align-items: center;
+    justify-content: flex-start;
+    height: fit-content;
+    column-gap: 1em;
+    // flex-wrap: wrap;
+    
+    p {
+        margin-block: 0.1em;
+    }
+}
+
+.inline-wrapper button, .inline-wrapper label,
+.profile-button
+    {
+        padding-inline: 1em;
+        line-height: 2.5em;
+        background-color: white;
+        color: black;
+        font-family: inherit;
+        border: none;
+        border-radius: 0.25lh;
+        cursor: pointer;
+        &.bad
+        {
+            background-color: transparent;
+            border: 2px solid rgb(184, 0, 0);
+            color: rgb(184, 0, 0)
+        }
+
+        &.warning
+        {
+            background-color: theme.$accent-color;
+            color: white;
+        }
+    }
+
+
+#profile .profile-pic-large
+{
+    // margin: -30px 0px 0px -30px;
+    max-width: 100px;
+    border-radius: 50%;
+    padding: 4px;
+    background-color: rgb(255, 255, 255);
+    // // transform: translateY(-50%);
+    // grid-row: 1 / 2;
+    // // top: -110px;
+    // position: relative;
+    // // grid-column: 1 / 1;
+
+}
+
+.empty-response
+{
+    text-align: center;
+    opacity: 0.5;
+}
+
+.color-container
+{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+input[type=color]
+{
+    opacity: 0;
+}
+
+.color-list
+{
+    display: flex;
+    gap: 1em;
+    justify-content: space-between;
+    width: 75%;
+    margin: auto;
+    span
+    {
+        border-radius: 50%;
+        background-color: var(--color);
+        width: 25px;
+        display: block;
+        height: 25px;
+        position: relative;
+    }
+    span:has(input[type=color])
+    {
+        background-color: transparent;
+        background: conic-gradient(red, green, blue, red);
+        border: 2px solid var(--color);
+        width: 27px;
+        height: 27px;
+        box-sizing: border-box;
+    }
+    span.selected::before,
+    span:has(input[type=color].selected)::before
+    {
+        content: "";
+        color: rgb(253, 253, 253);
+        text-align: center;
+        position: absolute;
+        // margin: -10px;
+        box-sizing: border-box;
+        border: 2px solid gray;
+        border-radius: 5px;
+        padding: 5px;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+    }
+    span:has(input[type=color])::after
+    {
+        content: '?';
+        position: absolute;
+        text-shadow: 1px 1px black;
+        pointer-events: none;
+        font-family: inherit;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+    }
+    #color-active::after
+    {
+        content: '';
+        position: absolute;
+        display: block;
+        height: 100%;
+        right: -16px;
+        border-right: 2px solid gray;
+        margin-right: 5px;
+    }
+}
+
+.projects-container
+{
+    display: grid;
+    gap: 1em;
+    grid-auto-flow: dense;
+    grid-template-columns: auto auto auto;
+    &>.project
+    {
+        // padding: 1em;
+        background-color: theme.$background-color;
+        border-radius: 10px;
+        color: inherit;
+        padding-inline: 2em;
+        padding-block: 0.5em;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        h3
+        {
+            display: inline;
+        }
+        button 
+        {
+            margin-left: 1em;
+            border-radius: 50%;
+            aspect-ratio: 1;
+            display: inline;
+            text-align: center;
+            background-color: rgb(10,10,10);
+            color: white;
+            border: 2px solid $border-color;
+            
+        }
+        &:hover
+        {
+            background-color: rgb(30,30,30);
+        }
     }
 }
