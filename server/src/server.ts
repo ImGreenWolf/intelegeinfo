@@ -1298,14 +1298,13 @@ function endConnectionPromise()
                 
                 if(!buffer)
                     return
-                
-                // if (buffer.indexOf('\0') !== -1) return false;
+                if (buffer.indexOf('\0') !== -1) return false;
 
-                // const nonPrint = (buffer.match(/\\\\/g) || []).length;
-                // // If more than 1% non-printable, treat as binary
-                // console.log(nonPrint, Math.max(1, buffer.length))
-                // if(nonPrint / Math.max(1, buffer.length) > 0.01)
-                //     return 
+                const nonPrint = (buffer.match(/\\\\/g) || []).length;
+                // If more than 1% non-printable, treat as binary
+                console.log(nonPrint, Math.max(1, buffer.length))
+                if(nonPrint / Math.max(1, buffer.length) > 0.01)
+                    return 
 
                 if (true) {
                     // We have everything, remove listener
@@ -1315,7 +1314,7 @@ function endConnectionPromise()
                         if(element.trim()!='')
                         {
                              const gdbOutput = parseGDBString(element);
-                             if(gdbOutput.json == '{}')
+                             if(JSON.stringify(gdbOutput.json) == '{}')
                                 continue;
 
                         if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')

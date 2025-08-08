@@ -1021,19 +1021,20 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
             if (!buffer)
                 return;
-            // if (buffer.indexOf('\0') !== -1) return false;
-            // const nonPrint = (buffer.match(/\\\\/g) || []).length;
-            // // If more than 1% non-printable, treat as binary
-            // console.log(nonPrint, Math.max(1, buffer.length))
-            // if(nonPrint / Math.max(1, buffer.length) > 0.01)
-            //     return 
+            if (buffer.indexOf('\0') !== -1)
+                return false;
+            const nonPrint = (buffer.match(/\\\\/g) || []).length;
+            // If more than 1% non-printable, treat as binary
+            console.log(nonPrint, Math.max(1, buffer.length));
+            if (nonPrint / Math.max(1, buffer.length) > 0.01)
+                return;
             if (true) {
                 // We have everything, remove listener
                 // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                 for (const element of buffer.split('\n')) {
                     if (element.trim() != '') {
                         const gdbOutput = (0, gdbUtilities_1.parseGDBString)(element);
-                        if (gdbOutput.json == '{}')
+                        if (JSON.stringify(gdbOutput.json) == '{}')
                             continue;
                         if (gdbOutput.json['exit-code'] != undefined || gdbOutput.json.reason == 'exited-normally') {
                             closeProcess(clientSession.process);
