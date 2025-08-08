@@ -1217,7 +1217,6 @@ value {
   max-width: 100%;
   align-self: center;
   display: block;
-  animation: fade 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
   max-height: 600px;
   min-height: 1lh;
   text-overflow: ellipsis;
