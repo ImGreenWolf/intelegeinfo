@@ -309,7 +309,7 @@ header2
     .header-buttons-container
     {
       // box-sizing: content-box;
-      height: 1.5lh;
+      // height: 1.5lh;
       display: flex;
       gap: 2em;
       align-items: stretch;
@@ -522,7 +522,7 @@ header2
         {
             justify-self: center;
             transform: none;
-            grid-column: 1/-1;
+            // grid-column: 1/-1;
             li 
             {
               padding: 0.75em 0.25em !important;

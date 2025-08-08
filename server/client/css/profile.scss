@@ -33,7 +33,7 @@ $border-color: rgba(126, 126, 126, 0.219);
 {
     background-color: theme.$background-highlight-color;
     color: white;
-    border-radius: 5px;
+    border-radius: 1em;
     // min-width: 500px;
     min-height: 250px;
     height: auto;
@@ -54,19 +54,27 @@ $border-color: rgba(126, 126, 126, 0.219);
   text-decoration: underline;
 
 }
-#profile h2 
+#profile .profile-grid>h2 
 {
-    padding-inline: 1em;
-    margin-block: 0.25em;
+    padding: 1em;
+    margin-block: 0;
+    border-bottom: 1px solid $border-color;
+    border-right: 1px solid $border-color;
+    text-wrap: nowrap;
 }
 #profile ul 
 {
-    grid-row: 2 / 2;
-    grid-column: 1 / 1;
+    // grid-row: 2 / 2;
+    // grid-column: 1 / 1;
+    grid-area: tabs;
     display: flex;
     flex-direction: column;
     padding: 0;
-    margin-right: 30px;
+    // margin-right: 30px;
+    margin: 0;
+    
+    border-right: 1px solid $border-color;
+    // margin-top: 2em;
     // gap: 5px;
     button {
         height: 2lh;
@@ -80,30 +88,44 @@ $border-color: rgba(126, 126, 126, 0.219);
         color: inherit;
         font-family: inherit;
         text-align: start;
+        //  border-bottom: 1px solid $border-color;
+        &:not(:last-of-type)
+        {
+            border-bottom: 2px solid $border-color;
+        }
     }
     button:hover
     {
         background-color: rgba(126, 126, 126, 0.082);
         border-right: 5px solid var(--accent-color);
+        border-bottom: none;
     }
 }
+
 
 .profile-grid
 {
     display: grid;
-    grid-template-columns: 1fr auto 2fr;
-    grid-template-rows: 1lh auto 1fr;
-    gap: 30px;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: min-content 1fr;
+    // gap: 30px;
+
+    grid-template-areas: 
+        'header page'
+        'tabs page'
+        'tabs page';
 }
 
-vl {
-    border-color: $border-color !important;
-    margin: -15px;
+
+#panel-container
+{
+    grid-area: page;
 }
 
 #profile .content-container
 {
-    grid-row: 1/-1;
+    // grid-row: 1/-1;
+
     display: flex;
     flex-direction: column;
     gap: 2em;
@@ -125,7 +147,7 @@ vl {
 {
         // grid-row: span 2;
         height: auto;
-        min-width: 700px;
+        width: 700px;
         width: auto;
         .email *
         {
@@ -166,7 +188,8 @@ vl {
     }
 }
 
-.inline-wrapper button, .inline-wrapper label,
+.inline-wrapper button,
+.inline-wrapper label,
 .profile-button
     {
         padding-inline: 1em;
@@ -229,8 +252,9 @@ input[type=color]
     display: flex;
     gap: 1em;
     justify-content: space-between;
-    width: 75%;
+    min-width: 75%;
     margin: auto;
+    // flex-wrap: wrap;
     span
     {
         border-radius: 50%;
@@ -295,6 +319,7 @@ input[type=color]
     gap: 1em;
     grid-auto-flow: dense;
     grid-template-columns: auto auto auto;
+    font-size: 0.75em;
     &>.project
     {
         // padding: 1em;
@@ -327,4 +352,30 @@ input[type=color]
             background-color: rgb(30,30,30);
         }
     }
+}
+
+
+@media screen and (max-width: 1024px) {
+    .main-container
+    {
+        grid-template-columns: 1fr;
+        grid-template-rows: 2fr 1fr;
+        height: fit-content;
+        font-size: 0.75em;
+    }
+    .profile-grid
+    {
+        grid-template-columns: 1fr;
+        // gap: 1em;
+         grid-template-rows: min-content min-content  auto;
+        grid-template-areas: 
+        'header'
+        'tabs'
+        'page' !important;
+    }
+    .projects-container
+    {
+        grid-template-columns: auto
+    }
+    
 }

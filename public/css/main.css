@@ -247,7 +247,6 @@ header2 h2 {
   left: 3em;
 }
 header2 .header-buttons-container {
-  height: 1.5lh;
   display: flex;
   gap: 2em;
   align-items: stretch;
@@ -414,7 +413,6 @@ header2 nav ul li:hover {
   header2 nav {
     justify-self: center;
     transform: none;
-    grid-column: 1/-1;
   }
   header2 nav li {
     padding: 0.75em 0.25em !important;

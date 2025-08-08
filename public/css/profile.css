@@ -23,7 +23,7 @@ html, body {
 .container {
   background-color: rgb(11, 15, 20);
   color: white;
-  border-radius: 5px;
+  border-radius: 1em;
   min-height: 250px;
   height: auto;
   max-width: 100%;
@@ -42,18 +42,21 @@ html, body {
   text-decoration: underline;
 }
 
-#profile h2 {
-  padding-inline: 1em;
-  margin-block: 0.25em;
+#profile .profile-grid > h2 {
+  padding: 1em;
+  margin-block: 0;
+  border-bottom: 1px solid rgba(126, 126, 126, 0.219);
+  border-right: 1px solid rgba(126, 126, 126, 0.219);
+  text-wrap: nowrap;
 }
 
 #profile ul {
-  grid-row: 2/2;
-  grid-column: 1/1;
+  grid-area: tabs;
   display: flex;
   flex-direction: column;
   padding: 0;
-  margin-right: 30px;
+  margin: 0;
+  border-right: 1px solid rgba(126, 126, 126, 0.219);
 }
 #profile ul button {
   height: 2lh;
@@ -66,25 +69,27 @@ html, body {
   font-family: inherit;
   text-align: start;
 }
+#profile ul button:not(:last-of-type) {
+  border-bottom: 2px solid rgba(126, 126, 126, 0.219);
+}
 #profile ul button:hover {
   background-color: rgba(126, 126, 126, 0.082);
   border-right: 5px solid var(--accent-color);
+  border-bottom: none;
 }
 
 .profile-grid {
   display: grid;
-  grid-template-columns: 1fr auto 2fr;
-  grid-template-rows: 1lh auto 1fr;
-  gap: 30px;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: min-content 1fr;
+  grid-template-areas: "header page" "tabs page" "tabs page";
 }
 
-vl {
-  border-color: rgba(126, 126, 126, 0.219) !important;
-  margin: -15px;
+#panel-container {
+  grid-area: page;
 }
 
 #profile .content-container {
-  grid-row: 1/-1;
   display: flex;
   flex-direction: column;
   gap: 2em;
@@ -102,7 +107,7 @@ vl {
 
 #profile {
   height: auto;
-  min-width: 700px;
+  width: 700px;
   width: auto;
 }
 #profile .email * {
@@ -136,7 +141,8 @@ vl {
   margin-block: 0.1em;
 }
 
-.inline-wrapper button, .inline-wrapper label,
+.inline-wrapper button,
+.inline-wrapper label,
 .profile-button {
   padding-inline: 1em;
   line-height: 2.5em;
@@ -147,13 +153,15 @@ vl {
   border-radius: 0.25lh;
   cursor: pointer;
 }
-.inline-wrapper button.bad, .inline-wrapper label.bad,
+.inline-wrapper button.bad,
+.inline-wrapper label.bad,
 .profile-button.bad {
   background-color: transparent;
   border: 2px solid rgb(184, 0, 0);
   color: rgb(184, 0, 0);
 }
-.inline-wrapper button.warning, .inline-wrapper label.warning,
+.inline-wrapper button.warning,
+.inline-wrapper label.warning,
 .profile-button.warning {
   background-color: rgb(63, 9, 16);
   color: white;
@@ -185,7 +193,7 @@ input[type=color] {
   display: flex;
   gap: 1em;
   justify-content: space-between;
-  width: 75%;
+  min-width: 75%;
   margin: auto;
 }
 .color-list span {
@@ -244,6 +252,7 @@ input[type=color] {
   gap: 1em;
   grid-auto-flow: dense;
   grid-template-columns: auto auto auto;
+  font-size: 0.75em;
 }
 .projects-container > .project {
   background-color: rgb(20, 20, 20);
@@ -270,6 +279,23 @@ input[type=color] {
 }
 .projects-container > .project:hover {
   background-color: rgb(30, 30, 30);
+}
+
+@media screen and (max-width: 1024px) {
+  .main-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 2fr 1fr;
+    height: fit-content;
+    font-size: 0.75em;
+  }
+  .profile-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content min-content auto;
+    grid-template-areas: "header" "tabs" "page" !important;
+  }
+  .projects-container {
+    grid-template-columns: auto;
+  }
 }
 
 /*# sourceMappingURL=profile.css.map */

@@ -18,13 +18,13 @@
         <div class="container" id="profile" style="--accent-color: ##{userColor}">
             <div style="height: 100%;" class="profile-grid">
                 <h2>Salut #{username}!</h2>
-                <vl style="grid-column: 1; grid-row: 2; border-bottom: 1px solid;"></vl>
-                <ul style="grid-row: 3">
+            
+                <ul>
                     <button onclick="openTab('accDetails')">Detalii cont</button>
                     <button onclick="openTab('preferences')">Preferinte</button>
                     <button onclick="openTab('actions')">Actiuni</button>
                 </ul>
-                <vl style="grid-row: 1 / -1; border-left: 1px solid;"></vl>
+                
                 <div id="panel-container">
                     <div class="content-container open" id="accDetails">
                         <h1>Detalii cont</h1>
