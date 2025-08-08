@@ -691,7 +691,7 @@ class DebugWindow {
         else 
           value = valString
 
-        value = value.split(',').map(val => val.trim())
+        value = value.split(',').map(val => val.trim().replaceAll('<', '&lt;').replace('>', '&gt;'))
       
       }
        
@@ -707,9 +707,9 @@ class DebugWindow {
     for(const [varName, varVal] of this.procVariables.entries())
     {
       if(Array.isArray(varVal))
-        vars.push(createNode('li', {htmlSting: `${varName}: ${varVal.map(val => `<span>${val}</span>`).join(' ')}`}))
+        vars.push(createNode('li', {htmlSting: `${varName}: <div class="array-container">${varVal.map(val => `<span>${val}</span>`).join(' ')}</div>`}))
       else
-        vars.push(createNode('li', {innerText: `${varName}: ${varVal}`}))
+        vars.push(createNode('li', {innerText: `${varName}: <div class="value-container">${varVal}</div>`}))
     }
     this.varList.replaceChildren(...vars)
   }

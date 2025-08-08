@@ -2376,6 +2376,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             throw 'invalid debug process'
 
                                         addProcessToMap(sessionId, clientSession.gdbProcess);
+                                        replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                                     } catch (err){
                                         printClientConsoleError("docker error: " + err)
                                     }

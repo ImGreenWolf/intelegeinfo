@@ -1901,6 +1901,7 @@ bash `.trim().replaceAll('\n', "");
                                                     if (!clientSession.gdbProcess)
                                                         throw 'invalid debug process';
                                                     addProcessToMap(sessionId, clientSession.gdbProcess);
+                                                    replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                                 }
                                                 catch (err) {
                                                     printClientConsoleError("docker error: " + err);
