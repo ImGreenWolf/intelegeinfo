@@ -1292,7 +1292,7 @@ function endConnectionPromise()
                 const nonPrint = (buffer.match(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g) || []).length;
                 // If more than 1% non-printable, treat as binary
                 console.log(nonPrint, Math.max(1, buffer.length))
-                if(nonPrint / Math.max(1, buffer.length) < 0.01)
+                if(nonPrint / Math.max(1, buffer.length) > 0.01)
                     return 
 
                 if (true) {
