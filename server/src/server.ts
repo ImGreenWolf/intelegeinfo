@@ -1280,7 +1280,7 @@ function endConnectionPromise()
 
        const onData = (data: Buffer) => {
                 
-                const buffer = data.toString();
+                const buffer = data.toString('utf8');
                 console.log(buffer)
                 // Check if the full response has arrived
                 if(!buffer.toString())

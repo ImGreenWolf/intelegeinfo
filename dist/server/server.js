@@ -1006,7 +1006,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
         }
         const onData = (data) => {
-            const buffer = data.toString();
+            const buffer = data.toString('utf8');
             console.log(buffer);
             // Check if the full response has arrived
             if (!buffer.toString())
