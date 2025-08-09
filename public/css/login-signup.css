@@ -13,6 +13,7 @@
 body, html {
   height: 100%;
   background-image: none !important;
+  padding: 0;
 }
 
 .container {
@@ -235,10 +236,10 @@ form {
 
 .interaction-area {
   display: grid;
-  grid-template-rows: 0.75fr 1fr;
-  gap: 4em;
   width: 75%;
   margin: auto;
+  align-content: space-evenly;
+  gap: 3em;
 }
 
 input:not([type=checkbox]) {
@@ -416,7 +417,11 @@ button.login-method {
   justify-self: flex-end;
   position: relative;
   justify-content: start;
-  gap: 1.5em;
+  gap: 1em;
+}
+
+.input-container > div {
+  width: 100%;
 }
 
 .button-container {
@@ -439,7 +444,7 @@ a:visited {
 
 form div.inline {
   display: flex;
-  gap: 1em;
+  gap: 0.75em;
   box-sizing: content-box;
   width: 100%;
 }
@@ -464,6 +469,69 @@ hl {
 }
 hl.dashed {
   border-top-style: dashed;
+}
+
+input[type=radio] {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  height: 100%;
+  width: 100%;
+  border-color: var(--color);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  border-radius: 3lh;
+  border-width: 0.2em;
+  font-size: inherit;
+}
+input[type=radio]:checked {
+  background-color: var(--color);
+  color: white;
+}
+
+h3 {
+  margin-top: 0.1em;
+}
+
+.type-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  transition-duration: inherit;
+}
+.type-container div {
+  position: relative;
+  width: 7em;
+  height: 3em;
+  font-size: 1em;
+  color: var(--color);
+  transition-duration: inherit;
+}
+.type-container div:has(#student) {
+  --color: rgb(15, 56, 110);
+}
+.type-container div:has(#teacher) {
+  --color: rgb(63, 9, 16);
+}
+.type-container div:has(#none) {
+  --color: rgb(54, 54, 54);
+}
+.type-container div:has(input[type=radio]:checked) {
+  color: white;
+}
+.type-container div:not(:has(input[type=radio]:checked)) {
+  opacity: 0.75;
+}
+.type-container label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: inherit;
+  transition-duration: 0.3s;
+  user-select: none;
 }
 
 @media screen and (max-aspect-ratio: 3/1) and (orientation: portrait) {
