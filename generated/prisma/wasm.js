@@ -141,7 +141,8 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt',
   activeAt: 'activeAt',
   password: 'password',
-  loginMethod: 'loginMethod'
+  loginMethod: 'loginMethod',
+  occupationType: 'occupationType'
 };
 
 exports.Prisma.CodeScalarFieldEnum = {
@@ -209,6 +210,20 @@ exports.Prisma.SolveScalarFieldEnum = {
   uploadedAt: 'uploadedAt',
   score: 'score',
   time: 'time'
+};
+
+exports.Prisma.CourseScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  experience: 'experience',
+  price: 'price',
+  courseLength: 'courseLength',
+  description: 'description',
+  phone: 'phone',
+  external: 'external',
+  email: 'email',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -286,9 +301,23 @@ exports.Prisma.ProblemOrderByRelevanceFieldEnum = {
 exports.Prisma.SolveOrderByRelevanceFieldEnum = {
   sourceCode: 'sourceCode'
 };
+
+exports.Prisma.CourseOrderByRelevanceFieldEnum = {
+  experience: 'experience',
+  description: 'description',
+  phone: 'phone',
+  external: 'external',
+  email: 'email'
+};
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   ADMIN: 'ADMIN'
+};
+
+exports.OccupationType = exports.$Enums.OccupationType = {
+  Student: 'Student',
+  Teacher: 'Teacher',
+  None: 'None'
 };
 
 exports.Difficulty = exports.$Enums.Difficulty = {
@@ -307,7 +336,8 @@ exports.Prisma.ModelName = {
   Tag: 'Tag',
   GuideTag: 'GuideTag',
   Problem: 'Problem',
-  Solve: 'Solve'
+  Solve: 'Solve',
+  Course: 'Course'
 };
 
 /**

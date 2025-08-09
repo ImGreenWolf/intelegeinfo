@@ -39,12 +39,19 @@ model User {
   activeAt DateTime @default(now())
   password String 
   loginMethod String @default("local")
+  occupationType OccupationType @default(None)
   projects Project[]
   solves Solve[]
 
   Guide Guide[] // guides written by user
-}
 
+  Course Course? // course offered 
+}
+enum OccupationType {
+  None
+  Student
+  Teacher
+}
 enum Role {
   USER
   ADMIN
@@ -137,3 +144,22 @@ model Solve {
   time Int @default(-1)
 }
 
+
+model Course {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  experience String
+  price Int 
+  courseLength Int
+  description String
+  
+  phone String?
+  external String[]
+  email String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+}

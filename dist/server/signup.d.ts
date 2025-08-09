@@ -1,13 +1,14 @@
 import { Response } from 'express';
 import { onLoggedIn } from "./login";
 declare const router: import("express-serve-static-core").Router;
-export declare function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }: {
+export declare function onSignedIn({ email, username, loginMethod, firstName, lastName, profile, type }: {
     email: any;
     username: any;
     loginMethod: any;
     firstName: any;
     lastName: any;
     profile: any;
+    type: any;
 }, res: Response, password: string, req: any, keepLoggedIn?: boolean): Promise<{
     json: {
         message: any;

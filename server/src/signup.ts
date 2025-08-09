@@ -11,6 +11,7 @@ import {onLoggedIn} from "./login"
 import path from 'path';
 import { randomHexColor } from './types';
 import { UserNoPassword } from './usersManager';
+import { OccupationType, Prisma } from '../../generated/prisma';
 
 
 const router = express.Router();
@@ -32,12 +33,12 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 //   }
 
 
-export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile}, res:Response, password: string, req, keepLoggedIn=true):
+export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile, type }, res:Response, password: string, req, keepLoggedIn=true ):
  Promise<{json: {message, redirect, email, id, loginMethod}, res: ReturnType<typeof onLoggedIn> }>
 {
   return new Promise((resolve, reject) => {
 
-  
+  console.log(OccupationType[type]!=undefined ? OccupationType[type] : OccupationType.None, type, OccupationType[type])
    prisma.user.create({
     data: {
       firstName, 
@@ -49,6 +50,7 @@ export async function onSignedIn({ email, username, loginMethod, firstName, last
       userColor: randomHexColor(),
       picture: profile,
       emailValidated: loginMethod == 'google',
+      occupationType: OccupationType[type]!=undefined ? OccupationType[type] : OccupationType.None
     },
     omit:
     {
@@ -70,9 +72,9 @@ export async function onSignedIn({ email, username, loginMethod, firstName, last
 
 
 
-function createUser(params:any, res: Response, password: string, req)
+function createUser(params, res: Response, password: string, req)
 {
-  const { email, name, loginMethod, } = params;
+  const { email, username, loginMethod,type} = params;
   prisma.user.findUnique({ // TODO Finda  better way to check if a user exists.
     where:
     {

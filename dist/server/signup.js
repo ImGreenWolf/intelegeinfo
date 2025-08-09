@@ -14,6 +14,7 @@ const dbClient_1 = __importDefault(require("./dbClient"));
 const login_1 = require("./login");
 const path_1 = __importDefault(require("path"));
 const types_1 = require("./types");
+const prisma_1 = require("../../generated/prisma");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/signup.html"));
@@ -28,8 +29,9 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 
 //       { expiresIn: '1h' }
 //     );
 //   }
-async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile }, res, password, req, keepLoggedIn = true) {
+async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile, type }, res, password, req, keepLoggedIn = true) {
     return new Promise((resolve, reject) => {
+        console.log(prisma_1.OccupationType[type] != undefined ? prisma_1.OccupationType[type] : prisma_1.OccupationType.None, type, prisma_1.OccupationType[type]);
         dbClient_1.default.user.create({
             data: {
                 firstName,
@@ -41,6 +43,7 @@ async function onSignedIn({ email, username, loginMethod, firstName, lastName, p
                 userColor: (0, types_1.randomHexColor)(),
                 picture: profile,
                 emailValidated: loginMethod == 'google',
+                occupationType: prisma_1.OccupationType[type] != undefined ? prisma_1.OccupationType[type] : prisma_1.OccupationType.None
             },
             omit: {
                 password: true
@@ -57,7 +60,7 @@ async function onSignedIn({ email, username, loginMethod, firstName, lastName, p
     });
 }
 function createUser(params, res, password, req) {
-    const { email, name, loginMethod, } = params;
+    const { email, username, loginMethod, type } = params;
     dbClient_1.default.user.findUnique({
         where: {
             email
