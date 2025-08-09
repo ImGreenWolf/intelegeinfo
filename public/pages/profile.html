@@ -106,10 +106,32 @@
                                 
                                
                             </div>
+                             <div>
+                                <div class="type-wrapper">
+                                <h3>Sunt...</h3>
+                                <div class="type-container">
+                                    <div>
+                                    <input type="radio" name="type" id="student" value="Student" required="required">
+                                    <label for="student">Elev</label>
+                                    </div>
+                                    <div>
+                                    <input type="radio" name="type" id="teacher" value="Teacher" required="required">
+                                    <label for="teacher">Profesor</label>
+                                    </div>
+                                    <div>
+                                    <input type="radio" name="type" id="none" value="None" required="required">
+                                    <label for="none">Niciunul</label>
+
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+
                             <button id="color-submit" class="profile-button">Update</button>
 
 
                              <script>
+                                    document.querySelector('input[value="#{occupationType}"]').checked = true;
                                     let selectedColor = document.getElementById('color-active')
                                     document.getElementById('color-list').onclick = (ev) => {
                                         let color = ev.target.getAttribute('color')
@@ -127,7 +149,8 @@
                                     }
                                     document.getElementById('color-submit').onclick = (ev) => { 
                                         color = selectedColor.getAttribute('color') ? selectedColor.getAttribute('color') : selectedColor.value
-                                        if(!selectedColor || !color)
+                                        const occupationType = document.querySelector('input[name="type"]:checked').value;
+                                        if((!selectedColor || !color) && !occupation)
                                             return
                                         fetch('profile/update', {
                                             method: 'POST',
@@ -137,7 +160,8 @@
                                             },
                                             body: 
                                             JSON.stringify({
-                                                color
+                                                color,
+                                                occupationType
                                             })
                                         }).then(val => {
                                             location.reload()
@@ -145,6 +169,8 @@
                                     }
                                 </script>
                             </div>
+
+                           
                     </div>
                     
                 </div>

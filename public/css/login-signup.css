@@ -527,12 +527,11 @@ input[type=radio] {
   -webkit-appearance: none;
   height: 100%;
   width: 100%;
-  border-color: var(--color);
   margin: 0;
   padding: 0;
   text-align: center;
   border-radius: 3lh;
-  border-width: 0.2em;
+  border: 0.2em solid var(--color);
   font-size: inherit;
 }
 input[type=radio]:checked {
@@ -572,7 +571,7 @@ h3 {
   color: white;
 }
 .type-container div:not(:has(input[type=radio]:checked)) {
-  opacity: 0.75;
+  opacity: 0.9;
 }
 .type-container label {
   position: absolute;

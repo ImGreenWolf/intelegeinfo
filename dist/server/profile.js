@@ -81,11 +81,13 @@ router.post('/update', (req, res) => {
         res.status(500).send('invalid body');
         return;
     }
-    if (req.body.file)
-        var { file } = req.body;
-    if (req.body.color)
-        var { color } = req.body;
+    //  if(req.body.file)
+    //     var {file} = req.body
+    //  if(req.body.color)
+    //     var {color} = req.body
+    //  if()
     try {
+        var { occupationType, color } = req.body;
         if (req.body.deleteAccount) {
             dbClient_1.default.user.delete({
                 where: {
@@ -108,6 +110,7 @@ router.post('/update', (req, res) => {
                 },
                 data: {
                     userColor,
+                    occupationType
                     // picture: file ? file : undefined
                 }
             }).then(value => {

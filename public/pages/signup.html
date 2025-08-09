@@ -51,9 +51,11 @@
         </div>
         <input type="hidden" name='loginMethod' value="local">
         <div class="type-wrapper">
-          <h3>Ce sunteti?</h3>
+          <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; height: 50px;">
+            <h3 style="display: inline; margin: 0;">Sunt...</h3>
+            <span style="opacity: 0.25;border: 0.15em solid white; border-radius: 50%; font-size: 0.8em; box-sizing: content-box; line-height: 0.5em; padding: 0.3em 0.4em; font-family: cursive; font-weight: 100;" title="Aceasta informatie v-a fi folosita in scop informativ si statistic, nu v-a restricționa accesul la site sau functiile lui.">i</span></div>
           <div class="type-container">
-            <div>
+             <div>
               <input type="radio" name="type" id="student" value="Student" required="required">
               <label for="student">Elev</label>
             </div>
@@ -63,8 +65,7 @@
             </div>
             <div>
               <input type="radio" name="type" id="none" value="None" required="required" checked>
-              <label for="none">Niciunul</label>
-
+              <label for="none" title="..sau prefer sa nu spun">Niciunul</label>
             </div>
           </div>
         </div>
@@ -73,19 +74,19 @@
       <div class="button-container">
 
         <p id="message"></p>
-        <button type="submit">Signup</button>
+        <button type="submit">Sign up</button>
         <div class="signup-options">
           <span>Ai cont deja?</span> <a href="./login">Logeaza-te aici!</a>
         </div>
         
         <div class="login-method-break">
           <hl></hl>
-          <span>or</span>
+          <span>ori</span>
           <hl></hl>
         </div>
 
         <div class="login-method-container">
-          <button onclick="loginWithGoogle()" type="button" class="google login-method">Signup with Google</button>
+          <button onclick="loginWithGoogle()" type="button" class="google login-method">Sign up with Google</button>
         </div>
       
       </div>
@@ -127,9 +128,9 @@
       e.preventDefault();
       const formData = new FormData(e.target);
       
-      if(document.getElementById('password').innerText != document.getElementById('confirm-password').innerText)
+      if(document.getElementById('password').value != document.getElementById('confirm-password').value)
       {
-        document.getElementById('message').innerText = "Parolele nu sunt la fel"
+        document.getElementById('message').innerText = "Parolele nu se potrivesc!"
         setTimeout(() => {
             document.getElementById('message').innerText = '';
         }, 5000);
@@ -157,7 +158,7 @@
         if(result.redirect)
         setTimeout(() => {
           window.location.href = result.redirect + `?id=${result.id}`
-        }, 1000);
+        }, 300);
         
     });
 

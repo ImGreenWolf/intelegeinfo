@@ -48,8 +48,13 @@ body
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    
     background: theme.$background;
     color: theme.$text-color;
+}
+body:has(header2)
+{
+  padding-top: 6em;
 }
 header
 {
@@ -252,7 +257,7 @@ header2
     display: grid;
     align-self: center;
     grid-template-columns: 1fr 2fr 1fr;
-    grid-template-rows: 2lh;
+    grid-template-rows: 3.25em;
     align-items: center;
     justify-content: center;
     justify-items: center;
@@ -306,6 +311,10 @@ header2
         // position: absolute;
         left: 3em;
     }
+    .home 
+    {
+      display: none;
+    }
     .header-buttons-container
     {
       // box-sizing: content-box;
@@ -329,7 +338,7 @@ header2
         text-wrap: nowrap;
         &:nth-child(2)
         {
-          border-radius: 1lh;
+          border-radius: 1.25em;
           background-color: white;
           color: black;
           padding: 0em 0.75em;
@@ -367,7 +376,7 @@ header2
             list-style-type: none;
             // gap: 1em;
              box-shadow: 2px 5px 10px 5px rgba(0, 0, 0, 0.3), inset 10px 10px 20px -10px rgba(63, 86, 105, 0.247);
-             border-radius: 1lh;
+             border-radius: 1.25em;
             li
             {
             // border-radius: 1lh;
@@ -379,10 +388,10 @@ header2
             // border-right: 1px solid theme.$border-color;
             border: 2px solid transparent;
             background-color: rgba(16, 21, 27, 0.363);
-            padding: 0.75em;
+            padding: 0 0.75em;
             transition-duration: 0.2s;
             text-align: center;
-            
+            line-height: 2.75em;
             font-weight: 600;
             }
             :any-link
@@ -393,10 +402,11 @@ header2
                 width: 100%;
                 display: block;
             }
-            li:first-child
+            li.home + li,
+            .home 
             {
-                border-radius: 1lh 0 0 1lh;
-                padding-left: 1.5lh;
+                border-radius: 1.25em 0 0 1.25em;
+                padding-left: 2.25em;
                 &:hover
                 {
                      box-shadow: inset -5px 0px 20px -10px rgb(108 114 119 / 30%);
@@ -404,8 +414,8 @@ header2
             }
             li:last-child
             {
-                border-radius: 0 1lh 1lh 0;
-                padding-right: 1.5lh;
+                border-radius: 0 1.25em 1.25em 0;
+                padding-right: 2.25em;
                 box-sizing: content-box;
                 &:hover
                 {
@@ -427,17 +437,16 @@ header2
 .lang-dropdown
 {
     // outline: 1px solid red;
-    border-radius: 1lh;
+    border-radius: 1.25em;
     background-color: theme.$background-color;
     position: relative;
-    // padding: 0.25lh 0.25lh;
     transition-duration: 0.4s;
     display: flex;
     align-items: center;
     // min-width: 100px;
     &.open 
     {
-        border-radius: 0.5lh 0.5lh 0.25lh 0.25lh;
+        border-radius: 0.5em 0.5em  0.25em 0.25em ;
     }
 }
 
@@ -454,8 +463,8 @@ header2
     span
     {
         display: inline-block;
-        width: 0.5lh;
-        height: 0.5lh;
+        width: 0.75em;
+        height: 0.75em;
         border-radius: 50%;
     overflow: hidden;
         background-size: contain;
@@ -482,12 +491,12 @@ header2
     flex-direction: column;
     align-items: center;
     position: absolute;
-    bottom: -0.1lh;
+    bottom: -0.2em;
     left: 0;
     right: 0;
     transform: translateY(100%);
     background-color: inherit;
-    border-radius: 0.25lh 0.25lh 0.5lh 0.5lh;
+    border-radius: 0.25em 0.25em 0.5em 0.5em;
     transition-duration: inherit;
     
 }
@@ -527,6 +536,15 @@ header2
             {
               padding: 0.75em 0.25em !important;
             }
+            li.home + li
+            {
+               border-radius: none;
+              padding-left: none;
+              &:hover
+              {
+                    box-shadow: none;
+              }
+            }
             .home 
             {
               background: url(/favicon.ico) no-repeat;
@@ -534,6 +552,7 @@ header2
               background-size: 1lh;
               padding: 0 1lh;
               width: 50px;
+              display: block;
               a
               {
                 display: none;

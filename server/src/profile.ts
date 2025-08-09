@@ -56,11 +56,15 @@ router.post('/update', (req, res) => {
          return;
      }
        
-     if(req.body.file)
-        var {file} = req.body
-     if(req.body.color)
-        var {color} = req.body
+    //  if(req.body.file)
+    //     var {file} = req.body
+    //  if(req.body.color)
+    //     var {color} = req.body
+    //  if()
+        
     try {
+        var {occupationType, color} = req.body 
+
         if(req.body.deleteAccount)
         {
             prisma.user.delete({
@@ -86,6 +90,7 @@ router.post('/update', (req, res) => {
                 },
                 data: {
                     userColor,
+                    occupationType
                     // picture: file ? file : undefined
                 }
             }).then(value => {

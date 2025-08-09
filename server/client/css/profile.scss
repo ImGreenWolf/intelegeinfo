@@ -1,10 +1,13 @@
 @use 'theme';
 
+@use 'user_utils' as user;
+
 html, body
 {
     background: none;
     background-color: theme.$background-color;
     height: 100%;
+    box-sizing: border-box;
 }
 
 $border-color: rgba(126, 126, 126, 0.219);
@@ -22,7 +25,7 @@ $border-color: rgba(126, 126, 126, 0.219);
     align-content: stretch;
     // padding: 200px 50px 50px 50px;
     padding: 1em;
-    padding-top: 7em;
+    // padding-top: 7em;
     
     // top: 2em;
     position: relative;
@@ -98,7 +101,7 @@ $border-color: rgba(126, 126, 126, 0.219);
     {
         background-color: rgba(126, 126, 126, 0.082);
         border-right: 5px solid var(--accent-color);
-        border-bottom: none;
+        // border-bottom: none;
     }
 }
 
@@ -353,7 +356,7 @@ input[type=color]
         }
     }
 }
-
+@include user.occupationSelector;
 
 @media screen and (max-width: 1024px) {
     .main-container
