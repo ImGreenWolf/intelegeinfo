@@ -172,11 +172,12 @@ form div
     animation-fill-mode: both;
 }
 
-@for $i from 1 through 10 {
+@for $i from 1 through 15 {
   form .input-container div:nth-child(#{$i}),
   form .input-container div:nth-child(#{$i}) div,
-  form *:nth-child(#{$i}) {
-    animation-duration: calc(#{$i} * 600ms);
+  form>*:nth-child(#{$i}),
+  .input-container div:nth-child(#{$i}) {
+    animation-duration: calc(#{$i} * 400ms);
     animation-delay: calc(#{$i}* 100ms);
   }
 }
@@ -575,7 +576,8 @@ h3
     div
     {
         position: relative;
-        width: 7em;
+        max-width: 7em;
+        width: 100%;
         height: 3em;
         font-size: 1em;
         color:  var(--color);
@@ -631,5 +633,13 @@ h3
     html 
     {
         font-size: 14px;
+    }
+    .type-container>div 
+    {
+        font-size: 0.75em;
+    }
+    .type-wrapper>h3
+    {
+        font-size: 1em;
     }
  }
