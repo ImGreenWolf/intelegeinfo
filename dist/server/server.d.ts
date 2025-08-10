@@ -1,8 +1,8 @@
 import { ChildProcess } from "child_process";
 import WebSocket from "ws";
 import { EditorSession } from "./types";
-import { UUID } from "crypto";
 export declare const rootDirName: string;
+import { UUID } from "crypto";
 export declare function authMiddleware(req: any, res: any, next: any, role?: string): void;
 import * as https from 'https';
 import * as http from 'http';
@@ -11,4 +11,5 @@ export declare let clients: Map<UUID, WebSocket>;
 export declare let runningProcesses: Map<UUID, ChildProcess>;
 export declare let sessionMap: Map<UUID, EditorSession>;
 export declare const wss: WebSocket.Server<typeof WebSocket, typeof http.IncomingMessage>;
-export declare function parseText(file: string, req: any): string;
+export declare function sendFile(path: string, res: any, req: any, params?: any): any;
+export declare function parseText(file: string, req: any, params?: any): string;

@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.11.1",
+    "@typescript/native-preview": "^7.0.0-dev.20250810.1",
     "ace-builds": "^1.39.1",
     "archiver": "^7.0.1",
     "bcryptjs": "^3.0.2",

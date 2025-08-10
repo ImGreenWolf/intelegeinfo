@@ -63,15 +63,25 @@ export type Solve = $Result.DefaultSelection<Prisma.$SolvePayload>
  * 
  */
 export type Course = $Result.DefaultSelection<Prisma.$CoursePayload>
+/**
+ * Model Review
+ * 
+ */
+export type Review = $Result.DefaultSelection<Prisma.$ReviewPayload>
+/**
+ * Model Upload
+ * 
+ */
+export type Upload = $Result.DefaultSelection<Prisma.$UploadPayload>
 
 /**
  * Enums
  */
 export namespace $Enums {
   export const OccupationType: {
+  None: 'None',
   Student: 'Student',
-  Teacher: 'Teacher',
-  None: 'None'
+  Teacher: 'Teacher'
 };
 
 export type OccupationType = (typeof OccupationType)[keyof typeof OccupationType]
@@ -332,6 +342,26 @@ export class PrismaClient<
     * ```
     */
   get course(): Prisma.CourseDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.review`: Exposes CRUD operations for the **Review** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Reviews
+    * const reviews = await prisma.review.findMany()
+    * ```
+    */
+  get review(): Prisma.ReviewDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.upload`: Exposes CRUD operations for the **Upload** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Uploads
+    * const uploads = await prisma.upload.findMany()
+    * ```
+    */
+  get upload(): Prisma.UploadDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -781,7 +811,9 @@ export namespace Prisma {
     GuideTag: 'GuideTag',
     Problem: 'Problem',
     Solve: 'Solve',
-    Course: 'Course'
+    Course: 'Course',
+    Review: 'Review',
+    Upload: 'Upload'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -800,7 +832,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "project" | "user" | "code" | "refreshToken" | "guide" | "tag" | "guideTag" | "problem" | "solve" | "course"
+      modelProps: "project" | "user" | "code" | "refreshToken" | "guide" | "tag" | "guideTag" | "problem" | "solve" | "course" | "review" | "upload"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1544,6 +1576,154 @@ export namespace Prisma {
           }
         }
       }
+      Review: {
+        payload: Prisma.$ReviewPayload<ExtArgs>
+        fields: Prisma.ReviewFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ReviewFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ReviewFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          findFirst: {
+            args: Prisma.ReviewFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ReviewFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          findMany: {
+            args: Prisma.ReviewFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>[]
+          }
+          create: {
+            args: Prisma.ReviewCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          createMany: {
+            args: Prisma.ReviewCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ReviewCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>[]
+          }
+          delete: {
+            args: Prisma.ReviewDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          update: {
+            args: Prisma.ReviewUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          deleteMany: {
+            args: Prisma.ReviewDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ReviewUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ReviewUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>[]
+          }
+          upsert: {
+            args: Prisma.ReviewUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          aggregate: {
+            args: Prisma.ReviewAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateReview>
+          }
+          groupBy: {
+            args: Prisma.ReviewGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ReviewGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ReviewCountArgs<ExtArgs>
+            result: $Utils.Optional<ReviewCountAggregateOutputType> | number
+          }
+        }
+      }
+      Upload: {
+        payload: Prisma.$UploadPayload<ExtArgs>
+        fields: Prisma.UploadFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UploadFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UploadFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>
+          }
+          findFirst: {
+            args: Prisma.UploadFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UploadFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>
+          }
+          findMany: {
+            args: Prisma.UploadFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>[]
+          }
+          create: {
+            args: Prisma.UploadCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>
+          }
+          createMany: {
+            args: Prisma.UploadCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UploadCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>[]
+          }
+          delete: {
+            args: Prisma.UploadDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>
+          }
+          update: {
+            args: Prisma.UploadUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>
+          }
+          deleteMany: {
+            args: Prisma.UploadDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UploadUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UploadUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>[]
+          }
+          upsert: {
+            args: Prisma.UploadUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UploadPayload>
+          }
+          aggregate: {
+            args: Prisma.UploadAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUpload>
+          }
+          groupBy: {
+            args: Prisma.UploadGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UploadGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UploadCountArgs<ExtArgs>
+            result: $Utils.Optional<UploadCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1638,6 +1818,8 @@ export namespace Prisma {
     problem?: ProblemOmit
     solve?: SolveOmit
     course?: CourseOmit
+    review?: ReviewOmit
+    upload?: UploadOmit
   }
 
   /* Types for Logging */
@@ -1735,12 +1917,16 @@ export namespace Prisma {
     projects: number
     solves: number
     Guide: number
+    Review: number
+    Upload: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | UserCountOutputTypeCountProjectsArgs
     solves?: boolean | UserCountOutputTypeCountSolvesArgs
     Guide?: boolean | UserCountOutputTypeCountGuideArgs
+    Review?: boolean | UserCountOutputTypeCountReviewArgs
+    Upload?: boolean | UserCountOutputTypeCountUploadArgs
   }
 
   // Custom InputTypes
@@ -1773,6 +1959,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountGuideArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GuideWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReviewArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReviewWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountUploadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UploadWhereInput
   }
 
 
@@ -1866,6 +2066,77 @@ export namespace Prisma {
    */
   export type ProblemCountOutputTypeCountSolvesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SolveWhereInput
+  }
+
+
+  /**
+   * Count Type CourseCountOutputType
+   */
+
+  export type CourseCountOutputType = {
+    reviews: number
+  }
+
+  export type CourseCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reviews?: boolean | CourseCountOutputTypeCountReviewsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CourseCountOutputType without action
+   */
+  export type CourseCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CourseCountOutputType
+     */
+    select?: CourseCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CourseCountOutputType without action
+   */
+  export type CourseCountOutputTypeCountReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReviewWhereInput
+  }
+
+
+  /**
+   * Count Type UploadCountOutputType
+   */
+
+  export type UploadCountOutputType = {
+    Course: number
+    ProfilePictures: number
+  }
+
+  export type UploadCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Course?: boolean | UploadCountOutputTypeCountCourseArgs
+    ProfilePictures?: boolean | UploadCountOutputTypeCountProfilePicturesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UploadCountOutputType without action
+   */
+  export type UploadCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UploadCountOutputType
+     */
+    select?: UploadCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UploadCountOutputType without action
+   */
+  export type UploadCountOutputTypeCountCourseArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CourseWhereInput
+  }
+
+  /**
+   * UploadCountOutputType without action
+   */
+  export type UploadCountOutputTypeCountProfilePicturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
   }
 
 
@@ -3239,10 +3510,13 @@ export namespace Prisma {
     password?: boolean
     loginMethod?: boolean
     occupationType?: boolean
+    pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
     projects?: boolean | User$projectsArgs<ExtArgs>
     solves?: boolean | User$solvesArgs<ExtArgs>
     Guide?: boolean | User$GuideArgs<ExtArgs>
     Course?: boolean | User$CourseArgs<ExtArgs>
+    Review?: boolean | User$ReviewArgs<ExtArgs>
+    Upload?: boolean | User$UploadArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3261,6 +3535,7 @@ export namespace Prisma {
     password?: boolean
     loginMethod?: boolean
     occupationType?: boolean
+    pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3278,6 +3553,7 @@ export namespace Prisma {
     password?: boolean
     loginMethod?: boolean
     occupationType?: boolean
+    pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -3299,22 +3575,32 @@ export namespace Prisma {
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "firstName" | "lastName" | "email" | "emailValidated" | "userColor" | "picture" | "role" | "createdAt" | "activeAt" | "password" | "loginMethod" | "occupationType", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
     projects?: boolean | User$projectsArgs<ExtArgs>
     solves?: boolean | User$solvesArgs<ExtArgs>
     Guide?: boolean | User$GuideArgs<ExtArgs>
     Course?: boolean | User$CourseArgs<ExtArgs>
+    Review?: boolean | User$ReviewArgs<ExtArgs>
+    Upload?: boolean | User$UploadArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
+  }
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
+  }
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
+      pictureUpload: Prisma.$UploadPayload<ExtArgs>
       projects: Prisma.$ProjectPayload<ExtArgs>[]
       solves: Prisma.$SolvePayload<ExtArgs>[]
       Guide: Prisma.$GuidePayload<ExtArgs>[]
       Course: Prisma.$CoursePayload<ExtArgs> | null
+      Review: Prisma.$ReviewPayload<ExtArgs>[]
+      Upload: Prisma.$UploadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3725,10 +4011,13 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    pictureUpload<T extends UploadDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UploadDefaultArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     projects<T extends User$projectsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     solves<T extends User$solvesArgs<ExtArgs> = {}>(args?: Subset<T, User$solvesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SolvePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Guide<T extends User$GuideArgs<ExtArgs> = {}>(args?: Subset<T, User$GuideArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuidePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Course<T extends User$CourseArgs<ExtArgs> = {}>(args?: Subset<T, User$CourseArgs<ExtArgs>>): Prisma__CourseClient<$Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    Review<T extends User$ReviewArgs<ExtArgs> = {}>(args?: Subset<T, User$ReviewArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Upload<T extends User$UploadArgs<ExtArgs> = {}>(args?: Subset<T, User$UploadArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4021,6 +4310,10 @@ export namespace Prisma {
      */
     data: UserCreateManyInput | UserCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4091,6 +4384,10 @@ export namespace Prisma {
      * Limit how many Users to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4248,6 +4545,54 @@ export namespace Prisma {
      */
     include?: CourseInclude<ExtArgs> | null
     where?: CourseWhereInput
+  }
+
+  /**
+   * User.Review
+   */
+  export type User$ReviewArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    where?: ReviewWhereInput
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    cursor?: ReviewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * User.Upload
+   */
+  export type User$UploadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    where?: UploadWhereInput
+    orderBy?: UploadOrderByWithRelationInput | UploadOrderByWithRelationInput[]
+    cursor?: UploadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UploadScalarFieldEnum | UploadScalarFieldEnum[]
   }
 
   /**
@@ -12004,7 +12349,9 @@ export namespace Prisma {
     experience: string | null
     price: number | null
     courseLength: number | null
+    summary: string | null
     description: string | null
+    summaryPath: string | null
     phone: string | null
     email: string | null
     createdAt: Date | null
@@ -12017,7 +12364,9 @@ export namespace Prisma {
     experience: string | null
     price: number | null
     courseLength: number | null
+    summary: string | null
     description: string | null
+    summaryPath: string | null
     phone: string | null
     email: string | null
     createdAt: Date | null
@@ -12030,7 +12379,9 @@ export namespace Prisma {
     experience: number
     price: number
     courseLength: number
+    summary: number
     description: number
+    summaryPath: number
     phone: number
     external: number
     email: number
@@ -12060,7 +12411,9 @@ export namespace Prisma {
     experience?: true
     price?: true
     courseLength?: true
+    summary?: true
     description?: true
+    summaryPath?: true
     phone?: true
     email?: true
     createdAt?: true
@@ -12073,7 +12426,9 @@ export namespace Prisma {
     experience?: true
     price?: true
     courseLength?: true
+    summary?: true
     description?: true
+    summaryPath?: true
     phone?: true
     email?: true
     createdAt?: true
@@ -12086,7 +12441,9 @@ export namespace Prisma {
     experience?: true
     price?: true
     courseLength?: true
+    summary?: true
     description?: true
+    summaryPath?: true
     phone?: true
     external?: true
     email?: true
@@ -12187,7 +12544,9 @@ export namespace Prisma {
     experience: string
     price: number
     courseLength: number
+    summary: string
     description: string
+    summaryPath: string | null
     phone: string | null
     external: string[]
     email: string | null
@@ -12220,13 +12579,18 @@ export namespace Prisma {
     experience?: boolean
     price?: boolean
     courseLength?: boolean
+    summary?: boolean
     description?: boolean
+    summaryPath?: boolean
     phone?: boolean
     external?: boolean
     email?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    videoSummary?: boolean | Course$videoSummaryArgs<ExtArgs>
+    reviews?: boolean | Course$reviewsArgs<ExtArgs>
+    _count?: boolean | CourseCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["course"]>
 
   export type CourseSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12235,13 +12599,16 @@ export namespace Prisma {
     experience?: boolean
     price?: boolean
     courseLength?: boolean
+    summary?: boolean
     description?: boolean
+    summaryPath?: boolean
     phone?: boolean
     external?: boolean
     email?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    videoSummary?: boolean | Course$videoSummaryArgs<ExtArgs>
   }, ExtArgs["result"]["course"]>
 
   export type CourseSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12250,13 +12617,16 @@ export namespace Prisma {
     experience?: boolean
     price?: boolean
     courseLength?: boolean
+    summary?: boolean
     description?: boolean
+    summaryPath?: boolean
     phone?: boolean
     external?: boolean
     email?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    videoSummary?: boolean | Course$videoSummaryArgs<ExtArgs>
   }, ExtArgs["result"]["course"]>
 
   export type CourseSelectScalar = {
@@ -12265,7 +12635,9 @@ export namespace Prisma {
     experience?: boolean
     price?: boolean
     courseLength?: boolean
+    summary?: boolean
     description?: boolean
+    summaryPath?: boolean
     phone?: boolean
     external?: boolean
     email?: boolean
@@ -12273,21 +12645,28 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CourseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "experience" | "price" | "courseLength" | "description" | "phone" | "external" | "email" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
+  export type CourseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "experience" | "price" | "courseLength" | "summary" | "description" | "summaryPath" | "phone" | "external" | "email" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
   export type CourseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    videoSummary?: boolean | Course$videoSummaryArgs<ExtArgs>
+    reviews?: boolean | Course$reviewsArgs<ExtArgs>
+    _count?: boolean | CourseCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CourseIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    videoSummary?: boolean | Course$videoSummaryArgs<ExtArgs>
   }
   export type CourseIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    videoSummary?: boolean | Course$videoSummaryArgs<ExtArgs>
   }
 
   export type $CoursePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Course"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      videoSummary: Prisma.$UploadPayload<ExtArgs> | null
+      reviews: Prisma.$ReviewPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -12295,7 +12674,9 @@ export namespace Prisma {
       experience: string
       price: number
       courseLength: number
+      summary: string
       description: string
+      summaryPath: string | null
       phone: string | null
       external: string[]
       email: string | null
@@ -12696,6 +13077,8 @@ export namespace Prisma {
   export interface Prisma__CourseClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    videoSummary<T extends Course$videoSummaryArgs<ExtArgs> = {}>(args?: Subset<T, Course$videoSummaryArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    reviews<T extends Course$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, Course$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12730,7 +13113,9 @@ export namespace Prisma {
     readonly experience: FieldRef<"Course", 'String'>
     readonly price: FieldRef<"Course", 'Int'>
     readonly courseLength: FieldRef<"Course", 'Int'>
+    readonly summary: FieldRef<"Course", 'String'>
     readonly description: FieldRef<"Course", 'String'>
+    readonly summaryPath: FieldRef<"Course", 'String'>
     readonly phone: FieldRef<"Course", 'String'>
     readonly external: FieldRef<"Course", 'String[]'>
     readonly email: FieldRef<"Course", 'String'>
@@ -13132,6 +13517,49 @@ export namespace Prisma {
   }
 
   /**
+   * Course.videoSummary
+   */
+  export type Course$videoSummaryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    where?: UploadWhereInput
+  }
+
+  /**
+   * Course.reviews
+   */
+  export type Course$reviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    where?: ReviewWhereInput
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    cursor?: ReviewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
    * Course without action
    */
   export type CourseDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13147,6 +13575,2278 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CourseInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Review
+   */
+
+  export type AggregateReview = {
+    _count: ReviewCountAggregateOutputType | null
+    _avg: ReviewAvgAggregateOutputType | null
+    _sum: ReviewSumAggregateOutputType | null
+    _min: ReviewMinAggregateOutputType | null
+    _max: ReviewMaxAggregateOutputType | null
+  }
+
+  export type ReviewAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    courseId: number | null
+    rating: number | null
+  }
+
+  export type ReviewSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    courseId: number | null
+    rating: number | null
+  }
+
+  export type ReviewMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    courseId: number | null
+    rating: number | null
+    createdAt: Date | null
+    motive: string | null
+  }
+
+  export type ReviewMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    courseId: number | null
+    rating: number | null
+    createdAt: Date | null
+    motive: string | null
+  }
+
+  export type ReviewCountAggregateOutputType = {
+    id: number
+    userId: number
+    courseId: number
+    rating: number
+    createdAt: number
+    motive: number
+    _all: number
+  }
+
+
+  export type ReviewAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    courseId?: true
+    rating?: true
+  }
+
+  export type ReviewSumAggregateInputType = {
+    id?: true
+    userId?: true
+    courseId?: true
+    rating?: true
+  }
+
+  export type ReviewMinAggregateInputType = {
+    id?: true
+    userId?: true
+    courseId?: true
+    rating?: true
+    createdAt?: true
+    motive?: true
+  }
+
+  export type ReviewMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    courseId?: true
+    rating?: true
+    createdAt?: true
+    motive?: true
+  }
+
+  export type ReviewCountAggregateInputType = {
+    id?: true
+    userId?: true
+    courseId?: true
+    rating?: true
+    createdAt?: true
+    motive?: true
+    _all?: true
+  }
+
+  export type ReviewAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Review to aggregate.
+     */
+    where?: ReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reviews to fetch.
+     */
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Reviews
+    **/
+    _count?: true | ReviewCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ReviewAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ReviewSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ReviewMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ReviewMaxAggregateInputType
+  }
+
+  export type GetReviewAggregateType<T extends ReviewAggregateArgs> = {
+        [P in keyof T & keyof AggregateReview]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReview[P]>
+      : GetScalarType<T[P], AggregateReview[P]>
+  }
+
+
+
+
+  export type ReviewGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReviewWhereInput
+    orderBy?: ReviewOrderByWithAggregationInput | ReviewOrderByWithAggregationInput[]
+    by: ReviewScalarFieldEnum[] | ReviewScalarFieldEnum
+    having?: ReviewScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ReviewCountAggregateInputType | true
+    _avg?: ReviewAvgAggregateInputType
+    _sum?: ReviewSumAggregateInputType
+    _min?: ReviewMinAggregateInputType
+    _max?: ReviewMaxAggregateInputType
+  }
+
+  export type ReviewGroupByOutputType = {
+    id: number
+    userId: number
+    courseId: number
+    rating: number
+    createdAt: Date
+    motive: string | null
+    _count: ReviewCountAggregateOutputType | null
+    _avg: ReviewAvgAggregateOutputType | null
+    _sum: ReviewSumAggregateOutputType | null
+    _min: ReviewMinAggregateOutputType | null
+    _max: ReviewMaxAggregateOutputType | null
+  }
+
+  type GetReviewGroupByPayload<T extends ReviewGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ReviewGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ReviewGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ReviewGroupByOutputType[P]>
+            : GetScalarType<T[P], ReviewGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ReviewSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    courseId?: boolean
+    rating?: boolean
+    createdAt?: boolean
+    motive?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    course?: boolean | CourseDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["review"]>
+
+  export type ReviewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    courseId?: boolean
+    rating?: boolean
+    createdAt?: boolean
+    motive?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    course?: boolean | CourseDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["review"]>
+
+  export type ReviewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    courseId?: boolean
+    rating?: boolean
+    createdAt?: boolean
+    motive?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    course?: boolean | CourseDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["review"]>
+
+  export type ReviewSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    courseId?: boolean
+    rating?: boolean
+    createdAt?: boolean
+    motive?: boolean
+  }
+
+  export type ReviewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "courseId" | "rating" | "createdAt" | "motive", ExtArgs["result"]["review"]>
+  export type ReviewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    course?: boolean | CourseDefaultArgs<ExtArgs>
+  }
+  export type ReviewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    course?: boolean | CourseDefaultArgs<ExtArgs>
+  }
+  export type ReviewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    course?: boolean | CourseDefaultArgs<ExtArgs>
+  }
+
+  export type $ReviewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Review"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      course: Prisma.$CoursePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      courseId: number
+      rating: number
+      createdAt: Date
+      motive: string | null
+    }, ExtArgs["result"]["review"]>
+    composites: {}
+  }
+
+  type ReviewGetPayload<S extends boolean | null | undefined | ReviewDefaultArgs> = $Result.GetResult<Prisma.$ReviewPayload, S>
+
+  type ReviewCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ReviewFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ReviewCountAggregateInputType | true
+    }
+
+  export interface ReviewDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Review'], meta: { name: 'Review' } }
+    /**
+     * Find zero or one Review that matches the filter.
+     * @param {ReviewFindUniqueArgs} args - Arguments to find a Review
+     * @example
+     * // Get one Review
+     * const review = await prisma.review.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ReviewFindUniqueArgs>(args: SelectSubset<T, ReviewFindUniqueArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Review that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ReviewFindUniqueOrThrowArgs} args - Arguments to find a Review
+     * @example
+     * // Get one Review
+     * const review = await prisma.review.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ReviewFindUniqueOrThrowArgs>(args: SelectSubset<T, ReviewFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Review that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewFindFirstArgs} args - Arguments to find a Review
+     * @example
+     * // Get one Review
+     * const review = await prisma.review.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ReviewFindFirstArgs>(args?: SelectSubset<T, ReviewFindFirstArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Review that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewFindFirstOrThrowArgs} args - Arguments to find a Review
+     * @example
+     * // Get one Review
+     * const review = await prisma.review.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ReviewFindFirstOrThrowArgs>(args?: SelectSubset<T, ReviewFindFirstOrThrowArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Reviews that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Reviews
+     * const reviews = await prisma.review.findMany()
+     * 
+     * // Get first 10 Reviews
+     * const reviews = await prisma.review.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const reviewWithIdOnly = await prisma.review.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ReviewFindManyArgs>(args?: SelectSubset<T, ReviewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Review.
+     * @param {ReviewCreateArgs} args - Arguments to create a Review.
+     * @example
+     * // Create one Review
+     * const Review = await prisma.review.create({
+     *   data: {
+     *     // ... data to create a Review
+     *   }
+     * })
+     * 
+     */
+    create<T extends ReviewCreateArgs>(args: SelectSubset<T, ReviewCreateArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Reviews.
+     * @param {ReviewCreateManyArgs} args - Arguments to create many Reviews.
+     * @example
+     * // Create many Reviews
+     * const review = await prisma.review.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ReviewCreateManyArgs>(args?: SelectSubset<T, ReviewCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Reviews and returns the data saved in the database.
+     * @param {ReviewCreateManyAndReturnArgs} args - Arguments to create many Reviews.
+     * @example
+     * // Create many Reviews
+     * const review = await prisma.review.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Reviews and only return the `id`
+     * const reviewWithIdOnly = await prisma.review.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ReviewCreateManyAndReturnArgs>(args?: SelectSubset<T, ReviewCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Review.
+     * @param {ReviewDeleteArgs} args - Arguments to delete one Review.
+     * @example
+     * // Delete one Review
+     * const Review = await prisma.review.delete({
+     *   where: {
+     *     // ... filter to delete one Review
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ReviewDeleteArgs>(args: SelectSubset<T, ReviewDeleteArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Review.
+     * @param {ReviewUpdateArgs} args - Arguments to update one Review.
+     * @example
+     * // Update one Review
+     * const review = await prisma.review.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ReviewUpdateArgs>(args: SelectSubset<T, ReviewUpdateArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Reviews.
+     * @param {ReviewDeleteManyArgs} args - Arguments to filter Reviews to delete.
+     * @example
+     * // Delete a few Reviews
+     * const { count } = await prisma.review.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ReviewDeleteManyArgs>(args?: SelectSubset<T, ReviewDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Reviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Reviews
+     * const review = await prisma.review.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ReviewUpdateManyArgs>(args: SelectSubset<T, ReviewUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Reviews and returns the data updated in the database.
+     * @param {ReviewUpdateManyAndReturnArgs} args - Arguments to update many Reviews.
+     * @example
+     * // Update many Reviews
+     * const review = await prisma.review.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Reviews and only return the `id`
+     * const reviewWithIdOnly = await prisma.review.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ReviewUpdateManyAndReturnArgs>(args: SelectSubset<T, ReviewUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Review.
+     * @param {ReviewUpsertArgs} args - Arguments to update or create a Review.
+     * @example
+     * // Update or create a Review
+     * const review = await prisma.review.upsert({
+     *   create: {
+     *     // ... data to create a Review
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Review we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ReviewUpsertArgs>(args: SelectSubset<T, ReviewUpsertArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Reviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewCountArgs} args - Arguments to filter Reviews to count.
+     * @example
+     * // Count the number of Reviews
+     * const count = await prisma.review.count({
+     *   where: {
+     *     // ... the filter for the Reviews we want to count
+     *   }
+     * })
+    **/
+    count<T extends ReviewCountArgs>(
+      args?: Subset<T, ReviewCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ReviewCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Review.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ReviewAggregateArgs>(args: Subset<T, ReviewAggregateArgs>): Prisma.PrismaPromise<GetReviewAggregateType<T>>
+
+    /**
+     * Group by Review.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ReviewGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ReviewGroupByArgs['orderBy'] }
+        : { orderBy?: ReviewGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ReviewGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReviewGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Review model
+   */
+  readonly fields: ReviewFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Review.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    course<T extends CourseDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CourseDefaultArgs<ExtArgs>>): Prisma__CourseClient<$Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Review model
+   */
+  interface ReviewFieldRefs {
+    readonly id: FieldRef<"Review", 'Int'>
+    readonly userId: FieldRef<"Review", 'Int'>
+    readonly courseId: FieldRef<"Review", 'Int'>
+    readonly rating: FieldRef<"Review", 'Int'>
+    readonly createdAt: FieldRef<"Review", 'DateTime'>
+    readonly motive: FieldRef<"Review", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Review findUnique
+   */
+  export type ReviewFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Review to fetch.
+     */
+    where: ReviewWhereUniqueInput
+  }
+
+  /**
+   * Review findUniqueOrThrow
+   */
+  export type ReviewFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Review to fetch.
+     */
+    where: ReviewWhereUniqueInput
+  }
+
+  /**
+   * Review findFirst
+   */
+  export type ReviewFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Review to fetch.
+     */
+    where?: ReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reviews to fetch.
+     */
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Reviews.
+     */
+    cursor?: ReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reviews.
+     */
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * Review findFirstOrThrow
+   */
+  export type ReviewFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Review to fetch.
+     */
+    where?: ReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reviews to fetch.
+     */
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Reviews.
+     */
+    cursor?: ReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reviews.
+     */
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * Review findMany
+   */
+  export type ReviewFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Reviews to fetch.
+     */
+    where?: ReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reviews to fetch.
+     */
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Reviews.
+     */
+    cursor?: ReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reviews.
+     */
+    skip?: number
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * Review create
+   */
+  export type ReviewCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Review.
+     */
+    data: XOR<ReviewCreateInput, ReviewUncheckedCreateInput>
+  }
+
+  /**
+   * Review createMany
+   */
+  export type ReviewCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Reviews.
+     */
+    data: ReviewCreateManyInput | ReviewCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Review createManyAndReturn
+   */
+  export type ReviewCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * The data used to create many Reviews.
+     */
+    data: ReviewCreateManyInput | ReviewCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Review update
+   */
+  export type ReviewUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Review.
+     */
+    data: XOR<ReviewUpdateInput, ReviewUncheckedUpdateInput>
+    /**
+     * Choose, which Review to update.
+     */
+    where: ReviewWhereUniqueInput
+  }
+
+  /**
+   * Review updateMany
+   */
+  export type ReviewUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Reviews.
+     */
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyInput>
+    /**
+     * Filter which Reviews to update
+     */
+    where?: ReviewWhereInput
+    /**
+     * Limit how many Reviews to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Review updateManyAndReturn
+   */
+  export type ReviewUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * The data used to update Reviews.
+     */
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyInput>
+    /**
+     * Filter which Reviews to update
+     */
+    where?: ReviewWhereInput
+    /**
+     * Limit how many Reviews to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Review upsert
+   */
+  export type ReviewUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Review to update in case it exists.
+     */
+    where: ReviewWhereUniqueInput
+    /**
+     * In case the Review found by the `where` argument doesn't exist, create a new Review with this data.
+     */
+    create: XOR<ReviewCreateInput, ReviewUncheckedCreateInput>
+    /**
+     * In case the Review was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ReviewUpdateInput, ReviewUncheckedUpdateInput>
+  }
+
+  /**
+   * Review delete
+   */
+  export type ReviewDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter which Review to delete.
+     */
+    where: ReviewWhereUniqueInput
+  }
+
+  /**
+   * Review deleteMany
+   */
+  export type ReviewDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Reviews to delete
+     */
+    where?: ReviewWhereInput
+    /**
+     * Limit how many Reviews to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Review without action
+   */
+  export type ReviewDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Upload
+   */
+
+  export type AggregateUpload = {
+    _count: UploadCountAggregateOutputType | null
+    _avg: UploadAvgAggregateOutputType | null
+    _sum: UploadSumAggregateOutputType | null
+    _min: UploadMinAggregateOutputType | null
+    _max: UploadMaxAggregateOutputType | null
+  }
+
+  export type UploadAvgAggregateOutputType = {
+    id: number | null
+    UserId: number | null
+  }
+
+  export type UploadSumAggregateOutputType = {
+    id: number | null
+    UserId: number | null
+  }
+
+  export type UploadMinAggregateOutputType = {
+    id: number | null
+    path: string | null
+    UserId: number | null
+  }
+
+  export type UploadMaxAggregateOutputType = {
+    id: number | null
+    path: string | null
+    UserId: number | null
+  }
+
+  export type UploadCountAggregateOutputType = {
+    id: number
+    path: number
+    UserId: number
+    _all: number
+  }
+
+
+  export type UploadAvgAggregateInputType = {
+    id?: true
+    UserId?: true
+  }
+
+  export type UploadSumAggregateInputType = {
+    id?: true
+    UserId?: true
+  }
+
+  export type UploadMinAggregateInputType = {
+    id?: true
+    path?: true
+    UserId?: true
+  }
+
+  export type UploadMaxAggregateInputType = {
+    id?: true
+    path?: true
+    UserId?: true
+  }
+
+  export type UploadCountAggregateInputType = {
+    id?: true
+    path?: true
+    UserId?: true
+    _all?: true
+  }
+
+  export type UploadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Upload to aggregate.
+     */
+    where?: UploadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Uploads to fetch.
+     */
+    orderBy?: UploadOrderByWithRelationInput | UploadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UploadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Uploads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Uploads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Uploads
+    **/
+    _count?: true | UploadCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UploadAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UploadSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UploadMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UploadMaxAggregateInputType
+  }
+
+  export type GetUploadAggregateType<T extends UploadAggregateArgs> = {
+        [P in keyof T & keyof AggregateUpload]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUpload[P]>
+      : GetScalarType<T[P], AggregateUpload[P]>
+  }
+
+
+
+
+  export type UploadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UploadWhereInput
+    orderBy?: UploadOrderByWithAggregationInput | UploadOrderByWithAggregationInput[]
+    by: UploadScalarFieldEnum[] | UploadScalarFieldEnum
+    having?: UploadScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UploadCountAggregateInputType | true
+    _avg?: UploadAvgAggregateInputType
+    _sum?: UploadSumAggregateInputType
+    _min?: UploadMinAggregateInputType
+    _max?: UploadMaxAggregateInputType
+  }
+
+  export type UploadGroupByOutputType = {
+    id: number
+    path: string
+    UserId: number | null
+    _count: UploadCountAggregateOutputType | null
+    _avg: UploadAvgAggregateOutputType | null
+    _sum: UploadSumAggregateOutputType | null
+    _min: UploadMinAggregateOutputType | null
+    _max: UploadMaxAggregateOutputType | null
+  }
+
+  type GetUploadGroupByPayload<T extends UploadGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UploadGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UploadGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UploadGroupByOutputType[P]>
+            : GetScalarType<T[P], UploadGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UploadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    path?: boolean
+    UserId?: boolean
+    UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
+    Course?: boolean | Upload$CourseArgs<ExtArgs>
+    ProfilePictures?: boolean | Upload$ProfilePicturesArgs<ExtArgs>
+    _count?: boolean | UploadCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["upload"]>
+
+  export type UploadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    path?: boolean
+    UserId?: boolean
+    UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
+  }, ExtArgs["result"]["upload"]>
+
+  export type UploadSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    path?: boolean
+    UserId?: boolean
+    UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
+  }, ExtArgs["result"]["upload"]>
+
+  export type UploadSelectScalar = {
+    id?: boolean
+    path?: boolean
+    UserId?: boolean
+  }
+
+  export type UploadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "path" | "UserId", ExtArgs["result"]["upload"]>
+  export type UploadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
+    Course?: boolean | Upload$CourseArgs<ExtArgs>
+    ProfilePictures?: boolean | Upload$ProfilePicturesArgs<ExtArgs>
+    _count?: boolean | UploadCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type UploadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
+  }
+  export type UploadIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
+  }
+
+  export type $UploadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Upload"
+    objects: {
+      UploadUser: Prisma.$UserPayload<ExtArgs> | null
+      Course: Prisma.$CoursePayload<ExtArgs>[]
+      ProfilePictures: Prisma.$UserPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      path: string
+      UserId: number | null
+    }, ExtArgs["result"]["upload"]>
+    composites: {}
+  }
+
+  type UploadGetPayload<S extends boolean | null | undefined | UploadDefaultArgs> = $Result.GetResult<Prisma.$UploadPayload, S>
+
+  type UploadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UploadFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UploadCountAggregateInputType | true
+    }
+
+  export interface UploadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Upload'], meta: { name: 'Upload' } }
+    /**
+     * Find zero or one Upload that matches the filter.
+     * @param {UploadFindUniqueArgs} args - Arguments to find a Upload
+     * @example
+     * // Get one Upload
+     * const upload = await prisma.upload.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UploadFindUniqueArgs>(args: SelectSubset<T, UploadFindUniqueArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Upload that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UploadFindUniqueOrThrowArgs} args - Arguments to find a Upload
+     * @example
+     * // Get one Upload
+     * const upload = await prisma.upload.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UploadFindUniqueOrThrowArgs>(args: SelectSubset<T, UploadFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Upload that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UploadFindFirstArgs} args - Arguments to find a Upload
+     * @example
+     * // Get one Upload
+     * const upload = await prisma.upload.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UploadFindFirstArgs>(args?: SelectSubset<T, UploadFindFirstArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Upload that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UploadFindFirstOrThrowArgs} args - Arguments to find a Upload
+     * @example
+     * // Get one Upload
+     * const upload = await prisma.upload.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UploadFindFirstOrThrowArgs>(args?: SelectSubset<T, UploadFindFirstOrThrowArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Uploads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UploadFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Uploads
+     * const uploads = await prisma.upload.findMany()
+     * 
+     * // Get first 10 Uploads
+     * const uploads = await prisma.upload.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const uploadWithIdOnly = await prisma.upload.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UploadFindManyArgs>(args?: SelectSubset<T, UploadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Upload.
+     * @param {UploadCreateArgs} args - Arguments to create a Upload.
+     * @example
+     * // Create one Upload
+     * const Upload = await prisma.upload.create({
+     *   data: {
+     *     // ... data to create a Upload
+     *   }
+     * })
+     * 
+     */
+    create<T extends UploadCreateArgs>(args: SelectSubset<T, UploadCreateArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Uploads.
+     * @param {UploadCreateManyArgs} args - Arguments to create many Uploads.
+     * @example
+     * // Create many Uploads
+     * const upload = await prisma.upload.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UploadCreateManyArgs>(args?: SelectSubset<T, UploadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Uploads and returns the data saved in the database.
+     * @param {UploadCreateManyAndReturnArgs} args - Arguments to create many Uploads.
+     * @example
+     * // Create many Uploads
+     * const upload = await prisma.upload.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Uploads and only return the `id`
+     * const uploadWithIdOnly = await prisma.upload.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UploadCreateManyAndReturnArgs>(args?: SelectSubset<T, UploadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Upload.
+     * @param {UploadDeleteArgs} args - Arguments to delete one Upload.
+     * @example
+     * // Delete one Upload
+     * const Upload = await prisma.upload.delete({
+     *   where: {
+     *     // ... filter to delete one Upload
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UploadDeleteArgs>(args: SelectSubset<T, UploadDeleteArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Upload.
+     * @param {UploadUpdateArgs} args - Arguments to update one Upload.
+     * @example
+     * // Update one Upload
+     * const upload = await prisma.upload.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UploadUpdateArgs>(args: SelectSubset<T, UploadUpdateArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Uploads.
+     * @param {UploadDeleteManyArgs} args - Arguments to filter Uploads to delete.
+     * @example
+     * // Delete a few Uploads
+     * const { count } = await prisma.upload.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UploadDeleteManyArgs>(args?: SelectSubset<T, UploadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Uploads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UploadUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Uploads
+     * const upload = await prisma.upload.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UploadUpdateManyArgs>(args: SelectSubset<T, UploadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Uploads and returns the data updated in the database.
+     * @param {UploadUpdateManyAndReturnArgs} args - Arguments to update many Uploads.
+     * @example
+     * // Update many Uploads
+     * const upload = await prisma.upload.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Uploads and only return the `id`
+     * const uploadWithIdOnly = await prisma.upload.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UploadUpdateManyAndReturnArgs>(args: SelectSubset<T, UploadUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Upload.
+     * @param {UploadUpsertArgs} args - Arguments to update or create a Upload.
+     * @example
+     * // Update or create a Upload
+     * const upload = await prisma.upload.upsert({
+     *   create: {
+     *     // ... data to create a Upload
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Upload we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UploadUpsertArgs>(args: SelectSubset<T, UploadUpsertArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Uploads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UploadCountArgs} args - Arguments to filter Uploads to count.
+     * @example
+     * // Count the number of Uploads
+     * const count = await prisma.upload.count({
+     *   where: {
+     *     // ... the filter for the Uploads we want to count
+     *   }
+     * })
+    **/
+    count<T extends UploadCountArgs>(
+      args?: Subset<T, UploadCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UploadCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Upload.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UploadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UploadAggregateArgs>(args: Subset<T, UploadAggregateArgs>): Prisma.PrismaPromise<GetUploadAggregateType<T>>
+
+    /**
+     * Group by Upload.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UploadGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UploadGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UploadGroupByArgs['orderBy'] }
+        : { orderBy?: UploadGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UploadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUploadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Upload model
+   */
+  readonly fields: UploadFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Upload.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UploadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    UploadUser<T extends Upload$UploadUserArgs<ExtArgs> = {}>(args?: Subset<T, Upload$UploadUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    Course<T extends Upload$CourseArgs<ExtArgs> = {}>(args?: Subset<T, Upload$CourseArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ProfilePictures<T extends Upload$ProfilePicturesArgs<ExtArgs> = {}>(args?: Subset<T, Upload$ProfilePicturesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Upload model
+   */
+  interface UploadFieldRefs {
+    readonly id: FieldRef<"Upload", 'Int'>
+    readonly path: FieldRef<"Upload", 'String'>
+    readonly UserId: FieldRef<"Upload", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Upload findUnique
+   */
+  export type UploadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * Filter, which Upload to fetch.
+     */
+    where: UploadWhereUniqueInput
+  }
+
+  /**
+   * Upload findUniqueOrThrow
+   */
+  export type UploadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * Filter, which Upload to fetch.
+     */
+    where: UploadWhereUniqueInput
+  }
+
+  /**
+   * Upload findFirst
+   */
+  export type UploadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * Filter, which Upload to fetch.
+     */
+    where?: UploadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Uploads to fetch.
+     */
+    orderBy?: UploadOrderByWithRelationInput | UploadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Uploads.
+     */
+    cursor?: UploadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Uploads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Uploads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Uploads.
+     */
+    distinct?: UploadScalarFieldEnum | UploadScalarFieldEnum[]
+  }
+
+  /**
+   * Upload findFirstOrThrow
+   */
+  export type UploadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * Filter, which Upload to fetch.
+     */
+    where?: UploadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Uploads to fetch.
+     */
+    orderBy?: UploadOrderByWithRelationInput | UploadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Uploads.
+     */
+    cursor?: UploadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Uploads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Uploads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Uploads.
+     */
+    distinct?: UploadScalarFieldEnum | UploadScalarFieldEnum[]
+  }
+
+  /**
+   * Upload findMany
+   */
+  export type UploadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * Filter, which Uploads to fetch.
+     */
+    where?: UploadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Uploads to fetch.
+     */
+    orderBy?: UploadOrderByWithRelationInput | UploadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Uploads.
+     */
+    cursor?: UploadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Uploads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Uploads.
+     */
+    skip?: number
+    distinct?: UploadScalarFieldEnum | UploadScalarFieldEnum[]
+  }
+
+  /**
+   * Upload create
+   */
+  export type UploadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Upload.
+     */
+    data?: XOR<UploadCreateInput, UploadUncheckedCreateInput>
+  }
+
+  /**
+   * Upload createMany
+   */
+  export type UploadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Uploads.
+     */
+    data: UploadCreateManyInput | UploadCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Upload createManyAndReturn
+   */
+  export type UploadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * The data used to create many Uploads.
+     */
+    data: UploadCreateManyInput | UploadCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Upload update
+   */
+  export type UploadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Upload.
+     */
+    data: XOR<UploadUpdateInput, UploadUncheckedUpdateInput>
+    /**
+     * Choose, which Upload to update.
+     */
+    where: UploadWhereUniqueInput
+  }
+
+  /**
+   * Upload updateMany
+   */
+  export type UploadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Uploads.
+     */
+    data: XOR<UploadUpdateManyMutationInput, UploadUncheckedUpdateManyInput>
+    /**
+     * Filter which Uploads to update
+     */
+    where?: UploadWhereInput
+    /**
+     * Limit how many Uploads to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Upload updateManyAndReturn
+   */
+  export type UploadUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * The data used to update Uploads.
+     */
+    data: XOR<UploadUpdateManyMutationInput, UploadUncheckedUpdateManyInput>
+    /**
+     * Filter which Uploads to update
+     */
+    where?: UploadWhereInput
+    /**
+     * Limit how many Uploads to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Upload upsert
+   */
+  export type UploadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Upload to update in case it exists.
+     */
+    where: UploadWhereUniqueInput
+    /**
+     * In case the Upload found by the `where` argument doesn't exist, create a new Upload with this data.
+     */
+    create: XOR<UploadCreateInput, UploadUncheckedCreateInput>
+    /**
+     * In case the Upload was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UploadUpdateInput, UploadUncheckedUpdateInput>
+  }
+
+  /**
+   * Upload delete
+   */
+  export type UploadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
+    /**
+     * Filter which Upload to delete.
+     */
+    where: UploadWhereUniqueInput
+  }
+
+  /**
+   * Upload deleteMany
+   */
+  export type UploadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Uploads to delete
+     */
+    where?: UploadWhereInput
+    /**
+     * Limit how many Uploads to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Upload.UploadUser
+   */
+  export type Upload$UploadUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Upload.Course
+   */
+  export type Upload$CourseArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Course
+     */
+    select?: CourseSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Course
+     */
+    omit?: CourseOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CourseInclude<ExtArgs> | null
+    where?: CourseWhereInput
+    orderBy?: CourseOrderByWithRelationInput | CourseOrderByWithRelationInput[]
+    cursor?: CourseWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CourseScalarFieldEnum | CourseScalarFieldEnum[]
+  }
+
+  /**
+   * Upload.ProfilePictures
+   */
+  export type Upload$ProfilePicturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * Upload without action
+   */
+  export type UploadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Upload
+     */
+    select?: UploadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Upload
+     */
+    omit?: UploadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UploadInclude<ExtArgs> | null
   }
 
 
@@ -13289,7 +15989,9 @@ export namespace Prisma {
     experience: 'experience',
     price: 'price',
     courseLength: 'courseLength',
+    summary: 'summary',
     description: 'description',
+    summaryPath: 'summaryPath',
     phone: 'phone',
     external: 'external',
     email: 'email',
@@ -13298,6 +16000,27 @@ export namespace Prisma {
   };
 
   export type CourseScalarFieldEnum = (typeof CourseScalarFieldEnum)[keyof typeof CourseScalarFieldEnum]
+
+
+  export const ReviewScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    courseId: 'courseId',
+    rating: 'rating',
+    createdAt: 'createdAt',
+    motive: 'motive'
+  };
+
+  export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
+
+
+  export const UploadScalarFieldEnum: {
+    id: 'id',
+    path: 'path',
+    UserId: 'UserId'
+  };
+
+  export type UploadScalarFieldEnum = (typeof UploadScalarFieldEnum)[keyof typeof UploadScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -13417,13 +16140,29 @@ export namespace Prisma {
 
   export const CourseOrderByRelevanceFieldEnum: {
     experience: 'experience',
+    summary: 'summary',
     description: 'description',
+    summaryPath: 'summaryPath',
     phone: 'phone',
     external: 'external',
     email: 'email'
   };
 
   export type CourseOrderByRelevanceFieldEnum = (typeof CourseOrderByRelevanceFieldEnum)[keyof typeof CourseOrderByRelevanceFieldEnum]
+
+
+  export const ReviewOrderByRelevanceFieldEnum: {
+    motive: 'motive'
+  };
+
+  export type ReviewOrderByRelevanceFieldEnum = (typeof ReviewOrderByRelevanceFieldEnum)[keyof typeof ReviewOrderByRelevanceFieldEnum]
+
+
+  export const UploadOrderByRelevanceFieldEnum: {
+    path: 'path'
+  };
+
+  export type UploadOrderByRelevanceFieldEnum = (typeof UploadOrderByRelevanceFieldEnum)[keyof typeof UploadOrderByRelevanceFieldEnum]
 
 
   /**
@@ -13636,10 +16375,13 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     loginMethod?: StringFilter<"User"> | string
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
+    pictureUpload?: XOR<UploadScalarRelationFilter, UploadWhereInput>
     projects?: ProjectListRelationFilter
     solves?: SolveListRelationFilter
     Guide?: GuideListRelationFilter
     Course?: XOR<CourseNullableScalarRelationFilter, CourseWhereInput> | null
+    Review?: ReviewListRelationFilter
+    Upload?: UploadListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -13657,20 +16399,23 @@ export namespace Prisma {
     password?: SortOrder
     loginMethod?: SortOrder
     occupationType?: SortOrder
+    pictureUpload?: UploadOrderByWithRelationInput
     projects?: ProjectOrderByRelationAggregateInput
     solves?: SolveOrderByRelationAggregateInput
     Guide?: GuideOrderByRelationAggregateInput
     Course?: CourseOrderByWithRelationInput
+    Review?: ReviewOrderByRelationAggregateInput
+    Upload?: UploadOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    username?: string
     email?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    username?: StringFilter<"User"> | string
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     emailValidated?: BoolFilter<"User"> | boolean
@@ -13682,11 +16427,14 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     loginMethod?: StringFilter<"User"> | string
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
+    pictureUpload?: XOR<UploadScalarRelationFilter, UploadWhereInput>
     projects?: ProjectListRelationFilter
     solves?: SolveListRelationFilter
     Guide?: GuideListRelationFilter
     Course?: XOR<CourseNullableScalarRelationFilter, CourseWhereInput> | null
-  }, "id" | "email">
+    Review?: ReviewListRelationFilter
+    Upload?: UploadListRelationFilter
+  }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
@@ -14199,13 +16947,17 @@ export namespace Prisma {
     experience?: StringFilter<"Course"> | string
     price?: IntFilter<"Course"> | number
     courseLength?: IntFilter<"Course"> | number
+    summary?: StringFilter<"Course"> | string
     description?: StringFilter<"Course"> | string
+    summaryPath?: StringNullableFilter<"Course"> | string | null
     phone?: StringNullableFilter<"Course"> | string | null
     external?: StringNullableListFilter<"Course">
     email?: StringNullableFilter<"Course"> | string | null
     createdAt?: DateTimeFilter<"Course"> | Date | string
     updatedAt?: DateTimeFilter<"Course"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    videoSummary?: XOR<UploadNullableScalarRelationFilter, UploadWhereInput> | null
+    reviews?: ReviewListRelationFilter
   }
 
   export type CourseOrderByWithRelationInput = {
@@ -14214,13 +16966,17 @@ export namespace Prisma {
     experience?: SortOrder
     price?: SortOrder
     courseLength?: SortOrder
+    summary?: SortOrder
     description?: SortOrder
+    summaryPath?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     external?: SortOrder
     email?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    videoSummary?: UploadOrderByWithRelationInput
+    reviews?: ReviewOrderByRelationAggregateInput
     _relevance?: CourseOrderByRelevanceInput
   }
 
@@ -14233,13 +16989,17 @@ export namespace Prisma {
     experience?: StringFilter<"Course"> | string
     price?: IntFilter<"Course"> | number
     courseLength?: IntFilter<"Course"> | number
+    summary?: StringFilter<"Course"> | string
     description?: StringFilter<"Course"> | string
+    summaryPath?: StringNullableFilter<"Course"> | string | null
     phone?: StringNullableFilter<"Course"> | string | null
     external?: StringNullableListFilter<"Course">
     email?: StringNullableFilter<"Course"> | string | null
     createdAt?: DateTimeFilter<"Course"> | Date | string
     updatedAt?: DateTimeFilter<"Course"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    videoSummary?: XOR<UploadNullableScalarRelationFilter, UploadWhereInput> | null
+    reviews?: ReviewListRelationFilter
   }, "id" | "userId">
 
   export type CourseOrderByWithAggregationInput = {
@@ -14248,7 +17008,9 @@ export namespace Prisma {
     experience?: SortOrder
     price?: SortOrder
     courseLength?: SortOrder
+    summary?: SortOrder
     description?: SortOrder
+    summaryPath?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     external?: SortOrder
     email?: SortOrderInput | SortOrder
@@ -14270,12 +17032,135 @@ export namespace Prisma {
     experience?: StringWithAggregatesFilter<"Course"> | string
     price?: IntWithAggregatesFilter<"Course"> | number
     courseLength?: IntWithAggregatesFilter<"Course"> | number
+    summary?: StringWithAggregatesFilter<"Course"> | string
     description?: StringWithAggregatesFilter<"Course"> | string
+    summaryPath?: StringNullableWithAggregatesFilter<"Course"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Course"> | string | null
     external?: StringNullableListFilter<"Course">
     email?: StringNullableWithAggregatesFilter<"Course"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Course"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Course"> | Date | string
+  }
+
+  export type ReviewWhereInput = {
+    AND?: ReviewWhereInput | ReviewWhereInput[]
+    OR?: ReviewWhereInput[]
+    NOT?: ReviewWhereInput | ReviewWhereInput[]
+    id?: IntFilter<"Review"> | number
+    userId?: IntFilter<"Review"> | number
+    courseId?: IntFilter<"Review"> | number
+    rating?: IntFilter<"Review"> | number
+    createdAt?: DateTimeFilter<"Review"> | Date | string
+    motive?: StringNullableFilter<"Review"> | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
+  }
+
+  export type ReviewOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    courseId?: SortOrder
+    rating?: SortOrder
+    createdAt?: SortOrder
+    motive?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+    course?: CourseOrderByWithRelationInput
+    _relevance?: ReviewOrderByRelevanceInput
+  }
+
+  export type ReviewWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    userId_courseId?: ReviewUserIdCourseIdCompoundUniqueInput
+    AND?: ReviewWhereInput | ReviewWhereInput[]
+    OR?: ReviewWhereInput[]
+    NOT?: ReviewWhereInput | ReviewWhereInput[]
+    userId?: IntFilter<"Review"> | number
+    courseId?: IntFilter<"Review"> | number
+    rating?: IntFilter<"Review"> | number
+    createdAt?: DateTimeFilter<"Review"> | Date | string
+    motive?: StringNullableFilter<"Review"> | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
+  }, "id" | "userId_courseId">
+
+  export type ReviewOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    courseId?: SortOrder
+    rating?: SortOrder
+    createdAt?: SortOrder
+    motive?: SortOrderInput | SortOrder
+    _count?: ReviewCountOrderByAggregateInput
+    _avg?: ReviewAvgOrderByAggregateInput
+    _max?: ReviewMaxOrderByAggregateInput
+    _min?: ReviewMinOrderByAggregateInput
+    _sum?: ReviewSumOrderByAggregateInput
+  }
+
+  export type ReviewScalarWhereWithAggregatesInput = {
+    AND?: ReviewScalarWhereWithAggregatesInput | ReviewScalarWhereWithAggregatesInput[]
+    OR?: ReviewScalarWhereWithAggregatesInput[]
+    NOT?: ReviewScalarWhereWithAggregatesInput | ReviewScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Review"> | number
+    userId?: IntWithAggregatesFilter<"Review"> | number
+    courseId?: IntWithAggregatesFilter<"Review"> | number
+    rating?: IntWithAggregatesFilter<"Review"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"Review"> | Date | string
+    motive?: StringNullableWithAggregatesFilter<"Review"> | string | null
+  }
+
+  export type UploadWhereInput = {
+    AND?: UploadWhereInput | UploadWhereInput[]
+    OR?: UploadWhereInput[]
+    NOT?: UploadWhereInput | UploadWhereInput[]
+    id?: IntFilter<"Upload"> | number
+    path?: StringFilter<"Upload"> | string
+    UserId?: IntNullableFilter<"Upload"> | number | null
+    UploadUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    Course?: CourseListRelationFilter
+    ProfilePictures?: UserListRelationFilter
+  }
+
+  export type UploadOrderByWithRelationInput = {
+    id?: SortOrder
+    path?: SortOrder
+    UserId?: SortOrderInput | SortOrder
+    UploadUser?: UserOrderByWithRelationInput
+    Course?: CourseOrderByRelationAggregateInput
+    ProfilePictures?: UserOrderByRelationAggregateInput
+    _relevance?: UploadOrderByRelevanceInput
+  }
+
+  export type UploadWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    path?: string
+    AND?: UploadWhereInput | UploadWhereInput[]
+    OR?: UploadWhereInput[]
+    NOT?: UploadWhereInput | UploadWhereInput[]
+    UserId?: IntNullableFilter<"Upload"> | number | null
+    UploadUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    Course?: CourseListRelationFilter
+    ProfilePictures?: UserListRelationFilter
+  }, "id" | "path">
+
+  export type UploadOrderByWithAggregationInput = {
+    id?: SortOrder
+    path?: SortOrder
+    UserId?: SortOrderInput | SortOrder
+    _count?: UploadCountOrderByAggregateInput
+    _avg?: UploadAvgOrderByAggregateInput
+    _max?: UploadMaxOrderByAggregateInput
+    _min?: UploadMinOrderByAggregateInput
+    _sum?: UploadSumOrderByAggregateInput
+  }
+
+  export type UploadScalarWhereWithAggregatesInput = {
+    AND?: UploadScalarWhereWithAggregatesInput | UploadScalarWhereWithAggregatesInput[]
+    OR?: UploadScalarWhereWithAggregatesInput[]
+    NOT?: UploadScalarWhereWithAggregatesInput | UploadScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Upload"> | number
+    path?: StringWithAggregatesFilter<"Upload"> | string
+    UserId?: IntNullableWithAggregatesFilter<"Upload"> | number | null
   }
 
   export type ProjectCreateInput = {
@@ -14337,17 +17222,19 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
     password: string
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -14358,7 +17245,7 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
+    picture: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
@@ -14369,6 +17256,8 @@ export namespace Prisma {
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserUpdateInput = {
@@ -14378,17 +17267,19 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailValidated?: BoolFieldUpdateOperationsInput | boolean
     userColor?: StringFieldUpdateOperationsInput | string
-    picture?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -14410,6 +17301,8 @@ export namespace Prisma {
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -14420,7 +17313,7 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
+    picture: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
@@ -14436,7 +17329,6 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailValidated?: BoolFieldUpdateOperationsInput | boolean
     userColor?: StringFieldUpdateOperationsInput | string
-    picture?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14931,6 +17823,7 @@ export namespace Prisma {
     experience: string
     price: number
     courseLength: number
+    summary?: string
     description: string
     phone?: string | null
     external?: CourseCreateexternalInput | string[]
@@ -14938,6 +17831,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutCourseInput
+    videoSummary?: UploadCreateNestedOneWithoutCourseInput
+    reviews?: ReviewCreateNestedManyWithoutCourseInput
   }
 
   export type CourseUncheckedCreateInput = {
@@ -14946,18 +17841,22 @@ export namespace Prisma {
     experience: string
     price: number
     courseLength: number
+    summary?: string
     description: string
+    summaryPath?: string | null
     phone?: string | null
     external?: CourseCreateexternalInput | string[]
     email?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    reviews?: ReviewUncheckedCreateNestedManyWithoutCourseInput
   }
 
   export type CourseUpdateInput = {
     experience?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     external?: CourseUpdateexternalInput | string[]
@@ -14965,6 +17864,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutCourseNestedInput
+    videoSummary?: UploadUpdateOneWithoutCourseNestedInput
+    reviews?: ReviewUpdateManyWithoutCourseNestedInput
   }
 
   export type CourseUncheckedUpdateInput = {
@@ -14973,12 +17874,15 @@ export namespace Prisma {
     experience?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    summaryPath?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     external?: CourseUpdateexternalInput | string[]
     email?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviews?: ReviewUncheckedUpdateManyWithoutCourseNestedInput
   }
 
   export type CourseCreateManyInput = {
@@ -14987,7 +17891,9 @@ export namespace Prisma {
     experience: string
     price: number
     courseLength: number
+    summary?: string
     description: string
+    summaryPath?: string | null
     phone?: string | null
     external?: CourseCreateexternalInput | string[]
     email?: string | null
@@ -14999,6 +17905,7 @@ export namespace Prisma {
     experience?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     external?: CourseUpdateexternalInput | string[]
@@ -15013,12 +17920,119 @@ export namespace Prisma {
     experience?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    summaryPath?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     external?: CourseUpdateexternalInput | string[]
     email?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReviewCreateInput = {
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+    user: UserCreateNestedOneWithoutReviewInput
+    course: CourseCreateNestedOneWithoutReviewsInput
+  }
+
+  export type ReviewUncheckedCreateInput = {
+    id?: number
+    userId: number
+    courseId: number
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+  }
+
+  export type ReviewUpdateInput = {
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneRequiredWithoutReviewNestedInput
+    course?: CourseUpdateOneRequiredWithoutReviewsNestedInput
+  }
+
+  export type ReviewUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    courseId?: IntFieldUpdateOperationsInput | number
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReviewCreateManyInput = {
+    id?: number
+    userId: number
+    courseId: number
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+  }
+
+  export type ReviewUpdateManyMutationInput = {
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReviewUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    courseId?: IntFieldUpdateOperationsInput | number
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UploadCreateInput = {
+    id?: number
+    path?: string
+    UploadUser?: UserCreateNestedOneWithoutUploadInput
+    Course?: CourseCreateNestedManyWithoutVideoSummaryInput
+    ProfilePictures?: UserCreateNestedManyWithoutPictureUploadInput
+  }
+
+  export type UploadUncheckedCreateInput = {
+    id?: number
+    path?: string
+    UserId?: number | null
+    Course?: CourseUncheckedCreateNestedManyWithoutVideoSummaryInput
+    ProfilePictures?: UserUncheckedCreateNestedManyWithoutPictureUploadInput
+  }
+
+  export type UploadUpdateInput = {
+    path?: StringFieldUpdateOperationsInput | string
+    UploadUser?: UserUpdateOneWithoutUploadNestedInput
+    Course?: CourseUpdateManyWithoutVideoSummaryNestedInput
+    ProfilePictures?: UserUpdateManyWithoutPictureUploadNestedInput
+  }
+
+  export type UploadUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    UserId?: NullableIntFieldUpdateOperationsInput | number | null
+    Course?: CourseUncheckedUpdateManyWithoutVideoSummaryNestedInput
+    ProfilePictures?: UserUncheckedUpdateManyWithoutPictureUploadNestedInput
+  }
+
+  export type UploadCreateManyInput = {
+    id?: number
+    path?: string
+    UserId?: number | null
+  }
+
+  export type UploadUpdateManyMutationInput = {
+    path?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UploadUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    UserId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -15172,6 +18186,11 @@ export namespace Prisma {
     not?: NestedEnumOccupationTypeFilter<$PrismaModel> | $Enums.OccupationType
   }
 
+  export type UploadScalarRelationFilter = {
+    is?: UploadWhereInput
+    isNot?: UploadWhereInput
+  }
+
   export type ProjectListRelationFilter = {
     every?: ProjectWhereInput
     some?: ProjectWhereInput
@@ -15195,6 +18214,18 @@ export namespace Prisma {
     isNot?: CourseWhereInput | null
   }
 
+  export type ReviewListRelationFilter = {
+    every?: ReviewWhereInput
+    some?: ReviewWhereInput
+    none?: ReviewWhereInput
+  }
+
+  export type UploadListRelationFilter = {
+    every?: UploadWhereInput
+    some?: UploadWhereInput
+    none?: UploadWhereInput
+  }
+
   export type ProjectOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -15204,6 +18235,14 @@ export namespace Prisma {
   }
 
   export type GuideOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReviewOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UploadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -15782,6 +18821,11 @@ export namespace Prisma {
     time?: SortOrder
   }
 
+  export type UploadNullableScalarRelationFilter = {
+    is?: UploadWhereInput | null
+    isNot?: UploadWhereInput | null
+  }
+
   export type CourseOrderByRelevanceInput = {
     fields: CourseOrderByRelevanceFieldEnum | CourseOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -15794,7 +18838,9 @@ export namespace Prisma {
     experience?: SortOrder
     price?: SortOrder
     courseLength?: SortOrder
+    summary?: SortOrder
     description?: SortOrder
+    summaryPath?: SortOrder
     phone?: SortOrder
     external?: SortOrder
     email?: SortOrder
@@ -15815,7 +18861,9 @@ export namespace Prisma {
     experience?: SortOrder
     price?: SortOrder
     courseLength?: SortOrder
+    summary?: SortOrder
     description?: SortOrder
+    summaryPath?: SortOrder
     phone?: SortOrder
     email?: SortOrder
     createdAt?: SortOrder
@@ -15828,7 +18876,9 @@ export namespace Prisma {
     experience?: SortOrder
     price?: SortOrder
     courseLength?: SortOrder
+    summary?: SortOrder
     description?: SortOrder
+    summaryPath?: SortOrder
     phone?: SortOrder
     email?: SortOrder
     createdAt?: SortOrder
@@ -15840,6 +18890,149 @@ export namespace Prisma {
     userId?: SortOrder
     price?: SortOrder
     courseLength?: SortOrder
+  }
+
+  export type CourseScalarRelationFilter = {
+    is?: CourseWhereInput
+    isNot?: CourseWhereInput
+  }
+
+  export type ReviewOrderByRelevanceInput = {
+    fields: ReviewOrderByRelevanceFieldEnum | ReviewOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type ReviewUserIdCourseIdCompoundUniqueInput = {
+    userId: number
+    courseId: number
+  }
+
+  export type ReviewCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    courseId?: SortOrder
+    rating?: SortOrder
+    createdAt?: SortOrder
+    motive?: SortOrder
+  }
+
+  export type ReviewAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    courseId?: SortOrder
+    rating?: SortOrder
+  }
+
+  export type ReviewMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    courseId?: SortOrder
+    rating?: SortOrder
+    createdAt?: SortOrder
+    motive?: SortOrder
+  }
+
+  export type ReviewMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    courseId?: SortOrder
+    rating?: SortOrder
+    createdAt?: SortOrder
+    motive?: SortOrder
+  }
+
+  export type ReviewSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    courseId?: SortOrder
+    rating?: SortOrder
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type CourseListRelationFilter = {
+    every?: CourseWhereInput
+    some?: CourseWhereInput
+    none?: CourseWhereInput
+  }
+
+  export type UserListRelationFilter = {
+    every?: UserWhereInput
+    some?: UserWhereInput
+    none?: UserWhereInput
+  }
+
+  export type CourseOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UploadOrderByRelevanceInput = {
+    fields: UploadOrderByRelevanceFieldEnum | UploadOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type UploadCountOrderByAggregateInput = {
+    id?: SortOrder
+    path?: SortOrder
+    UserId?: SortOrder
+  }
+
+  export type UploadAvgOrderByAggregateInput = {
+    id?: SortOrder
+    UserId?: SortOrder
+  }
+
+  export type UploadMaxOrderByAggregateInput = {
+    id?: SortOrder
+    path?: SortOrder
+    UserId?: SortOrder
+  }
+
+  export type UploadMinOrderByAggregateInput = {
+    id?: SortOrder
+    path?: SortOrder
+    UserId?: SortOrder
+  }
+
+  export type UploadSumOrderByAggregateInput = {
+    id?: SortOrder
+    UserId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type UserCreateNestedOneWithoutProjectsInput = {
@@ -15872,6 +19065,12 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type UploadCreateNestedOneWithoutProfilePicturesInput = {
+    create?: XOR<UploadCreateWithoutProfilePicturesInput, UploadUncheckedCreateWithoutProfilePicturesInput>
+    connectOrCreate?: UploadCreateOrConnectWithoutProfilePicturesInput
+    connect?: UploadWhereUniqueInput
+  }
+
   export type ProjectCreateNestedManyWithoutUserInput = {
     create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
@@ -15897,6 +19096,20 @@ export namespace Prisma {
     create?: XOR<CourseCreateWithoutUserInput, CourseUncheckedCreateWithoutUserInput>
     connectOrCreate?: CourseCreateOrConnectWithoutUserInput
     connect?: CourseWhereUniqueInput
+  }
+
+  export type ReviewCreateNestedManyWithoutUserInput = {
+    create?: XOR<ReviewCreateWithoutUserInput, ReviewUncheckedCreateWithoutUserInput> | ReviewCreateWithoutUserInput[] | ReviewUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutUserInput | ReviewCreateOrConnectWithoutUserInput[]
+    createMany?: ReviewCreateManyUserInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
+  export type UploadCreateNestedManyWithoutUploadUserInput = {
+    create?: XOR<UploadCreateWithoutUploadUserInput, UploadUncheckedCreateWithoutUploadUserInput> | UploadCreateWithoutUploadUserInput[] | UploadUncheckedCreateWithoutUploadUserInput[]
+    connectOrCreate?: UploadCreateOrConnectWithoutUploadUserInput | UploadCreateOrConnectWithoutUploadUserInput[]
+    createMany?: UploadCreateManyUploadUserInputEnvelope
+    connect?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
   }
 
   export type ProjectUncheckedCreateNestedManyWithoutUserInput = {
@@ -15926,6 +19139,20 @@ export namespace Prisma {
     connect?: CourseWhereUniqueInput
   }
 
+  export type ReviewUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ReviewCreateWithoutUserInput, ReviewUncheckedCreateWithoutUserInput> | ReviewCreateWithoutUserInput[] | ReviewUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutUserInput | ReviewCreateOrConnectWithoutUserInput[]
+    createMany?: ReviewCreateManyUserInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
+  export type UploadUncheckedCreateNestedManyWithoutUploadUserInput = {
+    create?: XOR<UploadCreateWithoutUploadUserInput, UploadUncheckedCreateWithoutUploadUserInput> | UploadCreateWithoutUploadUserInput[] | UploadUncheckedCreateWithoutUploadUserInput[]
+    connectOrCreate?: UploadCreateOrConnectWithoutUploadUserInput | UploadCreateOrConnectWithoutUploadUserInput[]
+    createMany?: UploadCreateManyUploadUserInputEnvelope
+    connect?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+  }
+
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
   }
@@ -15936,6 +19163,14 @@ export namespace Prisma {
 
   export type EnumOccupationTypeFieldUpdateOperationsInput = {
     set?: $Enums.OccupationType
+  }
+
+  export type UploadUpdateOneRequiredWithoutProfilePicturesNestedInput = {
+    create?: XOR<UploadCreateWithoutProfilePicturesInput, UploadUncheckedCreateWithoutProfilePicturesInput>
+    connectOrCreate?: UploadCreateOrConnectWithoutProfilePicturesInput
+    upsert?: UploadUpsertWithoutProfilePicturesInput
+    connect?: UploadWhereUniqueInput
+    update?: XOR<XOR<UploadUpdateToOneWithWhereWithoutProfilePicturesInput, UploadUpdateWithoutProfilePicturesInput>, UploadUncheckedUpdateWithoutProfilePicturesInput>
   }
 
   export type ProjectUpdateManyWithoutUserNestedInput = {
@@ -15990,6 +19225,34 @@ export namespace Prisma {
     update?: XOR<XOR<CourseUpdateToOneWithWhereWithoutUserInput, CourseUpdateWithoutUserInput>, CourseUncheckedUpdateWithoutUserInput>
   }
 
+  export type ReviewUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ReviewCreateWithoutUserInput, ReviewUncheckedCreateWithoutUserInput> | ReviewCreateWithoutUserInput[] | ReviewUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutUserInput | ReviewCreateOrConnectWithoutUserInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutUserInput | ReviewUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ReviewCreateManyUserInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutUserInput | ReviewUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutUserInput | ReviewUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type UploadUpdateManyWithoutUploadUserNestedInput = {
+    create?: XOR<UploadCreateWithoutUploadUserInput, UploadUncheckedCreateWithoutUploadUserInput> | UploadCreateWithoutUploadUserInput[] | UploadUncheckedCreateWithoutUploadUserInput[]
+    connectOrCreate?: UploadCreateOrConnectWithoutUploadUserInput | UploadCreateOrConnectWithoutUploadUserInput[]
+    upsert?: UploadUpsertWithWhereUniqueWithoutUploadUserInput | UploadUpsertWithWhereUniqueWithoutUploadUserInput[]
+    createMany?: UploadCreateManyUploadUserInputEnvelope
+    set?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+    disconnect?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+    delete?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+    connect?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+    update?: UploadUpdateWithWhereUniqueWithoutUploadUserInput | UploadUpdateWithWhereUniqueWithoutUploadUserInput[]
+    updateMany?: UploadUpdateManyWithWhereWithoutUploadUserInput | UploadUpdateManyWithWhereWithoutUploadUserInput[]
+    deleteMany?: UploadScalarWhereInput | UploadScalarWhereInput[]
+  }
+
   export type ProjectUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
@@ -16040,6 +19303,34 @@ export namespace Prisma {
     delete?: CourseWhereInput | boolean
     connect?: CourseWhereUniqueInput
     update?: XOR<XOR<CourseUpdateToOneWithWhereWithoutUserInput, CourseUpdateWithoutUserInput>, CourseUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ReviewCreateWithoutUserInput, ReviewUncheckedCreateWithoutUserInput> | ReviewCreateWithoutUserInput[] | ReviewUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutUserInput | ReviewCreateOrConnectWithoutUserInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutUserInput | ReviewUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ReviewCreateManyUserInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutUserInput | ReviewUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutUserInput | ReviewUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type UploadUncheckedUpdateManyWithoutUploadUserNestedInput = {
+    create?: XOR<UploadCreateWithoutUploadUserInput, UploadUncheckedCreateWithoutUploadUserInput> | UploadCreateWithoutUploadUserInput[] | UploadUncheckedCreateWithoutUploadUserInput[]
+    connectOrCreate?: UploadCreateOrConnectWithoutUploadUserInput | UploadCreateOrConnectWithoutUploadUserInput[]
+    upsert?: UploadUpsertWithWhereUniqueWithoutUploadUserInput | UploadUpsertWithWhereUniqueWithoutUploadUserInput[]
+    createMany?: UploadCreateManyUploadUserInputEnvelope
+    set?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+    disconnect?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+    delete?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+    connect?: UploadWhereUniqueInput | UploadWhereUniqueInput[]
+    update?: UploadUpdateWithWhereUniqueWithoutUploadUserInput | UploadUpdateWithWhereUniqueWithoutUploadUserInput[]
+    updateMany?: UploadUpdateManyWithWhereWithoutUploadUserInput | UploadUpdateManyWithWhereWithoutUploadUserInput[]
+    deleteMany?: UploadScalarWhereInput | UploadScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutGuideInput = {
@@ -16282,6 +19573,26 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type UploadCreateNestedOneWithoutCourseInput = {
+    create?: XOR<UploadCreateWithoutCourseInput, UploadUncheckedCreateWithoutCourseInput>
+    connectOrCreate?: UploadCreateOrConnectWithoutCourseInput
+    connect?: UploadWhereUniqueInput
+  }
+
+  export type ReviewCreateNestedManyWithoutCourseInput = {
+    create?: XOR<ReviewCreateWithoutCourseInput, ReviewUncheckedCreateWithoutCourseInput> | ReviewCreateWithoutCourseInput[] | ReviewUncheckedCreateWithoutCourseInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutCourseInput | ReviewCreateOrConnectWithoutCourseInput[]
+    createMany?: ReviewCreateManyCourseInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
+  export type ReviewUncheckedCreateNestedManyWithoutCourseInput = {
+    create?: XOR<ReviewCreateWithoutCourseInput, ReviewUncheckedCreateWithoutCourseInput> | ReviewCreateWithoutCourseInput[] | ReviewUncheckedCreateWithoutCourseInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutCourseInput | ReviewCreateOrConnectWithoutCourseInput[]
+    createMany?: ReviewCreateManyCourseInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
   export type CourseUpdateexternalInput = {
     set?: string[]
     push?: string | string[]
@@ -16293,6 +19604,180 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutCourseInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCourseInput, UserUpdateWithoutCourseInput>, UserUncheckedUpdateWithoutCourseInput>
+  }
+
+  export type UploadUpdateOneWithoutCourseNestedInput = {
+    create?: XOR<UploadCreateWithoutCourseInput, UploadUncheckedCreateWithoutCourseInput>
+    connectOrCreate?: UploadCreateOrConnectWithoutCourseInput
+    upsert?: UploadUpsertWithoutCourseInput
+    disconnect?: UploadWhereInput | boolean
+    delete?: UploadWhereInput | boolean
+    connect?: UploadWhereUniqueInput
+    update?: XOR<XOR<UploadUpdateToOneWithWhereWithoutCourseInput, UploadUpdateWithoutCourseInput>, UploadUncheckedUpdateWithoutCourseInput>
+  }
+
+  export type ReviewUpdateManyWithoutCourseNestedInput = {
+    create?: XOR<ReviewCreateWithoutCourseInput, ReviewUncheckedCreateWithoutCourseInput> | ReviewCreateWithoutCourseInput[] | ReviewUncheckedCreateWithoutCourseInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutCourseInput | ReviewCreateOrConnectWithoutCourseInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutCourseInput | ReviewUpsertWithWhereUniqueWithoutCourseInput[]
+    createMany?: ReviewCreateManyCourseInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutCourseInput | ReviewUpdateWithWhereUniqueWithoutCourseInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutCourseInput | ReviewUpdateManyWithWhereWithoutCourseInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutCourseNestedInput = {
+    create?: XOR<ReviewCreateWithoutCourseInput, ReviewUncheckedCreateWithoutCourseInput> | ReviewCreateWithoutCourseInput[] | ReviewUncheckedCreateWithoutCourseInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutCourseInput | ReviewCreateOrConnectWithoutCourseInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutCourseInput | ReviewUpsertWithWhereUniqueWithoutCourseInput[]
+    createMany?: ReviewCreateManyCourseInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutCourseInput | ReviewUpdateWithWhereUniqueWithoutCourseInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutCourseInput | ReviewUpdateManyWithWhereWithoutCourseInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutReviewInput = {
+    create?: XOR<UserCreateWithoutReviewInput, UserUncheckedCreateWithoutReviewInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type CourseCreateNestedOneWithoutReviewsInput = {
+    create?: XOR<CourseCreateWithoutReviewsInput, CourseUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: CourseCreateOrConnectWithoutReviewsInput
+    connect?: CourseWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutReviewNestedInput = {
+    create?: XOR<UserCreateWithoutReviewInput, UserUncheckedCreateWithoutReviewInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewInput
+    upsert?: UserUpsertWithoutReviewInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewInput, UserUpdateWithoutReviewInput>, UserUncheckedUpdateWithoutReviewInput>
+  }
+
+  export type CourseUpdateOneRequiredWithoutReviewsNestedInput = {
+    create?: XOR<CourseCreateWithoutReviewsInput, CourseUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: CourseCreateOrConnectWithoutReviewsInput
+    upsert?: CourseUpsertWithoutReviewsInput
+    connect?: CourseWhereUniqueInput
+    update?: XOR<XOR<CourseUpdateToOneWithWhereWithoutReviewsInput, CourseUpdateWithoutReviewsInput>, CourseUncheckedUpdateWithoutReviewsInput>
+  }
+
+  export type UserCreateNestedOneWithoutUploadInput = {
+    create?: XOR<UserCreateWithoutUploadInput, UserUncheckedCreateWithoutUploadInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUploadInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type CourseCreateNestedManyWithoutVideoSummaryInput = {
+    create?: XOR<CourseCreateWithoutVideoSummaryInput, CourseUncheckedCreateWithoutVideoSummaryInput> | CourseCreateWithoutVideoSummaryInput[] | CourseUncheckedCreateWithoutVideoSummaryInput[]
+    connectOrCreate?: CourseCreateOrConnectWithoutVideoSummaryInput | CourseCreateOrConnectWithoutVideoSummaryInput[]
+    createMany?: CourseCreateManyVideoSummaryInputEnvelope
+    connect?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedManyWithoutPictureUploadInput = {
+    create?: XOR<UserCreateWithoutPictureUploadInput, UserUncheckedCreateWithoutPictureUploadInput> | UserCreateWithoutPictureUploadInput[] | UserUncheckedCreateWithoutPictureUploadInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutPictureUploadInput | UserCreateOrConnectWithoutPictureUploadInput[]
+    createMany?: UserCreateManyPictureUploadInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type CourseUncheckedCreateNestedManyWithoutVideoSummaryInput = {
+    create?: XOR<CourseCreateWithoutVideoSummaryInput, CourseUncheckedCreateWithoutVideoSummaryInput> | CourseCreateWithoutVideoSummaryInput[] | CourseUncheckedCreateWithoutVideoSummaryInput[]
+    connectOrCreate?: CourseCreateOrConnectWithoutVideoSummaryInput | CourseCreateOrConnectWithoutVideoSummaryInput[]
+    createMany?: CourseCreateManyVideoSummaryInputEnvelope
+    connect?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutPictureUploadInput = {
+    create?: XOR<UserCreateWithoutPictureUploadInput, UserUncheckedCreateWithoutPictureUploadInput> | UserCreateWithoutPictureUploadInput[] | UserUncheckedCreateWithoutPictureUploadInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutPictureUploadInput | UserCreateOrConnectWithoutPictureUploadInput[]
+    createMany?: UserCreateManyPictureUploadInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneWithoutUploadNestedInput = {
+    create?: XOR<UserCreateWithoutUploadInput, UserUncheckedCreateWithoutUploadInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUploadInput
+    upsert?: UserUpsertWithoutUploadInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUploadInput, UserUpdateWithoutUploadInput>, UserUncheckedUpdateWithoutUploadInput>
+  }
+
+  export type CourseUpdateManyWithoutVideoSummaryNestedInput = {
+    create?: XOR<CourseCreateWithoutVideoSummaryInput, CourseUncheckedCreateWithoutVideoSummaryInput> | CourseCreateWithoutVideoSummaryInput[] | CourseUncheckedCreateWithoutVideoSummaryInput[]
+    connectOrCreate?: CourseCreateOrConnectWithoutVideoSummaryInput | CourseCreateOrConnectWithoutVideoSummaryInput[]
+    upsert?: CourseUpsertWithWhereUniqueWithoutVideoSummaryInput | CourseUpsertWithWhereUniqueWithoutVideoSummaryInput[]
+    createMany?: CourseCreateManyVideoSummaryInputEnvelope
+    set?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+    disconnect?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+    delete?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+    connect?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+    update?: CourseUpdateWithWhereUniqueWithoutVideoSummaryInput | CourseUpdateWithWhereUniqueWithoutVideoSummaryInput[]
+    updateMany?: CourseUpdateManyWithWhereWithoutVideoSummaryInput | CourseUpdateManyWithWhereWithoutVideoSummaryInput[]
+    deleteMany?: CourseScalarWhereInput | CourseScalarWhereInput[]
+  }
+
+  export type UserUpdateManyWithoutPictureUploadNestedInput = {
+    create?: XOR<UserCreateWithoutPictureUploadInput, UserUncheckedCreateWithoutPictureUploadInput> | UserCreateWithoutPictureUploadInput[] | UserUncheckedCreateWithoutPictureUploadInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutPictureUploadInput | UserCreateOrConnectWithoutPictureUploadInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutPictureUploadInput | UserUpsertWithWhereUniqueWithoutPictureUploadInput[]
+    createMany?: UserCreateManyPictureUploadInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutPictureUploadInput | UserUpdateWithWhereUniqueWithoutPictureUploadInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutPictureUploadInput | UserUpdateManyWithWhereWithoutPictureUploadInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type CourseUncheckedUpdateManyWithoutVideoSummaryNestedInput = {
+    create?: XOR<CourseCreateWithoutVideoSummaryInput, CourseUncheckedCreateWithoutVideoSummaryInput> | CourseCreateWithoutVideoSummaryInput[] | CourseUncheckedCreateWithoutVideoSummaryInput[]
+    connectOrCreate?: CourseCreateOrConnectWithoutVideoSummaryInput | CourseCreateOrConnectWithoutVideoSummaryInput[]
+    upsert?: CourseUpsertWithWhereUniqueWithoutVideoSummaryInput | CourseUpsertWithWhereUniqueWithoutVideoSummaryInput[]
+    createMany?: CourseCreateManyVideoSummaryInputEnvelope
+    set?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+    disconnect?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+    delete?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+    connect?: CourseWhereUniqueInput | CourseWhereUniqueInput[]
+    update?: CourseUpdateWithWhereUniqueWithoutVideoSummaryInput | CourseUpdateWithWhereUniqueWithoutVideoSummaryInput[]
+    updateMany?: CourseUpdateManyWithWhereWithoutVideoSummaryInput | CourseUpdateManyWithWhereWithoutVideoSummaryInput[]
+    deleteMany?: CourseScalarWhereInput | CourseScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutPictureUploadNestedInput = {
+    create?: XOR<UserCreateWithoutPictureUploadInput, UserUncheckedCreateWithoutPictureUploadInput> | UserCreateWithoutPictureUploadInput[] | UserUncheckedCreateWithoutPictureUploadInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutPictureUploadInput | UserCreateOrConnectWithoutPictureUploadInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutPictureUploadInput | UserUpsertWithWhereUniqueWithoutPictureUploadInput[]
+    createMany?: UserCreateManyPictureUploadInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutPictureUploadInput | UserUpdateWithWhereUniqueWithoutPictureUploadInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutPictureUploadInput | UserUpdateManyWithWhereWithoutPictureUploadInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -16538,6 +20023,33 @@ export namespace Prisma {
     _max?: NestedEnumDifficultyNullableFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type UserCreateWithoutProjectsInput = {
     username: string
     firstName: string
@@ -16545,16 +20057,18 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
     password: string
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
@@ -16565,7 +20079,7 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
+    picture: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
@@ -16575,6 +20089,8 @@ export namespace Prisma {
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -16600,16 +20116,18 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailValidated?: BoolFieldUpdateOperationsInput | boolean
     userColor?: StringFieldUpdateOperationsInput | string
-    picture?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -16630,6 +20148,27 @@ export namespace Prisma {
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+  }
+
+  export type UploadCreateWithoutProfilePicturesInput = {
+    id?: number
+    path?: string
+    UploadUser?: UserCreateNestedOneWithoutUploadInput
+    Course?: CourseCreateNestedManyWithoutVideoSummaryInput
+  }
+
+  export type UploadUncheckedCreateWithoutProfilePicturesInput = {
+    id?: number
+    path?: string
+    UserId?: number | null
+    Course?: CourseUncheckedCreateNestedManyWithoutVideoSummaryInput
+  }
+
+  export type UploadCreateOrConnectWithoutProfilePicturesInput = {
+    where: UploadWhereUniqueInput
+    create: XOR<UploadCreateWithoutProfilePicturesInput, UploadUncheckedCreateWithoutProfilePicturesInput>
   }
 
   export type ProjectCreateWithoutUserInput = {
@@ -16723,12 +20262,15 @@ export namespace Prisma {
     experience: string
     price: number
     courseLength: number
+    summary?: string
     description: string
     phone?: string | null
     external?: CourseCreateexternalInput | string[]
     email?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    videoSummary?: UploadCreateNestedOneWithoutCourseInput
+    reviews?: ReviewCreateNestedManyWithoutCourseInput
   }
 
   export type CourseUncheckedCreateWithoutUserInput = {
@@ -16736,17 +20278,93 @@ export namespace Prisma {
     experience: string
     price: number
     courseLength: number
+    summary?: string
     description: string
+    summaryPath?: string | null
     phone?: string | null
     external?: CourseCreateexternalInput | string[]
     email?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    reviews?: ReviewUncheckedCreateNestedManyWithoutCourseInput
   }
 
   export type CourseCreateOrConnectWithoutUserInput = {
     where: CourseWhereUniqueInput
     create: XOR<CourseCreateWithoutUserInput, CourseUncheckedCreateWithoutUserInput>
+  }
+
+  export type ReviewCreateWithoutUserInput = {
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+    course: CourseCreateNestedOneWithoutReviewsInput
+  }
+
+  export type ReviewUncheckedCreateWithoutUserInput = {
+    id?: number
+    courseId: number
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+  }
+
+  export type ReviewCreateOrConnectWithoutUserInput = {
+    where: ReviewWhereUniqueInput
+    create: XOR<ReviewCreateWithoutUserInput, ReviewUncheckedCreateWithoutUserInput>
+  }
+
+  export type ReviewCreateManyUserInputEnvelope = {
+    data: ReviewCreateManyUserInput | ReviewCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UploadCreateWithoutUploadUserInput = {
+    id?: number
+    path?: string
+    Course?: CourseCreateNestedManyWithoutVideoSummaryInput
+    ProfilePictures?: UserCreateNestedManyWithoutPictureUploadInput
+  }
+
+  export type UploadUncheckedCreateWithoutUploadUserInput = {
+    id?: number
+    path?: string
+    Course?: CourseUncheckedCreateNestedManyWithoutVideoSummaryInput
+    ProfilePictures?: UserUncheckedCreateNestedManyWithoutPictureUploadInput
+  }
+
+  export type UploadCreateOrConnectWithoutUploadUserInput = {
+    where: UploadWhereUniqueInput
+    create: XOR<UploadCreateWithoutUploadUserInput, UploadUncheckedCreateWithoutUploadUserInput>
+  }
+
+  export type UploadCreateManyUploadUserInputEnvelope = {
+    data: UploadCreateManyUploadUserInput | UploadCreateManyUploadUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UploadUpsertWithoutProfilePicturesInput = {
+    update: XOR<UploadUpdateWithoutProfilePicturesInput, UploadUncheckedUpdateWithoutProfilePicturesInput>
+    create: XOR<UploadCreateWithoutProfilePicturesInput, UploadUncheckedCreateWithoutProfilePicturesInput>
+    where?: UploadWhereInput
+  }
+
+  export type UploadUpdateToOneWithWhereWithoutProfilePicturesInput = {
+    where?: UploadWhereInput
+    data: XOR<UploadUpdateWithoutProfilePicturesInput, UploadUncheckedUpdateWithoutProfilePicturesInput>
+  }
+
+  export type UploadUpdateWithoutProfilePicturesInput = {
+    path?: StringFieldUpdateOperationsInput | string
+    UploadUser?: UserUpdateOneWithoutUploadNestedInput
+    Course?: CourseUpdateManyWithoutVideoSummaryNestedInput
+  }
+
+  export type UploadUncheckedUpdateWithoutProfilePicturesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    UserId?: NullableIntFieldUpdateOperationsInput | number | null
+    Course?: CourseUncheckedUpdateManyWithoutVideoSummaryNestedInput
   }
 
   export type ProjectUpsertWithWhereUniqueWithoutUserInput = {
@@ -16853,12 +20471,15 @@ export namespace Prisma {
     experience?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     external?: CourseUpdateexternalInput | string[]
     email?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    videoSummary?: UploadUpdateOneWithoutCourseNestedInput
+    reviews?: ReviewUpdateManyWithoutCourseNestedInput
   }
 
   export type CourseUncheckedUpdateWithoutUserInput = {
@@ -16866,12 +20487,68 @@ export namespace Prisma {
     experience?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    summaryPath?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     external?: CourseUpdateexternalInput | string[]
     email?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviews?: ReviewUncheckedUpdateManyWithoutCourseNestedInput
+  }
+
+  export type ReviewUpsertWithWhereUniqueWithoutUserInput = {
+    where: ReviewWhereUniqueInput
+    update: XOR<ReviewUpdateWithoutUserInput, ReviewUncheckedUpdateWithoutUserInput>
+    create: XOR<ReviewCreateWithoutUserInput, ReviewUncheckedCreateWithoutUserInput>
+  }
+
+  export type ReviewUpdateWithWhereUniqueWithoutUserInput = {
+    where: ReviewWhereUniqueInput
+    data: XOR<ReviewUpdateWithoutUserInput, ReviewUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ReviewUpdateManyWithWhereWithoutUserInput = {
+    where: ReviewScalarWhereInput
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ReviewScalarWhereInput = {
+    AND?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+    OR?: ReviewScalarWhereInput[]
+    NOT?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+    id?: IntFilter<"Review"> | number
+    userId?: IntFilter<"Review"> | number
+    courseId?: IntFilter<"Review"> | number
+    rating?: IntFilter<"Review"> | number
+    createdAt?: DateTimeFilter<"Review"> | Date | string
+    motive?: StringNullableFilter<"Review"> | string | null
+  }
+
+  export type UploadUpsertWithWhereUniqueWithoutUploadUserInput = {
+    where: UploadWhereUniqueInput
+    update: XOR<UploadUpdateWithoutUploadUserInput, UploadUncheckedUpdateWithoutUploadUserInput>
+    create: XOR<UploadCreateWithoutUploadUserInput, UploadUncheckedCreateWithoutUploadUserInput>
+  }
+
+  export type UploadUpdateWithWhereUniqueWithoutUploadUserInput = {
+    where: UploadWhereUniqueInput
+    data: XOR<UploadUpdateWithoutUploadUserInput, UploadUncheckedUpdateWithoutUploadUserInput>
+  }
+
+  export type UploadUpdateManyWithWhereWithoutUploadUserInput = {
+    where: UploadScalarWhereInput
+    data: XOR<UploadUpdateManyMutationInput, UploadUncheckedUpdateManyWithoutUploadUserInput>
+  }
+
+  export type UploadScalarWhereInput = {
+    AND?: UploadScalarWhereInput | UploadScalarWhereInput[]
+    OR?: UploadScalarWhereInput[]
+    NOT?: UploadScalarWhereInput | UploadScalarWhereInput[]
+    id?: IntFilter<"Upload"> | number
+    path?: StringFilter<"Upload"> | string
+    UserId?: IntNullableFilter<"Upload"> | number | null
   }
 
   export type UserCreateWithoutGuideInput = {
@@ -16881,16 +20558,18 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
     password: string
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserUncheckedCreateWithoutGuideInput = {
@@ -16901,7 +20580,7 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
+    picture: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
@@ -16911,6 +20590,8 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserCreateOrConnectWithoutGuideInput = {
@@ -16954,16 +20635,18 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailValidated?: BoolFieldUpdateOperationsInput | boolean
     userColor?: StringFieldUpdateOperationsInput | string
-    picture?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGuideInput = {
@@ -16984,6 +20667,8 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
   }
 
   export type GuideTagUpsertWithWhereUniqueWithoutGuideInput = {
@@ -17198,16 +20883,18 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
     password: string
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserUncheckedCreateWithoutSolvesInput = {
@@ -17218,7 +20905,7 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
+    picture: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
@@ -17228,6 +20915,8 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserCreateOrConnectWithoutSolvesInput = {
@@ -17295,16 +20984,18 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailValidated?: BoolFieldUpdateOperationsInput | boolean
     userColor?: StringFieldUpdateOperationsInput | string
-    picture?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSolvesInput = {
@@ -17325,6 +21016,8 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
   }
 
   export type ProblemUpsertWithoutSolvesInput = {
@@ -17382,16 +21075,18 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
     password: string
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserUncheckedCreateWithoutCourseInput = {
@@ -17402,7 +21097,7 @@ export namespace Prisma {
     email: string
     emailValidated?: boolean
     userColor?: string
-    picture?: string
+    picture: string
     role?: $Enums.Role
     createdAt?: Date | string
     activeAt?: Date | string
@@ -17412,11 +21107,57 @@ export namespace Prisma {
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
   }
 
   export type UserCreateOrConnectWithoutCourseInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutCourseInput, UserUncheckedCreateWithoutCourseInput>
+  }
+
+  export type UploadCreateWithoutCourseInput = {
+    id?: number
+    path?: string
+    UploadUser?: UserCreateNestedOneWithoutUploadInput
+    ProfilePictures?: UserCreateNestedManyWithoutPictureUploadInput
+  }
+
+  export type UploadUncheckedCreateWithoutCourseInput = {
+    id?: number
+    path?: string
+    UserId?: number | null
+    ProfilePictures?: UserUncheckedCreateNestedManyWithoutPictureUploadInput
+  }
+
+  export type UploadCreateOrConnectWithoutCourseInput = {
+    where: UploadWhereUniqueInput
+    create: XOR<UploadCreateWithoutCourseInput, UploadUncheckedCreateWithoutCourseInput>
+  }
+
+  export type ReviewCreateWithoutCourseInput = {
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+    user: UserCreateNestedOneWithoutReviewInput
+  }
+
+  export type ReviewUncheckedCreateWithoutCourseInput = {
+    id?: number
+    userId: number
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+  }
+
+  export type ReviewCreateOrConnectWithoutCourseInput = {
+    where: ReviewWhereUniqueInput
+    create: XOR<ReviewCreateWithoutCourseInput, ReviewUncheckedCreateWithoutCourseInput>
+  }
+
+  export type ReviewCreateManyCourseInputEnvelope = {
+    data: ReviewCreateManyCourseInput | ReviewCreateManyCourseInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutCourseInput = {
@@ -17437,16 +21178,18 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailValidated?: BoolFieldUpdateOperationsInput | boolean
     userColor?: StringFieldUpdateOperationsInput | string
-    picture?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: StringFieldUpdateOperationsInput | string
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCourseInput = {
@@ -17467,6 +21210,495 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+  }
+
+  export type UploadUpsertWithoutCourseInput = {
+    update: XOR<UploadUpdateWithoutCourseInput, UploadUncheckedUpdateWithoutCourseInput>
+    create: XOR<UploadCreateWithoutCourseInput, UploadUncheckedCreateWithoutCourseInput>
+    where?: UploadWhereInput
+  }
+
+  export type UploadUpdateToOneWithWhereWithoutCourseInput = {
+    where?: UploadWhereInput
+    data: XOR<UploadUpdateWithoutCourseInput, UploadUncheckedUpdateWithoutCourseInput>
+  }
+
+  export type UploadUpdateWithoutCourseInput = {
+    path?: StringFieldUpdateOperationsInput | string
+    UploadUser?: UserUpdateOneWithoutUploadNestedInput
+    ProfilePictures?: UserUpdateManyWithoutPictureUploadNestedInput
+  }
+
+  export type UploadUncheckedUpdateWithoutCourseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    UserId?: NullableIntFieldUpdateOperationsInput | number | null
+    ProfilePictures?: UserUncheckedUpdateManyWithoutPictureUploadNestedInput
+  }
+
+  export type ReviewUpsertWithWhereUniqueWithoutCourseInput = {
+    where: ReviewWhereUniqueInput
+    update: XOR<ReviewUpdateWithoutCourseInput, ReviewUncheckedUpdateWithoutCourseInput>
+    create: XOR<ReviewCreateWithoutCourseInput, ReviewUncheckedCreateWithoutCourseInput>
+  }
+
+  export type ReviewUpdateWithWhereUniqueWithoutCourseInput = {
+    where: ReviewWhereUniqueInput
+    data: XOR<ReviewUpdateWithoutCourseInput, ReviewUncheckedUpdateWithoutCourseInput>
+  }
+
+  export type ReviewUpdateManyWithWhereWithoutCourseInput = {
+    where: ReviewScalarWhereInput
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyWithoutCourseInput>
+  }
+
+  export type UserCreateWithoutReviewInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password: string
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+  }
+
+  export type UserUncheckedCreateWithoutReviewInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password: string
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReviewInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReviewInput, UserUncheckedCreateWithoutReviewInput>
+  }
+
+  export type CourseCreateWithoutReviewsInput = {
+    experience: string
+    price: number
+    courseLength: number
+    summary?: string
+    description: string
+    phone?: string | null
+    external?: CourseCreateexternalInput | string[]
+    email?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutCourseInput
+    videoSummary?: UploadCreateNestedOneWithoutCourseInput
+  }
+
+  export type CourseUncheckedCreateWithoutReviewsInput = {
+    id?: number
+    userId: number
+    experience: string
+    price: number
+    courseLength: number
+    summary?: string
+    description: string
+    summaryPath?: string | null
+    phone?: string | null
+    external?: CourseCreateexternalInput | string[]
+    email?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CourseCreateOrConnectWithoutReviewsInput = {
+    where: CourseWhereUniqueInput
+    create: XOR<CourseCreateWithoutReviewsInput, CourseUncheckedCreateWithoutReviewsInput>
+  }
+
+  export type UserUpsertWithoutReviewInput = {
+    update: XOR<UserUpdateWithoutReviewInput, UserUncheckedUpdateWithoutReviewInput>
+    create: XOR<UserCreateWithoutReviewInput, UserUncheckedCreateWithoutReviewInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReviewInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReviewInput, UserUncheckedUpdateWithoutReviewInput>
+  }
+
+  export type UserUpdateWithoutReviewInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReviewInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+  }
+
+  export type CourseUpsertWithoutReviewsInput = {
+    update: XOR<CourseUpdateWithoutReviewsInput, CourseUncheckedUpdateWithoutReviewsInput>
+    create: XOR<CourseCreateWithoutReviewsInput, CourseUncheckedCreateWithoutReviewsInput>
+    where?: CourseWhereInput
+  }
+
+  export type CourseUpdateToOneWithWhereWithoutReviewsInput = {
+    where?: CourseWhereInput
+    data: XOR<CourseUpdateWithoutReviewsInput, CourseUncheckedUpdateWithoutReviewsInput>
+  }
+
+  export type CourseUpdateWithoutReviewsInput = {
+    experience?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    external?: CourseUpdateexternalInput | string[]
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutCourseNestedInput
+    videoSummary?: UploadUpdateOneWithoutCourseNestedInput
+  }
+
+  export type CourseUncheckedUpdateWithoutReviewsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    experience?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    summaryPath?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    external?: CourseUpdateexternalInput | string[]
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserCreateWithoutUploadInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password: string
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutUploadInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password: string
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutUploadInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutUploadInput, UserUncheckedCreateWithoutUploadInput>
+  }
+
+  export type CourseCreateWithoutVideoSummaryInput = {
+    experience: string
+    price: number
+    courseLength: number
+    summary?: string
+    description: string
+    phone?: string | null
+    external?: CourseCreateexternalInput | string[]
+    email?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutCourseInput
+    reviews?: ReviewCreateNestedManyWithoutCourseInput
+  }
+
+  export type CourseUncheckedCreateWithoutVideoSummaryInput = {
+    id?: number
+    userId: number
+    experience: string
+    price: number
+    courseLength: number
+    summary?: string
+    description: string
+    phone?: string | null
+    external?: CourseCreateexternalInput | string[]
+    email?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reviews?: ReviewUncheckedCreateNestedManyWithoutCourseInput
+  }
+
+  export type CourseCreateOrConnectWithoutVideoSummaryInput = {
+    where: CourseWhereUniqueInput
+    create: XOR<CourseCreateWithoutVideoSummaryInput, CourseUncheckedCreateWithoutVideoSummaryInput>
+  }
+
+  export type CourseCreateManyVideoSummaryInputEnvelope = {
+    data: CourseCreateManyVideoSummaryInput | CourseCreateManyVideoSummaryInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutPictureUploadInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password: string
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPictureUploadInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password: string
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPictureUploadInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPictureUploadInput, UserUncheckedCreateWithoutPictureUploadInput>
+  }
+
+  export type UserCreateManyPictureUploadInputEnvelope = {
+    data: UserCreateManyPictureUploadInput | UserCreateManyPictureUploadInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutUploadInput = {
+    update: XOR<UserUpdateWithoutUploadInput, UserUncheckedUpdateWithoutUploadInput>
+    create: XOR<UserCreateWithoutUploadInput, UserUncheckedCreateWithoutUploadInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutUploadInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutUploadInput, UserUncheckedUpdateWithoutUploadInput>
+  }
+
+  export type UserUpdateWithoutUploadInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUploadInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type CourseUpsertWithWhereUniqueWithoutVideoSummaryInput = {
+    where: CourseWhereUniqueInput
+    update: XOR<CourseUpdateWithoutVideoSummaryInput, CourseUncheckedUpdateWithoutVideoSummaryInput>
+    create: XOR<CourseCreateWithoutVideoSummaryInput, CourseUncheckedCreateWithoutVideoSummaryInput>
+  }
+
+  export type CourseUpdateWithWhereUniqueWithoutVideoSummaryInput = {
+    where: CourseWhereUniqueInput
+    data: XOR<CourseUpdateWithoutVideoSummaryInput, CourseUncheckedUpdateWithoutVideoSummaryInput>
+  }
+
+  export type CourseUpdateManyWithWhereWithoutVideoSummaryInput = {
+    where: CourseScalarWhereInput
+    data: XOR<CourseUpdateManyMutationInput, CourseUncheckedUpdateManyWithoutVideoSummaryInput>
+  }
+
+  export type CourseScalarWhereInput = {
+    AND?: CourseScalarWhereInput | CourseScalarWhereInput[]
+    OR?: CourseScalarWhereInput[]
+    NOT?: CourseScalarWhereInput | CourseScalarWhereInput[]
+    id?: IntFilter<"Course"> | number
+    userId?: IntFilter<"Course"> | number
+    experience?: StringFilter<"Course"> | string
+    price?: IntFilter<"Course"> | number
+    courseLength?: IntFilter<"Course"> | number
+    summary?: StringFilter<"Course"> | string
+    description?: StringFilter<"Course"> | string
+    summaryPath?: StringNullableFilter<"Course"> | string | null
+    phone?: StringNullableFilter<"Course"> | string | null
+    external?: StringNullableListFilter<"Course">
+    email?: StringNullableFilter<"Course"> | string | null
+    createdAt?: DateTimeFilter<"Course"> | Date | string
+    updatedAt?: DateTimeFilter<"Course"> | Date | string
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutPictureUploadInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutPictureUploadInput, UserUncheckedUpdateWithoutPictureUploadInput>
+    create: XOR<UserCreateWithoutPictureUploadInput, UserUncheckedCreateWithoutPictureUploadInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutPictureUploadInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutPictureUploadInput, UserUncheckedUpdateWithoutPictureUploadInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutPictureUploadInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutPictureUploadInput>
+  }
+
+  export type UserScalarWhereInput = {
+    AND?: UserScalarWhereInput | UserScalarWhereInput[]
+    OR?: UserScalarWhereInput[]
+    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
+    id?: IntFilter<"User"> | number
+    username?: StringFilter<"User"> | string
+    firstName?: StringFilter<"User"> | string
+    lastName?: StringFilter<"User"> | string
+    email?: StringFilter<"User"> | string
+    emailValidated?: BoolFilter<"User"> | boolean
+    userColor?: StringFilter<"User"> | string
+    picture?: StringFilter<"User"> | string
+    role?: EnumRoleFilter<"User"> | $Enums.Role
+    createdAt?: DateTimeFilter<"User"> | Date | string
+    activeAt?: DateTimeFilter<"User"> | Date | string
+    password?: StringFilter<"User"> | string
+    loginMethod?: StringFilter<"User"> | string
+    occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
   }
 
   export type ProjectCreateManyUserInput = {
@@ -17496,6 +21728,19 @@ export namespace Prisma {
     description?: string | null
     category?: string | null
     visits?: number
+  }
+
+  export type ReviewCreateManyUserInput = {
+    id?: number
+    courseId: number
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+  }
+
+  export type UploadCreateManyUploadUserInput = {
+    id?: number
+    path?: string
   }
 
   export type ProjectUpdateWithoutUserInput = {
@@ -17584,6 +21829,47 @@ export namespace Prisma {
     visits?: IntFieldUpdateOperationsInput | number
   }
 
+  export type ReviewUpdateWithoutUserInput = {
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: CourseUpdateOneRequiredWithoutReviewsNestedInput
+  }
+
+  export type ReviewUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    courseId?: IntFieldUpdateOperationsInput | number
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    courseId?: IntFieldUpdateOperationsInput | number
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UploadUpdateWithoutUploadUserInput = {
+    path?: StringFieldUpdateOperationsInput | string
+    Course?: CourseUpdateManyWithoutVideoSummaryNestedInput
+    ProfilePictures?: UserUpdateManyWithoutPictureUploadNestedInput
+  }
+
+  export type UploadUncheckedUpdateWithoutUploadUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    Course?: CourseUncheckedUpdateManyWithoutVideoSummaryNestedInput
+    ProfilePictures?: UserUncheckedUpdateManyWithoutPictureUploadNestedInput
+  }
+
+  export type UploadUncheckedUpdateManyWithoutUploadUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+  }
+
   export type GuideTagCreateManyGuideInput = {
     tagId: number
   }
@@ -17649,6 +21935,173 @@ export namespace Prisma {
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
     time?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ReviewCreateManyCourseInput = {
+    id?: number
+    userId: number
+    rating: number
+    createdAt?: Date | string
+    motive?: string | null
+  }
+
+  export type ReviewUpdateWithoutCourseInput = {
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneRequiredWithoutReviewNestedInput
+  }
+
+  export type ReviewUncheckedUpdateWithoutCourseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutCourseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    rating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    motive?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CourseCreateManyVideoSummaryInput = {
+    id?: number
+    userId: number
+    experience: string
+    price: number
+    courseLength: number
+    summary?: string
+    description: string
+    phone?: string | null
+    external?: CourseCreateexternalInput | string[]
+    email?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserCreateManyPictureUploadInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password: string
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+  }
+
+  export type CourseUpdateWithoutVideoSummaryInput = {
+    experience?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    external?: CourseUpdateexternalInput | string[]
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutCourseNestedInput
+    reviews?: ReviewUpdateManyWithoutCourseNestedInput
+  }
+
+  export type CourseUncheckedUpdateWithoutVideoSummaryInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    experience?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    external?: CourseUpdateexternalInput | string[]
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviews?: ReviewUncheckedUpdateManyWithoutCourseNestedInput
+  }
+
+  export type CourseUncheckedUpdateManyWithoutVideoSummaryInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    experience?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    courseLength?: IntFieldUpdateOperationsInput | number
+    summary?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    external?: CourseUpdateexternalInput | string[]
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpdateWithoutPictureUploadInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPictureUploadInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutPictureUploadInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
   }
 
 

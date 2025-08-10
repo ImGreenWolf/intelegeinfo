@@ -218,12 +218,29 @@ exports.Prisma.CourseScalarFieldEnum = {
   experience: 'experience',
   price: 'price',
   courseLength: 'courseLength',
+  summary: 'summary',
   description: 'description',
+  summaryPath: 'summaryPath',
   phone: 'phone',
   external: 'external',
   email: 'email',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReviewScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  courseId: 'courseId',
+  rating: 'rating',
+  createdAt: 'createdAt',
+  motive: 'motive'
+};
+
+exports.Prisma.UploadScalarFieldEnum = {
+  id: 'id',
+  path: 'path',
+  UserId: 'UserId'
 };
 
 exports.Prisma.SortOrder = {
@@ -304,10 +321,20 @@ exports.Prisma.SolveOrderByRelevanceFieldEnum = {
 
 exports.Prisma.CourseOrderByRelevanceFieldEnum = {
   experience: 'experience',
+  summary: 'summary',
   description: 'description',
+  summaryPath: 'summaryPath',
   phone: 'phone',
   external: 'external',
   email: 'email'
+};
+
+exports.Prisma.ReviewOrderByRelevanceFieldEnum = {
+  motive: 'motive'
+};
+
+exports.Prisma.UploadOrderByRelevanceFieldEnum = {
+  path: 'path'
 };
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
@@ -315,9 +342,9 @@ exports.Role = exports.$Enums.Role = {
 };
 
 exports.OccupationType = exports.$Enums.OccupationType = {
+  None: 'None',
   Student: 'Student',
-  Teacher: 'Teacher',
-  None: 'None'
+  Teacher: 'Teacher'
 };
 
 exports.Difficulty = exports.$Enums.Difficulty = {
@@ -337,7 +364,9 @@ exports.Prisma.ModelName = {
   GuideTag: 'GuideTag',
   Problem: 'Problem',
   Solve: 'Solve',
-  Course: 'Course'
+  Course: 'Course',
+  Review: 'Review',
+  Upload: 'Upload'
 };
 
 /**

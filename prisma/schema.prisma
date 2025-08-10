@@ -27,13 +27,14 @@ model Project {
 
 model User {
   id    Int    @id @default(autoincrement())
-  username  String 
+  username  String @unique
   firstName  String
   lastName  String
   email String @unique
   emailValidated Boolean @default(false)
   userColor String @default("#FFFFFF")
-  picture String @default("default")
+  picture String  
+  pictureUpload Upload @relation(fields: [picture], references: [path])
   role Role @default(USER)
   createdAt DateTime @default(now())
   activeAt DateTime @default(now())
@@ -46,6 +47,10 @@ model User {
   Guide Guide[] // guides written by user
 
   Course Course? // course offered 
+
+  Review Review[]
+
+  Upload Upload[] @relation(name: "Upload User")
 }
 enum OccupationType {
   None
@@ -153,13 +158,41 @@ model Course {
   experience String
   price Int 
   courseLength Int
+  summary String @default("Salut, ofer meditatii la informatica!")
   description String
-  
+  summaryPath String?
+  videoSummary Upload? @relation(fields: [summaryPath], references: [path])
   phone String?
   external String[]
   email String?
-
+  reviews Review[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
+}
+model Review {
+  id Int @id @default(autoincrement())
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  course Course @relation(fields: [courseId], references: [id])
+  courseId Int
+
+  rating Int
+  createdAt DateTime @default(now())
+  motive String?
+
+  @@unique([userId, courseId])
+}
+
+model Upload {
+  id Int @unique @default(autoincrement())
+  path String @default("default") @unique
+
+  UploadUser User? @relation(name: "Upload User", fields: [UserId], references: [id])
+  UserId Int?
+
+  Course Course[]
+  ProfilePictures User[]
+  
 }

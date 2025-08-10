@@ -62,7 +62,16 @@ function parseArray(str: string) {
 
 
 
-
+if(!Array.prototype.at)
+{
+  Array.prototype.at = function (index: number)
+  {
+    if(index<0)
+      return this[this.length-index]
+    else
+      return this[index]
+  }
+}
 
 
 

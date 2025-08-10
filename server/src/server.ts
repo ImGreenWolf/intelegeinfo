@@ -9,6 +9,8 @@ import {ClientObject, ClientPermissions, EditorFile, EditorPermission, EditorSes
 import { QRCode } from "qrcode";
 import * as qrcode from "qrcode";
 import archiver from 'archiver';
+export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
+
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -27,10 +29,11 @@ import { UUID } from "crypto";
 import jwt from "jsonwebtoken"
 import cookieParser from 'cookie-parser'
 import * as users from './usersManager'
+import  coursesManager  from './views/courses'
 import { router as usersManager } from './usersManager'
 import GuideCreator from "./guideCreator"
 import { privateKey } from "./login.js";
-export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
+
 const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
@@ -61,6 +64,7 @@ function templateManager(req,res,next)
 
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', Metrics)
+app.use('/courses', coursesManager)
 app.use('/subiecte', examSubjects)
 app.post('/github/onpull', (req, res) => {
     try {
@@ -2843,13 +2847,35 @@ const defaultLang = 'ro-RO'
     translation = JSON.parse(data.toString())
     console.log('translations loaded, bytes:', data.byteLength)
  })
-export function parseText(file: string, req: any )
+export function sendFile(path: string, res, req, params?)
+{
+    if(path.split('.').at(-1) != 'html')
+        return res.status(500).send('Input file isnt HTML.')
+    try {
+        fs.readFile(path, (err, file) => {
+            if(err || !file)
+               return
+
+            return res.contentType('html').send(parseText(file.toString(), req, params))
+        })
+    } catch (err)
+    {
+        console.error(err)
+        return res.status(500).send('Error:' + err)
+    }
+}
+
+export function parseText(file: string, req: any, params?)
 {
     if(!req || !req.cookies)
-        return file;
+    {
+        console.error('YOU FORGOT TO ADD COOKIE PARSER!')
+                return file;
+    }
+
     if(!translation)
         throw 'invalid translation json'
-    const matches = file.matchAll(/\^{[%&](.*)}/g)
+    const matches = file.matchAll(/\^{[%&*](.*)}/g)
     let text = file
     const locale =  function () {
         const accLang = req.cookies.ii_lang ? req.cookies.ii_lang : req.headers["accept-language"] as string;
@@ -2857,20 +2883,20 @@ export function parseText(file: string, req: any )
             return defaultLang
         return accLang.split(',').map(param => param.split(';')[0])
     }()[0]
-
+    const keyDictionary = params ? {...translation, ...params} : translation
     for(const matchobj of matches)
     {
         const match = (matchobj[1] as string)
         const key = (matchobj[0] as string)
         if(key.startsWith('^{%')) {
-             if(!translation[match])
+             if(!keyDictionary[match])
                 continue;
 
-            const expr = translation[match][locale] ? translation[match][locale] : translation[match][defaultLang] ? translation[match][defaultLang] : '' as string;
+            const expr = keyDictionary[match][locale] ? keyDictionary[match][locale] : keyDictionary[match][defaultLang] ? keyDictionary[match][defaultLang] : '' as string;
             if(expr != '' && expr !== undefined)
                 text = text.replaceAll(key, expr)
-            else if(translation[match][defaultLang])
-                text = text.replaceAll(key, translation[match][defaultLang])
+            else if(keyDictionary[match][defaultLang])
+                text = text.replaceAll(key, keyDictionary[match][defaultLang])
             else
                 console.error('invalid translation id', match)
         } else if(key.startsWith('^{&file:'))
@@ -2880,6 +2906,20 @@ export function parseText(file: string, req: any )
                 throw 'invalid file path'
             const file = fs.readFileSync(path.resolve(rootDirName, 'public', filePath)).toString()
             text = text.replaceAll(key, parseText(file, req))
+        } else 
+        {
+            const keys = match.split('.')
+            let obj = params;
+            for(const key2 of keys)
+                if(obj && obj[key2])
+                {
+                    
+                     obj = obj[key2]
+                     
+                }
+                else 
+                    break;
+            text = text.replaceAll(key, obj)
         }
     }
     return text;

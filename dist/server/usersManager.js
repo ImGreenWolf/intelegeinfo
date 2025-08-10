@@ -179,7 +179,7 @@ exports.router.get('/removeproject', (req, res) => {
         res.status(500).send('failed: ' + err);
     });
 });
-exports.router.get('/profilePicture/:id', (req, res) => {
+exports.router.get('/picture/:id', (req, res) => {
     const id = parseInt(req.params.id);
     dbClient_1.default.user.findUnique({
         where: {
@@ -189,7 +189,22 @@ exports.router.get('/profilePicture/:id', (req, res) => {
         if (user.picture.startsWith('http'))
             res.status(200).redirect(user.picture);
         else
-            res.status(200).sendFile(path_1.default.join(__dirname, `../../server/users/pfp/${user.picture}.png`));
+            res.status(200).sendFile(path_1.default.join(__dirname, `../../server/users/uploads/${user.picture}`));
+    }).catch(err => {
+        res.status(500).send('failed: ' + err);
+    });
+});
+exports.router.get('/upload/:path', (req, res) => {
+    const filePath = req.params.path;
+    dbClient_1.default.upload.findUnique({
+        where: {
+            path: filePath
+        }
+    }).then(upload => {
+        if (upload.path.startsWith('http'))
+            res.status(200).redirect(upload.path);
+        else
+            res.status(200).sendFile(path_1.default.join(__dirname, `../../server/users/uploads/${upload.path}`));
     }).catch(err => {
         res.status(500).send('failed: ' + err);
     });
@@ -421,12 +436,14 @@ exports.router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req);
     if (id) {
         const user = await updateActiveAtForUser(id); //getUserData
-        if (!user)
+        if (!user) {
+            res.clearCookie('token').status(404).redirect('/');
             return;
+        }
         if (user.picture.startsWith('http'))
             res.status(200).redirect(user.picture);
         else
-            res.status(200).sendFile(path_1.default.join(rootDirName, `/server/users/pfp/${user.picture}.png`));
+            res.status(200).sendFile(path_1.default.join(rootDirName, `/server/users/uploads/${user.picture}`));
     }
 });
 function activeAtComponent() {

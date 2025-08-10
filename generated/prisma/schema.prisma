@@ -5,9 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/prisma"
-  binaryTargets = ["native", "linux-musl"]
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  binaryTargets   = ["native", "linux-musl"]
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -25,20 +26,35 @@ model Project {
 }
 
 model User {
-  id             Int       @id @default(autoincrement())
-  username       String
+  id             Int            @id @default(autoincrement())
+  username       String         @unique
   firstName      String
   lastName       String
-  email          String    @unique
-  emailValidated Boolean   @default(false)
-  userColor      String    @default("#FFFFFF")
-  picture        String    @default("default")
-  role           Role      @default(USER)
-  createdAt      DateTime  @default(now())
+  email          String         @unique
+  emailValidated Boolean        @default(false)
+  userColor      String         @default("#FFFFFF")
+  picture        String
+  // pictureUpload Upload @relation(fields: [picture], references: [path])
+  role           Role           @default(USER)
+  createdAt      DateTime       @default(now())
+  activeAt       DateTime       @default(now())
   password       String
-  loginMethod    String    @default("local")
+  loginMethod    String         @default("local")
+  occupationType OccupationType @default(None)
   projects       Project[]
   solves         Solve[]
+
+  Guide Guide[] // guides written by user
+
+  Course Course? // course offered 
+
+  Review Review[]
+}
+
+enum OccupationType {
+  None
+  Student
+  Teacher
 }
 
 enum Role {
@@ -61,17 +77,34 @@ model RefreshToken {
 }
 
 model Guide {
-  id              Int      @id @default(autoincrement())
-  name            String   @unique
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @default(now())
-  author          String   @default("Anonim")
-  positiveRatings Int      @default(0)
-  negativeRatings Int      @default(0)
+  id              Int        @id @default(autoincrement())
+  name            String     @unique
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @default(now())
+  author          User       @relation(fields: [authorId], references: [id])
+  authorId        Int        @default(1)
+  positiveRatings Int        @default(0)
+  negativeRatings Int        @default(0)
   content         String
   description     String?
   category        String?
-  visits          Int      @default(0)
+  visits          Int        @default(0)
+  guideTags       GuideTag[]
+}
+
+model Tag {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  guideTags GuideTag[]
+}
+
+model GuideTag {
+  guideId Int
+  tagId   Int
+  guide   Guide @relation(fields: [guideId], references: [id])
+  tag     Tag   @relation(fields: [tagId], references: [id])
+
+  @@id([guideId, tagId])
 }
 
 model Problem {
@@ -114,3 +147,45 @@ model Solve {
   score      Int
   time       Int      @default(-1)
 }
+
+model Course {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  experience   String
+  price        Int
+  courseLength Int
+  summary      String   @default("Salut, ofer meditatii la informatica!")
+  description  String
+  path         String
+  // videoSummary Upload @relation(fields: [path], references: [path])
+  phone        String?
+  external     String[]
+  email        String?
+  reviews      Review[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model Review {
+  id Int @unique
+
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId Int
+
+  rating    Int
+  createdAt DateTime @default(now())
+  motive    String
+}
+
+// model Upload {
+//   id Int @unique @default(autoincrement())
+//   // User User @relation(fields: [UserId], references: [id])
+//   // UserId Int
+
+//   // Course Course[]
+
+// }

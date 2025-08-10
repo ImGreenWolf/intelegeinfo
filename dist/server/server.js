@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
+exports.sendFile = sendFile;
 exports.parseText = parseText;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
@@ -48,6 +49,7 @@ const types_1 = require("../../dist/shared/types");
 const types_2 = require("./types");
 const qrcode = __importStar(require("qrcode"));
 const archiver_1 = __importDefault(require("archiver"));
+exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -63,9 +65,9 @@ const profile_js_1 = __importDefault(require("./profile.js"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const users = __importStar(require("./usersManager"));
+const courses_1 = __importDefault(require("./views/courses"));
 const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
-exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
 ;
 const crypto_1 = __importDefault(require("crypto"));
@@ -85,6 +87,7 @@ function templateManager(req, res, next) {
 }
 app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', metrics_1.default);
+app.use('/courses', courses_1.default);
 app.use('/subiecte', examSubjects_1.default);
 app.post('/github/onpull', (req, res) => {
     try {
@@ -2258,12 +2261,29 @@ fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'server', 'data',
     translation = JSON.parse(data.toString());
     console.log('translations loaded, bytes:', data.byteLength);
 });
-function parseText(file, req) {
-    if (!req || !req.cookies)
+function sendFile(path, res, req, params) {
+    if (path.split('.').at(-1) != 'html')
+        return res.status(500).send('Input file isnt HTML.');
+    try {
+        fs_1.default.readFile(path, (err, file) => {
+            if (err || !file)
+                return;
+            return res.contentType('html').send(parseText(file.toString(), req, params));
+        });
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).send('Error:' + err);
+    }
+}
+function parseText(file, req, params) {
+    if (!req || !req.cookies) {
+        console.error('YOU FORGOT TO ADD COOKIE PARSER!');
         return file;
+    }
     if (!translation)
         throw 'invalid translation json';
-    const matches = file.matchAll(/\^{[%&](.*)}/g);
+    const matches = file.matchAll(/\^{[%&*](.*)}/g);
     let text = file;
     const locale = function () {
         const accLang = req.cookies.ii_lang ? req.cookies.ii_lang : req.headers["accept-language"];
@@ -2271,17 +2291,18 @@ function parseText(file, req) {
             return defaultLang;
         return accLang.split(',').map(param => param.split(';')[0]);
     }()[0];
+    const keyDictionary = params ? { ...translation, ...params } : translation;
     for (const matchobj of matches) {
         const match = matchobj[1];
         const key = matchobj[0];
         if (key.startsWith('^{%')) {
-            if (!translation[match])
+            if (!keyDictionary[match])
                 continue;
-            const expr = translation[match][locale] ? translation[match][locale] : translation[match][defaultLang] ? translation[match][defaultLang] : '';
+            const expr = keyDictionary[match][locale] ? keyDictionary[match][locale] : keyDictionary[match][defaultLang] ? keyDictionary[match][defaultLang] : '';
             if (expr != '' && expr !== undefined)
                 text = text.replaceAll(key, expr);
-            else if (translation[match][defaultLang])
-                text = text.replaceAll(key, translation[match][defaultLang]);
+            else if (keyDictionary[match][defaultLang])
+                text = text.replaceAll(key, keyDictionary[match][defaultLang]);
             else
                 console.error('invalid translation id', match);
         }
@@ -2291,6 +2312,17 @@ function parseText(file, req) {
                 throw 'invalid file path';
             const file = fs_1.default.readFileSync(path_1.default.resolve(exports.rootDirName, 'public', filePath)).toString();
             text = text.replaceAll(key, parseText(file, req));
+        }
+        else {
+            const keys = match.split('.');
+            let obj = params;
+            for (const key2 of keys)
+                if (obj && obj[key2]) {
+                    obj = obj[key2];
+                }
+                else
+                    break;
+            text = text.replaceAll(key, obj);
         }
     }
     return text;

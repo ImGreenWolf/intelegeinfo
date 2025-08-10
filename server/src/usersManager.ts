@@ -193,7 +193,7 @@ router.get('/removeproject', (req, res) => {
 
 })
 
-router.get('/profilePicture/:id', (req, res) => {
+router.get('/picture/:id', (req, res) => {
     const id = parseInt(req.params.id as string);
     
     prisma.user.findUnique({
@@ -205,7 +205,26 @@ router.get('/profilePicture/:id', (req, res) => {
         if(user.picture.startsWith('http'))
             res.status(200).redirect(user.picture)
         else
-        res.status(200).sendFile(path.join(__dirname,`../../server/users/pfp/${user.picture}.png`))
+        res.status(200).sendFile(path.join(__dirname,`../../server/users/uploads/${user.picture}`))
+    }).catch(err => {
+        res.status(500).send('failed: '+ err)
+    })
+
+})
+
+router.get('/upload/:path', (req, res) => {
+    const filePath = req.params.path as string
+    
+    prisma.upload.findUnique({
+        where:
+        {
+            path: filePath
+        }
+    }).then(upload => {
+        if(upload.path.startsWith('http'))
+            res.status(200).redirect(upload.path)
+        else
+        res.status(200).sendFile(path.join(__dirname,`../../server/users/uploads/${upload.path}`))
     }).catch(err => {
         res.status(500).send('failed: '+ err)
     })
@@ -535,18 +554,22 @@ const passwordPagesPath = path.join(rootDirName, 'public','pages')
     {
         const user = await updateActiveAtForUser(id) //getUserData
         if(!user)
+        {
+            res.clearCookie('token').status(404).redirect('/')
             return
+        }
+        
        if(user.picture.startsWith('http'))
             res.status(200).redirect(user.picture)
         else
-            res.status(200).sendFile(path.join(rootDirName,`/server/users/pfp/${user.picture}.png`))
+            res.status(200).sendFile(path.join(rootDirName,`/server/users/uploads/${user.picture}`))
     }
   })
 
-    export function activeAtComponent()
-    {
-        return {activeAt: new Date()}
-    }
+export function activeAtComponent()
+{
+    return {activeAt: new Date()}
+}
   export async function updateActiveAtForUser(userId: number)
   {
     try 

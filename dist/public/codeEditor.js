@@ -30,6 +30,14 @@ function parseArray(str) {
         return [];
     }
 }
+if (!Array.prototype.at) {
+    Array.prototype.at = function (index) {
+        if (index < 0)
+            return this[this.length - index];
+        else
+            return this[index];
+    };
+}
 // Class to render one visual cursor
 class VisualCursor {
     color;
