@@ -638,7 +638,7 @@ class SessionClient {
           <div>
             <h3>${this.displayName}${isLocal ? ' (Tu)' : ''}<div class='img-placeholder'></div></h3>
             <lable>${this.canEdit ? 'Poate edita' : 'Nu poate edita'}</lable>
-            <button>Scoate</button>
+            ${!isLocal ? `<button>Scoate</button>` : ''}
           </div>
           `
         }),
