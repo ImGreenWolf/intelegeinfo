@@ -246,7 +246,13 @@ export class Toolbox extends IElement {
         //             duration: 300
         //         })
         // }, 1000);
+        this.parentElement = toolboxArea;
         return toolboxArea;
+    }
+    addSection(htmlChildren, id) {
+        const editorControls = createNode('div', { html: htmlChildren, className: 'inner-toolbar', id });
+        this.parentElement.children[1].prepend(editorControls);
+        return editorControls;
     }
 }
 export class Pixelated extends IElement {

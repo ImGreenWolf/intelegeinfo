@@ -62,7 +62,7 @@ footer {
   padding: 0.5em 2em;
   margin-top: 20px;
   box-sizing: border-box;
-  border-top: 3px solid rgb(31, 31, 31);
+  border-top: 3px solid rgba(126, 126, 126, 0.219);
   background-color: rgb(20, 20, 20);
 }
 footer nav {
@@ -281,7 +281,7 @@ footer nav :any-link {
   padding: 1px;
   overflow: hidden;
   position: relative;
-  --border-radius: 2lh;
+  --border-radius: 2em;
   border-radius: var(--border-radius);
   font-size: 1.2em;
   min-width: 200px;
@@ -315,7 +315,7 @@ a.button {
   color: white;
   position: relative;
   z-index: 2;
-  padding: 0.75lh 1lh;
+  padding: 1.25em 0;
   display: flex;
   justify-content: center;
   text-decoration: none;
@@ -994,7 +994,7 @@ h1.center {
   background-color: rgb(5, 5, 5);
   display: block;
   margin: 1em;
-  border: 3px solid rgb(31, 31, 31);
+  border: 3px solid rgba(126, 126, 126, 0.219);
   white-space: pre;
 }
 #problem > div > div {

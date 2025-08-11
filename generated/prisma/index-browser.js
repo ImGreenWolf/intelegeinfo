@@ -141,6 +141,7 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt',
   activeAt: 'activeAt',
   password: 'password',
+  authId: 'authId',
   loginMethod: 'loginMethod',
   occupationType: 'occupationType'
 };
@@ -218,12 +219,45 @@ exports.Prisma.CourseScalarFieldEnum = {
   experience: 'experience',
   price: 'price',
   courseLength: 'courseLength',
+  summary: 'summary',
   description: 'description',
+  summaryPath: 'summaryPath',
   phone: 'phone',
   external: 'external',
   email: 'email',
+  views: 'views',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InquiryScalarFieldEnum = {
+  id: 'id',
+  courseId: 'courseId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  respondedAt: 'respondedAt',
+  response: 'response',
+  contactInfo: 'contactInfo',
+  message: 'message',
+  firstName: 'firstName',
+  lastName: 'lastName'
+};
+
+exports.Prisma.ReviewScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  courseId: 'courseId',
+  rating: 'rating',
+  createdAt: 'createdAt',
+  motive: 'motive'
+};
+
+exports.Prisma.UploadScalarFieldEnum = {
+  id: 'id',
+  path: 'path',
+  originalName: 'originalName',
+  size: 'size',
+  UserId: 'UserId'
 };
 
 exports.Prisma.SortOrder = {
@@ -233,6 +267,10 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.NullableJsonNullValueInput = {
   DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -246,6 +284,11 @@ exports.Prisma.ProjectOrderByRelevanceFieldEnum = {
   fileUUID: 'fileUUID'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.UserOrderByRelevanceFieldEnum = {
   username: 'username',
   firstName: 'firstName',
@@ -254,6 +297,7 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   userColor: 'userColor',
   picture: 'picture',
   password: 'password',
+  authId: 'authId',
   loginMethod: 'loginMethod'
 };
 
@@ -265,11 +309,6 @@ exports.Prisma.CodeOrderByRelevanceFieldEnum = {
 exports.Prisma.RefreshTokenOrderByRelevanceFieldEnum = {
   code: 'code',
   hmac: 'hmac'
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 
 exports.Prisma.GuideOrderByRelevanceFieldEnum = {
@@ -304,10 +343,26 @@ exports.Prisma.SolveOrderByRelevanceFieldEnum = {
 
 exports.Prisma.CourseOrderByRelevanceFieldEnum = {
   experience: 'experience',
+  summary: 'summary',
   description: 'description',
+  summaryPath: 'summaryPath',
   phone: 'phone',
-  external: 'external',
   email: 'email'
+};
+
+exports.Prisma.InquiryOrderByRelevanceFieldEnum = {
+  message: 'message',
+  firstName: 'firstName',
+  lastName: 'lastName'
+};
+
+exports.Prisma.ReviewOrderByRelevanceFieldEnum = {
+  motive: 'motive'
+};
+
+exports.Prisma.UploadOrderByRelevanceFieldEnum = {
+  path: 'path',
+  originalName: 'originalName'
 };
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
@@ -315,9 +370,9 @@ exports.Role = exports.$Enums.Role = {
 };
 
 exports.OccupationType = exports.$Enums.OccupationType = {
+  None: 'None',
   Student: 'Student',
-  Teacher: 'Teacher',
-  None: 'None'
+  Teacher: 'Teacher'
 };
 
 exports.Difficulty = exports.$Enums.Difficulty = {
@@ -337,7 +392,10 @@ exports.Prisma.ModelName = {
   GuideTag: 'GuideTag',
   Problem: 'Problem',
   Solve: 'Solve',
-  Course: 'Course'
+  Course: 'Course',
+  Inquiry: 'Inquiry',
+  Review: 'Review',
+  Upload: 'Upload'
 };
 
 /**

@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
+exports.sendFile = sendFile;
 exports.parseText = parseText;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
@@ -48,6 +49,8 @@ const types_1 = require("../../dist/shared/types");
 const types_2 = require("./types");
 const qrcode = __importStar(require("qrcode"));
 const archiver_1 = __importDefault(require("archiver"));
+exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
+const js_sha256_1 = require("js-sha256");
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -63,9 +66,9 @@ const profile_js_1 = __importDefault(require("./profile.js"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const users = __importStar(require("./usersManager"));
+const courses_1 = __importDefault(require("./views/courses"));
 const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
-exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
 ;
 const crypto_1 = __importDefault(require("crypto"));
@@ -83,8 +86,15 @@ app.use(express_1.default.json({
 }));
 function templateManager(req, res, next) {
 }
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cookie_parser_1.default)());
+app.use('/user', usersManager_1.router);
+app.use('/login', login_js_1.default);
+app.use('/signup', signup_js_1.default);
+app.use('/profile', authMiddleware, profile_js_1.default);
 app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', metrics_1.default);
+app.use('/courses', courses_1.default);
 app.use('/subiecte', examSubjects_1.default);
 app.post('/github/onpull', (req, res) => {
     try {
@@ -117,8 +127,6 @@ app.post('/github/onpull', (req, res) => {
     }
 });
 app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
-app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, cookie_parser_1.default)());
 app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
 app.use('/editor/components', (req, res) => {
     try {
@@ -325,10 +333,6 @@ function handle404(req, res, next) {
     else
         res.json('Oops! Page not found.');
 }
-app.use('/login', login_js_1.default);
-app.use('/signup', signup_js_1.default);
-app.use('/profile', authMiddleware, profile_js_1.default);
-app.use('/user', usersManager_1.router);
 //          LOCAL  SERVER  VARIABLES       //
 let compileProcess;
 //                      END                      //  
@@ -883,17 +887,17 @@ exports.wss.addListener('connection', async (ws, req) => {
                 clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, body: { command: types_3.FileManagementCommands.Open, content: fileContent } })); // Send the list of files to the client
         }
         function clientInfo(thisclientObj, prefix = '') {
-            if (!clientObj)
+            if (!clientObj && !thisclientObj)
                 return;
             if (!thisclientObj)
                 thisclientObj = clientObj;
             if (thisclientObj)
-                return { clientId: thisclientObj.clientId, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName() };
+                return { clientId: thisclientObj.clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName() };
             // JSON.parse(`{"${prefix}clientId": "${thisclientObj.clientId}", "${prefix}displayName": "${thisclientObj.displayName}", "${prefix}color": "${thisclientObj.color}", "${prefix}openFile": "${thisclientObj.openFileName}"}`)
             else if (prefix)
-                return JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`);
+                return JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}accountId: "${thisclientObj.clientData ? thisclientObj.clientData.id : undefined}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`);
             else
-                return { clientId: clientId, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName() };
+                return { clientId: clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName() };
         }
         async function loadSave(fileUUID) {
             try {
@@ -1697,14 +1701,30 @@ bash `.trim().replaceAll('\n', "");
                         // save code to file
                         // if(shouldSave) // TODO replace true with shouldSave 
                         // {
+                        const file = clientObj.getFile(fileName);
+                        if (!file)
+                            return;
+                        const delta = messageJSON.delta;
+                        file.changeContent(messageJSON.body, delta);
+                        const checksum = (0, js_sha256_1.sha256)(file.content);
+                        const checksumFailed = checksum !== messageJSON.checksum;
+                        // replicate changes to others
+                        if (checksumFailed) {
+                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, fileName, body: messageJSON.body, checksum });
+                            console.error('Checksum failed for session id:', sessionId, 'On client:', clientId);
+                        }
+                        replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                            if (clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
+                                thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, delta, fileName, body: checksumFailed ? messageJSON.body : undefined, checksum, msgId: JSON.parse(message.toString()).msgId }));
+                        }, clientObj);
                         shouldSave = false;
                         if (checkSyntaxTimeout)
                             clearTimeout(checkSyntaxTimeout);
                         checkSyntaxTimeout = setTimeout(() => {
                             //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
-                            fs_1.default.writeFile(path_1.default.join(clientFilesPath, fileName), messageJSON.body, (err) => {
+                            fs_1.default.writeFile(file.filePath, file.content, (err) => {
                                 if (err)
-                                    console.log("Failed saving file! " + err);
+                                    console.error("Failed saving file! " + err);
                                 // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
                                 // checkSyntaxTimeout = setTimeout(() => {
                                 if (clientObj.getFile(fileName) && clientObj.getFile(fileName).editorMode)
@@ -1726,12 +1746,7 @@ bash `.trim().replaceAll('\n', "");
                             });
                         }, 200);
                         // }
-                        clientObj.getFile(fileName).changeContent(messageJSON.body);
-                        // replicate changes to others
-                        replicateFunction((thisclientWs, localClientId, thisClientObj) => {
-                            if (clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
-                                thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, delta: messageJSON.delta, fileName, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId }));
-                        }, clientObj);
+                        // console.log(messageJSON.delta, messageJSON)
                         break;
                     case types_1.WebSocketMessageType.ConsoleTyping:
                         if (!clientObj.permissions.canChat)
@@ -2258,12 +2273,29 @@ fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'server', 'data',
     translation = JSON.parse(data.toString());
     console.log('translations loaded, bytes:', data.byteLength);
 });
-function parseText(file, req) {
-    if (!req || !req.cookies)
+function sendFile(path, res, req, params) {
+    if (path.split('.').at(-1) != 'html')
+        return res.status(500).send('Input file isnt HTML.');
+    try {
+        fs_1.default.readFile(path, (err, file) => {
+            if (err || !file)
+                throw err;
+            return res.contentType('html').send(parseText(file.toString(), req, params));
+        });
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).send('Error:' + err);
+    }
+}
+function parseText(file, req, params) {
+    if (!req || !req.cookies) {
+        console.error('YOU FORGOT TO ADD COOKIE PARSER!');
         return file;
+    }
     if (!translation)
         throw 'invalid translation json';
-    const matches = file.matchAll(/\^{[%&](.*)}/g);
+    const matches = file.matchAll(/\^{[%&*](.*)}/g);
     let text = file;
     const locale = function () {
         const accLang = req.cookies.ii_lang ? req.cookies.ii_lang : req.headers["accept-language"];
@@ -2271,17 +2303,18 @@ function parseText(file, req) {
             return defaultLang;
         return accLang.split(',').map(param => param.split(';')[0]);
     }()[0];
+    const keyDictionary = translation;
     for (const matchobj of matches) {
         const match = matchobj[1];
         const key = matchobj[0];
         if (key.startsWith('^{%')) {
-            if (!translation[match])
+            if (!keyDictionary[match])
                 continue;
-            const expr = translation[match][locale] ? translation[match][locale] : translation[match][defaultLang] ? translation[match][defaultLang] : '';
+            const expr = keyDictionary[match][locale] ? keyDictionary[match][locale] : keyDictionary[match][defaultLang] ? keyDictionary[match][defaultLang] : '';
             if (expr != '' && expr !== undefined)
                 text = text.replaceAll(key, expr);
-            else if (translation[match][defaultLang])
-                text = text.replaceAll(key, translation[match][defaultLang]);
+            else if (keyDictionary[match][defaultLang])
+                text = text.replaceAll(key, keyDictionary[match][defaultLang]);
             else
                 console.error('invalid translation id', match);
         }
@@ -2291,6 +2324,22 @@ function parseText(file, req) {
                 throw 'invalid file path';
             const file = fs_1.default.readFileSync(path_1.default.resolve(exports.rootDirName, 'public', filePath)).toString();
             text = text.replaceAll(key, parseText(file, req));
+        }
+        else {
+            const keys = match.split('.');
+            let obj = params;
+            for (const key2 of keys)
+                if (obj && obj[key2]) {
+                    obj = obj[key2];
+                }
+                else {
+                    obj = undefined;
+                    break;
+                }
+            if (obj)
+                text = text.replaceAll(key, obj);
+            else
+                text = text.replaceAll(key, '');
         }
     }
     return text;

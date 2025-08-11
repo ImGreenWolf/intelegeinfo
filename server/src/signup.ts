@@ -48,9 +48,20 @@ export async function onSignedIn({ email, username, loginMethod, firstName, last
       password,
       loginMethod,
       userColor: randomHexColor(),
-      picture: profile,
       emailValidated: loginMethod == 'google',
-      occupationType: OccupationType[type]!=undefined ? OccupationType[type] : OccupationType.None
+      occupationType: OccupationType[type]!=undefined ? OccupationType[type] : OccupationType.None,
+      pictureUpload:
+      {
+        connectOrCreate: {
+          where: {
+            path: profile ? profile : 'default.png'
+          },
+          create:
+          {
+            path: profile ? profile : 'default.png'
+          }
+        }
+      }
     },
     omit:
     {

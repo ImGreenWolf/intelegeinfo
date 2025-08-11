@@ -322,7 +322,7 @@ export class IIWebRTC
                         await this.pc!.addIceCandidate(candidate);
                     } catch (err) {
                         if (!this.ignoreOffer) {
-                        throw err;
+                            console.error(err)
                         }
                     }
                 }
@@ -361,7 +361,7 @@ export class IIWebRTC
                 setTimeout(() => {
                     this.pc?.restartIce()
                 }, 5000);
-            throw "Connection is " + this.pc!.connectionState +". And datachannel is " + this.dc.readyState
+                console.error( "Connection is " + this.pc!.connectionState +". And datachannel is " + this.dc.readyState)
             }
            
     }

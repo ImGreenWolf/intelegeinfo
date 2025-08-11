@@ -36,6 +36,7 @@ export declare function createButton(icon: any, options: {
 }): HTMLDivElement;
 export declare class Toolbox extends IElement {
     render(): HTMLElement;
+    addSection(htmlChildren: HTMLElement[], id: any): HTMLElement;
 }
 export declare class Pixelated extends IElement {
     canvas: HTMLCanvasElement | undefined;

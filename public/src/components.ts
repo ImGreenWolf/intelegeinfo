@@ -307,10 +307,16 @@ export class Toolbox extends IElement {
         //         })
 
         // }, 1000);
-
+        this.parentElement = toolboxArea
         return toolboxArea;
 
        
+    }
+    public addSection(htmlChildren: HTMLElement[], id): HTMLElement
+    {
+        const editorControls = createNode('div', {html: htmlChildren, className: 'inner-toolbar', id})
+        this.parentElement!.children[1].prepend(editorControls)
+        return editorControls!
     }
 }
 

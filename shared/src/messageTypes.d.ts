@@ -44,11 +44,12 @@ type HandshakeMessage = {
     clientId: UUID;
     displayName: string;
     color: string;
+    accountId: number | undefined;
     body: string;
     permissions: any;
     files: string[];
     project?: string[];
-    users: {displayName: string, clientId: UUID, openFile: string[], color: string}[];
+    users: {displayName: string, clientId: UUID, accountId: number | undefined, openFile: string[], color: string}[];
 };
 
 type DebugMessageRunning = {

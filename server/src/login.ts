@@ -9,28 +9,30 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from './dbClient';
 import * as signup from './signup'
 import path from 'path';
+import { Role } from '../../generated/prisma';
 
 const router = express.Router();
 router.use(bodyParser.json());
 router.use(express.static("public/pages/login.html"))
-export default router;
-const validEmail = 'a@c';      
-const salt = bcrypt.genSaltSync(10);
-const validPassword = bcrypt.hashSync("123", salt);
+export default router;    
 const rootDirName = path.resolve("./")
 const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem'), 'utf8') || "supersecretprivatekey" ;
 export const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
 const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 
 
-
+export interface UserState  {
+      iss: string
+      sub: string,
+      role: Role,
+}
 
 function createToken(user: any) {
     return jwt.sign({
       iss: "intelegeinfo.ro",
       sub: user.id,
       role: user.role,
-    }, privateKeyPem, {  algorithm: 'RS256', expiresIn: 1000000});
+    } as UserState, privateKeyPem, {  algorithm: 'RS256', expiresIn: 1000000});
   }
 
 export function onLoggedIn(user: unknown, res: Response, req: Request, shouldkeepLoggedIn= false)
@@ -300,7 +302,7 @@ router.get('/callback', async (req:any, res:any) => {
     {
 
       try{
-        const result = await signup.onSignedIn({email: userInfo.email, type: 'none', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, res, '', req )
+        const result = await signup.onSignedIn({email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, res, '', req )
         result.res.send(result.json)
        
       }

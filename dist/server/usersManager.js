@@ -36,14 +36,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.router = void 0;
+exports.upload = exports.storage = exports.router = exports.transporter = void 0;
 exports.generateCode = generateCode;
 exports.getJWT = getJWT;
 exports.getUserData = getUserData;
 exports.getIdFromJWT = getIdFromJWT;
 exports.addProject = addProject;
 exports.listAllProjects = listAllProjects;
+exports.getClientJWTValue = getClientJWTValue;
 exports.getClientId = getClientId;
+exports.createUploadFromFile = createUploadFromFile;
+exports.uploadFromFileData = uploadFromFileData;
 exports.activeAtComponent = activeAtComponent;
 exports.updateActiveAtForUser = updateActiveAtForUser;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -64,15 +67,31 @@ const users = __importStar(require("./usersManager"));
 const googleapis_1 = require("googleapis");
 const signup_1 = require("./signup");
 const OAuth2 = googleapis_1.google.auth.OAuth2;
+const multer_1 = __importDefault(require("multer"));
+updateTransporter();
+setInterval(updateTransporter, 3600 * 1000);
 const rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
 const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem')) || "supersecretprivatekey";
 // const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
 exports.router = express_1.default.Router();
 exports.router.use(body_parser_1.default.json());
-exports.router.use(express_1.default.static("public/pages/login.html"));
+// router.use(express.static("public/pages/login.html"))
 const userNoPassword = prisma_1.Prisma.validator()({
     omit: { password: true }
 });
+exports.storage = multer_1.default.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path_1.default.join(rootDirName, 'server', 'users', 'uploads')); // Folder where files will be stored
+    },
+    filename: function (req, file, cb) {
+        // Save file with original name + timestamp
+        cb(null, Date.now() + path_1.default.extname(file.originalname));
+    }
+});
+if (!fs_1.default.existsSync(path_1.default.join(rootDirName, 'server', 'users', 'uploads'))) {
+    fs_1.default.mkdirSync(path_1.default.join(rootDirName, 'server', 'users', 'uploads'));
+}
+exports.upload = (0, multer_1.default)({ storage: exports.storage });
 function generateCode() {
     let code = (Math.random() * Math.pow(10, 6)).toFixed();
     if (code.length != 6)
@@ -82,7 +101,7 @@ function generateCode() {
 function getJWT(req) {
     return req.cookies.token;
 }
-function getUserData(id) {
+function getUserData(id, include) {
     return new Promise((resolve, reject) => {
         if (!id) {
             // no id found
@@ -96,9 +115,7 @@ function getUserData(id) {
             omit: {
                 password: true
             },
-            include: {
-                projects: false
-            }
+            include
         }).then(user => {
             resolve(user);
         }).catch(err => {
@@ -142,6 +159,20 @@ function listAllProjects(userId) {
         });
     });
 }
+function getClientJWTValue(token) {
+    if (!token)
+        return; // throw {code: 401, message:'invalid token'};
+    let userState;
+    try {
+        userState = jsonwebtoken_1.default.verify(token, privateKeyPem);
+    }
+    catch {
+        return;
+    }
+    if (!userState)
+        return; //throw {code: 401, message:'invalid state'};
+    return userState;
+}
 function getClientId(token) {
     if (!token)
         return; // throw {code: 401, message:'invalid token'};
@@ -159,8 +190,26 @@ function getClientId(token) {
         return; //throw {code: 401, message:'couldnt get id'}
     return userId;
 }
+function createUploadFromFile(fileReq, userId) {
+    const data = uploadFromFileData(fileReq, userId);
+    return fileReq.file && data ? {
+        create: data
+    } : undefined;
+}
+function uploadFromFileData(fileReq, userId) {
+    return fileReq.file ? {
+        path: fileReq.file.filename,
+        size: fileReq.file.size,
+        originalName: fileReq.file.originalname,
+        // UserId: userId,
+        UploadUser: {
+            connect: {
+                id: userId,
+            }
+        }
+    } : undefined;
+}
 exports.default = dbClient_1.default;
-let transporter;
 exports.router.get('/checkLoggedIn', (req, res) => {
     if (getIdFromJWT(req) != undefined)
         res.status(200).send(true);
@@ -179,7 +228,7 @@ exports.router.get('/removeproject', (req, res) => {
         res.status(500).send('failed: ' + err);
     });
 });
-exports.router.get('/profilePicture/:id', (req, res) => {
+exports.router.get('/picture/:id', (req, res) => {
     const id = parseInt(req.params.id);
     dbClient_1.default.user.findUnique({
         where: {
@@ -189,13 +238,28 @@ exports.router.get('/profilePicture/:id', (req, res) => {
         if (user.picture.startsWith('http'))
             res.status(200).redirect(user.picture);
         else
-            res.status(200).sendFile(path_1.default.join(__dirname, `../../server/users/pfp/${user.picture}.png`));
+            res.status(200).sendFile(path_1.default.join(__dirname, `../../server/users/uploads/${user.picture}`));
+    }).catch(err => {
+        res.status(500).send('failed: ' + err);
+    });
+});
+exports.router.get('/upload/:path', (req, res) => {
+    const filePath = req.params.path;
+    dbClient_1.default.upload.findUnique({
+        where: {
+            path: filePath
+        }
+    }).then(upload => {
+        if (upload.path.startsWith('http'))
+            res.status(200).redirect(upload.path);
+        else
+            res.status(200).sendFile(path_1.default.join(__dirname, `../../server/users/uploads/${upload.path}`));
     }).catch(err => {
         res.status(500).send('failed: ' + err);
     });
 });
 async function updateTransporter() {
-    transporter = nodemailer_1.default.createTransport({
+    return exports.transporter = nodemailer_1.default.createTransport({
         host: 'antares.webyouridea.ro',
         port: 587, // STARTTLS
         secure: false, // false because STARTTLS is used
@@ -215,8 +279,6 @@ const oauth2Client = new OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE
 oauth2Client.setCredentials({
     refresh_token: process.env.GOOGLE_EMAILV_REFRESHTOKEN
 });
-updateTransporter();
-setInterval(updateTransporter, 3600 * 1000);
 exports.router.get('/verifyemail', (req, res) => {
     const id = parseInt(req.query.id);
     getUserData(id).then(user => {
@@ -229,7 +291,7 @@ exports.router.get('/verifyemail', (req, res) => {
             let censoredEmail = user.email;
             for (const match of user.email.matchAll(/#{(\w*) ?(?:\?)(.*): ?(.*)}|#{(\w*)}/g))
                 censoredEmail = censoredEmail.replace(match[1], "*".repeat(match[1].length)).replace(match[2], "*".repeat(match[2].length));
-            await transporter.verify();
+            await exports.transporter.verify();
             const fileToSend = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'public', 'pages', 'emailVerification.html')).toString();
             const map = new Map();
             map.set("firstName", user.firstName);
@@ -248,7 +310,7 @@ exports.router.get('/verifyemail', (req, res) => {
             if (false)
                 res.send(file.replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail));
             else
-                transporter.sendMail(mailOptions, function (error, info) {
+                exports.transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
                         res.status(500).send({ message: "error sending email", error });
                     }
@@ -349,7 +411,7 @@ exports.router.get('/reset-password', async (req, res) => {
     if (req.query.email) {
         try {
             const email = req.query.email;
-            await transporter.verify();
+            await exports.transporter.verify();
             const token = jsonwebtoken_1.default.sign({ email }, privateKeyPem, { algorithm: 'RS256', expiresIn: '1h', issuer: 'intelegeinfo.ro' });
             var mailOptions = {
                 from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
@@ -365,7 +427,7 @@ exports.router.get('/reset-password', async (req, res) => {
     <p>Pentru orice intrebare va rugam sa ne contactati la 
     <a href="mailto://office@intelegeinfo.ro">office@intelegeinfo.ro</a></p>`,
             };
-            transporter.sendMail(mailOptions, (err, info) => {
+            exports.transporter.sendMail(mailOptions, (err, info) => {
                 res.sendFile(path_1.default.join(passwordPagesPath, 'reset-password-confirm.html'));
             });
         }
@@ -421,12 +483,37 @@ exports.router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req);
     if (id) {
         const user = await updateActiveAtForUser(id); //getUserData
-        if (!user)
+        if (!user) {
+            res.clearCookie('token').status(404).redirect('/');
             return;
+        }
         if (user.picture.startsWith('http'))
             res.status(200).redirect(user.picture);
         else
-            res.status(200).sendFile(path_1.default.join(rootDirName, `/server/users/pfp/${user.picture}.png`));
+            res.status(200).sendFile(path_1.default.join(rootDirName, `/server/users/uploads/${user.picture}`));
+    }
+});
+exports.router.post('/picture', exports.upload.single('profilePicture'), async (req, res) => {
+    try {
+        const id = getIdFromJWT(req);
+        if (!id)
+            throw 'Please log in first.';
+        const data = uploadFromFileData(req, id);
+        if (!data)
+            throw 'invalid data';
+        dbClient_1.default.user.update({
+            where: {
+                id
+            },
+            data: {
+                pictureUpload: createUploadFromFile(req, id)
+            }
+        }).then(val => {
+            res.redirect('/profile');
+        });
+    }
+    catch (error) {
+        res.send(error);
     }
 });
 function activeAtComponent() {

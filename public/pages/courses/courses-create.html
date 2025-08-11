@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditatii</title>
+      <link rel="stylesheet" href="../css/main.css">
+       <link rel="stylesheet" href="../css/course.css">
+</head>
+
+<body>
+
+    ^{&file:_header.html}
+
+   
+    <form action="" method="post">
+        <label for="experience">Experienta</label>
+        <input type="text" name="experience" id="experience" value="^{*course.experience}">
+        <label for="summary">Sumar</label>
+        <textarea name="summary" id="summary" maxlength="300">^{*course.summary}</textarea>
+        <label for="videoSummary">Video/Banner</label>
+        <input type="file" name="videoSummary" id="videoSummary">
+        <label for="description">Descriere</label>
+        <textarea name="description" id="description">^{*course.description}</textarea>
+        <label for="courseLength">Durata cursului minute</label>
+        <input type="number" name="courseLength" id="courseLength" value="^{*course.courseLength}">
+        <label for="price">Pretul cursului</label>
+        <input type="number" name="price" id="price" value="^{*course.price}">
+        <h2>Date de contact</h2>
+        <label for="phone">Telefon</label>
+        <input type="tel" name="phone" id="phone" value="^{*course.phone}">
+        <label for="instagram">Social media</label>
+        <div id="link-container">
+
+            <button type="button" onclick="addLink()">+</button>
+        </div>
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="^{*user.email}">
+        <button type="submit">Creaza</button>
+    </form>
+
+     <script>
+        let i =0;
+        const elems = []
+        try
+        {
+            const json = JSON.parse(`^{*course.external}`);
+            if(json)
+            for(const link of json.links)
+            addLink(link.name, link.value)
+        } catch(err)
+        {
+           
+        }
+        
+        
+        function addLink(name, value)
+        {
+
+            let template = `
+            <h3>Link ${i}:</h3>
+
+            <div>
+                <label>Nume</label><br>
+                <input class="external-name" value='${name ? name : ''}'>
+            </div>
+            <div>
+                <label>Link</label><br>
+                <input type="url" class="external-value" value='${value ? value : ''}'>
+            </div>
+                `;
+
+            let container = document.getElementById('link-container');
+            let div = document.createElement('div');
+            elems.push(div)
+            div.innerHTML = template;
+            container.appendChild(div);
+            i++;
+            div
+        }
+
+        document.getElementsByTagName("form")[0].addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+
+            // Add your extra object as JSON string
+            const external = {
+                links: elems.map(elem => ({
+                    name: elem.querySelector('.external-name').value,
+                    value: elem.querySelector('.external-value').value
+                }))
+            };
+            formData.set("external", JSON.stringify(external));
+
+            // Send the FormData directly — do NOT set Content-Type manually
+            const response = await fetch('', {
+                method: 'POST',
+                body: formData
+            });
+
+            const text = await response.text();
+            console.log(text);
+        });
+    </script>
+
+</body>
+</html>

@@ -9,6 +9,8 @@ import {ClientObject, ClientPermissions, EditorFile, EditorPermission, EditorSes
 import { QRCode } from "qrcode";
 import * as qrcode from "qrcode";
 import archiver from 'archiver';
+export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
+import { sha256, sha224 } from 'js-sha256';
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -19,7 +21,6 @@ const compression = require('compression')
 import SharedStateManager from "./sessionStore"
 import { Prisma, Problem } from "../../generated/prisma";
 import prisma from "./dbClient";
-import problemCreator from './problemCreator.js'
 import loginManager from './login.js'
 import signupManager from './signup.js'
 import profileManager from './profile.js'
@@ -27,10 +28,11 @@ import { UUID } from "crypto";
 import jwt from "jsonwebtoken"
 import cookieParser from 'cookie-parser'
 import * as users from './usersManager'
+import  coursesManager  from './views/courses'
 import { router as usersManager } from './usersManager'
 import GuideCreator from "./guideCreator"
 import { privateKey } from "./login.js";
-export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
+
 const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
@@ -39,7 +41,7 @@ import Metrics, { wssAPI } from './metrics'
 import examSubjects from './examSubjects'
 import tx2 from 'tx2';
 import { FileManagementCommands,sessionCookieName } from "../../dist/shared/types";
-import { WebSocketMessage } from "../../shared/src/messageTypes"
+import { HandshakeMessage, WebSocketMessage } from "../../shared/src/messageTypes"
 import router, { handleExecError, handleSucces, ProblemTest, testProblem } from "./problemManager";
 interface ResponseWRaw extends IncomingMessage 
 {
@@ -57,10 +59,15 @@ function templateManager(req,res,next)
 {
     
 }
-
-
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
+app.use('/user', usersManager)
+app.use('/login', loginManager);
+app.use('/signup', signupManager);
+app.use('/profile', authMiddleware, profileManager)
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', Metrics)
+app.use('/courses', coursesManager)
 app.use('/subiecte', examSubjects)
 app.post('/github/onpull', (req, res) => {
     try {
@@ -94,8 +101,7 @@ app.post('/github/onpull', (req, res) => {
 
 
 app.use('/client/scripts',express.static(path.join('dist', 'public')));
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
+
 app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'public', 'codeEditor.js')))
 app.use('/editor/components', 
     (req, res) => {
@@ -375,14 +381,6 @@ function handle404(req:any, res:any, next:NextFunction)
      else 
       res.json('Oops! Page not found.' );
 }
-
-  
-
-
-app.use('/login', loginManager);
-app.use('/signup', signupManager);
-app.use('/profile', authMiddleware, profileManager)
-app.use('/user', usersManager)
 
 
 
@@ -1107,18 +1105,18 @@ function endConnectionPromise()
             clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, body: {command: FileManagementCommands.Open ,content: fileContent}})); // Send the list of files to the client
     }  
 
-    function clientInfo(thisclientObj?: ClientObject , prefix: string = ''): {clientId: typeof clientId, displayName: typeof clientObj.displayName, color: typeof clientObj.color, openFile: typeof clientObj.openFileName}
+    function clientInfo(thisclientObj?: ClientObject , prefix: string = ''): HandshakeMessage['users'][number] // {clientId: typeof clientId, displayName: typeof clientObj.displayName, color: typeof clientObj.color, openFile: typeof clientObj.openFileName}
      {
-        if(!clientObj)
+        if(!clientObj && !thisclientObj)
             return;
         if(!thisclientObj)
             thisclientObj = clientObj;
         if(thisclientObj)
-            return  {clientId: thisclientObj.clientId, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName()}
+            return  {clientId: thisclientObj.clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName()}
         // JSON.parse(`{"${prefix}clientId": "${thisclientObj.clientId}", "${prefix}displayName": "${thisclientObj.displayName}", "${prefix}color": "${thisclientObj.color}", "${prefix}openFile": "${thisclientObj.openFileName}"}`)
         else if(prefix)
-            return JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`)
-        else return {clientId: clientId, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName()}
+            return JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}accountId: "${thisclientObj.clientData ? thisclientObj.clientData.id : undefined}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`)
+        else return {clientId: clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName()}
     }
 
     async function loadSave(fileUUID)
@@ -2108,12 +2106,35 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     // save code to file
                 // if(shouldSave) // TODO replace true with shouldSave 
                     // {
+                        const file = clientObj.getFile(fileName)
+                        if(!file)
+                            return 
+
+                         const delta = messageJSON.delta
+                        file.changeContent(messageJSON.body, delta)
+
+                        const checksum = sha256(file.content)
+                            
+                        const checksumFailed = checksum !== messageJSON.checksum
+                            // replicate changes to others
+                        if(checksumFailed)
+                        {
+                            clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientId, fileName,  body: messageJSON.body, checksum})
+                            console.error('Checksum failed for session id:', sessionId, 'On client:', clientId)
+                        }
+                            
+                        replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                            if(clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
+                                thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId, delta, fileName,  body: checksumFailed ? messageJSON.body : undefined, checksum, msgId: JSON.parse(message.toString()).msgId}))
+                            }, clientObj)
+
+
                         shouldSave=false 
                         if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
                         checkSyntaxTimeout = setTimeout(() => {
                         //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
-                        fs.writeFile(path.join(clientFilesPath , fileName), messageJSON.body, (err) => {
-                            if(err) console.log("Failed saving file! " + err)
+                        fs.writeFile(file.filePath, file.content, (err) => {
+                            if(err) console.error("Failed saving file! " + err)
                             // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
                             // checkSyntaxTimeout = setTimeout(() => {
@@ -2138,13 +2159,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         });
                         }, 200);
                     // }
-                    
-                    clientObj.getFile(fileName).changeContent(messageJSON.body)
-                        // replicate changes to others
-                    replicateFunction((thisclientWs, localClientId, thisClientObj) => {
-                        if(clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
-                            thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId,delta: messageJSON.delta, fileName, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId}))
-                        }, clientObj)
+                    // console.log(messageJSON.delta, messageJSON)
+                   
                     
                     break;
                 
@@ -2843,13 +2859,35 @@ const defaultLang = 'ro-RO'
     translation = JSON.parse(data.toString())
     console.log('translations loaded, bytes:', data.byteLength)
  })
-export function parseText(file: string, req: any )
+export function sendFile(path: string, res, req, params?)
+{
+    if(path.split('.').at(-1) != 'html')
+        return res.status(500).send('Input file isnt HTML.')
+    try {
+        fs.readFile(path, (err, file) => {
+            if(err || !file)
+               throw err
+
+            return res.contentType('html').send(parseText(file.toString(), req, params))
+        })
+    } catch (err)
+    {
+        console.error(err)
+        return res.status(500).send('Error:' + err)
+    }
+}
+
+export function parseText(file: string, req: any, params?)
 {
     if(!req || !req.cookies)
-        return file;
+    {
+        console.error('YOU FORGOT TO ADD COOKIE PARSER!')
+                return file;
+    }
+
     if(!translation)
         throw 'invalid translation json'
-    const matches = file.matchAll(/\^{[%&](.*)}/g)
+    const matches = file.matchAll(/\^{[%&*](.*)}/g)
     let text = file
     const locale =  function () {
         const accLang = req.cookies.ii_lang ? req.cookies.ii_lang : req.headers["accept-language"] as string;
@@ -2857,20 +2895,20 @@ export function parseText(file: string, req: any )
             return defaultLang
         return accLang.split(',').map(param => param.split(';')[0])
     }()[0]
-
+    const keyDictionary = translation
     for(const matchobj of matches)
     {
         const match = (matchobj[1] as string)
         const key = (matchobj[0] as string)
         if(key.startsWith('^{%')) {
-             if(!translation[match])
+             if(!keyDictionary[match])
                 continue;
 
-            const expr = translation[match][locale] ? translation[match][locale] : translation[match][defaultLang] ? translation[match][defaultLang] : '' as string;
+            const expr = keyDictionary[match][locale] ? keyDictionary[match][locale] : keyDictionary[match][defaultLang] ? keyDictionary[match][defaultLang] : '' as string;
             if(expr != '' && expr !== undefined)
                 text = text.replaceAll(key, expr)
-            else if(translation[match][defaultLang])
-                text = text.replaceAll(key, translation[match][defaultLang])
+            else if(keyDictionary[match][defaultLang])
+                text = text.replaceAll(key, keyDictionary[match][defaultLang])
             else
                 console.error('invalid translation id', match)
         } else if(key.startsWith('^{&file:'))
@@ -2880,6 +2918,27 @@ export function parseText(file: string, req: any )
                 throw 'invalid file path'
             const file = fs.readFileSync(path.resolve(rootDirName, 'public', filePath)).toString()
             text = text.replaceAll(key, parseText(file, req))
+        } else 
+        {
+            const keys = match.split('.')
+            let obj = params;
+            for(const key2 of keys)
+                if(obj && obj[key2])
+                {
+                    
+                     obj = obj[key2]
+                     
+                }
+                else 
+                {
+                    obj = undefined;
+                    break
+                }
+
+            if(obj)
+                text = text.replaceAll(key, obj)
+            else 
+                text = text.replaceAll(key, '')
         }
     }
     return text;

@@ -1,0 +1,457 @@
+@use 'theme';
+
+.courses-grid
+{
+    display: grid;
+    grid-template-areas: 
+    'intro create'
+    'main main'
+    'search search'
+    'posts posts';
+
+    width: 75%;
+    margin: auto;
+    grid-template-columns: 1fr 300px;
+    grid-template-rows: auto auto auto;
+    align-items: center;
+    font-family: Poppins;
+    padding-top: 2em;
+    box-sizing: border-box;
+    gap: 50px;
+}
+
+.create
+{
+    grid-area: create;
+
+    a
+    {
+        color: inherit;
+        padding: 1em 2em;
+        border: 0.2em solid rgba(51, 51, 51, 0.466);
+        font-weight: 600;
+        // box-sizing: content-box;
+        border-radius: 1em;
+        text-wrap: nowrap;
+        display: block;
+        // width: 100%;
+        text-align: center;
+    }
+    
+}
+.search
+{
+    grid-area: search;
+    justify-self: center;
+    width: 75%;
+}
+.search input
+{
+    background-color: rgb(34,34,34);
+    // line-height: 4em;
+    padding-inline: 1em;
+    line-height: 2.5em;
+    width: 100%;
+    margin: auto;
+    font-size: 1.25em;
+    border-radius: 1lh;
+    border: 2px solid rgb(58, 58, 58);
+    color: white;
+    outline: none;
+}
+
+.main
+{
+    
+    grid-area: main;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 50px;
+}
+.courses-intro
+{
+    // font-size: 1.5em;
+    grid-area: intro;
+    h1
+    {
+        font-size: 4em;
+        margin-top: 0;
+    }
+    p
+    {
+        padding-inline: 2em;
+    }
+}
+.courses-carousel
+{
+
+    // grid-row: 2;
+    display: flex;
+    justify-content: space-between;
+}
+.course-carousel-element
+{
+    width: 200px;
+    font-size: 0.85em;
+    display: flex;
+    flex-direction: column;
+    background-color: theme.$background-highlight-color;
+    padding: 2em 3em;
+    border-radius: 1em;
+    gap: 0.5em;
+    color: inherit;
+    text-decoration: inherit;
+    img 
+    {
+        width: 100%;
+        border-radius: 50%;
+    }
+
+    button.action-button
+    {
+        padding: 1em 2em;
+        background-color: rgb(34, 134, 201);
+        color: white;
+        font-weight: 600;
+        border-radius: 1em;
+        border: none;
+        font-family: inherit;
+        
+        width: 100%;
+    }
+
+    .details
+    {
+        display: flex;
+        justify-content: center;
+        gap: 2em;
+        margin: 1em 0;
+    }
+}
+
+button.action-button 
+{
+    padding: 1em 2em;
+    background-color: rgb(34, 134, 201);
+    color: white;
+    font-weight: 600;
+    border-radius: 1em;
+    border: none;
+    font-family: inherit;
+    
+    width: 100%;
+}
+
+.course-element
+{
+    width: 300px;
+    font-size: 1em;
+    display: flex;
+    flex-direction: column;
+    background-color: theme.$background-highlight-color;
+    padding: 2em 3em;
+    border-radius: 1em;
+    gap: 0.5em;
+    color: inherit;
+    text-decoration: inherit;
+    img 
+    {
+        width: 80%;
+        margin: auto;
+        border-radius: 50%;
+    }
+
+    
+
+    .details
+    {
+        display: flex;
+        justify-content: center;
+        gap: 2em;
+        margin: 1em 0;
+    }
+}
+
+
+.course-page-element
+{
+    width: 300px;
+    font-size: 1em;
+    display: flex;
+    flex-direction: column;
+    background-color: theme.$background-highlight-color;
+    padding: 2em 3em;
+    border-radius: 1em;
+    gap: 0.5em;
+    color: inherit;
+    text-decoration: inherit;
+    
+    img 
+    {
+        width: 80%;
+        margin: auto;
+        border-radius: 50%;
+    }
+
+    button.action-button
+    {
+        padding: 1em 2em;
+        background-color: rgb(34, 134, 201);
+        color: white;
+        font-weight: 600;
+        border-radius: 1em;
+        border: none;
+        font-family: inherit;
+        
+        width: 100%;
+    }
+
+    .details
+    {
+        display: flex;
+        justify-content: center;
+        gap: 2em;
+        margin: 1em 0;
+    }
+}
+
+
+.course-page-grid
+{
+    display: grid;
+    grid-template-columns: 1000px 1fr;
+    grid-template-rows: minmax(550px, auto) 1fr;
+    width: 75%;
+    margin: auto;
+    gap: 2em;
+    font-family: Poppins;
+}
+
+.video-container
+{
+    grid-row: 1;
+    position: relative;
+    video 
+    {
+        width: 100%;
+        // height: 100%;
+        border-radius: 0.5em;
+        // opacity: 0;
+        transition-duration: 0.5s;
+    }
+
+    &:not(:hover) video:not(.is-playing)
+    {
+        opacity: 0.5;
+        filter: blur(3px);
+    }
+    .profile
+    {
+        width: 200px;
+        border-radius: 50%;
+        // padding: 0.5em;
+        margin-bottom: 1em;
+        transition-duration: 0.4s;
+    }
+
+    &:hover,
+    &:has(video.is-playing) 
+    {
+        .profile
+        {
+            opacity: 0;
+        }
+        div 
+        {
+            opacity: 0.75;
+        }
+        
+    }
+    div
+    {
+        font-size: 2em;
+        position: absolute;
+        bottom: 2em;
+        left: 1em;
+        text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.247);
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        pointer-events: none;
+        // gap: 1em;
+        h1
+        {
+            margin: 0;
+            padding: 0;
+        }
+        p 
+        {
+            font-size: 0.75em;
+            padding: 0;
+            margin: 0;
+        }
+    }
+}
+
+
+.content-container
+{
+    grid-row: 2;
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 50px auto;
+    align-items: center;
+    h2 
+    {
+        margin: 0;
+    }
+}
+
+.details-container .pricing
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    align-content: center;
+    gap: 1em;
+    p {
+        padding: 1em 2em;
+        background-color: rgb(14, 14, 14);
+        border-radius: 3em;
+        margin: 0;
+        flex-grow: 1;
+         text-align: center;
+    }
+    p:last-child {
+        // width: 100%;
+        
+       
+    }
+}
+
+.description-container
+{
+    grid-row: 2;
+    grid-column: 1 / -1;
+}
+.description-container p
+{
+    padding: 0.5em 1em;
+    text-indent: 2em;
+}
+
+.action-container
+{
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+
+
+
+.star-rating-container {
+    display: flex;
+    gap: 0.25em;
+    position: relative;
+    white-space: nowrap;
+    align-items: center;
+    justify-content: center;
+    svg {
+        width: 20px;
+        height: 20px;
+        fill: #e2c108;
+    }
+    p 
+    {
+        margin: 0;
+        font-weight: 800;
+    }
+}
+
+.cover {
+  background: white;
+  height: 100%;
+  overflow: hidden;
+  mix-blend-mode: color;
+  position: absolute;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.bulletpoint-button
+{
+    appearance: none;
+}
+
+.bulletpoint-button
+{
+    background-color: transparent;
+    color: inherit;
+    border: none;
+    position: relative;
+    font-family: inherit;
+    padding: 0;
+    &>div {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 15%);
+        // right: 0;
+        width: 100px;
+        display: flex;
+        flex-direction: column;
+        background-color: rgb(15,15,15);
+        padding: 1em;
+        border-radius: 1em;
+
+        div:not(:last-child)
+        {
+            border-bottom: 2px solid theme.$border-color;
+            
+        }
+        div 
+        {
+            padding: 0.25em 0;
+        }
+    }
+    &.open::before
+        {
+            
+            content: '';
+            position: absolute;
+            bottom: -125%;
+            left: 50%;
+            background-color: rgb(15,15,15);
+            transform: translateX(-50%) rotate(45deg);
+            width: 25px;
+            height: 25px;
+            display: block;
+        }
+
+    &:not(.open)>div
+    {
+        display: none !important;
+    }
+}
+
+.external-links
+{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    a 
+    {
+            padding: 0.5em 2em;
+            border: 3px solid theme.$border-color;
+            color: white;
+            font-weight: 600;
+            border-radius: 1em;
+            // border: none;
+            font-family: inherit;
+            // width: 100%;
+    }
+}
+

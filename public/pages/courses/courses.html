@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en-US, en, ro-RO, ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditatii</title>
+    <link rel="stylesheet" href="../css/courses.css">
+      <link rel="stylesheet" href="../css/main.css">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Teachers:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    ^{&file:_header.html}
+    <div class="courses-grid">
+        <div class="create">
+            <a href="/courses/create">+ Publica un anunt</a>
+        </div>
+       
+         <div class="courses-intro">
+                <h1>Meditatii</h1>
+                <p>Gaseste-ti meditatorul potrivit si incepe sa inveti informatica!</p>
+            </div>
+        <div class="main">
+           
+            <div class="courses-carousel">
+                ^{*coursesCarousel}
+            </div>
+
+        </div>
+        
+        <div class="search">
+            <h2>Gaseste-ti meditatorul</h2>
+            <input type="search" name="search" id="search" placeholder="cauta..">
+        </div>
+        <div>
+            ^{*courses}
+        </div>
+    </div>
+    
+    
+</body>
+</html>

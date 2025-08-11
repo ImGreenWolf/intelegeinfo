@@ -30,6 +30,14 @@ function parseArray(str) {
         return [];
     }
 }
+if (!Array.prototype.at) {
+    Array.prototype.at = function (index) {
+        if (index < 0)
+            return this[this.length - index];
+        else
+            return this[index];
+    };
+}
 // Class to render one visual cursor
 class VisualCursor {
     color;
@@ -444,11 +452,51 @@ class SessionClient {
     color;
     displayName;
     canEdit;
-    constructor(clientId, displayName, color, canEdit) {
+    sessionIcon;
+    rtcConnection;
+    constructor(clientId, displayName, color, canEdit, userId, isLocal) {
         this.clientId = clientId;
         this.color = color;
         this.displayName = displayName;
         this.canEdit = canEdit;
+        this.sessionIcon = createNode('div', {
+            onclick: function (ev) {
+                for (const child of this.parentElement.children)
+                    if (child != this)
+                        child.classList.remove('open');
+                this.classList.toggle('open');
+            },
+            className: 'client-container' + (isLocal ? ' localClient' : ''),
+            attributes: [{ name: 'style', value: '--userColor: #' + color }],
+            html: [
+                createNode('img', { attributes: [{ name: 'src', value: userId ? '/user/picture/' + userId : '/user/upload/default.png' }] }),
+                createNode('div', { className: 'session-client-menu', htmlSting: `
+          <div>
+            <h3>${this.displayName}${isLocal ? ' (Tu)' : ''}<div class='img-placeholder'></div></h3>
+            <lable>${this.canEdit ? 'Poate edita' : 'Nu poate edita'}</lable>
+            <button>Scoate</button>
+          </div>
+          `
+                }),
+                createNode('div', { innerText: this.displayName, className: 'tooltip-clientName' })
+            ]
+        });
+        document.getElementById('sessionInfo-container')?.appendChild(this.sessionIcon);
+    }
+    onJoin() {
+    }
+    onDisconect() {
+        for (const session of this.editorSession) {
+            session.fileElement?.removeUser(this.clientId);
+            if (cursorManagers.has(session.editor.id))
+                cursorManagers.get(session.editor.id).removeCursor(this.clientId);
+            else
+                console.error('invalid cursor manager');
+        }
+        cursors.get(this.clientId)?.remove();
+        rtc.get(this.clientId)?.close();
+        rtc.delete(this.clientId);
+        this.sessionIcon.remove();
     }
 }
 // VARIABLES //
@@ -526,7 +574,7 @@ class DebugWindow {
             if (Array.isArray(varVal))
                 vars.push(createNode('li', { htmlSting: `${varName}: <div class="array-container">${varVal.map(val => `<span>${val}</span>`).join(' ')}</div>` }));
             else
-                vars.push(createNode('li', { innerText: `${varName}: <div class="value-container">${varVal}</div>` }));
+                vars.push(createNode('li', { htmlSting: `${varName}: <div class="value-container">${varVal}</div>` }));
         }
         this.varList.replaceChildren(...vars);
     }
@@ -2001,8 +2049,9 @@ function addButtons(buttons, id) {
     //         window.editor.sendDebugCommand('-exec-next')
     //     }, class: "debug"})
     // ]
-    const editorControls = createNode('div', { html: buttons, className: 'inner-toolbar', id });
-    DockElement.children[1].prepend(editorControls);
+    const editorControls = ClientDock.addSection(buttons, id);
+    // const editorControls = createNode('div', {html: buttons, className: 'inner-toolbar', id})
+    //   DockElement!.children[1].prepend(editorControls)
     editorControls.animate([
         { maxWidth: '0', overflow: 'hidden' },
         { maxWidth: '80px', overflow: 'initial' }
@@ -2427,7 +2476,8 @@ ws.onmessage = (event) => {
             else
                 pauseVoice();
         };
-        document.getElementById('content-container')?.appendChild(microphone);
+        ClientDock.addSection([microphone], 'microphone-container');
+        // ClientDock.appendChild(microphone)
         // for(const newRTC of rtc.values())
         //   sendVoice(newRTC)
     }
@@ -2509,7 +2559,7 @@ ws.onmessage = (event) => {
     }
     function onRemoteClientJoin(rclient) {
         if (!rclient)
-            throw 'Ivalid remote client';
+            throw 'Invalid remote client';
         // clients.push(new SessionClient(rclient.clientId, rclient.displayName, rclient.color))
         if (!rtc.has(rclient.clientId))
             createRTCConnection(rclient.clientId, true);
@@ -2519,7 +2569,7 @@ ws.onmessage = (event) => {
         const fileName = rclient.openFile[0];
         // if(clientIndex == -1)
         // {
-        createClient(rclient.clientId, rclient.displayName, rclient.color, rclient.openFile.map(fileName => { return { fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor }; }));
+        createClient(rclient.clientId, rclient.displayName, rclient.color, rclient.accountId, false, rclient.openFile.map(fileName => { return { fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor }; }));
         for (const remoteFileName of rclient.openFile)
             editorSessions.get(remoteFileName)?.fileElement?.addUser({ name: rclient.displayName, color: rclient.color, id: rclient.clientId }, undefined);
     }
@@ -2604,11 +2654,22 @@ ws.onmessage = (event) => {
                     window.editor.sendDebugCommand('-exec-run');
                 }, class: "debug" }));
     }
-    function createClient(clientId, displayName, color, session) {
-        const client = new SessionClient(clientId, displayName, color, true);
+    function createClient(clientId, displayName, color, userId, isLocal, session) {
+        const client = new SessionClient(clientId, displayName, color, true, userId, isLocal);
         client.editorSession = session;
         clients.set(clientId, client);
         console.log("Created client: ", client, clients);
+        return client;
+    }
+    function onClientDisconect(colabClientId, messageJson) {
+        const collabClient = clients.get(colabClientId);
+        if (!collabClient)
+            throw 'couldnt find collab client';
+        // document.getElementById('cursor-'+colabClientId)?.remove()
+        // cursors.delete(colabClientId)
+        collabClient.onDisconect();
+        writeOutput(messageJson.body, messageJson, false, ConsoleMessageType.SessionInfo);
+        clients.delete(colabClientId);
     }
     function getEditorSession(fileName) {
         return editorSessions.get(fileName); //client?.editorSession.find(file => file.fileName === fileName)!
@@ -2847,18 +2908,20 @@ ws.onmessage = (event) => {
                 else {
                     if (!client) {
                         // create local client
-                        client = new SessionClient(wsClientId, messageJson.displayName, messageJson.color, sessionData.canEdit);
+                        client = createClient(wsClientId, messageJson.displayName, messageJson.color, messageJson.accountId, true, [{ fileName: rclient.openFile[0], editor: undefined, fileElement: undefined }]);
+                        // client = new SessionClient(wsClientId, messageJson.displayName, messageJson.color, sessionData.canEdit)
+                        document.getElementById('editor-grid-container').style = '--userColor: #' + messageJson.color;
                         if (rclient.openFile.length == 0)
                             showDefaultScreen();
                         else {
                             openFile(rclient.openFile[0]);
-                            client.editorSession[0] = { fileName: rclient.openFile[0], editor: undefined, fileElement: undefined };
+                            // client.editorSession![0] = {fileName: rclient.openFile[0], editor: undefined, fileElement: undefined}
                             addButtons([createButton('play_arrow.svg', { onclick: () => {
                                         window.editor.sendDebugCommand('execute');
                                     }, class: "run" }),
                             ], 'execution');
                         }
-                        clients.set(wsClientId, client);
+                        // clients.set(wsClientId, client)
                     }
                 }
             });
@@ -2866,17 +2929,23 @@ ws.onmessage = (event) => {
         case WebSocketMessageType.CodeChange:
             // editor.session.getDocument().applyDelta(delta);
             const editorSession = editorSessions.get(messageJson.fileName) || editorSessions.values()[0];
-            if (editorSession.editor.getValue() !== data.body &&
-                messageJson.clientId !== wsClientId) {
-                const delta = messageJson.delta;
-                if (!editorSession.editor)
-                    throw 'invalid editor on editor session';
-                isRemoteChange = true;
-                editorSession.editor.getDocument().applyDelta(delta);
-                isRemoteChange = false;
-                document.getElementById('buttons')?.classList.remove('compiled');
-                dirtyFile(messageJson.fileName);
+            const delta = messageJson.delta;
+            if (!editorSession.editor)
+                throw 'invalid editor on editor session';
+            isRemoteChange = true;
+            if (messageJson.body) {
+                editorSession.editor.getDocument().setValue(messageJson.body);
+                console.warn('Applied forced file content correction!');
+                if (sha256(editorSession.editor.getValue()) != messageJson.checksum)
+                    console.error('Failed checksum check after force content change.');
             }
+            else
+                editorSession.editor.getDocument().applyDelta(delta);
+            if (sha256(editorSession.editor.getValue()) != messageJson.checksum)
+                console.error('Checksum failed!');
+            isRemoteChange = false;
+            document.getElementById('buttons')?.classList.remove('compiled');
+            dirtyFile(messageJson.fileName);
             break;
         case WebSocketMessageType.CompileResult:
             const compileErrors = JSON.parse(messageJson.body);
@@ -3102,21 +3171,7 @@ ws.onmessage = (event) => {
                 case "DISCONECT":
                     if (!colabClientId)
                         break;
-                    cursors.get(messageJson.clientId)?.remove();
-                    const collabClient = clients.get(colabClientId);
-                    if (!collabClient)
-                        throw 'couldnt find collab client';
-                    for (const session of collabClient.editorSession) {
-                        session.fileElement?.removeUser(colabClientId);
-                        if (cursorManagers.has(session.editor.id))
-                            cursorManagers.get(session.editor.id).removeCursor(colabClientId);
-                        else
-                            throw 'invalid cursor manager';
-                    }
-                    // document.getElementById('cursor-'+colabClientId)?.remove()
-                    // cursors.delete(colabClientId)
-                    writeOutput(messageJson.body, messageJson, false, ConsoleMessageType.SessionInfo);
-                    clients.delete(colabClientId);
+                    onClientDisconect(colabClientId, messageJson);
                     break;
                 case "HOST":
                     writeOutput(messageJson.body, messageJson, false, ConsoleMessageType.SessionInfo);

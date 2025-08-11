@@ -8,7 +8,7 @@ import prisma from "./dbClient";
 import { Prisma, User } from "../../generated/prisma";
 import fs from "fs";
 import nodemailer from "nodemailer"
-import { onLoggedIn } from "./login"
+import { onLoggedIn, UserState } from "./login"
 import * as Profile from './profile'
 import path from "path";
 import * as hmacuUtil from "../../dist/shared/hmacUtils";
@@ -17,16 +17,42 @@ import * as users from './usersManager'
 import { google } from "googleapis";
 import { prepareEncrPassForDB } from "./signup";
 const OAuth2 = google.auth.OAuth2;
+import multer from 'multer'
+
+export let transporter: nodemailer.Transporter;
+updateTransporter()
+
+setInterval(updateTransporter, 3600*1000);
 
 const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
 const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem')) || "supersecretprivatekey";
 // const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
 export const router = express.Router();
+
 router.use(bodyParser.json());
-router.use(express.static("public/pages/login.html"))
+// router.use(express.static("public/pages/login.html"))
+
 const userNoPassword = Prisma.validator<Prisma.UserDefaultArgs>()({
   omit: {password: true}
 })
+
+export const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(rootDirName, 'server', 'users', 'uploads')); // Folder where files will be stored
+  },
+  filename: function (req, file, cb) {
+    // Save file with original name + timestamp
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+if (!fs.existsSync(path.join(rootDirName, 'server', 'users', 'uploads'))) {
+  fs.mkdirSync(path.join(rootDirName, 'server', 'users', 'uploads'));
+}
+
+
+export const upload = multer({ storage: storage });
+
 export type UserNoPassword = Prisma.UserGetPayload<typeof userNoPassword>
 
 
@@ -45,7 +71,7 @@ export function getJWT(req: any)
 }
 
 
-export function getUserData(id: number): Promise<UserNoPassword>
+export function getUserData(id: number, include?: Prisma.UserInclude): Promise<UserNoPassword>
 {
     
     return new Promise<UserNoPassword> ((resolve, reject)=>
@@ -66,10 +92,7 @@ export function getUserData(id: number): Promise<UserNoPassword>
             omit: {
                 password: true
             },
-            include:
-            {
-                projects: false
-            }
+            include
         }).then(user => {
             resolve(user)
         }).catch(err => {
@@ -141,7 +164,20 @@ export function addProject(id: number, data: any)
     
 }
 
-
+export function getClientJWTValue(token: string): UserState
+{
+    if(!token)  return; // throw {code: 401, message:'invalid token'};
+    let userState;
+    try {
+     userState = jwt.verify(token, privateKeyPem);
+    }
+    catch
+    {
+        return
+    }
+    if(!userState) return; //throw {code: 401, message:'invalid state'};
+        return userState as UserState
+}
 
 
 export function getClientId(token: string)
@@ -156,18 +192,37 @@ export function getClientId(token: string)
         return
     }
     if(!userState) return; //throw {code: 401, message:'invalid state'};
-    const userId= parseInt((userState as any).sub);
+        const userId= parseInt((userState as UserState).sub);
     if(!userId) return; //throw {code: 401, message:'couldnt get id'}
     return userId;
 }
 
-
+export function createUploadFromFile(fileReq, userId: number) {
+    const data = uploadFromFileData(fileReq, userId)
+    return fileReq.file && data ? {
+        create: data            
+    } : undefined
+}
+export function uploadFromFileData(fileReq, userId): Prisma.UploadCreateInput | undefined
+{
+    return fileReq.file ? {
+        path: fileReq.file.filename,
+        size: fileReq.file.size,
+        originalName: fileReq.file.originalname,
+        // UserId: userId,
+        UploadUser: {
+            connect: {
+                id: userId,
+            }
+        }
+    } : undefined
+}
 export default prisma;
 
 
 
 
- let transporter: nodemailer.Transporter;
+
 
 
 router.get('/checkLoggedIn', (req, res) => {
@@ -193,7 +248,7 @@ router.get('/removeproject', (req, res) => {
 
 })
 
-router.get('/profilePicture/:id', (req, res) => {
+router.get('/picture/:id', (req, res) => {
     const id = parseInt(req.params.id as string);
     
     prisma.user.findUnique({
@@ -205,7 +260,26 @@ router.get('/profilePicture/:id', (req, res) => {
         if(user.picture.startsWith('http'))
             res.status(200).redirect(user.picture)
         else
-        res.status(200).sendFile(path.join(__dirname,`../../server/users/pfp/${user.picture}.png`))
+        res.status(200).sendFile(path.join(__dirname,`../../server/users/uploads/${user.picture}`))
+    }).catch(err => {
+        res.status(500).send('failed: '+ err)
+    })
+
+})
+
+router.get('/upload/:path', (req, res) => {
+    const filePath = req.params.path as string
+    
+    prisma.upload.findUnique({
+        where:
+        {
+            path: filePath
+        }
+    }).then(upload => {
+        if(upload.path.startsWith('http'))
+            res.status(200).redirect(upload.path)
+        else
+        res.status(200).sendFile(path.join(__dirname,`../../server/users/uploads/${upload.path}`))
     }).catch(err => {
         res.status(500).send('failed: '+ err)
     })
@@ -214,7 +288,7 @@ router.get('/profilePicture/:id', (req, res) => {
 
 
  async function updateTransporter() {
-    transporter = nodemailer.createTransport({
+    return transporter = nodemailer.createTransport({
         host: 'antares.webyouridea.ro',
         port: 587,           // STARTTLS
         secure: false,       // false because STARTTLS is used
@@ -249,9 +323,7 @@ oauth2Client.setCredentials({
 
 
 
-updateTransporter()
 
-setInterval(updateTransporter, 3600*1000);
 
 
     
@@ -529,24 +601,56 @@ const passwordPagesPath = path.join(rootDirName, 'public','pages')
   });
 
 
-  router.get('/picture', async (req, res) => {
+router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req)
     if(id)
     {
         const user = await updateActiveAtForUser(id) //getUserData
         if(!user)
+        {
+            res.clearCookie('token').status(404).redirect('/')
             return
-       if(user.picture.startsWith('http'))
+        }
+        
+        if(user.picture.startsWith('http'))
             res.status(200).redirect(user.picture)
         else
-            res.status(200).sendFile(path.join(rootDirName,`/server/users/pfp/${user.picture}.png`))
+            res.status(200).sendFile(path.join(rootDirName,`/server/users/uploads/${user.picture}`))
     }
-  })
+})
 
-    export function activeAtComponent()
-    {
-        return {activeAt: new Date()}
+router.post('/picture', upload.single('profilePicture'), async (req, res) => {
+    try {
+        const id = getIdFromJWT(req)
+        if(!id)
+            throw 'Please log in first.'
+
+            const data = uploadFromFileData(req, id)
+            if(!data)
+                throw 'invalid data'
+
+            prisma.user.update({
+                where: {
+                    id
+                },
+                data: {
+                    pictureUpload:  createUploadFromFile(req, id)
+                } 
+            }).then(val => {
+                res.redirect('/profile')
+            })
+        
+    } catch (error) {
+        res.send(error)
     }
+})
+
+
+
+export function activeAtComponent()
+{
+    return {activeAt: new Date()}
+}
   export async function updateActiveAtForUser(userId: number)
   {
     try 

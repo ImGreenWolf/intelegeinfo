@@ -29,3 +29,4 @@ export declare function testProblem(tests: ProblemTest[], clientObj: ClientObjec
 } | undefined>[]>;
 export declare const router: import("express-serve-static-core").Router;
 export default router;
+export declare function dateDeltaToString(date: Date, capitalize?: boolean, language?: string): string;

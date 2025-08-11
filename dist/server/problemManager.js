@@ -41,6 +41,7 @@ exports.handleSucces = handleSucces;
 exports.handleExecError = handleExecError;
 exports.createProblem = createProblem;
 exports.testProblem = testProblem;
+exports.dateDeltaToString = dateDeltaToString;
 const dbClient_1 = __importDefault(require("./dbClient"));
 function handleSucces(index, clientObj) {
     clientObj.sendMessage({ index, succes: true });
@@ -515,20 +516,53 @@ const codeMentorFeedback = {
     },
     "strict": true
 };
-function dateDeltaToString(date) {
+const TimeUnit = {
+    years: {
+        'ro-RO': 'ani',
+        'en-US': 'years'
+    },
+    months: {
+        'ro-RO': 'luni',
+        'en-US': 'months'
+    },
+    days: {
+        'ro-RO': 'zile',
+        'en-US': 'days'
+    },
+    hours: {
+        'ro-RO': 'ore',
+        'en-US': 'hours'
+    },
+    minutes: {
+        'ro-RO': 'minute',
+        'en-US': 'minutes'
+    },
+    seconds: {
+        'ro-RO': 'secunde',
+        'en-US': 'seconds'
+    },
+};
+function dateDeltaToString(date, capitalize = true, language = 'ro-RO') {
+    function formatTime(time, unit) {
+        switch (language) {
+            case 'ro-RO':
+                return `${capitalize ? "A" : 'a'}cum ${time} ${TimeUnit[unit][language]}`;
+            case 'en-US':
+                return `${time} ${TimeUnit[unit][language]} ago`;
+        }
+    }
     const delta = new Date();
     const now = date;
-    console.log(date.getTime(), Date.now(), Date.now() - date.getTime(), delta.toDateString());
     if (delta.getUTCFullYear() - now.getUTCFullYear() >= 1)
-        return `${delta.getUTCFullYear() - now.getUTCFullYear()} years ago`;
+        return formatTime(delta.getUTCFullYear() - now.getUTCFullYear(), 'years');
     else if (delta.getUTCMonth() - now.getUTCMonth() >= 1)
-        return `${delta.getUTCMonth() - now.getUTCMonth()} months ago`;
+        return formatTime(delta.getUTCMonth() - now.getUTCMonth(), 'months');
     else if (delta.getDay() - now.getDay() >= 1)
-        return `${delta.getDay() - now.getDay()} days ago`;
+        return formatTime(delta.getDay() - now.getDay(), 'days');
     else if (delta.getHours() - now.getHours() >= 1)
-        return `${delta.getHours() - now.getHours()} hours ago`;
+        return formatTime(delta.getHours() - now.getHours(), 'hours');
     else if (delta.getMinutes() - now.getMinutes() >= 1)
-        return `${delta.getMinutes() - now.getMinutes()} minutes ago`;
+        return formatTime(delta.getMinutes() - now.getMinutes(), 'minutes');
     else
-        return `${delta.getSeconds() - now.getSeconds()} seconds ago`;
+        return formatTime(delta.getSeconds() - now.getSeconds(), 'seconds');
 }

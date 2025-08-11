@@ -41,9 +41,18 @@ async function onSignedIn({ email, username, loginMethod, firstName, lastName, p
                 password,
                 loginMethod,
                 userColor: (0, types_1.randomHexColor)(),
-                picture: profile,
                 emailValidated: loginMethod == 'google',
-                occupationType: prisma_1.OccupationType[type] != undefined ? prisma_1.OccupationType[type] : prisma_1.OccupationType.None
+                occupationType: prisma_1.OccupationType[type] != undefined ? prisma_1.OccupationType[type] : prisma_1.OccupationType.None,
+                pictureUpload: {
+                    connectOrCreate: {
+                        where: {
+                            path: profile ? profile : 'default.png'
+                        },
+                        create: {
+                            path: profile ? profile : 'default.png'
+                        }
+                    }
+                }
             },
             omit: {
                 password: true

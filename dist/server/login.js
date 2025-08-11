@@ -52,9 +52,6 @@ const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/login.html"));
 exports.default = router;
-const validEmail = 'a@c';
-const salt = bcryptjs_1.default.genSaltSync(10);
-const validPassword = bcryptjs_1.default.hashSync("123", salt);
 const rootDirName = path_1.default.resolve("./");
 const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 'private.pem'), 'utf8') || "supersecretprivatekey";
 exports.privateKey = node_forge_1.default.pki.privateKeyFromPem(privateKeyPem);
@@ -256,7 +253,7 @@ router.get('/callback', async (req, res) => {
         }
         else {
             try {
-                const result = await signup.onSignedIn({ email: userInfo.email, type: 'none', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, '', req);
+                const result = await signup.onSignedIn({ email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, '', req);
                 result.res.send(result.json);
             }
             catch (err) {
