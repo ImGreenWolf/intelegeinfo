@@ -3079,12 +3079,15 @@ ws.onmessage = (event) => {
                     //     : errorOutputString ||
                     //         "Compilation error. (couldnt retrieve error message, sorry)"
                     // );
-                    if (activeConsole)
-                        if (activeConsole.compileMessage)
-                            if (!messageJson.body)
-                                activeConsole.onProcessStart();
-                            else
-                                activeConsole.compileMessage.children[1].innerHTML = messageJson.body;
+                    if (!activeConsole) {
+                        startProgram();
+                        onRun();
+                    }
+                    else if (activeConsole.compileMessage)
+                        if (!messageJson.body)
+                            activeConsole.onProcessStart();
+                        else
+                            activeConsole.compileMessage.children[1].innerHTML = messageJson.body;
                     document.getElementById('compile-status').innerText = messageJson.body;
                     document.getElementById('compile-status').style.opacity = '1';
                     setTimeout(() => {
