@@ -2118,7 +2118,7 @@ form#codeForm {
   right: 50%;
   transform: translate(50%, -75%);
 }
-#sessionInfo-container > div:not(:hover) .tooltip-clientName {
+#sessionInfo-container > div:where(:not(:hover), .open) .tooltip-clientName {
   opacity: 0;
 }
 #sessionInfo-container > div.open {

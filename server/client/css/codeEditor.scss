@@ -2496,7 +2496,7 @@ form#codeForm {
             }
         }
 
-        &:not(:hover) .tooltip-clientName
+        &:where(:not(:hover), .open) .tooltip-clientName
         {
             opacity: 0;
         }
@@ -2510,6 +2510,7 @@ form#codeForm {
                 z-index: 2;
                 transition-duration: 0.3s;
             }
+            
        }
        .session-client-menu
        {
