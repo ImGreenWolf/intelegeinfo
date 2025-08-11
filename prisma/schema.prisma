@@ -34,7 +34,7 @@ model User {
   emailValidated Boolean @default(false)
   userColor String @default("#FFFFFF")
   picture String  
-  pictureUpload Upload @relation(fields: [picture], references: [path])
+  // pictureUpload Upload @relation(fields: [picture], references: [path])
   role Role @default(USER)
   createdAt DateTime @default(now())
   activeAt DateTime @default(now())
@@ -224,6 +224,6 @@ model Upload {
   UserId Int?
 
   Course Course[]
-  ProfilePictures User[]
+  // ProfilePictures User[]
   
 }
