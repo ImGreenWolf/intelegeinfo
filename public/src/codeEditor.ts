@@ -4001,7 +4001,10 @@ break;
           //         "Compilation error. (couldnt retrieve error message, sorry)"
           // );
           if(!activeConsole)
+          {
+            startProgram()
             onRun()
+          }
           else
             if( activeConsole.compileMessage)
               if(!messageJson.body)

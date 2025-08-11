@@ -3010,8 +3010,10 @@ ws.onmessage = (event) => {
                     //     : errorOutputString ||
                     //         "Compilation error. (couldnt retrieve error message, sorry)"
                     // );
-                    if (!activeConsole)
+                    if (!activeConsole) {
+                        startProgram();
                         onRun();
+                    }
                     else if (activeConsole.compileMessage)
                         if (!messageJson.body)
                             activeConsole.onProcessStart();
