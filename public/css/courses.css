@@ -84,7 +84,7 @@
   width: 100%;
   border-radius: 50%;
 }
-.course-carousel-element button {
+.course-carousel-element button.action-button {
   padding: 1em 2em;
   background-color: rgb(34, 134, 201);
   color: white;
@@ -99,6 +99,17 @@
   justify-content: center;
   gap: 2em;
   margin: 1em 0;
+}
+
+button.action-button {
+  padding: 1em 2em;
+  background-color: rgb(34, 134, 201);
+  color: white;
+  font-weight: 600;
+  border-radius: 1em;
+  border: none;
+  font-family: inherit;
+  width: 100%;
 }
 
 .course-element {
@@ -117,16 +128,6 @@
   width: 80%;
   margin: auto;
   border-radius: 50%;
-}
-.course-element button {
-  padding: 1em 2em;
-  background-color: rgb(34, 134, 201);
-  color: white;
-  font-weight: 600;
-  border-radius: 1em;
-  border: none;
-  font-family: inherit;
-  width: 100%;
 }
 .course-element .details {
   display: flex;
@@ -152,7 +153,7 @@
   margin: auto;
   border-radius: 50%;
 }
-.course-page-element button {
+.course-page-element button.action-button {
   padding: 1em 2em;
   background-color: rgb(34, 134, 201);
   color: white;
@@ -176,6 +177,7 @@
   width: 75%;
   margin: auto;
   gap: 2em;
+  font-family: Poppins;
 }
 
 .video-container {
@@ -229,17 +231,49 @@
   grid-column: 1;
   display: grid;
   grid-template-columns: 2fr 1fr;
+  grid-template-rows: 50px auto;
+  align-items: center;
+}
+.content-container h2 {
+  margin: 0;
+}
+
+.details-container .pricing {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+  gap: 1em;
+}
+.details-container .pricing p {
+  padding: 1em 2em;
+  background-color: rgb(14, 14, 14);
+  border-radius: 3em;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+.description-container {
+  grid-row: 2;
+  grid-column: 1/-1;
+}
+
+.description-container p {
+  padding: 0.5em 1em;
+  text-indent: 2em;
 }
 
 .action-container {
   display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
 .star-rating-container {
   display: flex;
   gap: 0.25em;
   position: relative;
-  padding: 1rem;
   white-space: nowrap;
   align-items: center;
   justify-content: center;
@@ -263,6 +297,64 @@
   top: 0;
   right: 0;
   pointer-events: none;
+}
+
+.bulletpoint-button {
+  appearance: none;
+}
+
+.bulletpoint-button {
+  background-color: transparent;
+  color: inherit;
+  border: none;
+  position: relative;
+  font-family: inherit;
+  padding: 0;
+}
+.bulletpoint-button > div {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 15%);
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(15, 15, 15);
+  padding: 1em;
+  border-radius: 1em;
+}
+.bulletpoint-button > div div:not(:last-child) {
+  border-bottom: 2px solid rgba(126, 126, 126, 0.219);
+}
+.bulletpoint-button > div div {
+  padding: 0.25em 0;
+}
+.bulletpoint-button.open::before {
+  content: "";
+  position: absolute;
+  bottom: -125%;
+  left: 50%;
+  background-color: rgb(15, 15, 15);
+  transform: translateX(-50%) rotate(45deg);
+  width: 25px;
+  height: 25px;
+  display: block;
+}
+.bulletpoint-button:not(.open) > div {
+  display: none !important;
+}
+
+.external-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+}
+.external-links a {
+  padding: 0.5em 2em;
+  border: 3px solid rgba(126, 126, 126, 0.219);
+  color: white;
+  font-weight: 600;
+  border-radius: 1em;
+  font-family: inherit;
 }
 
 /*# sourceMappingURL=courses.css.map */

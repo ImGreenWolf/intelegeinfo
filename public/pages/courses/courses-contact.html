@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formular Contact ^{*course.user.firstName}</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/course.css">
+</head>
+<body>
+    ^{&file:_header.html}
+
+    <form action="" method="post" >
+        <label for="firstName">Prenume</label>
+        <input type="text" name="firstName" id="firstName" value="^{*user.firstName}">
+
+        <label for="lastName">Nume</label>
+        <input type="text" name="lastName" id="lastName" value="^{*user.lastName}">
+
+        <label for="message">Lasa un mesaj meditatorului</label>
+        <textarea name="message" id="message" placeholder="Scrie un mesaj..."></textarea>
+        <div><h2>Metoda de contact</h2><span>Completeaza cel putin una</span></div>
+        <div style="display: flex; flex-direction: column;">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" value="^{*user.email}">
+            <label for="phone">Telefon</label>
+            <input type="tel" name="phone" id="phone">
+            <label for="other">Altul</label>
+            <input type="text" name="other" id="other">
+        </div>
+        <br>
+        <br>
+        <button type="submit">Trimite</button>
+        
+    </form>
+</body>
+</html>

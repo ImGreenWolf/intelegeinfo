@@ -29,9 +29,15 @@
                     <div class="content-container open" id="accDetails">
                         <h1>Detalii cont</h1>
                         <div class="inline-wrapper">
-                            <img src="user/picture" class="profile-pic-large">
-                            <!-- <input type="file" name="file" id="file" style="display: none;" accept="image/png, image/jpeg"><label for="file">Schimba poza</label>
-                            <button class="warning">Sterge poza</button> -->
+                            <img src="/user/picture" class="profile-pic-large">
+                            <form action="/user/picture" method="post" enctype="multipart/form-data">
+                                <input type="file" name="profilePicture" id="profilePicture" 
+                                style="display: none; height: 100%;" 
+                                accept="image/png, image/jpeg, image/jpg, image/webp, image/avif"
+                                capture="user" >
+                                <label for="profilePicture" style="height: 100%; display: block;">Schimba poza</label>
+                            </form>
+                            <button class="warning">Sterge poza</button>
                         </div>
                         
                         <div class="info-container">
@@ -239,18 +245,7 @@
     }
 
     document.getElementById('file').onchange = (ev) => {
-        document.getElementById('pfpform').submit()
-        // const file = ev.target.files[0];
-        // const upload = URL.createObjectURL(file);
-        // console.log(upload)
-        // fetch('profile/update', {
-        //     method: 'POST',
-        //     body: 
-        //     JSON.stringify(
-        //     {
-        //         file: upload
-        //     })
-        // })
+        document.querySelector('form:has(#file)').submit()
     }
 </script>
 </html>

@@ -141,6 +141,7 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt',
   activeAt: 'activeAt',
   password: 'password',
+  authId: 'authId',
   loginMethod: 'loginMethod',
   occupationType: 'occupationType'
 };
@@ -224,8 +225,22 @@ exports.Prisma.CourseScalarFieldEnum = {
   phone: 'phone',
   external: 'external',
   email: 'email',
+  views: 'views',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InquiryScalarFieldEnum = {
+  id: 'id',
+  courseId: 'courseId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  respondedAt: 'respondedAt',
+  response: 'response',
+  contactInfo: 'contactInfo',
+  message: 'message',
+  firstName: 'firstName',
+  lastName: 'lastName'
 };
 
 exports.Prisma.ReviewScalarFieldEnum = {
@@ -240,6 +255,8 @@ exports.Prisma.ReviewScalarFieldEnum = {
 exports.Prisma.UploadScalarFieldEnum = {
   id: 'id',
   path: 'path',
+  originalName: 'originalName',
+  size: 'size',
   UserId: 'UserId'
 };
 
@@ -253,6 +270,10 @@ exports.Prisma.NullableJsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -263,6 +284,11 @@ exports.Prisma.ProjectOrderByRelevanceFieldEnum = {
   fileUUID: 'fileUUID'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.UserOrderByRelevanceFieldEnum = {
   username: 'username',
   firstName: 'firstName',
@@ -271,6 +297,7 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   userColor: 'userColor',
   picture: 'picture',
   password: 'password',
+  authId: 'authId',
   loginMethod: 'loginMethod'
 };
 
@@ -282,11 +309,6 @@ exports.Prisma.CodeOrderByRelevanceFieldEnum = {
 exports.Prisma.RefreshTokenOrderByRelevanceFieldEnum = {
   code: 'code',
   hmac: 'hmac'
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 
 exports.Prisma.GuideOrderByRelevanceFieldEnum = {
@@ -325,8 +347,13 @@ exports.Prisma.CourseOrderByRelevanceFieldEnum = {
   description: 'description',
   summaryPath: 'summaryPath',
   phone: 'phone',
-  external: 'external',
   email: 'email'
+};
+
+exports.Prisma.InquiryOrderByRelevanceFieldEnum = {
+  message: 'message',
+  firstName: 'firstName',
+  lastName: 'lastName'
 };
 
 exports.Prisma.ReviewOrderByRelevanceFieldEnum = {
@@ -334,7 +361,8 @@ exports.Prisma.ReviewOrderByRelevanceFieldEnum = {
 };
 
 exports.Prisma.UploadOrderByRelevanceFieldEnum = {
-  path: 'path'
+  path: 'path',
+  originalName: 'originalName'
 };
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
@@ -365,6 +393,7 @@ exports.Prisma.ModelName = {
   Problem: 'Problem',
   Solve: 'Solve',
   Course: 'Course',
+  Inquiry: 'Inquiry',
   Review: 'Review',
   Upload: 'Upload'
 };

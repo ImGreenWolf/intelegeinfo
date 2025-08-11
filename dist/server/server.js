@@ -85,6 +85,12 @@ app.use(express_1.default.json({
 }));
 function templateManager(req, res, next) {
 }
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cookie_parser_1.default)());
+app.use('/user', usersManager_1.router);
+app.use('/login', login_js_1.default);
+app.use('/signup', signup_js_1.default);
+app.use('/profile', authMiddleware, profile_js_1.default);
 app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', metrics_1.default);
 app.use('/courses', courses_1.default);
@@ -120,8 +126,6 @@ app.post('/github/onpull', (req, res) => {
     }
 });
 app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
-app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, cookie_parser_1.default)());
 app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
 app.use('/editor/components', (req, res) => {
     try {
@@ -328,10 +332,6 @@ function handle404(req, res, next) {
     else
         res.json('Oops! Page not found.');
 }
-app.use('/login', login_js_1.default);
-app.use('/signup', signup_js_1.default);
-app.use('/profile', authMiddleware, profile_js_1.default);
-app.use('/user', usersManager_1.router);
 //          LOCAL  SERVER  VARIABLES       //
 let compileProcess;
 //                      END                      //  
@@ -2267,7 +2267,7 @@ function sendFile(path, res, req, params) {
     try {
         fs_1.default.readFile(path, (err, file) => {
             if (err || !file)
-                return;
+                throw err;
             return res.contentType('html').send(parseText(file.toString(), req, params));
         });
     }
@@ -2291,7 +2291,7 @@ function parseText(file, req, params) {
             return defaultLang;
         return accLang.split(',').map(param => param.split(';')[0]);
     }()[0];
-    const keyDictionary = params ? { ...translation, ...params } : translation;
+    const keyDictionary = translation;
     for (const matchobj of matches) {
         const match = matchobj[1];
         const key = matchobj[0];
@@ -2320,9 +2320,14 @@ function parseText(file, req, params) {
                 if (obj && obj[key2]) {
                     obj = obj[key2];
                 }
-                else
+                else {
+                    obj = undefined;
                     break;
-            text = text.replaceAll(key, obj);
+                }
+            if (obj)
+                text = text.replaceAll(key, obj);
+            else
+                text = text.replaceAll(key, '');
         }
     }
     return text;

@@ -21,7 +21,6 @@ const compression = require('compression')
 import SharedStateManager from "./sessionStore"
 import { Prisma, Problem } from "../../generated/prisma";
 import prisma from "./dbClient";
-import problemCreator from './problemCreator.js'
 import loginManager from './login.js'
 import signupManager from './signup.js'
 import profileManager from './profile.js'
@@ -60,8 +59,12 @@ function templateManager(req,res,next)
 {
     
 }
-
-
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
+app.use('/user', usersManager)
+app.use('/login', loginManager);
+app.use('/signup', signupManager);
+app.use('/profile', authMiddleware, profileManager)
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', Metrics)
 app.use('/courses', coursesManager)
@@ -98,8 +101,7 @@ app.post('/github/onpull', (req, res) => {
 
 
 app.use('/client/scripts',express.static(path.join('dist', 'public')));
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
+
 app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'public', 'codeEditor.js')))
 app.use('/editor/components', 
     (req, res) => {
@@ -379,14 +381,6 @@ function handle404(req:any, res:any, next:NextFunction)
      else 
       res.json('Oops! Page not found.' );
 }
-
-  
-
-
-app.use('/login', loginManager);
-app.use('/signup', signupManager);
-app.use('/profile', authMiddleware, profileManager)
-app.use('/user', usersManager)
 
 
 
@@ -2854,7 +2848,7 @@ export function sendFile(path: string, res, req, params?)
     try {
         fs.readFile(path, (err, file) => {
             if(err || !file)
-               return
+               throw err
 
             return res.contentType('html').send(parseText(file.toString(), req, params))
         })
@@ -2883,7 +2877,7 @@ export function parseText(file: string, req: any, params?)
             return defaultLang
         return accLang.split(',').map(param => param.split(';')[0])
     }()[0]
-    const keyDictionary = params ? {...translation, ...params} : translation
+    const keyDictionary = translation
     for(const matchobj of matches)
     {
         const match = (matchobj[1] as string)
@@ -2918,8 +2912,15 @@ export function parseText(file: string, req: any, params?)
                      
                 }
                 else 
-                    break;
-            text = text.replaceAll(key, obj)
+                {
+                    obj = undefined;
+                    break
+                }
+
+            if(obj)
+                text = text.replaceAll(key, obj)
+            else 
+                text = text.replaceAll(key, '')
         }
     }
     return text;
