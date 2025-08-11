@@ -91,7 +91,7 @@ ${htmlHead(guide.name, req, guide.description, guide.category)}
             <button type="submit">Submit</button>
         </form>
         <article style="margin: 0;">
-            <content id="preview">
+            <content id="preview" contenteditable="true">
             
             </content>
         </article>
