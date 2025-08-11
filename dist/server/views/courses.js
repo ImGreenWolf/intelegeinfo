@@ -135,22 +135,19 @@ router.get('/by/:username/dashboard', async (req, res) => {
         const id = (0, usersManager_1.getIdFromJWT)(req);
         if (!id)
             throw 'invalid token id';
-        dbClient_1.default.course.findFirst({
+        const course = await dbClient_1.default.course.findFirst({
             where: {
-                userId: id
+                userId: id,
             },
             include: {
                 inquiries: { include: { user: true } },
                 reviews: true,
                 user: true
             }
-        }).then(course => {
-            if (course.userId != id && (0, usersManager_1.getClientJWTValue)((0, usersManager_1.getJWT)(req)).role !== 'ADMIN')
-                throw 'Nu ai permisiunea sa vezi aceasta pagina!';
-            res.contentType('html').send(createCourseDashboardPage(course, req));
-        }).catch(err => {
-            throw err;
         });
+        if (course.userId != id && (0, usersManager_1.getClientJWTValue)((0, usersManager_1.getJWT)(req)).role !== 'ADMIN')
+            throw 'Nu ai permisiunea sa vezi aceasta pagina!';
+        res.contentType('html').send(createCourseDashboardPage(course, req));
     }
     catch (error) {
         res.send(error);
@@ -395,7 +392,7 @@ function createCourseElement(course, className = 'course-element') {
         <span>${course.price} Lei</span>
     </div>
     <button class='action-button'>
-        ${course.phone.slice(0, 6) + 'x'.repeat(course.phone.length - 4)}
+        Vezi Detalii
     </button>
     </div>
 </a>
@@ -599,7 +596,7 @@ function createCourseDashboardPage(course, req) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboardul lui ${course.user.firstName}</title>
-
+    
     <link rel="stylesheet" href="/css/courses-dashboard.css">
         <link rel="stylesheet" href="/css/main.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">

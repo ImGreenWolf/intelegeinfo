@@ -158,10 +158,10 @@ router.get('/by/:username/dashboard', async (req, res) => {
     const id = getIdFromJWT(req)
     if(!id)
         throw 'invalid token id'
-    prisma.course.findFirst({
+    const course = await prisma.course.findFirst({
     where: 
      {
-        userId: id
+        userId: id,
      },
     include:
     {
@@ -169,13 +169,11 @@ router.get('/by/:username/dashboard', async (req, res) => {
         reviews: true,
         user: true
     }
-    }).then(course => {
-        if(course.userId != id && getClientJWTValue(getJWT(req)).role !== 'ADMIN')
-            throw 'Nu ai permisiunea sa vezi aceasta pagina!'
-        res.contentType('html').send(createCourseDashboardPage(course, req))
-    }).catch(err => {
-        throw err
     })
+    if(course.userId != id && getClientJWTValue(getJWT(req)).role !== 'ADMIN')
+        throw 'Nu ai permisiunea sa vezi aceasta pagina!'
+    res.contentType('html').send(createCourseDashboardPage(course, req))
+    
 
 
    } catch (error) {
@@ -472,7 +470,7 @@ return /*html*/`
         <span>${course.price} Lei</span>
     </div>
     <button class='action-button'>
-        ${course.phone.slice(0, 6) + 'x'.repeat(course.phone.length-4)}
+        Vezi Detalii
     </button>
     </div>
 </a>
@@ -690,7 +688,7 @@ return parseText(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboardul lui ${course.user.firstName}</title>
-
+    
     <link rel="stylesheet" href="/css/courses-dashboard.css">
         <link rel="stylesheet" href="/css/main.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
