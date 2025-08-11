@@ -300,7 +300,7 @@ router.get('/callback', async (req:any, res:any) => {
     {
 
       try{
-        const result = await signup.onSignedIn({email: userInfo.email, firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, res, '', req )
+        const result = await signup.onSignedIn({email: userInfo.email, type: 'none', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, res, '', req )
         result.res.send(result.json)
        
       }

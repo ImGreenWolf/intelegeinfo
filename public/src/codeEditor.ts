@@ -4003,7 +4003,11 @@ break;
           if(activeConsole)
             if( activeConsole.compileMessage)
               if(!messageJson.body)
-                  activeConsole.onProcessStart()
+              {
+                onRun()
+                activeConsole.onProcessStart()
+              }
+                  
                 else
                   activeConsole.compileMessage.children[1].innerHTML = messageJson.body
               

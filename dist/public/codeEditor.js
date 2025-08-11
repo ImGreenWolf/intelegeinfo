@@ -3012,8 +3012,10 @@ ws.onmessage = (event) => {
                     // );
                     if (activeConsole)
                         if (activeConsole.compileMessage)
-                            if (!messageJson.body)
+                            if (!messageJson.body) {
+                                onRun();
                                 activeConsole.onProcessStart();
+                            }
                             else
                                 activeConsole.compileMessage.children[1].innerHTML = messageJson.body;
                     document.getElementById('compile-status').innerText = messageJson.body;

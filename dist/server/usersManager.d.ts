@@ -25,6 +25,7 @@ export declare function addProject(id: number, data: any): Promise<{
     activeAt: Date;
     password: string;
     loginMethod: string;
+    occupationType: import("../../generated/prisma").$Enums.OccupationType;
 }>;
 export declare function listAllProjects(userId: any): Promise<any[]>;
 export declare function getClientId(token: string): number;
@@ -46,4 +47,5 @@ export declare function updateActiveAtForUser(userId: number): Promise<false | {
     activeAt: Date;
     password: string;
     loginMethod: string;
+    occupationType: import("../../generated/prisma").$Enums.OccupationType;
 }>;
