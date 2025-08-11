@@ -98,7 +98,11 @@ declare class SessionClient {
     color: any;
     displayName: any;
     canEdit: boolean;
-    constructor(clientId: any, displayName: any, color: any, canEdit: any);
+    sessionIcon: HTMLElement;
+    rtcConnection: IIWebRTC | undefined;
+    constructor(clientId: any, displayName: any, color: any, canEdit: any, userId: number | undefined, isLocal: any);
+    onJoin(): void;
+    onDisconect(): void;
 }
 export declare let client: SessionClient | undefined;
 export declare let clients: Map<UUID, SessionClient>;
@@ -145,7 +149,7 @@ declare class FileElement extends EditorWindowTab {
     getDragText: () => string | undefined;
     openTab(ev: MouseEvent): void;
     addUser(user: User, lastFileName: any): void;
-    removeUser(userId: any): void;
+    removeUser(userId: UUID): void;
     remove(): void;
 }
 export declare function createFileNamePrompt(): void;
@@ -171,6 +175,7 @@ export declare class TokenTooltip extends Tooltip {
     destroy(): void;
 }
 export declare const ws: WebSocket;
+import { IIWebRTC } from "./webrtcdemo.js";
 export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 type FileEditorSession = {
     editor: Ace.EditSession | undefined;

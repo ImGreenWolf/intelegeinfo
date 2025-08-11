@@ -2,7 +2,7 @@ import  Ace, { EditSession }  from "ace-builds";
 import { client, CompileError, compileErrorObjs, createFile, dirtyFile, displayBlankEditor, displayMessagePopup, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, onFileSessionUpdated, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
 import { createNode } from "./components.js";
 declare const ace: typeof Ace;
-
+declare const sha256: any
 export const cursorManagers: Map<string, MultiCursorManager> = new Map()
 
 const preloadTabs = false;
@@ -357,13 +357,15 @@ export class EditorWindow {
             if (!name) console.error("Current file name is invalid");
             if(name)
             dirtyFile(name)
+
+
             ws.send(
                 JSON.stringify({
-                body: code,
                 delta: delta,
                 type: WebSocketMessageType.CodeChange,
                 fileName: name,
                 saveFile: true,
+                checksum: sha256(code)
                 })
             ); // Send code to server on change // TODO Remove code from body.
 

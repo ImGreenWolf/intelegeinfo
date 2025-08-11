@@ -112,7 +112,8 @@ export declare class EditorFile {
     delete(clientObj: ClientObject): void;
     rename(newName: any, clientObj: ClientObject): void;
     openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;
-    changeContent(content: any): void;
+    changeContent(content: any, delta: any): void;
+    private applyDelta;
 }
 import DebugProcess from './editor-modes/ProcessTypes';
 export declare function randomHexColor(): string;

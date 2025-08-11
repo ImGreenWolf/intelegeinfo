@@ -280,11 +280,11 @@ export class EditorWindow {
             if (name)
                 dirtyFile(name);
             ws.send(JSON.stringify({
-                body: code,
                 delta: delta,
                 type: WebSocketMessageType.CodeChange,
                 fileName: name,
                 saveFile: true,
+                checksum: sha256(code)
             })); // Send code to server on change // TODO Remove code from body.
             if (!navigator.onLine)
                 displayMessagePopup('Se pare ca nu esti conectat la internet!');

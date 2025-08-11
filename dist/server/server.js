@@ -50,6 +50,7 @@ const types_2 = require("./types");
 const qrcode = __importStar(require("qrcode"));
 const archiver_1 = __importDefault(require("archiver"));
 exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
+const js_sha256_1 = require("js-sha256");
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -886,17 +887,17 @@ exports.wss.addListener('connection', async (ws, req) => {
                 clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, body: { command: types_3.FileManagementCommands.Open, content: fileContent } })); // Send the list of files to the client
         }
         function clientInfo(thisclientObj, prefix = '') {
-            if (!clientObj)
+            if (!clientObj && !thisclientObj)
                 return;
             if (!thisclientObj)
                 thisclientObj = clientObj;
             if (thisclientObj)
-                return { clientId: thisclientObj.clientId, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName() };
+                return { clientId: thisclientObj.clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName() };
             // JSON.parse(`{"${prefix}clientId": "${thisclientObj.clientId}", "${prefix}displayName": "${thisclientObj.displayName}", "${prefix}color": "${thisclientObj.color}", "${prefix}openFile": "${thisclientObj.openFileName}"}`)
             else if (prefix)
-                return JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`);
+                return JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}accountId: "${thisclientObj.clientData ? thisclientObj.clientData.id : undefined}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`);
             else
-                return { clientId: clientId, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName() };
+                return { clientId: clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName() };
         }
         async function loadSave(fileUUID) {
             try {
@@ -1700,14 +1701,30 @@ bash `.trim().replaceAll('\n', "");
                         // save code to file
                         // if(shouldSave) // TODO replace true with shouldSave 
                         // {
+                        const file = clientObj.getFile(fileName);
+                        if (!file)
+                            return;
+                        const delta = messageJSON.delta;
+                        file.changeContent(messageJSON.body, delta);
+                        const checksum = (0, js_sha256_1.sha256)(file.content);
+                        const checksumFailed = checksum !== messageJSON.checksum;
+                        // replicate changes to others
+                        if (checksumFailed) {
+                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, fileName, body: messageJSON.body, checksum });
+                            console.error('Checksum failed for session id:', sessionId, 'On client:', clientId);
+                        }
+                        replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                            if (clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
+                                thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, delta, fileName, body: checksumFailed ? messageJSON.body : undefined, checksum, msgId: JSON.parse(message.toString()).msgId }));
+                        }, clientObj);
                         shouldSave = false;
                         if (checkSyntaxTimeout)
                             clearTimeout(checkSyntaxTimeout);
                         checkSyntaxTimeout = setTimeout(() => {
                             //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
-                            fs_1.default.writeFile(path_1.default.join(clientFilesPath, fileName), messageJSON.body, (err) => {
+                            fs_1.default.writeFile(file.filePath, file.content, (err) => {
                                 if (err)
-                                    console.log("Failed saving file! " + err);
+                                    console.error("Failed saving file! " + err);
                                 // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
                                 // checkSyntaxTimeout = setTimeout(() => {
                                 if (clientObj.getFile(fileName) && clientObj.getFile(fileName).editorMode)
@@ -1729,12 +1746,7 @@ bash `.trim().replaceAll('\n', "");
                             });
                         }, 200);
                         // }
-                        clientObj.getFile(fileName).changeContent(messageJSON.body);
-                        // replicate changes to others
-                        replicateFunction((thisclientWs, localClientId, thisClientObj) => {
-                            if (clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
-                                thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, delta: messageJSON.delta, fileName, body: messageJSON.body, msgId: JSON.parse(message.toString()).msgId }));
-                        }, clientObj);
+                        // console.log(messageJSON.delta, messageJSON)
                         break;
                     case types_1.WebSocketMessageType.ConsoleTyping:
                         if (!clientObj.permissions.canChat)
