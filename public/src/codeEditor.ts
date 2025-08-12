@@ -2,11 +2,11 @@
 
 import Ace, { edit } from "ace-builds";
 // import { Marker } from "ace-builds-internal/search_highlight";
-import { text } from "body-parser";
+// import { text } from "body-parser";
 // import * as FileManagement from "./FIleManagement";
 
 // import { WebSocketMessageType } from "./types"; // fuck this
-import { WSMessage } from '../../shared/src/types.js'
+// import { WSMessage } from '../../shared/src/types.js'
 import { UUID } from "crypto";
 // import QRCode from 'qrcode'
 // import { WebSocketMessageType } from "../../dist/shared/types";
@@ -896,10 +896,10 @@ ws.onerror = (err) => {
     setTimeout(() => {
      
       if(wsSessionId==undefined)
-        ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, displayName: name}))
+        ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
         setTimeout(() => {
           if(wsSessionId==undefined)
-            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, displayName: name}))
+            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
         }, 3000); 
     }, 500); 
 

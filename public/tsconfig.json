@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
       "composite": true,
-      "module": "es2022",
+      "module": "ES2020",
       "target": "ES2024",
       "outDir": "../dist/public",
       "tsBuildInfoFile": "../dist/public/.tsbuildinfo",

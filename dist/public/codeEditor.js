@@ -665,10 +665,10 @@ export let ws;
         let hoverTooltip = 0;
         setTimeout(() => {
             if (wsSessionId == undefined)
-                ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake, displayName: name }));
+                ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
             setTimeout(() => {
                 if (wsSessionId == undefined)
-                    ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake, displayName: name }));
+                    ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
             }, 3000);
         }, 500);
     });
