@@ -1,6 +1,11 @@
 import OpenAI from "openai";
 import { EditorMode } from "./editor-modes";
 import { EditorFile } from "./types";
+import path from "path";
+import fs from 'fs';
+import { rootDirName } from "./server";
+import { Guide } from "../../generated/prisma";
+const openai = new OpenAI();
 
 export async function transpileCode(client, openFile: EditorFile, TargetEditorMode: typeof EditorMode)
 {
@@ -9,9 +14,9 @@ export async function transpileCode(client, openFile: EditorFile, TargetEditorMo
     if(!original || !target)
         throw 'invalid language name'
 
-    const aiclient = new OpenAI();
+    
 
-    const response = await aiclient.responses.create({
+    const response = await openai.responses.create({
         model: "gpt-4o-mini",
         instructions: `
     You're a coding asistant that transpiles source code from the ${original} language to the ${target} language.
@@ -32,4 +37,25 @@ export async function transpileCode(client, openFile: EditorFile, TargetEditorMo
     
 
     
+}
+
+export async function guideTTS(guide: Guide)
+{
+    return (await textToSpeach(guide.name, guide.content, "You're a profesor teaching students on a website."))
+}
+
+async function textToSpeach(name, text, instructions?) {
+    const fileName = `${name}.mp3`
+    const speechFile = path.join(rootDirName, "server", "users", "uploads", fileName);
+
+    const mp3 = await openai.audio.speech.create({
+    model: "tts-1",
+    voice: "coral",
+    input: text,
+    instructions: instructions,
+    });
+
+    const buffer = Buffer.from(await mp3.arrayBuffer());
+    await fs.promises.writeFile(speechFile, buffer);
+    return {buffer, speechFile, fileName}
 }

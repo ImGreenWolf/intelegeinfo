@@ -5,6 +5,7 @@ import prisma from './dbClient';
 import { authMiddleware, parseText } from './server';
 import { getIdFromJWT, getJWT, getUserData } from './usersManager';
 import { Prisma } from '../../generated/prisma';
+import { guideTTS } from './aiIntegration';
 // import { rootDirName } from './server';
 // import rootDirName from "./server"
 const rootDirName = path.resolve("./")
@@ -366,6 +367,7 @@ router.post('/submit', (req: Request, res: Response) => {
                 res.status(401).send('Please login before publishing.')
                 return 
             }
+            // TODO Replace with upsert
         prisma.guide.update({
             where:
             {
@@ -396,9 +398,9 @@ router.post('/submit', (req: Request, res: Response) => {
                     }
                 }
             }
-        }).then(guide => {
-
-            res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
+        }).then(async guide => {
+            
+            res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <audio src='/user/uploads/${(await guideTTS(guide)).fileName}<article>${content}</article>`);
         }).catch((err) => {
             console.log(err)
             try {
