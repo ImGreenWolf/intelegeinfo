@@ -752,7 +752,7 @@ async function loadLanguages()
                 document.getElementById('language-info-display')!.innerHTML =
                 `
                     <p>${language.description}</p>
-                    <img src="../media/logos/${language.src}" style='max-width:200px'>
+                    <img src="../media/logos/${language.src}" style='max-height:200px'>
                
                 `
             },
