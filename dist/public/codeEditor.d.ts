@@ -34,7 +34,7 @@ export declare class MultiCursorManager {
     addCursor(cursorId: string, position: CursorPosition, color: any): VisualCursor;
     updateCursor(cursorId: string, position: CursorPosition): void;
     removeCursor(cursorId: string): boolean;
-    replicateCursor(color: any, cursorId: string, position: CursorPosition): CursorPosition | VisualCursor | undefined;
+    replicateCursor(color: any, cursorId: string, position: CursorPosition): VisualCursor | CursorPosition | undefined;
 }
 declare class EditorCursor {
     cursor: HTMLDivElement | undefined;
@@ -109,6 +109,7 @@ export declare let clients: Map<UUID, SessionClient>;
 export declare const editorSessions: Map<string, FileEditorSession>;
 export declare const windows: EditorWindow[];
 declare var Tooltip: any;
+export declare const ws: WebSocket;
 type CursorPosition = {
     row: number;
     column: number;
@@ -174,7 +175,6 @@ export declare class TokenTooltip extends Tooltip {
     setPosition(x: any, y: any): void;
     destroy(): void;
 }
-export declare const ws: WebSocket;
 import { IIWebRTC } from "./webrtcdemo.js";
 export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 type FileEditorSession = {

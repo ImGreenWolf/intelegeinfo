@@ -92,7 +92,7 @@ export declare class EditorSession {
     getClientId(ClientObject: ClientObject): UUID;
     getClientObjectById(clientId: UUID): ClientObject | undefined;
     removeClient(clientId: UUID): void;
-    spawnClient(ws: WebSocket, userData?: UserNoPassword): UUID;
+    spawnClient(ws: WebSocket, displayName: string, userData?: UserNoPassword): UUID;
     replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID, clientObj: ClientObject) => void, excludeClientObj?: ClientObject): void;
     getClientFilesPath(): string;
 }

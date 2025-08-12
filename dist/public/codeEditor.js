@@ -624,10 +624,14 @@ for (const param of params) {
         wsParams.set(paramNames[paramIndex], param.toString());
     }
 }
-const name = window.prompt();
-if (name)
-    wsParams.set('name', name);
-const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + "/editor" + wsParams.size ? "?" : "" + wsParams.toString();
+async function startConnection() {
+    const name = await displayInputPopup('Name');
+    if (name)
+        wsParams.set('name', name.value);
+    const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + "/editor" + wsParams.size ? "?" : "" + wsParams.toString();
+    return new WebSocket(WSUrl);
+}
+export const ws = await startConnection();
 // Initialize the manager
 let msgId = 0;
 function parseDebuggerOutput(input, { onNewVariable = (newVar) => { }, onArrayIndexChange = (name, change, changed) => { }, } = {}) {
@@ -2208,7 +2212,6 @@ export class TokenTooltip extends Tooltip {
     }
     ;
 }
-export const ws = new WebSocket(WSUrl);
 ws.addEventListener('open', (ev) => {
     const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
     //writeOutput(sessionId || "No session ID found in URL.");

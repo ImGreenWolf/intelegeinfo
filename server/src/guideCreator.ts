@@ -5,7 +5,6 @@ import prisma from './dbClient';
 import { authMiddleware, parseText } from './server';
 import { getIdFromJWT, getJWT, getUserData } from './usersManager';
 import { Prisma } from '../../generated/prisma';
-import { guideTTS } from './aiIntegration';
 // import { rootDirName } from './server';
 // import rootDirName from "./server"
 const rootDirName = path.resolve("./")
@@ -127,7 +126,7 @@ router.get('/', (req,res) => {
 
 
 router.get('/posts', (req,res) => {
-    getPosts(req, req.query.take ? req.query.take : 5).then(json => res.send(json.guideEntries))})
+    getPosts(req, req.query.take ? parseInt(req.query.take.toString()) : 5).then(json => res.send(json.guideEntries))})
 
 async function getPosts(req: Request, take=10): Promise<{guideEntries: any, err?: string}>
 {
@@ -400,7 +399,7 @@ router.post('/submit', (req: Request, res: Response) => {
             }
         }).then(async guide => {
             
-            res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <audio src='/user/uploads/${(await guideTTS(guide)).fileName}<article>${content}</article>`);
+            res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
         }).catch((err) => {
             console.log(err)
             try {

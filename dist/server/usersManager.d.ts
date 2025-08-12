@@ -20,10 +20,11 @@ export declare function getIdFromJWT(req: any): number;
 export declare function addProject(id: number, data: any): Promise<{
     id: number;
     createdAt: Date;
+    email: string;
     username: string;
+    loginMethod: string;
     firstName: string;
     lastName: string;
-    email: string;
     emailValidated: boolean;
     userColor: string;
     picture: string;
@@ -31,7 +32,6 @@ export declare function addProject(id: number, data: any): Promise<{
     activeAt: Date;
     password: string | null;
     authId: string | null;
-    loginMethod: string;
     occupationType: import("../../generated/prisma").$Enums.OccupationType;
 }>;
 export declare function listAllProjects(userId: any): Promise<any[]>;
@@ -48,10 +48,11 @@ export declare function activeAtComponent(): {
 export declare function updateActiveAtForUser(userId: number): Promise<false | {
     id: number;
     createdAt: Date;
+    email: string;
     username: string;
+    loginMethod: string;
     firstName: string;
     lastName: string;
-    email: string;
     emailValidated: boolean;
     userColor: string;
     picture: string;
@@ -59,6 +60,5 @@ export declare function updateActiveAtForUser(userId: number): Promise<false | {
     activeAt: Date;
     password: string | null;
     authId: string | null;
-    loginMethod: string;
     occupationType: import("../../generated/prisma").$Enums.OccupationType;
 }>;

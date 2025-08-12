@@ -360,10 +360,10 @@ Tralalero Tralala`.split('\n');
             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ConsoleTyping, displayName: this.getClientObjectById(clientId)?.displayName, clientId: clientId, status: 'end' }));
         }, this.getClientObjectById(clientId));
     }
-    spawnClient(ws, userData) {
+    spawnClient(ws, displayName, userData) {
         let newClient;
         if (userData != undefined)
-            newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
+            newClient = new ClientObject(this.sessionId, this, ws, userData.username ? userData.username : displayName, userData);
         else
             newClient = new ClientObject(this.sessionId, this, ws);
         if (this.clientsMap.size == 0) {

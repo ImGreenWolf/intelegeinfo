@@ -8,7 +8,6 @@ const path_1 = __importDefault(require("path"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const server_1 = require("./server");
 const usersManager_1 = require("./usersManager");
-const aiIntegration_1 = require("./aiIntegration");
 // import { rootDirName } from './server';
 // import rootDirName from "./server"
 const rootDirName = path_1.default.resolve("./");
@@ -117,7 +116,7 @@ router.get('/', (req, res) => {
     getPosts(req).then(json => postsRequest(json.guideEntries, req, res, json.err));
 });
 router.get('/posts', (req, res) => {
-    getPosts(req, req.query.take ? req.query.take : 5).then(json => res.send(json.guideEntries));
+    getPosts(req, req.query.take ? parseInt(req.query.take.toString()) : 5).then(json => res.send(json.guideEntries));
 });
 async function getPosts(req, take = 10) {
     return new Promise((resolve, reject) => {
@@ -359,7 +358,7 @@ router.post('/submit', (req, res) => {
             }
         }
     }).then(async (guide) => {
-        res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <audio src='/user/uploads/${(await (0, aiIntegration_1.guideTTS)(guide)).fileName}<article>${content}</article>`);
+        res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
     }).catch((err) => {
         console.log(err);
         try {
