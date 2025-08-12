@@ -363,9 +363,9 @@ Tralalero Tralala`.split('\n');
     spawnClient(ws, displayName, userData) {
         let newClient;
         if (userData != undefined)
-            newClient = new ClientObject(this.sessionId, this, ws, userData.username ? userData.username : displayName, userData);
+            newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
         else
-            newClient = new ClientObject(this.sessionId, this, ws);
+            newClient = new ClientObject(this.sessionId, this, ws, displayName);
         if (this.clientsMap.size == 0) {
             this.hostClient = newClient;
             newClient.editorPermission = EditorPermission.OnlyHost;

@@ -109,7 +109,6 @@ export declare let clients: Map<UUID, SessionClient>;
 export declare const editorSessions: Map<string, FileEditorSession>;
 export declare const windows: EditorWindow[];
 declare var Tooltip: any;
-export declare let ws: WebSocket;
 type CursorPosition = {
     row: number;
     column: number;
@@ -175,6 +174,7 @@ export declare class TokenTooltip extends Tooltip {
     setPosition(x: any, y: any): void;
     destroy(): void;
 }
+export declare let ws: any;
 import { IIWebRTC } from "./webrtcdemo.js";
 export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 type FileEditorSession = {

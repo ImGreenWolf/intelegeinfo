@@ -2,11 +2,11 @@
 
 import Ace, { edit } from "ace-builds";
 // import { Marker } from "ace-builds-internal/search_highlight";
-// import { text } from "body-parser";
+import { text } from "body-parser";
 // import * as FileManagement from "./FIleManagement";
 
 // import { WebSocketMessageType } from "./types"; // fuck this
-// import { WSMessage } from '../../shared/src/types.js'
+import { WSMessage } from '../../shared/src/types.js'
 import { UUID } from "crypto";
 // import QRCode from 'qrcode'
 // import { WebSocketMessageType } from "../../dist/shared/types";
@@ -826,89 +826,6 @@ export const windows = [codeWindow, chatWindow]
 var event = ace.require("ace/lib/event");
 var Range = ace.require("ace/range").Range;
 var Tooltip = ace.require("ace/tooltip").Tooltip;
-
-const sessionId = new URLSearchParams(window.location.search).get("session") 
-const saveId = new URLSearchParams(window.location.search).get("save");
-const params: (boolean | string | undefined | null)[] = [sessionId, saveId, inIframe]
-const paramNames: (string)[] = ['session', 'save', 'embeded']
-const wsParams = new URLSearchParams()
-let paramsURL = ''
-for(const param of params)
-{
-  const paramIndex = params.indexOf(param)
-  if(typeof param == 'string' || typeof param == 'boolean' && param)
-  {
-    wsParams.set(paramNames[paramIndex], param.toString())
-  }
-    
-    
-}
-async function startConnection()
-{
-   const name = await displayInputPopup('Name')
-    if(name)
-    wsParams.set('name', name.value!)
-
-    const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + wsParams.size ? "?" : "" + wsParams.toString()
-
-     return new WebSocket(WSUrl);
-}
-export let ws: WebSocket;
-// Immediately-invoked async function to initialize ws
-(async () => {
-  ws = await startConnection();
-  // Place any code that depends on ws being initialized here, if needed.
-
-  ws.addEventListener('close', (ev) => {
-  const serviceRestart = ev.code == 1006;
-  console.warn(ev.code, ev.reason)
-  const socketStopped = document.createElement('div')
-  socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error')
-  const socketText = document.createElement('p')
-  socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
-  socketStopped.appendChild(socketText)
-  document.getElementById('code-window-container')?.appendChild(socketStopped)
-  // if(serviceRestart)
-  //   setTimeout(() => {
-  //     window.location.reload()
-  //   }, 2000);
-})
-
-
-
-ws.onerror = (err) => {
-  displayMessagePopup("Sorry we encountered an error while connecting to the server...")
-  console.error(err)
-}
-
- ws.addEventListener('open', (ev) => {
-    const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
-    //writeOutput(sessionId || "No session ID found in URL.");
-
-    window.onbeforeunload = (ev => {
-      if(!inIframe)
-      if(modifiedFile)
-        ev.preventDefault()
-    })
-
-    let hoverTooltip = 0;
-
-    setTimeout(() => {
-     
-      if(wsSessionId==undefined)
-        ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-        setTimeout(() => {
-          if(wsSessionId==undefined)
-            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
-        }, 3000); 
-    }, 500); 
-
-    
-
-});
-
-ws.onmessage = onMessage
-})();
 // Initialize the manager
 
 
@@ -2958,19 +2875,106 @@ export class TokenTooltip extends Tooltip {
 
 }
 
+  // export const ws = new WebSocket(WSUrl);
+
+  export let ws; 
+  (async() => {
+
+    
+    const sessionId = new URLSearchParams(window.location.search).get("session") 
+    const saveId = new URLSearchParams(window.location.search).get("save");
+    // const params: (boolean | string | undefined | null)[] = [sessionId, saveId, inIframe]
+    // const paramNames: (boolean | string | undefined | null)[] = ['session', 'save', 'embeded']
+    // let paramsURL = ''
+    // for(const param of params)
+    // {
+    //   const paramIndex = params.indexOf(param)
+    //   if(typeof param == 'string' || typeof param == 'boolean' && param)
+    //   {
+    //     if(paramIndex!=0)
+    //       paramsURL+="&"
+    //     paramsURL += `${paramNames[paramIndex]}=${param}`
+    //   }
+        
+        
+    // }
+    const params = new URLSearchParams()
+    if(sessionId)
+    {
+            params.set('session', sessionId.toString())
+            const displayName = await displayInputPopup('ssk')
+            if(displayName.ok && displayName.value)
+            params.set('displayName', displayName.value)
+    }
+
+    if(saveId)
+     params.set('save', saveId.toString())
+    params.set('embeded', inIframe.toString())
+    const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + params.size ? "?" : "" + params.toString()
 
 
 
- 
+    
 
+    ws = new WebSocket(WSUrl);
+
+      ws.addEventListener('open', (ev) => {
+          const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
+          //writeOutput(sessionId || "No session ID found in URL.");
+
+          window.onbeforeunload = (ev => {
+            if(!inIframe)
+            if(modifiedFile)
+              ev.preventDefault()
+          })
+
+          let hoverTooltip = 0;
+
+          setTimeout(() => {
+          
+            if(wsSessionId==undefined)
+              ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, displayName: name}))
+              setTimeout(() => {
+                if(wsSessionId==undefined)
+                  ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, displayName: name}))
+              }, 3000); 
+          }, 500); 
+
+          
+
+      });
+
+
+      ws.addEventListener('close', (ev) => {
+        const serviceRestart = ev.code == 1006;
+        console.warn(ev.code, ev.reason)
+        const socketStopped = document.createElement('div')
+        socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error')
+        const socketText = document.createElement('p')
+        socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
+        socketStopped.appendChild(socketText)
+        document.getElementById('code-window-container')?.appendChild(socketStopped)
+        // if(serviceRestart)
+        //   setTimeout(() => {
+        //     window.location.reload()
+        //   }, 2000);
+      })
+
+
+
+      ws.onerror = (err) => {
+        displayMessagePopup("Sorry we encountered an error while connecting to the server...")
+        console.error(err)
+      }
+
+      ws.onmessage = onMessage
+  })()
 
 
 
 
 
 import { IIWebRTC } from "./webrtcdemo.js";
-import { R } from "ace-builds-internal/lib/bidiutil";
-import { URLSearchParams } from "url";
 
 
 
@@ -3104,7 +3108,7 @@ export const compileErrorObjs: Map<number,CompileError> = new Map();
 
 //    END   //
 
-function onMessage(event) {
+ function onMessage (event) {
   const parsedData = JSON.parse(event.data);
   const type: WebSocketMessageType = parsedData.type
   let messageJson = parsedData as WebSocketMessage

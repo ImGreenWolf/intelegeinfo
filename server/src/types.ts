@@ -407,8 +407,8 @@ Tralalero Tralala`.split('\n')
     public spawnClient(ws: WebSocket,displayName: string, userData?: UserNoPassword): UUID
     {
         let newClient: ClientObject;
-        if(userData != undefined) newClient = new ClientObject(this.sessionId, this, ws, userData.username ? userData.username : displayName, userData);
-            else newClient = new ClientObject(this.sessionId, this, ws);
+        if(userData != undefined) newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
+            else newClient = new ClientObject(this.sessionId, this, ws, displayName);
         if(this.clientsMap.size == 0)
         {
             this.hostClient = newClient

@@ -725,7 +725,7 @@ function endConnectionPromise()
     function customData(req: http.IncomingMessage)
     {
         const s =new URLSearchParams(req.url)
-        return s.get('name')
+        return s.get('displayName')
     }
 
 

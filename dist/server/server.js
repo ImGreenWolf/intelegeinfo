@@ -581,7 +581,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         function customData(req) {
             const s = new URLSearchParams(req.url);
-            return s.get('name');
+            return s.get('displayName');
         }
         function handshake(req) {
             const urlParams = new URL("https://intelegeinfo.ro/editor" + req.url).searchParams;
