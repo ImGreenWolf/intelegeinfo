@@ -234,7 +234,7 @@ footer
     grid-template-rows: 65vh 400px;
     // justify-content: center;
     justify-items: center;
-
+    gap: 2em;
     /* gap: 1s00px; */
 
 }
@@ -696,6 +696,8 @@ a.button
     box-shadow: 0 10px 50px 50px color.adjust($color: $hero-shadow, $alpha: -0.3);
     transition-duration: 0.3s;
     opacity: 1;
+    top: 50px;
+    box-sizing: border-box;
     &:has(#display-editor:not(.loaded))
     {
         opacity: 0;

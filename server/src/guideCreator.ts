@@ -293,7 +293,7 @@ async function postsRequest(guideEntries,req,res, error?)
             <h5>Cauta</h5>
             <input type="text" id="search-input">
             <h5>Filtreaza</h5>
-            <ul class="tags">${tags ? tags.map(tag => `<li>${hasPermission ? `<a href="guides/tags/delete/${encodeURI(tag.name)}">-</a>` : ''}<p>${tag.name}</p></li>`).join('\n') : ''}</ul>
+            <ul class="tags">${tags ? tags.map(tag => `<li>${hasPermission ? `<a href="guides/tags/delete/${encodeURI(tag.name)}">-</a>` : ''}<span>${tag.name}</span></li>`).join('\n') : ''}</ul>
         </div></div>
 
         <script>
@@ -335,7 +335,7 @@ async function postsRequest(guideEntries,req,res, error?)
         for(const tag of document.getElementsByClassName('tags')[0].children)
         {
             tag.onclick = (ev) => {
-                const text = tag.querySelect('p').innerText
+                const text = tag.querySelector('p').innerText
                 if(params.has("tags", text))
                     params.delete("tags")
                 else
