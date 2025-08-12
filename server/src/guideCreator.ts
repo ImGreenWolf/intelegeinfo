@@ -126,9 +126,9 @@ router.get('/', (req,res) => {
 
 
 router.get('/posts', (req,res) => {
-    getPosts(req).then(json => res.send(json.guideEntries))})
+    getPosts(req, req.query.take ? req.query.take : 5).then(json => res.send(json.guideEntries))})
 
-async function getPosts(req: Request): Promise<{guideEntries: any, err?: string}>
+async function getPosts(req: Request, take=10): Promise<{guideEntries: any, err?: string}>
 {
     return new Promise((resolve, reject) => {
        
@@ -173,7 +173,7 @@ async function getPosts(req: Request): Promise<{guideEntries: any, err?: string}
         `
         :
         prisma.guide.findMany({
-            take: 10,
+            take,
             orderBy: {
                 visits: 'desc',
             },
