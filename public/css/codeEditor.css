@@ -2140,6 +2140,8 @@ form#codeForm {
   word-wrap: nowrap;
   contain: paint;
   text-align: right;
+  pointer-events: none;
+  text-overflow: clip;
 }
 #sessionInfo-container > div .tooltip-clientName::before {
   content: "";
