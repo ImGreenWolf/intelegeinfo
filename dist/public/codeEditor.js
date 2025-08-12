@@ -616,16 +616,18 @@ const sessionId = new URLSearchParams(window.location.search).get("session");
 const saveId = new URLSearchParams(window.location.search).get("save");
 const params = [sessionId, saveId, inIframe];
 const paramNames = ['session', 'save', 'embeded'];
+const wsParams = new URLSearchParams();
 let paramsURL = '';
 for (const param of params) {
     const paramIndex = params.indexOf(param);
     if (typeof param == 'string' || typeof param == 'boolean' && param) {
-        if (paramIndex != 0)
-            paramsURL += "&";
-        paramsURL += `${paramNames[paramIndex]}=${param}`;
+        wsParams.set(paramNames[paramIndex], param.toString());
     }
 }
-const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + "/editor" + (params.find(val => val != undefined) && params.length != 0 ? "?" : "") + paramsURL;
+const name = window.prompt();
+if (name)
+    wsParams.set('name', name);
+const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + "/editor" + wsParams.size ? "?" : "" + wsParams.toString();
 // Initialize the manager
 let msgId = 0;
 function parseDebuggerOutput(input, { onNewVariable = (newVar) => { }, onArrayIndexChange = (name, change, changed) => { }, } = {}) {
@@ -2218,10 +2220,10 @@ ws.addEventListener('open', (ev) => {
     let hoverTooltip = 0;
     setTimeout(() => {
         if (wsSessionId == undefined)
-            ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+            ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake, displayName: name }));
         setTimeout(() => {
             if (wsSessionId == undefined)
-                ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake }));
+                ws.send(JSON.stringify({ type: WebSocketMessageType.Handshake, displayName: name }));
         }, 3000);
     }, 500);
 });
@@ -2244,6 +2246,7 @@ ws.onerror = (err) => {
     console.error(err);
 };
 import { IIWebRTC } from "./webrtcdemo.js";
+import { URLSearchParams } from "url";
 export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;

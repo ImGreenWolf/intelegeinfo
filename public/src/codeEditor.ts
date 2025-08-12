@@ -830,22 +830,24 @@ var Tooltip = ace.require("ace/tooltip").Tooltip;
 const sessionId = new URLSearchParams(window.location.search).get("session") 
 const saveId = new URLSearchParams(window.location.search).get("save");
 const params: (boolean | string | undefined | null)[] = [sessionId, saveId, inIframe]
-const paramNames: (boolean | string | undefined | null)[] = ['session', 'save', 'embeded']
+const paramNames: (string)[] = ['session', 'save', 'embeded']
+const wsParams = new URLSearchParams()
 let paramsURL = ''
 for(const param of params)
 {
   const paramIndex = params.indexOf(param)
   if(typeof param == 'string' || typeof param == 'boolean' && param)
   {
-    if(paramIndex!=0)
-      paramsURL+="&"
-    paramsURL += `${paramNames[paramIndex]}=${param}`
+    wsParams.set(paramNames[paramIndex], param.toString())
   }
     
     
 }
+ const name = window.prompt()
+ if(name)
+wsParams.set('name', name)
 
-const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + (params.find(val => val!=undefined) && params.length !=0 ? "?" : "") + paramsURL
+const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + wsParams.size ? "?" : "" + wsParams.toString()
 // Initialize the manager
 
 
@@ -2911,11 +2913,12 @@ export class TokenTooltip extends Tooltip {
     let hoverTooltip = 0;
 
     setTimeout(() => {
+     
       if(wsSessionId==undefined)
-        ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+        ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, displayName: name}))
         setTimeout(() => {
           if(wsSessionId==undefined)
-            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake}))
+            ws.send(JSON.stringify({type: WebSocketMessageType.Handshake, displayName: name}))
         }, 3000); 
     }, 500); 
 
@@ -2950,6 +2953,7 @@ ws.onerror = (err) => {
 
 import { IIWebRTC } from "./webrtcdemo.js";
 import { R } from "ace-builds-internal/lib/bidiutil";
+import { URLSearchParams } from "url";
 
 
 
