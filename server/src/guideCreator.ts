@@ -293,7 +293,7 @@ async function postsRequest(guideEntries,req,res, error?)
             <h5>Cauta</h5>
             <input type="text" id="search-input">
             <h5>Filtreaza</h5>
-            <ul class="tags">${tags ? tags.map(tag => `<li>${hasPermission ? `<a href="guides/tags/delete/${encodeURI(tag.name)}">-</a>` : ''}${tag.name}</li>`).join('\n') : ''}</ul>
+            <ul class="tags">${tags ? tags.map(tag => `<li>${hasPermission ? `<a href="guides/tags/delete/${encodeURI(tag.name)}">-</a>` : ''}<p>${tag.name}</p></li>`).join('\n') : ''}</ul>
         </div></div>
 
         <script>
@@ -335,7 +335,7 @@ async function postsRequest(guideEntries,req,res, error?)
         for(const tag of document.getElementsByClassName('tags')[0].children)
         {
             tag.onclick = (ev) => {
-                const text = ev.target.innerText
+                const text = tag.querySelect('p').innerText
                 if(params.has("tags", text))
                     params.delete("tags")
                 else
@@ -556,7 +556,6 @@ router.get('/post/:name', (req: Request, res: Response) => {
                     // showGutter: false,
                     mode: "ace/mode/c_cpp",
                     minLines: 3,
-                    maxLines: 15,
                     theme: "ace/theme/editor-theme"
                 });
                 editor.container.style.pointerEvents="none"
