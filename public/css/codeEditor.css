@@ -2098,6 +2098,21 @@ form#codeForm {
 #sessionInfo-container:not(:has(:nth-child(1))) {
   display: none;
 }
+#sessionInfo-container img {
+  border: 1px ridge rgba(167, 167, 167, 0.418);
+  background-color: var(--userColor);
+  padding: 1px;
+  aspect-ratio: 1;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 50%;
+  transition-duration: 0.6s;
+  transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  box-shadow: 1px 0px 5px 1px transparent;
+  bottom: 0;
+  position: relative;
+  user-select: none;
+}
 #sessionInfo-container > div {
   box-sizing: border-box;
   transition-duration: 0.4s;
@@ -2141,16 +2156,6 @@ form#codeForm {
 #sessionInfo-container > div:where(:not(:hover), .open) .tooltip-clientName {
   opacity: 0;
 }
-#sessionInfo-container > div.open {
-  width: 60px;
-  height: 60px;
-}
-#sessionInfo-container > div.open img {
-  bottom: -50px;
-  left: -20px;
-  z-index: 2;
-  transition-duration: 0.3s !important;
-}
 #sessionInfo-container > div .session-client-menu {
   height: 140px;
   min-width: 170px;
@@ -2189,20 +2194,16 @@ form#codeForm {
   transition-duration: 0.3s;
   transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 0.6);
 }
-#sessionInfo-container img {
-  border: 1px ridge rgba(167, 167, 167, 0.418);
-  background-color: var(--userColor);
-  padding: 1px;
-  aspect-ratio: 1;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 50%;
-  transition-duration: 0.6s;
-  transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-  box-shadow: 1px 0px 5px 1px transparent;
-  bottom: 0;
-  position: relative;
-  user-select: none;
+#sessionInfo-container > div.open {
+  width: 60px;
+  height: 60px;
+  transition-duration: 0.2s;
+}
+#sessionInfo-container > div.open img {
+  bottom: -50px;
+  left: -20px;
+  z-index: 2;
+  transition-duration: 0.3s;
 }
 #sessionInfo-container:has(:nth-child(5)):not(:hover) > div {
   width: 7.5px;

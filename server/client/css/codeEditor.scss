@@ -2481,6 +2481,22 @@ form#codeForm {
     &:not(:has(:nth-child(1))) {
         display: none;
     }
+    img {
+        border: 1px ridge rgba(167, 167, 167, 0.418);
+        background-color: var(--userColor);
+        padding: 1px;
+        // height: 100%;
+        aspect-ratio: 1;
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 50%;
+        transition-duration: 0.6s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);   //cubic-bezier(0.215, 0.610, 0.355, 0.6);
+         box-shadow: 1px 0px 5px 1px transparent;
+         bottom: 0;
+         position: relative;
+         user-select: none;
+    }
 
     &>div {
         box-sizing: border-box;
@@ -2529,19 +2545,7 @@ form#codeForm {
         {
             opacity: 0;
         }
-       &.open 
-       {
-            width: 60px;
-            height: 60px;
-            img {
-                bottom: -50px;
-                left: -20px;
-                z-index: 2;
-                transition-duration: 0.3s !important;
-                // transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            
-       }
+       
        .session-client-menu
        {
             height: 140px;
@@ -2588,25 +2592,25 @@ form#codeForm {
             transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 0.6);
        }
 
-        
+        &.open 
+        {
+            width: 60px;
+            height: 60px;
+            transition-duration: 0.2s;
+            // transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+            img {
+                bottom: -50px;
+                left: -20px;
+                z-index: 2;
+                transition-duration: 0.3s;
+                // transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            
+        }
     }
     
-    img {
-        border: 1px ridge rgba(167, 167, 167, 0.418);
-        background-color: var(--userColor);
-        padding: 1px;
-        // height: 100%;
-        aspect-ratio: 1;
-        width: 100%;
-        box-sizing: border-box;
-        border-radius: 50%;
-        transition-duration: 0.6s;
-        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);   //cubic-bezier(0.215, 0.610, 0.355, 0.6);
-         box-shadow: 1px 0px 5px 1px transparent;
-         bottom: 0;
-         position: relative;
-         user-select: none;
-    }
+    
+    
 
     &:has(:nth-child(5)):not(:hover)>div
     {
@@ -2622,4 +2626,6 @@ form#codeForm {
         }
        
     }
+
+    
 }
