@@ -8,8 +8,9 @@ class CppMode extends EditorMode {
 
     static name = 'C++'
     static logoSrc: string = 'c++-logo.png'
-    static description: string = 'nothing yet'
-
+    static description: string = `Limbaj rapid și puternic, folosit la jocuri, sisteme și aplicații complexe.
+Avantaje: Viteză mare, control total, folosit în industrie.`
+    static color: string = '#659AD2'
 
     static extension: string[] = ['cpp', 'c++'];
     static dockerSafeTag: string = 'cpp'

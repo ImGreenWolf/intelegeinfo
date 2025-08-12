@@ -42,6 +42,8 @@ export function createNode(tag, options) {
             elem.onclick = options.onclick;
         if (options.onchange)
             elem.onchange = options.onchange;
+        if (options.onhover)
+            elem.onmouseover = options.onhover;
     }
     return elem;
 }

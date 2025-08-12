@@ -10,7 +10,9 @@ const ProcessTypes_1 = __importDefault(require("./ProcessTypes"));
 class javascript extends BaseEditorMode_1.default {
     static name = 'JS';
     static logoSrc = 'js-logo.png';
-    static description = 'nothing yet';
+    static description = `Limbajul web-ului, face site-urile interactive și dinamice.
+Avantaje: Rulează în browser și pe server, multe framework-uri.`;
+    static color = '#F0DB4F';
     static extension = ['js'];
     static dockerSafeTag = 'js';
     static defaultText = `//    Compilator C++ online | intelegeinfo.ro

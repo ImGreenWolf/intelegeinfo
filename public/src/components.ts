@@ -39,7 +39,7 @@ export function createNode
 <K extends keyof HTMLElementTagNameMap>
 (tag: K, options?: {innerText?: string, css?: string, className?: string, id?: string, html?: Node[],
  htmlSting?: string, attributes?: ({name: string, value: string}|undefined)[], onclick?: (ev) => void,
-onchange?: (ev) => void}): HTMLElementTagNameMap[K]
+onchange?: (ev) => void, onhover?: (ev) => void}): HTMLElementTagNameMap[K]
     {  
         const elem = document.createElement(tag)
         if(options)
@@ -65,6 +65,8 @@ onchange?: (ev) => void}): HTMLElementTagNameMap[K]
                 elem.onclick = options.onclick
             if(options.onchange)
                 elem.onchange = options.onchange
+            if(options.onhover)
+                elem.onmouseover = options.onhover
         }       
         
 

@@ -5,6 +5,7 @@ declare abstract class EditorMode {
     static name: string;
     static logoSrc: string;
     static description: string;
+    static color: string;
     static versions: any;
     static dockerFile: string;
     static dockerSafeTag: string;

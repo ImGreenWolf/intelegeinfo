@@ -9,8 +9,9 @@ class javascript extends EditorMode {
 
     static name = 'JS'
     static logoSrc: string = 'js-logo.png'
-    static description: string = 'nothing yet'
-
+    static description: string = `Limbajul web-ului, face site-urile interactive și dinamice.
+Avantaje: Rulează în browser și pe server, multe framework-uri.`
+    static color: string = '#F0DB4F'
 
     static extension: string[] = ['js'];
     static dockerSafeTag: string = 'js'

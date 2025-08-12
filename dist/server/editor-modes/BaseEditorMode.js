@@ -5,6 +5,7 @@ class EditorMode {
     static name;
     static logoSrc;
     static description;
+    static color;
     static versions;
     static dockerFile;
     static dockerSafeTag;

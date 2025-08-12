@@ -734,11 +734,11 @@ async function loadLanguages()
         return;
 
     const res = (await fetch('/editor/languages'))
-    const languages: {name, src,ext?, description?, versions?}[] = await res.json()
+    const languages: {name: string, src: string,ext?: string, description?: string, versions?, color?: string}[] = await res.json()
     
     let langaugeElements: HTMLElement[] = [];
     for(const language of languages)
-        langaugeElements.push(createNode('button', 
+        langaugeElements.push(createNode('div',  {className: 'language-button-wrapper', css: '--language-color: '+language.color, html: [createNode('button', 
         {   html: 
             [
                 createNode('div', { css: "background-image: url(../media/logos/"+language.src+");",
@@ -748,26 +748,39 @@ async function loadLanguages()
                         {name: 'aria-label', value: `Create ${language.name} project`}]}),
                 createNode('p', {innerText: language.name})
             ],
+            onhover: () => {
+                document.getElementById('language-info-display')!.innerHTML =
+                `
+                    <p>${language.description}</p>
+                    <img src="../media/logos/${language.src}" style='max-width:200px'>
+               
+                `
+            },
             attributes: [
                 // {name: 'tabindex',value: (i++).toString()},
                 language.ext ? {name: 'onclick', value: `window.editor.createFile('main.${language.ext}'); `} : undefined,
                 !language.ext ? {name: "disabled", value:  ''} : undefined
                 ],
                 className: 'custom-button'
-        }))
+        })
+    ]})
+    )
     for(let i=0;i<langaugeElements.length;i++)
-    {
         languageCarousel.replaceChild( langaugeElements[i],languageCarousel.children[i])  
-        languageCarousel.children[i].animate([
-        { opacity:"0%", transform: "translateY(-50%)"},
-        { opacity: "100%",  transform: "translateY(0%)"},
-      ],
-      {
-        duration: Math.random()*400 + 100,
-        delay: Math.random()*20,
-        // easing: "ease-out"
-      })
-    }
+
+    // for(let i=0;i<langaugeElements.length;i++)
+    // {
+    //     languageCarousel.replaceChild( langaugeElements[i],languageCarousel.children[i])  
+    //     languageCarousel.children[i].animate([
+    //     { opacity:"0%", transform: "translateY(-50%)"},
+    //     { opacity: "100%",  transform: "translateY(0%)"},
+    //   ],
+    //   {
+    //     duration: Math.random()*400 + 100,
+    //     delay: Math.random()*20,
+    //     // easing: "ease-out"
+    //   })
+    // }
        
 }
 export async function showDefaultScreen()
@@ -788,7 +801,7 @@ export async function showDefaultScreen()
     //     {name: 'node.js', src: 'node.js-logo.webp',}// ext: 'js'},
     //     ]
     let langaugeElements: HTMLElement[] = [];
-    for(let i=0; i<=9;i++)
+    for(let i=1; i<=8;i++)
         langaugeElements.push(createNode('div', 
         {   html: 
             [
@@ -810,7 +823,7 @@ export async function showDefaultScreen()
         ]}),
         
         languageCarousel,
-        createNode('div', {className: 'language-info'})
+        createNode('div', {className: 'language-info', id: 'language-info-display'})
     ]})
 
 
@@ -833,18 +846,7 @@ export async function showDefaultScreen()
     // }
 
     // // updateCarousel(undefined, 0)
-        for(const elem of languageCarousel.children)
-        elem.animate([
-        { opacity:"0%", transform: "translateY(-50%)"},
-        { opacity: "75%",  transform: "translateY(0%)"},
-      ],
-      {
-        duration: 200,
-        delay: Math.random()*200 + 50,
-        easing: "ease-out",
-        fill: "both"
-      })
-
+        
 
     // container.onpointerup = stopHolding
     // container.onpointercancel = stopHolding
@@ -940,8 +942,20 @@ export async function showDefaultScreen()
     window.addTab(tab)
     window.setActiveFile(tab)
     tab.openTab(undefined)
-    setTimeout(() => {
-        loadLanguages()
+    setTimeout(async () => {
+        await loadLanguages()
+    //     for(const elem of languageCarousel.children)
+    //     elem.animate([
+    //     { opacity:"0%", transform: "translateY(-50%)"},
+    //     { opacity: "75%",  transform: "translateY(0%)"},
+    //   ],
+    //   {
+    //     duration: 200,
+    //     delay: Math.random()*200 + 50,
+    //     easing: "ease-out",
+    //     fill: "both"
+    //   })
+
     }, 10);
     
 }

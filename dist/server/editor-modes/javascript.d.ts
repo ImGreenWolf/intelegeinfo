@@ -7,6 +7,7 @@ declare class javascript extends EditorMode {
     static name: string;
     static logoSrc: string;
     static description: string;
+    static color: string;
     static extension: string[];
     static dockerSafeTag: string;
     static defaultText: string;

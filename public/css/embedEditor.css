@@ -1878,7 +1878,6 @@ form label {
 
 mini-dock {
   position: relative;
-  top: 5px;
   display: flex;
   align-items: center;
   justify-content: start;
@@ -1899,6 +1898,7 @@ mini-dock a, mini-dock button {
   box-sizing: content-box;
   outline: 1px solid var(--outline);
   color: white;
+  margin: auto 0;
 }
 mini-dock a:not(:hover), mini-dock button:not(:hover) {
   background-color: hsla(0, 104.0816326531%, 0.9607843137%, 0.25);
@@ -1954,7 +1954,7 @@ mini-dock #joinSession {
   left: 0;
   right: 0;
   grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   padding: 2em;
   gap: 1em;
   box-shadow: inset 5px 5px 35px -30px rgb(107, 107, 107);
@@ -1964,15 +1964,33 @@ mini-dock #joinSession {
   font-family: Teachers, Poppins, Cambria;
 }
 .default-screen .language-info {
-  grid-column: 2/2;
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 1em;
+  text-align: start;
+}
+.default-screen .language-button-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2px;
+  background: var(--language-color);
+  display: flex;
+  border-radius: 50px;
+}
+.default-screen .language-button-wrapper > * {
+  width: 100%;
+  box-sizing: border-box;
 }
 .default-screen .language-carousel {
   display: grid;
   max-width: 100%;
+  grid-column: 1/-1;
   padding: 1em 0;
-  grid-column: span 2;
-  grid-row: 2;
-  height: 50px;
+  align-self: flex-end;
+  height: 100%;
   justify-content: space-around;
   grid-template-columns: repeat(4, 1fr);
   gap: 1em 1.5em;
@@ -1980,11 +1998,12 @@ mini-dock #joinSession {
   align-items: center;
   align-content: center;
   max-height: 100%;
-  max-height: 350px;
+  max-height: 200px;
   width: 100%;
   border-top: 2px solid gray;
   align-content: stretch;
   justify-self: end;
+  align-self: flex-end;
 }
 .default-screen .language-carousel .custom-button {
   user-select: none;
@@ -1992,18 +2011,18 @@ mini-dock #joinSession {
   gap: 1em;
   padding: 1em 1.5em;
   border: 2px solid rgb(36, 36, 36);
-  border-radius: 50px;
+  border-radius: inherit;
   font-family: Poppins;
   height: 25px;
   align-items: center;
+  border-radius: 50px;
   text-align: center;
   justify-content: center;
   transition-duration: 0.5s;
-  background-color: transparent;
+  background-color: rgb(20, 20, 20);
   box-sizing: content-box;
   color: white;
   background-image: linear-gradient(30deg, rgba(20, 20, 20, 0.5), rgba(29, 29, 29, 0.301), rgba(20, 20, 20, 0.5));
-  backdrop-filter: blur(5px);
   box-shadow: inset 5px 5px 25px -25px rgb(107, 107, 107), 3px 5px 15px 5px rgba(0, 0, 0, 0.24);
 }
 .default-screen .language-carousel .custom-button[disabled] {
@@ -2078,13 +2097,12 @@ form#codeForm {
   gap: 3px;
   transition-duration: 0.3s;
   flex-direction: row-reverse;
-  padding: 2px 0.5em;
+  padding: 4px 0.5em;
   background-color: var(--userColor);
   border-radius: 1lh;
-  border: 2px solid rgb(41, 41, 41);
   transition-duration: 0.5s;
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: inset 0 0 10px 5px rgba(32, 32, 32, 0.514);
+  box-shadow: inset 0 0 10px 5px rgba(32, 32, 32, 0.514), inset 0 0 1px 1px rgba(200, 200, 200, 0.9);
   font-family: Poppins;
 }
 #sessionInfo-container:not(:has(:nth-child(1))) {
@@ -2175,10 +2193,12 @@ form#codeForm {
 }
 #sessionInfo-container > div:not(.open) .session-client-menu {
   opacity: 0;
-  height: 0;
-  width: 0;
+  transform: scale(0.8);
+  margin-top: 20px;
+  pointer-events: none;
+  transform-origin: 100% 0;
   min-width: 0px;
-  transition-duration: 0.5s;
+  transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 0.6);
 }
 #sessionInfo-container img {

@@ -5,6 +5,7 @@ declare class Python extends EditorMode {
     static name: string;
     static logoSrc: string;
     static description: string;
+    static color: string;
     static versions: any;
     static dockerSafeTag: string;
     static extension: string[];

@@ -9,7 +9,9 @@ class Python extends EditorMode {
 
     static name = 'Python'
     static logoSrc: string = 'python-logo.webp';
-    static description: string = 'nothing yet';
+    static description: string = `Simplu și ușor de învățat, ideal pentru web, AI și automatizare.
+Avantaje: Sintaxă clară, multe biblioteci, comunitate mare.`;
+    static color: string = 'linear-gradient(145deg, #4B8BBE, #FFD43B)'
     static versions
 
     static dockerSafeTag: string = 'py'

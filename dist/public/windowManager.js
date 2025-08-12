@@ -560,33 +560,45 @@ async function loadLanguages() {
     const languages = await res.json();
     let langaugeElements = [];
     for (const language of languages)
-        langaugeElements.push(createNode('button', { html: [
-                createNode('div', { css: "background-image: url(../media/logos/" + language.src + ");",
-                    className: 'language-logo',
+        langaugeElements.push(createNode('div', { className: 'language-button-wrapper', css: '--language-color: ' + language.color, html: [createNode('button', { html: [
+                        createNode('div', { css: "background-image: url(../media/logos/" + language.src + ");",
+                            className: 'language-logo',
+                            attributes: [
+                                { name: 'draggable', value: 'false' },
+                                { name: 'aria-label', value: `Create ${language.name} project` }
+                            ] }),
+                        createNode('p', { innerText: language.name })
+                    ],
+                    onhover: () => {
+                        document.getElementById('language-info-display').innerHTML =
+                            `
+                    <p>${language.description}</p>
+                    <img src="../media/logos/${language.src}" style='max-width:200px'>
+               
+                `;
+                    },
                     attributes: [
-                        { name: 'draggable', value: 'false' },
-                        { name: 'aria-label', value: `Create ${language.name} project` }
-                    ] }),
-                createNode('p', { innerText: language.name })
-            ],
-            attributes: [
-                // {name: 'tabindex',value: (i++).toString()},
-                language.ext ? { name: 'onclick', value: `window.editor.createFile('main.${language.ext}'); ` } : undefined,
-                !language.ext ? { name: "disabled", value: '' } : undefined
-            ],
-            className: 'custom-button'
-        }));
-    for (let i = 0; i < langaugeElements.length; i++) {
+                        // {name: 'tabindex',value: (i++).toString()},
+                        language.ext ? { name: 'onclick', value: `window.editor.createFile('main.${language.ext}'); ` } : undefined,
+                        !language.ext ? { name: "disabled", value: '' } : undefined
+                    ],
+                    className: 'custom-button' })
+            ] }));
+    for (let i = 0; i < langaugeElements.length; i++)
         languageCarousel.replaceChild(langaugeElements[i], languageCarousel.children[i]);
-        languageCarousel.children[i].animate([
-            { opacity: "0%", transform: "translateY(-50%)" },
-            { opacity: "100%", transform: "translateY(0%)" },
-        ], {
-            duration: Math.random() * 400 + 100,
-            delay: Math.random() * 20,
-            // easing: "ease-out"
-        });
-    }
+    // for(let i=0;i<langaugeElements.length;i++)
+    // {
+    //     languageCarousel.replaceChild( langaugeElements[i],languageCarousel.children[i])  
+    //     languageCarousel.children[i].animate([
+    //     { opacity:"0%", transform: "translateY(-50%)"},
+    //     { opacity: "100%",  transform: "translateY(0%)"},
+    //   ],
+    //   {
+    //     duration: Math.random()*400 + 100,
+    //     delay: Math.random()*20,
+    //     // easing: "ease-out"
+    //   })
+    // }
 }
 export async function showDefaultScreen() {
     const window = windows[0];
@@ -604,7 +616,7 @@ export async function showDefaultScreen() {
     //     {name: 'node.js', src: 'node.js-logo.webp',}// ext: 'js'},
     //     ]
     let langaugeElements = [];
-    for (let i = 0; i <= 9; i++)
+    for (let i = 1; i <= 8; i++)
         langaugeElements.push(createNode('div', { html: [
                 createNode('div', {
                     className: 'language-logo',
@@ -624,7 +636,7 @@ export async function showDefaultScreen() {
                     createNode('p', { innerText: 'Alege un limbaj in care sa-ti incepi proiectul. ' }),
                 ] }),
             languageCarousel,
-            createNode('div', { className: 'language-info' })
+            createNode('div', { className: 'language-info', id: 'language-info-display' })
         ] });
     // let offset = 0;
     // let velocity = 0;
@@ -643,16 +655,6 @@ export async function showDefaultScreen() {
     //     // requestAnimationFrame((timestamp) => updateCarousel(timestamp,ev, false))
     // }
     // // updateCarousel(undefined, 0)
-    for (const elem of languageCarousel.children)
-        elem.animate([
-            { opacity: "0%", transform: "translateY(-50%)" },
-            { opacity: "75%", transform: "translateY(0%)" },
-        ], {
-            duration: 200,
-            delay: Math.random() * 200 + 50,
-            easing: "ease-out",
-            fill: "both"
-        });
     // container.onpointerup = stopHolding
     // container.onpointercancel = stopHolding
     // container.onpointerout = stopHolding
@@ -735,8 +737,19 @@ export async function showDefaultScreen() {
     window.addTab(tab);
     window.setActiveFile(tab);
     tab.openTab(undefined);
-    setTimeout(() => {
-        loadLanguages();
+    setTimeout(async () => {
+        await loadLanguages();
+        //     for(const elem of languageCarousel.children)
+        //     elem.animate([
+        //     { opacity:"0%", transform: "translateY(-50%)"},
+        //     { opacity: "75%",  transform: "translateY(0%)"},
+        //   ],
+        //   {
+        //     duration: 200,
+        //     delay: Math.random()*200 + 50,
+        //     easing: "ease-out",
+        //     fill: "both"
+        //   })
     }, 10);
 }
 let tooltip = {};

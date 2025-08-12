@@ -284,13 +284,14 @@ app.post('/editor/startsession/:id', (req, res) => {
     
 })
 app.get('/editor/languages', (req, res) => {
-    const languages:{name, src,ext?, description?, versions?}[] = []
+    const languages:{name, src,ext?, description?, versions?, color?}[] = []
     for(const mode of EditorModes.modes)
     {
-        languages.push({name: mode.name, src: mode.logoSrc, description: mode.description, versions: mode.versions, ext: mode.extension[0]})
+        languages.push({name: mode.name, src: mode.logoSrc, color: mode.color, description: mode.description, versions: mode.versions, ext: mode.extension[0], })
     }
     res.send(JSON.stringify(languages))
 })
+
 app.use('/editor/problem', router)
 
 app.get('/editor/tooltipHints', (req, res) => {

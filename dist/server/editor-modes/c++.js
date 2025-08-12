@@ -11,7 +11,9 @@ const types_1 = require("../../../dist/shared/types");
 class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
     static logoSrc = 'c++-logo.png';
-    static description = 'nothing yet';
+    static description = `Limbaj rapid și puternic, folosit la jocuri, sisteme și aplicații complexe.
+Avantaje: Viteză mare, control total, folosit în industrie.`;
+    static color = '#659AD2';
     static extension = ['cpp', 'c++'];
     static dockerSafeTag = 'cpp';
     static defaultText = `//    Compilator C++ online | intelegeinfo.ro

@@ -45,7 +45,9 @@ const types_1 = require("../../../dist/shared/types");
 class Python extends BaseEditorMode_1.default {
     static name = 'Python';
     static logoSrc = 'python-logo.webp';
-    static description = 'nothing yet';
+    static description = `Simplu și ușor de învățat, ideal pentru web, AI și automatizare.
+Avantaje: Sintaxă clară, multe biblioteci, comunitate mare.`;
+    static color = 'linear-gradient(145deg, #4B8BBE, #FFD43B)';
     static versions;
     static dockerSafeTag = 'py';
     static extension = ['py'];
