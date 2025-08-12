@@ -8,6 +8,7 @@ const path_1 = __importDefault(require("path"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const server_1 = require("./server");
 const usersManager_1 = require("./usersManager");
+const aiIntegration_1 = require("./aiIntegration");
 // import { rootDirName } from './server';
 // import rootDirName from "./server"
 const rootDirName = path_1.default.resolve("./");
@@ -261,7 +262,7 @@ async function postsRequest(guideEntries, req, res, error) {
             <h5>Cauta</h5>
             <input type="text" id="search-input">
             <h5>Filtreaza</h5>
-            <ul class="tags">${tags ? tags.map(tag => `<li>${hasPermission ? `<a href="guides/tags/delete/${encodeURI(tag.name)}">-</a>` : ''}${tag.name}</li>`).join('\n') : ''}</ul>
+            <ul class="tags">${tags ? tags.map(tag => `<li>${hasPermission ? `<a href="guides/tags/delete/${encodeURI(tag.name)}">-</a>` : ''}<p>${tag.name}</p></li>`).join('\n') : ''}</ul>
         </div></div>
 
         <script>
@@ -303,7 +304,7 @@ async function postsRequest(guideEntries, req, res, error) {
         for(const tag of document.getElementsByClassName('tags')[0].children)
         {
             tag.onclick = (ev) => {
-                const text = ev.target.innerText
+                const text = tag.querySelect('p').innerText
                 if(params.has("tags", text))
                     params.delete("tags")
                 else
@@ -330,6 +331,7 @@ router.post('/submit', (req, res) => {
         res.status(401).send('Please login before publishing.');
         return;
     }
+    // TODO Replace with upsert
     dbClient_1.default.guide.update({
         where: {
             name: gname,
@@ -356,8 +358,8 @@ router.post('/submit', (req, res) => {
                 }
             }
         }
-    }).then(guide => {
-        res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <article>${content}</article>`);
+    }).then(async (guide) => {
+        res.send(`<head>${htmlHead(guide.name, req, guide.description, guide.category)} <h2>Updated ${gname}!</h2><p>Content:</p> <audio src='/user/uploads/${(await (0, aiIntegration_1.guideTTS)(guide)).fileName}<article>${content}</article>`);
     }).catch((err) => {
         console.log(err);
         try {
@@ -493,7 +495,6 @@ router.get('/post/:name', (req, res) => {
                     // showGutter: false,
                     mode: "ace/mode/c_cpp",
                     minLines: 3,
-                    maxLines: 15,
                     theme: "ace/theme/editor-theme"
                 });
                 editor.container.style.pointerEvents="none"
