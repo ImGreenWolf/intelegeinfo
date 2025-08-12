@@ -2526,8 +2526,6 @@ form#codeForm {
             word-wrap: nowrap;
             contain: paint;
             text-align: right;
-            pointer-events: none;
-            text-overflow: clip;
             &::before
             {
                 content: '';
