@@ -1942,7 +1942,6 @@ mini-dock #joinSession {
   bottom: 0;
   left: 0;
   right: 0;
-  grid-template-columns: auto 1fr;
   grid-template-rows: auto auto auto;
   padding: 2em;
   gap: 1em;
@@ -1953,9 +1952,11 @@ mini-dock #joinSession {
   font-family: Teachers, Poppins, Cambria;
 }
 .default-screen .language-info {
-  grid-column: 2;
+  max-width: 100%;
+  width: 500px;
   grid-row: 2;
   display: flex;
+  justify-self: end;
   justify-content: flex-end;
   align-items: flex-start;
   gap: 1em;
