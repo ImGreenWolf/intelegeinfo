@@ -116,9 +116,9 @@ router.get('/', (req, res) => {
     getPosts(req).then(json => postsRequest(json.guideEntries, req, res, json.err));
 });
 router.get('/posts', (req, res) => {
-    getPosts(req).then(json => res.send(json.guideEntries));
+    getPosts(req, req.query.take ? req.query.take : 5).then(json => res.send(json.guideEntries));
 });
-async function getPosts(req) {
+async function getPosts(req, take = 10) {
     return new Promise((resolve, reject) => {
         const unparsedTags = req.query.tags;
         const tags = unparsedTags ? unparsedTags.split(',').map(tag => tag.trim()) : [];
@@ -160,7 +160,7 @@ async function getPosts(req) {
         `
             :
                 dbClient_1.default.guide.findMany({
-                    take: 10,
+                    take,
                     orderBy: {
                         visits: 'desc',
                     },
