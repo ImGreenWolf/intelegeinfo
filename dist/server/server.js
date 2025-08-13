@@ -1205,7 +1205,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
                         try {
                             const builder = (0, child_process_1.spawn)(`docker`, ["build", "-t", clientSession.currentbuildTag, , '"' + sessionFolder + '"'], { stdio: 'pipe', shell: true });
-                            replicateFunction((ws, id, obj) => obj.sendMessage({ body: 'Please wait.. Preparing your sandbox' }, types_1.WebSocketMessageType.ExecuteStatus));
+                            replicateFunction((ws, id, obj) => obj.sendMessage({ body: 'Vă rugăm așteptați.. Pregătim mediul de rulare.' }, types_1.WebSocketMessageType.ExecuteStatus));
                             builder.on('exit', code => {
                                 if (code == 0)
                                     resolve();
@@ -1859,12 +1859,12 @@ bash `.trim().replaceAll('\n', "");
                                                                 };
                                                                 if (!clientObj.editorMode.isInterpreter) {
                                                                     replicateFunction((clientWs) => {
-                                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
+                                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compilăm programul.', clientId: clientId })); // Send GDB output to the client
                                                                     });
                                                                     //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
                                                                     await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
                                                                     replicateFunction((clientWs) => {
-                                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
+                                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compilat!', clientId: clientId })); // Send GDB output to the client
                                                                     });
                                                                 }
                                                                 clientSession.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession);
@@ -1927,12 +1927,12 @@ bash `.trim().replaceAll('\n', "");
                                                         }
                                                     };
                                                     replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiling program.', clientId: clientId })); // Send GDB output to the client
+                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compilăm programul.', clientId: clientId })); // Send GDB output to the client
                                                     });
                                                     // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
                                                     await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), true);
                                                     replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compiled', clientId: clientId })); // Send GDB output to the client
+                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compilat!', clientId: clientId })); // Send GDB output to the client
                                                     });
                                                     clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession);
                                                     clientSession.gdbProcess.addDataListener(onData);
