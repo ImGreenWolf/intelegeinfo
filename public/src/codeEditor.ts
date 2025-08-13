@@ -4136,6 +4136,7 @@ break;
 
                   submitConsole(console, WebSocketMessageType.Console, activeConsole)
                   console.innerText = ''
+                  console.value = ''
                   console.removeEventListener("keypress", listener)
                   // console.remove()
                 }
