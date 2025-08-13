@@ -479,7 +479,7 @@ router.get('/post/:name', (req: Request, res: Response) => {
         {
             visits:  { increment: 1 }
         }
-    }).then((value)=> {
+    }).then(async (value)=> {
        
 
         try {
@@ -497,7 +497,21 @@ router.get('/post/:name', (req: Request, res: Response) => {
                         ("REDIRECT TO PAGE").length,
                         value.content.indexOf(';')
                         ).trim())
-            else
+            else{
+                let content = value.content
+
+                
+                for(const match of content.matchAll(/<problem pid='(\d)'><\/problem>/g))
+                {
+                    console.log(match[0], match[1])
+                    const projFolder = (await prisma.project.findFirst({where: {id: parseInt(match[1].toString())}})).fileUUID
+                    if(!projFolder)
+                        break;
+                    const projPath = path.join(rootDirName, 'saved',projFolder, 'clientFiles', 'main.cpp')
+                    if(fs.existsSync(projPath))
+                    content = content.replace(match[0], `<a href='/editor?save=${projFolder}'>Deschide in editor</a><pre>${fs.readFileSync(projPath).toString()}</pre>`)
+
+                }
                 //                        <button onclick="fetch('${value.name}/like')">like</button>
                         // <button onclick="fetch('${value.name}/deslike')">deslike</button>
             res.send(`
@@ -514,7 +528,7 @@ router.get('/post/:name', (req: Request, res: Response) => {
                         <p>Postat ${new Date(value.createdAt).toLocaleString("ro-RO",options)}</p>
                     </div>
                 </div>
-                ${value.content} 
+                ${content} 
                 </article>
                 
                   
@@ -567,7 +581,7 @@ router.get('/post/:name', (req: Request, res: Response) => {
             
             
             
-            </script>`)
+            </script>`)}
         } catch (error) {
             console.error('Error processing folders:', error);
             res.status(500).json({ error: 'Failed to process folders' });

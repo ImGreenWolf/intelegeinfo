@@ -432,10 +432,40 @@ router.post('/verifyemail', (req, res) => {
 
 
   // router.get('/problem', problemCreator);
-router.post('/saveProject', authMiddleware, (req, res) => {
+router.post('/saveProject', authMiddleware, async (req, res) => {
    
-    const { name, sessionId:saveSessionId } = req.body;
-    console.log(saveSessionId)
+    const { name, sessionId: saveSessionId, projectId } = req.body;
+    console.log(saveSessionId, projectId)
+    if(projectId)
+    {
+
+        const foundProj = await prisma.project.findFirst({
+            where: {
+                fileUUID: projectId
+            }
+        })
+        if(foundProj && foundProj.fileUUID)
+        {
+             fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", foundProj.fileUUID), {recursive: true, force: true}, (() => {
+                    try {
+                        res.status(200).json({isNew: false, message: "sucsess"})
+                    } catch (err: any)
+                    {
+                        if(err.code) res.status(err.code).json({message: err.message})
+                            else res.status(401).json('error: ' + err)
+                    }
+                }))
+             return
+        }
+           
+           
+    }
+    if(!name)
+    {
+        res.send(JSON.stringify({isNew: true}))
+        return
+    }
+         
     if(!sessionMap.has(saveSessionId)) return
     // sessionMap.get(saveSessionId).
     const saveId = randomUUID()
@@ -443,7 +473,7 @@ router.post('/saveProject', authMiddleware, (req, res) => {
             users.addProject(users.getIdFromJWT(req) as number, {  name: name, fileUUID: saveId}).then(user => {
                  fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", saveId), {recursive: true}, (() => {
                     try {
-                        res.status(200).json({message: "sucsess"})
+                        res.status(200).json({message: "sucsess", projectId: saveId})
                     } catch (err: any)
                     {
                         if(err.code) res.status(err.code).json({message: err.message})

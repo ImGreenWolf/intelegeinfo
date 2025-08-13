@@ -1479,25 +1479,43 @@ export function saveProject() {
             //   }
             // }
             // const enterListener = namePrompt.addEventListener("keypress", handleEnterKey);
-            displayInputPopup('Ce nume vrei sa aiba proiectul tau?', 'nume').then(res => {
-                if (!res.ok)
-                    return;
-                fetch('/user/saveProject', {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: res.value, sessionId: wsSessionId })
-                }).then(response => {
-                    if (!response.ok)
-                        if (response.status === 401)
-                            displayMessagePopup('Please log in!');
-                    // save was sucsessfull
-                    document.getElementById('active-project-name')?.classList.remove('dirty');
+            fetch('/user/saveProject', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: wsSessionId, projectId: new URLSearchParams(location.search).get('save') })
+            }).then(async (response) => {
+                if (!response.ok)
+                    if (response.status === 401)
+                        displayMessagePopup('Please log in!');
+                const json = await response.json();
+                if (!json.isNew) {
                     modifiedFile = false;
-                })
-                    .catch(err => {
-                    displayMessagePopup(err);
-                });
-                document.getElementById('saveProject')?.classList.add('saved');
+                    document.getElementById('saveProject')?.classList.add('saved');
+                }
+                else
+                    displayInputPopup('Ce nume vrei sa aiba proiectul tau?', 'nume').then(res => {
+                        if (!res.ok)
+                            return;
+                        fetch('/user/saveProject', {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: res.value, sessionId: wsSessionId })
+                        }).then(async (res) => {
+                            if (!response.ok)
+                                return displayMessagePopup('A aparut o problema...');
+                            return await res.json();
+                        })
+                            .then(response => {
+                            // save was sucsessfull
+                            document.getElementById('active-project-name')?.classList.remove('dirty');
+                            modifiedFile = false;
+                            document.getElementById('saveProject')?.classList.add('saved');
+                            window.history.pushState({ page: "updated save info" }, "intelege info", window.location.search + (window.location.search ? "&" : "?") + "save=" + response.projectId);
+                        })
+                            .catch(err => {
+                            displayMessagePopup(err);
+                        });
+                    });
             });
         }
         else {

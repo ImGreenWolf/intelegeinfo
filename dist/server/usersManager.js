@@ -350,9 +350,34 @@ exports.router.post('/verifyemail', (req, res) => {
     });
 });
 // router.get('/problem', problemCreator);
-exports.router.post('/saveProject', server_1.authMiddleware, (req, res) => {
-    const { name, sessionId: saveSessionId } = req.body;
-    console.log(saveSessionId);
+exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) => {
+    const { name, sessionId: saveSessionId, projectId } = req.body;
+    console.log(saveSessionId, projectId);
+    if (projectId) {
+        const foundProj = await dbClient_1.default.project.findFirst({
+            where: {
+                fileUUID: projectId
+            }
+        });
+        if (foundProj && foundProj.fileUUID) {
+            fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", foundProj.fileUUID), { recursive: true, force: true }, (() => {
+                try {
+                    res.status(200).json({ isNew: false, message: "sucsess" });
+                }
+                catch (err) {
+                    if (err.code)
+                        res.status(err.code).json({ message: err.message });
+                    else
+                        res.status(401).json('error: ' + err);
+                }
+            }));
+            return;
+        }
+    }
+    if (!name) {
+        res.send(JSON.stringify({ isNew: true }));
+        return;
+    }
     if (!server_1.sessionMap.has(saveSessionId))
         return;
     // sessionMap.get(saveSessionId).
@@ -362,7 +387,7 @@ exports.router.post('/saveProject', server_1.authMiddleware, (req, res) => {
     users.addProject(users.getIdFromJWT(req), { name: name, fileUUID: saveId }).then(user => {
         fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", saveId), { recursive: true }, (() => {
             try {
-                res.status(200).json({ message: "sucsess" });
+                res.status(200).json({ message: "sucsess", projectId: saveId });
             }
             catch (err) {
                 if (err.code)

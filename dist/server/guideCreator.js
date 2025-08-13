@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const server_1 = require("./server");
@@ -428,7 +429,7 @@ router.get('/post/:name', (req, res) => {
         data: {
             visits: { increment: 1 }
         }
-    }).then((value) => {
+    }).then(async (value) => {
         try {
             // Filter for directories only
             // editor.on("paste", function(e) {
@@ -436,7 +437,17 @@ router.get('/post/:name', (req, res) => {
             // });
             if (value.content.includes("REDIRECT TO PAGE"))
                 res.redirect("../.." + value.content.substring(("REDIRECT TO PAGE").length, value.content.indexOf(';')).trim());
-            else
+            else {
+                let content = value.content;
+                for (const match of content.matchAll(/<problem pid='(\d)'><\/problem>/g)) {
+                    console.log(match[0], match[1]);
+                    const projFolder = (await dbClient_1.default.project.findFirst({ where: { id: parseInt(match[1].toString()) } })).fileUUID;
+                    if (!projFolder)
+                        break;
+                    const projPath = path_1.default.join(rootDirName, 'saved', projFolder, 'clientFiles', 'main.cpp');
+                    if (fs_1.default.existsSync(projPath))
+                        content = content.replace(match[0], `<a href='/editor?save=${projFolder}'>Deschide in editor</a><pre>${fs_1.default.readFileSync(projPath).toString()}</pre>`);
+                }
                 //                        <button onclick="fetch('${value.name}/like')">like</button>
                 // <button onclick="fetch('${value.name}/deslike')">deslike</button>
                 res.send(`
@@ -453,7 +464,7 @@ router.get('/post/:name', (req, res) => {
                         <p>Postat ${new Date(value.createdAt).toLocaleString("ro-RO", options)}</p>
                     </div>
                 </div>
-                ${value.content} 
+                ${content} 
                 </article>
                 
                   
@@ -507,6 +518,7 @@ router.get('/post/:name', (req, res) => {
             
             
             </script>`);
+            }
         }
         catch (error) {
             console.error('Error processing folders:', error);
