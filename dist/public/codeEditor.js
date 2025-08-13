@@ -95,7 +95,7 @@ class Console {
             outputArea.appendChild(thisConsole);
         thisConsole.id = 'active-console';
         thisConsole.className = 'output-console-container';
-        thisConsole.innerHTML = "<div class='program-output'></div>";
+        // thisConsole.innerHTML = "<div class='program-output'></div>"
         const resendButton = document.createElement('button');
         resendButton.innerText = '↻';
         resendButton.classList = 'retry-program custom-button';
