@@ -2230,7 +2230,11 @@ export let ws;
     const params = new URLSearchParams();
     if (sessionId) {
         params.set('session', sessionId.toString());
-        if (!getCookie('savedName')) {
+        if (getCookie('token')) {
+            if (getCookie('savedName'))
+                document.cookie = 'savedName=';
+        }
+        else if (!getCookie('savedName')) {
             const displayName = await displayInputPopup('Introduce-ti numele');
             if (displayName.value) {
                 document.cookie = 'savedName=' + displayName.value;

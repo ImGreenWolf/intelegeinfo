@@ -2920,19 +2920,24 @@ export class TokenTooltip extends Tooltip {
     if(sessionId)
     {
             params.set('session', sessionId.toString())
-
-            if(!getCookie('savedName'))
-            {
-              const displayName = await displayInputPopup('Introduce-ti numele')
-              
-              if(displayName.value)
-              {
-                document.cookie = 'savedName='+displayName.value
-                params.set('displayName', displayName.value)
-              }
+            if(getCookie('token'))
+            {  
+               if(getCookie('savedName'))
+                document.cookie = 'savedName='
             }
             else
-              params.set('displayName', getCookie('savedName'))
+              if(!getCookie('savedName'))
+              {
+                const displayName = await displayInputPopup('Introduce-ti numele')
+                
+                if(displayName.value)
+                {
+                  document.cookie = 'savedName='+displayName.value
+                  params.set('displayName', displayName.value)
+                }
+              }
+              else
+                params.set('displayName', getCookie('savedName'))
             
             
     }
