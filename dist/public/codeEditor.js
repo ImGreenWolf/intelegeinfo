@@ -1751,7 +1751,7 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                 textArea = activeConsole.element.getElementsByTagName('pre')[0];
                 if (!textArea) {
                     textArea = createNode('pre');
-                    activeConsole.element.appendChild(textArea);
+                    activeConsole.element.prepend(textArea);
                 }
             }
             // outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${msgText}</pre>`;

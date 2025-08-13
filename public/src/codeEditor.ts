@@ -2330,7 +2330,7 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
         if(!textArea)
         {
           textArea = createNode('pre')
-          activeConsole.element.appendChild(textArea)
+          activeConsole.element.prepend(textArea)
         }
       }
       // outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${msgText}</pre>`;
