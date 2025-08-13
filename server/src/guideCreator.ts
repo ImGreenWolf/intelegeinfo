@@ -510,7 +510,7 @@ router.get('/post/:name', (req: Request, res: Response) => {
                         break;
                     const projPath = path.join(rootDirName, 'saved',projFolder, 'clientFiles', 'main.cpp')
                     if(fs.existsSync(projPath))
-                    content = content.replace(match[0], `<a href='/editor?save=${projFolder}' class='openEditor'>Deschide in editor</a><pre>${fs.readFileSync(projPath).toString()}</pre>`)
+                    content = content.replace(match[0], `<pre language='C++'>${fs.readFileSync(projPath).toString()}</pre> <a href='/editor?save=${projFolder}' class='openEditor'>Deschide in editor</a>`)
 
                     } catch(err)
                     {

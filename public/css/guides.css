@@ -20,6 +20,9 @@ article ::selection {
 article * {
   color: black;
 }
+article h1 {
+  font-size: 2em;
+}
 
 code.ace_editor {
   padding: 1px;
@@ -67,6 +70,18 @@ code .ace_cursor, pre .ace_cursor {
   padding-block: 0;
   padding-inline: 0.15em;
   line-height: 1.25lh;
+}
+
+.openEditor {
+  display: block;
+  background-color: rgb(33, 50, 88);
+  padding: 0.5em 1em;
+  color: white;
+  width: fit-content;
+  border-radius: 1em;
+  font-size: 0.75em;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 @media screen and (max-width: 700px) {
