@@ -75,14 +75,19 @@ class ClientObject {
             this.clientData = user;
         }
         else {
-            const displayNames = EditorSession.clientsDisplayNames;
-            if (false)
-                this.displayName = EditorSession.brainrotNames[Math.floor(Math.random() * EditorSession.brainrotNames.length)];
-            else
-                this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)];
-            displayNames.splice(displayNames.indexOf(this.displayName), 1);
-            if (this.displayName[0])
-                this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
+            if (displayName)
+                this.displayName = displayName;
+            else {
+                // assaign random name
+                const displayNames = EditorSession.clientsDisplayNames;
+                if (false)
+                    this.displayName = EditorSession.brainrotNames[Math.floor(Math.random() * EditorSession.brainrotNames.length)];
+                else
+                    this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)];
+                displayNames.splice(displayNames.indexOf(this.displayName), 1);
+                if (this.displayName[0])
+                    this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
+            }
         }
     }
     sendMessage(message, type) {
@@ -362,6 +367,7 @@ Tralalero Tralala`.split('\n');
     }
     spawnClient(ws, displayName, userData) {
         let newClient;
+        console.log(displayName);
         if (userData != undefined)
             newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
         else

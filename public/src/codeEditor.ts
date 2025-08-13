@@ -628,19 +628,37 @@ class SessionClient {
         for(const child of (this as any).parentElement.children)
           if(child != (this as any))
             child.classList.remove('open');
-        (this as any).classList.toggle('open'); },
-      className: 'client-container' + (isLocal ? ' localClient' : ''),
-      attributes: [{name: 'style', value: '--userColor: #'+color}],
-      html: [
-        createNode('img', {attributes: [{name:  'src', value: userId ? '/user/picture/'+userId : '/user/upload/default.png'}]}),
-        createNode('div', {className: 'session-client-menu', htmlSting: 
-          `
-          <div>
-            <h3>${this.displayName}${isLocal ? ' (Tu)' : ''}<div class='img-placeholder'></div></h3>
-            <lable>${this.canEdit ? 'Poate edita' : 'Nu poate edita'}</lable>
-            ${!isLocal ? `<button>Scoate</button>` : ''}
-          </div>
-          `
+              (this as any).classList.toggle('open'); },
+            className: 'client-container' + (isLocal ? ' localClient' : ''),
+            attributes: [{name: 'style', value: '--userColor: #'+color}],
+            html: [
+              createNode('img', {attributes: [{name:  'src', value: userId ? '/user/picture/'+userId : '/user/upload/default.png'}]}),
+              createNode('div', {className: 'session-client-menu', html: [
+                createNode('div', {html: [
+                  
+                    createNode('a', {htmlSting:  `<h3>${this.displayName}<div class='img-placeholder'></div>"</h3>`,
+                    attributes: [userId ? {name: 'href', value: '/profile'} : undefined],
+                    onclick: async ev => 
+                      {if(userId)
+                        return
+                      const displayName = await displayInputPopup('Schimba-ti numele')
+                      if(displayName.value)
+                      {
+                        document.cookie = 'savedName='+displayName.value
+                        // params.set('displayName', displayName.value)
+                      }
+                    }}),
+                    createNode('p', {innerText: this.canEdit ? 'Poate edita' : 'Nu poate edita'}),
+                    !isLocal ? createNode('button', {innerText: 'Scoate din sesiune'}) : undefined,
+                ]})
+              ] 
+          // `
+          // <div>
+          //   ${isLocal ? '<a href="/user/profile">' : ''}<h3>${this.displayName}${isLocal ? ' (Tu)' : ''}<div class='img-placeholder'></div></h3>${isLocal ? '</a>' : ''}
+          //   <lable>${this.canEdit ? 'Poate edita' : 'Nu poate edita'}</lable>
+          //   ${!isLocal ? `<button>Scoate</button>` : ''}
+          // </div>
+          // `
         }),
         createNode('div', {innerText: this.displayName, className: 'tooltip-clientName'})
       ]})
@@ -2902,15 +2920,27 @@ export class TokenTooltip extends Tooltip {
     if(sessionId)
     {
             params.set('session', sessionId.toString())
-            const displayName = await displayInputPopup('ssk')
-            if(displayName.ok && displayName.value)
-            params.set('displayName', displayName.value)
+
+            if(!getCookie('savedName'))
+            {
+              const displayName = await displayInputPopup('Introduce-ti numele')
+              
+              if(displayName.value)
+              {
+                document.cookie = 'savedName='+displayName.value
+                params.set('displayName', displayName.value)
+              }
+            }
+            else
+              params.set('displayName', getCookie('savedName'))
+            
+            
     }
 
     if(saveId)
      params.set('save', saveId.toString())
     params.set('embeded', inIframe.toString())
-    const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + params.size ? "?" : "" + params.toString()
+    const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + (params.size ? "?" : "") + params.toString()
 
 
 

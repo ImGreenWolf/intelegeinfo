@@ -31,7 +31,8 @@ export function createNode(tag, options) {
             elem.innerText = options.innerText;
         if (options.html)
             for (const node of options.html)
-                elem.appendChild(node);
+                if (node)
+                    elem.appendChild(node);
         if (options.attributes)
             for (const attribute of options.attributes)
                 if (attribute)

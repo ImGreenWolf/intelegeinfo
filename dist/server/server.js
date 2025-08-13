@@ -579,10 +579,6 @@ exports.wss.addListener('connection', async (ws, req) => {
                 // }, 500);
             }
         }
-        function customData(req) {
-            const s = new URLSearchParams(req.url);
-            return s.get('displayName');
-        }
         function handshake(req) {
             const urlParams = new URL("https://intelegeinfo.ro/editor" + req.url).searchParams;
             // session id to connect to
@@ -632,7 +628,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                     resolve();
                                     return;
                                 }
-                                clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, customData(req), userData);
+                                clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, urlParams.get('displayName'), userData);
                                 clientObj = getThisClientSession().getClientObjectById(clientId);
                                 exports.clients.set(clientId, ws);
                                 isHost = false;
@@ -642,7 +638,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                              {
                                 //getThisClientSession()?.clients.push(clientId); // add client to client list.
                                 clientSession = createThisClientSession(wssessionId);
-                                clientId = getThisClientSession()?.spawnClient(ws, customData(req), userData);
+                                clientId = getThisClientSession()?.spawnClient(ws, urlParams.get('displayName'), userData);
                                 clientObj = getThisClientSession().getClientObjectById(clientId);
                                 exports.clients.set(clientId, ws); // TODO remove this map
                                 // printClientConsoleDebug('creating session: ' + clientSession.sessionId)
@@ -670,7 +666,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                             clientSession = createThisClientSession();
                             if (getThisClientSession() != undefined) {
                                 sessionId = clientSession.sessionId;
-                                clientId = getThisClientSession()?.spawnClient(ws, customData(req), userData);
+                                clientId = getThisClientSession()?.spawnClient(ws, urlParams.get('displayName'), userData);
                                 clientObj = getThisClientSession().getClientObjectById(clientId);
                                 // to automatically make public if it has isPublic query
                                 clientFilesPath = path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");

@@ -722,11 +722,7 @@ function endConnectionPromise()
         
     } 
 
-    function customData(req: http.IncomingMessage)
-    {
-        const s =new URLSearchParams(req.url)
-        return s.get('displayName')
-    }
+    
 
 
 
@@ -788,7 +784,7 @@ function endConnectionPromise()
                         return
                     }
 
-                    clientId = (getThisClientSession() || clientSession)?.spawnClient(ws,customData(req),userData)
+                    clientId = (getThisClientSession() || clientSession)?.spawnClient(ws,urlParams.get('displayName'),userData)
 
                     clientObj = getThisClientSession().getClientObjectById(clientId);
                     clients.set(clientId, ws);
@@ -800,7 +796,7 @@ function endConnectionPromise()
                     
                     //getThisClientSession()?.clients.push(clientId); // add client to client list.
                     clientSession = createThisClientSession(wssessionId);
-                    clientId = getThisClientSession()?.spawnClient(ws, customData(req),userData)
+                    clientId = getThisClientSession()?.spawnClient(ws, urlParams.get('displayName'),userData)
                     clientObj = getThisClientSession().getClientObjectById(clientId);
                     clients.set(clientId, ws); // TODO remove this map
 
@@ -837,7 +833,7 @@ function endConnectionPromise()
                 if(getThisClientSession() != undefined)
                 {
                     sessionId = clientSession.sessionId;
-                    clientId = getThisClientSession()?.spawnClient(ws,customData(req), userData)
+                    clientId = getThisClientSession()?.spawnClient(ws,urlParams.get('displayName'), userData)
                     clientObj = getThisClientSession().getClientObjectById(clientId);
                     // to automatically make public if it has isPublic query
                     

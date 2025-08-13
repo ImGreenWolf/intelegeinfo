@@ -46,13 +46,20 @@ export class ClientObject {
         } 
         else
         {
-            const displayNames = EditorSession.clientsDisplayNames;
-            if(false) this.displayName = EditorSession.brainrotNames[Math.floor(Math.random() * EditorSession.brainrotNames.length)]
-            else this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)]
+            if(displayName)
+                this.displayName = displayName
+            else 
+            {
+                // assaign random name
+                 const displayNames = EditorSession.clientsDisplayNames;
+                if(false) this.displayName = EditorSession.brainrotNames[Math.floor(Math.random() * EditorSession.brainrotNames.length)]
+                else this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)]
 
-            displayNames.splice(displayNames.indexOf(this.displayName), 1)
-            if(this.displayName[0]) 
-                this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
+                displayNames.splice(displayNames.indexOf(this.displayName), 1)
+                if(this.displayName[0]) 
+                    this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
+            }
+           
         }
         
       }
@@ -407,6 +414,7 @@ Tralalero Tralala`.split('\n')
     public spawnClient(ws: WebSocket,displayName: string, userData?: UserNoPassword): UUID
     {
         let newClient: ClientObject;
+        console.log(displayName)
         if(userData != undefined) newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
             else newClient = new ClientObject(this.sessionId, this, ws, displayName);
         if(this.clientsMap.size == 0)

@@ -16,7 +16,7 @@ export declare function createNode<K extends keyof HTMLElementTagNameMap>(tag: K
     css?: string;
     className?: string;
     id?: string;
-    html?: Node[];
+    html?: (Node | undefined)[];
     htmlSting?: string;
     attributes?: ({
         name: string;
