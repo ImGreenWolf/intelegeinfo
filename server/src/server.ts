@@ -1522,7 +1522,7 @@ if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag +
     try {
         const builder = spawn(`docker`, ["build" ,"-t", clientSession.currentbuildTag,, '"' +sessionFolder+'"'], { stdio: 'pipe', shell: true });
 
-        replicateFunction((ws,id, obj) => obj.sendMessage({body: 'Please wait.. Preparing your sandbox'}, WebSocketMessageType.ExecuteStatus))
+        replicateFunction((ws,id, obj) => obj.sendMessage({body: 'Vă rugăm așteptați.. Pregătim mediul de rulare.'}, WebSocketMessageType.ExecuteStatus))
        
         
         builder.on('exit', code => {
@@ -2308,14 +2308,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                 if(!clientObj.editorMode.isInterpreter)
                                                 {
                                                     replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
+                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilăm programul.', clientId: clientId}));  // Send GDB output to the client
                                                     });
 
                                                     //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
                                                     await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
                                                     
                                                     replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
+                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilat!', clientId: clientId}));  // Send GDB output to the client
                                                     });
                                                 }
                                                 
@@ -2406,14 +2406,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     
                                         }      
                                         replicateFunction((clientWs) => {
-                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiling program.', clientId: clientId}));  // Send GDB output to the client
+                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilăm programul.', clientId: clientId}));  // Send GDB output to the client
                                         });
 
                                         // execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/main.cpp -o main"`)
                                         await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), true)
                                         
                                         replicateFunction((clientWs) => {
-                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compiled', clientId: clientId}));  // Send GDB output to the client
+                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilat!', clientId: clientId}));  // Send GDB output to the client
                                         });
 
                                         clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession)
