@@ -3726,7 +3726,7 @@ break;
 
     case WebSocketMessageType.End:
         if(data)
-          writeOutput(" " + data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time +"</span>ms" + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
+          writeOutput(" " + data + "  |<span style='text-wrap: wrap;'>Timp de executie: " + `<span style="color:${messageJson.time < 300 ? 'green' : 'red'}">` + messageJson.time +"</span>ms" + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
         else if(messageJson.sandbox)
             activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox)!)
           else  writeOutput("Pregramul a fost terminat fortat." + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
