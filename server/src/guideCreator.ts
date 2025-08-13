@@ -501,16 +501,22 @@ router.get('/post/:name', (req: Request, res: Response) => {
                 let content = value.content
 
                 
-                for(const match of content.matchAll(/<problem pid='(\d)'><\/problem>/g))
+                for(const match of content.matchAll(/<problem pid='(.*)'><\/problem>/g))
                 {
-                    console.log(match[0], match[1])
-                    const projFolder = (await prisma.project.findFirst({where: {id: parseInt(match[1].toString())}})).fileUUID
+                    try {
+                          console.log(match[0], match[1])
+                    const projFolder = (await prisma.project.findFirst({where: {fileUUID: match[1].toString()}})).fileUUID
                     if(!projFolder)
                         break;
                     const projPath = path.join(rootDirName, 'saved',projFolder, 'clientFiles', 'main.cpp')
                     if(fs.existsSync(projPath))
-                    content = content.replace(match[0], `<a href='/editor?save=${projFolder}'>Deschide in editor</a><pre>${fs.readFileSync(projPath).toString()}</pre>`)
+                    content = content.replace(match[0], `<a href='/editor?save=${projFolder}' class='openEditor'>Deschide in editor</a><pre>${fs.readFileSync(projPath).toString()}</pre>`)
 
+                    } catch(err)
+                    {
+                        console.error(err)
+                    }
+                  
                 }
                 //                        <button onclick="fetch('${value.name}/like')">like</button>
                         // <button onclick="fetch('${value.name}/deslike')">deslike</button>

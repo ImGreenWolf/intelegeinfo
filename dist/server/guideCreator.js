@@ -439,14 +439,19 @@ router.get('/post/:name', (req, res) => {
                 res.redirect("../.." + value.content.substring(("REDIRECT TO PAGE").length, value.content.indexOf(';')).trim());
             else {
                 let content = value.content;
-                for (const match of content.matchAll(/<problem pid='(\d)'><\/problem>/g)) {
-                    console.log(match[0], match[1]);
-                    const projFolder = (await dbClient_1.default.project.findFirst({ where: { id: parseInt(match[1].toString()) } })).fileUUID;
-                    if (!projFolder)
-                        break;
-                    const projPath = path_1.default.join(rootDirName, 'saved', projFolder, 'clientFiles', 'main.cpp');
-                    if (fs_1.default.existsSync(projPath))
-                        content = content.replace(match[0], `<a href='/editor?save=${projFolder}'>Deschide in editor</a><pre>${fs_1.default.readFileSync(projPath).toString()}</pre>`);
+                for (const match of content.matchAll(/<problem pid='(.*)'><\/problem>/g)) {
+                    try {
+                        console.log(match[0], match[1]);
+                        const projFolder = (await dbClient_1.default.project.findFirst({ where: { fileUUID: match[1].toString() } })).fileUUID;
+                        if (!projFolder)
+                            break;
+                        const projPath = path_1.default.join(rootDirName, 'saved', projFolder, 'clientFiles', 'main.cpp');
+                        if (fs_1.default.existsSync(projPath))
+                            content = content.replace(match[0], `<a href='/editor?save=${projFolder}' class='openEditor'>Deschide in editor</a><pre>${fs_1.default.readFileSync(projPath).toString()}</pre>`);
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
                 }
                 //                        <button onclick="fetch('${value.name}/like')">like</button>
                 // <button onclick="fetch('${value.name}/deslike')">deslike</button>
