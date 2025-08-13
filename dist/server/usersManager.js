@@ -353,6 +353,7 @@ exports.router.post('/verifyemail', (req, res) => {
 exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) => {
     const { name, sessionId: saveSessionId, projectId } = req.body;
     console.log(saveSessionId, projectId);
+    const userId = users.getIdFromJWT(req);
     if (projectId) {
         const foundProj = await dbClient_1.default.project.findFirst({
             where: {
@@ -360,17 +361,20 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
             }
         });
         if (foundProj && foundProj.fileUUID) {
-            fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", foundProj.fileUUID), { recursive: true, force: true }, (() => {
-                try {
-                    res.status(200).json({ isNew: false, message: "sucsess" });
-                }
-                catch (err) {
-                    if (err.code)
-                        res.status(err.code).json({ message: err.message });
-                    else
-                        res.status(401).json('error: ' + err);
-                }
-            }));
+            if (foundProj.userId != userId)
+                res.status(401).json({ message: 'Nu poti salva acest proiect deoarece nu este al tau!' });
+            else
+                fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", foundProj.fileUUID), { recursive: true, force: true }, (() => {
+                    try {
+                        res.status(200).json({ isNew: false, message: "sucsess" });
+                    }
+                    catch (err) {
+                        if (err.code)
+                            res.status(err.code).json({ message: err.message });
+                        else
+                            res.status(401).json('error: ' + err);
+                    }
+                }));
             return;
         }
     }
@@ -380,11 +384,8 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
     }
     if (!server_1.sessionMap.has(saveSessionId))
         return;
-    // sessionMap.get(saveSessionId).
     const saveId = (0, crypto_1.randomUUID)();
-    if (!users.getIdFromJWT(req))
-        throw 'not logged in';
-    users.addProject(users.getIdFromJWT(req), { name: name, fileUUID: saveId }).then(user => {
+    users.addProject(userId, { name: name, fileUUID: saveId }).then(user => {
         fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", saveId), { recursive: true }, (() => {
             try {
                 res.status(200).json({ message: "sucsess", projectId: saveId });

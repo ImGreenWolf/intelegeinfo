@@ -436,6 +436,7 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
    
     const { name, sessionId: saveSessionId, projectId } = req.body;
     console.log(saveSessionId, projectId)
+    const userId = users.getIdFromJWT(req)
     if(projectId)
     {
 
@@ -446,6 +447,9 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
         })
         if(foundProj && foundProj.fileUUID)
         {
+            if(foundProj.userId != userId)
+                 res.status(401).json({message: 'Nu poti salva acest proiect deoarece nu este al tau!'})
+            else
              fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", foundProj.fileUUID), {recursive: true, force: true}, (() => {
                     try {
                         res.status(200).json({isNew: false, message: "sucsess"})
@@ -467,22 +471,21 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
     }
          
     if(!sessionMap.has(saveSessionId)) return
-    // sessionMap.get(saveSessionId).
+
     const saveId = randomUUID()
-   if(!users.getIdFromJWT(req)) throw 'not logged in';
-            users.addProject(users.getIdFromJWT(req) as number, {  name: name, fileUUID: saveId}).then(user => {
-                 fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", saveId), {recursive: true}, (() => {
-                    try {
-                        res.status(200).json({message: "sucsess", projectId: saveId})
-                    } catch (err: any)
-                    {
-                        if(err.code) res.status(err.code).json({message: err.message})
-                            else res.status(401).json('error: ' + err)
-                    }
-                }))
-            }).catch(err => {
-                res.status(500).json('error: ' + err)
-            })
+    users.addProject(userId, {  name: name, fileUUID: saveId}).then(user => {
+            fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", saveId), {recursive: true}, (() => {
+            try {
+                res.status(200).json({message: "sucsess", projectId: saveId})
+            } catch (err: any)
+            {
+                if(err.code) res.status(err.code).json({message: err.message})
+                    else res.status(401).json('error: ' + err)
+            }
+        }))
+    }).catch(err => {
+        res.status(500).json('error: ' + err)
+    })
    
   });
 
