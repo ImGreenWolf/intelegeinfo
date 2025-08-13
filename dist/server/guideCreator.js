@@ -494,6 +494,7 @@ router.get('/post/:name', (req, res) => {
                     // showGutter: false,
                     mode: "ace/mode/c_cpp",
                     minLines: 3,
+                    maxLines: 100,
                     theme: "ace/theme/editor-theme"
                 });
                 editor.container.style.pointerEvents="none"
