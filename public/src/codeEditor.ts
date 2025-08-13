@@ -3726,10 +3726,10 @@ break;
 
     case WebSocketMessageType.End:
         if(data)
-          writeOutput( data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time +"</span>ms" + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
+          writeOutput(" " + data + "  |<span>   Execution time: " + `<span style="color:${messageJson.time < 100 ? 'green' : 'red'}">` + messageJson.time +"</span>ms" + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
         else if(messageJson.sandbox)
             activeConsole?.element.appendChild(createSandbox(messageJson.fileName, messageJson.sandbox)!)
-          else  writeOutput("Forced closed program." + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
+          else  writeOutput("Pregramul a fost terminat fortat." + (messageJson.notes  != "" &&  messageJson.notes != undefined ? "<br><span style='opacity: 0.5'>notes: " + messageJson.notes + "</span>": "" + "</span>"), messageJson);
       onExit()
 
       
@@ -4119,8 +4119,8 @@ break;
           } else {
             if(messageJson.input == 1)
             {
-              if(document.getElementById('console-input'))
-                document.getElementById('console-input')?.remove();
+              // if(document.getElementById('console-input'))
+              //   document.getElementById('console-input')?.remove();
               
               const console = activeConsole!.consoleInput
               if(!console)

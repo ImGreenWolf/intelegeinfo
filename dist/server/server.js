@@ -1419,17 +1419,17 @@ bash `.trim().replaceAll('\n', "");
                     switch (code) {
                         case 0:
                         default:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Program exited with code: " + code?.toString() || -1);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu codul: " + code?.toString() || -1);
                             break;
                         case 136:
                         case 138:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Arithmetic devided by 0</a>", true);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Arithmetic devided by 0</a>", true);
                             break;
                         case 139:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Program exited with errror: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Segmentation Fault</a>", true);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Segmentation Fault</a>", true);
                             break;
                         case 3221225477:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Program exited with errror: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
                             break;
                     }
                     gdbBuffer = "";
