@@ -501,7 +501,7 @@ router.get('/post/:name', (req: Request, res: Response) => {
                 let content = value.content
 
                 
-                for(const match of content.matchAll(/<problem pid='(.*)'><\/problem>/g))
+                for(const match of content.matchAll(/<project pid='(.*)'><\/project>/g))
                 {
                     try {
                           console.log(match[0], match[1])

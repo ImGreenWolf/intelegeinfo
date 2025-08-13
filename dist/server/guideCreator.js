@@ -439,7 +439,7 @@ router.get('/post/:name', (req, res) => {
                 res.redirect("../.." + value.content.substring(("REDIRECT TO PAGE").length, value.content.indexOf(';')).trim());
             else {
                 let content = value.content;
-                for (const match of content.matchAll(/<problem pid='(.*)'><\/problem>/g)) {
+                for (const match of content.matchAll(/<project pid='(.*)'><\/project>/g)) {
                     try {
                         console.log(match[0], match[1]);
                         const projFolder = (await dbClient_1.default.project.findFirst({ where: { fileUUID: match[1].toString() } })).fileUUID;
