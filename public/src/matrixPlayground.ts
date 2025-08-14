@@ -1,6 +1,6 @@
-// import { createNode } from "./components"
-declare const createNode
-
+import { createNode } from "./components"
+// declare const createNode;
+// declare module '/editor/components';
 interface TableOptions {
     rows
     columns,

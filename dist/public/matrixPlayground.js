@@ -1,4 +1,4 @@
-"use strict";
+import { createNode } from "./components";
 function initInput(inputElem, options) {
     inputElem.oninput = (ev) => {
         const expr = inputElem.value;
