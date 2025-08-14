@@ -63,10 +63,24 @@ function getExpressionValue(options: TableOptions, row, column)
 }
 
 
-function initDisplay(parentElem: HTMLElement, rows: number, columns: number, indexOffset: number)
+function initDisplay(parentElem: HTMLElement, indexOffset: number)
 {
     const input = document.getElementById('sandbox-input') as HTMLInputElement
-    const options = {rows, columns, indexOffset, expression:  input.value}
+    const options = {rows: 5, columns: 5, indexOffset, expression:  input.value}
+
+    const row =  document.getElementById('sandbox-row') as HTMLInputElement
+    row.onchange = () => {
+        options.rows = row.valueAsNumber
+        updateTableElements(options)
+        
+    }
+
+    const column =  document.getElementById('sandbox-column') as HTMLInputElement
+    column.onchange = () => {
+        options.columns = column.valueAsNumber
+        updateTableElements(options)
+        
+    }
     
     table = createNode('table', {html: updateTableElements(options), className: 'matricie'});
 
@@ -81,4 +95,4 @@ function initDisplay(parentElem: HTMLElement, rows: number, columns: number, ind
 }
 
 let table: HTMLTableElement;
-initDisplay(document.getElementById('sandbox')!, parseInt((document.getElementById('sandbox-row') as HTMLInputElement).value), parseInt((document.getElementById('sandbox-column')as HTMLInputElement).value), 0)
+initDisplay(document.getElementById('sandbox')!, 0)
