@@ -20,16 +20,21 @@ function updateTableElements(options) {
 }
 function getExpressionValue(expr, row, column) {
     let rexExpr = expr.replaceAll('i', row).replaceAll('j', column);
-    const res = eval(rexExpr);
-    switch (typeof res) {
-        case 'boolean':
-            return { css: res ? 'background-color: lime' : '', text: Number(row + column).toString() };
-            break;
-        case 'number':
-            return { text: res.toString() };
-            break;
-        default:
-            return { err: 'invalid output type' };
+    try {
+        const res = eval(rexExpr);
+        switch (typeof res) {
+            case 'boolean':
+                return { css: res ? 'background-color: lime' : '', text: `i:${row},j:${column}` };
+                break;
+            case 'number':
+                return { text: res.toString() };
+                break;
+            default:
+                return { err: 'invalid output type' };
+        }
+    }
+    catch (err) {
+        return { err };
     }
 }
 function initDisplay(parentElem, rows, columns, indexOffset) {
