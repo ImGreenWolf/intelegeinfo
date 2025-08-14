@@ -40,11 +40,11 @@ function getExpressionValue(options, row, column) {
 function initDisplay(parentElem, rows, columns, indexOffset) {
     const options = { rows, columns, indexOffset, expression: '' };
     table = createNode('table', { html: updateTableElements(options), className: 'matricie' });
-    const input = createNode('input');
+    const input = document.getElementById('sandbox-input');
     const container = createNode('div', { html: [table, input] });
     parentElem.appendChild(container);
     initInput(input, options);
     return table;
 }
 let table;
-initDisplay(document.getElementById('sandbox'), 5, 5, 0);
+initDisplay(document.getElementById('sandbox'), parseInt(document.getElementById('sandbox-row').value), parseInt(document.getElementById('sandbox-column').value), 0);

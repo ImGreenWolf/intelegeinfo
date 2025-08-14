@@ -69,7 +69,7 @@ function initDisplay(parentElem: HTMLElement, rows: number, columns: number, ind
     
      table = createNode('table', {html: updateTableElements(options), className: 'matricie'});
 
-    const input = createNode('input')
+    const input = document.getElementById('sandbox-input')!
     
     const container = createNode('div', {html: [table, input]})
     parentElem.appendChild(container)
@@ -80,4 +80,4 @@ function initDisplay(parentElem: HTMLElement, rows: number, columns: number, ind
 }
 
 let table: HTMLTableElement;
-initDisplay(document.getElementById('sandbox')!, 5, 5, 0)
+initDisplay(document.getElementById('sandbox')!, parseInt((document.getElementById('sandbox-row') as HTMLInputElement).value), parseInt((document.getElementById('sandbox-column')as HTMLInputElement).value), 0)
