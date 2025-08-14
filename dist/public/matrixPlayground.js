@@ -10,8 +10,10 @@ function updateTableElements(options) {
     let rowElems = [];
     for (let row = 0 + options.indexOffset; row < options.rows + options.indexOffset; row++) {
         const colomElems = [];
-        for (let column = 0 + options.indexOffset; column < options.columns + options.indexOffset; column++)
-            colomElems.push(createNode('th', { innerText: row + column, css: getExpressionValue(options.expression, row, column).css }));
+        for (let column = 0 + options.indexOffset; column < options.columns + options.indexOffset; column++) {
+            const value = getExpressionValue(options.expression, row, column);
+            colomElems.push(createNode('th', { innerText: value.text, css: value.css }));
+        }
         rowElems.push(createNode('tr', { html: colomElems }));
     }
     return rowElems;
@@ -19,9 +21,16 @@ function updateTableElements(options) {
 function getExpressionValue(expr, row, column) {
     let rexExpr = expr.replaceAll('i', row).replaceAll('j', column);
     const res = eval(rexExpr);
-    if (typeof res != 'boolean')
-        return { err: 'invalid type of input' };
-    return { css: res ? 'background-color: lime' : '' };
+    switch (typeof res) {
+        case 'boolean':
+            return { css: res ? 'background-color: lime' : '', text: Number(row + column).toString() };
+            break;
+        case 'number':
+            return { text: res.toString() };
+            break;
+        default:
+            return { err: 'invalid output type' };
+    }
 }
 function initDisplay(parentElem, rows, columns, indexOffset) {
     const options = { rows, columns, indexOffset, expression: '' };
