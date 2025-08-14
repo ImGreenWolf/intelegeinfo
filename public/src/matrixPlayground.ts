@@ -69,16 +69,16 @@ function initDisplay(parentElem: HTMLElement, indexOffset: number)
     const options = {rows: 5, columns: 5, indexOffset, expression:  input.value}
 
     const row =  document.getElementById('sandbox-row') as HTMLInputElement
-    row.onchange = () => {
+    row.oninput = () => {
         options.rows = row.valueAsNumber
-        updateTableElements(options)
+        table.replaceChildren(...updateTableElements(options))
         
     }
 
     const column =  document.getElementById('sandbox-column') as HTMLInputElement
-    column.onchange = () => {
+    column.oninput = () => {
         options.columns = column.valueAsNumber
-        updateTableElements(options)
+        table.replaceChildren(...updateTableElements(options))
         
     }
     

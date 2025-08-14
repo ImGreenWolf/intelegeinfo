@@ -41,14 +41,14 @@ function initDisplay(parentElem, indexOffset) {
     const input = document.getElementById('sandbox-input');
     const options = { rows: 5, columns: 5, indexOffset, expression: input.value };
     const row = document.getElementById('sandbox-row');
-    row.onchange = () => {
+    row.oninput = () => {
         options.rows = row.valueAsNumber;
-        updateTableElements(options);
+        table.replaceChildren(...updateTableElements(options));
     };
     const column = document.getElementById('sandbox-column');
-    column.onchange = () => {
+    column.oninput = () => {
         options.columns = column.valueAsNumber;
-        updateTableElements(options);
+        table.replaceChildren(...updateTableElements(options));
     };
     table = createNode('table', { html: updateTableElements(options), className: 'matricie' });
     const container = createNode('div', { html: [table] });
