@@ -38,10 +38,10 @@ function getExpressionValue(options, row, column) {
     }
 }
 function initDisplay(parentElem, rows, columns, indexOffset) {
-    const options = { rows, columns, indexOffset, expression: '' };
-    table = createNode('table', { html: updateTableElements(options), className: 'matricie' });
     const input = document.getElementById('sandbox-input');
-    const container = createNode('div', { html: [table, input] });
+    const options = { rows, columns, indexOffset, expression: input.value };
+    table = createNode('table', { html: updateTableElements(options), className: 'matricie' });
+    const container = createNode('div', { html: [table] });
     parentElem.appendChild(container);
     initInput(input, options);
     return table;

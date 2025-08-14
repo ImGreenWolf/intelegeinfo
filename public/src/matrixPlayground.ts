@@ -65,13 +65,14 @@ function getExpressionValue(options: TableOptions, row, column)
 
 function initDisplay(parentElem: HTMLElement, rows: number, columns: number, indexOffset: number)
 {
-   const options = {rows, columns, indexOffset, expression: ''}
+    const input = document.getElementById('sandbox-input') as HTMLInputElement
+    const options = {rows, columns, indexOffset, expression:  input.value}
     
-     table = createNode('table', {html: updateTableElements(options), className: 'matricie'});
+    table = createNode('table', {html: updateTableElements(options), className: 'matricie'});
 
-    const input = document.getElementById('sandbox-input')!
     
-    const container = createNode('div', {html: [table, input]})
+    
+    const container = createNode('div', {html: [table]})
     parentElem.appendChild(container)
 
 
