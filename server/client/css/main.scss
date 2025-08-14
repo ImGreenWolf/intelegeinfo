@@ -252,23 +252,24 @@ header a p
 header2
 {
     
-    // backdrop-filter: blur(5px);
-    color: white;
-    display: grid;
-    align-self: center;
-    grid-template-columns: 1fr 2fr 1fr;
-    grid-template-rows: 3.25em;
-    align-items: center;
-    justify-content: center;
-    justify-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 1em 5em;
-    z-index: 200;
-    box-shadow: 0 5px 20px 10px rgba(0, 0, 0, 0.3);
-    background-image: linear-gradient(30deg,rgba(28, 35, 58, 0.29), rgba(39, 49, 77, 0.301), rgba(23, 21, 59, 0.288)), linear-gradient(rgba(0, 0, 0, 0.692), rgba(0, 0, 0, 0.507));;
+  // backdrop-filter: blur(5px);
+  color: white;
+  display: grid;
+  align-self: center;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 3.25em;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1em 5em;
+  z-index: 200;
+  box-shadow: 0 5px 20px 10px rgba(0, 0, 0, 0.3);
+  background-image: linear-gradient(30deg,rgba(28, 35, 58, 0.29), rgba(39, 49, 77, 0.301), rgba(23, 21, 59, 0.288)), linear-gradient(rgba(0, 0, 0, 0.692), rgba(0, 0, 0, 0.507));;
+  gap: 1em;
 
   .profile img
   {
@@ -322,7 +323,7 @@ header2
       display: flex;
       gap: 2em;
       align-items: stretch;
-
+      height: 75%;
       text-align: center;
       #login-container
       {
@@ -374,9 +375,8 @@ header2
             justify-content: space-around;
             width: 100%;
             list-style-type: none;
-            // gap: 1em;
-             box-shadow: 2px 5px 10px 5px rgba(0, 0, 0, 0.3), inset 10px 10px 20px -10px rgba(63, 86, 105, 0.247);
-             border-radius: 1.25em;
+            box-shadow: 2px 5px 10px 5px rgba(0, 0, 0, 0.3), inset 10px 10px 20px -10px rgba(63, 86, 105, 0.247);
+            border-radius: 1.25em;
             li
             {
             // border-radius: 1lh;
@@ -545,8 +545,9 @@ header2
             }
             .home 
             {
-              background: url(/favicon.ico) no-repeat;
-              background-position: 50% 50%;
+              background-image: url(/favicon.ico);
+              background-repeat: no-repeat;
+              background-position: 50% 30%;
               background-size: 0.5lh;
               box-sizing: border-box;
               // padding-left: 1lh;
@@ -561,7 +562,8 @@ header2
         }
         .header-buttons-container
         {
-              flex-direction: row-reverse;
+            flex-direction: row-reverse;
+            height: 75%;
             .profile img,
             .profile
             {

@@ -1126,10 +1126,10 @@ function endConnectionPromise()
          {
             let savedProject: Project | undefined;
             if(!getJWTCookie(req.headers.cookie)) throw 'not logged in';
-            const id = jwt.verify(getJWTCookie(req.headers.cookie), privateKeyPem)
+            const id = users.getIdFromJWT(req)
             
             savedProject = (await loadProject(fileUUID)) as Project
-            if(savedProject.userId !== parseInt(id.sub as string)) throw 'not authorized'
+            // if(savedProject.userId !== id) throw 'not authorized' // TODO check if project is public/shared or private (to implement)
             fs.cpSync(path.join(rootDirName,"saved", savedProject.fileUUID), path.join(rootDirName, "cache", sessionId), {recursive: true})
             project = savedProject;
             clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})

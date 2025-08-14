@@ -904,10 +904,9 @@ exports.wss.addListener('connection', async (ws, req) => {
                 let savedProject;
                 if (!getJWTCookie(req.headers.cookie))
                     throw 'not logged in';
-                const id = jsonwebtoken_1.default.verify(getJWTCookie(req.headers.cookie), privateKeyPem);
+                const id = users.getIdFromJWT(req);
                 savedProject = (await loadProject(fileUUID));
-                if (savedProject.userId !== parseInt(id.sub))
-                    throw 'not authorized';
+                // if(savedProject.userId !== id) throw 'not authorized' // TODO check if project is public/shared or private (to implement)
                 fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
                 project = savedProject;
                 clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });

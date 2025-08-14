@@ -216,6 +216,7 @@ header2 {
   z-index: 200;
   box-shadow: 0 5px 20px 10px rgba(0, 0, 0, 0.3);
   background-image: linear-gradient(30deg, rgba(28, 35, 58, 0.29), rgba(39, 49, 77, 0.301), rgba(23, 21, 59, 0.288)), linear-gradient(rgba(0, 0, 0, 0.692), rgba(0, 0, 0, 0.507));
+  gap: 1em;
 }
 header2 .profile img {
   border-radius: 50%;
@@ -257,6 +258,7 @@ header2 .header-buttons-container {
   display: flex;
   gap: 2em;
   align-items: stretch;
+  height: 75%;
   text-align: center;
 }
 header2 .header-buttons-container #login-container {
@@ -431,8 +433,9 @@ header2 nav ul li:hover {
     box-shadow: none;
   }
   header2 nav .home {
-    background: url(/favicon.ico) no-repeat;
-    background-position: 50% 50%;
+    background-image: url(/favicon.ico);
+    background-repeat: no-repeat;
+    background-position: 50% 30%;
     background-size: 0.5lh;
     box-sizing: border-box;
     width: 30px;
@@ -443,6 +446,7 @@ header2 nav ul li:hover {
   }
   header2 .header-buttons-container {
     flex-direction: row-reverse;
+    height: 75%;
   }
   header2 .header-buttons-container .profile img,
   header2 .header-buttons-container .profile {
