@@ -547,7 +547,7 @@ header2
             {
               background-image: url(/favicon.ico);
               background-repeat: no-repeat;
-              background-position: 50% 30%;
+              background-position: 50% 37%;
               background-size: 0.5lh;
               box-sizing: border-box;
               // padding-left: 1lh;
@@ -576,7 +576,7 @@ header2
         h2,
         div
         {
-          gap: 0;
+          gap: 0 !important;
             display: none;
         }
     }
