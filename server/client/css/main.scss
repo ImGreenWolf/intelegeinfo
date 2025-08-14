@@ -576,8 +576,11 @@ header2
         h2,
         div
         {
-          gap: 0 !important;
+
             display: none;
+        }
+        .header-buttons-container {
+                    gap: 0 !important;
         }
     }
 

@@ -456,8 +456,10 @@ header2 nav ul li:hover {
   }
   header2 h2,
   header2 div {
-    gap: 0 !important;
     display: none;
+  }
+  header2 .header-buttons-container {
+    gap: 0 !important;
   }
 }
 
