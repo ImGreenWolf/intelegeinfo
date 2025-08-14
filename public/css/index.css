@@ -890,17 +890,6 @@ h1.center {
   footer nav a {
     width: 100px;
   }
-  header2 {
-    font-size: 0.75em;
-  }
-  header2 nav {
-    justify-self: center;
-    transform: none;
-    grid-column: unset;
-  }
-  header2 h2 {
-    display: none;
-  }
   #graphic {
     width: 100px;
     left: 25%;
