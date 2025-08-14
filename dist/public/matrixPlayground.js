@@ -1,4 +1,4 @@
-import { createNode } from "./components";
+import { createNode } from "./components.js";
 function initInput(inputElem, options) {
     inputElem.oninput = (ev) => {
         const expr = inputElem.value;

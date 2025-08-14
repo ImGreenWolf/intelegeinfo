@@ -1,4 +1,4 @@
-import { createNode } from "./components"
+import { createNode } from "./components.js"
 // declare const createNode;
 // declare module '/editor/components';
 interface TableOptions {
