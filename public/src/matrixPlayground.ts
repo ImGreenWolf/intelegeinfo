@@ -1,4 +1,5 @@
-import { createNode } from "./components"
+// import { createNode } from "./components"
+declare const createNode
 
 interface TableOptions {
     rows
