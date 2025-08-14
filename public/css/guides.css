@@ -41,6 +41,10 @@ code.ace_editor {
   box-shadow: inset 0 0 10px 1px rgba(20, 20, 20, 0.25);
 }
 
+.ace_editor {
+  border-radius: 0.5em;
+}
+
 code.ace_editor::after {
   box-shadow: inset 0 0 3px 1px rgba(20, 20, 20, 0.25);
 }
