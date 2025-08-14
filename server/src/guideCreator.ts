@@ -66,6 +66,9 @@ router.get('/guideCreator/load/:name', authMiddleware, (req: Request, res: Respo
             display: flex;
             flex-direction: column;
             width: 30%;
+            position: sticky;
+            top: 0;
+            height: fit-content;
         }
         form input[type="text"]
         {
