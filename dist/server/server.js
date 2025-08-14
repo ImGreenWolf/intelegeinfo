@@ -1705,7 +1705,7 @@ bash `.trim().replaceAll('\n', "");
                         const checksumFailed = checksum !== messageJSON.checksum;
                         // replicate changes to others
                         if (checksumFailed) {
-                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, fileName, body: messageJSON.body, checksum });
+                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, fileName, body: file.content, checksum });
                             console.error('Checksum failed for session id:', sessionId, 'On client:', clientId);
                         }
                         replicateFunction((thisclientWs, localClientId, thisClientObj) => {

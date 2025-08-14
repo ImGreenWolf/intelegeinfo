@@ -3977,6 +3977,7 @@ break;
       if(!editorSession.editor)
         throw 'invalid editor on editor session'
       isRemoteChange = true;
+      try{
 
         if(messageJson.body)
         {
@@ -3990,10 +3991,13 @@ break;
 
         if(sha256(editorSession.editor.getValue()) != messageJson.checksum)
           console.error('Checksum failed!')
-
-      isRemoteChange = false;
-      document.getElementById('buttons')?.classList.remove('compiled')
-      dirtyFile(messageJson.fileName)
+      } finally {
+        isRemoteChange = false;
+        document.getElementById('buttons')?.classList.remove('compiled')
+        dirtyFile(messageJson.fileName)
+      }
+      
+      
 
       
       break;

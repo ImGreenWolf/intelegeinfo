@@ -2995,19 +2995,23 @@ function onMessage(event) {
             if (!editorSession.editor)
                 throw 'invalid editor on editor session';
             isRemoteChange = true;
-            if (messageJson.body) {
-                editorSession.editor.getDocument().setValue(messageJson.body);
-                console.warn('Applied forced file content correction!');
+            try {
+                if (messageJson.body) {
+                    editorSession.editor.getDocument().setValue(messageJson.body);
+                    console.warn('Applied forced file content correction!');
+                    if (sha256(editorSession.editor.getValue()) != messageJson.checksum)
+                        console.error('Failed checksum check after force content change.');
+                }
+                else
+                    editorSession.editor.getDocument().applyDelta(delta);
                 if (sha256(editorSession.editor.getValue()) != messageJson.checksum)
-                    console.error('Failed checksum check after force content change.');
+                    console.error('Checksum failed!');
             }
-            else
-                editorSession.editor.getDocument().applyDelta(delta);
-            if (sha256(editorSession.editor.getValue()) != messageJson.checksum)
-                console.error('Checksum failed!');
-            isRemoteChange = false;
-            document.getElementById('buttons')?.classList.remove('compiled');
-            dirtyFile(messageJson.fileName);
+            finally {
+                isRemoteChange = false;
+                document.getElementById('buttons')?.classList.remove('compiled');
+                dirtyFile(messageJson.fileName);
+            }
             break;
         case WebSocketMessageType.CompileResult:
             const compileErrors = JSON.parse(messageJson.body);

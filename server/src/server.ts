@@ -2116,7 +2116,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             // replicate changes to others
                         if(checksumFailed)
                         {
-                            clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientId, fileName,  body: messageJSON.body, checksum})
+                            clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientId, fileName,  body: file.content, checksum})
                             console.error('Checksum failed for session id:', sessionId, 'On client:', clientId)
                         }
                             
