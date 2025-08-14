@@ -902,8 +902,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         async function loadSave(fileUUID) {
             try {
                 let savedProject;
-                if (!getJWTCookie(req.headers.cookie))
-                    throw 'not logged in';
+                // if(!getJWTCookie(req.headers.cookie)) throw 'not logged in';
                 const id = users.getIdFromJWT(req);
                 savedProject = (await loadProject(fileUUID));
                 // if(savedProject.userId !== id) throw 'not authorized' // TODO check if project is public/shared or private (to implement)
