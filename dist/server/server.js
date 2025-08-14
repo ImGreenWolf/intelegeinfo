@@ -901,10 +901,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         async function loadSave(fileUUID) {
             try {
-                let savedProject;
-                // if(!getJWTCookie(req.headers.cookie)) throw 'not logged in';
-                const id = users.getIdFromJWT(req);
-                savedProject = (await loadProject(fileUUID));
+                let savedProject = (await loadProject(fileUUID));
                 // if(savedProject.userId !== id) throw 'not authorized' // TODO check if project is public/shared or private (to implement)
                 fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
                 project = savedProject;

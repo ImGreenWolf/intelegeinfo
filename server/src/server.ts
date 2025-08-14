@@ -1124,11 +1124,7 @@ function endConnectionPromise()
     {
          try
          {
-            let savedProject: Project | undefined;
-            // if(!getJWTCookie(req.headers.cookie)) throw 'not logged in';
-            // const id = users.getIdFromJWT(req)
-            
-            savedProject = (await loadProject(fileUUID)) as Project
+            let savedProject = (await loadProject(fileUUID)) as Project
             // if(savedProject.userId !== id) throw 'not authorized' // TODO check if project is public/shared or private (to implement)
             fs.cpSync(path.join(rootDirName,"saved", savedProject.fileUUID), path.join(rootDirName, "cache", sessionId), {recursive: true})
             project = savedProject;
