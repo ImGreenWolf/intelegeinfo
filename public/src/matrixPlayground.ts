@@ -26,7 +26,7 @@ function updateTableElements(options: TableOptions) {
         const colomElems: HTMLElement[] = [];
         for(let column=0 + options.indexOffset; column < options.columns + options.indexOffset; column++)
         {
-            const value = getExpressionValue(options.expression, row, column)
+            const value = getExpressionValue(options, row, column)
             colomElems.push(createNode('th', {innerText: value.text, css: value.css}))
         }
             
@@ -38,15 +38,15 @@ function updateTableElements(options: TableOptions) {
 
 
 
-function getExpressionValue(expr, row, column)
+function getExpressionValue(options: TableOptions, row, column)
 {
-    let rexExpr = expr.replaceAll('i', row).replaceAll('j', column)
+    let rexExpr = options.expression.replaceAll('i', row).replaceAll('j', column).replaceAll('n',options.rows).replaceAll('m', options.columns)
     try{
         const res = eval(rexExpr) 
         switch(typeof res)
         {
             case 'boolean':
-                return {css: res ? 'background-color: lime' : '', text: `i:${row},j:${column}`}
+                return {css: res ? 'background-color: lime' : '', text: `${row}, ${column}`}
             break;
             case 'number':
                 return {text: res.toString()}
