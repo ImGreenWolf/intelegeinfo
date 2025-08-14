@@ -456,6 +456,7 @@ header2 nav ul li:hover {
   }
   header2 h2,
   header2 div {
+    gap: 0;
     display: none;
   }
 }
