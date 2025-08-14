@@ -584,3 +584,14 @@ header2
     }
 
   }
+
+  @media screen and (max-width: 300px) {
+
+    header2 .header-buttons-container
+    {
+      display: none;
+    }
+    header2 {
+      grid-template-columns: auto;
+    }
+  }
