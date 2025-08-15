@@ -2073,7 +2073,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                    
                     if(messageJSON.command.startsWith('&'))
                     {
-                        clientSession.sessionContainer.process.stdin.write(messageJSON.command)
+                        clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1))
                         clientObj.sendMessage({type: WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: "cmd:"+messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId});
                         break
                     }
