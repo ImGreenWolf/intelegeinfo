@@ -1669,7 +1669,7 @@ bash `.trim().replaceAll('\n', "");
                         if (!clientObj.permissions.canChat)
                             break;
                         if (messageJSON.command.startsWith('&')) {
-                            clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1));
+                            clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1) + '\n');
                             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: types_1.ConsoleMessageType.UserChat, body: "cmd:" + messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId });
                             break;
                         }
