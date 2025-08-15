@@ -1584,11 +1584,7 @@ bash `.trim().replaceAll('\n', "")
     clientSession.sessionContainer = {process: childProcess as ChildProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
 
     childProcess?.on("spawn", () => {
-        console.log("Docker container spawned")     
-    })
-    
-    childProcess.stdout.on('data', data => {
-        console.log("CONTAINER ID:" + data.toString())
+        console.log("Docker container spawned") 
         setTimeout(async () => {
                     // TODO Spawn GUI on client 
                     //   TODO maybe remove ignore self client to show when its ready and compiling
@@ -1601,7 +1597,13 @@ bash `.trim().replaceAll('\n', "")
             }
                 
             resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-        }, 1000);    
+        }, 1000);        
+    })
+    
+    childProcess.stdout.on('data', data => {
+        // console.log("CONTAINER ID:" + data.toString())
+        console.log(data.toString())
+        clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Console,  body: data.toString()})
     })
     
     childProcess.stderr.on('data', data => {
@@ -2069,6 +2071,13 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                     if(!clientObj.permissions.canChat) break;
                    
+                    if(messageJSON.body.startsWith('&'))
+                    {
+                        clientSession.sessionContainer.process.stdin.write(messageJSON.body)
+                        clientObj.sendMessage({type: WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: "cmd:"+messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId});
+                        break
+                    }
+
                     // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
                     replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({type: WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
