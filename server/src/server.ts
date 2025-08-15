@@ -2071,9 +2071,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                     if(!clientObj.permissions.canChat) break;
                    
-                    if(messageJSON.body.startsWith('&'))
+                    if(messageJSON.command.startsWith('&'))
                     {
-                        clientSession.sessionContainer.process.stdin.write(messageJSON.body)
+                        clientSession.sessionContainer.process.stdin.write(messageJSON.command)
                         clientObj.sendMessage({type: WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: "cmd:"+messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId});
                         break
                     }
