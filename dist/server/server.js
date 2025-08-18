@@ -1839,7 +1839,7 @@ bash `.trim().replaceAll('\n', "");
                                                 const mainPromise = new Promise((resolve, reject) => {
                                                     if (!clientSession.clientsActiveFile.get(clientId)) {
                                                         onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`);
-                                                        return reject('No client active file');
+                                                        return reject('Client appears to not have an active open file');
                                                     }
                                                     if (!clientObj.editorMode.clientCompile)
                                                         buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
@@ -1848,7 +1848,7 @@ bash `.trim().replaceAll('\n', "");
                                                                 return resolve();
                                                             if (!clientObj.getFile(res.fileName)) {
                                                                 onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`);
-                                                                return reject('No client active file');
+                                                                return reject('No client active file for ' + res.fileName);
                                                             }
                                                             try {
                                                                 clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal) => {

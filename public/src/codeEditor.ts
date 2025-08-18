@@ -2338,8 +2338,9 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
         break;
         case ConsoleMessageType.Console:
           if(textArea)
-
           textArea.innerHTML += data + " \n"
+        else 
+           outputArea.innerText += data + "\n";
         break;
         case ConsoleMessageType.Notification:
           displayMessagePopup(data)

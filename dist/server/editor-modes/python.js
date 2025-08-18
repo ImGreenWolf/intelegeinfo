@@ -81,7 +81,7 @@ print("Intelege Info: " + x)`;
     WORKDIR /app
     RUN apt-get update && apt-get install -y \
     xvfb x11vnc fluxbox python3-tk wget python3-opencv && apt-get clean
-    RUN pip install opencv-python ultralytics 
+    RUN pip install opencv-python ultralytics numpy
     
 CMD bash `;
     vcam;
@@ -208,7 +208,7 @@ CMD bash `;
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
         // execSync('docker exec -i '+res.imageName + ' sh -c "pip install opencv-python"')
-        const proc = (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "python clientFiles/" + res.fileName], {
+        const proc = (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "(cd ./clientFiles && python -u " + res.fileName + ")"], {
             stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
         });
         if (sessionObj && this.hasGUI)

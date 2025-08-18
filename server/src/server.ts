@@ -2283,7 +2283,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         if(!clientSession.clientsActiveFile.get(clientId))
                                         {
                                             onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`)
-                                            return reject('No client active file')
+                                            return reject('Client appears to not have an active open file')
                                         }
 
                                         if(!clientObj.editorMode.clientCompile)
@@ -2293,7 +2293,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             if(!clientObj.getFile(res.fileName))
                                             {
                                                 onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`)
-                                                return reject('No client active file')
+                                                return reject('No client active file for '+ res.fileName)
                                             }
                                                     
                                             try {
