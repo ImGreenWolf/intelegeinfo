@@ -230,10 +230,12 @@ async function readChunk(reader: ReadableStreamDefaultReader<Uint8Array>, file: 
 
 export function copySendLink() {
     const url = new URL(location.toString())
-    url.searchParams.set('targetId', clientId)
+    const targetId = uuidv4().split('-')[0]
+    url.searchParams.set('clientId', targetId)
     const text = url.toString()
-    
     navigator.clipboard.writeText(text)
+
+    setCodeValue(targetId)
 }
 
 function uuidv4() {
@@ -242,9 +244,11 @@ function uuidv4() {
   );
 }
 export function copyRecieveLink() {
-    const url = new URL(location.toString())
-    url.searchParams.set('clientId', uuidv4())
-    const text = url.toString()
 
+     const url = new URL(location.toString())
+    url.searchParams.set('targetId', clientId)
+    const text = url.toString()
+    
     navigator.clipboard.writeText(text)
+    
 }
