@@ -35,6 +35,8 @@ exports.wssFS.on('connection', (ws, req) => {
         var clientId = wsURL.searchParams.get('clientId');
     else
         var clientId = (0, node_crypto_1.randomUUID)().split('-')[0];
+    if (clientsMap.has(clientId))
+        return sendError('Client aready exists, please create another link.');
     clientsMap.set(clientId, ws);
     sendMessage({ type: 'init', clientId });
     ws.addListener("message", async (data, isBinary) => {

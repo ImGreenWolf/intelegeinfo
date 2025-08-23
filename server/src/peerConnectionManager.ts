@@ -40,7 +40,8 @@ wssFS.on('connection', (ws, req) => {
         var clientId = wsURL.searchParams.get('clientId')
     else
         var clientId = randomUUID().split('-')[0]
-    
+    if(clientsMap.has(clientId))
+        return sendError('Client aready exists, please create another link.')
     clientsMap.set(clientId, ws)
     
     sendMessage({type: 'init', clientId})
