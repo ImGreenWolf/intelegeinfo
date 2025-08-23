@@ -10,9 +10,9 @@ const output = document.getElementById('output') as HTMLPreElement
 const progressBar = document.getElementById('progressBar') as HTMLImageElement
 const selectFile = document.getElementById('selectFile') as HTMLButtonElement
 
-if(new URLSearchParams(location.toString()).has('targetId'))
+if(new URL(location.toString()).searchParams.has('targetId'))
 {
-    const targetId = new URLSearchParams(location.toString()).get('targetId')
+    const targetId = new URL(location.toString()).searchParams.get('targetId')
     setCodeValue(targetId as string)
 }
 
@@ -251,7 +251,7 @@ export function copySendLink() {
     navigator.clipboard.writeText(text)
 
     const myurl = new URL(location.toString())
-    myurl.searchParams.set('targetId', clientId)
+    myurl.searchParams.set('targetId', targetId)
     window.history.replaceState(null, '', myurl)
 
     setCodeValue(targetId)

@@ -6,8 +6,8 @@ const codeElem = document.getElementById('code');
 const output = document.getElementById('output');
 const progressBar = document.getElementById('progressBar');
 const selectFile = document.getElementById('selectFile');
-if (new URLSearchParams(location.toString()).has('targetId')) {
-    const targetId = new URLSearchParams(location.toString()).get('targetId');
+if (new URL(location.toString()).searchParams.has('targetId')) {
+    const targetId = new URL(location.toString()).searchParams.get('targetId');
     setCodeValue(targetId);
 }
 let rtcCon;
@@ -199,7 +199,7 @@ export function copySendLink() {
     const text = url.toString();
     navigator.clipboard.writeText(text);
     const myurl = new URL(location.toString());
-    myurl.searchParams.set('targetId', clientId);
+    myurl.searchParams.set('targetId', targetId);
     window.history.replaceState(null, '', myurl);
     setCodeValue(targetId);
 }
