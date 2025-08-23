@@ -402,6 +402,11 @@ exports.server.on('upgrade', function upgrade(request, socket, head) {
                 metrics_1.wssAPI.emit('connection', ws, request);
             });
             break;
+        case '/directSharing':
+            peerConnectionManager_1.wssFS.handleUpgrade(request, socket, head, function done(ws) {
+                peerConnectionManager_1.wssFS.emit('connection', ws, request);
+            });
+            break;
         case '/editor':
             exports.wss.handleUpgrade(request, socket, head, function done(ws) {
                 exports.wss.emit('connection', ws, request);
@@ -1268,10 +1273,11 @@ bash `.trim().replaceAll('\n', "");
                     childProcess.stdout.on('data', data => {
                         // console.log("CONTAINER ID:" + data.toString())
                         console.log(data.toString());
-                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Console, body: data.toString() });
+                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: data.toString() });
                     });
                     childProcess.stderr.on('data', data => {
                         console.log('[Docker Container Error]' + data.toString());
+                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: data.toString() });
                         // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
                     });
                 }).catch(err => [
@@ -1645,34 +1651,41 @@ bash `.trim().replaceAll('\n', "");
                  */
                         break;
                     case types_1.WebSocketMessageType.Console:
-                        if (getProcessFromMap() != undefined) {
-                            if (getProcessFromMap().sendCommand) {
-                                getProcessFromMap().sendCommand(messageJSON.command);
-                                replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
-                            }
-                            else {
-                                if (!getProcessFromMap().stdin)
-                                    return;
-                                getProcessFromMap().stdin.write(messageJSON.command + "\n");
-                                dataTimeout = setTimeout(() => {
-                                    replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
-                                }, 200);
-                            }
+                        switch (messageJSON.action) {
+                            default:
+                            case 'process':
+                                if (getProcessFromMap() != undefined) {
+                                    if (getProcessFromMap().sendCommand) {
+                                        getProcessFromMap().sendCommand(messageJSON.command);
+                                        replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
+                                    }
+                                    else {
+                                        if (!getProcessFromMap().stdin)
+                                            return;
+                                        getProcessFromMap().stdin.write(messageJSON.command + "\n");
+                                        dataTimeout = setTimeout(() => {
+                                            replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
+                                        }, 200);
+                                    }
+                                }
+                                else
+                                    processInputBuffer += messageJSON.command + "\n";
+                                replicateFunction((clientWs) => {
+                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Console, body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client
+                                });
+                                break;
+                            case 'container':
+                                if (!clientSession.sessionContainer || !clientSession.sessionContainer.process) {
+                                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: "Va rugam rulati programul cel putin o data inainte sa puteti executa comenzi!" });
+                                    break;
+                                }
+                                clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1) + '\n');
+                                clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: "......." });
                         }
-                        else
-                            processInputBuffer += messageJSON.command + "\n";
-                        replicateFunction((clientWs) => {
-                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Console, body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client
-                        });
                         break;
                     case types_1.WebSocketMessageType.Chat:
                         if (!clientObj.permissions.canChat)
                             break;
-                        if (messageJSON.command.startsWith('&')) {
-                            clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1) + '\n');
-                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: types_1.ConsoleMessageType.UserChat, body: "cmd:" + messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId });
-                            break;
-                        }
                         // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
                         replicateFunction((clientWs) => {
                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: types_1.ConsoleMessageType.UserChat, body: messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client

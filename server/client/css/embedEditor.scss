@@ -110,11 +110,30 @@
             display: none;
         }
 
-        .language-carousel
-        {
-            overflow: auto;
-            height: 100%;
-            grid-template-columns: 1fr;
-        }
+        // .language-carousel
+        // {
+        //     overflow: auto;
+        //     height: 100%;
+        //     grid-template-columns: 1fr;
+        // }
+    }
+    #sessionInfo-container > div
+    {
+        // height: 0;
+    }
+    #sessionInfo-container
+    {
+        max-height: 20px;
+    }
+    .session-container
+    {
+        position: absolute;
+        right: 1em;
+        top: 0.75em;
+        z-index: 1;
+    }
+    .default-screen .language-info
+    {
+        display: none;
     }
 } 

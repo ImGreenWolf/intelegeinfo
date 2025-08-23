@@ -2228,6 +2228,13 @@ form#codeForm {
   margin-left: 15px;
 }
 
+.terminal .ace_gutter {
+  display: none;
+}
+.terminal .ace_scroller {
+  left: 0;
+}
+
 .container {
   padding: 5px;
   overflow: hidden;
@@ -2294,10 +2301,17 @@ form#codeForm {
   .default-screen h1 {
     display: none;
   }
-  .default-screen .language-carousel {
-    overflow: auto;
-    height: 100%;
-    grid-template-columns: 1fr;
+  #sessionInfo-container {
+    max-height: 20px;
+  }
+  .session-container {
+    position: absolute;
+    right: 1em;
+    top: 0.75em;
+    z-index: 1;
+  }
+  .default-screen .language-info {
+    display: none;
   }
 }
 

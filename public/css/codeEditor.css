@@ -2217,4 +2217,11 @@ form#codeForm {
   margin-left: 15px;
 }
 
+.terminal .ace_gutter {
+  display: none;
+}
+.terminal .ace_scroller {
+  left: 0;
+}
+
 /*# sourceMappingURL=codeEditor.css.map */

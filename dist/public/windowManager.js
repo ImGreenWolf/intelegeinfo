@@ -535,6 +535,7 @@ export function updateCatalouge(sessionId, clientId) {
         createEditorTab('Subiecte', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] })),
         createEditorTab('Pbinfo', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://www.pbinfo.ro/' }, { name: 'allow', value: "encrypted-media" }] })),
         createEditorTab('Probleme', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problems.html?sessionId=' + sessionId }] })),
+        new TerminalTab()
     ];
     if (false) // TODO check if user is admin
         tabs.push(createEditorTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] })));
@@ -549,8 +550,11 @@ export function updateCatalouge(sessionId, clientId) {
         catalouge?.appendChild(tab.element);
     }
 }
+function createTabElement(name) {
+    return createNode('span', { className: "file-tab", html: [createNode('p', { innerText: name })] });
+}
 export function createEditorTab(name, content, disableDrag) {
-    return new EditorWindowTab(name, createNode('span', { className: "file-tab", html: [createNode('p', { innerText: name })] }), content, undefined, disableDrag);
+    return new EditorWindowTab(name, createTabElement(name), content, undefined, disableDrag);
 }
 async function loadLanguages() {
     const languageCarousel = document.getElementById('languageCarousel');
@@ -869,4 +873,94 @@ class TokenTooltip extends Tooltip {
         delete this.editor.tokenTooltip;
     }
     ;
+}
+export class TerminalTab extends EditorWindowTab {
+    terminal;
+    constructor() {
+        const terminalElem = createNode('div', { className: 'terminal' });
+        let terminal = ace.edit(terminalElem, {
+            showGutter: false,
+            enableBasicAutocompletion: false,
+            displayIndentGuides: false,
+            fontSize: 16,
+            showLineNumbers: false,
+            highlightActiveLine: false,
+            showPrintMargin: false,
+            wrap: true,
+            theme: 'ace/theme/terminal'
+        });
+        terminal.setShowPrintMargin(false);
+        terminal.renderer.setShowGutter(false);
+        let prompt = "$ "; // your prompt string
+        terminal.setValue(prompt, -1); // set prompt and move cursor to end
+        function runCommand(command) {
+            // Simple commands for demonstration
+            let output = "";
+            switch (command.trim()) {
+                case "help":
+                    output = "Available commands: help, echo, clear";
+                    break;
+                case "":
+                    output = "";
+                    break;
+                case "clear":
+                    terminal.setValue(prompt, prompt.length);
+                    return;
+                default:
+                    if (command.startsWith("echo ")) {
+                        output = command.slice(5);
+                    }
+                    else {
+                        output = `Command not found: ${command}`;
+                    }
+            }
+            terminal.insert("\n" + output + "\n" + prompt);
+            // Move cursor to end
+            terminal.gotoLine(terminal.session.getLength(), prompt.length);
+        }
+        // Prevent editing previous lines
+        terminal.on("change", function (delta) {
+            const lines = terminal.session.getDocument().getAllLines();
+            const lastLine = lines[lines.length - 1];
+            const cursor = terminal.getCursorPosition();
+            if (cursor.row < lines.length - 1 || cursor.column < prompt.length) {
+                terminal.gotoLine(lines.length, prompt.length);
+            }
+        });
+        // Intercept Enter key to run command
+        terminal.commands.addCommand({
+            name: "runTerminalCommand",
+            bindKey: { win: "Enter", mac: "Enter" },
+            exec: function (editor) {
+                const lines = editor.session.getDocument().getAllLines();
+                const lastLine = lines[lines.length - 1];
+                const command = lastLine.slice(prompt.length);
+                // runCommand(command);
+                ws.send(JSON.stringify({ type: WebSocketMessageType.Console, action: 'container', body: command }));
+            }
+        });
+        // Prevent backspacing the prompt
+        terminal.commands.addCommand({
+            name: "preventBackspacePrompt",
+            bindKey: { win: "Backspace", mac: "Backspace" },
+            exec: function (editor) {
+                const pos = editor.getCursorPosition();
+                const line = editor.session.getLine(pos.row);
+                if (pos.column <= prompt.length)
+                    return;
+                editor.remove("left");
+            }
+        });
+        super('Terminal', createTabElement('Terminal'), terminalElem);
+        this.terminal = terminal;
+    }
+    write(data) {
+        this.terminal.session.insert({ row: this.terminal.session.getLength() + 1, column: 0 }, "\n" + data);
+    }
+}
+export function findTabByName(name) {
+    let found;
+    for (const window_ of windows)
+        found = window_.tabs.find(tab => tab.name == name);
+    return found;
 }

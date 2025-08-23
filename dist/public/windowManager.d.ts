@@ -44,4 +44,10 @@ declare class TokenTooltip extends Tooltip {
     setPosition(x: any, y: any): void;
     destroy(): void;
 }
+export declare class TerminalTab extends EditorWindowTab {
+    terminal: Ace.Editor;
+    constructor();
+    write(data: string): void;
+}
+export declare function findTabByName(name: any): EditorWindowTab;
 export {};

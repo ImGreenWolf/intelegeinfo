@@ -68,6 +68,9 @@
   .chat-content {
     font-size: 1rem;
   }
+  .default-screen {
+    gap: 0;
+  }
   .default-screen .language-carousel {
     display: grid;
     max-width: 100%;
@@ -85,6 +88,9 @@
     border-top: 2px solid gray;
     overflow: auto;
     box-sizing: content-box;
+  }
+  .default-screen .language-info {
+    display: none;
   }
 }
 /*

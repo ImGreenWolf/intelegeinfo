@@ -5,7 +5,7 @@
 import { createButton, createNode, EditorCanvas, LoadingThrobber, Toolbox } from "./components";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
-import { createEditorTab, cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updateCatalouge } from "./windowManager.js";
+import { createEditorTab, cursorManagers, EditorWindow, EditorWindowTab, findTabByName, showDefaultScreen, updateCatalouge } from "./windowManager.js";
 const AceRange = ace.require("ace/range").Range;
 const aceModes = ace.require("ace/ext/modelist");
 const sessionCookieName = 'editor_session_id';
@@ -105,6 +105,7 @@ class Console {
                 command: this.stdin.join(" "),
                 // args: ["console"],
                 type: WebSocketMessageType.Console,
+                action: 'process'
             }));
         };
         thisConsole.appendChild(resendButton);
@@ -1613,7 +1614,7 @@ export function listProjects() {
 }
 // END DOCUMENT FUNCTIONS //
 // standardise the json
-function sendWebsocketCommand(cmd, argsArr = []) {
+export function sendWebsocketCommand(cmd, argsArr = []) {
     ws.send(JSON.stringify({
         command: cmd,
         args: argsArr,
@@ -2248,7 +2249,7 @@ export let ws;
     //   }
     // }
     const params = new URLSearchParams();
-    if (sessionId) {
+    if (sessionId && !inIframe) {
         params.set('session', sessionId.toString());
         if (getCookie('token')) {
             if (getCookie('savedName'))
@@ -2323,6 +2324,7 @@ export function submitConsole(elem, type, Console) {
         command: sendText,
         // args: ["console"],
         type: type || WebSocketMessageType.Chat,
+        action: 'process'
     }));
     if (Console)
         Console.sendCommand(sendText);
@@ -2798,6 +2800,12 @@ function onMessage(event) {
                 canvas.handleReplication(messageJson);
             break;
         case WebSocketMessageType.Console:
+            if (messageJson.action == 'container') {
+                const tab = findTabByName('Terminal');
+                if (tab)
+                    tab.write(messageJson.body);
+                break;
+            }
         case WebSocketMessageType.Output:
             if (byteSize(messageJson.body) > 64000) // 1000000 is 1Mb
              {

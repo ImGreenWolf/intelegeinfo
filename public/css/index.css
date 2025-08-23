@@ -736,7 +736,6 @@ h1.center {
   flex-direction: column;
   grid-column: 1/-1;
   width: 75%;
-  min-height: 300px;
 }
 #editor-demo div {
   display: flex;
@@ -744,6 +743,7 @@ h1.center {
   flex-wrap: wrap;
   justify-content: space-around;
   position: relative;
+  min-height: 500px;
 }
 #editor-demo div button {
   position: absolute;
@@ -753,6 +753,7 @@ h1.center {
   padding: 20px;
   border-radius: 10px;
   width: 300px;
+  z-index: 2;
 }
 #editor-demo div iframe {
   border: 5px solid black;
@@ -760,7 +761,23 @@ h1.center {
   max-width: 600px;
   min-width: 150px;
   width: 100%;
+  position: absolute;
+  transition-duration: 0.5s;
+  transition-timing-function: cubic-bezier(0.86, 0, 0.07, 1);
+  transform: translateX(0%);
 }
+#editor-demo div iframe:not([src]) {
+  left: 50%;
+  transform: translateX(-50%);
+}
+#editor-demo div iframe[src]:nth-of-type(1) {
+  left: 0 !important;
+}
+#editor-demo div iframe[src]:nth-of-type(2) {
+  left: unset;
+  right: 0 !important;
+}
+
 :any-link {
   color: white;
 }

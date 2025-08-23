@@ -1,5 +1,5 @@
 // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc"
-import { createNode } from "./components";
+import { createNode } from "./components.js";
 // //@ts-ignore
 // const signaler = new WebSocket(WSUrl)
 // const pc = new RTCPeerConnection(configuration);
@@ -123,7 +123,7 @@ export class IIWebRTC {
     localAudioSender = [];
     //remote audio
     audio;
-    onData = (data) => console.log(data);
+    onData = (data) => () => { };
     onStartVoice = (data) => console.log(data);
     constructor(thistargetId, thisClientId, signaler, isHost, onConnection) {
         var configuration = {
@@ -147,6 +147,7 @@ export class IIWebRTC {
         this.pc = new RTCPeerConnection(configuration); // create local peer connection
         // console.log(this.id,'is caller : ', isHost, "target: ",thistargetId)
         this.dc = this.pc.createDataChannel('data'); // data channel for communication created locally on host
+        this.dc.binaryType = 'arraybuffer';
         console.log(this.id, "is host:", isHost, "caller:", thisClientId, "callee:", thistargetId);
         this.dc.onclose = () => {
             this.dc = undefined;
@@ -181,7 +182,7 @@ export class IIWebRTC {
                 await this.pc.setLocalDescription(offer); // 2
                 signaler.send(JSON.stringify({ type: "rtc", targetId: thistargetId, description: offer })); //this.pc!.localDescription //3
                 // console.log(this.id,'making offer. ',"target: ",thistargetId)
-                console.log(this.id, 'negotiation ended');
+                console.log(this.id, 'negotiation needed');
             }
             catch (err) {
                 console.error(this.id, err);

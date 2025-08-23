@@ -158,6 +158,7 @@ export declare function toggleConsoleDebugProgram(elem: HTMLElement): void;
 export declare function onConsoleInput(elem: HTMLTextAreaElement, ev?: Event): void;
 export declare function saveProject(): void;
 export declare function listProjects(): boolean | undefined;
+export declare function sendWebsocketCommand(cmd: string, argsArr?: string[]): void;
 export declare function joinsession(): boolean | undefined;
 export declare function copySessionLink(): boolean | void;
 export declare function createFile(fileName?: string, fileContent?: any, index?: number): void;
@@ -174,7 +175,7 @@ export declare class TokenTooltip extends Tooltip {
     setPosition(x: any, y: any): void;
     destroy(): void;
 }
-export declare let ws: any;
+export declare let ws: WebSocket;
 import { IIWebRTC } from "./webrtcdemo.js";
 export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 type FileEditorSession = {

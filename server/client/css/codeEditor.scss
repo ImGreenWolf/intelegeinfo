@@ -2631,3 +2631,14 @@ form#codeForm {
 
     
 }
+
+.terminal {
+
+    .ace_gutter {
+        display: none;
+    }
+    .ace_scroller 
+    {
+        left: 0;
+    }
+}

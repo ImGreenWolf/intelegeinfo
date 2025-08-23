@@ -1056,13 +1056,14 @@ h1.center
 
     grid-column: 1 / -1;
     width: 75%;
-    min-height: 300px;
+    
     div {
         display: flex;
         row-gap: 3em;
         flex-wrap: wrap;
         justify-content: space-around;
         position: relative;
+        min-height: 500px;
         button {
             position: absolute;
             top: 50%;
@@ -1071,6 +1072,7 @@ h1.center
             padding: 20px;
             border-radius: 10px;
             width: 300px;
+            z-index: 2;
         }
         iframe
         {
@@ -1079,13 +1081,30 @@ h1.center
             max-width: 600px;
             min-width: 150px;
             width: 100%;
-            
+            position: absolute;
+            transition-duration: 0.5s;
+            transition-timing-function: cubic-bezier(0.86, 0, 0.07, 1);
+            transform: translateX(0%);
             &:not([src])
             {
+                left: 50%;
+                // right: 50%;
+                transform: translateX(-50%);
                 // background: url(/media/landingpageBackground.png), radial-gradient(transparent, rgb(20, 20, 20) 80%);
                 // opacity: 0.25;
                 // background-blend-mode: color-burn;
                 // // filter: blur(5px);
+            }
+
+            &[src]:nth-of-type(1)
+            {
+                left: 0 !important;
+            }
+
+            &[src]:nth-of-type(2)
+            {
+                left: unset;
+                right: 0 !important;
             }
         }
     }

@@ -484,7 +484,9 @@ server.on('listening', onServerStart)
 
 
     export const wss = new WebSocket.Server({noServer: true, clientTracking: true,  });
-    import { wssRTC } from "./peerConnectionManager";
+    import { wssFS, wssRTC } from "./peerConnectionManager";
+
+    
 
 //                      END                      //  
 
@@ -496,16 +498,21 @@ server.on('listening', onServerStart)
             wssAPI.emit('connection', ws, request);
             });
             break
+        case '/directSharing': 
+            wssFS.handleUpgrade(request, socket, head, function done(ws) {
+            wssFS.emit('connection', ws, request);
+            });
+            break
         case '/editor':
             wss.handleUpgrade(request, socket, head, function done(ws) {
             wss.emit('connection', ws, request);
             });
             break;
-            case '/rtc':
-            wss.handleUpgrade(request, socket, head, function done(ws) {
-            wssRTC.emit('connection', ws, request);
-            });
-            break
+        case '/rtc':
+        wss.handleUpgrade(request, socket, head, function done(ws) {
+        wssRTC.emit('connection', ws, request);
+        });
+        break
         default:
             socket.destroy();
   
@@ -1603,11 +1610,12 @@ bash `.trim().replaceAll('\n', "")
     childProcess.stdout.on('data', data => {
         // console.log("CONTAINER ID:" + data.toString())
         console.log(data.toString())
-        clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Console,  body: data.toString()})
+        clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
     })
     
     childProcess.stderr.on('data', data => {
         console.log('[Docker Container Error]' + data.toString())
+        clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
         // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
     })
 
@@ -2040,43 +2048,52 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                    
 
                 case WebSocketMessageType.Console:
-                     if(getProcessFromMap()!=undefined)
-                     {
-                        if((getProcessFromMap() as DebugProcess).sendCommand)
-                        {
-                            (getProcessFromMap() as DebugProcess).sendCommand(messageJSON.command)
-                             replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
-                        }
-                        else
-                        {   
-                             if(!(getProcessFromMap() as ChildProcess).stdin)
-                            return
-                            (getProcessFromMap() as ChildProcess).stdin.write(messageJSON.command + "\n");
-                            dataTimeout = setTimeout(() => {
-                                replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
-                            }, 200);
-                        }
-                       
-                     }
-                     else
-                        processInputBuffer += messageJSON.command + "\n";
+                    switch(messageJSON.action) {
+                        default:
+                        case 'process':
+                            if(getProcessFromMap()!=undefined)
+                            {
+                                if((getProcessFromMap() as DebugProcess).sendCommand)
+                                {
+                                    (getProcessFromMap() as DebugProcess).sendCommand(messageJSON.command)
+                                    replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
+                                }
+                                else
+                                {   
+                                    if(!(getProcessFromMap() as ChildProcess).stdin)
+                                    return
+                                    (getProcessFromMap() as ChildProcess).stdin.write(messageJSON.command + "\n");
+                                    dataTimeout = setTimeout(() => {
+                                        replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
+                                    }, 200);
+                                }
+                            
+                            }
+                            else
+                                processInputBuffer += messageJSON.command + "\n";
 
-                    replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Console,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
-                    });
+                            replicateFunction((clientWs) => {
+                                clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Console,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
+                            });
+                            break
+                    case 'container':
+                            if(!clientSession.sessionContainer || !clientSession.sessionContainer.process)
+                                {
+                                    clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: "Va rugam rulati programul cel putin o data inainte sa puteti executa comenzi!"})
+                                    break
+                                }
+                            clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1)+'\n')
+                            clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: "......."})
+                               
+                    }
+                     
                     break;
                 case WebSocketMessageType.Chat:
 
                 
 
                     if(!clientObj.permissions.canChat) break;
-                   
-                    if(messageJSON.command.startsWith('&'))
-                    {
-                        clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1)+'\n')
-                        clientObj.sendMessage({type: WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: ConsoleMessageType.UserChat,  body: "cmd:"+messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId});
-                        break
-                    }
+                
 
                     // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
                     replicateFunction((clientWs) => {
@@ -2089,7 +2106,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         
                     // });
                     break;
-
+                
                 case WebSocketMessageType.MouseUpdate:
                     if(!clientObj.openFile)
                         throw "Client open file is invalid"

@@ -30,7 +30,7 @@ import modelist from "ace-builds/src-noconflict/ext-modelist";
 // import { EditorSession } from "../../server/types";
 import { Project } from "../../generated/prisma"
 import { HandshakeMessage, WebSocketMessage } from "../../shared/src/messageTypes"
-import { createEditorTab, cursorManagers, EditorWindow, EditorWindowTab, showDefaultScreen, updateCatalouge } from "./windowManager.js";
+import { createEditorTab, cursorManagers, EditorWindow, EditorWindowTab, findTabByName, showDefaultScreen, TerminalTab, updateCatalouge } from "./windowManager.js";
 import path from "path";
 const AceRange = ace.require("ace/range").Range;
 const aceModes: typeof modelist = ace.require("ace/ext/modelist");
@@ -165,6 +165,7 @@ class Console {
           command: this.stdin.join(" "),
           // args: ["console"],
           type: WebSocketMessageType.Console,
+          action: 'process'
         })
       );
 
@@ -2143,7 +2144,7 @@ export function listProjects()
 // END DOCUMENT FUNCTIONS //
 
 // standardise the json
-function sendWebsocketCommand(cmd: string, argsArr: string[] = []) {
+export function sendWebsocketCommand(cmd: string, argsArr: string[] = []) {
   ws.send(
     JSON.stringify({
       command: cmd,
@@ -2338,7 +2339,7 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
         break;
         case ConsoleMessageType.Console:
           if(textArea)
-          textArea.innerHTML += data + " \n"
+            textArea.innerHTML += data + " \n"
         else 
            outputArea.innerText += data + "\n";
         break;
@@ -2921,7 +2922,7 @@ export class TokenTooltip extends Tooltip {
 
   // export const ws = new WebSocket(WSUrl);
 
-  export let ws; 
+  export let ws: WebSocket 
   (async() => {
 
     
@@ -2943,7 +2944,7 @@ export class TokenTooltip extends Tooltip {
         
     // }
     const params = new URLSearchParams()
-    if(sessionId)
+    if(sessionId && !inIframe)
     {
             params.set('session', sessionId.toString())
             if(getCookie('token'))
@@ -3054,6 +3055,7 @@ export function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketM
       command: sendText,
       // args: ["console"],
       type: type || WebSocketMessageType.Chat,
+      action: 'process'
     })
   );
   if(Console)
@@ -3703,6 +3705,13 @@ break;
         canvas.handleReplication(messageJson)
       break;
     case WebSocketMessageType.Console:
+      if(messageJson.action == 'container')
+      {
+        const tab = findTabByName('Terminal') as TerminalTab
+        if(tab)
+          tab.write(messageJson.body)
+        break
+      }
     case WebSocketMessageType.Output:
       
       if(byteSize(messageJson.body) > 64000) // 1000000 is 1Mb

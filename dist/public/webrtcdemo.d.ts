@@ -23,7 +23,7 @@ export declare class IIWebRTC {
         candidate: any;
     }): Promise<void>;
     addMediaStream(selfVideo: any): Promise<void>;
-    send(data: string): void;
+    send(data: any): void;
     close(): void;
     beginSendingAudio(): Promise<MediaStream>;
     stopSendingAudio(): void;
