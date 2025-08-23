@@ -16,7 +16,7 @@ if(new URLSearchParams(location.toString()).has('targetId'))
     setCodeValue(targetId as string)
 }
 
-let rtcCon: IIWebRTC;
+let rtcCon: IIWebRTC | undefined;
 
 function setCodeValue(value) {
     codeElem.value = value
@@ -28,13 +28,15 @@ selectFile.onclick = (ev) => {
         return connectToClient()
     sendFile()
 }
-codeElem.onchange = (ev) => {
+codeElem.oninput = (ev) => {
     if(!rtcCon)
         return selectFile.disabled = false
     rtcCon.close()
+    rtcCon = undefined
     selectFile.disabled = true
     codeElem.setCustomValidity('You have been disconected')
 }
+
 
 
 function connectToClient() {
@@ -70,6 +72,8 @@ ws.addEventListener('message', (ev) => {
 
 function handleTransmissionData(rtcChannel: RTCDataChannel)
 {
+    if(!rtcCon)
+        return 
     rtcChannel.binaryType = 'arraybuffer';
     let buffer: any[] = []
     let fileData: {name: string, originalSize: number, fileType: string}
@@ -179,7 +183,7 @@ async function sendFile() {
     
     const file = await getFile()
     const fileData = {name: file.name, originalSize: file.size, fileType: file.type}
-    rtcCon.send(JSON.stringify({type: 'fileData', fileData}))
+    rtcCon!.send(JSON.stringify({type: 'fileData', fileData}))
         
     await readFile(file)
     setProgress(0)
@@ -199,14 +203,14 @@ async function readFile(file: File) {
     output.innerText += `\nDone! Sent ${(res/1000000).toFixed(2)}mb!`
     // readChunk(e.data.stream().getReader(), e.data)
     setProgress(0)
-    rtcCon.send(JSON.stringify({type: 'done'}))
+    rtcCon!.send(JSON.stringify({type: 'done'}))
     
 }
 
 async function readChunk(reader: ReadableStreamDefaultReader<Uint8Array>, file: File) {
     let totalSize = 0;
     const CHUNK_SIZE = 63 * 1024; // 64KB per chunk, adjust as needed
-    const CHUNKS_PER_SECOND = 100; // Limit to 10 chunks per second
+    const CHUNKS_PER_SECOND = 200; // Limit to 10 chunks per second
     const INTERVAL_MS = 1000 / CHUNKS_PER_SECOND;
     setInterval(() => {
        setProgress(totalSize/file.size*100)
@@ -220,7 +224,7 @@ async function readChunk(reader: ReadableStreamDefaultReader<Uint8Array>, file: 
             for (let offset = 0; offset < value.byteLength; offset += CHUNK_SIZE) {
                 const chunk = value.subarray(offset, offset + CHUNK_SIZE);
                 // rtcCon.send(chunk);
-                rtcCon.send(chunk);
+                rtcCon!.send(chunk);
                 totalSize += chunk.byteLength;
                 await new Promise(res => setTimeout(res, INTERVAL_MS));
             } 

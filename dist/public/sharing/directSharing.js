@@ -20,10 +20,11 @@ selectFile.onclick = (ev) => {
         return connectToClient();
     sendFile();
 };
-codeElem.onchange = (ev) => {
+codeElem.oninput = (ev) => {
     if (!rtcCon)
         return selectFile.disabled = false;
     rtcCon.close();
+    rtcCon = undefined;
     selectFile.disabled = true;
     codeElem.setCustomValidity('You have been disconected');
 };
@@ -55,6 +56,8 @@ ws.addEventListener('message', (ev) => {
     }
 });
 function handleTransmissionData(rtcChannel) {
+    if (!rtcCon)
+        return;
     rtcChannel.binaryType = 'arraybuffer';
     let buffer = [];
     let fileData;
@@ -161,7 +164,7 @@ async function readFile(file) {
 async function readChunk(reader, file) {
     let totalSize = 0;
     const CHUNK_SIZE = 63 * 1024; // 64KB per chunk, adjust as needed
-    const CHUNKS_PER_SECOND = 100; // Limit to 10 chunks per second
+    const CHUNKS_PER_SECOND = 200; // Limit to 10 chunks per second
     const INTERVAL_MS = 1000 / CHUNKS_PER_SECOND;
     setInterval(() => {
         setProgress(totalSize / file.size * 100);
