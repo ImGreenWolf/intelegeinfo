@@ -18,7 +18,7 @@ if(new URLSearchParams(location.toString()).has('targetId'))
 
 let rtcCon: IIWebRTC | undefined;
 
-function setCodeValue(value) {
+function setCodeValue(value: string) {
     codeElem.value = value
     selectFile.disabled = false
 }
@@ -70,17 +70,20 @@ ws.addEventListener('message', (ev) => {
     } 
 })
 
+let updateInterval
+const updateRate = 100;
 function handleTransmissionData(rtcChannel: RTCDataChannel)
 {
     if(!rtcCon)
         return 
+    
     rtcChannel.binaryType = 'arraybuffer';
+
     let buffer: any[] = []
     let fileData: {name: string, originalSize: number, fileType: string}
     let chunkSize = 0;
-    let updateInterval
     let lastChunkSize = 0
-    let updateRate = 100;
+
     rtcChannel.addEventListener('message', (ev) => {
         if(typeof (ev.data) == 'object')
         {   
@@ -169,6 +172,8 @@ function setProgress(progress: number) {
     {
         progressBar.classList.remove('active')
          selectFile.disabled = false
+         if(updateInterval)
+            clearInterval(updateInterval)
     }
     else 
     {
@@ -209,12 +214,14 @@ async function readFile(file: File) {
 
 async function readChunk(reader: ReadableStreamDefaultReader<Uint8Array>, file: File) {
     let totalSize = 0;
-    const CHUNK_SIZE = 63 * 1024; // 64KB per chunk, adjust as needed
-    const CHUNKS_PER_SECOND = 100; // Limit to 10 chunks per second
+    const CHUNK_SIZE = 64 * 1024 * 4; // 64KB per chunk, adjust as needed
+    const CHUNKS_PER_SECOND = 200; // Limit to 10 chunks per second
     const INTERVAL_MS = 1000 / CHUNKS_PER_SECOND;
-    setInterval(() => {
+    updateInterval = setInterval(() => {
        setProgress(totalSize/file.size*100)
+       output.innerText = `buffer: ${rtcCon!.dc!.bufferedAmount}`
     }, 100);
+
     let done = false;
     while (!done) {
         const { value, done: isDone } = await reader.read();
@@ -226,7 +233,10 @@ async function readChunk(reader: ReadableStreamDefaultReader<Uint8Array>, file: 
                 // rtcCon.send(chunk);
                 rtcCon!.send(chunk);
                 totalSize += chunk.byteLength;
-                await new Promise(res => setTimeout(res, INTERVAL_MS));
+                await new Promise<void>(res => setInterval(() => {
+                    if(rtcCon!.dc!.bufferedAmount < CHUNK_SIZE)
+                     res()
+                }, INTERVAL_MS));
             } 
         }
     }
@@ -239,6 +249,10 @@ export function copySendLink() {
     url.searchParams.set('clientId', targetId)
     const text = url.toString()
     navigator.clipboard.writeText(text)
+
+    const myurl = new URL(location.toString())
+    myurl.searchParams.set('targetId', clientId)
+    window.history.replaceState(null, '', myurl)
 
     setCodeValue(targetId)
 }

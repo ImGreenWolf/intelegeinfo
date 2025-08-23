@@ -55,6 +55,8 @@ ws.addEventListener('message', (ev) => {
             break;
     }
 });
+let updateInterval;
+const updateRate = 100;
 function handleTransmissionData(rtcChannel) {
     if (!rtcCon)
         return;
@@ -62,9 +64,7 @@ function handleTransmissionData(rtcChannel) {
     let buffer = [];
     let fileData;
     let chunkSize = 0;
-    let updateInterval;
     let lastChunkSize = 0;
-    let updateRate = 100;
     rtcChannel.addEventListener('message', (ev) => {
         if (typeof (ev.data) == 'object') {
             buffer.push(ev.data);
@@ -136,6 +136,8 @@ function setProgress(progress) {
     if (progress == 0) {
         progressBar.classList.remove('active');
         selectFile.disabled = false;
+        if (updateInterval)
+            clearInterval(updateInterval);
     }
     else {
         selectFile.disabled = true;
@@ -163,11 +165,12 @@ async function readFile(file) {
 }
 async function readChunk(reader, file) {
     let totalSize = 0;
-    const CHUNK_SIZE = 63 * 1024; // 64KB per chunk, adjust as needed
-    const CHUNKS_PER_SECOND = 100; // Limit to 10 chunks per second
+    const CHUNK_SIZE = 64 * 1024 * 4; // 64KB per chunk, adjust as needed
+    const CHUNKS_PER_SECOND = 200; // Limit to 10 chunks per second
     const INTERVAL_MS = 1000 / CHUNKS_PER_SECOND;
-    setInterval(() => {
+    updateInterval = setInterval(() => {
         setProgress(totalSize / file.size * 100);
+        output.innerText = `buffer: ${rtcCon.dc.bufferedAmount}`;
     }, 100);
     let done = false;
     while (!done) {
@@ -180,7 +183,10 @@ async function readChunk(reader, file) {
                 // rtcCon.send(chunk);
                 rtcCon.send(chunk);
                 totalSize += chunk.byteLength;
-                await new Promise(res => setTimeout(res, INTERVAL_MS));
+                await new Promise(res => setInterval(() => {
+                    if (rtcCon.dc.bufferedAmount < CHUNK_SIZE)
+                        res();
+                }, INTERVAL_MS));
             }
         }
     }
@@ -192,6 +198,9 @@ export function copySendLink() {
     url.searchParams.set('clientId', targetId);
     const text = url.toString();
     navigator.clipboard.writeText(text);
+    const myurl = new URL(location.toString());
+    myurl.searchParams.set('targetId', clientId);
+    window.history.replaceState(null, '', myurl);
     setCodeValue(targetId);
 }
 function uuidv4() {
