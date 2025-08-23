@@ -30,7 +30,7 @@ selectFile.onclick = (ev) => {
 }
 codeElem.onchange = (ev) => {
     if(!rtcCon)
-        return
+        return selectFile.disabled = false
     rtcCon.close()
     selectFile.disabled = true
     codeElem.setCustomValidity('You have been disconected')
@@ -181,7 +181,8 @@ async function sendFile() {
     const fileData = {name: file.name, originalSize: file.size, fileType: file.type}
     rtcCon.send(JSON.stringify({type: 'fileData', fileData}))
         
-    readFile(file)
+    await readFile(file)
+    setProgress(0)
     // const readWorker = new Worker("/client/scripts/sharing/sendWorker.js");
     // readWorker.postMessage(file)
     // readWorker.onmessage = (ev) => {
