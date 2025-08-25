@@ -132,9 +132,16 @@
             flex-direction: column;
             gap: 0.5em;
         }
+        #qrcode, 
+        #qrcode img {
+            width: 150px;
+            height: 150px;
+            margin: auto;
+        }
     </style>
 </head>
 <body>
+    <script src="/client/scripts/libs/davidshimjs-qrcodejs-04f46c6/qrcode.min.js"></script>
     <script type="module">
         import { copySendLink, copyRecieveLink } from "/client/scripts/sharing/directSharing.js";
         window.copySendLink = copySendLink;
@@ -142,6 +149,8 @@
     </script>
 
     <div class="title-container">
+        <div id="qrcode"></div>
+        
         <h3>Your code:</h3>
         <h1 id="ownCodeDisplay"></h1>
     </div>

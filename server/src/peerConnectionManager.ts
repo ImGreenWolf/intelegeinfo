@@ -53,6 +53,7 @@ wssFS.on('connection', (ws, req) => {
     if(wsURL.searchParams.has('targetId'))
         connectToTarget(wsURL.searchParams.get('targetId'))
 
+
    ws.addListener("message", async (data: Buffer, isBinary: boolean) => {  
         const message = JSON.parse(data.toString())
 
@@ -71,7 +72,7 @@ wssFS.on('connection', (ws, req) => {
     ws.onclose = (ev) => {
         clientsMap.delete(clientId)
     }
-    function connectToTarget(targetId) {
+    function connectToTarget(targetId, clientId?) {
         if(!clientsMap.has(targetId))
             return sendError('Invalid target')
         sendMessage({type: 'connect', targetId, request: false})

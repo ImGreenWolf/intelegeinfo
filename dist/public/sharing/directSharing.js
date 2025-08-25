@@ -41,6 +41,7 @@ ws.addEventListener('message', (ev) => {
         case 'init':
             clientId = message.clientId;
             document.getElementById('ownCodeDisplay').innerText = clientId;
+            new QRCode(document.getElementById("qrcode"), getCopyLink());
             break;
         case 'connect':
             if (!message.targetId)
@@ -235,15 +236,18 @@ async function readChunk(reader, file) {
     });
 }
 export function copySendLink() {
-    const url = new URL(location.toString());
+    navigator.clipboard.writeText(getCopyLink());
     const targetId = uuidv4().split('-')[0];
-    url.searchParams.set('clientId', targetId);
-    const text = url.toString();
-    navigator.clipboard.writeText(text);
     const myurl = new URL(location.toString());
     myurl.searchParams.set('targetId', targetId);
     window.history.replaceState(null, '', myurl);
     setCodeValue(targetId);
+}
+function getCopyLink() {
+    const url = new URL(location.toString());
+    const targetId = uuidv4().split('-')[0];
+    url.searchParams.set('clientId', targetId);
+    return url.toString();
 }
 function uuidv4() {
     return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c => (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16));

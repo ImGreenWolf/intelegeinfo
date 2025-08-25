@@ -58,7 +58,7 @@ exports.wssFS.on('connection', (ws, req) => {
     ws.onclose = (ev) => {
         clientsMap.delete(clientId);
     };
-    function connectToTarget(targetId) {
+    function connectToTarget(targetId, clientId) {
         if (!clientsMap.has(targetId))
             return sendError('Invalid target');
         sendMessage({ type: 'connect', targetId, request: false });
