@@ -58,13 +58,19 @@ ws.addEventListener('message', (ev) => {
         case 'init':
             clientId = message.clientId
             document.getElementById('ownCodeDisplay')!.innerText = clientId
-            new QRCode(document.getElementById("qrcode"), getCopyLink());
+            try {
+                new QRCode(document.getElementById("qrcode"), getCopyLink());
+            }
+            catch(err)
+            {
+                console.warn(err)
+            }
         break;
         case 'connect':
             if(!message.targetId)
                 break
             rtcCon = new IIWebRTC(message.targetId, clientId, ws, message.request, handleTransmissionData)
-            document.getElementById('connected')?.classList.add('active')
+            document.getElementById('connected')!.classList.add('active')
             selectFile.innerText = 'Select File'
             selectFile.disabled = false
             codeElem.value = message.targetId
@@ -92,7 +98,10 @@ function handleTransmissionData(rtcChannel: RTCDataChannel)
     rtcChannel.binaryType = 'arraybuffer';
     rtcCon!.dc!.bufferedAmountLowThreshold = 64 * 1024;
     rtcChannel.onclose = onDisconect
-    rtcChannel.onerror = onDisconect
+    rtcChannel.onerror = (err) => {
+        console.error(err.error)
+        err.type
+    }
     let buffer: any[] = []
     let fileData: {name: string, originalSize: number, fileType: string}
     let chunkSize = 0;

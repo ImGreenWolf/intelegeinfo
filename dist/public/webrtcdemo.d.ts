@@ -14,7 +14,9 @@ export declare class IIWebRTC {
     audio: HTMLAudioElement | undefined;
     onData: (data: string) => void;
     onStartVoice: (track: MediaStreamTrack, stream: readonly MediaStream[]) => void;
-    constructor(thistargetId: any, thisClientId: any, signaler: WebSocket, isHost: any, onConnection: (dataChannel: RTCDataChannel) => void);
+    constructor(thistargetId: any, thisClientId: any, signaler: WebSocket, isHost: any, onConnection: (dataChannel: RTCDataChannel) => void, options?: {
+        dataChannelOptions?: RTCDataChannelInit;
+    });
     handleSignal({ type, targetId, callerId, description, candidate }: {
         type: any;
         targetId: any;

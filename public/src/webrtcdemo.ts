@@ -167,7 +167,7 @@ export class IIWebRTC
     onData: (data: string) => void = (data) => () => {}
     onStartVoice: (track: MediaStreamTrack, stream: readonly MediaStream[]) => void = (data) => console.log(data)
 
-    constructor(thistargetId,thisClientId, signaler: WebSocket, isHost, onConnection: (dataChannel: RTCDataChannel) => void)
+    constructor(thistargetId,thisClientId, signaler: WebSocket, isHost, onConnection: (dataChannel: RTCDataChannel) => void, options?: {dataChannelOptions?: RTCDataChannelInit})
     {
         var configuration: RTCConfiguration = {
             iceServers : [ 
@@ -197,7 +197,7 @@ export class IIWebRTC
         this.pc! = new RTCPeerConnection(configuration); // create local peer connection
         // console.log(this.id,'is caller : ', isHost, "target: ",thistargetId)
        
-        this.dc = this.pc!.createDataChannel('data') // data channel for communication created locally on host
+        this.dc = this.pc!.createDataChannel('data', options ? options.dataChannelOptions : undefined) // data channel for communication created locally on host
         this.dc.binaryType = 'arraybuffer';
         console.log(this.id, "is host:", isHost, "caller:", thisClientId, "callee:", thistargetId)
 

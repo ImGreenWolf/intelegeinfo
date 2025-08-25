@@ -125,7 +125,7 @@ export class IIWebRTC {
     audio;
     onData = (data) => () => { };
     onStartVoice = (data) => console.log(data);
-    constructor(thistargetId, thisClientId, signaler, isHost, onConnection) {
+    constructor(thistargetId, thisClientId, signaler, isHost, onConnection, options) {
         var configuration = {
             iceServers: [
                 { urls: "stun:stun.l.google.com:19302" },
@@ -146,7 +146,7 @@ export class IIWebRTC {
             return;
         this.pc = new RTCPeerConnection(configuration); // create local peer connection
         // console.log(this.id,'is caller : ', isHost, "target: ",thistargetId)
-        this.dc = this.pc.createDataChannel('data'); // data channel for communication created locally on host
+        this.dc = this.pc.createDataChannel('data', options ? options.dataChannelOptions : undefined); // data channel for communication created locally on host
         this.dc.binaryType = 'arraybuffer';
         console.log(this.id, "is host:", isHost, "caller:", thisClientId, "callee:", thistargetId);
         this.dc.onclose = () => {

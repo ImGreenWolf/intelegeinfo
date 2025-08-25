@@ -72,7 +72,9 @@ wssFS.on('connection', (ws, req) => {
     ws.onclose = (ev) => {
         clientsMap.delete(clientId)
     }
-    function connectToTarget(targetId, clientId?) {
+    function connectToTarget(targetId) {
+        if(!targetId)
+            throw 'invalid target id';
         if(!clientsMap.has(targetId))
             return sendError('Invalid target')
         sendMessage({type: 'connect', targetId, request: false})
