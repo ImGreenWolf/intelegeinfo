@@ -204,12 +204,6 @@ export class IIWebRTC {
                 this.onData(ev.data);
             });
         };
-        // this.pc!.oniceconnectionstatechange = () => {
-        // if (this.pc!.iceConnectionState === "failed") {
-        //     this.pc!.setConfiguration(configuration);
-        //     this.pc!.restartIce();
-        // }
-        // };
         this.thisClientId = thisClientId;
         this.thistargetId = thistargetId;
         this.signaler = signaler;

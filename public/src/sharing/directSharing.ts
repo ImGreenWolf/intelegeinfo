@@ -56,7 +56,7 @@ ws.addEventListener('message', (ev) => {
         case 'init':
             clientId = message.clientId
             document.getElementById('ownCodeDisplay')!.innerText = clientId
-           
+            
         break;
         case 'connect':
             if(!message.targetId)
@@ -230,8 +230,8 @@ async function readChunk(reader: ReadableStreamDefaultReader<Uint8Array>, file: 
     
     let totalSize = 0;
     const CHUNK_SIZE = 64 * 1024 * 1; // 64KB per chunk, adjust as needed
-    const CHUNKS_PER_SECOND = 100; // Limit to 10 chunks per second
-    const INTERVAL_MS = 1000 / CHUNKS_PER_SECOND;
+    // const CHUNKS_PER_SECOND = 100; // Limit to 10 chunks per second
+    // const INTERVAL_MS = 1000 / CHUNKS_PER_SECOND;
     let lastChunkSize = 0
     updateInterval = setInterval(() => {
         if(rtcCon?.dc == undefined)
