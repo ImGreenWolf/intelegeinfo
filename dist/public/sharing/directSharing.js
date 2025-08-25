@@ -34,6 +34,7 @@ function connectToClient() {
 function sendMessage(msg) {
     ws.send(JSON.stringify(msg));
 }
+ws.onclose = onDisconect;
 ws.addEventListener('message', (ev) => {
     const message = JSON.parse(ev.data);
     switch (message.type) {
@@ -42,8 +43,13 @@ ws.addEventListener('message', (ev) => {
             document.getElementById('ownCodeDisplay').innerText = clientId;
             break;
         case 'connect':
+            if (!message.targetId)
+                break;
             rtcCon = new IIWebRTC(message.targetId, clientId, ws, message.request, handleTransmissionData);
             document.getElementById('connected')?.classList.add('active');
+            selectFile.innerText = 'Select File';
+            selectFile.disabled = false;
+            codeElem.value = message.targetId;
             break;
         case 'rtc':
             if (!rtcCon)
@@ -53,6 +59,8 @@ ws.addEventListener('message', (ev) => {
         case 'error':
             output.innerText = message.error;
             break;
+        case 'disconect':
+            onDisconect();
     }
 });
 let updateInterval;
@@ -61,6 +69,9 @@ function handleTransmissionData(rtcChannel) {
     if (!rtcCon)
         return;
     rtcChannel.binaryType = 'arraybuffer';
+    rtcCon.dc.bufferedAmountLowThreshold = 64 * 1024;
+    rtcChannel.onclose = onDisconect;
+    rtcChannel.onerror = onDisconect;
     let buffer = [];
     let fileData;
     let chunkSize = 0;
@@ -94,7 +105,7 @@ function handleTransmissionData(rtcChannel) {
     // only the host can send files
     if (rtcCon.polite)
         return;
-    sendFile();
+    // sendFile()
     async function finishReadingTransfer(buffer_) {
         const blob = new Blob(buffer_);
         console.log(blob);
@@ -164,33 +175,64 @@ async function readFile(file) {
     rtcCon.send(JSON.stringify({ type: 'done' }));
 }
 async function readChunk(reader, file) {
-    let totalSize = 0;
-    const CHUNK_SIZE = 64 * 1024 * 2; // 64KB per chunk, adjust as needed
-    const CHUNKS_PER_SECOND = 100; // Limit to 10 chunks per second
-    const INTERVAL_MS = 1000 / CHUNKS_PER_SECOND;
-    updateInterval = setInterval(() => {
-        setProgress(totalSize / file.size * 100);
-        output.innerText = `buffer: ${rtcCon.dc.bufferedAmount}`;
-    }, 100);
-    let done = false;
-    while (!done) {
-        const { value, done: isDone } = await reader.read();
-        done = isDone;
-        if (value) {
-            // If value is larger than CHUNK_SIZE, split it
+    return new Promise((resolve, reject) => {
+        let totalSize = 0;
+        const CHUNK_SIZE = 64 * 1024 * 1; // 64KB per chunk, adjust as needed
+        const CHUNKS_PER_SECOND = 100; // Limit to 10 chunks per second
+        const INTERVAL_MS = 1000 / CHUNKS_PER_SECOND;
+        let lastChunkSize = 0;
+        updateInterval = setInterval(() => {
+            if (rtcCon?.dc == undefined)
+                reject(clearInterval(updateInterval));
+            setProgress(totalSize / file.size * 100);
+            //    output.innerText = `buffer: ${rtcCon!.dc!.bufferedAmount}`
+            const downloadedSize = (totalSize / 1000000).toFixed(2);
+            const fileSize = (file.size / 1000000).toFixed(2);
+            output.innerText = `${downloadedSize}mb / ${fileSize}mb, buffer: ${rtcCon.dc.bufferedAmount}, speed: ${((totalSize - lastChunkSize) * (1000 / updateRate) / 1000000).toFixed(2)}mb/s \n`;
+            lastChunkSize = totalSize;
+            if (rtcCon.dc.bufferedAmount == 0)
+                send();
+        }, updateRate);
+        // let done = false;
+        // while (!done) {
+        //     const { value, done: isDone } = await reader.read();
+        //     done = isDone;
+        //     if (value) {
+        //         // If value is larger than CHUNK_SIZE, split it
+        //         for (let offset = 0; offset < value.byteLength; offset += CHUNK_SIZE) {
+        //             const chunk = value.subarray(offset, offset + CHUNK_SIZE);
+        //             // rtcCon.send(chunk);
+        //             rtcCon!.send(chunk);
+        //             totalSize += chunk.byteLength;
+        //             await new Promise<void>(res => setInterval(() => {
+        //                 if(rtcCon!.dc!.bufferedAmount < CHUNK_SIZE)
+        //                  res()
+        //             }, INTERVAL_MS));
+        //         } 
+        //     }
+        // }
+        // return totalSize;
+        rtcCon.dc.onbufferedamountlow = async function (ev) {
+            await send();
+        };
+        send();
+        async function send() {
+            const { value, done: isDone } = await reader.read();
+            if (isDone) {
+                // rtcCon!.dc!.onbufferedamountlow = null
+                resolve(totalSize);
+                return;
+            }
+            if (!value)
+                throw 'invalid chunk';
             for (let offset = 0; offset < value.byteLength; offset += CHUNK_SIZE) {
                 const chunk = value.subarray(offset, offset + CHUNK_SIZE);
-                // rtcCon.send(chunk);
                 rtcCon.send(chunk);
                 totalSize += chunk.byteLength;
-                await new Promise(res => setInterval(() => {
-                    if (rtcCon.dc.bufferedAmount < CHUNK_SIZE)
-                        res();
-                }, INTERVAL_MS));
             }
         }
-    }
-    return totalSize;
+        ;
+    });
 }
 export function copySendLink() {
     const url = new URL(location.toString());
@@ -211,4 +253,9 @@ export function copyRecieveLink() {
     url.searchParams.set('targetId', clientId);
     const text = url.toString();
     navigator.clipboard.writeText(text);
+}
+function onDisconect() {
+    document.getElementById('connected')?.classList.remove('active');
+    selectFile.disabled = true;
+    selectFile.innerText = 'Connect';
 }

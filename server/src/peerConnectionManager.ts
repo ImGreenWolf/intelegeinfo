@@ -40,24 +40,25 @@ wssFS.on('connection', (ws, req) => {
         var clientId = wsURL.searchParams.get('clientId')
     else
         var clientId = randomUUID().split('-')[0]
+
+   
+        
+
     if(clientsMap.has(clientId))
         return sendError('Client aready exists, please create another link.')
     clientsMap.set(clientId, ws)
     
     sendMessage({type: 'init', clientId})
- 
-   
+    
+    if(wsURL.searchParams.has('targetId'))
+        connectToTarget(wsURL.searchParams.get('targetId'))
 
    ws.addListener("message", async (data: Buffer, isBinary: boolean) => {  
         const message = JSON.parse(data.toString())
 
         switch(message.type) {
             case 'connect':
-                const targetId = message.target
-                if(!clientsMap.has(targetId))
-                    return sendError('Invalid target')
-                sendMessage({type: 'connect', targetId, request: false})
-                sendMessage({type: 'connect', targetId: clientId, request: true}, clientsMap.get(message.target))
+               connectToTarget(message.target)
             break;
             case 'rtc':
                 if(!clientsMap.has(message.targetId))
@@ -70,4 +71,12 @@ wssFS.on('connection', (ws, req) => {
     ws.onclose = (ev) => {
         clientsMap.delete(clientId)
     }
+    function connectToTarget(targetId) {
+        if(!clientsMap.has(targetId))
+            return sendError('Invalid target')
+        sendMessage({type: 'connect', targetId, request: false})
+        sendMessage({type: 'connect', targetId: clientId, request: true}, clientsMap.get(targetId))
+    }
 })
+
+
