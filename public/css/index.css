@@ -1021,4 +1021,40 @@ h1.center {
   text-decoration: none;
 }
 
+.tree-wrapper {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 2em;
+  position: relative;
+}
+.tree-wrapper::before {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  bottom: 2em;
+  left: 100px;
+  top: 0;
+  border-left: 5px dashed rgb(37, 37, 37);
+}
+
+.motive-tree {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  justify-content: space-between;
+  height: 80%;
+  align-items: center;
+  gap: 0.5em;
+}
+.motive-tree div {
+  border: 2px solid rgb(36, 36, 36);
+  box-shadow: 0 0 20px 10px inset rgb(1.9516129032, 2.6612903226, 3.5483870968);
+  background-color: rgb(11, 15, 20);
+  border-radius: 1lh;
+  padding: 1em;
+  width: 75%;
+  transition-duration: 0.3s;
+}
+
 /*# sourceMappingURL=index.css.map */

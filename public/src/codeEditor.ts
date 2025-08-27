@@ -730,7 +730,7 @@ export const editorSessions: Map<string, FileEditorSession> = new Map<
   FileEditorSession
 >();
 const ClientDock = inIframe ? undefined : new Toolbox() //Dock()
-const DockElement = inIframe ? undefined : ClientDock!.render() 
+const DockElement = inIframe || !ClientDock ? undefined : ClientDock.render() 
 let microphone: HTMLElement | undefined
 let microphonePaused: boolean = true;
 if(DockElement)
@@ -2726,8 +2726,9 @@ function addButtons(buttons, id?)
     //         window.editor.sendDebugCommand('-exec-next')
     //     }, class: "debug"})
     // ]
-
-    const editorControls = ClientDock!.addSection(buttons, id)
+    if(!ClientDock)
+      return
+    const editorControls = ClientDock.addSection(buttons, id)
     // const editorControls = createNode('div', {html: buttons, className: 'inner-toolbar', id})
     //   DockElement!.children[1].prepend(editorControls)
       editorControls.animate([
@@ -2926,8 +2927,8 @@ export class TokenTooltip extends Tooltip {
   (async() => {
 
     
-    const sessionId = new URLSearchParams(window.location.search).get("session") 
-    const saveId = new URLSearchParams(window.location.search).get("save");
+    const sessionId = new URL(window.location.toString()).searchParams.get("session") 
+    const saveId = new URL(window.location.toString()).searchParams.get("save");
     // const params: (boolean | string | undefined | null)[] = [sessionId, saveId, inIframe]
     // const paramNames: (boolean | string | undefined | null)[] = ['session', 'save', 'embeded']
     // let paramsURL = ''
@@ -2946,7 +2947,7 @@ export class TokenTooltip extends Tooltip {
     const params = new URLSearchParams()
     if(sessionId && !inIframe)
     {
-            params.set('session', sessionId.toString())
+            
             if(getCookie('token'))
             {  
                if(getCookie('savedName'))
@@ -2971,6 +2972,8 @@ export class TokenTooltip extends Tooltip {
 
     if(saveId)
      params.set('save', saveId.toString())
+    if(sessionId)
+      params.set('session', sessionId.toString())
     params.set('embeded', inIframe.toString())
     const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/editor" + (params.size ? "?" : "") + params.toString()
 
@@ -3362,7 +3365,8 @@ export const compileErrorObjs: Map<number,CompileError> = new Map();
       else
         pauseVoice()
     }
-    ClientDock!.addSection([microphone], 'microphone-container')
+    if(ClientDock)
+      ClientDock.addSection([microphone], 'microphone-container')
     // ClientDock.appendChild(microphone)
 
 
@@ -3435,7 +3439,7 @@ export const compileErrorObjs: Map<number,CompileError> = new Map();
 
   function createRTCConnection(targetId, isHost)
   {
-    
+    console.log('is host:',isHost)
     const newRTC = new IIWebRTC(targetId,wsClientId, ws, isHost, (dc) => {
       document.onpointerdown = onCapture;
       document.onpointermove = onCapture;
@@ -3479,7 +3483,7 @@ function onRemoteClientJoin(rclient: HandshakeMessage['users'][number])
     throw 'Invalid remote client'
   // clients.push(new SessionClient(rclient.clientId, rclient.displayName, rclient.color))
     if(!rtc.has(rclient.clientId))
-    createRTCConnection(rclient.clientId, true)
+    createRTCConnection(rclient.clientId, isHost)
 
   if(rclient.clientId == wsClientId)
     throw 'duplicate client id'
@@ -3668,34 +3672,10 @@ break;
         break;
       if(messageJson.description.type != "offer" )
         break;
-
       const callerId = messageJson.callerId
-            if(rtc.has(callerId))
-              break
-                      console.log('Createing remote rtc')
-              createRTCConnection(callerId, false)
-          // const newRTC = new IIWebRTC(callerId, wsClientId, ws, false, (dc) => {
-          //   ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate}))
-          // })
-          // if(!microphone)
-          // newRTC.onStartVoice = (track,stream) => {
-          //   microphone = createNode('div', {css: 'width: 50px; height: 50px; background-color: black;'})
-          //   document.getElementById('button-container')?.appendChild(microphone)
-          //   getStreamVolume(stream[0], 50, (volume) => {
-          //     console.log(volume)
-          //   })
-            
-          // }
-          // rtc.set(callerId, newRTC)
-          // newRTC.onData = (data) => {
-          //   const eventJson = JSON.parse(data)
-          //   console.log(eventJson)
-            
-          //   if(!cursors.has(eventJson.clientId))
-          //     new EditorCursor(eventJson)
-          //   else
-          //     cursors.get(callerId)!.update(eventJson)
-          // }
+      if(!rtc.has(callerId))
+        createRTCConnection(callerId, isHost)
+
     break;
     case WebSocketMessageType.Error:
       writeOutput(data, messageJson);

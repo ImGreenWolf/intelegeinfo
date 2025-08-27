@@ -1510,3 +1510,42 @@ h1.center
     
     
 }
+
+.tree-wrapper {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    gap: 2em;
+    position: relative;
+    &::before
+    {
+        z-index: -1;
+        content: '';
+        position: absolute;
+        bottom: 2em;
+        left: 100px;
+        top: 0;
+        border-left: 5px dashed rgb(37, 37, 37);
+    }
+}
+.motive-tree {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    justify-content: space-between;
+    height: 80%;
+    align-items: center;
+    gap: 0.5em;
+    
+    div {
+        border: 2px solid rgb(36, 36, 36);
+        box-shadow: 0 0 20px 10px inset rgb(1.9516129032, 2.6612903226, 3.5483870968);
+        background-color: theme.$background-highlight-color ;
+        border-radius: 1lh;
+        padding: 1em;
+        width: 75%;
+        transition-duration: 0.3s;
+        
+    }
+    
+}
