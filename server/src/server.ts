@@ -2104,7 +2104,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: "Va rugam rulati programul cel putin o data inainte sa puteti executa comenzi!"})
                                     break
                                 }
-                            clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1)+'\n')
+                            if(!messageJSON.body)
+                                console.error('invalid body')
+                            clientSession.sessionContainer.process.stdin.write(messageJSON.body.substring(1)+'\n')
                             clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: "......."})
                                
                     }

@@ -884,15 +884,10 @@ export class TerminalTab extends EditorWindowTab {
         });
         terminal.setShowPrintMargin(false);
         terminal.renderer.setShowGutter(false);
-        // Prevent editing previous lines
-        terminal.on("change", function (delta) {
-            const lines = terminal.session.getDocument().getAllLines();
-            const lastLine = lines[lines.length - 1];
-            const cursor = terminal.getCursorPosition();
-            if (cursor.row < lines.length - 1 || cursor.column < prompt.length) {
-                terminal.gotoLine(lines.length, prompt.length);
-            }
-        });
+        super('Terminal', createTabElement('Terminal'), terminalElem);
+        terminal.setValue(this.prompt, -1); // set prompt and move cursor to end
+        this.terminal = terminal;
+        const prompt = this.prompt;
         // Intercept Enter key to run command
         terminal.commands.addCommand({
             name: "runTerminalCommand",
@@ -919,9 +914,15 @@ export class TerminalTab extends EditorWindowTab {
                 editor.remove("left");
             }
         });
-        super('Terminal', createTabElement('Terminal'), terminalElem);
-        terminal.setValue(this.prompt, -1); // set prompt and move cursor to end
-        this.terminal = terminal;
+        // Prevent editing previous lines
+        terminal.on("change", function (delta) {
+            const lines = terminal.session.getDocument().getAllLines();
+            const lastLine = lines[lines.length - 1];
+            const cursor = terminal.getCursorPosition();
+            if (cursor.row < lines.length - 1 || cursor.column < prompt.length) {
+                terminal.gotoLine(lines.length, prompt.length);
+            }
+        });
     }
     write(data) {
         this.terminal.session.insert({ row: this.terminal.session.getLength() + 1, column: 0 }, "\n" + data + "\n" + this.prompt);

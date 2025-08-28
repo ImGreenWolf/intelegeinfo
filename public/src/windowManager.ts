@@ -1121,17 +1121,22 @@ export class TerminalTab extends EditorWindowTab {
 
 
 
-        // Prevent editing previous lines
-        terminal.on("change", function(delta) {
-            const lines = terminal.session.getDocument().getAllLines();
-            const lastLine = lines[lines.length - 1];
-            const cursor = terminal.getCursorPosition();
-            if (cursor.row < lines.length - 1 || cursor.column < prompt.length) {
-                terminal.gotoLine(lines.length, prompt.length);
-            }
-        });
+        
 
-        // Intercept Enter key to run command
+      
+
+       
+
+
+        super('Terminal', createTabElement('Terminal'), terminalElem)
+
+        
+         terminal.setValue(this.prompt, -1); // set prompt and move cursor to end
+        this.terminal = terminal
+        const prompt = this.prompt
+
+
+          // Intercept Enter key to run command
         terminal.commands.addCommand({
             name: "runTerminalCommand",
             bindKey: { win: "Enter", mac: "Enter" },
@@ -1158,12 +1163,15 @@ export class TerminalTab extends EditorWindowTab {
             }
         });
 
-       
-
-
-        super('Terminal', createTabElement('Terminal'), terminalElem)
-         terminal.setValue(this.prompt, -1); // set prompt and move cursor to end
-        this.terminal = terminal
+        // Prevent editing previous lines
+        terminal.on("change", function(delta) {
+            const lines = terminal.session.getDocument().getAllLines();
+            const lastLine = lines[lines.length - 1];
+            const cursor = terminal.getCursorPosition();
+            if (cursor.row < lines.length - 1 || cursor.column < prompt.length) {
+                terminal.gotoLine(lines.length, prompt.length);
+            }
+        });
     }
 
     public write(data: string)
