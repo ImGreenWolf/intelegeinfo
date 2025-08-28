@@ -26,10 +26,10 @@ function getExpressionValue(options, row, column) {
     let rexValExpr = options.valExpression.replaceAll('i', row).replaceAll('j', column).replaceAll('n', options.rows).replaceAll('m', options.columns);
     try {
         const res = eval(rexExpr);
-        const resVal = eval('3 + 5');
+        const resVal = eval(rexValExpr);
         let text = `${row}, ${column}`;
         if (typeof resVal == 'number' || typeof resVal == 'string')
-            text = rexValExpr;
+            text = resVal.toString();
         if (typeof res == 'boolean')
             return { css: res ? 'background-color: lime' : '', text };
         return { err: 'Incorrect input type' };
