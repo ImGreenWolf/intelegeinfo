@@ -1,8 +1,11 @@
 import { createNode } from "./components.js";
-function initInput(inputElem, options) {
+function initInput(inputElem, options, type) {
     inputElem.oninput = (ev) => {
         const expr = inputElem.value;
-        options.expression = expr;
+        if (type == 'b')
+            options.expression = expr;
+        else
+            options.valExpression = expr;
         table.replaceChildren(...updateTableElements(options));
     };
 }
@@ -20,18 +23,16 @@ function updateTableElements(options) {
 }
 function getExpressionValue(options, row, column) {
     let rexExpr = options.expression.replaceAll('i', row).replaceAll('j', column).replaceAll('n', options.rows).replaceAll('m', options.columns);
+    let rexValExpr = options.valExpression.replaceAll('i', row).replaceAll('j', column).replaceAll('n', options.rows).replaceAll('m', options.columns);
     try {
         const res = eval(rexExpr);
-        switch (typeof res) {
-            case 'boolean':
-                return { css: res ? 'background-color: lime' : '', text: `${row}, ${column}` };
-                break;
-            case 'number':
-                return { text: res.toString() };
-                break;
-            default:
-                return { err: 'invalid output type' };
-        }
+        const resVal = eval(rexValExpr);
+        let text = `${row}, ${column}`;
+        if (typeof resVal == 'number' || typeof resVal == 'string')
+            text = rexValExpr;
+        if (typeof res == 'boolean')
+            return { css: res ? 'background-color: lime' : '', text };
+        return { err: 'Incorrect input type' };
     }
     catch (err) {
         return { err };
@@ -39,7 +40,8 @@ function getExpressionValue(options, row, column) {
 }
 function initDisplay(parentElem, indexOffset) {
     const input = document.getElementById('sandbox-input');
-    const options = { rows: 5, columns: 5, indexOffset, expression: input.value };
+    const valInput = document.getElementById('sandbox-value-input');
+    const options = { rows: 5, columns: 5, indexOffset, expression: input.value, valExpression: valInput.value };
     const row = document.getElementById('sandbox-row');
     row.oninput = () => {
         options.rows = row.valueAsNumber;
@@ -53,7 +55,8 @@ function initDisplay(parentElem, indexOffset) {
     table = createNode('table', { html: updateTableElements(options), className: 'matricie' });
     const container = createNode('div', { html: [table] });
     parentElem.appendChild(container);
-    initInput(input, options);
+    initInput(input, options, 'b');
+    initInput(valInput, options, 'v');
     return table;
 }
 let table;
