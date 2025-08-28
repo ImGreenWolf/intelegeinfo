@@ -53,12 +53,15 @@ function getExpressionValue(options: TableOptions, row: number, column: number)
         let text = `${row}, ${column}`
 
         if(typeof resVal == 'number' || typeof resVal == 'string')
-            text = resVal.toString()
-        if(typeof res == 'boolean')
         {
-            cachedVal = {css: res ? 'background-color: lime' : '', text}
-            return cachedVal;
+            text = resVal.toString()
+            if(typeof res == 'boolean')
+            {
+                cachedVal = {css: res ? 'background-color: lime' : '', text}
+                return cachedVal;
+            }
         }
+       
            
 
         return cachedVal || {err: 'Incorrect input type'}

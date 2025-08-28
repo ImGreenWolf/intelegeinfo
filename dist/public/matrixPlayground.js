@@ -29,11 +29,12 @@ function getExpressionValue(options, row, column) {
         const res = eval(rexExpr);
         const resVal = eval(rexValExpr);
         let text = `${row}, ${column}`;
-        if (typeof resVal == 'number' || typeof resVal == 'string')
+        if (typeof resVal == 'number' || typeof resVal == 'string') {
             text = resVal.toString();
-        if (typeof res == 'boolean') {
-            cachedVal = { css: res ? 'background-color: lime' : '', text };
-            return cachedVal;
+            if (typeof res == 'boolean') {
+                cachedVal = { css: res ? 'background-color: lime' : '', text };
+                return cachedVal;
+            }
         }
         return cachedVal || { err: 'Incorrect input type' };
     }
