@@ -1973,17 +1973,28 @@ mini-dock #joinSession {
   gap: 1em;
   text-align: start;
 }
+.default-screen .language-info * {
+  animation: fade-in 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) 0.1s both;
+}
 .default-screen .language-button-wrapper {
   width: 100%;
   box-sizing: border-box;
-  padding: 2px;
-  background: var(--language-color);
+  padding: 0;
+  transition-duration: 0.2s;
   display: flex;
   border-radius: 50px;
+}
+.default-screen .language-button-wrapper:hover {
+  background: var(--language-color);
+  padding: 2px;
 }
 .default-screen .language-button-wrapper > * {
   width: 100%;
   box-sizing: border-box;
+  pointer-events: all;
+}
+.default-screen .language-button-wrapper > * * {
+  pointer-events: none;
 }
 .default-screen .language-carousel {
   display: grid;

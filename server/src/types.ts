@@ -8,11 +8,14 @@ import { User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import { CppMode } from './editor-modes';
-import fs from 'fs'
+import fs, { StatsListener, StatWatcher, WatchEventType, WatchListener } from 'fs'
 import { FileManagementCommands} from '../../dist/shared/types'
 import path from 'path';
 import { rootDirName } from './server';
 import { WebSocketMessage } from "../../shared/src/messageTypes"
+import { sha256, sha224 } from 'js-sha256';
+
+
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
     sessionId: UUID;
@@ -136,7 +139,7 @@ export class EditorSession {
     gdbProcess: DebugProcess | undefined;
     program: ChildProcess | undefined;
     displayServer: number = 0;
-
+    fileWatcher: fs.FSWatcher
     hostClient: ClientObject
     isPublic: boolean
     joinCode: number;
@@ -589,12 +592,17 @@ Tralalero Tralala`.split('\n')
         }
     }
 
+    public syncFileContent() {
+        const data = fs.readFileSync(this.filePath).toString()
+        this.content = data
+    }
+
+
     public async openFile(clientObj: ClientObject, shared?, closedFileName?: string)
     {
         try{
            
-                const data = fs.readFileSync(this.filePath).toString()
-                this.content = data
+                this.syncFileContent()
                  const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName)
                 if(closedFileIndex != -1)
                 {
@@ -615,8 +623,7 @@ Tralalero Tralala`.split('\n')
                 //     clientObj.openFile.splice(closedFileIndex,1)
                 //     clientObj.openFileName.splice(closedFileIndex,1)
                 // }
-              
-
+                
                 this.session.replicateFunction((cws, id, obj) => {
                     if((obj as ClientObject).openFileName == oldFileName)
                         cws.send(JSON.stringify({type: WebSocketMessageType.CodeSelection, body: null}))
@@ -629,7 +636,9 @@ Tralalero Tralala`.split('\n')
                 clientObj.lastOpenFile = this
                 console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
                 if(shared) shared.updateSession(this.session.sessionId, this.session)
-                    return data;
+                    return this.content;
+
+                
         }
         catch (err)
         {
@@ -637,12 +646,48 @@ Tralalero Tralala`.split('\n')
         }
     }
 
-    public changeContent(content, delta)
+    public changeContent(data: {content?, delta?, clientChecksum?}, clientObj: ClientObject)
     {
-        this.content = this.applyDelta(delta).join('\n')
+        if(data.content)
+            this.content = data.content
+        else
+            this.content = this.applyDelta(data.delta).join('\n')
+
+        const checksum = sha256(this.content)
+
+        if(data.clientChecksum)
+        {
+            
+                                    
+            const checksumFailed = checksum !== data.clientChecksum
+                // replicate changes to others
+            if(checksumFailed)
+            {
+                clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name,  body: this.content, checksum})
+                console.error('Checksum failed for session id:', this.session.sessionId, 'On client:', clientObj.clientId)
+            }
+                
+            this.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                if(clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
+                    thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientObj.clientId, delta: data.delta, fileName: this.name,  body: checksumFailed ? data.content : undefined, checksum}))
+                }, clientObj)
+            return 
+        }
+        else 
+            clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name,  body: this.content, checksum})
+
+        
     }
 
-
+    public onFileWatched(eventType: WatchEventType, clientObj) {
+        switch(eventType) {
+            case 'change':
+                this.syncFileContent()
+                this.changeContent({content: this.content}, clientObj)
+            break;
+        }
+    }
+ 
     private applyDelta (delta) {
         if(!delta)
             throw new Error('Invalid delta. Cant apply delta.')

@@ -10,7 +10,7 @@ import { QRCode } from "qrcode";
 import * as qrcode from "qrcode";
 import archiver from 'archiver';
 export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
-import { sha256, sha224 } from 'js-sha256';
+
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -1741,7 +1741,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     spawnPromise = new Promise<void>((resolve, reject) => {
 
-    clientSession.program?.on("spawn", () => {
+    clientSession.program?.on("spawn", async () => {
         console.log("Program spawned")
         spawnDate = Date.now()
         res.editorMode.onSpawn(clientSession);
@@ -1749,7 +1749,28 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         if( clientSession.program.stdin && processInputBuffer)
             if(clientSession.program?.stdin?.writable)
-            clientSession.program.stdin.write(processInputBuffer) // write buffer
+                clientSession.program.stdin.write(processInputBuffer) // write buffer
+
+        if(!clientSession.fileWatcher)
+        {
+            clientSession.fileWatcher = fs.watch(res.fileName, null, (event, fileNameBuf) => {
+                const fileName = fileNameBuf.toString()
+                if(!fileName)
+                    return
+                const changedFile = clientSession.files.find(file => file.name == fileName)
+                if(!changedFile)
+                {
+                    if(event == 'rename')
+                        {
+                            new EditorFile(clientSession, fileName, null, {abstract: true})
+                            console.warn('Created new file from rename event!')
+                        }
+                } 
+                changedFile.onFileWatched(event, clientObj)
+            })
+            
+        }
+        
         dataTimeout = 
         setTimeout(() => {
             replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
@@ -2136,20 +2157,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                          const delta = messageJSON.delta
                         file.changeContent(messageJSON.body, delta)
 
-                        const checksum = sha256(file.content)
-                            
-                        const checksumFailed = checksum !== messageJSON.checksum
-                            // replicate changes to others
-                        if(checksumFailed)
-                        {
-                            clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientId, fileName,  body: file.content, checksum})
-                            console.error('Checksum failed for session id:', sessionId, 'On client:', clientId)
-                        }
-                            
-                        replicateFunction((thisclientWs, localClientId, thisClientObj) => {
-                            if(clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
-                                thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientId, delta, fileName,  body: checksumFailed ? messageJSON.body : undefined, checksum, msgId: JSON.parse(message.toString()).msgId}))
-                            }, clientObj)
+                        
 
 
                         shouldSave=false 

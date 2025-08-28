@@ -50,7 +50,6 @@ const types_2 = require("./types");
 const qrcode = __importStar(require("qrcode"));
 const archiver_1 = __importDefault(require("archiver"));
 exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
-const js_sha256_1 = require("js-sha256");
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -1374,7 +1373,7 @@ bash `.trim().replaceAll('\n', "");
                     }, 1000);
                 // if(programTimeout) clearTimeout(programTimeout)
                 spawnPromise = new Promise((resolve, reject) => {
-                    clientSession.program?.on("spawn", () => {
+                    clientSession.program?.on("spawn", async () => {
                         console.log("Program spawned");
                         spawnDate = Date.now();
                         res.editorMode.onSpawn(clientSession);
@@ -1383,6 +1382,21 @@ bash `.trim().replaceAll('\n', "");
                         if (clientSession.program.stdin && processInputBuffer)
                             if (clientSession.program?.stdin?.writable)
                                 clientSession.program.stdin.write(processInputBuffer); // write buffer
+                        if (!clientSession.fileWatcher) {
+                            clientSession.fileWatcher = fs_1.default.watch(res.fileName, null, (event, fileNameBuf) => {
+                                const fileName = fileNameBuf.toString();
+                                if (!fileName)
+                                    return;
+                                const changedFile = clientSession.files.find(file => file.name == fileName);
+                                if (!changedFile) {
+                                    if (event == 'rename') {
+                                        new types_2.EditorFile(clientSession, fileName, null, { abstract: true });
+                                        console.warn('Created new file from rename event!');
+                                    }
+                                }
+                                changedFile.onFileWatched(event, clientObj);
+                            });
+                        }
                         dataTimeout =
                             setTimeout(() => {
                                 replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
@@ -1721,17 +1735,6 @@ bash `.trim().replaceAll('\n', "");
                             return;
                         const delta = messageJSON.delta;
                         file.changeContent(messageJSON.body, delta);
-                        const checksum = (0, js_sha256_1.sha256)(file.content);
-                        const checksumFailed = checksum !== messageJSON.checksum;
-                        // replicate changes to others
-                        if (checksumFailed) {
-                            clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, fileName, body: file.content, checksum });
-                            console.error('Checksum failed for session id:', sessionId, 'On client:', clientId);
-                        }
-                        replicateFunction((thisclientWs, localClientId, thisClientObj) => {
-                            if (clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
-                                thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientId, delta, fileName, body: checksumFailed ? messageJSON.body : undefined, checksum, msgId: JSON.parse(message.toString()).msgId }));
-                        }, clientObj);
                         shouldSave = false;
                         if (checkSyntaxTimeout)
                             clearTimeout(checkSyntaxTimeout);

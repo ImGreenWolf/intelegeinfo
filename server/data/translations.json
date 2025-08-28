@@ -23,6 +23,10 @@
     "ro-RO": "Editorul colaborativ de cod online creat de elevi, pentru elevi.",
     "en-US": "The online colaborative code editor, made by students for students."
   },
+  "main.longDescription": {
+    "ro-RO": "Unealta educationala dedicata pentru <b>elevi</b> si <b>profesori</b>, pentru a ajuta in <b>perfectionarea</b> cunostiintelor si abilitatiile in domeniul informaticii",
+    "en-US": "The educational tool dedicated to <b>students</b> and <b>teachers</b>, to help <b>perfect</b> their knowledge and abilities in the field of computer science."
+  },
   "display.title": {
     "ro-RO": "Editeaza cod alaturi de profesori si prieteni!",
     "en-US": "Edit code alongside teachers and friends!"

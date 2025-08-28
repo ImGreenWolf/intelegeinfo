@@ -45,6 +45,7 @@ const fs_1 = __importDefault(require("fs"));
 const types_2 = require("../../dist/shared/types");
 const path_1 = __importDefault(require("path"));
 const server_1 = require("./server");
+const js_sha256_1 = require("js-sha256");
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 class ClientObject {
     sessionId;
@@ -134,6 +135,7 @@ class EditorSession {
     gdbProcess;
     program;
     displayServer = 0;
+    fileWatcher;
     hostClient;
     isPublic;
     joinCode;
@@ -508,10 +510,13 @@ class EditorFile {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Notification, body: err });
         }
     }
+    syncFileContent() {
+        const data = fs_1.default.readFileSync(this.filePath).toString();
+        this.content = data;
+    }
     async openFile(clientObj, shared, closedFileName) {
         try {
-            const data = fs_1.default.readFileSync(this.filePath).toString();
-            this.content = data;
+            this.syncFileContent();
             const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName);
             if (closedFileIndex != -1) {
                 clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == closedFileName), 1);
@@ -538,14 +543,41 @@ class EditorFile {
             console.log(`Opened file ${this.name}, with mode ${(clientObj.editorMode).name}`);
             if (shared)
                 shared.updateSession(this.session.sessionId, this.session);
-            return data;
+            return this.content;
         }
         catch (err) {
             console.error(err);
         }
     }
-    changeContent(content, delta) {
-        this.content = this.applyDelta(delta).join('\n');
+    changeContent(data, clientObj) {
+        if (data.content)
+            this.content = data.content;
+        else
+            this.content = this.applyDelta(data.delta).join('\n');
+        const checksum = (0, js_sha256_1.sha256)(this.content);
+        if (data.clientChecksum) {
+            const checksumFailed = checksum !== data.clientChecksum;
+            // replicate changes to others
+            if (checksumFailed) {
+                clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name, body: this.content, checksum });
+                console.error('Checksum failed for session id:', this.session.sessionId, 'On client:', clientObj.clientId);
+            }
+            this.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                if (clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
+                    thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, delta: data.delta, fileName: this.name, body: checksumFailed ? data.content : undefined, checksum }));
+            }, clientObj);
+            return;
+        }
+        else
+            clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name, body: this.content, checksum });
+    }
+    onFileWatched(eventType, clientObj) {
+        switch (eventType) {
+            case 'change':
+                this.syncFileContent();
+                this.changeContent({ content: this.content }, clientObj);
+                break;
+        }
     }
     applyDelta(delta) {
         if (!delta)

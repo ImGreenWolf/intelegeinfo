@@ -175,7 +175,7 @@ footer nav :any-link {
 
 .main-container div#text-container {
   position: relative;
-  max-width: 500px;
+  max-width: 50em;
   text-align: center;
   align-items: stretch;
   display: grid;
@@ -188,6 +188,10 @@ footer nav :any-link {
   /* left: 50%;
   transform: translate(-50%, -50%); */
   /* top: 50%; */
+}
+.main-container div#text-container h1 {
+  font-size: 3em;
+  margin: 0;
 }
 .main-container div#text-container .ridge-gradient.inset-button {
   background-image: linear-gradient(rgb(42.3448275862, 40.2275862069, 51.8724137931), rgb(35.3103448276, 33.5448275862, 43.2551724138), rgb(44.6896551724, 42.4551724138, 54.7448275862));
@@ -204,10 +208,13 @@ footer nav :any-link {
 }
 .main-container div#text-container p {
   overflow-wrap: break-word;
-  width: 20em;
+  width: 75%;
   margin: auto;
-  font-style: italic;
-  font-weight: 300;
+  color: rgba(255, 255, 255, 0.815);
+  text-shadow: 2px 2px 3px black;
+}
+.main-container div#text-container b {
+  color: white;
 }
 .main-container div#text-container .inset-button a {
   background-color: rgb(40, 38, 49);

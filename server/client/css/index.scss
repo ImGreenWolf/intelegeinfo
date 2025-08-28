@@ -336,7 +336,7 @@ footer
 {
     // margin: 7rem 0;
     position: relative;
-    max-width: 500px;
+    max-width: 50em;
     text-align: center;
     align-items: stretch;
     display: grid;
@@ -350,6 +350,10 @@ footer
     /* left: 50%;
     transform: translate(-50%, -50%); */
     /* top: 50%; */
+    h1 {
+        font-size: 3em;
+        margin: 0;
+    }
     .ridge-gradient.inset-button
     {
         background-image: 
@@ -371,10 +375,15 @@ footer
     p
     {
         overflow-wrap: break-word;
-        width: 20em;
+        width: 75%;;
         margin: auto;
-        font-style: italic;
-        font-weight: 300;
+        // font-style: italic;
+        // font-weight: 300;
+        color: rgba(255, 255, 255, 0.815);
+        text-shadow: 2px 2px 3px black;
+    }
+    b {
+        color: theme.$text-color
     }
     .inset-button a
     {

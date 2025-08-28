@@ -539,7 +539,7 @@ export class EditorWindow {
                         start: { row },
                         command: {
                           id: "include<fstream>",
-                          title: `Add #include <fstream>"`,
+                          title: `Add #include <fstream>`,
                           arguments: { }
                         }
                       });
@@ -753,13 +753,21 @@ async function loadLanguages()
                         {name: 'aria-label', value: `Create ${language.name} project`}]}),
                 createNode('p', {innerText: language.name})
             ],
-            onhover: () => {
-                document.getElementById('language-info-display')!.innerHTML =
-                `
+            onhover: (ev) => {
+                const html = `
                     <p>${language.description}</p>
                     <img src="../media/logos/${language.src}" style='max-height:200px'>
                
                 `
+                const elem = document.getElementById('language-info-display')!
+                const langClassName = `langinfo-${language.name}`
+                const langaAttr = 'lang'
+                if(elem.getAttribute(langaAttr) != langClassName)
+                {
+                    elem.innerHTML = html
+                    elem.setAttribute(langaAttr, langClassName)
+                }
+                  
             },
             attributes: [
                 // {name: 'tabindex',value: (i++).toString()},

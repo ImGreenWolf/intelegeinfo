@@ -5,6 +5,7 @@ import { WSMessage } from '../../shared/src/types';
 import { WebSocketMessageType } from '../../dist/shared/types';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
+import fs, { WatchEventType } from 'fs';
 import { WebSocketMessage } from "../../shared/src/messageTypes";
 export declare class ClientObject {
     sessionId: UUID;
@@ -71,6 +72,7 @@ export declare class EditorSession {
     gdbProcess: DebugProcess | undefined;
     program: ChildProcess | undefined;
     displayServer: number;
+    fileWatcher: fs.FSWatcher;
     hostClient: ClientObject;
     isPublic: boolean;
     joinCode: number;
@@ -111,8 +113,14 @@ export declare class EditorFile {
     }, onCreate?: (this: EditorFile) => void);
     delete(clientObj: ClientObject): void;
     rename(newName: any, clientObj: ClientObject): void;
+    syncFileContent(): void;
     openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;
-    changeContent(content: any, delta: any): void;
+    changeContent(data: {
+        content?: any;
+        delta?: any;
+        clientChecksum?: any;
+    }, clientObj: ClientObject): void;
+    onFileWatched(eventType: WatchEventType, clientObj: any): void;
     private applyDelta;
 }
 import DebugProcess from './editor-modes/ProcessTypes';
