@@ -74,14 +74,14 @@ function initDisplay(parentElem: HTMLElement, indexOffset: number)
 
     const row =  document.getElementById('sandbox-row') as HTMLInputElement
     row.oninput = () => {
-        options.rows = row.valueAsNumber
+        options.rows = Math.min(20, row.valueAsNumber)
         table.replaceChildren(...updateTableElements(options))
         
     }
 
     const column =  document.getElementById('sandbox-column') as HTMLInputElement
     column.oninput = () => {
-        options.columns = column.valueAsNumber
+        options.columns =  Math.min(20, column.valueAsNumber)
         table.replaceChildren(...updateTableElements(options))
         
     }
