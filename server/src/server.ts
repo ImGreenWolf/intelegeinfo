@@ -2099,6 +2099,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             });
                             break
                     case 'container':
+                        if (!(clientObj.clientData && clientObj.clientData.emailValidated == true))
+                        {
+                            clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: "Va rugam sa va logati inainte de a accesa terminalul mediului de executare. Prin terminal, puteti instala orice librarie sau package, sau executati programul direct."})
+                            return;
+                        }
                             if(!clientSession.sessionContainer || !clientSession.sessionContainer.process)
                                 {
                                     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: "Va rugam rulati programul cel putin o data inainte sa puteti executa comenzi!"})
@@ -2107,7 +2112,6 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             if(!messageJSON.body)
                                 console.error('invalid body')
                             clientSession.sessionContainer.process.stdin.write((messageJSON.body as string)+'\n')
-                            clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: "......."})
                                
                     }
                      
@@ -2872,7 +2876,7 @@ export function sendFile(path: string, res, req, params?)
         fs.readFile(path, (err, file) => {
             if(err || !file)
                throw err
-
+            
             return res.contentType('html').send(parseText(file.toString(), req, params))
         })
     } catch (err)
@@ -2921,8 +2925,13 @@ export function parseText(file: string, req: any, params?)
             const filePath = match.split(":")[1]
             if(!filePath)
                 throw 'invalid file path'
+            if(filePath.includes('_header.html') &&  req.get('sec-fetch-dest') == 'iframe')
+            {
+                text =  text.replaceAll(key, '')
+                continue
+            }  
             const file = fs.readFileSync(path.resolve(rootDirName, 'public', filePath)).toString()
-            text = text.replaceAll(key, parseText(file, req))
+            text = text.replaceAll(key, parseText(file, req)) // recursivly parse file text
         } else 
         {
             const keys = match.split('.')

@@ -35,7 +35,6 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 
 router.get('/', async (req, res) => {
-
     sendFile(path.join(coursesPath, 'courses.html'), res, req, {courses: await createList(), coursesCarousel: await createList('course-carousel-element', 5)})
 })
 
