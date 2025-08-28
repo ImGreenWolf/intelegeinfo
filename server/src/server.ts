@@ -1753,7 +1753,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
         if(!clientSession.fileWatcher)
         {
-            clientSession.fileWatcher = fs.watch(res.fileName, null, (event, fileNameBuf) => {
+            clientSession.fileWatcher = fs.watch(path.join(clientSession.getClientFilesPath(), res.fileName), null, (event, fileNameBuf) => {
                 const fileName = fileNameBuf.toString()
                 if(!fileName)
                     return
@@ -2652,6 +2652,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         removeRunningProcessFromMap();
         if(isShared) shared.removeProcess(sessionId)
         clientSession.program = undefined
+
+        if(clientSession.fileWatcher)
+        {
+            clientSession.fileWatcher.close()
+            clientSession.fileWatcher = undefined
+            console.log('stopped file watcher')
+        }
+            
     // replicateFunction((thisclientWS, thisclientid) => {
     //     thisclientWS.send(JSON.stringify({type: WebSocketMessageType.Output, message: 'end'}))
     // })

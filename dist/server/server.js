@@ -1383,7 +1383,7 @@ bash `.trim().replaceAll('\n', "");
                             if (clientSession.program?.stdin?.writable)
                                 clientSession.program.stdin.write(processInputBuffer); // write buffer
                         if (!clientSession.fileWatcher) {
-                            clientSession.fileWatcher = fs_1.default.watch(res.fileName, null, (event, fileNameBuf) => {
+                            clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath(), res.fileName), null, (event, fileNameBuf) => {
                                 const fileName = fileNameBuf.toString();
                                 if (!fileName)
                                     return;
@@ -2117,6 +2117,11 @@ bash `.trim().replaceAll('\n', "");
             if (isShared)
                 shared.removeProcess(sessionId);
             clientSession.program = undefined;
+            if (clientSession.fileWatcher) {
+                clientSession.fileWatcher.close();
+                clientSession.fileWatcher = undefined;
+                console.log('stopped file watcher');
+            }
             // replicateFunction((thisclientWS, thisclientid) => {
             //     thisclientWS.send(JSON.stringify({type: WebSocketMessageType.Output, message: 'end'}))
             // })
