@@ -1734,7 +1734,7 @@ bash `.trim().replaceAll('\n', "");
                         if (!file)
                             return;
                         const delta = messageJSON.delta;
-                        file.changeContent(messageJSON.body, delta);
+                        file.changeContent({ content: messageJSON.body, delta, clientChecksum: messageJSON.checksum }, clientObj);
                         shouldSave = false;
                         if (checkSyntaxTimeout)
                             clearTimeout(checkSyntaxTimeout);
