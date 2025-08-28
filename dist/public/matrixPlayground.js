@@ -21,6 +21,7 @@ function updateTableElements(options) {
     }
     return rowElems;
 }
+let cachedVal;
 function getExpressionValue(options, row, column) {
     let rexExpr = options.expression.replaceAll('i', row).replaceAll('j', column).replaceAll('n', options.rows).replaceAll('m', options.columns);
     let rexValExpr = options.valExpression.replaceAll('i', row).replaceAll('j', column).replaceAll('n', options.rows).replaceAll('m', options.columns);
@@ -30,9 +31,11 @@ function getExpressionValue(options, row, column) {
         let text = `${row}, ${column}`;
         if (typeof resVal == 'number' || typeof resVal == 'string')
             text = resVal.toString();
-        if (typeof res == 'boolean')
-            return { css: res ? 'background-color: lime' : '', text };
-        return { err: 'Incorrect input type' };
+        if (typeof res == 'boolean') {
+            cachedVal = { css: res ? 'background-color: lime' : '', text };
+            return cachedVal;
+        }
+        return cachedVal || { err: 'Incorrect input type' };
     }
     catch (err) {
         return { err };

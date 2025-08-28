@@ -41,6 +41,7 @@ function updateTableElements(options: TableOptions) {
 }
 
 
+let cachedVal;
 
 function getExpressionValue(options: TableOptions, row: number, column: number)
 {
@@ -54,9 +55,13 @@ function getExpressionValue(options: TableOptions, row: number, column: number)
         if(typeof resVal == 'number' || typeof resVal == 'string')
             text = resVal.toString()
         if(typeof res == 'boolean')
-            return {css: res ? 'background-color: lime' : '', text}
+        {
+            cachedVal = {css: res ? 'background-color: lime' : '', text}
+            return cachedVal;
+        }
+           
 
-        return {err: 'Incorrect input type'}
+        return cachedVal || {err: 'Incorrect input type'}
     }
     catch(err) {
         return {err}
