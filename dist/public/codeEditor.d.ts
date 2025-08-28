@@ -100,7 +100,8 @@ declare class SessionClient {
     canEdit: boolean;
     sessionIcon: HTMLElement;
     rtcConnection: IIWebRTC | undefined;
-    constructor(clientId: any, displayName: any, color: any, canEdit: any, userId: number | undefined, isLocal: any);
+    isHost: boolean;
+    constructor(clientId: any, displayName: any, color: any, canEdit: any, userId: number | undefined, isLocal: any, clientIsHost: boolean);
     onJoin(): void;
     onDisconect(): void;
 }

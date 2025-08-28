@@ -49,7 +49,8 @@ type HandshakeMessage = {
     permissions: any;
     files: string[];
     project?: string[];
-    users: {displayName: string, clientId: UUID, accountId: number | undefined, openFile: string[], color: string}[];
+    isHost: boolean;
+    users: {displayName: string, clientId: UUID, accountId: number | undefined, openFile: string[], color: string, isHost: boolean}[];
 };
 
 type DebugMessageRunning = {

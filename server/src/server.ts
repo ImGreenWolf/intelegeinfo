@@ -1113,18 +1113,16 @@ function endConnectionPromise()
             clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, body: {command: FileManagementCommands.Open ,content: fileContent}})); // Send the list of files to the client
     }  
 
-    function clientInfo(thisclientObj?: ClientObject , prefix: string = ''): HandshakeMessage['users'][number] // {clientId: typeof clientId, displayName: typeof clientObj.displayName, color: typeof clientObj.color, openFile: typeof clientObj.openFileName}
+    function clientInfo(thisclientObj?: ClientObject): HandshakeMessage['users'][number] // {clientId: typeof clientId, displayName: typeof clientObj.displayName, color: typeof clientObj.color, openFile: typeof clientObj.openFileName}
      {
         if(!clientObj && !thisclientObj)
             return;
         if(!thisclientObj)
             thisclientObj = clientObj;
         if(thisclientObj)
-            return  {clientId: thisclientObj.clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName()}
+            return  {clientId: thisclientObj.clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: thisclientObj.displayName, color: thisclientObj.color, openFile: thisclientObj.getFilesName(), isHost: clientObj.isHost}
         // JSON.parse(`{"${prefix}clientId": "${thisclientObj.clientId}", "${prefix}displayName": "${thisclientObj.displayName}", "${prefix}color": "${thisclientObj.color}", "${prefix}openFile": "${thisclientObj.openFileName}"}`)
-        else if(prefix)
-            return JSON.parse(`{${prefix}clientId: "${clientId}", ${prefix}accountId: "${thisclientObj.clientData ? thisclientObj.clientData.id : undefined}", ${prefix}displayName: "${clientObj.displayName}", ${prefix}color: "${clientObj.color}"}`)
-        else return {clientId: clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName()}
+        else return {clientId: clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName(), isHost: clientObj.isHost}
     }
 
     async function loadSave(fileUUID)

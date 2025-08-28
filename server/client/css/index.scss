@@ -1526,15 +1526,40 @@ h1.center
     flex-direction: column;
     gap: 2em;
     position: relative;
+    overflow: hidden;
     &::before
     {
+        --height: 50%;
         z-index: -1;
         content: '';
         position: absolute;
-        bottom: 2em;
-        left: 100px;
-        top: 0;
-        border-left: 5px dashed rgb(37, 37, 37);
+        // bottom: 2em;
+        left: 150px;
+        height: var(--height);
+        // border-left: 5px dashed rgb(37, 37, 37);
+        width: 0.5em;
+        border-radius: 0.5em;
+        background-image: linear-gradient(transparent 20%,rgba(255, 255, 255, 0.349), transparent);
+        background-size: cover;
+        animation: tree-climber 10s infinite ease-in;
+
+        @keyframes tree-climber {
+            from {
+                top: calc(var(--height) * -0.5);
+                opacity: 0;
+                height: calc(var(--height) / 2);
+            }
+            85% {
+                opacity: 1;
+                max-height: var(--height);
+                top: calc(100% - var(--height) - 2em);
+            }
+            to {
+                top: calc(100% - 2em);
+                opacity: 0;
+                max-height: 0;
+            }
+        }
     }
 }
 .motive-tree {

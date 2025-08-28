@@ -1626,7 +1626,9 @@ pointer-events: none;
     #close-share-session
     {
         width: 25px;
-        // margin: 10px;
+        position: absolute;
+        top: 20px;
+        right: 20px;
         justify-self: start;
     }
     select
@@ -2524,6 +2526,20 @@ form#codeForm {
         transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
         cursor: pointer;
         // margin-left: 10px;
+        
+        &:not(.localClient) {
+            @keyframes profile-fadein {
+                from {
+                    max-width: 10px;
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                    max-width: 22px;
+                }
+            }
+            animation: profile-fadein 0.25s ease-out;
+        }
         .tooltip-clientName
         {
             position: absolute;
@@ -2564,7 +2580,7 @@ form#codeForm {
        
        .session-client-menu
        {
-            height: 140px;
+            min-height: 140px;
             min-width: 170px;
             background-color: rgba(14, 15, 19, 0.548);
             backdrop-filter: blur(4px);

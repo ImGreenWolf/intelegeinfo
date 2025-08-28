@@ -617,12 +617,13 @@ class SessionClient {
   canEdit: boolean
   sessionIcon: HTMLElement
   rtcConnection: IIWebRTC | undefined
-  constructor(clientId, displayName, color, canEdit, userId: number | undefined, isLocal) {
+  isHost: boolean
+  constructor(clientId, displayName, color, canEdit, userId: number | undefined, isLocal, clientIsHost: boolean) {
     this.clientId = clientId;
     this.color = color;
     this.displayName = displayName;
     this.canEdit = canEdit
-
+    this.isHost = clientIsHost
 
     this.sessionIcon = createNode('div', {
       onclick: function (ev: MouseEvent) {
@@ -637,10 +638,10 @@ class SessionClient {
               createNode('div', {className: 'session-client-menu', html: [
                 createNode('div', {html: [
                   
-                    createNode('a', {htmlSting:  `<h3>${this.displayName}<div class='img-placeholder'></div>"</h3>`,
+                    createNode('a', {htmlSting:  `<h3>${this.displayName}${isLocal ? ' (Tu)' : ''}<div class='img-placeholder'></div>"</h3>`,
                     attributes: [userId ? {name: 'href', value: '/profile'} : undefined],
                     onclick: async ev => 
-                      {if(userId)
+                      {if(userId || !isLocal)
                         return
                       const displayName = await displayInputPopup('Schimba-ti numele')
                       if(displayName.value)
@@ -649,8 +650,8 @@ class SessionClient {
                         // params.set('displayName', displayName.value)
                       }
                     }}),
-                    createNode('p', {innerText: this.canEdit ? 'Poate edita' : 'Nu poate edita'}),
-                    !isLocal ? createNode('button', {innerText: 'Scoate din sesiune'}) : undefined,
+                    createNode('p', {innerText: isHost && this.isHost ? 'Tu esti proprietarul acestei sesiuni!' :  this.isHost ? `${this.displayName} este proprietarul acestei seiuni` : this.canEdit ? 'Poate edita' : 'Nu poate edita'}),
+                    !isLocal && isHost ? createNode('button', {innerText: 'Scoate din sesiune'}) : undefined,
                 ]})
               ] 
           // `
@@ -661,7 +662,7 @@ class SessionClient {
           // </div>
           // `
         }),
-        createNode('div', {innerText: this.displayName, className: 'tooltip-clientName'})
+        createNode('div', {innerText: isLocal ? '(Tu)' : this.displayName, className: 'tooltip-clientName'})
       ]})
     document.getElementById('sessionInfo-container')?.appendChild(this.sessionIcon)
 
@@ -1436,6 +1437,9 @@ function updateLocalCursor(ev: PointerEvent, fromPress) {
       const sizeX = document.body.clientWidth;
       const sizeY = document.body.clientHeight;
       const foundEditor = client?.editorSession.find(editor => editor.fileElement?.parentWindow.element === document.elementsFromPoint(posX, posY).find(val => val.classList.contains('ace_editor')))
+      if(!foundEditor)
+        return console.error('Couldnt find editor while updating local cursor');
+        
       const session =  foundEditor ? foundEditor : client?.editorSession[0] 
       if(!session || !session.fileElement)
         return
@@ -2400,8 +2404,11 @@ export function joinsession()
             </div>
         </div>
         <div class="button-container">
-            <button  type="submit">Alatura-te</button>
-            <p id="code-error"></p>
+          <p>
+            Cere codul unui prieten sau profesor pentru a te conecta la sesiunea lor!
+          </p>
+          <button  type="submit">Alatura-te</button>
+          <p id="code-error"></p>
         </div>
         
     </form>
@@ -2411,7 +2418,7 @@ export function joinsession()
     
     
     document.body.appendChild(shareContainer)
-    shareContainer.appendChild(createNode('button', {css: 'position: absolute; top: 20px; left: 20px;', innerText: 'x',onclick(ev) {
+    shareContainer.appendChild(createNode('button', {css: 'position: absolute; top: 20px; right: 20px;', innerText: 'x',onclick(ev) {
       shareContainer.remove()
       onOpenMenu("join")
     },}))
@@ -2492,8 +2499,9 @@ export function copySessionLink() {
     shareContainer.id = 'share-container'
     shareContainer.innerHTML =
     `
+    <button id='close-share-session'>x</button>
     <form id="createSessionForm">
-      <button id='close-share-session'>x</button>
+      
 
       <label for="chat" title='Daca este oprit, persoanele care intră nu vor avea posibilitatea de a vorbi pe chat'>
         Porneste Chat <input type="checkbox" name="chat" checked></label>
@@ -3497,7 +3505,7 @@ function onRemoteClientJoin(rclient: HandshakeMessage['users'][number])
     // if(clientIndex == -1)
     // {
       
-      createClient(rclient.clientId, rclient.displayName, rclient.color, rclient.accountId, false,
+      createClient(rclient.clientId, rclient.displayName, rclient.color, rclient.accountId, false, rclient.isHost,
          rclient.openFile.map(fileName =>
            { return {fileElement: editorSessions.get(fileName)?.fileElement, fileName, editor: editorSessions.get(fileName)?.editor} as FileEditorSession }))
       for(const remoteFileName of rclient.openFile)
@@ -3612,9 +3620,9 @@ function onOpenFile(fileName, fileContent, client: SessionClient ) {
   
 }
 
-function createClient(clientId, displayName, color, userId, isLocal: boolean, session: FileEditorSession[], ) {
+function createClient(clientId, displayName, color, userId, isLocal: boolean, clientIsHost: boolean, session: FileEditorSession[]) {
   
-  const client = new SessionClient(clientId,displayName, color, true, userId, isLocal)
+  const client = new SessionClient(clientId,displayName, color, true, userId, isLocal, clientIsHost)
   client.editorSession = session
   clients.set(clientId,client)
   console.log("Created client: ", client, clients)
@@ -3909,7 +3917,7 @@ break;
 
       wsClientId = messageJson.clientId;
       wsSessionId = messageJson.sessionId
-      isHost = sessionData!=undefined ? sessionData.isHost : false
+      isHost = messageJson.isHost || sessionData!=undefined ? sessionData.isHost : false
       isColabSession = sessionData!=undefined
 
       if(sessionData)
@@ -3941,7 +3949,7 @@ break;
           if(!client)
           {
             // create local client
-            client = createClient(wsClientId, messageJson.displayName, messageJson.color, messageJson.accountId, true,  [{fileName: rclient.openFile[0], editor: undefined, fileElement: undefined}])
+            client = createClient(wsClientId, messageJson.displayName, messageJson.color, messageJson.accountId, true, messageJson.isHost || isHost,  [{fileName: rclient.openFile[0], editor: undefined, fileElement: undefined}])
             // client = new SessionClient(wsClientId, messageJson.displayName, messageJson.color, sessionData.canEdit)
             document.getElementById('editor-grid-container')!.style = '--userColor: #'+ messageJson.color;
             if(rclient.openFile.length == 0)

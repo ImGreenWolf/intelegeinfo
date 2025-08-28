@@ -1473,6 +1473,9 @@ value {
 }
 .share-container #close-share-session {
   width: 25px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
   justify-self: start;
 }
 .share-container select {
@@ -2139,6 +2142,19 @@ form#codeForm {
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   cursor: pointer;
 }
+#sessionInfo-container > div:not(.localClient) {
+  animation: profile-fadein 0.25s ease-out;
+}
+@keyframes profile-fadein {
+  from {
+    max-width: 10px;
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+    max-width: 22px;
+  }
+}
 #sessionInfo-container > div .tooltip-clientName {
   position: absolute;
   bottom: -5px;
@@ -2173,7 +2189,7 @@ form#codeForm {
   opacity: 0;
 }
 #sessionInfo-container > div .session-client-menu {
-  height: 140px;
+  min-height: 140px;
   min-width: 170px;
   background-color: rgba(14, 15, 19, 0.548);
   backdrop-filter: blur(4px);

@@ -124,6 +124,7 @@
         form#codeForm .button-container
         {
             display: flex;
+            align-items: center;
             gap: 20px;
             flex-direction: column;
             & button 
