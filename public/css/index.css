@@ -88,6 +88,10 @@ footer nav :any-link {
   color: rgb(255, 255, 255);
 }
 
+section h1 {
+  text-align: center;
+}
+
 .main-container {
   position: relative;
   max-width: 100vw;

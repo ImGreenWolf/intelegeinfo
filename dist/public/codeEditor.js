@@ -1087,8 +1087,8 @@ function updateLocalCursor(ev, fromPress) {
         const sizeX = document.body.clientWidth;
         const sizeY = document.body.clientHeight;
         const foundEditor = client?.editorSession.find(editor => editor.fileElement?.parentWindow.element === document.elementsFromPoint(posX, posY).find(val => val.classList.contains('ace_editor')));
-        if (!foundEditor)
-            return console.error('Couldnt find editor while updating local cursor');
+        // if(!foundEditor)
+        //   return console.error('Couldnt find editor while updating local cursor');
         const session = foundEditor ? foundEditor : client?.editorSession[0];
         if (!session || !session.fileElement)
             return;
