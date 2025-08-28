@@ -1694,7 +1694,9 @@ bash `.trim().replaceAll('\n', "");
                                     clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: "Va rugam rulati programul cel putin o data inainte sa puteti executa comenzi!" });
                                     break;
                                 }
-                                clientSession.sessionContainer.process.stdin.write(messageJSON.command.substring(1) + '\n');
+                                if (!messageJSON.body)
+                                    console.error('invalid body');
+                                clientSession.sessionContainer.process.stdin.write(messageJSON.body + '\n');
                                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: "......." });
                         }
                         break;

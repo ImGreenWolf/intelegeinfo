@@ -2106,7 +2106,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 }
                             if(!messageJSON.body)
                                 console.error('invalid body')
-                            clientSession.sessionContainer.process.stdin.write(messageJSON.body.substring(1)+'\n')
+                            clientSession.sessionContainer.process.stdin.write((messageJSON.body as string)+'\n')
                             clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: "......."})
                                
                     }
