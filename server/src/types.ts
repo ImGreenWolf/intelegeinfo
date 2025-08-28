@@ -645,7 +645,37 @@ Tralalero Tralala`.split('\n')
             console.error(err)
         }
     }
+    public updateFile(clientObj: ClientObject, content?: string) {
+        const fileContent = content || this.content
+        //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
+        fs.writeFile(this.filePath, fileContent, (err) => {
+            if(err) console.error("Failed saving file! " + err)
+            // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
 
+            
+            const fileName = this.name
+            if(!clientObj.getFile(this.name) && clientObj.getFile(fileName).editorMode && clientObj.getFile(fileName).editorMode.checkCodeSyntax)
+                this.session.replicateFunction((clientWs, localClientId) => {
+                    if(this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))
+                        clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, fileName, clientId: clientObj.clientId, saved: true}))
+                    })
+            else
+                clientObj.getFile(fileName).editorMode.checkCodeSyntax(this.session, clientObj.getFile(fileName)).then(json => {
+                    if(!JSON.parse(json)[0])
+                        return  this.session.replicateFunction((clientWs, localClientId) => {
+                            if(this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))
+                                clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, fileName,clientId: clientObj.clientId, saved: true, body: JSON.stringify(    [   {kind: 'success'} ]     )}))
+                            })
+                    this.session.replicateFunction((clientWs, localClientId) => {
+                        if(this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))
+                            clientWs.send(JSON.stringify({type: WebSocketMessageType.CompileResult, fileName, clientId: clientObj.clientId, body: json, saved: true}))
+                        })
+                }).catch(err => {
+                    console.error('syntax checker error: ' + err)
+                })
+
+        });
+    }
     public changeContent(data: {content?, delta?, clientChecksum?}, clientObj: ClientObject)
     {
         if(data.content)

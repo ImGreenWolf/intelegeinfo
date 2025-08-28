@@ -577,7 +577,6 @@ async function loadLanguages() {
                         const html = `
                     <p>${language.description}</p>
                     <img src="../media/logos/${language.src}" style='max-height:200px'>
-               
                 `;
                         const elem = document.getElementById('language-info-display');
                         const langClassName = `langinfo-${language.name}`;
@@ -596,19 +595,6 @@ async function loadLanguages() {
             ] }));
     for (let i = 0; i < langaugeElements.length; i++)
         languageCarousel.replaceChild(langaugeElements[i], languageCarousel.children[i]);
-    // for(let i=0;i<langaugeElements.length;i++)
-    // {
-    //     languageCarousel.replaceChild( langaugeElements[i],languageCarousel.children[i])  
-    //     languageCarousel.children[i].animate([
-    //     { opacity:"0%", transform: "translateY(-50%)"},
-    //     { opacity: "100%",  transform: "translateY(0%)"},
-    //   ],
-    //   {
-    //     duration: Math.random()*400 + 100,
-    //     delay: Math.random()*20,
-    //     // easing: "ease-out"
-    //   })
-    // }
 }
 export async function showDefaultScreen() {
     const window = windows[0];
@@ -882,6 +868,7 @@ class TokenTooltip extends Tooltip {
 }
 export class TerminalTab extends EditorWindowTab {
     terminal;
+    prompt = "$ ";
     constructor() {
         const terminalElem = createNode('div', { className: 'terminal' });
         let terminal = ace.edit(terminalElem, {
@@ -897,33 +884,6 @@ export class TerminalTab extends EditorWindowTab {
         });
         terminal.setShowPrintMargin(false);
         terminal.renderer.setShowGutter(false);
-        let prompt = "$ "; // your prompt string
-        terminal.setValue(prompt, -1); // set prompt and move cursor to end
-        function runCommand(command) {
-            // Simple commands for demonstration
-            let output = "";
-            switch (command.trim()) {
-                case "help":
-                    output = "Available commands: help, echo, clear";
-                    break;
-                case "":
-                    output = "";
-                    break;
-                case "clear":
-                    terminal.setValue(prompt, prompt.length);
-                    return;
-                default:
-                    if (command.startsWith("echo ")) {
-                        output = command.slice(5);
-                    }
-                    else {
-                        output = `Command not found: ${command}`;
-                    }
-            }
-            terminal.insert("\n" + output + "\n" + prompt);
-            // Move cursor to end
-            terminal.gotoLine(terminal.session.getLength(), prompt.length);
-        }
         // Prevent editing previous lines
         terminal.on("change", function (delta) {
             const lines = terminal.session.getDocument().getAllLines();
@@ -940,8 +900,10 @@ export class TerminalTab extends EditorWindowTab {
             exec: function (editor) {
                 const lines = editor.session.getDocument().getAllLines();
                 const lastLine = lines[lines.length - 1];
-                const command = lastLine.slice(prompt.length);
+                const command = lastLine.slice(prompt.length).trim();
                 // runCommand(command);
+                if (!command)
+                    return;
                 ws.send(JSON.stringify({ type: WebSocketMessageType.Console, action: 'container', body: command }));
             }
         });
@@ -958,10 +920,11 @@ export class TerminalTab extends EditorWindowTab {
             }
         });
         super('Terminal', createTabElement('Terminal'), terminalElem);
+        terminal.setValue(this.prompt, -1); // set prompt and move cursor to end
         this.terminal = terminal;
     }
     write(data) {
-        this.terminal.session.insert({ row: this.terminal.session.getLength() + 1, column: 0 }, "\n" + data);
+        this.terminal.session.insert({ row: this.terminal.session.getLength() + 1, column: 0 }, "\n" + data + "\n" + this.prompt);
     }
 }
 export function findTabByName(name) {

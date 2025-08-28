@@ -46,6 +46,7 @@ declare class TokenTooltip extends Tooltip {
 }
 export declare class TerminalTab extends EditorWindowTab {
     terminal: Ace.Editor;
+    prompt: string;
     constructor();
     write(data: string): void;
 }

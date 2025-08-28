@@ -576,6 +576,9 @@ header {
   z-index: 1;
   max-height: 40px;
 }
+#editor-tabs .file-tab.dirty, .tabs-container .file-tab.dirty {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px 2px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px, inset 0 -10px 20px -10px rgba(207, 180, 27, 0.589);
+}
 #editor-tabs .file-tab p, .tabs-container .file-tab p {
   flex-grow: 1;
   margin: 0 1.5em;

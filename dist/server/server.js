@@ -1724,13 +1724,6 @@ bash `.trim().replaceAll('\n', "");
                         if (!clientObj.permissions.canEdit)
                             break;
                         const fileName = messageJSON.fileName;
-                        // if(shouldSave==false)
-                        // shouldSaveTimeout = setTimeout(() => {
-                        //     shouldSave=true;
-                        // }, 500);
-                        // save code to file
-                        // if(shouldSave) // TODO replace true with shouldSave 
-                        // {
                         const file = clientObj.getFile(fileName);
                         if (!file)
                             return;
@@ -1740,32 +1733,8 @@ bash `.trim().replaceAll('\n', "");
                         if (checkSyntaxTimeout)
                             clearTimeout(checkSyntaxTimeout);
                         checkSyntaxTimeout = setTimeout(() => {
-                            //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
-                            fs_1.default.writeFile(file.filePath, file.content, (err) => {
-                                if (err)
-                                    console.error("Failed saving file! " + err);
-                                // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
-                                // checkSyntaxTimeout = setTimeout(() => {
-                                if (clientObj.getFile(fileName) && clientObj.getFile(fileName).editorMode)
-                                    if (clientObj.getFile(fileName).editorMode.checkCodeSyntax)
-                                        clientObj.getFile(fileName).editorMode.checkCodeSyntax(clientSession, clientObj.getFile(fileName)).then(json => {
-                                            if (!JSON.parse(json)[0])
-                                                return replicateFunction((clientWs, localClientId) => {
-                                                    if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, fileName, clientId: clientId, body: JSON.stringify([{ kind: 'success' }]) }));
-                                                });
-                                            replicateFunction((clientWs, localClientId) => {
-                                                if (getThisClientSession().clientsActiveFile.get(localClientId) === getThisClientSession().clientsActiveFile.get(clientId))
-                                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, fileName, clientId: clientId, body: json }));
-                                            });
-                                        }).catch(err => {
-                                            console.error('syntax checker error: ' + err);
-                                        });
-                                // }, 400);
-                            });
+                            file.updateFile(clientObj);
                         }, 200);
-                        // }
-                        // console.log(messageJSON.delta, messageJSON)
                         break;
                     case types_1.WebSocketMessageType.ConsoleTyping:
                         if (!clientObj.permissions.canChat)

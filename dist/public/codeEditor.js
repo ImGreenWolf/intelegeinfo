@@ -2383,9 +2383,13 @@ function cleanDebug() {
     clearTimeout(playbackId);
     onExit();
 }
+function cleanFile(fileName) {
+    editorSessions.get(fileName)?.fileElement?.fileElem.classList.remove('dirty');
+}
 export function dirtyFile(fileName) {
     modifiedFile = true;
     const saveFile = fileName ? !["c", "exe"].includes(fileName.split(".").pop() || "") : true;
+    editorSessions.get(fileName)?.fileElement?.fileElem.classList.add('dirty');
     if (saveFile) {
         document.getElementById('buttons')?.classList.remove('compiled');
         document.getElementById('saveProject')?.classList.remove('saved');
@@ -3010,6 +3014,8 @@ function onMessage(event) {
             const compileErrors = JSON.parse(messageJson.body);
             const index = client?.editorSession.findIndex(file => file.fileName === messageJson.fileName);
             const session = client?.editorSession[index].editor;
+            if (messageJson.saved)
+                cleanFile(messageJson.fileName);
             for (const elem of document.getElementsByClassName('console-error'))
                 elem.remove();
             session.setAnnotations([]);

@@ -115,6 +115,7 @@ export declare class EditorFile {
     rename(newName: any, clientObj: ClientObject): void;
     syncFileContent(): void;
     openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;
+    updateFile(clientObj: ClientObject, content?: string): void;
     changeContent(data: {
         content?: any;
         delta?: any;
