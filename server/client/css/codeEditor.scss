@@ -2525,7 +2525,7 @@ form#codeForm {
         {
             position: absolute;
             bottom: -5px;
-            right: 50%;
+            right: 100%;
             transform: translate(50%, 100%);
             background-color: rgb(10,10,10);
             backdrop-filter: blur(4px);
@@ -2549,7 +2549,7 @@ form#codeForm {
                 backdrop-filter: blur(4px);
                 position: absolute;
                 top: 0;
-                right: 50%;
+                right: 35%;
                 transform: translate(50%, -75%);
             }
         }
