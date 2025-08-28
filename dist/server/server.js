@@ -1386,9 +1386,10 @@ bash `.trim().replaceAll('\n', "");
                             clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath(), res.fileName), null, (event, fileNameBuf) => {
                                 const fileName = fileNameBuf.toString();
                                 if (!fileName)
-                                    return;
+                                    throw new Error('Invalid file name in watcher');
                                 const changedFile = clientSession.files.find(file => file.name == fileName);
                                 if (!changedFile) {
+                                    console.error('Couldnt find file to update in watcher.');
                                     if (event == 'rename') {
                                         new types_2.EditorFile(clientSession, fileName, null, { abstract: true });
                                         console.warn('Created new file from rename event!');

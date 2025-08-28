@@ -673,19 +673,20 @@ Tralalero Tralala`.split('\n')
                 }, clientObj)
             return 
         }
-        else 
-            clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name,  body: this.content, checksum})
+        else // replace with an array of clients that have this file open
+            this.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                if(clientObj.checkClientsFileOpen(thisClientObj))
+                    clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name,  body: this.content, checksum})
+                })
 
         
     }
 
     public onFileWatched(eventType: WatchEventType, clientObj) {
-        switch(eventType) {
-            case 'change':
-                this.syncFileContent()
-                this.changeContent({content: this.content}, clientObj)
-            break;
-        }
+        
+        this.syncFileContent()
+        this.changeContent({content: this.content}, clientObj)
+        console.log('Synced file content')
     }
  
     private applyDelta (delta) {

@@ -572,12 +572,9 @@ class EditorFile {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name, body: this.content, checksum });
     }
     onFileWatched(eventType, clientObj) {
-        switch (eventType) {
-            case 'change':
-                this.syncFileContent();
-                this.changeContent({ content: this.content }, clientObj);
-                break;
-        }
+        this.syncFileContent();
+        this.changeContent({ content: this.content }, clientObj);
+        console.log('Synced file content');
     }
     applyDelta(delta) {
         if (!delta)

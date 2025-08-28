@@ -1756,10 +1756,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             clientSession.fileWatcher = fs.watch(path.join(clientSession.getClientFilesPath(), res.fileName), null, (event, fileNameBuf) => {
                 const fileName = fileNameBuf.toString()
                 if(!fileName)
-                    return
+                    throw new Error('Invalid file name in watcher')
                 const changedFile = clientSession.files.find(file => file.name == fileName)
                 if(!changedFile)
                 {
+                    console.error('Couldnt find file to update in watcher.')
                     if(event == 'rename')
                         {
                             new EditorFile(clientSession, fileName, null, {abstract: true})
