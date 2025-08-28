@@ -568,8 +568,11 @@ class EditorFile {
             }, clientObj);
             return;
         }
-        else
-            clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name, body: this.content, checksum });
+        else // replace with an array of clients that have this file open
+            this.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                if (clientObj.checkClientsFileOpen(thisClientObj))
+                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name, body: this.content, checksum });
+            });
     }
     onFileWatched(eventType, clientObj) {
         this.syncFileContent();

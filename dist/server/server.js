@@ -1383,7 +1383,7 @@ bash `.trim().replaceAll('\n', "");
                             if (clientSession.program?.stdin?.writable)
                                 clientSession.program.stdin.write(processInputBuffer); // write buffer
                         if (!clientSession.fileWatcher) {
-                            clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath(), res.fileName), null, (event, fileNameBuf) => {
+                            clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath()), null, (event, fileNameBuf) => {
                                 const fileName = fileNameBuf.toString();
                                 if (!fileName)
                                     throw new Error('Invalid file name in watcher');

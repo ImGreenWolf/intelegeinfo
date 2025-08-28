@@ -1753,7 +1753,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
         if(!clientSession.fileWatcher)
         {
-            clientSession.fileWatcher = fs.watch(path.join(clientSession.getClientFilesPath(), res.fileName), null, (event, fileNameBuf) => {
+            clientSession.fileWatcher = fs.watch(path.join(clientSession.getClientFilesPath()), null, (event, fileNameBuf) => {
                 const fileName = fileNameBuf.toString()
                 if(!fileName)
                     throw new Error('Invalid file name in watcher')
