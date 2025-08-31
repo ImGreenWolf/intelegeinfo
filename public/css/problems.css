@@ -246,6 +246,7 @@ a.problem-card a:any-link {
   animation: animate-progress 20s infinite linear;
   background-size: 200%;
   text-decoration: underline;
+  border-block-end: 0.1em solid var(--colorA);
 }
 
 /*# sourceMappingURL=problems.css.map */
