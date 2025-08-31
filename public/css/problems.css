@@ -180,13 +180,13 @@ h2.good {
   --bgcolorb: rgb(25, 44, 28);
 }
 
-.problem-card.grade-color-10 > div {
+.problem-card.grade-color-11 > div {
   --bgcolor: rgb(165, 95, 165);
   --bgcolorw: rgb(219, 160, 219);
   --bgcolorb: rgb(105, 59, 105);
 }
 
-.problem-card.grade-color-10 > div {
+.problem-card.grade-color-12 > div {
   --bgcolor: rgb(151, 59, 59);
   --bgcolorw: rgb(218, 126, 126);
   --bgcolorb: rgb(90, 19, 19);

@@ -186,12 +186,15 @@ export class IIWebRTC
       
 
           
-        this.polite = isHost
+        this.polite = !isHost
         // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc?session="+sessionId
         // const signaler = new WebSocket(WSUrl) // 
 
-        if(!signaler.OPEN)
-            return
+        if (signaler.readyState !== WebSocket.OPEN) {
+             console.warn('Bailed out rtc connection due to signaling state unavaialable');
+             return;
+        }
+            
 
 
         this.pc! = new RTCPeerConnection(configuration); // create local peer connection
@@ -254,24 +257,72 @@ export class IIWebRTC
 
         
 
-            this.pc!.onicecandidate = ({ candidate }) => signaler.send(JSON.stringify({type: "rtc",  targetId: thistargetId,candidate }));
+        this.pc!.onicecandidate = ({ candidate }) => signaler.send(JSON.stringify({type: "rtc",  targetId: thistargetId,candidate }));
 
-            this.pc!.ondatachannel = (ev) => {
-                const newDC = ev.channel
-                if(!this.dc)
-                    this.dc = newDC
-                const pair = this.pc!.sctp!.transport.iceTransport.getSelectedCandidatePair();
-                console.log(pair!);
-                if(onConnection)
-                    onConnection(newDC)
-                newDC.addEventListener('message', ev => {
-                    this.onData(ev.data)
-                })
+        this.pc!.ondatachannel = (ev) => {
+            const newDC = ev.channel
+            if(!this.dc)
+                this.dc = newDC
+            const pair = this.pc!.sctp!.transport.iceTransport.getSelectedCandidatePair();
+            console.log(pair!);
+            if(onConnection)
+                onConnection(newDC)
+            newDC.addEventListener('message', ev => {
+                this.onData(ev.data)
+            })
+        }
+
+        this.pc!.oniceconnectionstatechange = () => {
+            console.log(this.id, "ICE state:", this.pc!.iceConnectionState);
+
+            switch (this.pc!.iceConnectionState) {
+                case "failed":
+                    console.warn(this.id, "ICE failed, trying ICE restart");
+                    try {
+                        this.pc?.restartIce();
+                    } catch (err) {
+                        console.error(this.id, "ICE restart error:", err);
+                    }
+                    break;
+
+                case "disconnected":
+                    console.warn(this.id, "ICE disconnected, may recover automatically");
+                    // it may reconnect
+                    break;
+
+                case "closed":
+                    console.log(this.id, "ICE closed, peer connection is gone");
+                    break;
             }
+        };
 
-           this.thisClientId = thisClientId
-            this.thistargetId = thistargetId
-            this.signaler = signaler
+        this.pc!.onconnectionstatechange = () => {
+            console.log(this.id, "Connection state:", this.pc!.connectionState);
+
+            switch (this.pc!.connectionState) {
+                case "connected":
+                    console.log(this.id, "WebRTC connected.");
+                    break;
+
+                case "disconnected":
+                    console.warn(this.id, "WebRTC disconnected. (may recover)");
+                    break;
+
+                case "failed":
+                    console.error(this.id, "WebRTC failed, closing & cleaning up");
+                    this.close();
+                    break;
+
+                case "closed":
+                    console.log(this.id, "WebRTC connection closed");
+                    this.onClose()
+                    break;
+            }
+        };
+
+        this.thisClientId = thisClientId
+        this.thistargetId = thistargetId
+        this.signaler = signaler
     }   
 
     public async handleSignal({type, targetId, callerId, description, candidate }) {
@@ -288,14 +339,12 @@ export class IIWebRTC
                         (this.pc!.signalingState === "stable" || this.isSettingRemoteAnswerPending);
 
                     const offerCollision = description.type === "offer" && !readyForOffer;
-
                     console.log(this.id,readyForOffer, offerCollision)
 
                     this.ignoreOffer = !this.polite && offerCollision;
-                    if (this.ignoreOffer) {
-                        return;
-                    }
-                    this.isSettingRemoteAnswerPending = description.type === "answer";
+                    if (this.ignoreOffer) return;
+                    this.isSettingRemoteAnswerPending = description.type === "offer";
+
                     console.log(this.id,'setting remote description', description.type)
 
                     await this.pc!.setRemoteDescription(description); // step 3: describe the remote connection
@@ -362,6 +411,12 @@ export class IIWebRTC
     public close()
     {
         this.pc?.close()
+        this.onClose()
+    }
+
+    protected onClose()
+    {
+        // TODO nothing right now, remove microphone, announce user etc
     }
 
     public beginSendingAudio(): Promise<MediaStream>

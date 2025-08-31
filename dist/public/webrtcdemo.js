@@ -139,11 +139,13 @@ export class IIWebRTC {
                 { urls: "stun:stun1.l.google.com:5349" },
             ]
         };
-        this.polite = isHost;
+        this.polite = !isHost;
         // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc?session="+sessionId
         // const signaler = new WebSocket(WSUrl) // 
-        if (!signaler.OPEN)
+        if (signaler.readyState !== WebSocket.OPEN) {
+            console.warn('Bailed out rtc connection due to signaling state unavaialable');
             return;
+        }
         this.pc = new RTCPeerConnection(configuration); // create local peer connection
         // console.log(this.id,'is caller : ', isHost, "target: ",thistargetId)
         this.dc = this.pc.createDataChannel('data', options ? options.dataChannelOptions : undefined); // data channel for communication created locally on host
@@ -204,6 +206,46 @@ export class IIWebRTC {
                 this.onData(ev.data);
             });
         };
+        this.pc.oniceconnectionstatechange = () => {
+            console.log(this.id, "ICE state:", this.pc.iceConnectionState);
+            switch (this.pc.iceConnectionState) {
+                case "failed":
+                    console.warn(this.id, "ICE failed, trying ICE restart");
+                    try {
+                        this.pc?.restartIce();
+                    }
+                    catch (err) {
+                        console.error(this.id, "ICE restart error:", err);
+                    }
+                    break;
+                case "disconnected":
+                    console.warn(this.id, "ICE disconnected, may recover automatically");
+                    // it may reconnect
+                    break;
+                case "closed":
+                    console.log(this.id, "ICE closed, peer connection is gone");
+                    break;
+            }
+        };
+        this.pc.onconnectionstatechange = () => {
+            console.log(this.id, "Connection state:", this.pc.connectionState);
+            switch (this.pc.connectionState) {
+                case "connected":
+                    console.log(this.id, "WebRTC connected.");
+                    break;
+                case "disconnected":
+                    console.warn(this.id, "WebRTC disconnected. (may recover)");
+                    break;
+                case "failed":
+                    console.error(this.id, "WebRTC failed, closing & cleaning up");
+                    this.close();
+                    break;
+                case "closed":
+                    console.log(this.id, "WebRTC connection closed");
+                    this.onClose();
+                    break;
+            }
+        };
         this.thisClientId = thisClientId;
         this.thistargetId = thistargetId;
         this.signaler = signaler;
@@ -221,10 +263,9 @@ export class IIWebRTC {
                 const offerCollision = description.type === "offer" && !readyForOffer;
                 console.log(this.id, readyForOffer, offerCollision);
                 this.ignoreOffer = !this.polite && offerCollision;
-                if (this.ignoreOffer) {
+                if (this.ignoreOffer)
                     return;
-                }
-                this.isSettingRemoteAnswerPending = description.type === "answer";
+                this.isSettingRemoteAnswerPending = description.type === "offer";
                 console.log(this.id, 'setting remote description', description.type);
                 await this.pc.setRemoteDescription(description); // step 3: describe the remote connection
                 this.isSettingRemoteAnswerPending = false;
@@ -282,6 +323,10 @@ export class IIWebRTC {
     }
     close() {
         this.pc?.close();
+        this.onClose();
+    }
+    onClose() {
+        // TODO nothing right now, remove microphone, announce user etc
     }
     beginSendingAudio() {
         return new Promise(resolve => {

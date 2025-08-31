@@ -491,6 +491,10 @@ export class EditorWindowTab {
         if (elem.outerHTML)
             this.onOpenTab(elem);
     }
+    setName(name) {
+        this.name = name;
+        this.element.querySelector('p').innerText = name;
+    }
     onOpenTab(elem) {
         if (!this.parentWindow)
             throw 'no parent window';
@@ -533,8 +537,8 @@ export function updateCatalouge(sessionId, clientId) {
     const tabs = [
         createEditorTab('Subiecte', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] })),
         createEditorTab('Pbinfo', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://www.pbinfo.ro/' }, { name: 'allow', value: "encrypted-media" }] })),
-        createEditorTab('Probleme', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problems.html?sessionId=' + sessionId }] })),
-        new TerminalTab()
+        newIframeTab('/pages/problems.html?sessionId=' + sessionId, "Probleme"),
+        new TerminalTab(),
     ];
     fetch('/user/jwt').then(async (loggedin) => {
         if (loggedin.ok && (await loggedin.json()).role == 'ADMIN') // TODO check if user is admin
@@ -547,6 +551,15 @@ export function updateCatalouge(sessionId, clientId) {
     const catalouge = document.getElementById('tab-catalouge');
     for (const tab of tabs)
         addtab(tab);
+    function newIframeTab(url, name) {
+        const iframe = createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: url }] });
+        const tab = createEditorTab(name, iframe);
+        iframe.onload = (ev) => {
+            const newName = iframe.contentWindow?.document.title;
+            tab.setName(newName);
+        };
+        return tab;
+    }
     function addtab(tab) {
         tab.element.ondragend = () => {
             catalouge?.parentElement?.classList.remove('open');

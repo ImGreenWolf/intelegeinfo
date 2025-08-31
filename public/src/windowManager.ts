@@ -638,7 +638,10 @@ export class EditorWindowTab {
         if(elem.outerHTML)
             this.onOpenTab(elem)
     }
-
+    public setName(name) {
+        this.name = name
+        this.element.querySelector('p')!.innerText = name
+    }
     public onOpenTab(elem)
     {
         if(!this.parentWindow)
@@ -698,9 +701,9 @@ export function updateCatalouge(sessionId, clientId)
     [
         createEditorTab('Subiecte', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})),
         createEditorTab('Pbinfo', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: 'https://www.pbinfo.ro/'}, {name: 'allow', value: "encrypted-media"}]})),
-        createEditorTab('Probleme', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problems.html?sessionId='+sessionId}]})),
-        new TerminalTab()
-        
+        newIframeTab('/pages/problems.html?sessionId='+sessionId, "Probleme"),
+        new TerminalTab(),
+       
 
     ]
     fetch('/user/jwt').then(async loggedin => {
@@ -718,7 +721,16 @@ export function updateCatalouge(sessionId, clientId)
 
     for(const tab of tabs)
         addtab(tab)
-    
+    function newIframeTab(url: string, name) {
+        const iframe = createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: url}]})
+         const tab = createEditorTab(name, iframe)
+        iframe.onload = (ev) => {
+            const newName = iframe.contentWindow?.document.title
+            tab.setName(newName)
+        }
+       
+        return tab
+    }
     function addtab(tab) {
         tab.element.ondragend = () => 
         {

@@ -27,6 +27,7 @@ export declare class IIWebRTC {
     addMediaStream(selfVideo: any): Promise<void>;
     send(data: any): void;
     close(): void;
+    protected onClose(): void;
     beginSendingAudio(): Promise<MediaStream>;
     stopSendingAudio(): void;
 }

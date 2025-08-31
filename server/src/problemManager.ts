@@ -204,7 +204,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 else if(outputBuffer.trim() === expectedStoud.trim())
                     resolve({status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length, time: startTime ?  Date.now() - startTime : undefined})
                 else
-                    resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0, result: (i <= 2 ? {input: stdin, output: outputBuffer, expectedOutput: expectedStoud} : undefined)}) // TODO Determine if i should leave expected output
+                    resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0, result: (i <= 2 ? {input: stdin} : undefined)}) // TODO Determine if i should leave expected output
             })
         }))
         
@@ -589,7 +589,10 @@ Your ultimate goal is to evaluate the source code provided by the user to solve 
 input:
 `
 *Name: ${problem.name}
-*Class Grade: 9
+*Class Grade: ${problem.grade}
+*Problem Category: ${problem.category}
+*Problem Difficulty: ${problem.difficulty}
+*Problem Tags (separated by ,): ${problem.tags.join(', ')}
 *Description: ${problem.description}
 
 *Restrictions and requirements: 
@@ -628,13 +631,13 @@ const codeMentorFeedback = {
         "minLength": 10
       },
       "improvements": {
-        "type": "string",
-        "description": "A summary of areas where the user can improve their code or problem solving. Focus on habits, logic, or concepts.",
+        "type": ["string", "null"],
+        "description": "A summary of areas where the user can improve their code or problem solving, return null if you dont think the user has much to improve on or isnt necesary. Focus on habits, logic, or concepts.",
         "minLength": 10
       },
       "suggestions": {
-        "type": "string",
-        "description": "Actionable suggestions for the user to become a better problem solver and programmer. Prompt self-reflection and encourage conceptual learning.",
+        "type": ["string", "null"],
+        "description": "Actionable suggestions for the user to become a better problem solver and programmer, if you decide the user needs these suggestions. Prompt self-reflection and encourage conceptual learning.",
         "minLength": 10
       },
       "scoreConclusion": {

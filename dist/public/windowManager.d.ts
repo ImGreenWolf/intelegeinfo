@@ -27,6 +27,7 @@ export declare class EditorWindowTab {
     constructor(name: any, element: HTMLElement, content: typeof this.content, parentWindow?: EditorWindow, disableDrag?: boolean);
     getDragText: () => string | undefined;
     openTab(ev?: MouseEvent): void;
+    setName(name: any): void;
     onOpenTab(elem: any): void;
     remove(): void;
 }

@@ -9,7 +9,8 @@ export async function test(sessionId, problemId) {
         throw 'Invalid response';
     for (const result of json.results) {
         const test = result.value;
-        elems.push(createNode('div', { htmlSting: `#${test.index}: ${test.status} - Score: <span class="${test.score != 0 ? 'good' : 'bad'}">${test.score}</span>` + (test.result !== undefined ? `<div>Input: ${test.result.input}; Output: ${test.result.output}</div>` : '') }));
+        elems.push(createNode('div', { htmlSting: `#${test.index}: ${test.status} - Score: <span class="${test.score != 0 ? 'good' : 'bad'}">${test.score}</span>` +
+                (test.result !== undefined ? `<span title='arata datele de intrare a testului' class='show-input'>👁️<span>Input: ${test.result.input}</span></div>` : '') }));
     }
     output.replaceChildren(...elems);
     document.getElementById('final-score').innerHTML = `${json.solve.score} - Time: ${json.solve.time}`;
@@ -31,14 +32,16 @@ export async function evaluate(sessionId, problemId) {
         <h1>Ce ai facut bine</h1>
         <p>${json.positives}</p>
     </section>
+    ${json.improvements ? `
     <section>
         <h1>Ce ar trebui să îmbunătățești</h1>
         <p>${json.improvements}</p>
-    </section>
+    </section>` : ''}
+    ${json.suggestions ? `
     <section>
         <h1>Sugestii</h1>
         <p>${json.suggestions}</p>
-    </section>
+    </section>` : ''}
     <section>
         <h1>Concluzie</h1>
         <p>${json.scoreConclusion.conclusion}</p>
