@@ -236,7 +236,7 @@ h2.good {
   }
 }
 
-a.problem-card > a:any-link {
+a.problem-card a:any-link {
   background-clip: text;
   color: transparent;
   --colorA: rgb(205, 207, 52);
