@@ -324,7 +324,10 @@ router.get('/random', async (req, res) => {
 router.get('/page', async (req, res) => {
     const userId = users.getIdFromJWT(req)
     const problems = await prisma.problem.findMany({
-        take: 10,
+        take: 20,
+        orderBy: {
+            grade: 'asc'
+        },
         include: {
             tagsLinked: true,
              solves: userId ? {
@@ -335,10 +338,11 @@ router.get('/page', async (req, res) => {
                     score: "desc"
                 },
                 take: 1
-            } : false
+            } : false,
+            _count: true
         }
     })
-
+    
     res.send(problems)
 })
 import fs from 'fs';

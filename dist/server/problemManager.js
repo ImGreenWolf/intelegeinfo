@@ -283,7 +283,10 @@ exports.router.get('/random', async (req, res) => {
 exports.router.get('/page', async (req, res) => {
     const userId = users.getIdFromJWT(req);
     const problems = await dbClient_1.default.problem.findMany({
-        take: 10,
+        take: 20,
+        orderBy: {
+            grade: 'asc'
+        },
         include: {
             tagsLinked: true,
             solves: userId ? {
@@ -294,7 +297,8 @@ exports.router.get('/page', async (req, res) => {
                     score: "desc"
                 },
                 take: 1
-            } : false
+            } : false,
+            _count: true
         }
     });
     res.send(problems);

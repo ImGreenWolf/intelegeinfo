@@ -9,20 +9,23 @@ async function fetchProblems() {
         const data = await response.json();
         const list = document.getElementById('problem-list');
         list.innerHTML = '';
-        // console.log(data)
+        console.log(data);
         data.forEach(item => {
             const listItem = document.createElement('li');
             const link = document.createElement('a');
             const href = `../editor/problem/${sessionId}/details/${item.id}`;
             link.textContent = item.name;
             listItem.appendChild(link);
-            const progress = item.solves.length != 0 ? item.solves[0].score : 0;
+            const progress = item.solves && item.solves.length != 0 ? item.solves[0].score : 0;
             list.appendChild(createNode('a', { html: [
                     createNode('div', {
                         htmlSting: `
                         <div class='display-container'>
                             <div class='upper'>
-                                <h3>${item.category}</h3>
+                                <div>
+                                    <h3>${item.category}</h3>
+                                    ${item._count && item._count.solves >= 100 ? `<h3>${item._count.solves}</h3>` : ''}
+                                </div>
                                 <h2>${item.name}</h2>
                                 
                             </div>
@@ -30,8 +33,8 @@ async function fetchProblems() {
                                 <div class='tag-container'>
                                     ${item.tags.map(tag => `<span>${tag}</span>`).join('\n')}
                                 </div>
-                                <h2 class='${progress > 75 ? 'good' : 'bad'}'>${progress}%</h2>
-                                <div class='progress ${progress > 75 ? 'good' : 'bad'}'>
+                                <h2 class='${progress > 25 ? 'good' : 'bad'}'>${progress}%</h2>
+                                <div class='progress ${progress != 100 ? 'good' : 'bad'}'>
                                     <div style='width: ${progress}%'></div>
                                 </div>
                             </div>

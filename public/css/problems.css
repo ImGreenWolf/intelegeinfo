@@ -99,6 +99,7 @@ a.problem-card:hover {
 }
 .problem-card > div .info-wrapper:not(:hover) .info-container {
   height: 0;
+  opacity: 0;
 }
 .problem-card > div .display-container .lower {
   overflow: hidden;
@@ -114,7 +115,7 @@ a.problem-card:hover {
   color: rgb(71, 165, 71);
 }
 .problem-card > div:has(.info-wrapper:hover) .display-container {
-  padding: 1em 1.5em;
+  padding: 0.5em 1.5em;
 }
 .problem-card > div:has(.info-wrapper:hover) .display-container .lower {
   height: 0;
@@ -145,7 +146,7 @@ a.problem-card:hover {
 .display-container .upper h3::before {
   content: "";
   border-radius: 50%;
-  background-color: purple;
+  background-color: var(--bgcolorb);
   width: 0.75em;
   height: 0.75em;
   margin: auto 0.25em;
@@ -162,6 +163,18 @@ a.problem-card:hover {
   --bgcolor: rgb(58, 104, 62);
   --bgcolorw: rgb(132, 179, 146);
   --bgcolorb: rgb(25, 44, 28);
+}
+
+.problem-card.grade-color-10 > div {
+  --bgcolor: rgb(165, 95, 165);
+  --bgcolorw: rgb(219, 160, 219);
+  --bgcolorb: rgb(105, 59, 105);
+}
+
+.problem-card.grade-color-10 > div {
+  --bgcolor: rgb(151, 59, 59);
+  --bgcolorw: rgb(218, 126, 126);
+  --bgcolorb: rgb(90, 19, 19);
 }
 
 .tag-container {
