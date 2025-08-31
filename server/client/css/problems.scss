@@ -37,23 +37,24 @@ a.problem-card {
     background-color: var(--bgcolor);
     box-shadow: inset 0 -10px 5em -2em var(--bgcolorw),0 0 5px rgba(255, 255, 255, 0.425) inset;
     
-    display: grid;
-    grid-template-rows: auto min-content;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
+
     .display-container {
         background-color: rgb(252, 252, 252);
         color: black;
         box-shadow: 0 0 5px black inset,
          0 5px 13px -2px var(--bgcolorw);
         border-radius: calc(var(--radius) - var(--padding));
-        
-        height: 100%;
-        min-height: calc(var(--radius) * 1.5);
+
         overflow: hidden;
-        display: grid;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 1;
+
         padding: 2em 1.5em;
         box-sizing: border-box;
-        grid-template-rows: 2fr auto;
         gap: 0.5em;
 
         transition: 0.2s 0.3s;
@@ -62,22 +63,28 @@ a.problem-card {
             line-height: 1em;
         }
     }
+
     &:not(:has(.info-wrapper:hover)):hover .info-wrapper {
-        //  background-color: rgba(0, 0, 0, 0.062);
          box-shadow: 0 0 15px -5px inset rgba(0, 0, 0, 0.336);
     }
+
     .info-wrapper {
-        // min-height: 50px;
-        margin: 0.25em;
+        
         
         transition: 0.3s 0.2s;
+
         border-radius: inherit;
         overflow: hidden;
+        margin: 0.25em;
+
+        display: flex;
+        flex-direction: column;
+
         h3 {
             text-align: center;
             color: var(--bgcolorb);
             font-weight: 800;
-            margin: auto;
+            margin: 0 auto;
             line-height: 50px;
             font-family: Poppins;
             font-size: 1.5em;
@@ -85,18 +92,25 @@ a.problem-card {
         }
 
     }
+    
     .info-container {
-        height: 170px;
         overflow: hidden;
+        max-height: 100%;
+        height: 0;
+        // min-height: 100%; // i can use 100%, but the container gets height 300px and overflows...
+        min-height: 150px;
         transition: 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.2s;
         font-size: 0.75em;
+
         box-sizing: border-box;
         border-radius: var(--radius);
+
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-around;
-
+        justify-content: center;
+        gap: 0.25em;
+        
         p {
             margin: calc(var(--radius) / 4);
         }
@@ -105,47 +119,41 @@ a.problem-card {
             border-radius: 1em;
             padding: 0.25em 1em;
             background-color: var(--bgcolorw);
-            width: 100px;
+            max-width: 100px;
             text-align: center;
-            
             font-weight: 600;
             box-shadow: 0 0 0.5em rgba(27, 27, 27, 0.473);
         }
     }
     
+    &:not(:has(.info-wrapper:hover)) .display-container {
+         flex-grow: 1;
+    }
+        
+
     .info-wrapper:not(:hover) .info-container {
-        height: 0;
+        max-height: 0;
+        min-height: 0;
         opacity: 0;
     }
-
-    .display-container .lower {
-        overflow: hidden;
-        height: 100%;
-        transition: 0.2s 0.3s;
-        text-align:  end;
-    }
-
-    h2.bad {
-        color: white;
-        text-shadow: 0 0 3px black;
-    }
-
-    h2.good {
-        color: rgb(71, 165, 71);
-    }
-
+    
     &:has(.info-wrapper:hover) {
         .display-container {
             padding: 0.5em 1.5em;
             // max-height: 1em;
         }
         .display-container .lower {
+            // max-height: 0;
             height: 0;
             opacity: 0;
+            // display: none;
         }
         .display-container .upper {
-            max-height: 2em;
-
+            // max-height: 2em;
+            overflow: visible;
+        }
+        .info-wrapper {
+            flex-grow: 1;
         }
     }
 
@@ -153,7 +161,7 @@ a.problem-card {
 }
 
 .display-container .upper {
-    height: 100%;
+    // height: 100%;
     display: grid;
     justify-content: space-evenly;
     align-items: start;
@@ -180,6 +188,22 @@ a.problem-card {
     }
 }
 
+.display-container .lower {
+    overflow: hidden;
+    height: 100px;
+    transition: 0.3s 0.2s;
+    text-align:  end;
+    flex-shrink: 1;
+}
+
+h2.bad {
+    color: white;
+    text-shadow: 0 0 3px black;
+}
+
+h2.good {
+    color: rgb(71, 165, 71);
+}
 .problem-card.grade-color-9>div {
     --bgcolor: rgb(66, 87, 160);
     --bgcolorw: rgb(108, 115, 209);
