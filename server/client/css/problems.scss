@@ -6,7 +6,7 @@
     // grid-auto-flow: column;
     justify-content: space-evenly;
     grid-auto-rows: 300px;
-    row-gap: 5em;
+    row-gap: 2em;
     width: 100%;
     max-width: 1500px;
     margin: auto;
@@ -58,6 +58,7 @@ a.problem-card {
         gap: 0.5em;
 
         transition: 0.2s 0.3s;
+        justify-content: space-between;
         h1,h2,h3 {
             margin: 0;
             line-height: 1em;
