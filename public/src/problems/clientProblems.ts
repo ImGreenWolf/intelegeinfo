@@ -38,7 +38,7 @@ async function fetchProblems() {
                                     ${item.tags.map(tag => `<span>${tag}</span>`).join('\n')}
                                 </div>
                                 <h2 class='${progress > 25 ? 'good' : 'bad'}'>${progress}%</h2>
-                                <div class='progress ${progress != 100 ? 'good' : 'bad'}'>
+                                <div class='progress ${progress == 100 ? 'good' : 'bad'}'>
                                     <div style='width: ${progress}%'></div>
                                 </div>
                             </div>
