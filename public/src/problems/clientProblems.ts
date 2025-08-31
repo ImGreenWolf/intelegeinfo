@@ -11,8 +11,7 @@ async function fetchProblems() {
         const data = await response.json() as problems;
         const list = document.getElementById('problem-list');
         list!.innerHTML = '';
-        console.log(data)
-        for(let i=0;i<20;i++)
+        // console.log(data)
         data.forEach(item => {
             const listItem = document.createElement('li');
             const link = document.createElement('a');

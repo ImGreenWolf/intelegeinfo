@@ -9,18 +9,17 @@ async function fetchProblems() {
         const data = await response.json();
         const list = document.getElementById('problem-list');
         list.innerHTML = '';
-        console.log(data);
-        for (let i = 0; i < 20; i++)
-            data.forEach(item => {
-                const listItem = document.createElement('li');
-                const link = document.createElement('a');
-                const href = `../editor/problem/${sessionId}/details/${item.id}`;
-                link.textContent = item.name;
-                listItem.appendChild(link);
-                const progress = item.solves.length != 0 ? item.solves[0].score : 0;
-                list.appendChild(createNode('a', { html: [
-                        createNode('div', {
-                            htmlSting: `
+        // console.log(data)
+        data.forEach(item => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            const href = `../editor/problem/${sessionId}/details/${item.id}`;
+            link.textContent = item.name;
+            listItem.appendChild(link);
+            const progress = item.solves.length != 0 ? item.solves[0].score : 0;
+            list.appendChild(createNode('a', { html: [
+                    createNode('div', {
+                        htmlSting: `
                         <div class='display-container'>
                             <div class='upper'>
                                 <h3>${item.category}</h3>
@@ -49,11 +48,11 @@ async function fetchProblems() {
                             </div>
                         </div>
                         `
-                        })
-                    ],
-                    attributes: [{ name: 'href', value: href }],
-                    className: `problem-card grade-color-${item.grade}` }));
-            });
+                    })
+                ],
+                attributes: [{ name: 'href', value: href }],
+                className: `problem-card grade-color-${item.grade}` }));
+        });
     }
     catch (error) {
         console.error('Error fetching directory:', error);
