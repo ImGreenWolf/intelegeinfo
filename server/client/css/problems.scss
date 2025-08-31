@@ -278,3 +278,14 @@ h2.good {
 }
 
 
+a:any-link {
+    background-clip: text;
+    color: transparent;
+    --colorA: rgb(205, 207, 52);
+    --colorH: rgb(241, 241, 214);
+    background-color: var(--colorA);
+    background-image: linear-gradient(45deg, var(--colorA), var(--colorH), var(--colorA));
+    animation: animate-progress 20s infinite linear;
+    background-size: 200%;
+    text-decoration: underline;
+}
