@@ -185,12 +185,18 @@ exports.Prisma.GuideTagScalarFieldEnum = {
   tagId: 'tagId'
 };
 
+exports.Prisma.ProblemTagScalarFieldEnum = {
+  problemId: 'problemId',
+  tagId: 'tagId',
+  displayColor: 'displayColor'
+};
+
 exports.Prisma.ProblemScalarFieldEnum = {
   id: 'id',
   name: 'name',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  author: 'author',
+  authorId: 'authorId',
   positiveRatings: 'positiveRatings',
   negativeRatings: 'negativeRatings',
   description: 'description',
@@ -330,9 +336,12 @@ exports.Prisma.TagOrderByRelevanceFieldEnum = {
   name: 'name'
 };
 
+exports.Prisma.ProblemTagOrderByRelevanceFieldEnum = {
+  displayColor: 'displayColor'
+};
+
 exports.Prisma.ProblemOrderByRelevanceFieldEnum = {
   name: 'name',
-  author: 'author',
   description: 'description',
   category: 'category',
   sourceCode: 'sourceCode',
@@ -394,6 +403,7 @@ exports.Prisma.ModelName = {
   Guide: 'Guide',
   Tag: 'Tag',
   GuideTag: 'GuideTag',
+  ProblemTag: 'ProblemTag',
   Problem: 'Problem',
   Solve: 'Solve',
   Course: 'Course',

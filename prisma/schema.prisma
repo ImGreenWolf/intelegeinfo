@@ -55,6 +55,8 @@ model User {
   Upload Upload[] @relation(name: "Upload User")
 
   Inquiry Inquiry[]
+
+  Problem Problem[]
 }
 enum OccupationType {
   None
@@ -101,7 +103,7 @@ model Tag {
   name String @unique
   guideTags GuideTag[]
 
-  Problem Problem[]
+  Problem ProblemTag[]
 }
 
 model GuideTag {
@@ -113,12 +115,23 @@ model GuideTag {
   @@id([guideId, tagId])
 }
 
+model ProblemTag {
+  problemId Int
+  tagId Int
+  problem Problem @relation(fields: [problemId], references: [id])
+  tag Tag @relation(fields: [tagId], references: [id])
+  displayColor String?
+  @@id([problemId, tagId])
+}
+
 model Problem {
   id Int  @id @default(autoincrement())
   name String 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  author String @default("Anonim")
+  // author String @default("Anonim")
+  author User @relation(fields: [authorId], references: [id])
+  authorId Int @default(1)
   positiveRatings Int @default(0)
   negativeRatings Int @default(0)
   description String?
@@ -131,7 +144,7 @@ model Problem {
   difficulty Difficulty?
   tags String[]
   grade Int @default(9)
-  tagsLinked Tag[]
+  tagsLinked ProblemTag[]
   solves Solve[]
 }
 

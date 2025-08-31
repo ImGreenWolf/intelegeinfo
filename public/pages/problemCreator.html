@@ -18,29 +18,33 @@
 </head>
 <body>
     <form id="form">
-        <label for="pname">Numele Problemei</label>
-        <input type="text" id="pname" name="name">
-        <label for="pname">Autor</label>
-        <input type="text" id="author" name="author">
-        <label for="pname">Categorie</label>
+        <label for="name">Numele Problemei</label>
+        <input type="text" id="name" name="name">
+        <label for="category">Categorie</label>
         <input type="text" id="category" name="category">
-        <label for="pname">Dificultate</label>
+        <label for="difficulty">Dificultate</label>
         <select id="difficulty" name="difficulty">
+            <option value="Beginner">Incepator</option>
             <option value="Easy">Usor</option>
             <option value="Medium">Medium</option>
             <option value="Hard">Greu</option>
+            <option value="Exam">Bac</option>
             <option value="Competition">Concurs</option>
         </select>
         <label for="grade">Clasa</label>
         <input type="number" id="grade" name="grade">
+        
+        </select>
         <label for="tags">Taguri (separate prin ,)</label>
-        <input type="text" id="tags" name="tags">
+        <div>
+            <input type="text" id="tags" name="tags">
+            <select id="tagChips" name="tagChips"></select>
+        </div>
         <label for="requirement">Restrictii si precizari</label>
         <input type="text" id="requirement" name="requirement">
 
         <label for="description">Cerinta</label>
-        <textarea id="description" name="description"></textarea>
-        <input type="checkbox" id="auto-output">
+        <textarea id="description" name="description" rows="10"></textarea>
         <button type="button" onclick="addTest()">+</button>
         <ul id="tests">
 
@@ -49,17 +53,20 @@
     </form>
 
 <script>
+
+    const updateId = undefined
     function addTest()
     {
         const elem = document.createElement('textarea')
         document.getElementById('tests').appendChild(elem)
     }
+    const clientId = new URLSearchParams(location.search).get('clientId')
+    const sessionId = new URLSearchParams(location.search).get('sessionId')
     document.getElementById('form').onsubmit = (ev) => {
         ev.preventDefault()
         const formData = new FormData(document.getElementById('form'))
 
-        const clientId = new URLSearchParams(location.search).get('clientId')
-        const sessionId = new URLSearchParams(location.search).get('sessionId')
+        
 
 
         const tests = []
@@ -79,14 +86,49 @@
 
 
         console.log(json)
-        fetch('../editor/problem/create', {
+        fetch('../editor/problem/' + (updateId ? `update?id=${updateId}` : 'create'), {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(json),
         
-        
         })
     }
+    async function updateTags() {
+        const res = await fetch('/editor/problem/create/tags')
+        const json = await res.json()
+
+        const selectElem = document.getElementById('tagChips')
+        const tagsElem = document.getElementById('tags')
+        for (const chip of json){
+            var opt = document.createElement('option');
+            opt.value = chip.name;
+            opt.innerHTML = chip.name;
+            selectElem.appendChild(opt);
+
+            
+        }
+        selectElem.onchange = (ev) => {
+                tagsElem.value += ev.target.value + ' '
+            }
+    }
+    updateTags()
+    
+    async function updateValues() {
+        if(!updateId)
+            return;
+        const res = await fetch(`/editor/problem/update?id=${updateId}&sessionId=${sessionId}&clientId=${clientId}`)
+        const json = await res.json()
+
+        for(const [key, val] of Object.entries(json))
+        {
+            const elem = document.getElementById(key)
+            if(!elem)
+                continue;
+            elem.value = val
+        }
+    }
+
+    updateValues()
 </script>
 </body>
 </html>

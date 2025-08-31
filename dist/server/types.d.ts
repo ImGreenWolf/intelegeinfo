@@ -122,6 +122,7 @@ export declare class EditorFile {
         clientChecksum?: any;
     }, clientObj: ClientObject): void;
     onFileWatched(eventType: WatchEventType, clientObj: any): void;
+    setFileContent(content: any, clientObj: any): void;
     private applyDelta;
 }
 import DebugProcess from './editor-modes/ProcessTypes';

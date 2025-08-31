@@ -53,7 +53,7 @@ const problemCreator = new Map();
 class ProblemCreator {
     editorSession;
 }
-async function createProblem({ name, author, description, difficulty, tags, category, requirement, grade }, tests, editorSession, clientObj) {
+async function createProblem({ name, description, difficulty, tags, category, requirement, grade }, tests, editorSession, clientObj, req, id) {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
     //     console.error('no running container')
@@ -110,7 +110,7 @@ async function createProblem({ name, author, description, difficulty, tags, cate
         .catch(err => {
         console.error('Test failed.', err);
     })
-        .then((output) => {
+        .then(async (output) => {
         // if(i !== tests.length)
         //     {console.error('some tests failed', i, "out of", tests.length)
         //     return }
@@ -128,10 +128,13 @@ async function createProblem({ name, author, description, difficulty, tags, cate
             }
         });
         const sourceCode = testFile.content;
-        dbClient_1.default.problem.create({
-            data: {
+        const parsedTags = tags.split(',');
+        const createdProblem = await dbClient_1.default.problem.upsert({
+            where: {
+                id: id
+            },
+            update: {
                 name: name || "unnamed",
-                author,
                 category,
                 description,
                 requirement,
@@ -141,11 +144,45 @@ async function createProblem({ name, author, description, difficulty, tags, cate
                 sourceCode,
                 averageMemLimit: 0,
                 averageTimeLimit: time / timeIndex,
-                grade: parseInt(grade)
-            }
-        }).then(problem => {
-            console.log(problem);
+                grade: parseInt(grade),
+                // tagsLinked: {
+                // connect: parsedTags.map((tag) => ({
+                //     tag: {
+                //     connectOrCreate: {
+                //         where: { name: tag }, // requires Tag.name to be @unique ✅
+                //         create: { name: tag },
+                //             },
+                //         },
+                //     })),
+                // },
+            },
+            create: {
+                name: name || "unnamed",
+                authorId: users.getIdFromJWT(req),
+                category,
+                description,
+                requirement,
+                tests,
+                difficulty,
+                tags: tags.split(',').map(val => val.trim()),
+                sourceCode,
+                averageMemLimit: 0,
+                averageTimeLimit: time / timeIndex,
+                grade: parseInt(grade),
+                tagsLinked: {
+                    create: parsedTags.map((tag) => ({
+                        tag: {
+                            connectOrCreate: {
+                                where: { name: tag }, // requires Tag.name to be @unique ✅
+                                create: { name: tag },
+                            },
+                        },
+                    })),
+                },
+            },
+            include: { tagsLinked: { include: { tag: true } } },
         });
+        console.log(createdProblem);
     });
 }
 function testProblem(tests, clientObj, clientSession, res) {
@@ -203,7 +240,34 @@ exports.router.post('/create', (req, res) => {
             throw 'couldnt find client';
         if (!data.name)
             throw 'invalid name';
-        createProblem(data, tests, session, client);
+        if (!users.getIdFromJWT(req)) {
+            res.status(401).send('Unautharized');
+            return;
+        }
+        createProblem(data, tests, session, client, req);
+        res.status(200).send(tests[0].dataIn);
+    }
+    catch (err) {
+        res.status(500).send(err);
+    }
+});
+exports.router.post('/update', (req, res) => {
+    try {
+        const data = req.body;
+        const tests = data.tests;
+        const session = server_1.sessionMap.get(data.sessionId);
+        if (!session)
+            throw 'couldnt find session';
+        const client = session.clientsMap.get(data.clientId);
+        if (!client)
+            throw 'couldnt find client';
+        if (!data.name)
+            throw 'invalid name';
+        if (!users.getIdFromJWT(req)) {
+            res.status(401).send('Unautharized');
+            return;
+        }
+        createProblem(data, tests, session, client, req, parseInt(req.query.id));
         res.status(200).send(tests[0].dataIn);
     }
     catch (err) {
@@ -279,6 +343,35 @@ exports.router.get('/random', async (req, res) => {
         }
     });
     res.send(problem);
+});
+exports.router.get('/create/tags', async (req, res) => {
+    const tags = await dbClient_1.default.tag.findMany({
+        take: 20
+    });
+    res.send(tags);
+});
+exports.router.get('/update', async (req, res) => {
+    const problem = await dbClient_1.default.problem.findFirst({
+        where: {
+            id: parseInt(req.query.id)
+        }
+    });
+    try {
+        const sessionId = req.query.sessionId;
+        if (sessionId) {
+            const session = server_1.sessionMap.get(sessionId);
+            if (session) {
+                const client = session.clientsMap.get(req.query.clientId);
+                if (client)
+                    session.files[0].setFileContent(client, problem.sourceCode);
+            }
+        }
+    }
+    catch (error) {
+    }
+    finally {
+        res.send(problem);
+    }
 });
 exports.router.get('/page', async (req, res) => {
     const userId = users.getIdFromJWT(req);

@@ -608,6 +608,10 @@ class EditorFile {
         this.changeContent({ content: this.content }, clientObj);
         console.log('Synced file content');
     }
+    setFileContent(content, clientObj) {
+        this.changeContent({ content }, clientObj);
+        this.updateFile(clientObj);
+    }
     applyDelta(delta) {
         if (!delta)
             throw new Error('Invalid delta. Cant apply delta.');

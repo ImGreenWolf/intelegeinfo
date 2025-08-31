@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import prisma from "./dbClient";
 import { ClientObject, EditorSession } from "./types";
-import { Writable } from 'node:stream';
+
 export function handleSucces(index, clientObj: ClientObject)
 {
     clientObj.sendMessage({index, succes: true})
@@ -25,7 +25,7 @@ export type ProblemTest = {
     time: number,
 }
 
-export async function createProblem({name, author, description, difficulty, tags, category, requirement, grade}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
+export async function createProblem({name, description, difficulty, tags, category, requirement, grade}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, req, id?: number)
 {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
@@ -97,7 +97,7 @@ export async function createProblem({name, author, description, difficulty, tags
     .catch(err => {
         console.error('Test failed.', err)
     })
-    .then((output) => {
+    .then(async (output) => {
         // if(i !== tests.length)
         //     {console.error('some tests failed', i, "out of", tests.length)
         //     return }
@@ -118,10 +118,13 @@ export async function createProblem({name, author, description, difficulty, tags
            
         })
         const sourceCode = testFile.content;
-        prisma.problem.create({
-            data: {
+        const parsedTags = (tags as string).split(',')
+        const createdProblem = await prisma.problem.upsert({
+            where: {
+                id: id
+            },
+            update: {
                 name: name || "unnamed",
-                author,
                 category,
                 description,
                 requirement,
@@ -131,11 +134,51 @@ export async function createProblem({name, author, description, difficulty, tags
                 sourceCode, 
                 averageMemLimit: 0,
                 averageTimeLimit: time/timeIndex,
-                grade: parseInt(grade)
-            }
-        }).then(problem => {
-            console.log(problem)
+                grade: parseInt(grade),
+                // tagsLinked: {
+                    // connect: parsedTags.map((tag) => ({
+                    //     tag: {
+                    //     connectOrCreate: {
+                    //         where: { name: tag }, // requires Tag.name to be @unique ✅
+                    //         create: { name: tag },
+                    //             },
+                    //         },
+                    //     })),
+                    // },
+                },
+            create: {
+                name: name || "unnamed",
+                authorId: users.getIdFromJWT(req),
+                category,
+                description,
+                requirement,
+                tests,
+                difficulty,
+                tags: (tags as string).split(',').map(val => val.trim()),
+                sourceCode, 
+                averageMemLimit: 0,
+                averageTimeLimit: time/timeIndex,
+                grade: parseInt(grade),
+                tagsLinked: {
+                    create: parsedTags.map((tag) => ({
+                        tag: {
+                        connectOrCreate: {
+                            where: { name: tag }, // requires Tag.name to be @unique ✅
+                            create: { name: tag },
+                                },
+                            },
+                        })),
+                    },
+                },
+                include: { tagsLinked: { include: { tag: true } } },
         })
+
+        
+        
+
+
+            console.log(createdProblem)
+        
     })
     
 
@@ -216,8 +259,40 @@ router.post('/create', (req, res) => {
 
         if(!data.name)
             throw 'invalid name'
+        if(!users.getIdFromJWT(req))
+        {
+            res.status(401).send('Unautharized')
+            return
+        }
+        createProblem(data, tests, session, client, req)
+        res.status(200).send(tests[0].dataIn)
+    }
+    catch(err)
+    {
+        res.status(500).send(err)
+    }
+    
+})
 
-        createProblem(data, tests, session, client)
+router.post('/update', (req, res) => {
+    try {
+        const data = req.body
+        const tests: ProblemTest[] = data.tests
+        const session = sessionMap.get(data.sessionId)
+        if(!session)
+            throw 'couldnt find session'
+        const client = session.clientsMap.get(data.clientId)
+        if(!client)
+            throw 'couldnt find client'
+
+        if(!data.name)
+            throw 'invalid name'
+        if(!users.getIdFromJWT(req))
+        {
+            res.status(401).send('Unautharized')
+            return
+        }
+        createProblem(data, tests, session, client, req, parseInt(req.query.id as string))
         res.status(200).send(tests[0].dataIn)
     }
     catch(err)
@@ -320,6 +395,42 @@ router.get('/random', async (req, res) => {
     res.send(problem)
 })
 
+router.get('/create/tags', async (req, res) => {
+    const tags = await prisma.tag.findMany({
+        take: 20
+    })
+
+    res.send(tags)
+})
+
+router.get('/update', async (req, res) => {
+    const problem = await prisma.problem.findFirst({
+        where: {
+            id: parseInt(req.query.id as string)
+        }
+    })
+
+    try {
+        const sessionId = req.query.sessionId as UUID
+        if(sessionId)
+        {
+            const session = sessionMap.get(sessionId)
+            if(session)
+            {
+                const client = session.clientsMap.get(req.query.clientId as UUID)
+                if(client)
+                    session.files[0].setFileContent(client, problem.sourceCode)
+            }
+            
+        }
+    } catch (error) {
+        
+    }
+    finally {
+        res.send(problem)
+    }
+   
+})
 
 router.get('/page', async (req, res) => {
     const userId = users.getIdFromJWT(req)
@@ -424,7 +535,7 @@ router.get('/:sessionId/details/:id', async (req, res) => {
 export default router
 
 import OpenAI from "openai";
-import { Prisma } from "../../generated/prisma";
+import { WebSocketMessageType } from "./../../dist/shared/types";
 
 
 router.get('/:sessionId/details/:id/evaluate', async (req, res) => {

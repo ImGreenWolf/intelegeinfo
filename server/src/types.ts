@@ -718,7 +718,10 @@ Tralalero Tralala`.split('\n')
         this.changeContent({content: this.content}, clientObj)
         console.log('Synced file content')
     }
- 
+    public setFileContent(content, clientObj) {
+        this.changeContent({content}, clientObj)
+        this.updateFile(clientObj)
+    }
     private applyDelta (delta) {
         if(!delta)
             throw new Error('Invalid delta. Cant apply delta.')
