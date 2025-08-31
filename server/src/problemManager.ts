@@ -25,7 +25,7 @@ export type ProblemTest = {
     time: number,
 }
 
-export async function createProblem({name, author, description, difficulty, tags, category, requirement}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
+export async function createProblem({name, author, description, difficulty, tags, category, requirement, grade}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, )
 {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
@@ -130,7 +130,8 @@ export async function createProblem({name, author, description, difficulty, tags
                 tags: (tags as string).split(',').map(val => val.trim()),
                 sourceCode, 
                 averageMemLimit: 0,
-                averageTimeLimit: time/timeIndex
+                averageTimeLimit: time/timeIndex,
+                grade: parseInt(grade)
             }
         }).then(problem => {
             console.log(problem)
@@ -321,15 +322,26 @@ router.get('/random', async (req, res) => {
 
 
 router.get('/page', async (req, res) => {
-
+    const userId = users.getIdFromJWT(req)
     const problems = await prisma.problem.findMany({
-        take: 10
+        take: 10,
+        include: {
+            tagsLinked: true,
+             solves: userId ? {
+                where: {
+                    userId,
+                },
+                orderBy: {
+                    score: "desc"
+                },
+                take: 1
+            } : false
+        }
     })
 
     res.send(problems)
 })
 import fs from 'fs';
-import { error } from "node:console";
 import * as users from './usersManager'
 // import cookieParser from "cookie-parser";
 router.get('/:sessionId/details/:id', async (req, res) => {

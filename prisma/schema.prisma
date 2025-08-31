@@ -35,7 +35,7 @@ model User {
   emailValidated Boolean @default(false)
   userColor String @default("#FFFFFF")
   picture String  
-  // pictureUpload Upload @relation(fields: [picture], references: [path])
+  pictureUpload Upload @relation(fields: [picture], references: [path])
   role Role @default(USER)
   createdAt DateTime @default(now())
   activeAt DateTime @default(now())
@@ -100,6 +100,8 @@ model Tag {
   id Int @id @default(autoincrement())
   name String @unique
   guideTags GuideTag[]
+
+  Problem Problem[]
 }
 
 model GuideTag {
@@ -128,13 +130,17 @@ model Problem {
   sourceCode String?
   difficulty Difficulty?
   tags String[]
+  grade Int @default(9)
+  tagsLinked Tag[]
   solves Solve[]
 }
 
 enum Difficulty {
+  Beginner
   Easy
   Medium
   Hard
+  Exam
   Competition
 }
 
@@ -225,7 +231,7 @@ model Upload {
   UserId Int?
 
   Course Course[]
-  // ProfilePictures User[]
+  ProfilePictures User[]
 
   
 }

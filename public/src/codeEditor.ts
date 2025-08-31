@@ -2524,8 +2524,10 @@ export function copySessionLink() {
       <p class='info'>Dupa ce ati partajat editorul, sesiunea voastră v-a fi disponibilă orcărei persoane
       care are linkul, codul de 6 cifre sau codul qr.</p>
 
-      <button type="submit" id="submit-create-session" style='height: 2lh'>Partajeaza Editor</button>
       <p id='session-create-error'></p>
+
+      <button type="submit" id="submit-create-session" class="glowing" style='height: 2lh'>Partajeaza Editor</button>
+      
     </form>
     <div id='connect-data-container'>
       <div id='connect-data-inner'>

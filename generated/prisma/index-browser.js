@@ -125,7 +125,8 @@ exports.Prisma.ProjectScalarFieldEnum = {
   name: 'name',
   fileUUID: 'fileUUID',
   createdAt: 'createdAt',
-  userId: 'userId'
+  userId: 'userId',
+  metadata: 'metadata'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -200,7 +201,8 @@ exports.Prisma.ProblemScalarFieldEnum = {
   category: 'category',
   sourceCode: 'sourceCode',
   difficulty: 'difficulty',
-  tags: 'tags'
+  tags: 'tags',
+  grade: 'grade'
 };
 
 exports.Prisma.SolveScalarFieldEnum = {
@@ -279,14 +281,20 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
-exports.Prisma.ProjectOrderByRelevanceFieldEnum = {
-  name: 'name',
-  fileUUID: 'fileUUID'
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.ProjectOrderByRelevanceFieldEnum = {
+  name: 'name',
+  fileUUID: 'fileUUID'
 };
 
 exports.Prisma.UserOrderByRelevanceFieldEnum = {
@@ -320,12 +328,6 @@ exports.Prisma.GuideOrderByRelevanceFieldEnum = {
 
 exports.Prisma.TagOrderByRelevanceFieldEnum = {
   name: 'name'
-};
-
-exports.Prisma.JsonNullValueFilter = {
-  DbNull: Prisma.DbNull,
-  JsonNull: Prisma.JsonNull,
-  AnyNull: Prisma.AnyNull
 };
 
 exports.Prisma.ProblemOrderByRelevanceFieldEnum = {
@@ -376,9 +378,11 @@ exports.OccupationType = exports.$Enums.OccupationType = {
 };
 
 exports.Difficulty = exports.$Enums.Difficulty = {
+  Beginner: 'Beginner',
   Easy: 'Easy',
   Medium: 'Medium',
   Hard: 'Hard',
+  Exam: 'Exam',
   Competition: 'Competition'
 };
 

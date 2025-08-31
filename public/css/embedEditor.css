@@ -823,6 +823,7 @@ button:not(.custom-button) {
 
 #output-container {
   border-radius: 0.5em;
+  font-size: 1em;
   overflow: hidden;
   min-width: 200px;
   grid-row: 2;
@@ -836,19 +837,6 @@ button:not(.custom-button) {
 #output-container div h2 {
   display: inline;
 }
-#output-container button:not(.custom-button) {
-  margin: 5px;
-  padding: 5px 10px;
-  background-color: rgb(0, 0, 0);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  margin: auto;
-  float: right;
-  display: inline;
-}
 
 #output {
   overflow-y: auto;
@@ -858,7 +846,7 @@ button:not(.custom-button) {
   flex-direction: column;
   margin: 10px;
   padding: 20px 10px;
-  font-size: 13px;
+  font-size: 0.85em;
   gap: 1lh;
   position: relative;
   font-family: "Poppins", sans-serif;
@@ -895,16 +883,16 @@ button:not(.custom-button) {
 
 #console-container textarea {
   width: 100%;
-  padding: 10px;
-  border: 2px solid rgba(126, 126, 126, 0.219);
+  padding: 0.75em;
+  border: 0.1em solid rgba(126, 126, 126, 0.219);
   outline: 0;
   border-radius: 1lh;
   resize: none;
   font-family: "Poppins", sans-serif;
-  font-size: 16px;
+  font-size: 1em;
   background-color: rgb(20, 20, 20);
   color: white;
-  min-height: 1lh;
+  height: 1.25em;
   height: 1lh;
   transition-duration: 0.2s;
   transition-delay: 0.1s;
@@ -913,15 +901,18 @@ button:not(.custom-button) {
 
 #console-container button {
   border-radius: 50%;
-  width: 3rem;
-  height: 3rem;
+  width: 3em;
+  height: 3em;
+  font-size: inherit;
   background-image: url("../media/paper-plane-icon.svg");
   background-repeat: no-repeat;
   background-position: center;
+  margin: auto;
+  cursor: pointer;
   opacity: 0%;
   transform: scale(0.8);
-  background-size: 50%;
-  transition-duration: 0.1s;
+  background-size: 1.5em;
+  transition-duration: 0.2s;
   pointer-events: none;
 }
 
@@ -946,16 +937,18 @@ button:not(.custom-button) {
 
 .console-chat {
   max-width: 400px;
-  margin: 5px;
-  padding: 5px;
+  margin: 0.5em;
+  padding: 0.5em;
   display: flex;
   flex-flow: column;
   align-self: flex-start;
   color: white;
+  gap: 0.15em;
 }
 
 .chat-displayName {
   float: right;
+  font-size: 0.75em;
   color: white;
 }
 
@@ -979,7 +972,7 @@ button:not(.custom-button) {
   border-radius: 1lh;
   min-width: 2em;
   max-width: 40em;
-  padding: 5px 1lh;
+  padding: 0.4em 1em;
   font-size: 1em;
   display: block;
   text-overflow: ellipsis;
@@ -1554,7 +1547,7 @@ button:not(.custom-button, .noanimate).inset-button *, #editor-tabs span:not(#ac
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
 }
 button:not(.custom-button, .noanimate):hover, #editor-tabs span:not(#active-open-file, .open-file, .noanimate):hover, #signup:hover, #login:hover {
-  outline: 1px solid rgba(255, 255, 255, 0.8) !important;
+  outline: 1px solid rgba(255, 255, 255, 0.8);
   transform: translateY(0.5px) scale(0.98);
   transition-duration: 0.1s;
 }
@@ -2265,16 +2258,65 @@ form#codeForm {
   left: 0;
 }
 
+@property --rotateGrad {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: true;
+}
+button.glowing {
+  position: relative;
+  box-sizing: content-box;
+  border-radius: 1lh;
+  transform: none !important;
+  outline: none !important;
+  border: 1px solid rgb(0, 0, 0);
+}
+
+button.glowing::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  --padding: 0;
+  top: var(--padding);
+  bottom: var(--padding);
+  left: var(--padding);
+  right: var(--padding);
+  opacity: 0.5;
+  --gradient-colors: white, gold, orange,rgb(151, 22, 22) 90%, white;
+  background: conic-gradient(from var(--rotateGrad) in hsl shorter hue, var(--gradient-colors)) padding-box;
+  background-color: black;
+  background-size: contain;
+  border-radius: inherit;
+  animation: rotate 10s infinite linear;
+  transition-duration: 1s;
+  filter: blur(15px);
+}
+@keyframes rotate {
+  0% {
+    --rotateGrad: 0deg;
+  }
+  100% {
+    --rotateGrad: 360deg;
+  }
+}
+
+button.glowing:hover::before {
+  opacity: 1;
+  filter: blur(7px);
+  transition-duration: 0.5s;
+}
+
 .container {
   padding: 5px;
   overflow: hidden;
-  grid-template-columns: minmax(20%, auto) 50px;
-  grid-template-rows: 1fr 1fr;
-  grid-template-areas: "main buttons" "output buttons";
+  grid-template-columns: minmax(20%, auto) min-content;
+  grid-template-rows: auto 1fr 1fr;
+  grid-template-areas: "header header" "main buttons" "output buttons";
 }
 
 .buttons {
   display: flex !important;
+  flex-direction: column;
 }
 
 #output-container {
@@ -2282,7 +2324,6 @@ form#codeForm {
 }
 
 #output {
-  font-size: 0.75rem;
   margin: 0 auto;
   width: 100%;
   padding: 0;
@@ -2299,6 +2340,7 @@ form#codeForm {
 }
 @media screen and (((max-aspect-ratio: 2/1) or (orientation: landscape)) and (max-height: 500px)) {
   .buttons {
+    flex-direction: row;
     height: auto;
   }
   .container {
@@ -2323,10 +2365,8 @@ form#codeForm {
   #vector-container {
     overflow: visible;
   }
-  #output-container textarea {
-    max-width: 30%;
-    padding: 5px;
-    font-size: 8px;
+  #output-container {
+    font-size: 0.75rem;
   }
   .default-screen h1 {
     display: none;

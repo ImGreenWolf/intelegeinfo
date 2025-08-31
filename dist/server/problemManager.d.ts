@@ -7,7 +7,7 @@ export type ProblemTest = {
     score: number;
     time: number;
 };
-export declare function createProblem({ name, author, description, difficulty, tags, category, requirement }: {
+export declare function createProblem({ name, author, description, difficulty, tags, category, requirement, grade }: {
     name: any;
     author: any;
     description: any;
@@ -15,6 +15,7 @@ export declare function createProblem({ name, author, description, difficulty, t
     tags: any;
     category: any;
     requirement: any;
+    grade: any;
 }, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject): Promise<void>;
 export declare function testProblem(tests: ProblemTest[], clientObj: ClientObject, clientSession: any, res: any): Promise<PromiseSettledResult<{
     status: string;

@@ -210,11 +210,24 @@ function uploadFromFileData(fileReq, userId) {
     } : undefined;
 }
 exports.default = dbClient_1.default;
+// deprecated
 exports.router.get('/checkLoggedIn', (req, res) => {
     if (getIdFromJWT(req) != undefined)
         res.status(200).send(true);
     else
         res.status(401).send(false);
+});
+exports.router.get('/jwt', (req, res) => {
+    const jwt = getJWT(req);
+    if (!jwt) {
+        res.status(401).send({ err: 'Not autherized' });
+        return;
+    }
+    const data = getClientJWTValue(jwt);
+    if (data)
+        res.status(200).send(data);
+    else
+        res.status(401).send({ err: 'Invalid JWT value' });
 });
 exports.router.get('/removeproject', (req, res) => {
     const id = parseInt(req.query.id);
@@ -532,7 +545,7 @@ exports.router.post('/picture', exports.upload.single('profilePicture'), async (
                 id
             },
             data: {
-                pictureUpload: createUploadFromFile(req, id)
+                pictureUpload: createUploadFromFile(req, id),
             }
         }).then(val => {
             res.redirect('/profile');

@@ -53,7 +53,7 @@ const problemCreator = new Map();
 class ProblemCreator {
     editorSession;
 }
-async function createProblem({ name, author, description, difficulty, tags, category, requirement }, tests, editorSession, clientObj) {
+async function createProblem({ name, author, description, difficulty, tags, category, requirement, grade }, tests, editorSession, clientObj) {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
     //     console.error('no running container')
@@ -140,7 +140,8 @@ async function createProblem({ name, author, description, difficulty, tags, cate
                 tags: tags.split(',').map(val => val.trim()),
                 sourceCode,
                 averageMemLimit: 0,
-                averageTimeLimit: time / timeIndex
+                averageTimeLimit: time / timeIndex,
+                grade: parseInt(grade)
             }
         }).then(problem => {
             console.log(problem);
@@ -280,8 +281,21 @@ exports.router.get('/random', async (req, res) => {
     res.send(problem);
 });
 exports.router.get('/page', async (req, res) => {
+    const userId = users.getIdFromJWT(req);
     const problems = await dbClient_1.default.problem.findMany({
-        take: 10
+        take: 10,
+        include: {
+            tagsLinked: true,
+            solves: userId ? {
+                where: {
+                    userId,
+                },
+                orderBy: {
+                    score: "desc"
+                },
+                take: 1
+            } : false
+        }
     });
     res.send(problems);
 });

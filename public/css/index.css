@@ -177,9 +177,10 @@ section h1 {
   transform: scale(0.8) matrix3d(1, 0, 0, -0.0001, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
-.main-container div#text-container {
+#text-container {
   position: relative;
   max-width: 50em;
+  width: 75%;
   text-align: center;
   align-items: stretch;
   display: grid;
@@ -193,11 +194,11 @@ section h1 {
   transform: translate(-50%, -50%); */
   /* top: 50%; */
 }
-.main-container div#text-container h1 {
+#text-container h1 {
   font-size: 3em;
   margin: 0;
 }
-.main-container div#text-container .ridge-gradient.inset-button {
+#text-container .ridge-gradient.inset-button {
   background-image: linear-gradient(rgb(42.3448275862, 40.2275862069, 51.8724137931), rgb(35.3103448276, 33.5448275862, 43.2551724138), rgb(44.6896551724, 42.4551724138, 54.7448275862));
   height: 100px;
   margin: auto;
@@ -210,17 +211,17 @@ section h1 {
   align-items: stretch;
   overflow: hidden;
 }
-.main-container div#text-container p {
+#text-container p {
   overflow-wrap: break-word;
   width: 75%;
   margin: auto;
   color: rgba(255, 255, 255, 0.815);
   text-shadow: 2px 2px 3px black;
 }
-.main-container div#text-container b {
+#text-container b {
   color: white;
 }
-.main-container div#text-container .inset-button a {
+#text-container .inset-button a {
   background-color: rgb(40, 38, 49);
   color: white;
   padding: 0.5lh;
@@ -239,7 +240,7 @@ section h1 {
   text-shadow: 2px 2px 5px black;
   box-shadow: -5px 20px 5px 5px rgba(20, 20, 20, 0.8), inset 0px -10px 5px -10px rgba(40, 38, 49, 0.8), inset 0px 10px 10px -5px rgb(51.724137931, 49.1379310345, 63.3620689655);
 }
-.main-container div#text-container .inset-button a:hover {
+#text-container .inset-button a:hover {
   box-shadow: 0px 0px 5px 0px rgba(20, 20, 20, 0.8), inset 0px -10px 5px -10px rgba(40, 38, 49, 0.8), inset 0px 10px 10px -5px rgb(51.724137931, 49.1379310345, 63.3620689655);
   transform: scale(97%);
 }
@@ -959,6 +960,9 @@ h1.center {
   }
   .glowButton-wrapper {
     max-width: 250px;
+  }
+  .main-container #text-container h1 {
+    font-size: 2.5em;
   }
   .display-shadow {
     column-gap: 10px;

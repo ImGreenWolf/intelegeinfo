@@ -1,0 +1,242 @@
+
+#problem-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,400px);
+    // grid-auto-columns: 20em;
+    // grid-auto-flow: column;
+    justify-content: space-evenly;
+    grid-auto-rows: 300px;
+    row-gap: 5em;
+    width: 100%;
+    max-width: 1500px;
+    margin: auto;
+    box-sizing: border-box;
+}
+a.problem-card {
+    text-decoration: none;
+    color: inherit;
+    font-family: Poppins;
+    box-sizing: border-box;
+    &:hover {
+        z-index: 1;
+    }
+}
+
+.problem-card>div {
+    --padding: 5px;
+    --radius: 40px;
+    --bgcolor: rgb(165, 95, 165);
+    --bgcolorw: rgb(219, 160, 219);
+    --bgcolorb: rgb(105, 59, 105);
+    height: 100%;
+    
+   
+    border-radius: var(--radius);
+    padding: var(--padding);
+
+    background-color: var(--bgcolor);
+    box-shadow: inset 0 -10px 5em -2em var(--bgcolorw),0 0 5px rgba(255, 255, 255, 0.425) inset;
+    
+    display: grid;
+    grid-template-rows: auto min-content;
+    overflow: hidden;
+    .display-container {
+        background-color: rgb(252, 252, 252);
+        color: black;
+        box-shadow: 0 0 5px black inset,
+         0 5px 13px -2px var(--bgcolorw);
+        border-radius: calc(var(--radius) - var(--padding));
+        
+        height: 100%;
+        min-height: calc(var(--radius) * 1.5);
+        overflow: hidden;
+        display: grid;
+        padding: 2em 1.5em;
+        box-sizing: border-box;
+        grid-template-rows: 2fr auto;
+        gap: 0.5em;
+
+        transition: 0.2s 0.3s;
+        h1,h2,h3 {
+            margin: 0;
+            line-height: 1em;
+        }
+    }
+    &:not(:has(.info-wrapper:hover)):hover .info-wrapper {
+        //  background-color: rgba(0, 0, 0, 0.062);
+         box-shadow: 0 0 15px -5px inset rgba(0, 0, 0, 0.336);
+    }
+    .info-wrapper {
+        // min-height: 50px;
+        margin: 0.25em;
+        
+        transition: 0.3s 0.2s;
+        border-radius: inherit;
+        overflow: hidden;
+        h3 {
+            text-align: center;
+            color: var(--bgcolorb);
+            font-weight: 800;
+            margin: auto;
+            line-height: 50px;
+            font-family: Poppins;
+            font-size: 1.5em;
+            text-transform: uppercase;
+        }
+
+    }
+    .info-container {
+        height: 170px;
+        overflow: hidden;
+        transition: 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.2s;
+        font-size: 0.75em;
+        box-sizing: border-box;
+        border-radius: var(--radius);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+
+        p {
+            margin: calc(var(--radius) / 4);
+        }
+
+        .button {
+            border-radius: 1em;
+            padding: 0.25em 1em;
+            background-color: var(--bgcolorw);
+            width: 100px;
+            text-align: center;
+            
+            font-weight: 600;
+            box-shadow: 0 0 0.5em rgba(27, 27, 27, 0.473);
+        }
+    }
+    
+    .info-wrapper:not(:hover) .info-container {
+        height: 0;
+    }
+
+    .display-container .lower {
+        overflow: hidden;
+        height: 100%;
+        transition: 0.2s 0.3s;
+        text-align:  end;
+    }
+
+    h2.bad {
+        color: white;
+        text-shadow: 0 0 3px black;
+    }
+
+    h2.good {
+        color: rgb(71, 165, 71);
+    }
+
+    &:has(.info-wrapper:hover) {
+        .display-container {
+            padding: 1em 1.5em;
+            // max-height: 1em;
+        }
+        .display-container .lower {
+            height: 0;
+            opacity: 0;
+        }
+        .display-container .upper {
+            max-height: 2em;
+
+        }
+    }
+
+    
+}
+
+.display-container .upper {
+    height: 100%;
+    display: grid;
+    justify-content: space-evenly;
+    align-items: start;
+    align-content: start;
+    justify-items: start;
+    justify-content: start;
+    gap: 0.25em;
+    h3 {
+        border-radius: 0.5em;
+        padding: 0.25em 0.75em;
+        box-shadow: 0 0 0.25em rgba(0, 0, 0, 0.404) inset;
+        display: inline;
+        line-height: 1em;
+        font-size: 0.75em;
+        &::before {
+            content: '';
+            border-radius: 50%;
+            background-color: purple;
+            width: 0.75em;
+            height:  0.75em;
+            margin: auto 0.25em;
+            display: inline-block;
+        }
+    }
+}
+
+.problem-card.grade-color-9>div {
+    --bgcolor: rgb(66, 87, 160);
+    --bgcolorw: rgb(108, 115, 209);
+    --bgcolorb: rgb(33, 28, 88);
+}
+
+.problem-card.grade-color-10>div {
+    --bgcolor: rgb(58, 104, 62);
+    --bgcolorw: rgb(132, 179, 146);
+    --bgcolorb: rgb(25, 44, 28);
+}
+
+.tag-container {
+    display: flex;
+    font-size: 0.75em;
+    gap: 0.5em;
+    flex-wrap: wrap;
+    align-items: center;
+    min-height: 50px;
+    span {
+        box-shadow:  0 -0.75px 0.25em rgba(0, 0, 0, 0.219) inset;
+        padding: 0.25em 1em;
+        border-radius: 1em;
+    }
+}
+
+.progress {
+    overflow: hidden;
+    border-radius: 1em;
+    box-shadow:  0 -0.05em 0.2em rgba(0, 0, 0, 0.1) inset;
+    height: 10PX;
+    width: 100%;
+    &>div {
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        // background-color: rgb(71, 165, 71);
+        // background-image: linear-gradient(45deg, rgb(71, 165, 71), rgb(172, 212, 172), rgb(71, 165, 71));
+
+        background-size: 50em;
+        
+    }
+    &.good>div {
+            background-color: rgb(71, 165, 71);
+            background-image: linear-gradient(45deg, rgb(71, 165, 71), rgb(172, 212, 172), rgb(71, 165, 71));
+            animation: animate-progress 3s infinite linear;
+        }
+    &.bad>div {
+        background-color: rgb(168, 160, 15);
+    }
+    @keyframes animate-progress {
+        from {
+            background-position: -25em 0%;
+        }
+        to {
+            background-position: 25em 0% ;
+        }
+    }
+}
+
+

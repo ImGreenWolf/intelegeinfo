@@ -334,11 +334,12 @@ section h1 {
     }
 
 }
-.main-container div#text-container
+#text-container
 {
     // margin: 7rem 0;
     position: relative;
     max-width: 50em;
+    width: 75%;
     text-align: center;
     align-items: stretch;
     display: grid;
@@ -1359,6 +1360,9 @@ h1.center
     .glowButton-wrapper
     {
         max-width: 250px;
+    }
+    .main-container #text-container h1 {
+        font-size: 2.5em;
     }
     .display-shadow {
         column-gap: 10px;

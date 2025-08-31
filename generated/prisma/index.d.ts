@@ -101,9 +101,11 @@ export type Role = (typeof Role)[keyof typeof Role]
 
 
 export const Difficulty: {
+  Beginner: 'Beginner',
   Easy: 'Easy',
   Medium: 'Medium',
   Hard: 'Hard',
+  Exam: 'Exam',
   Competition: 'Competition'
 };
 
@@ -2113,10 +2115,12 @@ export namespace Prisma {
 
   export type TagCountOutputType = {
     guideTags: number
+    Problem: number
   }
 
   export type TagCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     guideTags?: boolean | TagCountOutputTypeCountGuideTagsArgs
+    Problem?: boolean | TagCountOutputTypeCountProblemArgs
   }
 
   // Custom InputTypes
@@ -2137,16 +2141,25 @@ export namespace Prisma {
     where?: GuideTagWhereInput
   }
 
+  /**
+   * TagCountOutputType without action
+   */
+  export type TagCountOutputTypeCountProblemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProblemWhereInput
+  }
+
 
   /**
    * Count Type ProblemCountOutputType
    */
 
   export type ProblemCountOutputType = {
+    tagsLinked: number
     solves: number
   }
 
   export type ProblemCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tagsLinked?: boolean | ProblemCountOutputTypeCountTagsLinkedArgs
     solves?: boolean | ProblemCountOutputTypeCountSolvesArgs
   }
 
@@ -2159,6 +2172,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the ProblemCountOutputType
      */
     select?: ProblemCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ProblemCountOutputType without action
+   */
+  export type ProblemCountOutputTypeCountTagsLinkedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
   }
 
   /**
@@ -2297,6 +2317,7 @@ export namespace Prisma {
     fileUUID: number
     createdAt: number
     userId: number
+    metadata: number
     _all: number
   }
 
@@ -2333,6 +2354,7 @@ export namespace Prisma {
     fileUUID?: true
     createdAt?: true
     userId?: true
+    metadata?: true
     _all?: true
   }
 
@@ -2428,6 +2450,7 @@ export namespace Prisma {
     fileUUID: string
     createdAt: Date
     userId: number
+    metadata: JsonValue | null
     _count: ProjectCountAggregateOutputType | null
     _avg: ProjectAvgAggregateOutputType | null
     _sum: ProjectSumAggregateOutputType | null
@@ -2455,6 +2478,7 @@ export namespace Prisma {
     fileUUID?: boolean
     createdAt?: boolean
     userId?: boolean
+    metadata?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -2464,6 +2488,7 @@ export namespace Prisma {
     fileUUID?: boolean
     createdAt?: boolean
     userId?: boolean
+    metadata?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -2473,6 +2498,7 @@ export namespace Prisma {
     fileUUID?: boolean
     createdAt?: boolean
     userId?: boolean
+    metadata?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -2482,9 +2508,10 @@ export namespace Prisma {
     fileUUID?: boolean
     createdAt?: boolean
     userId?: boolean
+    metadata?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "fileUUID" | "createdAt" | "userId", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "fileUUID" | "createdAt" | "userId" | "metadata", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -2506,6 +2533,7 @@ export namespace Prisma {
       fileUUID: string
       createdAt: Date
       userId: number
+      metadata: Prisma.JsonValue | null
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -2935,6 +2963,7 @@ export namespace Prisma {
     readonly fileUUID: FieldRef<"Project", 'String'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
     readonly userId: FieldRef<"Project", 'Int'>
+    readonly metadata: FieldRef<"Project", 'Json'>
   }
     
 
@@ -8119,6 +8148,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     guideTags?: boolean | Tag$guideTagsArgs<ExtArgs>
+    Problem?: boolean | Tag$ProblemArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
 
@@ -8140,6 +8170,7 @@ export namespace Prisma {
   export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name", ExtArgs["result"]["tag"]>
   export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     guideTags?: boolean | Tag$guideTagsArgs<ExtArgs>
+    Problem?: boolean | Tag$ProblemArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -8149,6 +8180,7 @@ export namespace Prisma {
     name: "Tag"
     objects: {
       guideTags: Prisma.$GuideTagPayload<ExtArgs>[]
+      Problem: Prisma.$ProblemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -8548,6 +8580,7 @@ export namespace Prisma {
   export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     guideTags<T extends Tag$guideTagsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$guideTagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Problem<T extends Tag$ProblemArgs<ExtArgs> = {}>(args?: Subset<T, Tag$ProblemArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProblemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8988,6 +9021,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GuideTagScalarFieldEnum | GuideTagScalarFieldEnum[]
+  }
+
+  /**
+   * Tag.Problem
+   */
+  export type Tag$ProblemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Problem
+     */
+    select?: ProblemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Problem
+     */
+    omit?: ProblemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProblemInclude<ExtArgs> | null
+    where?: ProblemWhereInput
+    orderBy?: ProblemOrderByWithRelationInput | ProblemOrderByWithRelationInput[]
+    cursor?: ProblemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProblemScalarFieldEnum | ProblemScalarFieldEnum[]
   }
 
   /**
@@ -10092,6 +10149,7 @@ export namespace Prisma {
     negativeRatings: number | null
     averageTimeLimit: number | null
     averageMemLimit: number | null
+    grade: number | null
   }
 
   export type ProblemSumAggregateOutputType = {
@@ -10100,6 +10158,7 @@ export namespace Prisma {
     negativeRatings: number | null
     averageTimeLimit: number | null
     averageMemLimit: number | null
+    grade: number | null
   }
 
   export type ProblemMinAggregateOutputType = {
@@ -10116,6 +10175,7 @@ export namespace Prisma {
     category: string | null
     sourceCode: string | null
     difficulty: $Enums.Difficulty | null
+    grade: number | null
   }
 
   export type ProblemMaxAggregateOutputType = {
@@ -10132,6 +10192,7 @@ export namespace Prisma {
     category: string | null
     sourceCode: string | null
     difficulty: $Enums.Difficulty | null
+    grade: number | null
   }
 
   export type ProblemCountAggregateOutputType = {
@@ -10151,6 +10212,7 @@ export namespace Prisma {
     sourceCode: number
     difficulty: number
     tags: number
+    grade: number
     _all: number
   }
 
@@ -10161,6 +10223,7 @@ export namespace Prisma {
     negativeRatings?: true
     averageTimeLimit?: true
     averageMemLimit?: true
+    grade?: true
   }
 
   export type ProblemSumAggregateInputType = {
@@ -10169,6 +10232,7 @@ export namespace Prisma {
     negativeRatings?: true
     averageTimeLimit?: true
     averageMemLimit?: true
+    grade?: true
   }
 
   export type ProblemMinAggregateInputType = {
@@ -10185,6 +10249,7 @@ export namespace Prisma {
     category?: true
     sourceCode?: true
     difficulty?: true
+    grade?: true
   }
 
   export type ProblemMaxAggregateInputType = {
@@ -10201,6 +10266,7 @@ export namespace Prisma {
     category?: true
     sourceCode?: true
     difficulty?: true
+    grade?: true
   }
 
   export type ProblemCountAggregateInputType = {
@@ -10220,6 +10286,7 @@ export namespace Prisma {
     sourceCode?: true
     difficulty?: true
     tags?: true
+    grade?: true
     _all?: true
   }
 
@@ -10326,6 +10393,7 @@ export namespace Prisma {
     sourceCode: string | null
     difficulty: $Enums.Difficulty | null
     tags: string[]
+    grade: number
     _count: ProblemCountAggregateOutputType | null
     _avg: ProblemAvgAggregateOutputType | null
     _sum: ProblemSumAggregateOutputType | null
@@ -10364,6 +10432,8 @@ export namespace Prisma {
     sourceCode?: boolean
     difficulty?: boolean
     tags?: boolean
+    grade?: boolean
+    tagsLinked?: boolean | Problem$tagsLinkedArgs<ExtArgs>
     solves?: boolean | Problem$solvesArgs<ExtArgs>
     _count?: boolean | ProblemCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["problem"]>
@@ -10385,6 +10455,7 @@ export namespace Prisma {
     sourceCode?: boolean
     difficulty?: boolean
     tags?: boolean
+    grade?: boolean
   }, ExtArgs["result"]["problem"]>
 
   export type ProblemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10404,6 +10475,7 @@ export namespace Prisma {
     sourceCode?: boolean
     difficulty?: boolean
     tags?: boolean
+    grade?: boolean
   }, ExtArgs["result"]["problem"]>
 
   export type ProblemSelectScalar = {
@@ -10423,10 +10495,12 @@ export namespace Prisma {
     sourceCode?: boolean
     difficulty?: boolean
     tags?: boolean
+    grade?: boolean
   }
 
-  export type ProblemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "author" | "positiveRatings" | "negativeRatings" | "description" | "requirement" | "tests" | "averageTimeLimit" | "averageMemLimit" | "category" | "sourceCode" | "difficulty" | "tags", ExtArgs["result"]["problem"]>
+  export type ProblemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "author" | "positiveRatings" | "negativeRatings" | "description" | "requirement" | "tests" | "averageTimeLimit" | "averageMemLimit" | "category" | "sourceCode" | "difficulty" | "tags" | "grade", ExtArgs["result"]["problem"]>
   export type ProblemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tagsLinked?: boolean | Problem$tagsLinkedArgs<ExtArgs>
     solves?: boolean | Problem$solvesArgs<ExtArgs>
     _count?: boolean | ProblemCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -10436,6 +10510,7 @@ export namespace Prisma {
   export type $ProblemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Problem"
     objects: {
+      tagsLinked: Prisma.$TagPayload<ExtArgs>[]
       solves: Prisma.$SolvePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -10455,6 +10530,7 @@ export namespace Prisma {
       sourceCode: string | null
       difficulty: $Enums.Difficulty | null
       tags: string[]
+      grade: number
     }, ExtArgs["result"]["problem"]>
     composites: {}
   }
@@ -10849,6 +10925,7 @@ export namespace Prisma {
    */
   export interface Prisma__ProblemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    tagsLinked<T extends Problem$tagsLinkedArgs<ExtArgs> = {}>(args?: Subset<T, Problem$tagsLinkedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     solves<T extends Problem$solvesArgs<ExtArgs> = {}>(args?: Subset<T, Problem$solvesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SolvePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -10895,6 +10972,7 @@ export namespace Prisma {
     readonly sourceCode: FieldRef<"Problem", 'String'>
     readonly difficulty: FieldRef<"Problem", 'Difficulty'>
     readonly tags: FieldRef<"Problem", 'String[]'>
+    readonly grade: FieldRef<"Problem", 'Int'>
   }
     
 
@@ -11280,6 +11358,30 @@ export namespace Prisma {
      * Limit how many Problems to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Problem.tagsLinked
+   */
+  export type Problem$tagsLinkedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    cursor?: TagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
   }
 
   /**
@@ -17282,7 +17384,8 @@ export namespace Prisma {
     name: 'name',
     fileUUID: 'fileUUID',
     createdAt: 'createdAt',
-    userId: 'userId'
+    userId: 'userId',
+    metadata: 'metadata'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -17378,7 +17481,8 @@ export namespace Prisma {
     category: 'category',
     sourceCode: 'sourceCode',
     difficulty: 'difficulty',
-    tags: 'tags'
+    tags: 'tags',
+    grade: 'grade'
   };
 
   export type ProblemScalarFieldEnum = (typeof ProblemScalarFieldEnum)[keyof typeof ProblemScalarFieldEnum]
@@ -17487,12 +17591,13 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-  export const ProjectOrderByRelevanceFieldEnum: {
-    name: 'name',
-    fileUUID: 'fileUUID'
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
   };
 
-  export type ProjectOrderByRelevanceFieldEnum = (typeof ProjectOrderByRelevanceFieldEnum)[keyof typeof ProjectOrderByRelevanceFieldEnum]
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   export const NullsOrder: {
@@ -17501,6 +17606,14 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const ProjectOrderByRelevanceFieldEnum: {
+    name: 'name',
+    fileUUID: 'fileUUID'
+  };
+
+  export type ProjectOrderByRelevanceFieldEnum = (typeof ProjectOrderByRelevanceFieldEnum)[keyof typeof ProjectOrderByRelevanceFieldEnum]
 
 
   export const UserOrderByRelevanceFieldEnum: {
@@ -17549,15 +17662,6 @@ export namespace Prisma {
   };
 
   export type TagOrderByRelevanceFieldEnum = (typeof TagOrderByRelevanceFieldEnum)[keyof typeof TagOrderByRelevanceFieldEnum]
-
-
-  export const JsonNullValueFilter: {
-    DbNull: typeof DbNull,
-    JsonNull: typeof JsonNull,
-    AnyNull: typeof AnyNull
-  };
-
-  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   export const ProblemOrderByRelevanceFieldEnum: {
@@ -17663,6 +17767,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -17694,20 +17812,6 @@ export namespace Prisma {
    * Reference to a field of type 'OccupationType[]'
    */
   export type ListEnumOccupationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OccupationType[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'QueryMode'
-   */
-  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -17758,6 +17862,7 @@ export namespace Prisma {
     fileUUID?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     userId?: IntFilter<"Project"> | number
+    metadata?: JsonNullableFilter<"Project">
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -17767,6 +17872,7 @@ export namespace Prisma {
     fileUUID?: SortOrder
     createdAt?: SortOrder
     userId?: SortOrder
+    metadata?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     _relevance?: ProjectOrderByRelevanceInput
   }
@@ -17780,6 +17886,7 @@ export namespace Prisma {
     name?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     userId?: IntFilter<"Project"> | number
+    metadata?: JsonNullableFilter<"Project">
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "fileUUID">
 
@@ -17789,6 +17896,7 @@ export namespace Prisma {
     fileUUID?: SortOrder
     createdAt?: SortOrder
     userId?: SortOrder
+    metadata?: SortOrderInput | SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _avg?: ProjectAvgOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
@@ -17805,6 +17913,7 @@ export namespace Prisma {
     fileUUID?: StringWithAggregatesFilter<"Project"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     userId?: IntWithAggregatesFilter<"Project"> | number
+    metadata?: JsonNullableWithAggregatesFilter<"Project">
   }
 
   export type UserWhereInput = {
@@ -18130,12 +18239,14 @@ export namespace Prisma {
     id?: IntFilter<"Tag"> | number
     name?: StringFilter<"Tag"> | string
     guideTags?: GuideTagListRelationFilter
+    Problem?: ProblemListRelationFilter
   }
 
   export type TagOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
     guideTags?: GuideTagOrderByRelationAggregateInput
+    Problem?: ProblemOrderByRelationAggregateInput
     _relevance?: TagOrderByRelevanceInput
   }
 
@@ -18146,6 +18257,7 @@ export namespace Prisma {
     OR?: TagWhereInput[]
     NOT?: TagWhereInput | TagWhereInput[]
     guideTags?: GuideTagListRelationFilter
+    Problem?: ProblemListRelationFilter
   }, "id" | "name">
 
   export type TagOrderByWithAggregationInput = {
@@ -18232,6 +18344,8 @@ export namespace Prisma {
     sourceCode?: StringNullableFilter<"Problem"> | string | null
     difficulty?: EnumDifficultyNullableFilter<"Problem"> | $Enums.Difficulty | null
     tags?: StringNullableListFilter<"Problem">
+    grade?: IntFilter<"Problem"> | number
+    tagsLinked?: TagListRelationFilter
     solves?: SolveListRelationFilter
   }
 
@@ -18252,6 +18366,8 @@ export namespace Prisma {
     sourceCode?: SortOrderInput | SortOrder
     difficulty?: SortOrderInput | SortOrder
     tags?: SortOrder
+    grade?: SortOrder
+    tagsLinked?: TagOrderByRelationAggregateInput
     solves?: SolveOrderByRelationAggregateInput
     _relevance?: ProblemOrderByRelevanceInput
   }
@@ -18276,6 +18392,8 @@ export namespace Prisma {
     sourceCode?: StringNullableFilter<"Problem"> | string | null
     difficulty?: EnumDifficultyNullableFilter<"Problem"> | $Enums.Difficulty | null
     tags?: StringNullableListFilter<"Problem">
+    grade?: IntFilter<"Problem"> | number
+    tagsLinked?: TagListRelationFilter
     solves?: SolveListRelationFilter
   }, "id">
 
@@ -18296,6 +18414,7 @@ export namespace Prisma {
     sourceCode?: SortOrderInput | SortOrder
     difficulty?: SortOrderInput | SortOrder
     tags?: SortOrder
+    grade?: SortOrder
     _count?: ProblemCountOrderByAggregateInput
     _avg?: ProblemAvgOrderByAggregateInput
     _max?: ProblemMaxOrderByAggregateInput
@@ -18323,6 +18442,7 @@ export namespace Prisma {
     sourceCode?: StringNullableWithAggregatesFilter<"Problem"> | string | null
     difficulty?: EnumDifficultyNullableWithAggregatesFilter<"Problem"> | $Enums.Difficulty | null
     tags?: StringNullableListFilter<"Problem">
+    grade?: IntWithAggregatesFilter<"Problem"> | number
   }
 
   export type SolveWhereInput = {
@@ -18729,6 +18849,7 @@ export namespace Prisma {
     name: string
     fileUUID: string
     createdAt?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     user: UserCreateNestedOneWithoutProjectsInput
   }
 
@@ -18738,12 +18859,14 @@ export namespace Prisma {
     fileUUID: string
     createdAt?: Date | string
     userId: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     fileUUID?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
   }
 
@@ -18753,6 +18876,7 @@ export namespace Prisma {
     fileUUID?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectCreateManyInput = {
@@ -18761,12 +18885,14 @@ export namespace Prisma {
     fileUUID: string
     createdAt?: Date | string
     userId: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     fileUUID?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUncheckedUpdateManyInput = {
@@ -18775,6 +18901,7 @@ export namespace Prisma {
     fileUUID?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserCreateInput = {
@@ -19126,23 +19253,27 @@ export namespace Prisma {
   export type TagCreateInput = {
     name: string
     guideTags?: GuideTagCreateNestedManyWithoutTagInput
+    Problem?: ProblemCreateNestedManyWithoutTagsLinkedInput
   }
 
   export type TagUncheckedCreateInput = {
     id?: number
     name: string
     guideTags?: GuideTagUncheckedCreateNestedManyWithoutTagInput
+    Problem?: ProblemUncheckedCreateNestedManyWithoutTagsLinkedInput
   }
 
   export type TagUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     guideTags?: GuideTagUpdateManyWithoutTagNestedInput
+    Problem?: ProblemUpdateManyWithoutTagsLinkedNestedInput
   }
 
   export type TagUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     guideTags?: GuideTagUncheckedUpdateManyWithoutTagNestedInput
+    Problem?: ProblemUncheckedUpdateManyWithoutTagsLinkedNestedInput
   }
 
   export type TagCreateManyInput = {
@@ -19209,6 +19340,8 @@ export namespace Prisma {
     sourceCode?: string | null
     difficulty?: $Enums.Difficulty | null
     tags?: ProblemCreatetagsInput | string[]
+    grade?: number
+    tagsLinked?: TagCreateNestedManyWithoutProblemInput
     solves?: SolveCreateNestedManyWithoutProblemInput
   }
 
@@ -19229,6 +19362,8 @@ export namespace Prisma {
     sourceCode?: string | null
     difficulty?: $Enums.Difficulty | null
     tags?: ProblemCreatetagsInput | string[]
+    grade?: number
+    tagsLinked?: TagUncheckedCreateNestedManyWithoutProblemInput
     solves?: SolveUncheckedCreateNestedManyWithoutProblemInput
   }
 
@@ -19248,6 +19383,8 @@ export namespace Prisma {
     sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
     tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
+    tagsLinked?: TagUpdateManyWithoutProblemNestedInput
     solves?: SolveUpdateManyWithoutProblemNestedInput
   }
 
@@ -19268,6 +19405,8 @@ export namespace Prisma {
     sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
     tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
+    tagsLinked?: TagUncheckedUpdateManyWithoutProblemNestedInput
     solves?: SolveUncheckedUpdateManyWithoutProblemNestedInput
   }
 
@@ -19288,6 +19427,7 @@ export namespace Prisma {
     sourceCode?: string | null
     difficulty?: $Enums.Difficulty | null
     tags?: ProblemCreatetagsInput | string[]
+    grade?: number
   }
 
   export type ProblemUpdateManyMutationInput = {
@@ -19306,6 +19446,7 @@ export namespace Prisma {
     sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
     tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProblemUncheckedUpdateManyInput = {
@@ -19325,6 +19466,7 @@ export namespace Prisma {
     sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
     tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
   }
 
   export type SolveCreateInput = {
@@ -19756,10 +19898,38 @@ export namespace Prisma {
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type ProjectOrderByRelevanceInput = {
@@ -19774,6 +19944,7 @@ export namespace Prisma {
     fileUUID?: SortOrder
     createdAt?: SortOrder
     userId?: SortOrder
+    metadata?: SortOrder
   }
 
   export type ProjectAvgOrderByAggregateInput = {
@@ -19849,6 +20020,32 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -19930,11 +20127,6 @@ export namespace Prisma {
     every?: InquiryWhereInput
     some?: InquiryWhereInput
     none?: InquiryWhereInput
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type ProjectOrderByRelationAggregateInput = {
@@ -20204,6 +20396,16 @@ export namespace Prisma {
     visits?: SortOrder
   }
 
+  export type ProblemListRelationFilter = {
+    every?: ProblemWhereInput
+    some?: ProblemWhereInput
+    none?: ProblemWhereInput
+  }
+
+  export type ProblemOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type TagOrderByRelevanceInput = {
     fields: TagOrderByRelevanceFieldEnum | TagOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -20272,29 +20474,6 @@ export namespace Prisma {
     guideId?: SortOrder
     tagId?: SortOrder
   }
-  export type JsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
   export type JsonNullableListFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonNullableListFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableListFilterBase<$PrismaModel>>, 'path'>>,
@@ -20336,6 +20515,16 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type TagListRelationFilter = {
+    every?: TagWhereInput
+    some?: TagWhereInput
+    none?: TagWhereInput
+  }
+
+  export type TagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ProblemOrderByRelevanceInput = {
     fields: ProblemOrderByRelevanceFieldEnum | ProblemOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -20359,6 +20548,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     difficulty?: SortOrder
     tags?: SortOrder
+    grade?: SortOrder
   }
 
   export type ProblemAvgOrderByAggregateInput = {
@@ -20367,6 +20557,7 @@ export namespace Prisma {
     negativeRatings?: SortOrder
     averageTimeLimit?: SortOrder
     averageMemLimit?: SortOrder
+    grade?: SortOrder
   }
 
   export type ProblemMaxOrderByAggregateInput = {
@@ -20383,6 +20574,7 @@ export namespace Prisma {
     category?: SortOrder
     sourceCode?: SortOrder
     difficulty?: SortOrder
+    grade?: SortOrder
   }
 
   export type ProblemMinOrderByAggregateInput = {
@@ -20399,6 +20591,7 @@ export namespace Prisma {
     category?: SortOrder
     sourceCode?: SortOrder
     difficulty?: SortOrder
+    grade?: SortOrder
   }
 
   export type ProblemSumOrderByAggregateInput = {
@@ -20407,32 +20600,7 @@ export namespace Prisma {
     negativeRatings?: SortOrder
     averageTimeLimit?: SortOrder
     averageMemLimit?: SortOrder
-  }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
+    grade?: SortOrder
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -21294,11 +21462,23 @@ export namespace Prisma {
     connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
   }
 
+  export type ProblemCreateNestedManyWithoutTagsLinkedInput = {
+    create?: XOR<ProblemCreateWithoutTagsLinkedInput, ProblemUncheckedCreateWithoutTagsLinkedInput> | ProblemCreateWithoutTagsLinkedInput[] | ProblemUncheckedCreateWithoutTagsLinkedInput[]
+    connectOrCreate?: ProblemCreateOrConnectWithoutTagsLinkedInput | ProblemCreateOrConnectWithoutTagsLinkedInput[]
+    connect?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+  }
+
   export type GuideTagUncheckedCreateNestedManyWithoutTagInput = {
     create?: XOR<GuideTagCreateWithoutTagInput, GuideTagUncheckedCreateWithoutTagInput> | GuideTagCreateWithoutTagInput[] | GuideTagUncheckedCreateWithoutTagInput[]
     connectOrCreate?: GuideTagCreateOrConnectWithoutTagInput | GuideTagCreateOrConnectWithoutTagInput[]
     createMany?: GuideTagCreateManyTagInputEnvelope
     connect?: GuideTagWhereUniqueInput | GuideTagWhereUniqueInput[]
+  }
+
+  export type ProblemUncheckedCreateNestedManyWithoutTagsLinkedInput = {
+    create?: XOR<ProblemCreateWithoutTagsLinkedInput, ProblemUncheckedCreateWithoutTagsLinkedInput> | ProblemCreateWithoutTagsLinkedInput[] | ProblemUncheckedCreateWithoutTagsLinkedInput[]
+    connectOrCreate?: ProblemCreateOrConnectWithoutTagsLinkedInput | ProblemCreateOrConnectWithoutTagsLinkedInput[]
+    connect?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
   }
 
   export type GuideTagUpdateManyWithoutTagNestedInput = {
@@ -21315,6 +21495,19 @@ export namespace Prisma {
     deleteMany?: GuideTagScalarWhereInput | GuideTagScalarWhereInput[]
   }
 
+  export type ProblemUpdateManyWithoutTagsLinkedNestedInput = {
+    create?: XOR<ProblemCreateWithoutTagsLinkedInput, ProblemUncheckedCreateWithoutTagsLinkedInput> | ProblemCreateWithoutTagsLinkedInput[] | ProblemUncheckedCreateWithoutTagsLinkedInput[]
+    connectOrCreate?: ProblemCreateOrConnectWithoutTagsLinkedInput | ProblemCreateOrConnectWithoutTagsLinkedInput[]
+    upsert?: ProblemUpsertWithWhereUniqueWithoutTagsLinkedInput | ProblemUpsertWithWhereUniqueWithoutTagsLinkedInput[]
+    set?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+    disconnect?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+    delete?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+    connect?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+    update?: ProblemUpdateWithWhereUniqueWithoutTagsLinkedInput | ProblemUpdateWithWhereUniqueWithoutTagsLinkedInput[]
+    updateMany?: ProblemUpdateManyWithWhereWithoutTagsLinkedInput | ProblemUpdateManyWithWhereWithoutTagsLinkedInput[]
+    deleteMany?: ProblemScalarWhereInput | ProblemScalarWhereInput[]
+  }
+
   export type GuideTagUncheckedUpdateManyWithoutTagNestedInput = {
     create?: XOR<GuideTagCreateWithoutTagInput, GuideTagUncheckedCreateWithoutTagInput> | GuideTagCreateWithoutTagInput[] | GuideTagUncheckedCreateWithoutTagInput[]
     connectOrCreate?: GuideTagCreateOrConnectWithoutTagInput | GuideTagCreateOrConnectWithoutTagInput[]
@@ -21327,6 +21520,19 @@ export namespace Prisma {
     update?: GuideTagUpdateWithWhereUniqueWithoutTagInput | GuideTagUpdateWithWhereUniqueWithoutTagInput[]
     updateMany?: GuideTagUpdateManyWithWhereWithoutTagInput | GuideTagUpdateManyWithWhereWithoutTagInput[]
     deleteMany?: GuideTagScalarWhereInput | GuideTagScalarWhereInput[]
+  }
+
+  export type ProblemUncheckedUpdateManyWithoutTagsLinkedNestedInput = {
+    create?: XOR<ProblemCreateWithoutTagsLinkedInput, ProblemUncheckedCreateWithoutTagsLinkedInput> | ProblemCreateWithoutTagsLinkedInput[] | ProblemUncheckedCreateWithoutTagsLinkedInput[]
+    connectOrCreate?: ProblemCreateOrConnectWithoutTagsLinkedInput | ProblemCreateOrConnectWithoutTagsLinkedInput[]
+    upsert?: ProblemUpsertWithWhereUniqueWithoutTagsLinkedInput | ProblemUpsertWithWhereUniqueWithoutTagsLinkedInput[]
+    set?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+    disconnect?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+    delete?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+    connect?: ProblemWhereUniqueInput | ProblemWhereUniqueInput[]
+    update?: ProblemUpdateWithWhereUniqueWithoutTagsLinkedInput | ProblemUpdateWithWhereUniqueWithoutTagsLinkedInput[]
+    updateMany?: ProblemUpdateManyWithWhereWithoutTagsLinkedInput | ProblemUpdateManyWithWhereWithoutTagsLinkedInput[]
+    deleteMany?: ProblemScalarWhereInput | ProblemScalarWhereInput[]
   }
 
   export type GuideCreateNestedOneWithoutGuideTagsInput = {
@@ -21365,11 +21571,23 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type TagCreateNestedManyWithoutProblemInput = {
+    create?: XOR<TagCreateWithoutProblemInput, TagUncheckedCreateWithoutProblemInput> | TagCreateWithoutProblemInput[] | TagUncheckedCreateWithoutProblemInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutProblemInput | TagCreateOrConnectWithoutProblemInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
   export type SolveCreateNestedManyWithoutProblemInput = {
     create?: XOR<SolveCreateWithoutProblemInput, SolveUncheckedCreateWithoutProblemInput> | SolveCreateWithoutProblemInput[] | SolveUncheckedCreateWithoutProblemInput[]
     connectOrCreate?: SolveCreateOrConnectWithoutProblemInput | SolveCreateOrConnectWithoutProblemInput[]
     createMany?: SolveCreateManyProblemInputEnvelope
     connect?: SolveWhereUniqueInput | SolveWhereUniqueInput[]
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutProblemInput = {
+    create?: XOR<TagCreateWithoutProblemInput, TagUncheckedCreateWithoutProblemInput> | TagCreateWithoutProblemInput[] | TagUncheckedCreateWithoutProblemInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutProblemInput | TagCreateOrConnectWithoutProblemInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
   }
 
   export type SolveUncheckedCreateNestedManyWithoutProblemInput = {
@@ -21401,6 +21619,19 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type TagUpdateManyWithoutProblemNestedInput = {
+    create?: XOR<TagCreateWithoutProblemInput, TagUncheckedCreateWithoutProblemInput> | TagCreateWithoutProblemInput[] | TagUncheckedCreateWithoutProblemInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutProblemInput | TagCreateOrConnectWithoutProblemInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutProblemInput | TagUpsertWithWhereUniqueWithoutProblemInput[]
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutProblemInput | TagUpdateWithWhereUniqueWithoutProblemInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutProblemInput | TagUpdateManyWithWhereWithoutProblemInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
   export type SolveUpdateManyWithoutProblemNestedInput = {
     create?: XOR<SolveCreateWithoutProblemInput, SolveUncheckedCreateWithoutProblemInput> | SolveCreateWithoutProblemInput[] | SolveUncheckedCreateWithoutProblemInput[]
     connectOrCreate?: SolveCreateOrConnectWithoutProblemInput | SolveCreateOrConnectWithoutProblemInput[]
@@ -21413,6 +21644,19 @@ export namespace Prisma {
     update?: SolveUpdateWithWhereUniqueWithoutProblemInput | SolveUpdateWithWhereUniqueWithoutProblemInput[]
     updateMany?: SolveUpdateManyWithWhereWithoutProblemInput | SolveUpdateManyWithWhereWithoutProblemInput[]
     deleteMany?: SolveScalarWhereInput | SolveScalarWhereInput[]
+  }
+
+  export type TagUncheckedUpdateManyWithoutProblemNestedInput = {
+    create?: XOR<TagCreateWithoutProblemInput, TagUncheckedCreateWithoutProblemInput> | TagCreateWithoutProblemInput[] | TagUncheckedCreateWithoutProblemInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutProblemInput | TagCreateOrConnectWithoutProblemInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutProblemInput | TagUpsertWithWhereUniqueWithoutProblemInput[]
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutProblemInput | TagUpdateWithWhereUniqueWithoutProblemInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutProblemInput | TagUpdateManyWithWhereWithoutProblemInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
   }
 
   export type SolveUncheckedUpdateManyWithoutProblemNestedInput = {
@@ -21841,6 +22085,40 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -21911,17 +22189,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedEnumOccupationTypeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.OccupationType | EnumOccupationTypeFieldRefInput<$PrismaModel>
     in?: $Enums.OccupationType[] | ListEnumOccupationTypeFieldRefInput<$PrismaModel>
@@ -21937,29 +22204,6 @@ export namespace Prisma {
     in?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
     notIn?: $Enums.Difficulty[] | ListEnumDifficultyFieldRefInput<$PrismaModel> | null
     not?: NestedEnumDifficultyNullableFilter<$PrismaModel> | $Enums.Difficulty | null
-  }
-  export type NestedJsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -22213,6 +22457,7 @@ export namespace Prisma {
     name: string
     fileUUID: string
     createdAt?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -22220,6 +22465,7 @@ export namespace Prisma {
     name: string
     fileUUID: string
     createdAt?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -22475,6 +22721,7 @@ export namespace Prisma {
     fileUUID?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     userId?: IntFilter<"Project"> | number
+    metadata?: JsonNullableFilter<"Project">
   }
 
   export type SolveUpsertWithWhereUniqueWithoutUserInput = {
@@ -22842,6 +23089,52 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ProblemCreateWithoutTagsLinkedInput = {
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    author?: string
+    positiveRatings?: number
+    negativeRatings?: number
+    description?: string | null
+    requirement?: NullableJsonNullValueInput | InputJsonValue
+    tests?: ProblemCreatetestsInput | InputJsonValue[]
+    averageTimeLimit: number
+    averageMemLimit: number
+    category?: string | null
+    sourceCode?: string | null
+    difficulty?: $Enums.Difficulty | null
+    tags?: ProblemCreatetagsInput | string[]
+    grade?: number
+    solves?: SolveCreateNestedManyWithoutProblemInput
+  }
+
+  export type ProblemUncheckedCreateWithoutTagsLinkedInput = {
+    id?: number
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    author?: string
+    positiveRatings?: number
+    negativeRatings?: number
+    description?: string | null
+    requirement?: NullableJsonNullValueInput | InputJsonValue
+    tests?: ProblemCreatetestsInput | InputJsonValue[]
+    averageTimeLimit: number
+    averageMemLimit: number
+    category?: string | null
+    sourceCode?: string | null
+    difficulty?: $Enums.Difficulty | null
+    tags?: ProblemCreatetagsInput | string[]
+    grade?: number
+    solves?: SolveUncheckedCreateNestedManyWithoutProblemInput
+  }
+
+  export type ProblemCreateOrConnectWithoutTagsLinkedInput = {
+    where: ProblemWhereUniqueInput
+    create: XOR<ProblemCreateWithoutTagsLinkedInput, ProblemUncheckedCreateWithoutTagsLinkedInput>
+  }
+
   export type GuideTagUpsertWithWhereUniqueWithoutTagInput = {
     where: GuideTagWhereUniqueInput
     update: XOR<GuideTagUpdateWithoutTagInput, GuideTagUncheckedUpdateWithoutTagInput>
@@ -22856,6 +23149,45 @@ export namespace Prisma {
   export type GuideTagUpdateManyWithWhereWithoutTagInput = {
     where: GuideTagScalarWhereInput
     data: XOR<GuideTagUpdateManyMutationInput, GuideTagUncheckedUpdateManyWithoutTagInput>
+  }
+
+  export type ProblemUpsertWithWhereUniqueWithoutTagsLinkedInput = {
+    where: ProblemWhereUniqueInput
+    update: XOR<ProblemUpdateWithoutTagsLinkedInput, ProblemUncheckedUpdateWithoutTagsLinkedInput>
+    create: XOR<ProblemCreateWithoutTagsLinkedInput, ProblemUncheckedCreateWithoutTagsLinkedInput>
+  }
+
+  export type ProblemUpdateWithWhereUniqueWithoutTagsLinkedInput = {
+    where: ProblemWhereUniqueInput
+    data: XOR<ProblemUpdateWithoutTagsLinkedInput, ProblemUncheckedUpdateWithoutTagsLinkedInput>
+  }
+
+  export type ProblemUpdateManyWithWhereWithoutTagsLinkedInput = {
+    where: ProblemScalarWhereInput
+    data: XOR<ProblemUpdateManyMutationInput, ProblemUncheckedUpdateManyWithoutTagsLinkedInput>
+  }
+
+  export type ProblemScalarWhereInput = {
+    AND?: ProblemScalarWhereInput | ProblemScalarWhereInput[]
+    OR?: ProblemScalarWhereInput[]
+    NOT?: ProblemScalarWhereInput | ProblemScalarWhereInput[]
+    id?: IntFilter<"Problem"> | number
+    name?: StringFilter<"Problem"> | string
+    createdAt?: DateTimeFilter<"Problem"> | Date | string
+    updatedAt?: DateTimeFilter<"Problem"> | Date | string
+    author?: StringFilter<"Problem"> | string
+    positiveRatings?: IntFilter<"Problem"> | number
+    negativeRatings?: IntFilter<"Problem"> | number
+    description?: StringNullableFilter<"Problem"> | string | null
+    requirement?: JsonNullableFilter<"Problem">
+    tests?: JsonNullableListFilter<"Problem">
+    averageTimeLimit?: FloatFilter<"Problem"> | number
+    averageMemLimit?: FloatFilter<"Problem"> | number
+    category?: StringNullableFilter<"Problem"> | string | null
+    sourceCode?: StringNullableFilter<"Problem"> | string | null
+    difficulty?: EnumDifficultyNullableFilter<"Problem"> | $Enums.Difficulty | null
+    tags?: StringNullableListFilter<"Problem">
+    grade?: IntFilter<"Problem"> | number
   }
 
   export type GuideCreateWithoutGuideTagsInput = {
@@ -22892,11 +23224,13 @@ export namespace Prisma {
 
   export type TagCreateWithoutGuideTagsInput = {
     name: string
+    Problem?: ProblemCreateNestedManyWithoutTagsLinkedInput
   }
 
   export type TagUncheckedCreateWithoutGuideTagsInput = {
     id?: number
     name: string
+    Problem?: ProblemUncheckedCreateNestedManyWithoutTagsLinkedInput
   }
 
   export type TagCreateOrConnectWithoutGuideTagsInput = {
@@ -22955,11 +23289,29 @@ export namespace Prisma {
 
   export type TagUpdateWithoutGuideTagsInput = {
     name?: StringFieldUpdateOperationsInput | string
+    Problem?: ProblemUpdateManyWithoutTagsLinkedNestedInput
   }
 
   export type TagUncheckedUpdateWithoutGuideTagsInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    Problem?: ProblemUncheckedUpdateManyWithoutTagsLinkedNestedInput
+  }
+
+  export type TagCreateWithoutProblemInput = {
+    name: string
+    guideTags?: GuideTagCreateNestedManyWithoutTagInput
+  }
+
+  export type TagUncheckedCreateWithoutProblemInput = {
+    id?: number
+    name: string
+    guideTags?: GuideTagUncheckedCreateNestedManyWithoutTagInput
+  }
+
+  export type TagCreateOrConnectWithoutProblemInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutProblemInput, TagUncheckedCreateWithoutProblemInput>
   }
 
   export type SolveCreateWithoutProblemInput = {
@@ -22987,6 +23339,30 @@ export namespace Prisma {
   export type SolveCreateManyProblemInputEnvelope = {
     data: SolveCreateManyProblemInput | SolveCreateManyProblemInput[]
     skipDuplicates?: boolean
+  }
+
+  export type TagUpsertWithWhereUniqueWithoutProblemInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutProblemInput, TagUncheckedUpdateWithoutProblemInput>
+    create: XOR<TagCreateWithoutProblemInput, TagUncheckedCreateWithoutProblemInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutProblemInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutProblemInput, TagUncheckedUpdateWithoutProblemInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutProblemInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutProblemInput>
+  }
+
+  export type TagScalarWhereInput = {
+    AND?: TagScalarWhereInput | TagScalarWhereInput[]
+    OR?: TagScalarWhereInput[]
+    NOT?: TagScalarWhereInput | TagScalarWhereInput[]
+    id?: IntFilter<"Tag"> | number
+    name?: StringFilter<"Tag"> | string
   }
 
   export type SolveUpsertWithWhereUniqueWithoutProblemInput = {
@@ -23073,6 +23449,8 @@ export namespace Prisma {
     sourceCode?: string | null
     difficulty?: $Enums.Difficulty | null
     tags?: ProblemCreatetagsInput | string[]
+    grade?: number
+    tagsLinked?: TagCreateNestedManyWithoutProblemInput
   }
 
   export type ProblemUncheckedCreateWithoutSolvesInput = {
@@ -23092,6 +23470,8 @@ export namespace Prisma {
     sourceCode?: string | null
     difficulty?: $Enums.Difficulty | null
     tags?: ProblemCreatetagsInput | string[]
+    grade?: number
+    tagsLinked?: TagUncheckedCreateNestedManyWithoutProblemInput
   }
 
   export type ProblemCreateOrConnectWithoutSolvesInput = {
@@ -23184,6 +23564,8 @@ export namespace Prisma {
     sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
     tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
+    tagsLinked?: TagUpdateManyWithoutProblemNestedInput
   }
 
   export type ProblemUncheckedUpdateWithoutSolvesInput = {
@@ -23203,6 +23585,8 @@ export namespace Prisma {
     sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
     difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
     tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
+    tagsLinked?: TagUncheckedUpdateManyWithoutProblemNestedInput
   }
 
   export type UserCreateWithoutCourseInput = {
@@ -24138,6 +24522,7 @@ export namespace Prisma {
     name: string
     fileUUID: string
     createdAt?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type SolveCreateManyUserInput = {
@@ -24193,6 +24578,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     fileUUID?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -24200,6 +24586,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     fileUUID?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -24207,6 +24594,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     fileUUID?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type SolveUpdateWithoutUserInput = {
@@ -24389,6 +24777,67 @@ export namespace Prisma {
     guideId?: IntFieldUpdateOperationsInput | number
   }
 
+  export type ProblemUpdateWithoutTagsLinkedInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: StringFieldUpdateOperationsInput | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    requirement?: NullableJsonNullValueInput | InputJsonValue
+    tests?: ProblemUpdatetestsInput | InputJsonValue[]
+    averageTimeLimit?: FloatFieldUpdateOperationsInput | number
+    averageMemLimit?: FloatFieldUpdateOperationsInput | number
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
+    solves?: SolveUpdateManyWithoutProblemNestedInput
+  }
+
+  export type ProblemUncheckedUpdateWithoutTagsLinkedInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: StringFieldUpdateOperationsInput | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    requirement?: NullableJsonNullValueInput | InputJsonValue
+    tests?: ProblemUpdatetestsInput | InputJsonValue[]
+    averageTimeLimit?: FloatFieldUpdateOperationsInput | number
+    averageMemLimit?: FloatFieldUpdateOperationsInput | number
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
+    solves?: SolveUncheckedUpdateManyWithoutProblemNestedInput
+  }
+
+  export type ProblemUncheckedUpdateManyWithoutTagsLinkedInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    author?: StringFieldUpdateOperationsInput | string
+    positiveRatings?: IntFieldUpdateOperationsInput | number
+    negativeRatings?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    requirement?: NullableJsonNullValueInput | InputJsonValue
+    tests?: ProblemUpdatetestsInput | InputJsonValue[]
+    averageTimeLimit?: FloatFieldUpdateOperationsInput | number
+    averageMemLimit?: FloatFieldUpdateOperationsInput | number
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableEnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty | null
+    tags?: ProblemUpdatetagsInput | string[]
+    grade?: IntFieldUpdateOperationsInput | number
+  }
+
   export type SolveCreateManyProblemInput = {
     id?: number
     userId: number
@@ -24396,6 +24845,22 @@ export namespace Prisma {
     uploadedAt?: Date | string
     score: number
     time?: number
+  }
+
+  export type TagUpdateWithoutProblemInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    guideTags?: GuideTagUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateWithoutProblemInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    guideTags?: GuideTagUncheckedUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateManyWithoutProblemInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
   }
 
   export type SolveUpdateWithoutProblemInput = {

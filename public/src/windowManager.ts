@@ -690,7 +690,7 @@ const draggedIdName = 'dragged'
 
 export function updateCatalouge(sessionId, clientId)
 {
-    const catalouge = document.getElementById('tab-catalouge')
+   
 
 
 
@@ -703,26 +703,36 @@ export function updateCatalouge(sessionId, clientId)
         
 
     ]
+    fetch('/user/jwt').then(async loggedin => {
 
-    if(false) // TODO check if user is admin
-    tabs.push(createEditorTab('Problem Creator', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problemCreator.html?sessionId='+sessionId+'&clientId='+clientId}]})))
+        if(loggedin.ok && (await loggedin.json()).role == 'ADMIN') // TODO check if user is admin
+        {
+            const tab = createEditorTab('Problem Creator',createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problemCreator.html?sessionId='+sessionId+'&clientId='+clientId}]}))
+            tabs.push(tab)
+            addtab(tab)
+        }
+            
+    })
 
+    const catalouge = document.getElementById('tab-catalouge')
 
     for(const tab of tabs)
-    {
-        tab.element.ondragend = () => 
-            {
-                catalouge?.parentElement?.classList.remove('open')
-                const index = tabs.findIndex(val => val === tab)
-                tabs.splice(index, 1)
-                if(tabs.length==0)
-                    (catalouge?.parentElement as HTMLButtonElement).disabled = true;
-            }
-        catalouge?.appendChild(tab.element)
-        
-    }
+        addtab(tab)
     
+    function addtab(tab) {
+        tab.element.ondragend = () => 
+        {
+            catalouge?.parentElement?.classList.remove('open')
+            const index = tabs.findIndex(val => val === tab)
+            tabs.splice(index, 1)
+            if(tabs.length==0)
+                (catalouge?.parentElement as HTMLButtonElement).disabled = true;
+        }
+        catalouge?.appendChild(tab.element)
+    }
 }
+
+
 
 function createTabElement(name) {
     return createNode('span', {className: "file-tab", html: [createNode('p', {innerText: name})]})

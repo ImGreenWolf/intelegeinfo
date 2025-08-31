@@ -18,100 +18,30 @@ var Sessions;
     Sessions[Sessions["Special"] = 2] = "Special";
     Sessions[Sessions["Model"] = 3] = "Model";
 })(Sessions || (Sessions = {}));
-router.get('/', async (req, res) => {
-    // const updates = await update()
-    // const mainDir = updates.dir
+const formatName = (filename, split = false) => {
+    const params = (split ? filename.split('.')[0] : filename)
+        .replaceAll(' ', '_')
+        .split('_');
+    if (['m', 's'].includes(filename[0]))
+        return `${params[0] == 'm' ? 'MI -' : 'SN -'} Varianta ${params[2]}`;
+    else
+        return (split ? filename.split('.')[0] : filename).replaceAll(' ', '_');
+};
+const unformatName = (filename) => {
+    const params = filename
+        .replaceAll('_', ' ')
+        .split(' ');
+    if (['MI', 'SN'].includes(filename.substring(0, 2)))
+        return `${params[0] == 'MI' ? 'm' : 's'}_var_${params[3]}`;
+    else
+        return filename.replaceAll('_', ' ');
+};
+let searchFields = { data: [] };
+let lastUpdate = Date.now();
+let grid = updateSubjectsGrid();
+function updateSubjectsGrid() {
     let grid = '';
-    // grid += subjectFormat(2025, [
-    //   {name: Sessions.IunieIulie,
-    //   folderPath: 'E_d_2025_ses_iunie',
-    //   variants: [
-    //     {name: 'MI - Varianta 1', file: 'E_d_Informatica_2025_sp_MI_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_MI_bar_01_LRO.pdf'},
-    //     {name: 'SN - Varianta 1', file: 'E_d_Informatica_2025_sp_SN_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_SN_bar_01_LRO.pdf'}
-    //   ] 
-    //   },
-    //   {name: Sessions.Special,
-    //     folderPath: 'Bac_2025_Ed_ses_speciala',
-    //     variants: [
-    //       {name: 'MI - Varianta 6', file: 'E_d_informatica_2025_sp_MI_var_06_LRO.pdf', barem: 'E_d_informatica_2025_sp_MI_bar_06_LRO.pdf'},
-    //     ] 
-    //   },
-    //   {name: Sessions.Model,
-    //     folderPath: 'Bac_2025_E_d_Informatica_modele',
-    //     variants: [
-    //       {name: 'MI - Varianta 1', file: 'E_d_informatica_2025_sp_MI_C_var_model.pdf', barem: 'E_d_informatica_2025_sp_MI_C_bar_model.pdf'},
-    //       {name: 'SN - Varianta 1', file: 'E_d_informatica_2025_sp_SN_C_var_model.pdf', barem: 'E_d_informatica_2025_sp_SN_bar_model.pdf'}
-    //     ] 
-    //   }
-    // ])
-    //   grid += subjectFormat(2024, [
-    //     {name: Sessions.IunieIulie,
-    //   folderPath: 'E_d_2025_ses_iunie',
-    //   variants: [
-    //     {name: 'MI - Varianta 1', file: 'E_d_Informatica_2025_sp_MI_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_MI_bar_01_LRO.pdf'},
-    //     {name: 'SN - Varianta 1', file: 'E_d_Informatica_2025_sp_SN_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_SN_bar_01_LRO.pdf'}
-    //   ] 
-    //   },
-    //     {name: Sessions.Special,
-    //     folderPath: 'E_d_2024_ses_speciala',
-    //     variants: [
-    //       {name: 'MI - Varianta 4', file: 'E_d_Informatica_2024_sp_MI_C_var_04_LRO.pdf', barem: 'E_d_Informatica_2024_sp_MI_C_bar_04_LRO.pdf'},
-    //       {name: 'SN - Varianta 4', file: 'E_d_Informatica_2024_sp_SN_C_var_04_LRO.pdf', barem: 'E_d_Informatica_2024_sp_SN_bar_04_LRO.pdf'}
-    //     ] 
-    //     },
-    //     {name: Sessions.Model,
-    //     folderPath: 'Bac_2024_E_d_Informatica_modele',
-    //     variants: [
-    //       {name: 'MI - Varianta 1', file: 'E_d_Informatica_2024_sp_MI_C_var_model.pdf', barem: 'E_d_Informatica_2024_sp_MI_bar_model.pdf'},
-    //       {name: 'SN - Varianta 1', file: 'E_d_Informatica_2024_sp_SN_C_var_model.pdf', barem: 'E_d_Informatica_2024_sp_SN_bar_model.pdf'}
-    //     ] 
-    //   }])
-    //   grid += subjectFormat(2024, [
-    //     {name: Sessions.IunieIulie,
-    //   folderPath: 'E_d_2025_ses_iunie',
-    //   variants: [
-    //     {name: 'MI - Varianta 1', file: 'E_d_Informatica_2025_sp_MI_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_MI_bar_01_LRO.pdf'},
-    //     {name: 'SN - Varianta 1', file: 'E_d_Informatica_2025_sp_SN_C_var_01_LRO.pdf', barem: 'E_d_informatica_2025_sp_SN_bar_01_LRO.pdf'}
-    //   ] 
-    //   },
-    //     {name: Sessions.Special,
-    //     folderPath: 'E_d_2024_ses_speciala',
-    //     variants: [
-    //       {name: 'MI - Varianta 4', file: 'E_d_Informatica_2024_sp_MI_C_var_04_LRO.pdf', barem: 'E_d_Informatica_2024_sp_MI_C_bar_04_LRO.pdf'},
-    //       {name: 'SN - Varianta 4', file: 'E_d_Informatica_2024_sp_SN_C_var_04_LRO.pdf', barem: 'E_d_Informatica_2024_sp_SN_bar_04_LRO.pdf'}
-    //     ] 
-    //     },
-    //     {name: Sessions.Model,
-    //     folderPath: 'Bac_2024_E_d_Informatica_modele',
-    //     variants: [
-    //       {name: 'MI - Varianta 1', file: 'E_d_Informatica_2024_sp_MI_C_var_model.pdf', barem: 'E_d_Informatica_2024_sp_MI_bar_model.pdf'},
-    //       {name: 'SN - Varianta 1', file: 'E_d_Informatica_2024_sp_SN_C_var_model.pdf', barem: 'E_d_Informatica_2024_sp_SN_bar_model.pdf'}
-    //     ] 
-    //   }])
-    // if(mainDir)
-    // {
-    //     const dateReg = /20\d*/g;
-    //      for(const dir of fs.readdirSync(mainDir).sort((a,b) => a.includes('.') || b.includes('.') ? 0 : parseInt(b.match(dateReg)[0]) - parseInt(a.match(dateReg)[0])))
-    //      {
-    //         if(dir.includes('.'))
-    //             continue
-    //         let files = ''
-    //         for(const file of fs.readdirSync(path.join(mainDir, dir)))
-    //             files += `<a href='subiecte/file/${path.join(dir, file)}'>${file.replace(`E_d_Informatica_${dir.match(dateReg)[0]}_sp_`, '')
-    //         .replace(`E_d_informatica_${dir.match(dateReg)[0]}_sp_`, '')
-    //         .replace('.pdf', '').replaceAll('_', ' ')
-    //         .replace('bar', 'barem').replace('var', 'varianta')
-    //         .replace('MI','Mate info').replace('SN','Stiinte ale naturii')
-    //         .replace('LRO','in Romana').replace('LMA','in Maghiara')
-    //         .replace('C', 'C++')
-    //     }</a><br>`
-    //         if(dir.match(dateReg)!=undefined)
-    //         {
-    //             const title = dir.includes('model') ? "Modele" : dir.includes('ses_speciala') ? "Sesiune Speciala" : dir.includes('ses_iunie') || dir.includes('_iul') || dir.includes('_iun') ? "Sesiunea iunie-iulie" : ""
-    //             grid += `<div><h2>${title} bac, anul ${(dir.match(dateReg)[0])}</h2>${files}</div>`
-    //         }
-    //      }
-    // }
+    lastUpdate = Date.now();
     const addVariant = (variant, folderPath) => {
         return `<div class='variant-container'><a href='${folderPath + variant.file}'>${variant.name}</a><a href='${folderPath + variant.barem}'>${variant.barem.split('.')[1][0].toLocaleUpperCase() + variant.barem.split('.')[1].substring(1)}</a></div>`;
     };
@@ -122,6 +52,7 @@ router.get('/', async (req, res) => {
                 </div>`;
     };
     const subjectFormat = (year, sections) => {
+        searchFields.data.push({ year, sections });
         return `<div class='subject-container'>
             <h1>${year}</h1>
             <section class='subject-list'>
@@ -168,6 +99,11 @@ router.get('/', async (req, res) => {
             grid += subjectFormat(dir, sections);
         }
     }
+    return grid;
+}
+router.get('/', async (req, res) => {
+    if (Date.now() - lastUpdate > 1000 * 60 * 60 * 12) // update cache only after 12 hours elapsed
+        grid = updateSubjectsGrid();
     let html = `
     <head>
     <meta charset="UTF-8">
@@ -195,8 +131,10 @@ router.get('/', async (req, res) => {
     </head>
     <body>
     ^{&file:_header.html}
-
-        
+   
+        <input id='search-input'>
+        <div id='display' style='display: flex; flex-direction: column; gap: 0.5em; position: absolute;background: black; padding: 1em;'></div>
+         <script src='/client/scripts/subjects/search.js'></script>
     <div id='grid'>
     ${grid}
     </div>
@@ -206,24 +144,6 @@ router.get('/', async (req, res) => {
     `;
     res.status(200).send((0, server_1.parseText)(html, req));
 });
-const formatName = (filename, split = false) => {
-    const params = (split ? filename.split('.')[0] : filename)
-        .replaceAll(' ', '_')
-        .split('_');
-    if (['m', 's'].includes(filename[0]))
-        return `${params[0] == 'm' ? 'MI -' : 'SN -'} Varianta ${params[2]}`;
-    else
-        return (split ? filename.split('.')[0] : filename).replaceAll(' ', '_');
-};
-const unformatName = (filename) => {
-    const params = filename
-        .replaceAll('_', ' ')
-        .split(' ');
-    if (['MI', 'SN'].includes(filename.substring(0, 2)))
-        return `${params[0] == 'MI' ? 'm' : 's'}_var_${params[3]}`;
-    else
-        return filename.replaceAll('_', ' ');
-};
 router.use('/pdf', express_1.default.static(path_1.default.join(server_1.rootDirName, 'server', 'libs', 'pdf')));
 router.get('/file/:year/:sub/:file', (req, res) => {
     // res.sendFile(path.join(rootDirName, 'server', 'data', 'subiecte', req.params.dir, req.params.name))
@@ -258,3 +178,48 @@ router.get('/file/:year/:sub/:file', (req, res) => {
         res.status(200).sendFile(path_1.default.join(server_1.rootDirName, 'server', 'data', 'formatedSubjects', dir));
     }
 });
+router.get('/search', (req, res) => {
+    let input = req.query.input;
+    function calcScore(entry) {
+        let i = 0;
+        let matchingChars = 0;
+        let lasCharIndex = 0;
+        if (entry.toLocaleLowerCase().includes(input.toLocaleLowerCase()))
+            matchingChars = input.length * 10;
+        else
+            for (const char of input.toLowerCase().trim()) {
+                const map = entry.toLowerCase().trim().split('').filter(schar => schar == char).map((val, index) => index);
+                if (map.length == 0)
+                    matchingChars -= 1;
+                else
+                    for (const index of map) {
+                        // if(index == i)
+                        //   matchingChars +=  5
+                        matchingChars += 1;
+                    }
+                // if(index != -1)
+                // {
+                //    if(index == i)
+                //         matchingChars +=  2
+                //     if (lasCharIndex+1==index)
+                //         matchingChars +=  3
+                //     matchingChars += 1
+                //     // lasCharIndex=index
+                // }
+                i += 1;
+            }
+        return matchingChars;
+    }
+    const output = flatten(searchFields.data).map(entry => { return { score: calcScore(entry.val), entry }; }).sort((a, b) => b.score - a.score);
+    res.send(JSON.stringify(output));
+});
+function flatten(obj) {
+    const result = [];
+    for (const entry of obj)
+        for (const section of entry.sections)
+            for (const variant of section.variants) {
+                const name = entry.year + " " + section.name + " " + variant.name;
+                result.push({ val: name, file: section.folderPath + variant.file });
+            }
+    return result;
+}

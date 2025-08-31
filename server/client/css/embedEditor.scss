@@ -7,15 +7,17 @@
 {
     padding: 5px;
     overflow: hidden;
-    grid-template-columns: minmax(20%, auto) 50px; 
-    grid-template-rows: 1fr 1fr;
+    grid-template-columns: minmax(20%, auto) min-content; 
+    grid-template-rows: auto 1fr 1fr;
     grid-template-areas:
+        "header header"
         "main buttons"
         "output buttons";
 }
 .buttons
 {
     display: flex !important;
+    flex-direction: column;
 }
 
 #output-container
@@ -25,7 +27,7 @@
 
 #output
 {
-    font-size: 0.75rem;
+    // font-size: 0.75rem;
     // padding: 0 100px;
     margin: 0 auto;
     width: 100%;
@@ -48,15 +50,7 @@
 
     .buttons
     {
-        // flex-direction: column;
-        // width: 50px;
-        // justify-content: flex-start;
-        // align-content: stretch;
-        // align-items: stretch;
-        
-        
-           
-        // gap: 1px;
+        flex-direction: row;
         height: auto;
     }
 
@@ -96,11 +90,9 @@
         overflow: visible;
         
     }
-    #output-container textarea
+    #output-container
     {
-        max-width: 30%;
-        padding: 5px;
-        font-size: 8px;
+       font-size: 0.75rem;
     }
     
     .default-screen
@@ -110,17 +102,8 @@
             display: none;
         }
 
-        // .language-carousel
-        // {
-        //     overflow: auto;
-        //     height: 100%;
-        //     grid-template-columns: 1fr;
-        // }
     }
-    #sessionInfo-container > div
-    {
-        // height: 0;
-    }
+
     #sessionInfo-container
     {
         max-height: 20px;

@@ -530,16 +530,24 @@ export class EditorWindowTab {
 }
 const draggedIdName = 'dragged';
 export function updateCatalouge(sessionId, clientId) {
-    const catalouge = document.getElementById('tab-catalouge');
     const tabs = [
         createEditorTab('Subiecte', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] })),
         createEditorTab('Pbinfo', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://www.pbinfo.ro/' }, { name: 'allow', value: "encrypted-media" }] })),
         createEditorTab('Probleme', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problems.html?sessionId=' + sessionId }] })),
         new TerminalTab()
     ];
-    if (false) // TODO check if user is admin
-        tabs.push(createEditorTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] })));
-    for (const tab of tabs) {
+    fetch('/user/jwt').then(async (loggedin) => {
+        if (loggedin.ok && (await loggedin.json()).role == 'ADMIN') // TODO check if user is admin
+         {
+            const tab = createEditorTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] }));
+            tabs.push(tab);
+            addtab(tab);
+        }
+    });
+    const catalouge = document.getElementById('tab-catalouge');
+    for (const tab of tabs)
+        addtab(tab);
+    function addtab(tab) {
         tab.element.ondragend = () => {
             catalouge?.parentElement?.classList.remove('open');
             const index = tabs.findIndex(val => val === tab);
