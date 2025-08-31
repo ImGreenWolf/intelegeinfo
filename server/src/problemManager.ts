@@ -119,34 +119,7 @@ export async function createProblem({name, description, difficulty, tags, catego
         })
         const sourceCode = testFile.content;
         const parsedTags = (tags as string).split(',')
-        const createdProblem = await prisma.problem.upsert({
-            where: {
-                id: id
-            },
-            update: {
-                name: name || "unnamed",
-                category,
-                description,
-                requirement,
-                tests,
-                difficulty,
-                tags: (tags as string).split(',').map(val => val.trim()),
-                sourceCode, 
-                averageMemLimit: 0,
-                averageTimeLimit: time/timeIndex,
-                grade: parseInt(grade),
-                // tagsLinked: {
-                    // connect: parsedTags.map((tag) => ({
-                    //     tag: {
-                    //     connectOrCreate: {
-                    //         where: { name: tag }, // requires Tag.name to be @unique ✅
-                    //         create: { name: tag },
-                    //             },
-                    //         },
-                    //     })),
-                    // },
-                },
-            create: {
+        const params = {
                 name: name || "unnamed",
                 authorId: users.getIdFromJWT(req),
                 category,
@@ -169,15 +142,19 @@ export async function createProblem({name, description, difficulty, tags, catego
                             },
                         })),
                     },
+                }
+        if(id)
+            await prisma.problem.upsert({
+                where: {
+                    id: id
                 },
-                include: { tagsLinked: { include: { tag: true } } },
-        })
-
+                update: params,
+                create: params,
+                    include: { tagsLinked: { include: { tag: true } } },
+            })
+        else 
+            await prisma.problem.create({data: params})
         
-        
-
-
-            console.log(createdProblem)
         
     })
     

@@ -129,60 +129,41 @@ async function createProblem({ name, description, difficulty, tags, category, re
         });
         const sourceCode = testFile.content;
         const parsedTags = tags.split(',');
-        const createdProblem = await dbClient_1.default.problem.upsert({
-            where: {
-                id: id
-            },
-            update: {
-                name: name || "unnamed",
-                category,
-                description,
-                requirement,
-                tests,
-                difficulty,
-                tags: tags.split(',').map(val => val.trim()),
-                sourceCode,
-                averageMemLimit: 0,
-                averageTimeLimit: time / timeIndex,
-                grade: parseInt(grade),
-                // tagsLinked: {
-                // connect: parsedTags.map((tag) => ({
-                //     tag: {
-                //     connectOrCreate: {
-                //         where: { name: tag }, // requires Tag.name to be @unique ✅
-                //         create: { name: tag },
-                //             },
-                //         },
-                //     })),
-                // },
-            },
-            create: {
-                name: name || "unnamed",
-                authorId: users.getIdFromJWT(req),
-                category,
-                description,
-                requirement,
-                tests,
-                difficulty,
-                tags: tags.split(',').map(val => val.trim()),
-                sourceCode,
-                averageMemLimit: 0,
-                averageTimeLimit: time / timeIndex,
-                grade: parseInt(grade),
-                tagsLinked: {
-                    create: parsedTags.map((tag) => ({
-                        tag: {
-                            connectOrCreate: {
-                                where: { name: tag }, // requires Tag.name to be @unique ✅
-                                create: { name: tag },
-                            },
+        const params = {
+            name: name || "unnamed",
+            authorId: users.getIdFromJWT(req),
+            category,
+            description,
+            requirement,
+            tests,
+            difficulty,
+            tags: tags.split(',').map(val => val.trim()),
+            sourceCode,
+            averageMemLimit: 0,
+            averageTimeLimit: time / timeIndex,
+            grade: parseInt(grade),
+            tagsLinked: {
+                create: parsedTags.map((tag) => ({
+                    tag: {
+                        connectOrCreate: {
+                            where: { name: tag }, // requires Tag.name to be @unique ✅
+                            create: { name: tag },
                         },
-                    })),
-                },
+                    },
+                })),
             },
-            include: { tagsLinked: { include: { tag: true } } },
-        });
-        console.log(createdProblem);
+        };
+        if (id)
+            await dbClient_1.default.problem.upsert({
+                where: {
+                    id: id
+                },
+                update: params,
+                create: params,
+                include: { tagsLinked: { include: { tag: true } } },
+            });
+        else
+            await dbClient_1.default.problem.create({ data: params });
     });
 }
 function testProblem(tests, clientObj, clientSession, res) {
