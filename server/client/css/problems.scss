@@ -12,7 +12,7 @@
     margin: auto;
     box-sizing: border-box;
 }
-a.problem-card {
+.problem-card {
     text-decoration: none;
     color: inherit;
     font-family: Poppins;
@@ -44,6 +44,7 @@ a.problem-card {
     .display-container {
         background-color: rgb(252, 252, 252);
         color: black;
+        text-decoration: none;
         box-shadow: 0 0 5px black inset,
          0 5px 13px -2px var(--bgcolorw);
         border-radius: calc(var(--radius) - var(--padding));
@@ -86,6 +87,7 @@ a.problem-card {
             color: var(--bgcolorb);
             font-weight: 800;
             margin: 0 auto;
+            text-decoration: underline;
             line-height: 50px;
             font-family: Poppins;
             font-size: 1.5em;
@@ -124,6 +126,8 @@ a.problem-card {
             text-align: center;
             font-weight: 600;
             box-shadow: 0 0 0.5em rgba(27, 27, 27, 0.473);
+            color: inherit;
+            text-decoration: none;
         }
     }
     

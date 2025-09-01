@@ -17,10 +17,10 @@ async function fetchProblems() {
             link.textContent = item.name;
             listItem.appendChild(link);
             const progress = item.solves && item.solves.length != 0 ? item.solves[0].score : 0;
-            list.appendChild(createNode('a', { html: [
+            list.appendChild(createNode('div', { html: [
                     createNode('div', {
                         htmlSting: `
-                        <div class='display-container'>
+                        <a class='display-container' href='${href}'>
                             <div class='upper'>
                                 <div>
                                     <h3>${item.category}</h3>
@@ -38,22 +38,22 @@ async function fetchProblems() {
                                     <div style='width: ${progress}%'></div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                         <div class='info-wrapper'>
                             <h3>Clasa a ${item.grade}-a</h3>
                             <div class='info-container'>
                                 <p>${item.description.substring(0, 200)}</p>
                                 <div>
-                                    <div class='button'>
+                                    <a class='button' href='${href}'>
                                         Rezolva
-                                    </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                         `
                     })
                 ],
-                attributes: [{ name: 'href', value: href }],
+                // attributes: [{name: 'href', value: href}],
                 className: `problem-card grade-color-${item.grade}` }));
         });
     }

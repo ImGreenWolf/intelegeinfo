@@ -10,13 +10,13 @@
   box-sizing: border-box;
 }
 
-a.problem-card {
+.problem-card {
   text-decoration: none;
   color: inherit;
   font-family: Poppins;
   box-sizing: border-box;
 }
-a.problem-card:hover {
+.problem-card:hover {
   z-index: 1;
 }
 
@@ -38,6 +38,7 @@ a.problem-card:hover {
 .problem-card > div .display-container {
   background-color: rgb(252, 252, 252);
   color: black;
+  text-decoration: none;
   box-shadow: 0 0 5px black inset, 0 5px 13px -2px var(--bgcolorw);
   border-radius: calc(var(--radius) - var(--padding));
   overflow: hidden;
@@ -70,6 +71,7 @@ a.problem-card:hover {
   color: var(--bgcolorb);
   font-weight: 800;
   margin: 0 auto;
+  text-decoration: underline;
   line-height: 50px;
   font-family: Poppins;
   font-size: 1.5em;
@@ -101,6 +103,8 @@ a.problem-card:hover {
   text-align: center;
   font-weight: 600;
   box-shadow: 0 0 0.5em rgba(27, 27, 27, 0.473);
+  color: inherit;
+  text-decoration: none;
 }
 .problem-card > div:not(:has(.info-wrapper:hover)) .display-container {
   flex-grow: 1;
