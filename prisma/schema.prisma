@@ -243,6 +243,8 @@ model Upload {
   UploadUser User? @relation(name: "Upload User", fields: [UserId], references: [id])
   UserId Int?
 
+  createdAt DateTime @default(now())
+  
   Course Course[]
   ProfilePictures User[]
 

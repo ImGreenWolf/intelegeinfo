@@ -316,7 +316,7 @@ section h1 {
         height: 100%;
         img,video
         {
-            height: 800px;
+            height: 700px;
             position: absolute;
             right: 0;
             bottom: 0;
@@ -1273,8 +1273,8 @@ h1.center
     "b g g d"
     "e f f d";
         grid-template-columns: 250px 50px 250px 300px;
-        grid-template-rows: 500px auto;
-        font-size: 0.75em;
+        grid-template-rows: minmax(0, 500px) auto;
+        
         .bento-card
         {
             justify-content: flex-end;
@@ -1434,6 +1434,7 @@ h1.center
         "f e" !important;
         grid-template-columns: auto !important;
         justify-items: stretch !important;
+        font-size: 0.7em;
         // &>img 
         // {
         //     margin-bottom: 5em;
@@ -1446,7 +1447,7 @@ h1.center
         {
             margin: auto;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1rem;
             width: 75%;
             margin-bottom: 1lh;
         }

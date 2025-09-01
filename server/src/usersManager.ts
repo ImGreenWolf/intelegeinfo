@@ -654,13 +654,12 @@ router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req)
     if(id)
     {
-        const user = await updateActiveAtForUser(id) //getUserData
+        const user = await updateActiveAtForUser(id, {pictureUpload: true}) //getUserData
         if(!user)
         {
             res.clearCookie('token').status(404).redirect('/')
             return
         }
-        
         if(user.picture.startsWith('http'))
             res.status(200).redirect(user.picture)
         else
@@ -700,7 +699,7 @@ export function activeAtComponent()
 {
     return {activeAt: new Date()}
 }
-  export async function updateActiveAtForUser(userId: number)
+  export async function updateActiveAtForUser(userId: number, include?: Prisma.UserInclude)
   {
     try 
     {
@@ -714,7 +713,8 @@ export function activeAtComponent()
             data:
             {
                 ...activeAtComponent()
-            }
+            },
+            include
         }
     )
     }
@@ -724,7 +724,8 @@ export function activeAtComponent()
         {
             where: {
                 id: userId
-            }
+            },
+            include
         }
     )
     }

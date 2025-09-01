@@ -521,7 +521,7 @@ exports.router.post('/reset-password', async (req, res) => {
 exports.router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req);
     if (id) {
-        const user = await updateActiveAtForUser(id); //getUserData
+        const user = await updateActiveAtForUser(id, { pictureUpload: true }); //getUserData
         if (!user) {
             res.clearCookie('token').status(404).redirect('/');
             return;
@@ -558,7 +558,7 @@ exports.router.post('/picture', exports.upload.single('profilePicture'), async (
 function activeAtComponent() {
     return { activeAt: new Date() };
 }
-async function updateActiveAtForUser(userId) {
+async function updateActiveAtForUser(userId, include) {
     try {
         if (!userId)
             return false;
@@ -568,14 +568,16 @@ async function updateActiveAtForUser(userId) {
             },
             data: {
                 ...activeAtComponent()
-            }
+            },
+            include
         });
     }
     catch (err) {
         return await dbClient_1.default.user.findFirst({
             where: {
                 id: userId
-            }
+            },
+            include
         });
     }
 }

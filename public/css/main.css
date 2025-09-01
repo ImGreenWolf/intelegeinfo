@@ -327,23 +327,13 @@ header2 nav ul li.home + li,
 header2 nav ul .home {
   border-radius: 1.25em 0 0 1.25em;
 }
-header2 nav ul li.home + li:hover,
-header2 nav ul .home:hover {
-  box-shadow: inset -5px 0px 20px -10px rgba(108, 114, 119, 0.3);
-}
 header2 nav ul li:last-child {
   border-radius: 0 1.25em 1.25em 0;
   padding-right: 2.25em;
   box-sizing: content-box;
 }
-header2 nav ul li:last-child:hover {
-  box-shadow: inset 5px 0px 20px -10px rgba(108, 114, 119, 0.3);
-}
 header2 nav ul li:hover {
-  transform: scale(1.1);
-  z-index: 1;
-  margin: 0 5px;
-  box-shadow: inset 0px 0px 20px -10px rgba(108, 114, 119, 0.3);
+  border-bottom: 2px solid rgba(175, 216, 240, 0.25);
 }
 
 .lang-dropdown {

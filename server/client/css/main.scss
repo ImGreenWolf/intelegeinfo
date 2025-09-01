@@ -408,28 +408,19 @@ header2
             {
                 border-radius: 1.25em 0 0 1.25em;
                 // padding-left: 2.25em;
-                &:hover
-                {
-                     box-shadow: inset -5px 0px 20px -10px rgb(108 114 119 / 30%);
-                }
+                
             }
             li:last-child
             {
                 border-radius: 0 1.25em 1.25em 0;
                 padding-right: 2.25em;
                 box-sizing: content-box;
-                &:hover
-                {
-                     box-shadow: inset 5px 0px 20px -10px rgb(108 114 119 / 30%);
-                }
+                
             }
 
             li:hover
             {
-                transform: scale(1.1);
-                z-index: 1;
-                margin: 0 5px;
-                box-shadow: inset 0px 0px 20px -10px rgb(108 114 119 / 30%);
+               border-bottom: 2px solid rgba(175, 216, 240, 0.25);
             }
         }
     } 

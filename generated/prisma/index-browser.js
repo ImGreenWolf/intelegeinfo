@@ -265,7 +265,8 @@ exports.Prisma.UploadScalarFieldEnum = {
   path: 'path',
   originalName: 'originalName',
   size: 'size',
-  UserId: 'UserId'
+  UserId: 'UserId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {

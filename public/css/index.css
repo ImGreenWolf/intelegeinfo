@@ -162,7 +162,7 @@ section h1 {
   height: 100%;
 }
 .display-shadow #mockup-container img, .display-shadow #mockup-container video {
-  height: 800px;
+  height: 700px;
   position: absolute;
   right: 0;
   bottom: 0;
@@ -905,8 +905,7 @@ h1.center {
   #features .content-list {
     grid-template-areas: "a a a c" "b g g d" "e f f d";
     grid-template-columns: 250px 50px 250px 300px;
-    grid-template-rows: 500px auto;
-    font-size: 0.75em;
+    grid-template-rows: minmax(0, 500px) auto;
   }
   #features .content-list .bento-card {
     justify-content: flex-end;
@@ -1008,11 +1007,12 @@ h1.center {
     grid-template-areas: "a a" "b g" "c c" "d d" "f e" !important;
     grid-template-columns: auto !important;
     justify-items: stretch !important;
+    font-size: 0.7em;
   }
   .content-container > h1, .content-container > h2, #editor-demo > h1, #editor-demo > h2 {
     margin: auto;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1rem;
     width: 75%;
     margin-bottom: 1lh;
   }

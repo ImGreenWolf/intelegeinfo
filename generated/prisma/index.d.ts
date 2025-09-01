@@ -17446,6 +17446,7 @@ export namespace Prisma {
     originalName: string | null
     size: number | null
     UserId: number | null
+    createdAt: Date | null
   }
 
   export type UploadMaxAggregateOutputType = {
@@ -17454,6 +17455,7 @@ export namespace Prisma {
     originalName: string | null
     size: number | null
     UserId: number | null
+    createdAt: Date | null
   }
 
   export type UploadCountAggregateOutputType = {
@@ -17462,6 +17464,7 @@ export namespace Prisma {
     originalName: number
     size: number
     UserId: number
+    createdAt: number
     _all: number
   }
 
@@ -17484,6 +17487,7 @@ export namespace Prisma {
     originalName?: true
     size?: true
     UserId?: true
+    createdAt?: true
   }
 
   export type UploadMaxAggregateInputType = {
@@ -17492,6 +17496,7 @@ export namespace Prisma {
     originalName?: true
     size?: true
     UserId?: true
+    createdAt?: true
   }
 
   export type UploadCountAggregateInputType = {
@@ -17500,6 +17505,7 @@ export namespace Prisma {
     originalName?: true
     size?: true
     UserId?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -17595,6 +17601,7 @@ export namespace Prisma {
     originalName: string
     size: number
     UserId: number | null
+    createdAt: Date
     _count: UploadCountAggregateOutputType | null
     _avg: UploadAvgAggregateOutputType | null
     _sum: UploadSumAggregateOutputType | null
@@ -17622,6 +17629,7 @@ export namespace Prisma {
     originalName?: boolean
     size?: boolean
     UserId?: boolean
+    createdAt?: boolean
     UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
     Course?: boolean | Upload$CourseArgs<ExtArgs>
     ProfilePictures?: boolean | Upload$ProfilePicturesArgs<ExtArgs>
@@ -17634,6 +17642,7 @@ export namespace Prisma {
     originalName?: boolean
     size?: boolean
     UserId?: boolean
+    createdAt?: boolean
     UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
   }, ExtArgs["result"]["upload"]>
 
@@ -17643,6 +17652,7 @@ export namespace Prisma {
     originalName?: boolean
     size?: boolean
     UserId?: boolean
+    createdAt?: boolean
     UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
   }, ExtArgs["result"]["upload"]>
 
@@ -17652,9 +17662,10 @@ export namespace Prisma {
     originalName?: boolean
     size?: boolean
     UserId?: boolean
+    createdAt?: boolean
   }
 
-  export type UploadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "path" | "originalName" | "size" | "UserId", ExtArgs["result"]["upload"]>
+  export type UploadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "path" | "originalName" | "size" | "UserId" | "createdAt", ExtArgs["result"]["upload"]>
   export type UploadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     UploadUser?: boolean | Upload$UploadUserArgs<ExtArgs>
     Course?: boolean | Upload$CourseArgs<ExtArgs>
@@ -17681,6 +17692,7 @@ export namespace Prisma {
       originalName: string
       size: number
       UserId: number | null
+      createdAt: Date
     }, ExtArgs["result"]["upload"]>
     composites: {}
   }
@@ -18112,6 +18124,7 @@ export namespace Prisma {
     readonly originalName: FieldRef<"Upload", 'String'>
     readonly size: FieldRef<"Upload", 'Int'>
     readonly UserId: FieldRef<"Upload", 'Int'>
+    readonly createdAt: FieldRef<"Upload", 'DateTime'>
   }
     
 
@@ -18791,7 +18804,8 @@ export namespace Prisma {
     path: 'path',
     originalName: 'originalName',
     size: 'size',
-    UserId: 'UserId'
+    UserId: 'UserId',
+    createdAt: 'createdAt'
   };
 
   export type UploadScalarFieldEnum = (typeof UploadScalarFieldEnum)[keyof typeof UploadScalarFieldEnum]
@@ -20091,6 +20105,7 @@ export namespace Prisma {
     originalName?: StringFilter<"Upload"> | string
     size?: IntFilter<"Upload"> | number
     UserId?: IntNullableFilter<"Upload"> | number | null
+    createdAt?: DateTimeFilter<"Upload"> | Date | string
     UploadUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     Course?: CourseListRelationFilter
     ProfilePictures?: UserListRelationFilter
@@ -20102,6 +20117,7 @@ export namespace Prisma {
     originalName?: SortOrder
     size?: SortOrder
     UserId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
     UploadUser?: UserOrderByWithRelationInput
     Course?: CourseOrderByRelationAggregateInput
     ProfilePictures?: UserOrderByRelationAggregateInput
@@ -20117,6 +20133,7 @@ export namespace Prisma {
     originalName?: StringFilter<"Upload"> | string
     size?: IntFilter<"Upload"> | number
     UserId?: IntNullableFilter<"Upload"> | number | null
+    createdAt?: DateTimeFilter<"Upload"> | Date | string
     UploadUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     Course?: CourseListRelationFilter
     ProfilePictures?: UserListRelationFilter
@@ -20128,6 +20145,7 @@ export namespace Prisma {
     originalName?: SortOrder
     size?: SortOrder
     UserId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
     _count?: UploadCountOrderByAggregateInput
     _avg?: UploadAvgOrderByAggregateInput
     _max?: UploadMaxOrderByAggregateInput
@@ -20144,6 +20162,7 @@ export namespace Prisma {
     originalName?: StringWithAggregatesFilter<"Upload"> | string
     size?: IntWithAggregatesFilter<"Upload"> | number
     UserId?: IntNullableWithAggregatesFilter<"Upload"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"Upload"> | Date | string
   }
 
   export type ProjectCreateInput = {
@@ -21149,6 +21168,7 @@ export namespace Prisma {
     path?: string
     originalName?: string
     size?: number
+    createdAt?: Date | string
     UploadUser?: UserCreateNestedOneWithoutUploadInput
     Course?: CourseCreateNestedManyWithoutVideoSummaryInput
     ProfilePictures?: UserCreateNestedManyWithoutPictureUploadInput
@@ -21160,6 +21180,7 @@ export namespace Prisma {
     originalName?: string
     size?: number
     UserId?: number | null
+    createdAt?: Date | string
     Course?: CourseUncheckedCreateNestedManyWithoutVideoSummaryInput
     ProfilePictures?: UserUncheckedCreateNestedManyWithoutPictureUploadInput
   }
@@ -21168,6 +21189,7 @@ export namespace Prisma {
     path?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     UploadUser?: UserUpdateOneWithoutUploadNestedInput
     Course?: CourseUpdateManyWithoutVideoSummaryNestedInput
     ProfilePictures?: UserUpdateManyWithoutPictureUploadNestedInput
@@ -21179,6 +21201,7 @@ export namespace Prisma {
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     UserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Course?: CourseUncheckedUpdateManyWithoutVideoSummaryNestedInput
     ProfilePictures?: UserUncheckedUpdateManyWithoutPictureUploadNestedInput
   }
@@ -21189,12 +21212,14 @@ export namespace Prisma {
     originalName?: string
     size?: number
     UserId?: number | null
+    createdAt?: Date | string
   }
 
   export type UploadUpdateManyMutationInput = {
     path?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UploadUncheckedUpdateManyInput = {
@@ -21203,6 +21228,7 @@ export namespace Prisma {
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     UserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -22410,6 +22436,7 @@ export namespace Prisma {
     originalName?: SortOrder
     size?: SortOrder
     UserId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type UploadAvgOrderByAggregateInput = {
@@ -22424,6 +22451,7 @@ export namespace Prisma {
     originalName?: SortOrder
     size?: SortOrder
     UserId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type UploadMinOrderByAggregateInput = {
@@ -22432,6 +22460,7 @@ export namespace Prisma {
     originalName?: SortOrder
     size?: SortOrder
     UserId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type UploadSumOrderByAggregateInput = {
@@ -23916,6 +23945,7 @@ export namespace Prisma {
     path?: string
     originalName?: string
     size?: number
+    createdAt?: Date | string
     UploadUser?: UserCreateNestedOneWithoutUploadInput
     Course?: CourseCreateNestedManyWithoutVideoSummaryInput
   }
@@ -23926,6 +23956,7 @@ export namespace Prisma {
     originalName?: string
     size?: number
     UserId?: number | null
+    createdAt?: Date | string
     Course?: CourseUncheckedCreateNestedManyWithoutVideoSummaryInput
   }
 
@@ -24093,6 +24124,7 @@ export namespace Prisma {
     path?: string
     originalName?: string
     size?: number
+    createdAt?: Date | string
     Course?: CourseCreateNestedManyWithoutVideoSummaryInput
     ProfilePictures?: UserCreateNestedManyWithoutPictureUploadInput
   }
@@ -24102,6 +24134,7 @@ export namespace Prisma {
     path?: string
     originalName?: string
     size?: number
+    createdAt?: Date | string
     Course?: CourseUncheckedCreateNestedManyWithoutVideoSummaryInput
     ProfilePictures?: UserUncheckedCreateNestedManyWithoutPictureUploadInput
   }
@@ -24215,6 +24248,7 @@ export namespace Prisma {
     path?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     UploadUser?: UserUpdateOneWithoutUploadNestedInput
     Course?: CourseUpdateManyWithoutVideoSummaryNestedInput
   }
@@ -24225,6 +24259,7 @@ export namespace Prisma {
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     UserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Course?: CourseUncheckedUpdateManyWithoutVideoSummaryNestedInput
   }
 
@@ -24417,6 +24452,7 @@ export namespace Prisma {
     originalName?: StringFilter<"Upload"> | string
     size?: IntFilter<"Upload"> | number
     UserId?: IntNullableFilter<"Upload"> | number | null
+    createdAt?: DateTimeFilter<"Upload"> | Date | string
   }
 
   export type InquiryUpsertWithWhereUniqueWithoutUserInput = {
@@ -25433,6 +25469,7 @@ export namespace Prisma {
     path?: string
     originalName?: string
     size?: number
+    createdAt?: Date | string
     UploadUser?: UserCreateNestedOneWithoutUploadInput
     ProfilePictures?: UserCreateNestedManyWithoutPictureUploadInput
   }
@@ -25443,6 +25480,7 @@ export namespace Prisma {
     originalName?: string
     size?: number
     UserId?: number | null
+    createdAt?: Date | string
     ProfilePictures?: UserUncheckedCreateNestedManyWithoutPictureUploadInput
   }
 
@@ -25584,6 +25622,7 @@ export namespace Prisma {
     path?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     UploadUser?: UserUpdateOneWithoutUploadNestedInput
     ProfilePictures?: UserUpdateManyWithoutPictureUploadNestedInput
   }
@@ -25594,6 +25633,7 @@ export namespace Prisma {
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     UserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ProfilePictures?: UserUncheckedUpdateManyWithoutPictureUploadNestedInput
   }
 
@@ -26363,6 +26403,7 @@ export namespace Prisma {
     path?: string
     originalName?: string
     size?: number
+    createdAt?: Date | string
   }
 
   export type InquiryCreateManyUserInput = {
@@ -26512,6 +26553,7 @@ export namespace Prisma {
     path?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Course?: CourseUpdateManyWithoutVideoSummaryNestedInput
     ProfilePictures?: UserUpdateManyWithoutPictureUploadNestedInput
   }
@@ -26521,6 +26563,7 @@ export namespace Prisma {
     path?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Course?: CourseUncheckedUpdateManyWithoutVideoSummaryNestedInput
     ProfilePictures?: UserUncheckedUpdateManyWithoutPictureUploadNestedInput
   }
@@ -26530,6 +26573,7 @@ export namespace Prisma {
     path?: StringFieldUpdateOperationsInput | string
     originalName?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InquiryUpdateWithoutUserInput = {
