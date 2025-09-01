@@ -906,6 +906,7 @@ h1.center {
     grid-template-areas: "a a a c" "b g g d" "e f f d";
     grid-template-columns: 250px 50px 250px 300px;
     grid-template-rows: 500px auto;
+    font-size: 0.75em;
   }
   #features .content-list .bento-card {
     justify-content: flex-end;
