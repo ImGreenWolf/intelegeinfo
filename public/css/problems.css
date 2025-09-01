@@ -248,7 +248,7 @@ h2.good {
   }
 }
 
-.problem-card lower a:any-link {
+.problem-card .lower a:any-link {
   background-clip: text;
   color: transparent;
   --colorA: rgb(205, 207, 52);
@@ -259,6 +259,17 @@ h2.good {
   background-size: 200%;
   text-decoration: underline;
   border-block-end: 0.1em solid var(--colorA);
+}
+
+.problem-card.golden .upper h2 {
+  background-clip: text;
+  color: transparent;
+  --colorA: rgb(218, 194, 63);
+  --colorH: rgb(236, 230, 173);
+  background-color: var(--colorA);
+  background-image: linear-gradient(45deg, var(--colorA), var(--colorH), var(--colorA));
+  animation: animate-progress 10s infinite linear;
+  background-size: 200%;
 }
 
 /*# sourceMappingURL=problems.css.map */
