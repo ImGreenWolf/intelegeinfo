@@ -144,12 +144,12 @@ html, body {
 .inline-wrapper label,
 .profile-button {
   padding-inline: 1em;
-  line-height: 2.5em;
+  padding-block: 0.5em;
   background-color: white;
   color: black;
   font-family: inherit;
   border: none;
-  border-radius: 0.25lh;
+  border-radius: 0.25em;
   cursor: pointer;
 }
 .inline-wrapper button.bad,

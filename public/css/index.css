@@ -117,7 +117,6 @@ section h1 {
   grid-template-rows: auto 1fr;
   grid-template-columns: 1fr 1fr;
   gap: 5em;
-  column-gap: 20em;
   padding: 0 5vw;
   box-sizing: border-box;
   justify-content: center;
@@ -169,12 +168,12 @@ section h1 {
   bottom: 0;
   box-shadow: 10px 10px 30px 10px rgba(2, 2, 2, 0.521);
   border-radius: 10px;
-  transform: scale(0.8) matrix3d(1, 0, 0, -0.0001, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  transform: scale(1) matrix3d(1, 0, 0, -0.0001, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 .display-shadow #mockup-container #desktop {
-  height: 500px;
+  height: auto;
+  width: 100%;
   bottom: -50px;
-  transform: scale(0.8) matrix3d(1, 0, 0, -0.0001, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
 #text-container {
@@ -895,12 +894,13 @@ h1.center {
 @media screen and ((max-aspect-ratio: 2/3) or (max-width: 1600px)) {
   #mockup-container {
     height: 75% !important;
+    max-width: 100%;
   }
-  #mockup-container img#desktop {
-    height: 250px !important;
+  #mockup-container #desktop {
+    width: 100%;
   }
   #mockup-container img {
-    height: 400px !important;
+    max-height: 100%;
   }
   #features .content-list {
     grid-template-areas: "a a a c" "b g g d" "e f f d";
@@ -979,15 +979,25 @@ h1.center {
   .display-shadow #mockup-container {
     grid-column: 1 !important;
     grid-row: 2/-1 !important;
-    height: 250px !important;
-    width: 300px;
+    min-height: 400px !important;
+    min-width: 300px;
+    width: 75%;
+    height: 100%;
     margin: 50px auto;
   }
   .display-shadow #mockup-container img {
-    height: 300px !important;
+    min-height: 200px !important;
+    height: 100%;
+    transform: none;
   }
   .display-shadow #mockup-container #desktop {
-    height: 150px !important;
+    margin: auto;
+    right: 0%;
+    left: 0%;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    transform: none;
   }
   .text {
     width: 75% !important;

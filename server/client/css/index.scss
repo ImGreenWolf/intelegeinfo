@@ -252,7 +252,7 @@ section h1 {
     grid-template-rows: auto 1fr;
     grid-template-columns: 1fr 1fr;
     gap: 5em;
-    column-gap: 20em;
+    // column-gap: 20em;
     padding: 0 5vw;
     box-sizing: border-box;
     justify-content: center;
@@ -322,13 +322,13 @@ section h1 {
             bottom: 0;
             box-shadow: 10px 10px 30px 10px rgba(2, 2, 2, 0.521);
             border-radius: 10px;
-            transform: scale(0.8) matrix3d(1, 0, 0, -0.0001, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+            transform: scale(1) matrix3d(1, 0, 0, -0.0001, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         }
         #desktop
         {
-            height: 500px;
+            height: auto;
+            width: 100%;
             bottom: -50px;
-            transform: scale(0.8) matrix3d(1, 0, 0, -0.0001, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         }
        
         
@@ -1249,15 +1249,18 @@ h1.center
     #mockup-container
     {
         height: 75% !important;  
-        img#desktop
+        max-width: 100%;
+        #desktop
         {
-            height: 250px !important;
+            width: 100%;
         }
         img
         {
-            height: 400px !important;
+            // height: 400px !important;
+            max-height: 100%;
         }
-    }   
+    }  
+    
 
     // header2 nav
     // {
@@ -1387,19 +1390,27 @@ h1.center
     {
         grid-column: 1 !important;
         grid-row: 2 / -1 !important;
-        height: 250px !important;
-        width: 300px;
-        // height: 100%;
+        min-height: 400px !important;
+        min-width: 300px;
+        width: 75%;
+        height: 100%;
         margin:  50px auto;
         img
         {
-            height: 300px !important;
-
+            min-height: 200px !important;
+            height: 100%;
+            transform: none;
         }
         #desktop
         {
-            height: 150px !important;
-            
+            // height: 150px !important;
+            margin: auto;
+            right: 0%;
+            left: 0%;
+            box-sizing: border-box;
+            width: 100%;
+            height: auto;
+            transform: none;
         }
         
     }
