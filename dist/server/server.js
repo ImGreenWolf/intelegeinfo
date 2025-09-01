@@ -2345,7 +2345,7 @@ function parseText(file, req, params) {
     return text;
 }
 function parseHTML(req, res, next) {
-    const filePath = req.path.endsWith('/') || req.path.endsWith('\\') ? 'index.html' : req.path;
+    const filePath = req.path.endsWith('/') || req.path.endsWith('\\') ? req.path + '/index.html' : req.path;
     const fullPath = path_1.default.join(exports.rootDirName, 'public', filePath);
     const ext = filePath.split('.').at(-1) ? filePath.split('.').at(-1) : 'text';
     if (ext != 'html') {
