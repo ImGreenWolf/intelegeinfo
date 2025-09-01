@@ -2,8 +2,6 @@
 #problem-list {
     display: grid;
     grid-template-columns: repeat(auto-fill,400px);
-    // grid-auto-columns: 20em;
-    // grid-auto-flow: column;
     justify-content: space-evenly;
     grid-auto-rows: 300px;
     row-gap: 2em;
@@ -11,6 +9,13 @@
     max-width: 1500px;
     margin: auto;
     box-sizing: border-box;
+    padding: 2em;
+}
+
+@media screen and (max-width: 825px) {
+    #problem-list {
+         grid-template-columns: auto
+    }
 }
 .problem-card {
     text-decoration: none;
@@ -22,7 +27,7 @@
     }
 }
 
-.problem-card>div {
+.problem-card {
     --padding: 5px;
     --radius: 40px;
     --bgcolor: rgb(165, 95, 165);
@@ -92,6 +97,7 @@
             font-family: Poppins;
             font-size: 1.5em;
             text-transform: uppercase;
+            user-select: none;
         }
 
     }
@@ -209,25 +215,25 @@ h2.bad {
 h2.good {
     color: rgb(71, 165, 71);
 }
-.problem-card.grade-color-9>div {
+.problem-card.grade-color-9 {
     --bgcolor: rgb(66, 87, 160);
     --bgcolorw: rgb(108, 115, 209);
     --bgcolorb: rgb(33, 28, 88);
 }
 
-.problem-card.grade-color-10>div {
+.problem-card.grade-color-10 {
     --bgcolor: rgb(58, 104, 62);
     --bgcolorw: rgb(132, 179, 146);
     --bgcolorb: rgb(25, 44, 28);
 }
 
-.problem-card.grade-color-11>div {
+.problem-card.grade-color-11 {
     --bgcolor: rgb(165, 95, 165);
     --bgcolorw: rgb(219, 160, 219);
     --bgcolorb: rgb(105, 59, 105);
 }
 
-.problem-card.grade-color-12>div {
+.problem-card.grade-color-12 {
     --bgcolor: rgb(151, 59, 59);
     --bgcolorw: rgb(218, 126, 126);
     --bgcolorb: rgb(90, 19, 19);
