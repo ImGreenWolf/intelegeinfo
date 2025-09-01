@@ -227,7 +227,7 @@ export class IIWebRTC {
                     break;
             }
         };
-        this.pc.onconnectionstatechange = () => {
+        this.pc.onconnectionstatechange = async () => {
             console.log(this.id, "Connection state:", this.pc.connectionState);
             switch (this.pc.connectionState) {
                 case "connected":
@@ -238,7 +238,13 @@ export class IIWebRTC {
                     break;
                 case "failed":
                     console.error(this.id, "WebRTC failed, closing & cleaning up");
-                    this.close();
+                    try {
+                        await this.pc?.restartIce();
+                    }
+                    catch (err) {
+                        console.error(this.id, "ICE restart failed:", err);
+                        this.close();
+                    }
                     break;
                 case "closed":
                     console.log(this.id, "WebRTC connection closed");
