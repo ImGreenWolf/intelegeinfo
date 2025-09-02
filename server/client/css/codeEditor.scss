@@ -2719,16 +2719,18 @@ button.glowing:hover::before {
     transition-duration: 0.5s;
 }
 
-.debug-container .value-container {
+.debug-container .value-container,
+.debug-container .array-container span {
     display: inline;
+    padding: 0.5em 0.25em;
+    font-family: monospace;
     background-color: theme.$button-color;
+    box-sizing: border-box;
 }
-.array-container {
+.debug-container .array-container {
     display: flex;
     flex-flow: wrap;
-    gap: 0.5em;
-    
-    span {
-         background-color: theme.$button-color;
-    }
+    gap: 0.5em;    
+    box-sizing: border-box;
+
 }

@@ -2305,18 +2305,20 @@ button.glowing:hover::before {
   transition-duration: 0.5s;
 }
 
-.debug-container .value-container {
+.debug-container .value-container,
+.debug-container .array-container span {
   display: inline;
+  padding: 0.5em 0.25em;
+  font-family: monospace;
   background-color: rgb(0, 0, 0);
+  box-sizing: border-box;
 }
 
-.array-container {
+.debug-container .array-container {
   display: flex;
   flex-flow: wrap;
   gap: 0.5em;
-}
-.array-container span {
-  background-color: rgb(0, 0, 0);
+  box-sizing: border-box;
 }
 
 .container {
