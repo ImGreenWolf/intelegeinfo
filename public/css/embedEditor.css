@@ -2305,6 +2305,13 @@ button.glowing:hover::before {
   transition-duration: 0.5s;
 }
 
+.debug-container ul {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  gap: 0.5em;
+}
+
 .debug-container .value-container,
 .debug-container .array-container span {
   display: inline;
