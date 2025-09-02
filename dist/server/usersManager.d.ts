@@ -19,6 +19,7 @@ export declare function getUserData(id: number, include?: Prisma.UserInclude): P
 export declare function getIdFromJWT(req: any): number;
 export declare function addProject(id: number, data: any): Promise<{
     id: number;
+    createdAt: Date;
     username: string;
     firstName: string;
     lastName: string;
@@ -27,10 +28,9 @@ export declare function addProject(id: number, data: any): Promise<{
     userColor: string;
     picture: string;
     role: import("../../generated/prisma").$Enums.Role;
-    createdAt: Date;
     activeAt: Date;
     password: string | null;
-    authId: string | null;
+    authId: Prisma.JsonValue | null;
     loginMethod: string;
     occupationType: import("../../generated/prisma").$Enums.OccupationType;
 }>;
@@ -46,34 +46,9 @@ export declare function activeAtComponent(): {
     activeAt: Date;
 };
 export declare function updateActiveAtForUser(userId: number, include?: Prisma.UserInclude): Promise<false | ({
-    pictureUpload: {
-        id: number;
-        createdAt: Date;
-        path: string;
-        originalName: string;
-        size: number;
-        UserId: number | null;
-    };
-    projects: {
-        name: string;
-        id: number;
-        createdAt: Date;
-        fileUUID: string;
-        userId: number;
-        metadata: Prisma.JsonValue | null;
-    }[];
-    solves: {
-        id: number;
-        userId: number;
-        problemid: number;
-        sourceCode: string;
-        uploadedAt: Date;
-        score: number;
-        time: number;
-    }[];
     Guide: {
-        name: string;
         id: number;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         authorId: number;
@@ -84,13 +59,38 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         category: string | null;
         visits: number;
     }[];
+    pictureUpload: {
+        id: number;
+        createdAt: Date;
+        path: string;
+        originalName: string;
+        size: number;
+        UserId: number | null;
+    };
+    projects: {
+        id: number;
+        metadata: Prisma.JsonValue | null;
+        name: string;
+        createdAt: Date;
+        fileUUID: string;
+        userId: number;
+    }[];
+    solves: {
+        id: number;
+        userId: number;
+        problemid: number;
+        sourceCode: string;
+        uploadedAt: Date;
+        score: number;
+        time: number;
+    }[];
     Course: {
         id: number;
-        email: string | null;
         createdAt: Date;
-        userId: number;
         updatedAt: Date;
         description: string;
+        email: string | null;
+        userId: number;
         experience: string;
         price: number;
         courseLength: number;
@@ -118,9 +118,9 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
     }[];
     Inquiry: {
         id: number;
+        createdAt: Date;
         firstName: string;
         lastName: string;
-        createdAt: Date;
         userId: number | null;
         courseId: number;
         respondedAt: Date | null;
@@ -129,16 +129,16 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         message: string | null;
     }[];
     Problem: {
-        name: string;
         id: number;
+        name: string;
         createdAt: Date;
-        sourceCode: string | null;
         updatedAt: Date;
         authorId: number;
         positiveRatings: number;
         negativeRatings: number;
         description: string | null;
         category: string | null;
+        sourceCode: string | null;
         requirement: Prisma.JsonValue | null;
         tests: Prisma.JsonValue[];
         averageTimeLimit: number;
@@ -160,6 +160,7 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
     };
 } & {
     id: number;
+    createdAt: Date;
     username: string;
     firstName: string;
     lastName: string;
@@ -168,10 +169,9 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
     userColor: string;
     picture: string;
     role: import("../../generated/prisma").$Enums.Role;
-    createdAt: Date;
     activeAt: Date;
     password: string | null;
-    authId: string | null;
+    authId: Prisma.JsonValue | null;
     loginMethod: string;
     occupationType: import("../../generated/prisma").$Enums.OccupationType;
 })>;

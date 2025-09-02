@@ -145,7 +145,7 @@ export function authMiddleware(req: any, res: Response, next:any) {
 
 
 // Types for token and user info
-interface GoogleTokenResponse {
+type GoogleTokenResponse = {
   access_token: string;
   expires_in: number;
   refresh_token?: string;
@@ -216,38 +216,27 @@ router.get('/callback', async (req:any, res:any) => {
     const userInfo = (await userInfoRes.json()) as GoogleUserInfo;
 
 
-    const userExists = await prisma.user.findUnique({
+    const userExists = await prisma.user.update({
       where: {
         email: userInfo.email
       },
+      data: {
+        authId: tokenData ? tokenData : null
+      }
     })
 
-    console.log(userExists)
-
+    const keepLoggedIn = true
     if(userExists) {
       if(userExists.loginMethod==='google')
       {
         console.log(userExists.password)
         if(userExists.password!==userExists.loginMethod)
         {
-        // var token = createToken(userExists)
 
-        // res.cookie('token', token, {
-        //     httpOnly: true,
-        //     secure: false, // Set to true in production (HTTPS)
-        //     maxAge: 3600000, // 1 hour
-        //   });
 
-        onLoggedIn(userExists, res, req, true)
+        onLoggedIn(userExists, res, req, keepLoggedIn)
          
         res.redirect('/')
-        // send(`
-        //     Te-ai logat cu sucess cu emailul ${userExists.email}.
-        //     Salut ${userExists.username}.
-        //     <a href='/profile'>Profil</a>
-        //     <a href='/editor'>Editor</a>
-        //   `)
-        // res.send('Hello ' + userExists.username + `<script>setTimeout(() => {location.href='/editor'}, 2000)</script>`)
 
         }else
         {
@@ -302,7 +291,9 @@ router.get('/callback', async (req:any, res:any) => {
     {
 
       try{
-        const result = await signup.onSignedIn({email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}, res, '', req )
+        const result = await signup.onSignedIn(
+          {email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}
+          , res, null, req, keepLoggedIn, tokenData)
         result.res.send(result.json)
        
       }

@@ -3511,7 +3511,6 @@ export namespace Prisma {
     createdAt: Date | null
     activeAt: Date | null
     password: string | null
-    authId: string | null
     loginMethod: string | null
     occupationType: $Enums.OccupationType | null
   }
@@ -3529,7 +3528,6 @@ export namespace Prisma {
     createdAt: Date | null
     activeAt: Date | null
     password: string | null
-    authId: string | null
     loginMethod: string | null
     occupationType: $Enums.OccupationType | null
   }
@@ -3575,7 +3573,6 @@ export namespace Prisma {
     createdAt?: true
     activeAt?: true
     password?: true
-    authId?: true
     loginMethod?: true
     occupationType?: true
   }
@@ -3593,7 +3590,6 @@ export namespace Prisma {
     createdAt?: true
     activeAt?: true
     password?: true
-    authId?: true
     loginMethod?: true
     occupationType?: true
   }
@@ -3716,7 +3712,7 @@ export namespace Prisma {
     createdAt: Date
     activeAt: Date
     password: string | null
-    authId: string | null
+    authId: JsonValue | null
     loginMethod: string
     occupationType: $Enums.OccupationType
     _count: UserCountAggregateOutputType | null
@@ -3870,7 +3866,7 @@ export namespace Prisma {
       createdAt: Date
       activeAt: Date
       password: string | null
-      authId: string | null
+      authId: Prisma.JsonValue | null
       loginMethod: string
       occupationType: $Enums.OccupationType
     }, ExtArgs["result"]["user"]>
@@ -4317,7 +4313,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly activeAt: FieldRef<"User", 'DateTime'>
     readonly password: FieldRef<"User", 'String'>
-    readonly authId: FieldRef<"User", 'String'>
+    readonly authId: FieldRef<"User", 'Json'>
     readonly loginMethod: FieldRef<"User", 'String'>
     readonly occupationType: FieldRef<"User", 'OccupationType'>
   }
@@ -18875,7 +18871,6 @@ export namespace Prisma {
     userColor: 'userColor',
     picture: 'picture',
     password: 'password',
-    authId: 'authId',
     loginMethod: 'loginMethod'
   };
 
@@ -19189,7 +19184,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     activeAt?: DateTimeFilter<"User"> | Date | string
     password?: StringNullableFilter<"User"> | string | null
-    authId?: StringNullableFilter<"User"> | string | null
+    authId?: JsonNullableFilter<"User">
     loginMethod?: StringFilter<"User"> | string
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
     pictureUpload?: XOR<UploadScalarRelationFilter, UploadWhereInput>
@@ -19247,7 +19242,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     activeAt?: DateTimeFilter<"User"> | Date | string
     password?: StringNullableFilter<"User"> | string | null
-    authId?: StringNullableFilter<"User"> | string | null
+    authId?: JsonNullableFilter<"User">
     loginMethod?: StringFilter<"User"> | string
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
     pictureUpload?: XOR<UploadScalarRelationFilter, UploadWhereInput>
@@ -19300,7 +19295,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     activeAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     password?: StringNullableWithAggregatesFilter<"User"> | string | null
-    authId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    authId?: JsonNullableWithAggregatesFilter<"User">
     loginMethod?: StringWithAggregatesFilter<"User"> | string
     occupationType?: EnumOccupationTypeWithAggregatesFilter<"User"> | $Enums.OccupationType
   }
@@ -20235,7 +20230,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -20262,7 +20257,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -20286,7 +20281,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -20313,7 +20308,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -20339,7 +20334,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
   }
@@ -20355,7 +20350,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
   }
@@ -20373,7 +20368,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
   }
@@ -21574,7 +21569,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     activeAt?: SortOrder
     password?: SortOrder
-    authId?: SortOrder
     loginMethod?: SortOrder
     occupationType?: SortOrder
   }
@@ -21592,7 +21586,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     activeAt?: SortOrder
     password?: SortOrder
-    authId?: SortOrder
     loginMethod?: SortOrder
     occupationType?: SortOrder
   }
@@ -23837,7 +23830,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -23863,7 +23856,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
@@ -23902,7 +23895,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -23928,7 +23921,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
@@ -24537,7 +24530,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -24563,7 +24556,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -24620,7 +24613,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -24646,7 +24639,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -25016,7 +25009,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -25042,7 +25035,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -25128,7 +25121,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -25154,7 +25147,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -25209,7 +25202,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -25235,7 +25228,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -25320,7 +25313,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -25346,7 +25339,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -25421,7 +25414,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -25447,7 +25440,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -25569,7 +25562,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -25595,7 +25588,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -25720,7 +25713,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -25746,7 +25739,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -25831,7 +25824,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -25857,7 +25850,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -25880,7 +25873,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -25906,7 +25899,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -25985,7 +25978,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -26011,7 +26004,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -26080,7 +26073,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
@@ -26106,7 +26099,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -26179,7 +26172,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectCreateNestedManyWithoutUserInput
@@ -26204,7 +26197,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -26249,7 +26242,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
@@ -26275,7 +26268,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -26355,7 +26348,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     activeAt?: DateTimeFilter<"User"> | Date | string
     password?: StringNullableFilter<"User"> | string | null
-    authId?: StringNullableFilter<"User"> | string | null
+    authId?: JsonNullableFilter<"User">
     loginMethod?: StringFilter<"User"> | string
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
   }
@@ -26884,7 +26877,7 @@ export namespace Prisma {
     createdAt?: Date | string
     activeAt?: Date | string
     password?: string | null
-    authId?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
   }
@@ -26951,7 +26944,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUpdateManyWithoutUserNestedInput
@@ -26976,7 +26969,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -27001,7 +26994,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
   }

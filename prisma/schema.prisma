@@ -40,7 +40,7 @@ model User {
   createdAt DateTime @default(now())
   activeAt DateTime @default(now())
   password String?
-  authId String? //googleId
+  authId Json? //googleId
   loginMethod String @default("local")
   occupationType OccupationType @default(None)
   projects Project[]

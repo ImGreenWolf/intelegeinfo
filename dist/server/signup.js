@@ -29,7 +29,7 @@ const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(rootDirName, 
 //       { expiresIn: '1h' }
 //     );
 //   }
-async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile, type }, res, password, req, keepLoggedIn = true) {
+async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile, type }, res, password, req, keepLoggedIn = true, tokenData) {
     return new Promise((resolve, reject) => {
         console.log(prisma_1.OccupationType[type] != undefined ? prisma_1.OccupationType[type] : prisma_1.OccupationType.None, type, prisma_1.OccupationType[type]);
         dbClient_1.default.user.create({
@@ -43,6 +43,7 @@ async function onSignedIn({ email, username, loginMethod, firstName, lastName, p
                 userColor: (0, types_1.randomHexColor)(),
                 emailValidated: loginMethod == 'google',
                 occupationType: prisma_1.OccupationType[type] != undefined ? prisma_1.OccupationType[type] : prisma_1.OccupationType.None,
+                authId: tokenData != undefined ? tokenData : null,
                 pictureUpload: {
                     connectOrCreate: {
                         where: {

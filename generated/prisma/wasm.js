@@ -312,7 +312,6 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   userColor: 'userColor',
   picture: 'picture',
   password: 'password',
-  authId: 'authId',
   loginMethod: 'loginMethod'
 };
 

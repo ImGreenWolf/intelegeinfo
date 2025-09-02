@@ -33,7 +33,7 @@ const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8'
 //   }
 
 
-export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile, type }, res:Response, password: string, req, keepLoggedIn=true ):
+export async function onSignedIn({ email, username, loginMethod, firstName, lastName, profile, type}, res:Response, password: string, req, keepLoggedIn=true, tokenData?: any ):
  Promise<{json: {message, redirect, email, id, loginMethod}, res: ReturnType<typeof onLoggedIn> }>
 {
   return new Promise((resolve, reject) => {
@@ -50,6 +50,7 @@ export async function onSignedIn({ email, username, loginMethod, firstName, last
       userColor: randomHexColor(),
       emailValidated: loginMethod == 'google',
       occupationType: OccupationType[type]!=undefined ? OccupationType[type] : OccupationType.None,
+      authId: tokenData!=undefined ? tokenData : null,
       pictureUpload:
       {
         connectOrCreate: {

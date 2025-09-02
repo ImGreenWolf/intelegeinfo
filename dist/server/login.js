@@ -179,31 +179,21 @@ router.get('/callback', async (req, res) => {
             headers: { Authorization: `Bearer ${tokenData.access_token}` }
         });
         const userInfo = (await userInfoRes.json());
-        const userExists = await dbClient_1.default.user.findUnique({
+        const userExists = await dbClient_1.default.user.update({
             where: {
                 email: userInfo.email
             },
+            data: {
+                authId: tokenData ? tokenData : null
+            }
         });
-        console.log(userExists);
+        const keepLoggedIn = true;
         if (userExists) {
             if (userExists.loginMethod === 'google') {
                 console.log(userExists.password);
                 if (userExists.password !== userExists.loginMethod) {
-                    // var token = createToken(userExists)
-                    // res.cookie('token', token, {
-                    //     httpOnly: true,
-                    //     secure: false, // Set to true in production (HTTPS)
-                    //     maxAge: 3600000, // 1 hour
-                    //   });
-                    onLoggedIn(userExists, res, req, true);
+                    onLoggedIn(userExists, res, req, keepLoggedIn);
                     res.redirect('/');
-                    // send(`
-                    //     Te-ai logat cu sucess cu emailul ${userExists.email}.
-                    //     Salut ${userExists.username}.
-                    //     <a href='/profile'>Profil</a>
-                    //     <a href='/editor'>Editor</a>
-                    //   `)
-                    // res.send('Hello ' + userExists.username + `<script>setTimeout(() => {location.href='/editor'}, 2000)</script>`)
                 }
                 else {
                     res.send(`
@@ -253,7 +243,7 @@ router.get('/callback', async (req, res) => {
         }
         else {
             try {
-                const result = await signup.onSignedIn({ email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, '', req);
+                const result = await signup.onSignedIn({ email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, null, req, keepLoggedIn, tokenData);
                 result.res.send(result.json);
             }
             catch (err) {

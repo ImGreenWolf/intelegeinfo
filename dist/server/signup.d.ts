@@ -9,7 +9,7 @@ export declare function onSignedIn({ email, username, loginMethod, firstName, la
     lastName: any;
     profile: any;
     type: any;
-}, res: Response, password: string, req: any, keepLoggedIn?: boolean): Promise<{
+}, res: Response, password: string, req: any, keepLoggedIn?: boolean, tokenData?: any): Promise<{
     json: {
         message: any;
         redirect: any;
