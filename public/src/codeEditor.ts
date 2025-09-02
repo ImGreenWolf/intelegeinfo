@@ -749,7 +749,7 @@ class DebugWindow {
   varList: HTMLUListElement
   constructor() {
     this.varList = createNode('ul')
-    this.mainContainer = createNode('div', {html: [this.varList]})
+    this.mainContainer = createNode('div', {html: [this.varList], className: 'debug-container'})
   }
 
   public updateVariables(variables: {name: string, value: string}[])
@@ -2510,7 +2510,7 @@ export function copySessionLink() {
         Porneste Voce <input type="checkbox" name="voice"></label>
 
       <label for="code-permission" title='Alegeti cine poate edita codul - Oricine, doar tu, sau oricui ii dati permisiunea'>
-        Editare Cod
+        Editori Cod
           <select id='code-permission' name='codePermission'>
             <option value='0'>Toata lumea</option>
             <option value='2'>Doar tu</option>
@@ -2519,8 +2519,23 @@ export function copySessionLink() {
       </label>
 
       <label for="sandbox" title='Daca este pornit, toate persoanele care intră vor avea fisierelelor lor, pe care doar dumneavoastra le veti putea vedea'>
-        Izolează colaboratori <input type="checkbox" name="sandbox"></label>
+        Izolează colaboratori ?<input type="checkbox" name="sandbox"></label>
 
+      <label for="externals" title='Daca nu este pornit, contribuitorii nu vor putea sa deschida taburi externe'>
+        Permite taburi externe ?<input type="checkbox" name="externals"></label>
+
+      <label for="anonymous" title='Asociaza nume anonime aleatori pentru fiecare contribuitor.'>
+        Nume anonime ?<input type="checkbox" name="anonymous"></label>
+
+      <label for="language" title='Alege ce limbaj de programare poate fi rulat in aceasta sesiune.'>
+      Limbajul Sesiunii
+        <select id='language' name='language'>
+            <option value='null'>Oricare</option>
+            <option value='C++'>C++</option>
+            <option value='Python'>Python</option>
+            <option value='Javascript'>Javascript</option>
+          </select>
+      </label>
       <p class='info'>Dupa ce ati partajat editorul, sesiunea voastră v-a fi disponibilă orcărei persoane
       care are linkul, codul de 6 cifre sau codul qr.</p>
 

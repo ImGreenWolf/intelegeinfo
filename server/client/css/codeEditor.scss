@@ -1496,16 +1496,16 @@ pointer-events: none;
     @extend .pop-up;
 
     border-radius: 1lh;
-    min-height: 400px;
+    min-height: 500px;
     padding: 3em;
-    width: 50%;
+    width: 75%;
     min-width: 300px;
-    max-width: 700px;
+    max-width: 1024px;
     display: grid;
     gap: 3em;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     justify-content: center;
-    align-content: center;
+    align-content: stretch;
     box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px #ffffff0a;
     font-family: 'Poppins';
     & form {
@@ -2685,7 +2685,7 @@ button.glowing::before {
     bottom: var(--padding);
     left: var(--padding);
     right: var(--padding);
-    opacity: 0.5;
+    opacity: 0;
     // display: none;
     // border: 2px solid transparent;
     
@@ -2698,7 +2698,6 @@ button.glowing::before {
     border-radius: inherit;
     animation: rotate 10s infinite linear;
     transition-duration: 1s;
-    filter: blur(15px);
 
 
     
@@ -2718,4 +2717,18 @@ button.glowing:hover::before {
     // display: block;
     filter: blur(7px);
     transition-duration: 0.5s;
+}
+
+.debug-container .value-container {
+    display: inline;
+    background-color: theme.$button-color;
+}
+.array-container {
+    display: flex;
+    flex-flow: wrap;
+    gap: 0.5em;
+    
+    span {
+         background-color: theme.$button-color;
+    }
 }

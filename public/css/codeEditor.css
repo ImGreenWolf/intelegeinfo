@@ -1367,16 +1367,16 @@ value {
 
 .share-container {
   border-radius: 1lh;
-  min-height: 400px;
+  min-height: 500px;
   padding: 3em;
-  width: 50%;
+  width: 75%;
   min-width: 300px;
-  max-width: 700px;
+  max-width: 1024px;
   display: grid;
   gap: 3em;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   justify-content: center;
-  align-content: center;
+  align-content: stretch;
   box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px rgba(255, 255, 255, 0.0392156863);
   font-family: "Poppins";
 }
@@ -2270,7 +2270,7 @@ button.glowing::before {
   bottom: var(--padding);
   left: var(--padding);
   right: var(--padding);
-  opacity: 0.5;
+  opacity: 0;
   --gradient-colors: white, gold, orange,rgb(151, 22, 22) 90%, white;
   background: conic-gradient(from var(--rotateGrad) in hsl shorter hue, var(--gradient-colors)) padding-box;
   background-color: black;
@@ -2278,7 +2278,6 @@ button.glowing::before {
   border-radius: inherit;
   animation: rotate 10s infinite linear;
   transition-duration: 1s;
-  filter: blur(15px);
 }
 @keyframes rotate {
   0% {
@@ -2293,6 +2292,20 @@ button.glowing:hover::before {
   opacity: 1;
   filter: blur(7px);
   transition-duration: 0.5s;
+}
+
+.debug-container .value-container {
+  display: inline;
+  background-color: rgb(0, 0, 0);
+}
+
+.array-container {
+  display: flex;
+  flex-flow: wrap;
+  gap: 0.5em;
+}
+.array-container span {
+  background-color: rgb(0, 0, 0);
 }
 
 /*# sourceMappingURL=codeEditor.css.map */
