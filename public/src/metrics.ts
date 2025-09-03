@@ -1,3 +1,5 @@
+import { createNode } from "./components.js";
+
 const monitoredValues: Monitor[] = []
 interface Monitor {
     value: string, cell: HTMLTableCellElement, displayName: string, container: HTMLDivElement, update: (name, value, isUpdate, cell) => string
@@ -72,7 +74,7 @@ let globalTime =0;
 
 function init()
 {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
         fetch('metrics/api').then(res => res.json())
         .then(res => {
             
@@ -199,6 +201,16 @@ function init()
             }
             resolve()   
         }).catch(err => reject(err))
+
+
+        const feedback = await (await fetch('/metrics/feedback')).json()
+
+        document.body.appendChild(createNode('div', {html: feedback.map(val =>
+             createNode('div',
+                 {htmlSting: `<span style='margin-inline: 1em'>${val.id}</span><span style='margin-inline: 1em'>${val.user.username ? val.user.username : 'anonim'}</span>
+                 <span style='font-family: Poppins'>${val.body}</span><span style='margin-inline: 1em'>${new Date(val.createdAt).toLocaleString('ro-RO')}</span>`})
+                 )}
+            ))
     })
     
     

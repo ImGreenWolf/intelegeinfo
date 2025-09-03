@@ -130,17 +130,20 @@ router.use('/', (req, res) => {
     // const token = req.cookies.token
     if (!users.getJWT(req)) {
         res.status(401).redirect('/signup');
+        return;
     }
     if (req.query.logout) {
         res.clearCookie('token');
         res.json({ redir: '/', message: "log out sucecsesfull!" });
+        return;
     }
     else
         try {
             const userId = users.getClientId(users.getJWT(req));
             users.updateActiveAtForUser(userId).then(async (user) => {
                 if (!user) {
-                    res.status(401).redirect('/signup');
+                    if (!res.headersSent)
+                        res.status(401).redirect('/signup');
                     return;
                 }
                 const params = user;
@@ -149,7 +152,6 @@ router.use('/', (req, res) => {
                     res.status(500).send('A aparut o problema...');
                     return;
                 }
-                console.log(projects);
                 if (!projects || projects.length == 0)
                     params.projectsList = '<p class="empty-response">Nu ai creat niciun proiect</p>';
                 else {

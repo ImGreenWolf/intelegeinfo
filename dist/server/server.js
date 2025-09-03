@@ -68,8 +68,6 @@ const users = __importStar(require("./usersManager"));
 const courses_1 = __importDefault(require("./views/courses"));
 const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
-const publicKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public.pem'), 'utf8') || "supersecretpublickey";
-;
 const crypto_1 = __importDefault(require("crypto"));
 const EditorModes = __importStar(require("./editor-modes/"));
 const metrics_1 = __importStar(require("./metrics"));
@@ -83,8 +81,6 @@ app.use(express_1.default.json({
         req.rawBody = buf; // Save raw body
     }
 }));
-function templateManager(req, res, next) {
-}
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use('/user', usersManager_1.router);
@@ -173,6 +169,18 @@ app.get('/editor', (req, res) => {
             res.contentType('html').send(text.toString());
         }
     });
+});
+app.post('/feedback', async (req, res) => {
+    const { body } = req.body;
+    const userId = users.getIdFromJWT(req);
+    dbClient_1.default.feedback.create({
+        data: {
+            body,
+            userId
+        }
+    }).then(feedback => {
+        res.send('Am primit feedbackul tau!');
+    }).catch(err => res.send("Eroare.. " + err));
 });
 app.use('/editor/', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public')));
 app.get('/editor/mode_cpp_custom.js', (req, res) => {

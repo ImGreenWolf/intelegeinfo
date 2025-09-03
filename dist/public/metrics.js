@@ -1,4 +1,4 @@
-"use strict";
+import { createNode } from "./components.js";
 const monitoredValues = [];
 function UpdateProcessValues(json, rawJSON) {
     for (const monitor of monitoredValues) {
@@ -45,7 +45,7 @@ init()
     .then(() => setInterval(updateLoop, 100));
 let globalTime = 0;
 function init() {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         fetch('metrics/api').then(res => res.json())
             .then(res => {
             let k = 0;
@@ -132,6 +132,9 @@ function init() {
             };
             resolve();
         }).catch(err => reject(err));
+        const feedback = await (await fetch('/metrics/feedback')).json();
+        document.body.appendChild(createNode('div', { html: feedback.map(val => createNode('div', { htmlSting: `<span style='margin-inline: 1em'>${val.id}</span><span style='margin-inline: 1em'>${val.user.username ? val.user.username : 'anonim'}</span>
+                 <span style='font-family: Poppins'>${val.body}</span><span style='margin-inline: 1em'>${new Date(val.createdAt).toLocaleString('ro-RO')}</span>` })) }));
     });
 }
 function updateLoop() {

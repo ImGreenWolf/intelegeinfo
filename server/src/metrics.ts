@@ -4,10 +4,29 @@ import path from 'path';
 import { rootDirName } from './server';
 import WebSocket from 'ws';
 import os from "os"
+import prisma from './dbClient';
 const router = express.Router();
 export default router
 router.get('/', (req, res) => {
     res.sendFile(path.join(rootDirName, 'public', 'pages', 'metrics.html'))
+})
+
+router.get('/feedback', async (req, res) => {
+  const feedback = await prisma.feedback.findMany({
+    take: 100, 
+    orderBy: {
+      createdAt: 'desc'
+    },
+    include: {
+      user: {
+        omit: {
+          password: true,
+        }
+      }
+    }
+  })
+
+  res.send(feedback)
 })
 
 export const wssAPI = new WebSocket.Server({noServer: true, clientTracking: true,  });

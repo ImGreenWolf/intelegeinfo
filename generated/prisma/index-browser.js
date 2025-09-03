@@ -269,6 +269,13 @@ exports.Prisma.UploadScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.FeedbackScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  body: 'body',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -375,6 +382,10 @@ exports.Prisma.UploadOrderByRelevanceFieldEnum = {
   path: 'path',
   originalName: 'originalName'
 };
+
+exports.Prisma.FeedbackOrderByRelevanceFieldEnum = {
+  body: 'body'
+};
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   ADMIN: 'ADMIN'
@@ -409,7 +420,8 @@ exports.Prisma.ModelName = {
   Course: 'Course',
   Inquiry: 'Inquiry',
   Review: 'Review',
-  Upload: 'Upload'
+  Upload: 'Upload',
+  Feedback: 'Feedback'
 };
 
 /**

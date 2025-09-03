@@ -36,7 +36,7 @@ export declare function addProject(id: number, data: any): Promise<{
 }>;
 export declare function listAllProjects(userId: any): Promise<any[]>;
 export declare function getClientJWTValue(token: string): UserState;
-export declare function getClientId(token: string): number;
+export declare function getClientId(token: string): number | undefined;
 export declare function createUploadFromFile(fileReq: any, userId: number): {
     create: Prisma.UploadCreateInput;
 };
@@ -147,6 +147,12 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         tags: string[];
         grade: number;
     }[];
+    Feedback: {
+        id: number;
+        createdAt: Date;
+        userId: number | null;
+        body: string;
+    }[];
     _count: {
         pictureUpload: number;
         projects: number;
@@ -157,6 +163,7 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         Upload: number;
         Inquiry: number;
         Problem: number;
+        Feedback: number;
     };
 } & {
     id: number;

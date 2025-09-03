@@ -16,11 +16,11 @@ $border-color: rgba(126, 126, 126, 0.219);
 {
     display: grid;
     justify-content: space-evenly;
-    height: 100%;
+    min-height: 100%;
     color: black; //theme.$text-color;
     font-family: Poppins;
     grid-template-columns: 2fr 1fr;
-    gap: 2em;
+    gap: 1em;
     grid-template-rows: 1fr;
     align-content: stretch;
     // padding: 200px 50px 50px 50px;
@@ -179,19 +179,28 @@ $border-color: rgba(126, 126, 126, 0.219);
 .inline-wrapper
 {
     display: flex;
-    // align-content: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
     align-items: center;
     justify-content: flex-start;
     height: fit-content;
-    column-gap: 1em;
     // flex-wrap: wrap;
     
     p {
         margin-block: 0.1em;
     }
+    &>div {
+       display: flex;
+    //    width: 100%;
+        gap: 0.5em;
+        align-items: center;
+        justify-content: flex-start;
+        height: fit-content;
+
+    }
 }
 
-.inline-wrapper button,
+button,
 .inline-wrapper label,
 .profile-button
     {
@@ -223,10 +232,11 @@ $border-color: rgba(126, 126, 126, 0.219);
     // margin: -30px 0px 0px -30px;
     max-width: 200px;
     max-height: 200px;
+    width: 20vw;
     aspect-ratio: 1;
     object-fit: cover;
     border-radius: 50%;
-    padding: 4px;
+    padding: 0.4em;
     background-color: rgb(255, 255, 255);
     // // transform: translateY(-50%);
     // grid-row: 1 / 2;
@@ -256,18 +266,22 @@ input[type=color]
 .color-list
 {
     display: flex;
-    gap: 1em;
     justify-content: space-between;
     min-width: 75%;
     margin: auto;
+    align-items: center;
     // flex-wrap: wrap;
     span
     {
         border-radius: 50%;
         background-color: var(--color);
-        width: 25px;
+        max-width: 25px;
+        max-height: 25px;
+        aspect-ratio: 1;
+        width: 4vw;
+        height: 4vw;
         display: block;
-        height: 25px;
+        
         position: relative;
     }
     span:has(input[type=color])
@@ -275,8 +289,11 @@ input[type=color]
         background-color: transparent;
         background: conic-gradient(in hsl increasing hue, red, green, blue, red);
         border: 2px solid var(--color);
-        width: 27px;
-        height: 27px;
+        width: 4.5vw;
+        height: 4.5vw;
+        max-width: 27px;
+        max-height: 27px;
+        aspect-ratio: 1;
         box-sizing: border-box;
     }
     span.selected::before,
@@ -359,6 +376,21 @@ input[type=color]
         }
     }
 }
+textarea {
+    padding: 0.5em 1em;
+    border-radius: 1em;
+    border: 2px solid theme.$border-color;
+    font-family: inherit;
+    display: block;
+    margin: 1em 0;
+    width: 100%;
+    min-height: 100px;
+    background-color: transparent;
+    color: inherit;
+    resize: vertical;
+    box-sizing: border-box
+}
+
 @include user.occupationSelector;
 
 @media screen and (max-width: 1024px) {
@@ -383,5 +415,7 @@ input[type=color]
     {
         grid-template-columns: auto
     }
-    
+    .color-list {
+        margin: unset;
+    }
 }

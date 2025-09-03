@@ -8,11 +8,11 @@ html, body {
 .main-container {
   display: grid;
   justify-content: space-evenly;
-  height: 100%;
+  min-height: 100%;
   color: black;
   font-family: Poppins;
   grid-template-columns: 2fr 1fr;
-  gap: 2em;
+  gap: 1em;
   grid-template-rows: 1fr;
   align-content: stretch;
   padding: 1em;
@@ -131,16 +131,24 @@ html, body {
 
 .inline-wrapper {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
   align-items: center;
   justify-content: flex-start;
   height: fit-content;
-  column-gap: 1em;
 }
 .inline-wrapper p {
   margin-block: 0.1em;
 }
+.inline-wrapper > div {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  justify-content: flex-start;
+  height: fit-content;
+}
 
-.inline-wrapper button,
+button,
 .inline-wrapper label,
 .profile-button {
   padding-inline: 1em;
@@ -152,14 +160,14 @@ html, body {
   border-radius: 0.25em;
   cursor: pointer;
 }
-.inline-wrapper button.bad,
+button.bad,
 .inline-wrapper label.bad,
 .profile-button.bad {
   background-color: transparent;
   border: 2px solid rgb(184, 0, 0);
   color: rgb(184, 0, 0);
 }
-.inline-wrapper button.warning,
+button.warning,
 .inline-wrapper label.warning,
 .profile-button.warning {
   background-color: rgb(63, 9, 16);
@@ -169,10 +177,11 @@ html, body {
 #profile .profile-pic-large {
   max-width: 200px;
   max-height: 200px;
+  width: 20vw;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 50%;
-  padding: 4px;
+  padding: 0.4em;
   background-color: rgb(255, 255, 255);
 }
 
@@ -193,25 +202,31 @@ input[type=color] {
 
 .color-list {
   display: flex;
-  gap: 1em;
   justify-content: space-between;
   min-width: 75%;
   margin: auto;
+  align-items: center;
 }
 .color-list span {
   border-radius: 50%;
   background-color: var(--color);
-  width: 25px;
+  max-width: 25px;
+  max-height: 25px;
+  aspect-ratio: 1;
+  width: 4vw;
+  height: 4vw;
   display: block;
-  height: 25px;
   position: relative;
 }
 .color-list span:has(input[type=color]) {
   background-color: transparent;
   background: conic-gradient(in hsl increasing hue, red, green, blue, red);
   border: 2px solid var(--color);
-  width: 27px;
-  height: 27px;
+  width: 4.5vw;
+  height: 4.5vw;
+  max-width: 27px;
+  max-height: 27px;
+  aspect-ratio: 1;
   box-sizing: border-box;
 }
 .color-list span.selected::before,
@@ -281,6 +296,21 @@ input[type=color] {
 }
 .projects-container > .project:hover {
   background-color: rgb(30, 30, 30);
+}
+
+textarea {
+  padding: 0.5em 1em;
+  border-radius: 1em;
+  border: 2px solid rgba(126, 126, 126, 0.219);
+  font-family: inherit;
+  display: block;
+  margin: 1em 0;
+  width: 100%;
+  min-height: 100px;
+  background-color: transparent;
+  color: inherit;
+  resize: vertical;
+  box-sizing: border-box;
 }
 
 input[type=radio] {
@@ -360,6 +390,9 @@ h3 {
   }
   .projects-container {
     grid-template-columns: auto;
+  }
+  .color-list {
+    margin: unset;
   }
 }
 

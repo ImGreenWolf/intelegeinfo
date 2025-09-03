@@ -132,16 +132,15 @@ router.get('/', async (req, res) => {
     <body>
     ^{&file:_header.html}
    
-        <input id='search-input'>
-        <div id='display' style='display: flex; flex-direction: column; gap: 0.5em; position: absolute;background: black; padding: 1em;'></div>
-         <script src='/client/scripts/subjects/search.js'></script>
+   
     <div id='grid'>
     ${grid}
     </div>
     </body>
-    
-    
     `;
+    //  <input id='search-input'>
+    //     <div id='display' style='display: flex; flex-direction: column; gap: 0.5em; position: absolute;background: black; padding: 1em;'></div>
+    //     <script src='/client/scripts/subjects/search.js'></script>
     res.status(200).send((0, server_1.parseText)(html, req));
 });
 router.use('/pdf', express_1.default.static(path_1.default.join(server_1.rootDirName, 'server', 'libs', 'pdf')));

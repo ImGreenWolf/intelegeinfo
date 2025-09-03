@@ -23,6 +23,7 @@
                     <button onclick="openTab('accDetails')">Detalii cont</button>
                     <button onclick="openTab('preferences')">Preferinte</button>
                     <button onclick="openTab('actions')">Actiuni</button>
+                    <button onclick="openTab('review')">Lasa un review!</button>
                 </ul>
                 
                 <div id="panel-container">
@@ -30,13 +31,15 @@
                         <h1>Detalii cont</h1>
                         <div class="inline-wrapper">
                             <img src="/user/picture" class="profile-pic-large">
-                            <form action="/user/picture" method="post" enctype="multipart/form-data">
-                                <input type="file" name="profilePicture" id="profilePicture" 
-                                style="display: none; height: 100%;" 
-                                accept="image/png, image/jpeg, image/jpg, image/webp, image/avif">
-                                <label for="profilePicture" style="height: 100%; display: block;">Schimba poza</label>
-                            </form>
-                            <button class="warning">Sterge poza</button>
+                            <div>
+                                <form action="/user/picture" method="post" enctype="multipart/form-data">
+                                    <input type="file" name="profilePicture" id="profilePicture" 
+                                    style="display: none; height: 100%;" 
+                                    accept="image/png, image/jpeg, image/jpg, image/webp, image/avif">
+                                    <label for="profilePicture" style="height: 100%; display: block;">Schimba poza</label>
+                                </form>
+                                <button class="warning">Sterge poza</button>
+                            </div>
                         </div>
                         
                         <div class="info-container">
@@ -178,6 +181,16 @@
                            
                     </div>
                     
+                    <div class="content-container" id="review">
+                       <h1>Parerea ta conteaza!</h1>
+                        <p>Trimite-ne un mesaj cu parerea ta despre site, feedback la ce ai dori sa imbunatatim sau doar cateva cuvinte frumoase! </p>
+                        <form action="/feedback" method="post">
+                            <textarea name="body" id="body" placeholder="mesajul tau..."></textarea>
+                            <button type="submit">Trimite</button>
+                        </form>
+                           
+                    </div>
+
                 </div>
             </div>
         </div>

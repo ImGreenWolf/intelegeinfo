@@ -33,7 +33,6 @@ import { router as usersManager } from './usersManager'
 import GuideCreator from "./guideCreator"
 import { privateKey } from "./login.js";
 
-const publicKeyPem = fs.readFileSync(path.join(rootDirName,'public.pem'), 'utf8') || "supersecretpublickey";;
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
 import * as EditorModes from './editor-modes/'
@@ -55,10 +54,7 @@ app.use(express.json({
     }
 }));
 
-function templateManager(req,res,next)
-{
-    
-}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use('/user', usersManager)
@@ -168,6 +164,19 @@ app.get('/editor', (req, res) => {
 
 })
 
+app.post('/feedback', async (req,res) => {
+    const {body} = req.body;
+    const userId = users.getIdFromJWT(req)
+    prisma.feedback.create({
+        data: {
+            body,
+            userId
+        }
+    }).then(feedback => {
+        res.send('Am primit feedbackul tau!')
+    }).catch(err => res.send("Eroare.. "+err))
+
+})
 
 app.use('/editor/', express.static(path.join(rootDirName,'dist', 'public')))
 

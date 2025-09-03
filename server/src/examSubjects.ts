@@ -167,17 +167,15 @@ router.get('/', async (req, res) => {
     <body>
     ^{&file:_header.html}
    
-        <input id='search-input'>
-        <div id='display' style='display: flex; flex-direction: column; gap: 0.5em; position: absolute;background: black; padding: 1em;'></div>
-         <script src='/client/scripts/subjects/search.js'></script>
+   
     <div id='grid'>
     ${grid}
     </div>
     </body>
-    
-    
     `
-
+//  <input id='search-input'>
+//     <div id='display' style='display: flex; flex-direction: column; gap: 0.5em; position: absolute;background: black; padding: 1em;'></div>
+//     <script src='/client/scripts/subjects/search.js'></script>
 
 
     res.status(200).send(parseText(html, req))

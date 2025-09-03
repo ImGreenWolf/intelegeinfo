@@ -10,10 +10,27 @@ const path_1 = __importDefault(require("path"));
 const server_1 = require("./server");
 const ws_1 = __importDefault(require("ws"));
 const os_1 = __importDefault(require("os"));
+const dbClient_1 = __importDefault(require("./dbClient"));
 const router = express_1.default.Router();
 exports.default = router;
 router.get('/', (req, res) => {
     res.sendFile(path_1.default.join(server_1.rootDirName, 'public', 'pages', 'metrics.html'));
+});
+router.get('/feedback', async (req, res) => {
+    const feedback = await dbClient_1.default.feedback.findMany({
+        take: 100,
+        orderBy: {
+            createdAt: 'desc'
+        },
+        include: {
+            user: {
+                omit: {
+                    password: true,
+                }
+            }
+        }
+    });
+    res.send(feedback);
 });
 exports.wssAPI = new ws_1.default.Server({ noServer: true, clientTracking: true, });
 exports.wssAPI.on('connection', ws => {

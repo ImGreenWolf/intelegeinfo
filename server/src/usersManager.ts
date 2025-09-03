@@ -180,7 +180,7 @@ export function getClientJWTValue(token: string): UserState
 }
 
 
-export function getClientId(token: string)
+export function getClientId(token: string): number | undefined
 {
     if(!token)  return; // throw {code: 401, message:'invalid token'};
     let userState;

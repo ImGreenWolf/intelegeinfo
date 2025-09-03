@@ -57,6 +57,8 @@ model User {
   Inquiry Inquiry[]
 
   Problem Problem[]
+
+  Feedback Feedback[]
 }
 enum OccupationType {
   None
@@ -249,4 +251,16 @@ model Upload {
   ProfilePictures User[]
 
   
+}
+
+
+model Feedback {
+  id Int @id @default(autoincrement())
+
+  userId Int?
+  user User? @relation(fields: [userId], references: [id])
+
+  body String
+
+  createdAt DateTime @default(now())
 }

@@ -119,10 +119,12 @@ router.use('/', (req, res) => {
         if (!users.getJWT(req))  
         {
             res.status(401).redirect('/signup')
+            return
         }
         if(req.query.logout) {
             res.clearCookie('token')
             res.json({redir: '/', message: "log out sucecsesfull!"})
+            return
         }
         else
             try {
@@ -135,9 +137,10 @@ router.use('/', (req, res) => {
                         projectsList?: string
                     }
                     if(!user)
-                    {
-                        res.status(401).redirect('/signup')
-                         return
+                    {  
+                        if(!res.headersSent)
+                            res.status(401).redirect('/signup')
+                        return
                     }  
                     
                     const params: webParams = user;
@@ -147,8 +150,7 @@ router.use('/', (req, res) => {
                          res.status(500).send('A aparut o problema...')
                          return
                     }
-                       
-                    console.log(projects)
+
                     if(!projects || projects.length == 0)
                         params.projectsList='<p class="empty-response">Nu ai creat niciun proiect</p>'
                     else 
