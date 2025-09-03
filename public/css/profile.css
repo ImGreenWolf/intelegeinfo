@@ -27,7 +27,7 @@ html, body {
   min-height: 250px;
   height: auto;
   max-width: 100%;
-  padding: 30px;
+  padding: 1em;
   --accent-color: rgb(63, 9, 16);
 }
 
@@ -142,6 +142,7 @@ html, body {
 }
 .inline-wrapper > div {
   display: flex;
+  flex-grow: 1;
   gap: 0.5em;
   align-items: center;
   justify-content: flex-start;
@@ -236,13 +237,13 @@ input[type=color] {
   text-align: center;
   position: absolute;
   box-sizing: border-box;
-  border: 2px solid gray;
-  border-radius: 5px;
-  padding: 5px;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
+  border: 0.175em solid gray;
+  border-radius: 0.35em;
+  padding: 0.35em;
+  top: -0.35em;
+  left: -0.35em;
+  right: -0.35em;
+  bottom: -0.35em;
 }
 .color-list span:has(input[type=color])::after {
   content: "?";
@@ -254,14 +255,10 @@ input[type=color] {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.color-list #color-active::after {
-  content: "";
-  position: absolute;
+.color-list #color-active::after, .color-list vl {
   display: block;
   height: 100%;
-  right: -16px;
   border-right: 2px solid gray;
-  margin-right: 5px;
 }
 
 .projects-container {
@@ -393,6 +390,10 @@ h3 {
   }
   .color-list {
     margin: unset;
+  }
+  #profile .content-container {
+    width: auto;
+    padding: 1em;
   }
 }
 
