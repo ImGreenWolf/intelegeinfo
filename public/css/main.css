@@ -250,7 +250,13 @@ header2::before {
   display: block;
 }
 header2 h2 {
-  left: 3em;
+  max-width: 150px;
+}
+header2 h2 a {
+  display: flex;
+}
+header2 h2 img {
+  width: 100%;
 }
 header2 .home {
   display: none;

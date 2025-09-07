@@ -933,11 +933,11 @@ h1.center {
   #guides ul {
     grid-template-columns: auto auto;
     grid-template-rows: 1fr 1fr;
-    max-width: 100%;
     position: relative;
     grid-auto-flow: initial;
     height: 400px;
-    grid-auto-flow: initial;
+    max-width: 300px;
+    font-size: 0.75em;
   }
   #guides ul li {
     box-sizing: border-box;
@@ -1069,7 +1069,7 @@ h1.center {
   position: absolute;
   left: 150px;
   height: var(--height);
-  width: 0.5em;
+  width: 0.25em;
   border-radius: 0.5em;
   background-image: linear-gradient(transparent 20%, rgba(255, 255, 255, 0.349), transparent);
   background-size: cover;
@@ -1103,13 +1103,11 @@ h1.center {
   gap: 0.5em;
 }
 .motive-tree div {
-  border: 2px solid rgb(36, 36, 36);
-  box-shadow: 0 0 20px 10px inset rgb(1.9516129032, 2.6612903226, 3.5483870968);
-  background-color: rgb(11, 15, 20);
-  border-radius: 1lh;
   padding: 1em;
   width: 75%;
   transition-duration: 0.3s;
+  background: linear-gradient(45deg, rgb(9, 11, 24), transparent);
+  border-radius: 1em;
 }
 
 /*# sourceMappingURL=index.css.map */
