@@ -1608,11 +1608,11 @@ h1.center
     gap: 0.5em;
     
     div {
-        padding: 1em;
+        padding: 1.5em 3em;
         width: 75%;
         transition-duration: 0.3s;
-        background: linear-gradient(45deg, rgb(9, 11, 24), transparent);
-        border-radius: 1em;
+        background: linear-gradient(90deg,transparent, rgb(9, 11, 24) 10%, transparent);
+        border-radius: 0.5em;
     }
     
 }
