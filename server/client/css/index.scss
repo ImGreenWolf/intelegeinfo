@@ -1273,7 +1273,7 @@ h1.center
     "b g g d"
     "e f f d";
         grid-template-columns: 250px 50px 250px 300px;
-        grid-template-rows: minmax(0, 500px) auto;
+        grid-auto-rows: auto;
         
         .bento-card
         {
@@ -1506,9 +1506,12 @@ h1.center
  }
 
   @media screen and (max-width: 375px ){
-    #guides ul {
+    #guides {
         display: none;
     }
+    // html {
+    //     font-size: 0.5em;
+    // }
   }
 #problem
 {

@@ -428,6 +428,23 @@ header {
   border: 5px solid rgb(255, 0, 0);
 }
 
+@keyframes logoLoad {
+  from {
+    display: none;
+  }
+  to {
+    display: block;
+  }
+}
+.loading-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: logoLoad 0.6s ease 0.15s both;
+  text-align: center;
+  font-family: Poppins, Arial;
+}
 #editor {
   position: relative;
   top: 0;
@@ -1947,6 +1964,7 @@ mini-dock #joinSession {
   gap: 1em;
   box-shadow: inset 5px 5px 35px -30px rgb(107, 107, 107);
   font-family: "Poppins";
+  animation: fade-in 0.2s;
 }
 .default-screen h1 {
   font-family: Teachers, Poppins, Cambria;
