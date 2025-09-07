@@ -1505,6 +1505,11 @@ h1.center
 
  }
 
+  @media screen and (max-width: 375px ){
+    #guides ul {
+        display: none;
+    }
+  }
 #problem
 {
     
@@ -1608,3 +1613,4 @@ h1.center
     }
     
 }
+

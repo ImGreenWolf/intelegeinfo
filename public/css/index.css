@@ -1027,6 +1027,11 @@ h1.center {
     transform: translateX(-50%);
   }
 }
+@media screen and (max-width: 375px) {
+  #guides ul {
+    display: none;
+  }
+}
 #problem .problem-requirement {
   width: 50%;
 }
