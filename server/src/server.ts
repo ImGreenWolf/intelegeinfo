@@ -1,7 +1,7 @@
 import express, { NextFunction } from "express";
 import fs from "fs";
 import { ChildProcess, exec, spawn } from "child_process";
-import WebSocket from "ws";
+import WebSocket, { WebSocketServer } from "ws";
 import path from 'path';
 import { ConsoleMessageType, WebSocketMessageType } from '../../dist/shared/types'
 import { Readable, Writable } from "stream";
@@ -18,6 +18,8 @@ export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo'
 // import { v4 as uuidv4 } from 'uuid';
 const app = express();
 const compression = require('compression')
+    var websocketReg = new Map<string, WebSocketServer>()
+
 import SharedStateManager from "./sessionStore"
 import { Prisma, Problem } from "../../generated/prisma";
 import prisma from "./dbClient";
@@ -42,6 +44,7 @@ import tx2 from 'tx2';
 import { FileManagementCommands,sessionCookieName } from "../../dist/shared/types";
 import { HandshakeMessage, WebSocketMessage } from "../../shared/src/messageTypes"
 import router, { handleExecError, handleSucces, ProblemTest, testProblem } from "./problemManager";
+import classManager from './classManager/classManager'
 interface ResponseWRaw extends IncomingMessage 
 {
     rawBody: Buffer
@@ -63,6 +66,7 @@ app.use('/signup', signupManager);
 app.use('/profile', authMiddleware, profileManager)
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', Metrics)
+app.use('/classes', classManager)
 app.use('/courses', coursesManager)
 app.use('/subiecte', examSubjects)
 app.post('/github/onpull', (req, res) => {
@@ -417,10 +421,6 @@ interface CompileResponse {
 
 
 
-    //          LOCAL  SERVER  VARIABLES       //
-
-let compileProcess: ChildProcess;
-
     //                      END                      //  
 function onServerStart()
 {
@@ -498,6 +498,15 @@ server.on('listening', onServerStart)
     
 
 //                      END                      //  
+    export function newWSS(path)
+    {
+        const wss = new WebSocket.Server({noServer: true})
+        if(!websocketReg)
+            console.error('invalid websocket reg')
+        websocketReg.set(path, wss)
+        return wss;
+    }
+
 
       server.on('upgrade', function upgrade(request, socket, head) {
         const { pathname } = new URL(request.url, 'wss://intelegeinfo.ro');
@@ -523,8 +532,13 @@ server.on('listening', onServerStart)
         });
         break
         default:
-            socket.destroy();
-  
+            
+            if(!websocketReg || !websocketReg.has(pathname))
+                socket.destroy();
+            const routedWS = websocketReg.get(pathname)
+            routedWS.handleUpgrade(request, socket, head, function done(ws) {
+                routedWS.emit('connection', ws, request);
+            })
 }
 });
 //@ts-ignore
@@ -2895,6 +2909,9 @@ export function sendFile(path: string, res, req, params?)
 
 export function parseText(file: string, req: any, params?)
 {
+    // ^{%...} - translation
+    // ^{&file:...} - include file
+    // ^{*...} - custom parameter
     if(!req || !req.cookies)
     {
         console.error('YOU FORGOT TO ADD COOKIE PARSER!')
@@ -2939,7 +2956,7 @@ export function parseText(file: string, req: any, params?)
             }  
             const file = fs.readFileSync(path.resolve(rootDirName, 'public', filePath)).toString()
             text = text.replaceAll(key, parseText(file, req)) // recursivly parse file text
-        } else 
+        } else if(key.startsWith('^{*'))
         {
             const keys = match.split('.')
             let obj = params;
@@ -2965,7 +2982,7 @@ export function parseText(file: string, req: any, params?)
     return text;
             
 }
-function parseHTML(req,res, next)
+export function parseHTML(req,res, next)
 {
     const filePath = req.path.endsWith('/') || req.path.endsWith('\\') ? req.path + '/index.html' : req.path;
     const fullPath = path.join(rootDirName,'public', filePath)

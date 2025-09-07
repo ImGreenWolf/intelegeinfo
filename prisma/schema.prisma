@@ -43,22 +43,21 @@ model User {
   authId Json? //googleId
   loginMethod String @default("local")
   occupationType OccupationType @default(None)
-  projects Project[]
-  solves Solve[]
 
-  Guide Guide[] // guides written by user
+  // relations
+    projects Project[]
+    solves Solve[]
+    Guide Guide[] // guides written by user
+    Course Course? // course offered 
+    Review Review[]
+    Upload Upload[] @relation(name: "Upload User")
+    Inquiry Inquiry[]
+    Problem Problem[]
+    Feedback Feedback[]
+    JoinedClass StudentsInCourse[] // TODO Change to Enrollment
+    CreatedClasses Class[] @relation(name: "ClassToCreator")
+    Assigments Assignment[]
 
-  Course Course? // course offered 
-
-  Review Review[]
-
-  Upload Upload[] @relation(name: "Upload User")
-
-  Inquiry Inquiry[]
-
-  Problem Problem[]
-
-  Feedback Feedback[]
 }
 enum OccupationType {
   None
@@ -148,6 +147,8 @@ model Problem {
   grade Int @default(9)
   tagsLinked ProblemTag[]
   solves Solve[]
+
+  Assignment Assignment[]
 }
 
 enum Difficulty {
@@ -167,7 +168,6 @@ model Solve {
   userId Int 
   problem Problem  @relation(fields: [problemid], references: [id]) 
   problemid Int
-
   sourceCode String
   uploadedAt DateTime @default(now())
   score Int
@@ -263,4 +263,57 @@ model Feedback {
   body String
 
   createdAt DateTime @default(now())
+}
+
+
+
+// classes
+
+model Class {
+  id Int @id @default(autoincrement())
+
+  name String
+  description String?
+
+  creatorId Int
+  Creator User @relation(fields: [creatorId], references: [id], name: "ClassToCreator")
+  createdAt DateTime @default(now())
+  color String @default("ffffff")
+
+  Students StudentsInCourse[]
+
+  Assignments Assignment[]
+}
+// TODO Change to Enrollment
+model StudentsInCourse {
+
+  userId Int
+  User User @relation(fields: [userId], references: [id]) 
+
+  classId Int
+  Class Class @relation(fields: [classId], references: [id])
+
+  joinDate DateTime @default(now())
+
+
+  @@unique([userId, classId])
+}
+
+
+model Assignment {
+  id Int @id @default(autoincrement())
+
+  Class Class @relation(fields: [classId], references: [id])
+  classId Int
+
+  problemId Int?
+  Problem Problem? @relation(fields: [problemId], references: [id])
+
+  title String
+  description String?
+
+  createdAt DateTime @default(now())
+  dueDate DateTime?
+
+  assignedTo User[]
 }

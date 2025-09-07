@@ -2977,6 +2977,11 @@ function onMessage(event) {
                 updatePermissions(sessionData);
             writeOutput(messageJson.body, messageJson);
             updateCatalouge(wsSessionId, wsClientId);
+            if (new URLSearchParams(location.search).has('content')) {
+                const content = decodeURIComponent(new URLSearchParams(location.search).get('content'));
+                const split = content.split(':');
+                createFile(split[0], content.substring(split[0].length + 1));
+            }
             // if(!document.cookie.includes(sessionCookieName+'='))
             //   document.cookie=sessionCookieName+'='
             // setTimeout(() => {

@@ -276,6 +276,31 @@ exports.Prisma.FeedbackScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ClassScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  creatorId: 'creatorId',
+  createdAt: 'createdAt',
+  color: 'color'
+};
+
+exports.Prisma.StudentsInCourseScalarFieldEnum = {
+  userId: 'userId',
+  classId: 'classId',
+  joinDate: 'joinDate'
+};
+
+exports.Prisma.AssignmentScalarFieldEnum = {
+  id: 'id',
+  classId: 'classId',
+  problemId: 'problemId',
+  title: 'title',
+  description: 'description',
+  createdAt: 'createdAt',
+  dueDate: 'dueDate'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -386,6 +411,17 @@ exports.Prisma.UploadOrderByRelevanceFieldEnum = {
 exports.Prisma.FeedbackOrderByRelevanceFieldEnum = {
   body: 'body'
 };
+
+exports.Prisma.ClassOrderByRelevanceFieldEnum = {
+  name: 'name',
+  description: 'description',
+  color: 'color'
+};
+
+exports.Prisma.AssignmentOrderByRelevanceFieldEnum = {
+  title: 'title',
+  description: 'description'
+};
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   ADMIN: 'ADMIN'
@@ -421,7 +457,10 @@ exports.Prisma.ModelName = {
   Inquiry: 'Inquiry',
   Review: 'Review',
   Upload: 'Upload',
-  Feedback: 'Feedback'
+  Feedback: 'Feedback',
+  Class: 'Class',
+  StudentsInCourse: 'StudentsInCourse',
+  Assignment: 'Assignment'
 };
 
 /**

@@ -101,27 +101,13 @@ function generateCode() {
 function getJWT(req) {
     return req.cookies.token;
 }
-function getUserData(id, include) {
-    return new Promise((resolve, reject) => {
-        if (!id) {
-            // no id found
-            resolve(undefined);
-            return;
-        }
-        dbClient_1.default.user.findUnique({
-            where: {
-                id
-            },
-            omit: {
-                password: true
-            },
-            include
-        }).then(user => {
-            resolve(user);
-        }).catch(err => {
-            console.error('couldnt find user data!');
-            reject(false);
-        });
+async function getUserData(id, include) {
+    if (!id)
+        return undefined;
+    return await dbClient_1.default.user.findUnique({
+        where: { id },
+        omit: { password: true },
+        include: include
     });
 }
 function getIdFromJWT(req) {

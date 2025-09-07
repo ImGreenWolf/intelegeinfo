@@ -1,0 +1,471 @@
+body {
+  background-image: none;
+}
+
+body, html, .main-container, #class-details {
+  height: 100%;
+  box-sizing: border-box;
+  max-height: 100%;
+}
+
+.main-container {
+  display: grid;
+  grid-template-columns: minmax(15em, auto) 1fr;
+  grid-template-rows: 100%;
+  grid-template-areas: "list content";
+  box-sizing: border-box;
+  margin: auto;
+  gap: 1em;
+  font-family: Poppins;
+  padding: 1em;
+}
+
+.list-wrapper {
+  grid-area: list;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.5em;
+}
+.list-wrapper .list-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding-bottom: 2em;
+  box-sizing: border-box;
+}
+.list-wrapper .list-header a {
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
+  background-color: transparent;
+  border: 2px solid rgba(126, 126, 126, 0.219);
+  color: rgb(100, 100, 100);
+  font-family: inherit;
+  text-decoration: none;
+  font-weight: 700;
+}
+.list-wrapper .list-header a:nth-of-type(2) {
+  background-color: rgba(48, 77, 172, 0.158);
+  color: white;
+}
+.list-wrapper #list {
+  border-top: 2px solid gray;
+  padding-top: 2em;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.list-wrapper button {
+  padding: 1em 2em;
+  background-color: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1em;
+  border: none;
+  width: 100%;
+  border-right: 2px solid var(--bgColor);
+}
+.list-wrapper button.selected {
+  background-color: rgb(30, 30, 30);
+}
+.list-wrapper button.owner {
+  border-left: 1px solid rgb(121, 121, 121);
+}
+.list-wrapper button:hover {
+  background-color: rgba(126, 126, 126, 0.219);
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+#class-details {
+  grid-area: content;
+  display: grid;
+  grid-template-columns: 1fr minmax(auto, 20em);
+  grid-template-rows: 5em 15em auto;
+  grid-template-areas: "classHeader people" "info people" "flux people";
+  gap: 1em;
+  max-height: 100%;
+}
+#class-details > * {
+  animation: fadein 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#class-details .header-container {
+  grid-area: classHeader;
+  background-color: var(--classColor);
+  color: var(--textColor);
+  padding: 1em;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0.5em;
+}
+#class-details #flex-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1em;
+}
+#class-details button {
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
+  background-color: transparent;
+  border: 0.2em solid var(--textColor);
+  color: inherit;
+  font-family: inherit;
+  font-weight: 600;
+}
+#class-details #info-container {
+  grid-area: info;
+  display: flex;
+  gap: 1em;
+  max-height: 100%;
+  overflow: hidden;
+}
+#class-details #info-container > div {
+  border-radius: 1em;
+  background-color: rgb(30, 30, 30);
+  max-width: 35%;
+  padding: 1em;
+  font-family: 0.75em;
+}
+#class-details .assigments {
+  grid-area: flux;
+  max-height: 100%;
+  border-top: 2px solid rgba(126, 126, 126, 0.219);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+#class-details .assigments a {
+  color: inherit;
+  font-family: inherit;
+}
+#class-details .assigments > p {
+  align-self: center;
+  justify-self: center;
+  text-align: center;
+  margin: auto;
+  opacity: 0.75;
+}
+@keyframes verticalReveal {
+  from {
+    min-height: 0;
+  }
+  to {
+    min-height: 100px;
+  }
+}
+#class-details .assigments .assignment-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  font-size: 0.85em;
+  --accColor: rgb(255, 187, 0);
+}
+#class-details .assigments .assignment-wrapper:not(:last-child) {
+  border-bottom: 1px solid rgb(42, 44, 48);
+}
+#class-details .assigments .assignment-wrapper .asignment-content {
+  gap: 1em;
+  max-height: 75px;
+  padding: 1em 3em;
+  display: grid;
+  align-items: center;
+  grid-template-columns: 35em 20em 10em 15em 1em;
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
+#class-details .assigments .assignment-wrapper .asignment-content:hover {
+  background-color: rgb(34, 35, 39);
+}
+#class-details .assigments .assignment-wrapper .asignment-content .assignment-progress {
+  display: flex;
+  height: 25%;
+  max-height: 5px;
+  background-color: rgb(17, 17, 17);
+}
+#class-details .assigments .assignment-wrapper .asignment-content .assignment-progress div {
+  background-color: rgb(25, 53, 28);
+  border-radius: 10px;
+}
+#class-details .assigments .assignment-wrapper .asignment-content div:has(.description) {
+  justify-self: center;
+}
+#class-details .assigments .assignment-wrapper .asignment-content .description, #class-details .assigments .assignment-wrapper .asignment-content h6 {
+  margin: 0;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  max-width: 400px;
+  overflow: hidden;
+}
+#class-details .assigments .assignment-wrapper .asignment-content h6 {
+  opacity: 0.5;
+}
+#class-details .assigments .assignment-wrapper .asignment-content .date-container {
+  text-align: right;
+}
+#class-details .assigments .assignment-wrapper .asignment-content .date-container p {
+  margin: 0.25em 0;
+}
+#class-details .assigments .assignment-wrapper .asignment-content .deadline {
+  font-size: 0.75em;
+  color: var(--accColor);
+  text-shadow: 1px 1px 2px black;
+}
+#class-details .assigments .assignment-wrapper .asignment-content .title-container h3 {
+  margin: 0;
+}
+#class-details .assigments .assignment-wrapper .asignment-content .title-container a {
+  font-size: 0.75em;
+}
+#class-details .assigments .assignment-wrapper .asignment-content .assignment-completed {
+  border-radius: 50%;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-left: 100%;
+  border: 2px solid var(--accColor);
+}
+#class-details .assigments .assignment-wrapper.past-due-date .asignment-content {
+  opacity: 0.5;
+}
+#class-details .assigments .assignment-wrapper.past-due-date .deadline {
+  color: rgb(199, 12, 12);
+}
+#class-details .assigments .assignment-wrapper.past-due-date .assignment-completed {
+  --accColor: rgb(199, 12, 12) ;
+}
+#class-details .assigments .assignment-wrapper.done {
+  --accColor: rgb(12, 199, 28) ;
+}
+#class-details .assigments .assignment-wrapper .solves-container {
+  background-color: rgb(25, 25, 25);
+  top: 100%;
+  min-height: 100px;
+  display: grid;
+  overflow: hidden;
+  animation: verticalReveal 0.5s;
+  padding: 0.5em 1em;
+  left: 0;
+  right: 0;
+}
+#class-details .assigments .assignment-wrapper .solves-container .profile-container {
+  width: 100%;
+}
+#class-details .assigments .assignment-wrapper .solves-container > div {
+  display: grid;
+  align-items: center;
+  padding: 0.5em 3em;
+  grid-template-columns: 100px 2fr 1fr;
+  justify-items: center;
+}
+#class-details .assigments .assignment-wrapper .solves-container > div.old {
+  opacity: 0.6;
+}
+#class-details .assigments .assignment-wrapper .solves-container > div div {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+#class-details .people-container {
+  grid-area: people;
+  display: flex;
+  flex-direction: column;
+}
+#class-details .people-container > * {
+  padding: 0.5em 1em;
+}
+#class-details .people-container span {
+  margin: 0.5em;
+  margin-top: 1em;
+  font-size: 0.75em;
+  border-bottom: 1px solid rgb(42, 44, 48);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#class-details .people-container span p {
+  font-weight: 200;
+  opacity: 0.75;
+}
+#class-details .people-container > p {
+  align-self: center;
+  justify-self: center;
+  text-align: center;
+  margin: auto;
+  opacity: 0.75;
+}
+#class-details .people-container > div {
+  --gradientColor: transparent;
+  background: linear-gradient(90deg, transparent 30%, var(--gradientColor));
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  transition-duration: 0.2s;
+}
+#class-details .people-container > div.student {
+  cursor: pointer;
+}
+#class-details .people-container > div.student:hover {
+  --gradientColor: var(--userColor) ;
+}
+#class-details .people-container > div div {
+  display: flex;
+  flex-direction: column;
+}
+#class-details .people-container > div h4, #class-details .people-container > div p {
+  margin: 0;
+  font-size: 0.9em;
+}
+#class-details .people-container > div p {
+  font-size: 0.6em;
+  padding-inline: 0.25em;
+  opacity: 0.75;
+}
+
+img.profile {
+  height: 2em;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+}
+
+@keyframes fadeIn {
+  from {
+    filter: blur(5px);
+  }
+  to {
+    filter: blur(0);
+  }
+}
+dialog.user-profile {
+  position: absolute;
+  top: 55%;
+  transform: translateY(-50%);
+  max-width: 1024px;
+  width: 75%;
+  height: 75%;
+  min-height: 600px;
+  display: grid;
+  background-color: rgb(27, 27, 27);
+  color: white;
+  border: none;
+  outline: none;
+  font-family: Poppins;
+  animation: fadeIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border-radius: 1em;
+  padding: 2em;
+  box-sizing: content-box;
+}
+dialog.user-profile canvas {
+  width: 100%;
+  height: 150px;
+}
+dialog.user-profile a {
+  color: inherit;
+}
+dialog.user-profile img.profile {
+  font-size: 2em;
+}
+dialog.user-profile > h2 {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+dialog.user-profile .profile-buttons {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+dialog.user-profile .profile-buttons span {
+  border-radius: 2em;
+  padding: 0.25em 1em;
+  font-size: 0.75em;
+  background-color: rgb(30, 30, 30);
+  border: 1px solid rgb(50, 50, 50);
+  cursor: pointer;
+}
+dialog.user-profile .teme {
+  overflow: auto;
+}
+dialog.user-profile .teme > div {
+  display: grid;
+  align-items: center;
+  color: inherit;
+  justify-items: center;
+  font-family: inherit;
+  text-decoration: none;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-auto-columns: 1fr;
+  border-bottom: 1px solid rgb(42, 44, 48);
+  font-size: 0.75em;
+}
+dialog.user-profile .teme > div > span {
+  grid-column: 2/-1;
+  text-align: center;
+  color: rgb(255, 187, 0);
+}
+dialog.user-profile .teme > div.unfinished {
+  opacity: 0.5;
+}
+
+span.good {
+  color: green;
+}
+
+button.display-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
+.create-assignment form {
+  display: flex;
+  flex-direction: column;
+}
+
+imgw {
+  position: relative;
+  display: flex;
+}
+
+imgw:has(img.profile)::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  display: block;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 1px solid gray;
+}
+
+.active imgw:has(img.profile)::after {
+  background-color: green;
+  border: none;
+}
+
+@property --gradientColor {
+  syntax: "<color>"; /* <- defined as type number for the transition to work */
+  initial-value: transparent;
+  inherits: false;
+}
+@media screen and ((orientation: landscape) and (max-height: 500px)) {
+  html {
+    font-size: 0.5em;
+  }
+}
+
+/*# sourceMappingURL=classes.css.map */

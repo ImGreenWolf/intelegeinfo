@@ -38,8 +38,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
+exports.newWSS = newWSS;
 exports.sendFile = sendFile;
 exports.parseText = parseText;
+exports.parseHTML = parseHTML;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
 const child_process_1 = require("child_process");
@@ -57,6 +59,7 @@ exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\inteleg
 // import { v4 as uuidv4 } from 'uuid';
 const app = (0, express_1.default)();
 const compression = require('compression');
+var websocketReg = new Map();
 const sessionStore_1 = __importDefault(require("./sessionStore"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const login_js_1 = __importDefault(require("./login.js"));
@@ -75,6 +78,7 @@ const examSubjects_1 = __importDefault(require("./examSubjects"));
 const tx2_1 = __importDefault(require("tx2"));
 const types_3 = require("../../dist/shared/types");
 const problemManager_1 = __importStar(require("./problemManager"));
+const classManager_1 = __importDefault(require("./classManager/classManager"));
 app.use(compression());
 app.use(express_1.default.json({
     verify: (req, res, buf) => {
@@ -89,6 +93,7 @@ app.use('/signup', signup_js_1.default);
 app.use('/profile', authMiddleware, profile_js_1.default);
 app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVNC')));
 app.use('/metrics', metrics_1.default);
+app.use('/classes', classManager_1.default);
 app.use('/courses', courses_1.default);
 app.use('/subiecte', examSubjects_1.default);
 app.post('/github/onpull', (req, res) => {
@@ -340,8 +345,6 @@ function handle404(req, res, next) {
     else
         res.json('Oops! Page not found.');
 }
-//          LOCAL  SERVER  VARIABLES       //
-let compileProcess;
 //                      END                      //  
 function onServerStart() {
     const err = undefined;
@@ -401,6 +404,13 @@ const buildTag = `cpp-image`;
 exports.wss = new ws_1.default.Server({ noServer: true, clientTracking: true, });
 const peerConnectionManager_1 = require("./peerConnectionManager");
 //                      END                      //  
+function newWSS(path) {
+    const wss = new ws_1.default.Server({ noServer: true });
+    if (!websocketReg)
+        console.error('invalid websocket reg');
+    websocketReg.set(path, wss);
+    return wss;
+}
 exports.server.on('upgrade', function upgrade(request, socket, head) {
     const { pathname } = new URL(request.url, 'wss://intelegeinfo.ro');
     switch (pathname) {
@@ -425,7 +435,12 @@ exports.server.on('upgrade', function upgrade(request, socket, head) {
             });
             break;
         default:
-            socket.destroy();
+            if (!websocketReg || !websocketReg.has(pathname))
+                socket.destroy();
+            const routedWS = websocketReg.get(pathname);
+            routedWS.handleUpgrade(request, socket, head, function done(ws) {
+                routedWS.emit('connection', ws, request);
+            });
     }
 });
 //@ts-ignore
@@ -2293,6 +2308,9 @@ function sendFile(path, res, req, params) {
     }
 }
 function parseText(file, req, params) {
+    // ^{%...} - translation
+    // ^{&file:...} - include file
+    // ^{*...} - custom parameter
     if (!req || !req.cookies) {
         console.error('YOU FORGOT TO ADD COOKIE PARSER!');
         return file;
@@ -2333,7 +2351,7 @@ function parseText(file, req, params) {
             const file = fs_1.default.readFileSync(path_1.default.resolve(exports.rootDirName, 'public', filePath)).toString();
             text = text.replaceAll(key, parseText(file, req)); // recursivly parse file text
         }
-        else {
+        else if (key.startsWith('^{*')) {
             const keys = match.split('.');
             let obj = params;
             for (const key2 of keys)

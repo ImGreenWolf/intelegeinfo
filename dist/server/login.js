@@ -69,7 +69,7 @@ function onLoggedIn(user, res, req, shouldkeepLoggedIn = false) {
         throw 'Invalid user';
     let token = createToken(user);
     const secure = req.secure;
-    const httpOnly = false;
+    const httpOnly = true;
     let keepLoggedIn = req.body ? (req.body.keepLoggedIn ? req.body.keepLoggedIn : shouldkeepLoggedIn) : shouldkeepLoggedIn;
     if (keepLoggedIn)
         return res.cookie('token', token, {

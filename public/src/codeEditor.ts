@@ -836,6 +836,7 @@ chatWindow.addTab(function () {
   chatTab.openTab()
   return chatTab
 }())
+
 // chatWindow.addTab(new EditorWindowTab('chat', createNode('a', {className: "file-tab", innerText: "Subiecte"}), createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})))
 export const windows = [codeWindow, chatWindow]
 
@@ -3944,6 +3945,13 @@ break;
       writeOutput(messageJson.body, messageJson);
       updateCatalouge(wsSessionId, wsClientId)
 
+
+      if(new URLSearchParams(location.search).has('content'))
+      {
+        const content = decodeURIComponent(new URLSearchParams(location.search).get('content') as string)
+        const split = content.split(':')
+        createFile(split[0], content.substring(split[0].length+1))
+      }
       // if(!document.cookie.includes(sessionCookieName+'='))
       //   document.cookie=sessionCookieName+'='
       // setTimeout(() => {

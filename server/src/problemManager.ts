@@ -428,6 +428,10 @@ router.get('/page', async (req, res) => {
                 take: 1
             } : false,
             _count: true
+        },
+        omit: {
+            sourceCode: true,
+            tests: true,
         }
     })
     
@@ -740,10 +744,41 @@ const TimeUnit = {
     
 }
 
+// export function dateDeltaToString(date: Date, capitalize=true, language='ro-RO')
+// {
+    
+//     function formatTime(time, unit)
+//     {
+//         switch(language)
+//         {
+//             case 'ro-RO':
+//              return `${capitalize ? "A" : 'a'}cum ${time} ${TimeUnit[unit][language]}`
+//             case 'en-US':
+//              return `${time} ${TimeUnit[unit][language]} ago`
+//         }
+       
+//     }
+//     const delta = new Date() 
+//     const now = date
+//     if(delta.getUTCFullYear() - now.getUTCFullYear()>=1)
+//         return formatTime(delta.getUTCFullYear()  - now.getUTCFullYear(), 'years')
+//     else if(delta.getUTCMonth() -  now.getUTCMonth()>= 1)
+//         return formatTime(delta.getUTCMonth() -now.getUTCMonth(), 'months')
+//     else if(delta.getDay() - now.getDay()>= 1)
+//         return formatTime(delta.getDay() - now.getDay(), 'days')  
+//     else if(delta.getHours() - now.getHours()>= 1)
+//         return formatTime(delta.getHours() - now.getHours(), 'hours')  
+//     else if(delta.getMinutes() - now.getMinutes()>= 1)
+//         return formatTime(delta.getMinutes() - now.getMinutes(), 'minutes')  
+//     else
+//         return formatTime(delta.getSeconds() - now.getSeconds(), 'seconds')
+// }
+
+
 export function dateDeltaToString(date: Date, capitalize=true, language='ro-RO')
 {
     
-    function formatTime(time, unit)
+    function formatTime(time: number, unit: keyof typeof TimeUnit)
     {
         switch(language)
         {
@@ -754,18 +789,27 @@ export function dateDeltaToString(date: Date, capitalize=true, language='ro-RO')
         }
        
     }
-    const delta = new Date() 
-    const now = date
-    if(delta.getUTCFullYear() - now.getUTCFullYear()>=1)
-        return formatTime(delta.getUTCFullYear()  - now.getUTCFullYear(), 'years')
-    else if(delta.getUTCMonth() -  now.getUTCMonth()>= 1)
-        return formatTime(delta.getUTCMonth() -now.getUTCMonth(), 'months')
-    else if(delta.getDay() - now.getDay()>= 1)
-        return formatTime(delta.getDay() - now.getDay(), 'days')  
-    else if(delta.getHours() - now.getHours()>= 1)
-        return formatTime(delta.getHours() - now.getHours(), 'hours')  
-    else if(delta.getMinutes() - now.getMinutes()>= 1)
-        return formatTime(delta.getMinutes() - now.getMinutes(), 'minutes')  
+    const now = new Date() 
+
+    // Calculate the difference in seconds
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+    const diffMonth = (now.getUTCFullYear() - date.getUTCFullYear()) * 12 + (now.getUTCMonth() - date.getUTCMonth());
+    const diffYear = now.getUTCFullYear() - date.getUTCFullYear();
+
+    if(diffYear >= 1)
+        return formatTime(diffYear, 'years')
+    else if(diffMonth >= 1)
+        return formatTime(diffMonth, 'months')
+    else if(diffDay >= 1)
+        return formatTime(diffDay, 'days')  
+    else if(diffHour >= 1)
+        return formatTime(diffHour, 'hours')  
+    else if(diffMin >= 1)
+        return formatTime(diffMin, 'minutes')  
     else
-        return formatTime(delta.getSeconds() - now.getSeconds(), 'seconds')
+        return formatTime(diffSec, 'seconds')
 }

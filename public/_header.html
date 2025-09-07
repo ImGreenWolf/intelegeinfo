@@ -33,22 +33,7 @@
                 </div>
             </div>
             <script>
-                function getCookie(cname) {
-                    let name = cname + "=";
-                    let decodedCookie = decodeURIComponent(document.cookie);
-                    let ca = decodedCookie.split(';');
-                    for(let i = 0; i <ca.length; i++) {
-                        let c = ca[i];
-                        while (c.charAt(0) == ' ') {
-                        c = c.substring(1);
-                        }
-                        if (c.indexOf(name) == 0) {
-                        return c.substring(name.length, c.length);
-                        }
-                    }
-                    return "";
-                }
-
+               
                 const langSel = document.getElementById('lang-selector')
                 console.log(navigator.language, getCookie('ii_lang'))
                 function setValueByName(lang)
@@ -94,21 +79,22 @@
                     }
                     return undefined;
                 }
-
-                if(getCookie('token'))
-                {
-                    console.log(getCookie('token'))
-                    const cont = document.getElementById('login-container')
-                    const profilePage = document.createElement('a')
-                    profilePage.href = '/profile'
-                    const profile = document.createElement('img')
-                    const profilebg = document.createElement('img')
-                    profile.src = '/user/picture'
-                    profilebg.src = '/user/picture'
-                    profilePage.classList.add('profile')
-                    profilePage.appendChild(profilebg)
-                    profilePage.appendChild(profile)
-                    cont.replaceChildren(profilePage)
-                }
+                fetch('/user/picture', {method: 'get'}).then((res) => {
+                    if(res.ok)
+                    {
+                        const cont = document.getElementById('login-container')
+                        const profilePage = document.createElement('a')
+                        profilePage.href = '/profile'
+                        const profile = document.createElement('img')
+                        const profilebg = document.createElement('img')
+                        profile.src = '/user/picture'
+                        profilebg.src = '/user/picture'
+                        profilePage.classList.add('profile')
+                        profilePage.appendChild(profilebg)
+                        profilePage.appendChild(profile)
+                        cont.replaceChildren(profilePage)
+                    }
+                })
+                
             </script>
 </header2>

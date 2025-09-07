@@ -18,6 +18,7 @@ import { google } from "googleapis";
 import { prepareEncrPassForDB } from "./signup";
 const OAuth2 = google.auth.OAuth2;
 import multer from 'multer'
+import { Payload } from "../../generated/prisma/runtime/library";
 
 export let transporter: nodemailer.Transporter;
 updateTransporter()
@@ -70,38 +71,23 @@ export function getJWT(req: any)
     return req.cookies.token
 }
 
+export async function getUserData<
+    T extends Prisma.UserInclude
+>(
+    id: number,
+    include?: T
+): Promise<
+    T extends Prisma.UserInclude
+        ? Prisma.UserGetPayload<{ include: T; }>
+        : UserNoPassword | undefined
+> {
+    if (!id) return undefined;
 
-export function getUserData(id: number, include?: Prisma.UserInclude): Promise<UserNoPassword>
-{
-    
-    return new Promise<UserNoPassword> ((resolve, reject)=>
-    {
-        if(!id) 
-        {
-            // no id found
-            resolve(undefined);
-            return;
-        }
-             
-
-        prisma.user.findUnique({
-            where: 
-            {
-                id
-            },
-            omit: {
-                password: true
-            },
-            include
-        }).then(user => {
-            resolve(user)
-        }).catch(err => {
-            
-            console.error('couldnt find user data!')
-            reject(false)
-        })
-    })
-    
+    return await prisma.user.findUnique({
+        where: { id },
+        omit: { password: true },
+        include: include as any
+    }) as any;
 }
 
 

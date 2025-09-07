@@ -548,6 +548,13 @@ export function updateCatalouge(sessionId, clientId) {
             addtab(tab);
         }
     });
+    if (new URLSearchParams(location.search).has('problem'))
+        windows[1].addTab(function () {
+            tabs.splice(tabs.findIndex(tab => tab.name == 'Probleme'), 1);
+            const tab = newIframeTab(`/editor/problem/${sessionId}/details/${new URLSearchParams(location.search).get('problem')}`, "Probleme");
+            tab.openTab();
+            return tab;
+        }());
     const catalouge = document.getElementById('tab-catalouge');
     for (const tab of tabs)
         addtab(tab);
