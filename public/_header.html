@@ -79,7 +79,7 @@
                     }
                     return undefined;
                 }
-                fetch('/user/picture', {method: 'get'}).then((res) => {
+                fetch('/user/picture', {method: 'head'}).then((res) => {
                     if(res.ok)
                     {
                         const cont = document.getElementById('login-container')
