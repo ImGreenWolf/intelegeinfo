@@ -144,27 +144,23 @@ export class EditorWindow {
         if (this.tooltip)
             this.tooltip.destroy();
         this.tooltip = new TokenTooltip(this.getEditor());
-        if (newSession) {
-            // if(this.editor.session)
-            //     draggedTab!.parentWindow.editor?.session.destroy()
+        if (newSession)
             this.editor.setSession(newSession);
-            // for(const session of editorSessions.values())
-            //     if(session.fileElement?.parentWindow === this)
-            //     session.editor = this.editor.getSession()
-        }
         const session = () => editorSessions.get(this.activeTab.name)?.editor || this.editor.session;
         cursorManagers.set(this.editor.id, new MultiCursorManager(windowEditor));
-        // this.editor.on('keyboardActivity', () => {
-        //     isRemoteChange = false;
-        // })
-        // const name = this.activeTab.name
+        let zoomFontSize = this.editor?.getFontSize();
+        this.editor.container.onwheel = (ev) => {
+            if (ev.ctrlKey) {
+                ev.preventDefault();
+                zoomFontSize = Math.max(6, Math.min(40, zoomFontSize + ev.deltaY / -100));
+                if (zoomFontSize % 2 == 0)
+                    this.editor?.setFontSize(zoomFontSize);
+            }
+        };
         let parsedCode;
         this.editor.on('changeSession', (e) => {
             if (!this.editor)
                 return;
-            // if(!this.activeTab)
-            //     throw 'no active tab'
-            // const name = this.activeTab.name
             //TODO Check if i can imrove the changedCss check, so it
             // doesnt create new listener for each update.
             let errorDisplay;
@@ -172,10 +168,6 @@ export class EditorWindow {
             !this.editor.session.getUndoManager().canRedo() ? document.getElementById('editor-redo')?.classList.add('enable') : document.getElementById('editor-redo')?.classList.remove('enable');
             !this.editor.session.getUndoManager().canUndo() ? document.getElementById('editor-undo')?.classList.add('enable') : document.getElementById('editor-undo')?.classList.remove('enable');
             this.editor.session.on('changeBreakpoint', e => {
-            });
-            this.editor.session.on('changeScrollTop', scrollTop => {
-                // if(lastEv!=undefined)
-                //   updateLocalCursor(lastEv)
             });
             function getContext(line, variable) {
                 return { type: "int" };
@@ -535,15 +527,15 @@ export class EditorWindowTab {
 const draggedIdName = 'dragged';
 export function updateCatalouge(sessionId, clientId) {
     const tabs = [
-        createEditorTab('Subiecte', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] })),
-        createEditorTab('Pbinfo', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://www.pbinfo.ro/' }, { name: 'allow', value: "encrypted-media" }] })),
-        newIframeTab('/pages/problems.html?sessionId=' + sessionId, "Probleme"),
+        createWindowTab('Subiecte', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] })),
+        createWindowTab('Pbinfo', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://www.pbinfo.ro/' }, { name: 'allow', value: "encrypted-media" }] })),
+        createIframeTab('/pages/problems.html?sessionId=' + sessionId, "Probleme"),
         new TerminalTab(),
     ];
     fetch('/user/jwt').then(async (loggedin) => {
         if (loggedin.ok && (await loggedin.json()).role == 'ADMIN') // TODO check if user is admin
          {
-            const tab = createEditorTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] }));
+            const tab = createWindowTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] }));
             tabs.push(tab);
             addtab(tab);
         }
@@ -551,22 +543,13 @@ export function updateCatalouge(sessionId, clientId) {
     if (new URLSearchParams(location.search).has('problem'))
         windows[1].addTab(function () {
             tabs.splice(tabs.findIndex(tab => tab.name == 'Probleme'), 1);
-            const tab = newIframeTab(`/editor/problem/${sessionId}/details/${new URLSearchParams(location.search).get('problem')}`, "Probleme");
+            const tab = createIframeTab(`/editor/problem/${sessionId}/details/${new URLSearchParams(location.search).get('problem')}`, "Probleme");
             tab.openTab();
             return tab;
         }());
     const catalouge = document.getElementById('tab-catalouge');
     for (const tab of tabs)
         addtab(tab);
-    function newIframeTab(url, name) {
-        const iframe = createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: url }] });
-        const tab = createEditorTab(name, iframe);
-        iframe.onload = (ev) => {
-            const newName = iframe.contentWindow?.document.title;
-            tab.setName(newName);
-        };
-        return tab;
-    }
     function addtab(tab) {
         tab.element.ondragend = () => {
             catalouge?.parentElement?.classList.remove('open');
@@ -578,10 +561,19 @@ export function updateCatalouge(sessionId, clientId) {
         catalouge?.appendChild(tab.element);
     }
 }
+export function createIframeTab(url, name) {
+    const iframe = createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: url }] });
+    const tab = createWindowTab(name, iframe);
+    iframe.onload = (ev) => {
+        const newName = iframe.contentWindow?.document.title;
+        tab.setName(newName);
+    };
+    return tab;
+}
 function createTabElement(name) {
     return createNode('span', { className: "file-tab", html: [createNode('p', { innerText: name })] });
 }
-export function createEditorTab(name, content, disableDrag) {
+export function createWindowTab(name, content, disableDrag) {
     return new EditorWindowTab(name, createTabElement(name), content, undefined, disableDrag);
 }
 async function loadLanguages() {
@@ -757,7 +749,7 @@ export async function showDefaultScreen() {
     //     console.log(acc, offset, isDown);
     //     startTime = timestamp;
     // }
-    const tab = createEditorTab('Hello!', container, true);
+    const tab = createWindowTab('Hello!', container, true);
     window.addTab(tab);
     window.setActiveFile(tab);
     tab.openTab(undefined);

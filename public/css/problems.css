@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, 400px);
   justify-content: space-evenly;
-  grid-auto-rows: 250px;
+  grid-auto-rows: auto;
   row-gap: 2em;
   width: 100%;
   max-width: 1500px;
@@ -40,6 +40,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 250px;
 }
 .problem-card .display-container {
   background-color: rgb(252, 252, 252);
@@ -88,7 +89,7 @@
   overflow: hidden;
   max-height: 100%;
   height: 0;
-  min-height: 150px;
+  min-height: 100px;
   transition: 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.2s;
   font-size: 0.75em;
   box-sizing: border-box;
@@ -96,7 +97,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   gap: 0.25em;
 }
 .problem-card .info-container p {
@@ -125,7 +126,7 @@
   padding: 0.5em 1.5em;
 }
 .problem-card:has(.info-wrapper:hover) .display-container .lower {
-  height: 0;
+  max-height: 0;
   opacity: 0;
 }
 .problem-card:has(.info-wrapper:hover) .display-container .upper {
@@ -164,7 +165,7 @@
 
 .display-container .lower {
   overflow: hidden;
-  height: 100px;
+  max-height: 100px;
   transition: 0.3s 0.2s;
   text-align: end;
   flex-shrink: 1;
@@ -209,7 +210,6 @@ h2.good {
   gap: 0.5em;
   flex-wrap: wrap;
   align-items: center;
-  min-height: 50px;
 }
 .tag-container span {
   box-shadow: 0 -0.75px 0.25em rgba(0, 0, 0, 0.219) inset;

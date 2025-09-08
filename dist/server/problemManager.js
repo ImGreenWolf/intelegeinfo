@@ -433,7 +433,8 @@ exports.router.get('/:sessionId/details/:id', async (req, res) => {
             buffer = buffer[params[i++]];
         return buffer;
     });
-    const solvesUI = problem.solves ? problem.solves.map(solve => `<div><span class="${['bad', 'decent', 'good', 'perfect'][Math.round(solve.score / 25) - (solve.score == 0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}`).join('\n') : '';
+    const solvesUI = problem.solves ?
+        problem.solves.map(solve => `<div><span class="${['bad', 'decent', 'good', 'perfect'][Math.round(solve.score / 25) - (solve.score == 0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`).join('\n') : '';
     res.send(serverSideReplace(fileBuffer, { json: { ...problem, difficulty: problem.difficulty ? problem.difficulty : '' }, sessionId, html: { solvesUI } }));
 });
 exports.default = exports.router;

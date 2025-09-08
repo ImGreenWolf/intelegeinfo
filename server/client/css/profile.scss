@@ -138,7 +138,7 @@ $border-color: rgba(126, 126, 126, 0.219);
     a 
     {
         color: inherit;
-        display: block;
+        font-family: inherit;
     }
     &:not(.open)
     {
@@ -230,8 +230,8 @@ button,
 #profile .profile-pic-large
 {
     // margin: -30px 0px 0px -30px;
-    max-width: 200px;
-    max-height: 200px;
+    max-width: 150px;
+    max-height: 150px;
     width: 20vw;
     aspect-ratio: 1;
     object-fit: cover;
@@ -257,6 +257,7 @@ button,
     display: flex;
     flex-direction: column;
     gap: 1em;
+    height: 100%;
 }
 input[type=color]
 {
@@ -268,7 +269,7 @@ input[type=color]
     display: flex;
     justify-content: space-between;
     min-width: 75%;
-    margin: auto;
+    margin: 0 auto;
     align-items: center;
     // flex-wrap: wrap;
     span

@@ -12,7 +12,7 @@ import { UUID } from "crypto";
 // import { WebSocketMessageType } from "../../dist/shared/types";
 // const WebSocketMessageType = require("../../dist/shared/types")
 
-import { createButton, createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated, Toolbox } from "./components";
+import { createButton, createNode, Dock, EditorCanvas, LoadingThrobber, Pixelated, Toolbox } from "./components.js";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 
@@ -26,12 +26,10 @@ declare const ace: typeof Ace;
 declare const gtag: any
 declare const sha256: any
 import modelist from "ace-builds/src-noconflict/ext-modelist";
-// import { Callback } from "ioredis";
-// import { EditorSession } from "../../server/types";
 import { Project } from "../../generated/prisma"
 import { HandshakeMessage, WebSocketMessage } from "../../shared/src/messageTypes"
-import { createEditorTab, cursorManagers, EditorWindow, EditorWindowTab, findTabByName, showDefaultScreen, TerminalTab, updateCatalouge } from "./windowManager.js";
-import path from "path";
+import { createWindowTab, cursorManagers, EditorWindow, EditorWindowTab, findTabByName, showDefaultScreen, TerminalTab, updateCatalouge } from "./windowManager.js";
+
 const AceRange = ace.require("ace/range").Range;
 const aceModes: typeof modelist = ace.require("ace/ext/modelist");
 const sessionCookieName = 'editor_session_id'
@@ -329,7 +327,7 @@ class EditorCursor {
               elem.style.filter = `blur: ${blurAmmount}px;`
               blurAmmount += maxBlur * blurDuration * timems
               if(maxBlur < 10)
-              requestAnimationFrame(blur)
+                requestAnimationFrame(blur)
               else blurDone()
             }
 
@@ -508,7 +506,7 @@ if(false)
             }, stepSize)}
             else
             {
-                this.cursorContainer!.style.left = this.posX+'px';
+              this.cursorContainer!.style.left = this.posX+'px';
               this.cursorContainer!.style.top = this.posY+'px';
               
               
@@ -1248,10 +1246,10 @@ export function displayInputPopup(message, placeholder='')
     popup = createPopup('input-popup', 10, [
       
       createNode('button', {innerText: 'x', onclick: () => {resolve({ok: false})}}),
+      createNode('p', {innerText: message}),
       createNode('input', {attributes: [{name: 'type', value: "text"}, {name: 'placeholder', value: placeholder}], onchange(ev) {
         resolve({ok: true, value: ev.target.value})
       },}),
-      createNode('p', {innerText: message}),
       
     ], true)
     
@@ -1488,7 +1486,7 @@ function updateCursor(cursor: HTMLElement, eventJson)
     else
       cursor.style.display = 'initial';
 
-    if(sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3)
+    if((sizeX/eventJson.sizeX<0.7 || sizeY/eventJson.sizeY<0.7 || sizeX/eventJson.sizeX>1.3 || sizeY/eventJson.sizeY>1.3) || true) // editor relative cursors
     {
       const scale = 5;
       const mask = Math.max((relPos.x - relPos.rect.width + relPos.rect.left - remSize)/scale + 10, (relPos.y - relPos.rect.height - relPos.rect.top + remSize)/scale + 10)
@@ -1913,24 +1911,33 @@ export function onConsoleInput(elem: HTMLTextAreaElement, ev?: Event)
   const console = elem as HTMLTextAreaElement;
   if(console.value!='') 
     {
-        if(!console.classList.contains('filled'))console.classList.add('filled');
+      console.classList.add('filled');
 
         
-        ws.send(JSON.stringify({type: WebSocketMessageType.ConsoleTyping, status: "start"}))
+      ws.send(JSON.stringify({type: WebSocketMessageType.ConsoleTyping, status: "start"}))
 
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-      ws.send(JSON.stringify({type: WebSocketMessageType.ConsoleTyping, status: "end"}))
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        ws.send(JSON.stringify({type: WebSocketMessageType.ConsoleTyping, status: "end"}))
 
-    }, Math.min(console.value.length*10+typingIndicatorDelay, 3000));
+      }, Math.min(console.value.length*10+typingIndicatorDelay, 3000));
 
-
+      
 
     } 
     else 
         console.classList.remove('filled');
 
-    
+    if(console.value.includes('\n'))
+      {
+        console.style.height = `auto`;
+         console.classList.add('multiline');
+        console.style.height = `${console.scrollHeight}px`;
+      }
+    else {
+       console.style.height = ''
+        console.classList.remove('multiline');
+    }
     
     // ws.send(JSON.stringify({type: WebSocketMessageType.ConsoleTyping, status: "end"}))
     // ws.send(JSON.stringify({type: WebSocketMessageType.ConsoleTyping, status: "alive"}))
@@ -2288,9 +2295,9 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
             messageGroup.setAttribute("msg-id", localmsgId + "");
             // messageGroup.classList.add('console-chat-group')
           } else
-            outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" msg-id="${localmsgId}" clientId="${(
+            outputArea.innerHTML += `<span class="console-chat ${ownMessageClass}" style='--userColor: #${message.color}' msg-id="${localmsgId}" clientId="${(
               messageClientId as string
-            ).trim()}"><span class="chat-displayName">${
+            ).trim()}"><span class="chat-displayName">${message.userId ? `<img src='/user/picture/${message.userId}'>` : ''}${
               message.clientDisplayName
             }</span><div class="chat-content-container"><span class="chat-content">${msgText}</span></div></span>`;
           break;
@@ -2948,7 +2955,14 @@ export class TokenTooltip extends Tooltip {
 }
 
   // export const ws = new WebSocket(WSUrl);
+  function doesHttpOnlyCookieExist(cookiename) {
+    var d = new Date();
+    d.setTime(d.getTime() + (1000));
+    var expires = "expires=" + d.toUTCString();
 
+    document.cookie = cookiename + "=new_value;path=/;" + expires;
+    return document.cookie.indexOf(cookiename + '=') == -1;
+  }
   export let ws: WebSocket 
   (async() => {
 
@@ -2974,7 +2988,7 @@ export class TokenTooltip extends Tooltip {
     if(sessionId && !inIframe)
     {
             
-            if(getCookie('token'))
+            if(doesHttpOnlyCookieExist('token'))
             {  
                if(getCookie('savedName'))
                 document.cookie = 'savedName='
@@ -2982,7 +2996,7 @@ export class TokenTooltip extends Tooltip {
             else
               if(!getCookie('savedName'))
               {
-                const displayName = await displayInputPopup('Introduce-ti numele')
+                const displayName = await displayInputPopup('Alegeti un nume prietenos:')
                 
                 if(displayName.value)
                 {
@@ -3760,7 +3774,7 @@ break;
          if(!debugWindow)
          {
            debugWindow = new DebugWindow()
-         windows[1].addTab(createEditorTab('Debug', debugWindow.mainContainer ))
+         windows[1].addTab(createWindowTab('Debug', debugWindow.mainContainer ))
          }
        
           break;
@@ -4296,46 +4310,49 @@ break;
       const indicatorStatus = messageJson.status;
       const indicatorClientId = messageJson.clientId;
       const typingIndicatorContainer = document.getElementById('typingIndicatorContainer');
-      
-      switch(indicatorStatus)
-      {
-        case "start":
-          if(!typingIndicators.has(indicatorClientId))
-            {
-              if((typingIndicators.has(indicatorClientId))) (typingIndicators.get(indicatorClientId) as HTMLElement).remove;
-              // typingIndicators.delete(indicatorClientId);
+      try {
+        switch(indicatorStatus)
+        {
+          case "start":
+            if(!typingIndicators.has(indicatorClientId))
+              {
+                if((typingIndicators.has(indicatorClientId)))
+                  (typingIndicators.get(indicatorClientId) as HTMLElement).remove;
 
-              const typingIndicator = document.createElement('div');
-              // typingIndicator. = indicatorClientId;
-              
-              typingIndicators.set(indicatorClientId, typingIndicator)
-              typingIndicator.textContent = messageJson.displayName + " scrie..."
-              typingIndicatorContainer?.appendChild(typingIndicator);
+                const typingIndicator = document.createElement('div');
+                
+                typingIndicators.set(indicatorClientId, typingIndicator)
+                typingIndicator.textContent = `${messageJson.displayName} scrie...`
+                typingIndicatorContainer?.appendChild(typingIndicator);
 
-              
-            }
-          break;
-          case "end":
+                
+              }
+            break;
+            case "end":
 
-          if(typingIndicatorContainer!==undefined && typingIndicators.has(indicatorClientId))
-            {
-              const typingIndicator = typingIndicators.get(indicatorClientId) as HTMLElement;
-              if(!typingIndicator) return typingIndicatorContainer?.replaceChildren();
-              typingIndicator.animate([
-                {opacity: "100%", bottom: "0px", filter: "blur(0px)"},
-                {bottom: "-50px", opacity: 0, filter:" blur(10px)"},
-                ],
-              {duration: 200}).onfinish = (event) => {
-                typingIndicatorContainer?.removeChild(typingIndicator);
-                typingIndicator.remove;
-                typingIndicators.delete(indicatorClientId);
+            if(typingIndicatorContainer!==undefined && typingIndicators.has(indicatorClientId))
+              {
+                const typingIndicator = typingIndicators.get(indicatorClientId) as HTMLElement;
+                if(!typingIndicator) return typingIndicatorContainer?.replaceChildren();
+                typingIndicator.animate([
+                  {opacity: "100%", bottom: "0px", filter: "blur(0px)"},
+                  {bottom: "-50px", opacity: 0, filter:" blur(10px)"},
+                  ],
+                {duration: 200}).onfinish = (event) => {
+                  typingIndicatorContainer?.removeChild(typingIndicator);
+                  typingIndicator.remove;
+                  typingIndicators.delete(indicatorClientId);
+
+                }
+
 
               }
-
-
-            }
-          break;
+            break;
+        }
+      } catch(err) {
+        console.warn(err)
       }
+      
         
 
       

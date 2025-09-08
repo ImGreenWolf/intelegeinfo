@@ -23,7 +23,8 @@ export declare class ClientObject {
     webcamid: number;
     editorPermission: EditorPermission;
     clientData: UserNoPassword;
-    constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
+    constructor(sessionId: UUID, editorSession: EditorSession, WebSocket: WebSocket, displayName?: string, user?: UserNoPassword);
+    private setRandomName;
     sendMessage(message: WebSocketMessage | string | Record<string, any>, type?: WebSocketMessageType): void;
     getFile(name: any): EditorFile;
     getFilesName(): string[];
@@ -41,7 +42,10 @@ export interface EditorOptions {
     enableChat: boolean;
     enableVoice: boolean;
     editorPermission: EditorPermission;
-    sandboxUsers: boolean;
+    sandboxUsers?: boolean;
+    externalLinks?: boolean;
+    anonymousNames?: boolean;
+    allowedLanguage?: typeof EditorMode;
 }
 export interface ClientPermissions {
     canChat: boolean;

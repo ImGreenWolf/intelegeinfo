@@ -1,4 +1,4 @@
-import { createNode } from "./components.js"
+import { createNode } from "../components.js"
 
 export async function test(sessionId, problemId)
 {
@@ -15,13 +15,13 @@ export async function test(sessionId, problemId)
     for(const result of json.results)
     {
         const test = result.value
-        elems.push(createNode('div', {htmlSting: `#${test.index}: ${test.status} - Score: <span class="${test.score!=0 ? 'good' : 'bad'}">${test.score}</span>` +
+        elems.push(createNode('div', {htmlSting: `<span>#${test.index}:</span><span> ${test.status} - Score: <span class="${test.score!=0 ? 'good' : 'bad'}">${test.score}</span></span>` +
          (test.result !== undefined ? `<span title='arata datele de intrare a testului' class='show-input'>👁️<span>Input: ${test.result.input}</span></div>` : '' )} ))
     }
 
         output!.replaceChildren(...elems)
 
-        document.getElementById('final-score')!.innerHTML = `${json.solve.score} - Time: ${json.solve.time}`;
+        document.getElementById('final-score')!.innerHTML = `<span>Scor</span><span class='score'>${json.solve.score}</span><span>Timp</span> <span class='time'>  ${json.solve.time}</span>`;
         document.getElementById('final-score')!.className = ['bad', 'decent','good', 'perfect'][Math.round(json.score/25)- (json.score==0 ? 0 : 1)]
         console.log(Math.round(json.score/25)- json.score==0 ? 0 : 1, Math.round(json.score/25), json.score==0 ? 0 : 1)
 }
@@ -68,3 +68,16 @@ export async function evaluate(sessionId, problemId)
     
 }
  
+init()
+
+function init() {
+   if(getAnyMultilineSample())
+    document.body.classList.add('multiline-sample')
+}
+
+function getAnyMultilineSample() {
+     for(const samp of document.getElementsByTagName('samp'))
+        if(samp.innerText.includes('\n'))
+            return true;
+    return false
+}

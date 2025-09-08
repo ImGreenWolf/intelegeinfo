@@ -40,7 +40,7 @@ router.use(cookieParser())
 //     if(!userId) throw 'couldnt get id'
 //     return userId;
 // }
-router.post('/update', (req, res) => {
+router.post('/update', async (req, res) => {
 
     if (!users.getJWT(req))  
     {
@@ -63,7 +63,7 @@ router.post('/update', (req, res) => {
     //  if()
         
     try {
-        var {occupationType, color} = req.body 
+        var {occupationType, color, preferences} = req.body 
 
         if(req.body.deleteAccount)
         {
@@ -83,19 +83,31 @@ router.post('/update', (req, res) => {
                 if(userColor.length != 6 && color[0] == '#')
                     throw "invalid color"
             }
+            const currentUserData = await prisma.user.findUnique({
+                where: {
+                    id: userId
+                }
+            })
             
-            prisma.user.update({
+            await prisma.user.update({
                 where: {
                     id: userId
                 },
                 data: {
                     userColor,
-                    occupationType
+                    occupationType,
                     // picture: file ? file : undefined
+                    preferences: preferences ? {
+                        ...(currentUserData.preferences as any),
+                        ...preferences
+                    } : undefined
                 }
-            }).then(value => {
-                res.redirect('/profile')
             })
+            if(req.accepts('application/json'))
+                res.send('Updated user info')
+            else
+                res.redirect('/profile')
+
         }
     }
     catch (err)
@@ -134,7 +146,8 @@ router.use('/', (req, res) => {
                  users.updateActiveAtForUser(userId as number).then(async user => {
                     interface webParams extends users.UserNoPassword
                     {
-                        projectsList?: string
+                        projectsList?: string,
+                        spotifyIframe?: string
                     }
                     if(!user)
                     {  
@@ -145,6 +158,15 @@ router.use('/', (req, res) => {
                     
                     const params: webParams = user;
                     const projects = await users.listAllProjects(userId)
+                    if(user.preferences) {
+                         const spotifyLink = (user.preferences as any).spotify
+                        if(spotifyLink)
+                            params.spotifyIframe = `
+                            <iframe data-testid="embed-iframe" style="border-radius:1em; background-color: rgb(25,25,25); margin-top:2em;"
+                                    src="https://open.spotify.com/embed/track/${spotifyLink}?theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+                            `;
+                    }
+                   
                     if(typeof projects == 'string')
                     {
                          res.status(500).send('A aparut o problema...')
@@ -200,40 +222,41 @@ export function parseUserInfoInFile(userId,fileSrc: string, params?: User | any)
     return new Promise<string>((resolve, reject) => {
 
          function replaceVariables(data, params)
-                     {
-                        const paramJSON = params;
-                        let file = data;
+        {
+        const paramJSON = params;
+        let file = data;
+        
+        for(const match of file.matchAll(/#{(.*)(?:\?)(.*):(.*)}|#{(.*)}/g))
+            {
+                if(!(paramJSON[match[4]?.trim()]!=undefined || paramJSON[match[1]?.trim()]!=undefined)) // !! had to add !=undefined because it was pickuping up emailValidated = false and projectList = '' as invalid matches lmao.
+                    {
                         
-                        for(const match of file.matchAll(/#{(.*)(?:\?)(.*):(.*)}|#{(.*)}/g))
+                        console.log('couldnt find value for match ' + (match[4] ? match[4] : match[1]));
+                        file = file.replace(match[0], '')
+                    }
+                        else
+                    {
+    // console.log(match)
+                            if(match[2])
                             {
-                                if(!(paramJSON[match[4]?.trim()]!=undefined || paramJSON[match[1]?.trim()]!=undefined)) // !! had to add !=undefined because it was pickuping up emailValidated = false and projectList = '' as invalid matches lmao.
-                                    {
-                                        
-                                        console.log('couldnt find value for match ' + (match[4] ? match[4] : match[1]));
-                                    }
-                                     else
-                                    {
-  // console.log(match)
-                                            if(match[2])
-                                            {
-                                                
-                                                if(match[1])
-                                                    file = file.replace(match[0], replaceVariables(match[2], params))
-                                                else
-                                                    file = file.replace(match[0], replaceVariables(match[3], params))
-                                                
-                                            } else 
-                                            {
-                                                file = file.replace(match[0], paramJSON[match[4].trim()])
+                                
+                                if(match[1])
+                                    file = file.replace(match[0], replaceVariables(match[2], params))
+                                else
+                                    file = file.replace(match[0], replaceVariables(match[3], params))
+                                
+                            } else 
+                            {
+                                file = file.replace(match[0], paramJSON[match[4].trim()])
 
-                                            }
-                                    }
-                                
-                              
-                                
                             }
-                            return file;
-                     }
+                    }
+                
+                
+                
+            }
+            return file;
+        }
 
 
 

@@ -35,7 +35,7 @@ export class ClientObject {
 
     clientData: UserNoPassword
     // EditorSessionObject: EditorSession
-    public constructor(sessionId: UUID, EditorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {
+    public constructor(sessionId: UUID, editorSession: EditorSession, WebSocket: WebSocket, displayName?:string, user?: UserNoPassword) {
         this.sessionId = sessionId;
         this.clientId = uuidv4() as UUID;
         this.ping = 0;
@@ -43,30 +43,32 @@ export class ClientObject {
         // this.EditorSessionObject = EditorSession;
         if(user)
         {
-            this.displayName = user.username;
+            if(editorSession.editorOptions.anonymousNames)
+                this.setRandomName(editorSession)
+            else
+                this.displayName = user.username;
             this.color = user.userColor
             this.clientData = user
         } 
         else
         {
-            if(displayName)
+            if(displayName && !editorSession.editorOptions.anonymousNames)
                 this.displayName = displayName
             else 
-            {
-                // assaign random name
-                 const displayNames = EditorSession.clientsDisplayNames;
-                if(false) this.displayName = EditorSession.brainrotNames[Math.floor(Math.random() * EditorSession.brainrotNames.length)]
-                else this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)]
-
-                displayNames.splice(displayNames.indexOf(this.displayName), 1)
-                if(this.displayName[0]) 
-                    this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
-            }
+                this.setRandomName(editorSession)
            
         }
         
       }
+      private setRandomName(editorSession: EditorSession) {
+         const displayNames = editorSession.clientsDisplayNames;
+        if(false) this.displayName = editorSession.brainrotNames[Math.floor(Math.random() * editorSession.brainrotNames.length)]
+        else this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)]
 
+        displayNames.splice(displayNames.indexOf(this.displayName), 1)
+        if(this.displayName[0]) 
+            this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
+      }
     public sendMessage(message: WebSocketMessage | string | Record<string, any>, type?: WebSocketMessageType)
     {
         if(type && typeof message != 'string')
@@ -107,7 +109,10 @@ export interface EditorOptions
     enableChat: boolean,
     enableVoice: boolean,
     editorPermission: EditorPermission,
-    sandboxUsers: boolean
+    sandboxUsers?: boolean,
+    externalLinks?: boolean,
+    anonymousNames?: boolean,
+    allowedLanguage?: typeof EditorMode
 }
 
 export interface ClientPermissions
@@ -149,7 +154,7 @@ export class EditorSession {
         editorPermission: EditorPermission.Everyone,
         enableChat: true,
         enableVoice: false,
-        sandboxUsers: false}
+        sandboxUsers: false,}
 
     executeProblemChecker: (problemId) => Promise<PromiseSettledResult<{status: string, error: boolean, index: number, score: number, time?: number} | undefined>[]>;
     public makeSessionPublic(options: EditorOptions)
@@ -417,7 +422,7 @@ Tralalero Tralala`.split('\n')
     public spawnClient(ws: WebSocket,displayName: string, userData?: UserNoPassword): UUID
     {
         let newClient: ClientObject;
-        console.log(displayName)
+
         if(userData != undefined) newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
             else newClient = new ClientObject(this.sessionId, this, ws, displayName);
         if(this.clientsMap.size == 0)

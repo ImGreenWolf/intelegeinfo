@@ -4028,6 +4028,7 @@ export namespace Prisma {
     authId: number
     loginMethod: number
     occupationType: number
+    preferences: number
     _all: number
   }
 
@@ -4090,6 +4091,7 @@ export namespace Prisma {
     authId?: true
     loginMethod?: true
     occupationType?: true
+    preferences?: true
     _all?: true
   }
 
@@ -4195,6 +4197,7 @@ export namespace Prisma {
     authId: JsonValue | null
     loginMethod: string
     occupationType: $Enums.OccupationType
+    preferences: JsonValue | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -4232,6 +4235,7 @@ export namespace Prisma {
     authId?: boolean
     loginMethod?: boolean
     occupationType?: boolean
+    preferences?: boolean
     pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
     projects?: boolean | User$projectsArgs<ExtArgs>
     solves?: boolean | User$solvesArgs<ExtArgs>
@@ -4264,6 +4268,7 @@ export namespace Prisma {
     authId?: boolean
     loginMethod?: boolean
     occupationType?: boolean
+    preferences?: boolean
     pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4283,6 +4288,7 @@ export namespace Prisma {
     authId?: boolean
     loginMethod?: boolean
     occupationType?: boolean
+    preferences?: boolean
     pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4302,9 +4308,10 @@ export namespace Prisma {
     authId?: boolean
     loginMethod?: boolean
     occupationType?: boolean
+    preferences?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "firstName" | "lastName" | "email" | "emailValidated" | "userColor" | "picture" | "role" | "createdAt" | "activeAt" | "password" | "authId" | "loginMethod" | "occupationType", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "firstName" | "lastName" | "email" | "emailValidated" | "userColor" | "picture" | "role" | "createdAt" | "activeAt" | "password" | "authId" | "loginMethod" | "occupationType" | "preferences", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
     projects?: boolean | User$projectsArgs<ExtArgs>
@@ -4361,6 +4368,7 @@ export namespace Prisma {
       authId: Prisma.JsonValue | null
       loginMethod: string
       occupationType: $Enums.OccupationType
+      preferences: Prisma.JsonValue | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -4812,6 +4820,7 @@ export namespace Prisma {
     readonly authId: FieldRef<"User", 'Json'>
     readonly loginMethod: FieldRef<"User", 'String'>
     readonly occupationType: FieldRef<"User", 'OccupationType'>
+    readonly preferences: FieldRef<"User", 'Json'>
   }
     
 
@@ -23793,7 +23802,8 @@ export namespace Prisma {
     password: 'password',
     authId: 'authId',
     loginMethod: 'loginMethod',
-    occupationType: 'occupationType'
+    occupationType: 'occupationType',
+    preferences: 'preferences'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -24405,6 +24415,7 @@ export namespace Prisma {
     authId?: JsonNullableFilter<"User">
     loginMethod?: StringFilter<"User"> | string
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
+    preferences?: JsonNullableFilter<"User">
     pictureUpload?: XOR<UploadScalarRelationFilter, UploadWhereInput>
     projects?: ProjectListRelationFilter
     solves?: SolveListRelationFilter
@@ -24436,6 +24447,7 @@ export namespace Prisma {
     authId?: SortOrderInput | SortOrder
     loginMethod?: SortOrder
     occupationType?: SortOrder
+    preferences?: SortOrderInput | SortOrder
     pictureUpload?: UploadOrderByWithRelationInput
     projects?: ProjectOrderByRelationAggregateInput
     solves?: SolveOrderByRelationAggregateInput
@@ -24471,6 +24483,7 @@ export namespace Prisma {
     authId?: JsonNullableFilter<"User">
     loginMethod?: StringFilter<"User"> | string
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
+    preferences?: JsonNullableFilter<"User">
     pictureUpload?: XOR<UploadScalarRelationFilter, UploadWhereInput>
     projects?: ProjectListRelationFilter
     solves?: SolveListRelationFilter
@@ -24502,6 +24515,7 @@ export namespace Prisma {
     authId?: SortOrderInput | SortOrder
     loginMethod?: SortOrder
     occupationType?: SortOrder
+    preferences?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -24528,6 +24542,7 @@ export namespace Prisma {
     authId?: JsonNullableWithAggregatesFilter<"User">
     loginMethod?: StringWithAggregatesFilter<"User"> | string
     occupationType?: EnumOccupationTypeWithAggregatesFilter<"User"> | $Enums.OccupationType
+    preferences?: JsonNullableWithAggregatesFilter<"User">
   }
 
   export type CodeWhereInput = {
@@ -25713,6 +25728,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -25744,6 +25760,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -25772,6 +25789,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -25803,6 +25821,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -25833,6 +25852,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUpdateManyMutationInput = {
@@ -25849,6 +25869,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -25867,6 +25888,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CodeCreateInput = {
@@ -27311,6 +27333,7 @@ export namespace Prisma {
     authId?: SortOrder
     loginMethod?: SortOrder
     occupationType?: SortOrder
+    preferences?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -30181,6 +30204,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
@@ -30211,6 +30235,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -30254,6 +30279,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
@@ -30284,6 +30310,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -31101,6 +31128,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -31131,6 +31159,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -31192,6 +31221,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -31222,6 +31252,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -31600,6 +31631,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -31630,6 +31662,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -31749,6 +31782,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -31779,6 +31813,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -31854,6 +31889,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
@@ -31884,6 +31920,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -31975,6 +32012,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
@@ -32005,6 +32043,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -32086,6 +32125,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -32116,6 +32156,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -32242,6 +32283,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -32272,6 +32314,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -32401,6 +32444,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -32431,6 +32475,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -32520,6 +32565,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -32550,6 +32596,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -32577,6 +32624,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -32607,6 +32655,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -32690,6 +32739,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -32720,6 +32770,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -32793,6 +32844,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -32823,6 +32875,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -32900,6 +32953,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
@@ -32929,6 +32983,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -32978,6 +33033,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -33008,6 +33064,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -33092,6 +33149,7 @@ export namespace Prisma {
     authId?: JsonNullableFilter<"User">
     loginMethod?: StringFilter<"User"> | string
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
+    preferences?: JsonNullableFilter<"User">
   }
 
   export type UserCreateWithoutFeedbackInput = {
@@ -33108,6 +33166,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -33138,6 +33197,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -33181,6 +33241,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -33211,6 +33272,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -33238,6 +33300,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -33268,6 +33331,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -33360,6 +33424,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -33390,6 +33455,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -33449,6 +33515,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -33479,6 +33546,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -33546,6 +33614,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -33576,6 +33645,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -33705,6 +33775,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
@@ -33735,6 +33806,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
@@ -34526,6 +34598,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: string
     occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CourseUpdateWithoutVideoSummaryInput = {
@@ -34593,6 +34666,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
@@ -34622,6 +34696,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -34651,6 +34726,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type StudentsInCourseCreateManyClassInput = {
@@ -34724,6 +34800,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
@@ -34754,6 +34831,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
@@ -34783,6 +34861,7 @@ export namespace Prisma {
     authId?: NullableJsonNullValueInput | InputJsonValue
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
   }
 
 

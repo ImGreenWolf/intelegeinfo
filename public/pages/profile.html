@@ -44,9 +44,9 @@
                         </div>
                         
                         <div class="info-container">
-
+                            
                             <div style="width: 100%;">
-                                    <p>Username</p>
+                                    <p>Nume de utilizator</p>
                                     <span style="width: 100%; display: block;">#{username}</span>
                                 </div>
 
@@ -113,9 +113,9 @@
                                     <input type="color" name="color" onchange="this.parentElement.style='--color:'+this.value" value="##{userColor}">
                                 </span>
                                 
-                               
+                              
                             </div>
-                             <div>
+                            <div>
                                 <div class="type-wrapper">
                                 <h3>Sunt...</h3>
                                 <div class="type-container">
@@ -138,6 +138,11 @@
 
                             <button id="color-submit" class="profile-button">Update</button>
 
+                             <div>
+                                #{spotifyIframe}
+                                <p>In viitor, aceasta melodie v-a fi vizibila pe profilul tau. Ca sa asculti melodia intreaga, trebuie sa fi logat in <a href="https://open.spotify.com/">spotify web</a> si sa ai premium.</p>
+                                <button onclick="changeDisplaySong()">Schimba Piesa</button>
+                            </div>
 
                              <script>
                                     document.querySelector('input[value="#{occupationType}"]').checked = true;
@@ -211,14 +216,14 @@
 </body>
 <script>
 
-    fetch('/user/listProjects', {
-    method: "GET",
-    headers: {'Content-Type': 'application/json'},
-  }).then(response => response.json()).catch(err => {})
-  .then(data => {
-    
-    console.log(data)
-  })
+    // fetch('/user/listProjects', {
+    //     method: "GET",
+    //     headers: {'Content-Type': 'application/json'},
+    // }).then(response => response.json()).catch(err => {})
+    // .then(data => {
+        
+    //     console.log(data)
+    // })
     async function logOut()
     {
         const msg = await fetch('?logout=true', {
@@ -256,7 +261,27 @@
 
         document.getElementById(open).classList.add('open')
     }
-
+    function changeDisplaySong() {
+        const songLink = window.prompt('Introdu id-ul piesei de pe spotify;')
+        const songId = songLink.split('/')[songLink.split('/').findIndex(path => path == 'track')+1]
+        if(!songId)
+            return;
+        fetch('profile/update', {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+            body: 
+                JSON.stringify({
+                    preferences: {
+                        spotify: songId
+                    }
+                })
+        }).then(val => {
+            location.reload()
+        })
+    }
     document.getElementById('profilePicture').onchange = (ev) => {
         document.querySelector('form:has(#profilePicture)').submit()
     }

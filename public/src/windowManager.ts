@@ -197,31 +197,29 @@ export class EditorWindow {
             this.tooltip.destroy()
          this.tooltip = new TokenTooltip(this.getEditor());
          if(newSession)
-        {
-            // if(this.editor.session)
-            //     draggedTab!.parentWindow.editor?.session.destroy()
             this.editor.setSession(newSession)
-            // for(const session of editorSessions.values())
-            //     if(session.fileElement?.parentWindow === this)
-            //     session.editor = this.editor.getSession()
-        }
+        
         const session = () => editorSessions.get(this.activeTab!.name)?.editor! || this.editor!.session
         
 
         cursorManagers.set(this.editor.id, new MultiCursorManager(windowEditor))
-        // this.editor.on('keyboardActivity', () => {
-        //     isRemoteChange = false;
-            
-        // })
-        // const name = this.activeTab.name
+
+        let zoomFontSize = this.editor?.getFontSize() as number;
+        this.editor.container.onwheel = (ev) => {
+            if(ev.ctrlKey)
+            {
+                ev.preventDefault()
+                zoomFontSize = Math.max(6, Math.min(40, zoomFontSize+ev.deltaY/-100 as number))
+                if(zoomFontSize%2==0)
+                    this.editor?.setFontSize(zoomFontSize)
+            }
+        }
         let parsedCode;
         this.editor.on('changeSession', (e) => 
         {
             if(!this.editor)
             return;
-        // if(!this.activeTab)
-        //     throw 'no active tab'
-        // const name = this.activeTab.name
+
             //TODO Check if i can imrove the changedCss check, so it
             // doesnt create new listener for each update.
             let errorDisplay: HTMLDivElement | undefined;
@@ -233,62 +231,59 @@ export class EditorWindow {
         
             })
         
-            this.editor.session.on('changeScrollTop', scrollTop => {
-            // if(lastEv!=undefined)
-            //   updateLocalCursor(lastEv)
-            })
         
             function getContext(line, variable): {type: string}
             {
                 return {type: "int"}
             }
+            
             function getErrorInfo(compileErrorObj: CompileError): {link: string, fixFunction: () => void}
             {
-            const mathces = compileErrorObj.text.match(/'.+?'/g)!
-            console.log(mathces[0])
-            const basicError = compileErrorObj.text.replaceAll(/'.+?'/g,'').trim()
-            console.log(basicError)
-            // TODO Improve this
-            var cases = [
-                {text: 'expected',
-                test: (error) => error.includes('expected') ,
-                return: {link: 'expected', fixFunction: () => {
-                    const varName = mathces[0].replaceAll("'", '')
-                    let i=1;
-                    const searchRow = compileErrorObj.range.end.row;
-                    const cond = () =>!(session().getLine(searchRow-i).trim().includes(';') || session().getLine(searchRow-i).trim() != '' && searchRow-i > 0) //(!editor.session.getLine(searchRow-i).trim().includes(';') || editor.session.getLine(searchRow-i).trim() == '') && searchRow-i > 0
-                    while(cond())
-                    {
-                    console.log(cond(), session().getLine(searchRow-i).trim(), session().getLine(searchRow-i).trim().includes(';'))
-                    i++
-                    } 
-                    const insertRange = {column: session().getLine(searchRow-i).length+1, row: searchRow-i}
-                    session().insert(insertRange,`;`)
-                    session().selection.selectWord()
-                    // editor.selection.setRange(new Range({start: {row: insertRange.row, column: 0}, end: insertRange}))
-                }}
-                },
-        
-                {text: 'was not declared in this scope',
-                test: (error) => error.includes('was not declared in this scope') ,
-                    return: {link: 'undeclared', fixFunction: () => {
-                    const varName = mathces[0].replaceAll("'", '')
-                    const context = getContext(session().getLines(compileErrorObj.range.start.row, compileErrorObj.range.end.row), varName)
-                    session().insert({column: 0, row: compileErrorObj.range.start.row},`\n`)
-                    session().insert({column: compileErrorObj.range.start.column, row: compileErrorObj.range.start.row},`${context.type} ${varName};`)
-                    session().selection.selectWord()
-                }}
-                },
-            ]
-        
-            for(const elem of cases)
-            {
-                if(elem.test(basicError))
-                return elem.return
-            }
-        
-        
-            return {link: '', fixFunction: () => {}}
+                const mathces = compileErrorObj.text.match(/'.+?'/g)!
+                console.log(mathces[0])
+                const basicError = compileErrorObj.text.replaceAll(/'.+?'/g,'').trim()
+                console.log(basicError)
+                // TODO Improve this
+                var cases = [
+                    {text: 'expected',
+                    test: (error) => error.includes('expected') ,
+                    return: {link: 'expected', fixFunction: () => {
+                        const varName = mathces[0].replaceAll("'", '')
+                        let i=1;
+                        const searchRow = compileErrorObj.range.end.row;
+                        const cond = () =>!(session().getLine(searchRow-i).trim().includes(';') || session().getLine(searchRow-i).trim() != '' && searchRow-i > 0) //(!editor.session.getLine(searchRow-i).trim().includes(';') || editor.session.getLine(searchRow-i).trim() == '') && searchRow-i > 0
+                        while(cond())
+                        {
+                        console.log(cond(), session().getLine(searchRow-i).trim(), session().getLine(searchRow-i).trim().includes(';'))
+                        i++
+                        } 
+                        const insertRange = {column: session().getLine(searchRow-i).length+1, row: searchRow-i}
+                        session().insert(insertRange,`;`)
+                        session().selection.selectWord()
+                        // editor.selection.setRange(new Range({start: {row: insertRange.row, column: 0}, end: insertRange}))
+                    }}
+                    },
+            
+                    {text: 'was not declared in this scope',
+                    test: (error) => error.includes('was not declared in this scope') ,
+                        return: {link: 'undeclared', fixFunction: () => {
+                        const varName = mathces[0].replaceAll("'", '')
+                        const context = getContext(session().getLines(compileErrorObj.range.start.row, compileErrorObj.range.end.row), varName)
+                        session().insert({column: 0, row: compileErrorObj.range.start.row},`\n`)
+                        session().insert({column: compileErrorObj.range.start.column, row: compileErrorObj.range.start.row},`${context.type} ${varName};`)
+                        session().selection.selectWord()
+                    }}
+                    },
+                ]
+            
+                for(const elem of cases)
+                {
+                    if(elem.test(basicError))
+                    return elem.return
+                }
+            
+            
+                return {link: '', fixFunction: () => {}}
             }
             this.editor.getSession().on('markerUpdate', (marker) => {
             if(!marker.changedCss) return;
@@ -374,27 +369,27 @@ export class EditorWindow {
         });
         
         this.editor.on("changeSelection", () => {
-        if(!this.activeTab)
-            throw 'no active tab'
-        const name = this.activeTab.name
-        if (isRemoteChange) return;
-        // if( !isColabSession) return;
-        const selection = windowEditor.getSelectionRange();
-    
-    
-        // const start = selection.start;
-        // const end = selection.end;
-        // const range = new AceRange(start.row, start.column, end.row, end.column);
-        // const selectedText = editor.session.getTextRange(range);
-        // console.log(selectedText);
-        if (!name) console.error("Current file name is invalid");
-        ws.send(
-            JSON.stringify({
-            range: selection,
-            fileName: name,
-            type: WebSocketMessageType.CodeSelection,
-            })
-        ); // Send code to server on change
+            if(!this.activeTab)
+                throw 'no active tab'
+            const name = this.activeTab.name
+            if (isRemoteChange) return;
+            // if( !isColabSession) return;
+            const selection = windowEditor.getSelectionRange();
+        
+        
+            // const start = selection.start;
+            // const end = selection.end;
+            // const range = new AceRange(start.row, start.column, end.row, end.column);
+            // const selectedText = editor.session.getTextRange(range);
+            // console.log(selectedText);
+            if (!name) console.error("Current file name is invalid");
+            ws.send(
+                JSON.stringify({
+                range: selection,
+                fileName: name,
+                type: WebSocketMessageType.CodeSelection,
+                })
+            ); // Send code to server on change
         });
 
 
@@ -473,9 +468,9 @@ export class EditorWindow {
             var codeLens = ace.require("ace/ext/code_lens");
             const editor = this.editor
             
-              const commandId = "createFileCommand";
+            const commandId = "createFileCommand";
             
-              editor.commands.addCommand({
+            editor.commands.addCommand({
                 name: commandId,
                 exec: function(editor: Ace.Editor, args) {
                   const filename = args?.filename || "unnamed.txt";
@@ -484,7 +479,7 @@ export class EditorWindow {
                   editor.renderer.updateFull(true)
                   codeLens.clear(editor.session)
               }});
-              editor.commands.addCommand({
+            editor.commands.addCommand({
                 name: "include<fstream>",
                 exec: function(editor: Ace.Editor, args) {
                   const index = editor.getValue().lastIndexOf("#include");
@@ -497,7 +492,7 @@ export class EditorWindow {
                   }
             
               }});
-              editor.commands.addCommand({
+            editor.commands.addCommand({
                 name: "usingnamespacestd",
                 exec: function(editor: Ace.Editor, args) {
                   const index = editor.getValue().lastIndexOf("#include");
@@ -699,9 +694,9 @@ export function updateCatalouge(sessionId, clientId)
 
     const tabs =
     [
-        createEditorTab('Subiecte', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})),
-        createEditorTab('Pbinfo', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: 'https://www.pbinfo.ro/'}, {name: 'allow', value: "encrypted-media"}]})),
-        newIframeTab('/pages/problems.html?sessionId='+sessionId, "Probleme"),
+        createWindowTab('Subiecte', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/subiecte'}]})),
+        createWindowTab('Pbinfo', createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: 'https://www.pbinfo.ro/'}, {name: 'allow', value: "encrypted-media"}]})),
+        createIframeTab('/pages/problems.html?sessionId='+sessionId, "Probleme"),
         new TerminalTab(),
        
 
@@ -710,7 +705,7 @@ export function updateCatalouge(sessionId, clientId)
 
         if(loggedin.ok && (await loggedin.json()).role == 'ADMIN') // TODO check if user is admin
         {
-            const tab = createEditorTab('Problem Creator',createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problemCreator.html?sessionId='+sessionId+'&clientId='+clientId}]}))
+            const tab = createWindowTab('Problem Creator',createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problemCreator.html?sessionId='+sessionId+'&clientId='+clientId}]}))
             tabs.push(tab)
             addtab(tab)
         }
@@ -721,7 +716,7 @@ export function updateCatalouge(sessionId, clientId)
     windows[1].addTab(function () {
      
         tabs.splice(tabs.findIndex(tab => tab.name == 'Probleme')!,1)
-        const tab = newIframeTab(`/editor/problem/${sessionId}/details/${new URLSearchParams(location.search).get('problem')}`, "Probleme")
+        const tab = createIframeTab(`/editor/problem/${sessionId}/details/${new URLSearchParams(location.search).get('problem')}`, "Probleme")
         tab.openTab()
         return tab
     }())
@@ -730,16 +725,7 @@ export function updateCatalouge(sessionId, clientId)
 
     for(const tab of tabs)
         addtab(tab)
-    function newIframeTab(url: string, name) {
-        const iframe = createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: url}]})
-         const tab = createEditorTab(name, iframe)
-        iframe.onload = (ev) => {
-            const newName = iframe.contentWindow?.document.title
-            tab.setName(newName)
-        }
-       
-        return tab
-    }
+    
     function addtab(tab) {
         tab.element.ondragend = () => 
         {
@@ -753,13 +739,23 @@ export function updateCatalouge(sessionId, clientId)
     }
 }
 
+export function createIframeTab(url: string, name) {
+    const iframe = createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: url}]})
+        const tab = createWindowTab(name, iframe)
+    iframe.onload = (ev) => {
+        const newName = iframe.contentWindow?.document.title
+        tab.setName(newName)
+    }
+    
+    return tab
+}
 
 
 function createTabElement(name) {
     return createNode('span', {className: "file-tab", html: [createNode('p', {innerText: name})]})
 }
 
-export function createEditorTab(name, content, disableDrag?)
+export function createWindowTab(name, content, disableDrag?)
 {
     return new EditorWindowTab(name, createTabElement(name), content, undefined, disableDrag)
 }
@@ -969,7 +965,7 @@ export async function showDefaultScreen()
     //     startTime = timestamp;
     // }
 
-    const tab = createEditorTab('Hello!', container, true)
+    const tab = createWindowTab('Hello!', container, true)
     window.addTab(tab)
     window.setActiveFile(tab)
     tab.openTab(undefined)

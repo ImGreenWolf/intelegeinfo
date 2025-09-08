@@ -64,32 +64,36 @@ class ClientObject {
     editorPermission = EditorPermission.Everyone;
     clientData;
     // EditorSessionObject: EditorSession
-    constructor(sessionId, EditorSession, WebSocket, displayName, user) {
+    constructor(sessionId, editorSession, WebSocket, displayName, user) {
         this.sessionId = sessionId;
         this.clientId = (0, uuid_1.v4)();
         this.ping = 0;
         this.CWebSocket = WebSocket;
         // this.EditorSessionObject = EditorSession;
         if (user) {
-            this.displayName = user.username;
+            if (editorSession.editorOptions.anonymousNames)
+                this.setRandomName(editorSession);
+            else
+                this.displayName = user.username;
             this.color = user.userColor;
             this.clientData = user;
         }
         else {
-            if (displayName)
+            if (displayName && !editorSession.editorOptions.anonymousNames)
                 this.displayName = displayName;
-            else {
-                // assaign random name
-                const displayNames = EditorSession.clientsDisplayNames;
-                if (false)
-                    this.displayName = EditorSession.brainrotNames[Math.floor(Math.random() * EditorSession.brainrotNames.length)];
-                else
-                    this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)];
-                displayNames.splice(displayNames.indexOf(this.displayName), 1);
-                if (this.displayName[0])
-                    this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
-            }
+            else
+                this.setRandomName(editorSession);
         }
+    }
+    setRandomName(editorSession) {
+        const displayNames = editorSession.clientsDisplayNames;
+        if (false)
+            this.displayName = editorSession.brainrotNames[Math.floor(Math.random() * editorSession.brainrotNames.length)];
+        else
+            this.displayName = displayNames[Math.floor(Math.random() * displayNames.length)];
+        displayNames.splice(displayNames.indexOf(this.displayName), 1);
+        if (this.displayName[0])
+            this.displayName = this.displayName[0].toLocaleUpperCase() + this.displayName.substring(1); // capitalise name
     }
     sendMessage(message, type) {
         if (type && typeof message != 'string')
@@ -144,7 +148,7 @@ class EditorSession {
         editorPermission: EditorPermission.Everyone,
         enableChat: true,
         enableVoice: false,
-        sandboxUsers: false
+        sandboxUsers: false,
     };
     executeProblemChecker;
     makeSessionPublic(options) {
@@ -369,7 +373,6 @@ Tralalero Tralala`.split('\n');
     }
     spawnClient(ws, displayName, userData) {
         let newClient;
-        console.log(displayName);
         if (userData != undefined)
             newClient = new ClientObject(this.sessionId, this, ws, userData.username, userData);
         else

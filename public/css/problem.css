@@ -1,0 +1,163 @@
+body {
+  width: 75%;
+  margin: auto;
+  font-family: Poppins;
+  display: grid;
+  grid-template-rows: 1fr;
+  gap: 1em;
+}
+
+output {
+  width: 75%;
+  margin: auto;
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+span {
+  /* font-size: 1.15em; */
+  margin-inline: 0.25em;
+}
+
+.good, .perfect {
+  color: green;
+}
+
+.bad {
+  color: rgb(160, 20, 20);
+}
+
+.decent {
+  color: rgb(206, 154, 44);
+}
+
+.show-input:not(:hover) span {
+  display: none;
+}
+
+.sample-container {
+  display: flex;
+  justify-content: stretch;
+  flex-direction: row;
+  width: 100%;
+  gap: 4em;
+}
+.sample-container > div {
+  display: inline;
+  flex-grow: 1;
+}
+.sample-container > div p {
+  margin: 0;
+  font-size: 0.75em;
+  padding-inline: 1em;
+}
+
+.multiline-sample .sample-container {
+  flex-direction: column;
+}
+
+samp {
+  white-space: pre;
+  background-color: black;
+  width: 100%;
+  border-radius: 0.5em;
+  padding: 1em 2em;
+  display: block;
+}
+
+.button-container {
+  display: flex;
+  gap: 2em;
+}
+
+button {
+  padding: 0.5em 1em;
+  background-color: white;
+  font-family: inherit;
+  font-size: inherit;
+  border-radius: 0.5em;
+  font-weight: 600;
+  border: none;
+}
+
+.ai-button {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  border: 0;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: transparent;
+  color: white;
+  position: relative;
+  z-index: 1; /* keep above svg if desired */
+}
+
+/* svg overlay that matches button size */
+.highlight-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* allow clicks through to the button */
+  z-index: 2;
+  overflow: visible;
+}
+
+/* animation: move the small dash around the perimeter */
+@keyframes dash-move {
+  to {
+    stroke-dashoffset: -512;
+  }
+}
+/* small moving dash: dash length 18, gap remainder of perimeter (500) */
+.highlight-svg {
+  stroke: var(--stroke);
+  stroke-width: var(--stroke-width);
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 70 462; /* 18 visible, rest invisible (perimeter ~= 500) */
+  stroke-dashoffset: 0;
+  animation: dash-move linear infinite;
+  animation-duration: var(--anim-duration);
+  transition-duration: 1s;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.ai-button-wrapper:not(:hover) .highlight-svg {
+  stroke-dasharray: 462 0;
+}
+
+/* subtle static glow behind the moving dash (optional) */
+.static-outline {
+  stroke: rgba(53, 30, 90, 0.836);
+  stroke-width: var(--stroke-width);
+  fill: none;
+}
+
+.ai-button-wrapper {
+  width: 150px;
+  position: relative;
+  display: inline-block;
+  --stroke: #1a47db; /* highlight color */
+  --stroke-width: 4; /* thickness */
+  --anim-duration: 5s; /* time for one full loop */
+}
+
+#output > div {
+  display: grid;
+  grid-template-columns: 3em 1fr auto;
+}
+
+#final-score {
+  font-size: 1em;
+}
+#final-score .score, #final-score .time {
+  font-size: 2em;
+  font-weight: 800;
+}
+
+/*# sourceMappingURL=problem.css.map */

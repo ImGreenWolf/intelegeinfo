@@ -71,7 +71,7 @@ router.use((0, cookie_parser_1.default)());
 //     if(!userId) throw 'couldnt get id'
 //     return userId;
 // }
-router.post('/update', (req, res) => {
+router.post('/update', async (req, res) => {
     if (!users.getJWT(req)) {
         res.status(401).json({ error: 'Unauthorized' });
         return;
@@ -87,7 +87,7 @@ router.post('/update', (req, res) => {
     //     var {color} = req.body
     //  if()
     try {
-        var { occupationType, color } = req.body;
+        var { occupationType, color, preferences } = req.body;
         if (req.body.deleteAccount) {
             dbClient_1.default.user.delete({
                 where: {
@@ -104,18 +104,29 @@ router.post('/update', (req, res) => {
                 if (userColor.length != 6 && color[0] == '#')
                     throw "invalid color";
             }
-            dbClient_1.default.user.update({
+            const currentUserData = await dbClient_1.default.user.findUnique({
+                where: {
+                    id: userId
+                }
+            });
+            await dbClient_1.default.user.update({
                 where: {
                     id: userId
                 },
                 data: {
                     userColor,
-                    occupationType
+                    occupationType,
                     // picture: file ? file : undefined
+                    preferences: preferences ? {
+                        ...currentUserData.preferences,
+                        ...preferences
+                    } : undefined
                 }
-            }).then(value => {
-                res.redirect('/profile');
             });
+            if (req.accepts('application/json'))
+                res.send('Updated user info');
+            else
+                res.redirect('/profile');
         }
     }
     catch (err) {
@@ -148,6 +159,14 @@ router.use('/', (req, res) => {
                 }
                 const params = user;
                 const projects = await users.listAllProjects(userId);
+                if (user.preferences) {
+                    const spotifyLink = user.preferences.spotify;
+                    if (spotifyLink)
+                        params.spotifyIframe = `
+                            <iframe data-testid="embed-iframe" style="border-radius:1em; background-color: rgb(25,25,25); margin-top:2em;"
+                                    src="https://open.spotify.com/embed/track/${spotifyLink}?theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+                            `;
+                }
                 if (typeof projects == 'string') {
                     res.status(500).send('A aparut o problema...');
                     return;
@@ -188,6 +207,7 @@ function parseUserInfoInFile(userId, fileSrc, params) {
                 if (!(paramJSON[match[4]?.trim()] != undefined || paramJSON[match[1]?.trim()] != undefined)) // !! had to add !=undefined because it was pickuping up emailValidated = false and projectList = '' as invalid matches lmao.
                  {
                     console.log('couldnt find value for match ' + (match[4] ? match[4] : match[1]));
+                    file = file.replace(match[0], '');
                 }
                 else {
                     // console.log(match)

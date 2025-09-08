@@ -69,6 +69,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const users = __importStar(require("./usersManager"));
 const courses_1 = __importDefault(require("./views/courses"));
+const challangesManager_1 = __importDefault(require("./challanges/challangesManager"));
 const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -96,6 +97,7 @@ app.use('/metrics', metrics_1.default);
 app.use('/classes', classManager_1.default);
 app.use('/courses', courses_1.default);
 app.use('/subiecte', examSubjects_1.default);
+app.use('/interview', challangesManager_1.default);
 app.post('/github/onpull', (req, res) => {
     try {
         if (!req.body)
@@ -126,9 +128,9 @@ app.post('/github/onpull', (req, res) => {
         res.status(500).send(err);
     }
 });
-app.use('/client/scripts', express_1.default.static(path_1.default.join('dist', 'public')));
+app.use('/client/scripts', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public')));
 app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
-app.use('/editor/components', (req, res) => {
+app.use('/editor/components.js', (req, res) => {
     try {
         fs_1.default.readFile(path_1.default.join(exports.rootDirName, 'dist', 'public', 'components.js'), (err, data) => {
             const renderer = data.toString();
@@ -182,9 +184,37 @@ app.post('/feedback', async (req, res) => {
         data: {
             body,
             userId
+        },
+        include: {
+            user: true
         }
-    }).then(feedback => {
-        res.send('Am primit feedbackul tau!');
+    }).then(async (feedback) => {
+        if (!await users.transporter.verify()) {
+            res.send('Am primit feedbackul tau!');
+            return;
+        }
+        const logoSvg = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'public', 'media', 'logoText.svg'));
+        const logoData = `<img src="data:image/svg+xml;base64,${logoSvg.toString('base64url')}">`;
+        const mailRes = await users.transporter.sendMail({
+            to: 'office@intelegeinfo.ro',
+            cc: 'radubitere5@gmail.com',
+            from: 'Feedback <office@intelegeinfo.ro>',
+            subject: 'Feedback intelegeinfo - ' + feedback.user.username,
+            // text: 
+            // `
+            // Am primit feedback #${feedback.id} pe ${feedback.createdAt.toLocaleString()}     de la ${feedback.user.firstName} ${feedback.user.lastName} cu userId ${feedback.user.id}:
+            // ${feedback.body}
+            // `
+            html: `
+            ${logoData}
+            <p>
+                Am primit feedback #${feedback.id} pe ${feedback.createdAt.toLocaleString()} de la ${feedback.user.firstName} ${feedback.user.lastName} cu userId ${feedback.user.id}:
+            </p>
+            <br>
+             <pre>${feedback.body}</pre>
+            `
+        });
+        res.send('Am primit feedbackul tau! Iti multumim!');
     }).catch(err => res.send("Eroare.. " + err));
 });
 app.use('/editor/', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public')));
@@ -248,20 +278,20 @@ app.post('/editor/startsession/:id', (req, res) => {
         if (!req.body && !id)
             res.status(501);
         if (exports.sessionMap.has(id)) {
-            const { chat, codePermission, voice, sandbox } = req.body;
-            if (exports.sessionMap.get(id).isPublic) {
-                exports.sessionMap.get(id).makeSessionPublic({ enableChat: checkboxValue(chat),
-                    editorPermission: codePermission,
-                    enableVoice: checkboxValue(voice),
-                    sandboxUsers: checkboxValue(sandbox) });
-                res.status(200);
-                return;
-            }
+            const { chat, codePermission, voice, sandbox, externals, anonymous, language } = req.body;
             exports.sessionMap.get(id).makeSessionPublic({ enableChat: checkboxValue(chat),
                 editorPermission: codePermission,
                 enableVoice: checkboxValue(voice),
-                sandboxUsers: checkboxValue(sandbox) });
+                sandboxUsers: checkboxValue(sandbox),
+                externalLinks: checkboxValue(externals),
+                anonymousNames: checkboxValue(anonymous),
+                allowedLanguage: EditorModes.modes.find(mode => mode.name == language) });
+            if (exports.sessionMap.get(id).isPublic) {
+                res.status(200);
+                return;
+            }
             res.status(201).send('');
+            return;
         }
         else {
             res.status(500);
@@ -1002,7 +1032,7 @@ exports.wss.addListener('connection', async (ws, req) => {
              {
                 // display join message
                 replicateFunction((clientWs, LocalclientId) => {
-                    printClientConsoleSessionInfo(clientObj?.displayName + " joined!", getThisClientSession().getClientObjectById(LocalclientId));
+                    printClientConsoleSessionInfo(clientObj?.displayName + " s-a alaturat sesiunii!", getThisClientSession().getClientObjectById(LocalclientId));
                 }, clientObj);
                 let displayNames = [];
                 getThisClientSession()?.clientsMap.forEach((client, id) => {
@@ -1729,7 +1759,11 @@ bash `.trim().replaceAll('\n', "");
                             break;
                         // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.UserChat,  body: messageJSON.command, clientDisplayName: clientObj?.displayName});
                         replicateFunction((clientWs) => {
-                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Chat, id: getThisClientSession().messageIndex, messageType: types_1.ConsoleMessageType.UserChat, body: messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"), clientDisplayName: clientObj?.displayName, clientId: clientId })); // Send GDB output to the client
+                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Chat, id: getThisClientSession().messageIndex,
+                                messageType: types_1.ConsoleMessageType.UserChat, body: messageJSON.command.replaceAll("<", "&lt").replaceAll(">", "&gt"),
+                                clientDisplayName: clientObj?.displayName,
+                                clientId: clientId, userId: clientObj.clientData ? clientObj.clientData.id : undefined,
+                                color: clientObj.color })); // Send GDB output to the client
                         });
                         getThisClientSession().messageIndex++; // counter used to id and group console mssages.
                         // clients.forEach((client, id) => {
@@ -2205,10 +2239,10 @@ bash `.trim().replaceAll('\n', "");
                         const newHost = Array.from(clientSession.clientsMap.values())[Math.floor(Math.random() * clientSession.clientsMap.size)];
                         newHost.isHost = true;
                         clientSession.hostClient = newHost;
-                        newHost.sendMessage({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "HOST", body: "You're now the host of this session." });
+                        newHost.sendMessage({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "HOST", body: "Acum esti proprietarul acestei sesiuni." });
                     }
                 replicateFunction((clientWs) => {
-                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ColabData, ...clientInfo(clientObj), colabCommand: "DISCONECT", session, body: clientObj?.displayName + " has left." }));
+                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ColabData, ...clientInfo(clientObj), colabCommand: "DISCONECT", session, body: clientObj?.displayName + " a iesit din sesiune." }));
                 }, clientObj);
                 console.info('session is still active');
                 // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, body: "$: Client " + clientId + " disconnected!"});

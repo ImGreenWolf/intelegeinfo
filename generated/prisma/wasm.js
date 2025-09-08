@@ -144,7 +144,8 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password',
   authId: 'authId',
   loginMethod: 'loginMethod',
-  occupationType: 'occupationType'
+  occupationType: 'occupationType',
+  preferences: 'preferences'
 };
 
 exports.Prisma.CodeScalarFieldEnum = {

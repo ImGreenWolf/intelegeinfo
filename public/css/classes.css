@@ -336,6 +336,8 @@ body, html, .main-container, #class-details {
 
 img.profile {
   height: 2em;
+  width: 2em;
+  aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
   position: relative;

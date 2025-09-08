@@ -22,10 +22,11 @@ export declare function getIdFromJWT(req: any): number;
 export declare function addProject(id: number, data: any): Promise<{
     id: number;
     createdAt: Date;
+    email: string;
     username: string;
+    loginMethod: string;
     firstName: string;
     lastName: string;
-    email: string;
     emailValidated: boolean;
     userColor: string;
     picture: string;
@@ -33,8 +34,8 @@ export declare function addProject(id: number, data: any): Promise<{
     activeAt: Date;
     password: string | null;
     authId: Prisma.JsonValue | null;
-    loginMethod: string;
     occupationType: import("../../generated/prisma").$Enums.OccupationType;
+    preferences: Prisma.JsonValue | null;
 }>;
 export declare function listAllProjects(userId: any): Promise<any[]>;
 export declare function getClientJWTValue(token: string): UserState;
@@ -48,6 +49,135 @@ export declare function activeAtComponent(): {
     activeAt: Date;
 };
 export declare function updateActiveAtForUser(userId: number, include?: Prisma.UserInclude): Promise<false | ({
+    Guide: {
+        id: number;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        authorId: number;
+        positiveRatings: number;
+        negativeRatings: number;
+        content: string;
+        description: string | null;
+        category: string | null;
+        visits: number;
+    }[];
+    Feedback: {
+        id: number;
+        createdAt: Date;
+        body: string;
+        userId: number | null;
+    }[];
+    pictureUpload: {
+        id: number;
+        createdAt: Date;
+        path: string;
+        originalName: string;
+        size: number;
+        UserId: number | null;
+    };
+    projects: {
+        id: number;
+        metadata: Prisma.JsonValue | null;
+        name: string;
+        createdAt: Date;
+        userId: number;
+        fileUUID: string;
+    }[];
+    solves: {
+        id: number;
+        userId: number;
+        problemid: number;
+        sourceCode: string;
+        uploadedAt: Date;
+        score: number;
+        time: number;
+    }[];
+    Course: {
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string;
+        email: string | null;
+        userId: number;
+        experience: string;
+        price: number;
+        courseLength: number;
+        summary: string;
+        summaryPath: string | null;
+        phone: string | null;
+        external: Prisma.JsonValue | null;
+        views: number;
+    };
+    Review: {
+        id: number;
+        createdAt: Date;
+        userId: number;
+        courseId: number;
+        rating: number;
+        motive: string | null;
+    }[];
+    Upload: {
+        id: number;
+        createdAt: Date;
+        path: string;
+        originalName: string;
+        size: number;
+        UserId: number | null;
+    }[];
+    Inquiry: {
+        id: number;
+        createdAt: Date;
+        firstName: string;
+        lastName: string;
+        message: string | null;
+        userId: number | null;
+        courseId: number;
+        respondedAt: Date | null;
+        response: boolean | null;
+        contactInfo: Prisma.JsonValue;
+    }[];
+    Problem: {
+        id: number;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        authorId: number;
+        positiveRatings: number;
+        negativeRatings: number;
+        description: string | null;
+        category: string | null;
+        difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
+        tags: string[];
+        requirement: Prisma.JsonValue | null;
+        grade: number;
+        sourceCode: string | null;
+        tests: Prisma.JsonValue[];
+        averageTimeLimit: number;
+        averageMemLimit: number;
+    }[];
+    JoinedClass: {
+        userId: number;
+        classId: number;
+        joinDate: Date;
+    }[];
+    CreatedClasses: {
+        id: number;
+        name: string;
+        createdAt: Date;
+        description: string | null;
+        color: string;
+        creatorId: number;
+    }[];
+    Assigments: {
+        id: number;
+        createdAt: Date;
+        description: string | null;
+        classId: number;
+        problemId: number | null;
+        title: string;
+        dueDate: Date | null;
+    }[];
     _count: {
         pictureUpload: number;
         projects: number;
@@ -63,142 +193,14 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         CreatedClasses: number;
         Assigments: number;
     };
-    Problem: {
-        id: number;
-        name: string;
-        description: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        authorId: number;
-        positiveRatings: number;
-        negativeRatings: number;
-        requirement: Prisma.JsonValue | null;
-        tests: Prisma.JsonValue[];
-        averageTimeLimit: number;
-        averageMemLimit: number;
-        category: string | null;
-        sourceCode: string | null;
-        difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
-        tags: string[];
-        grade: number;
-    }[];
-    CreatedClasses: {
-        id: number;
-        name: string;
-        description: string | null;
-        createdAt: Date;
-        creatorId: number;
-        color: string;
-    }[];
-    JoinedClass: {
-        userId: number;
-        classId: number;
-        joinDate: Date;
-    }[];
-    pictureUpload: {
-        id: number;
-        createdAt: Date;
-        path: string;
-        originalName: string;
-        size: number;
-        UserId: number | null;
-    };
-    projects: {
-        id: number;
-        name: string;
-        userId: number;
-        createdAt: Date;
-        metadata: Prisma.JsonValue | null;
-        fileUUID: string;
-    }[];
-    solves: {
-        id: number;
-        userId: number;
-        sourceCode: string;
-        problemid: number;
-        uploadedAt: Date;
-        score: number;
-        time: number;
-    }[];
-    Guide: {
-        id: number;
-        name: string;
-        description: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        authorId: number;
-        positiveRatings: number;
-        negativeRatings: number;
-        category: string | null;
-        content: string;
-        visits: number;
-    }[];
-    Course: {
-        id: number;
-        userId: number;
-        description: string;
-        createdAt: Date;
-        updatedAt: Date;
-        email: string | null;
-        experience: string;
-        price: number;
-        courseLength: number;
-        summary: string;
-        summaryPath: string | null;
-        phone: string | null;
-        external: Prisma.JsonValue | null;
-        views: number;
-    };
-    Review: {
-        id: number;
-        userId: number;
-        createdAt: Date;
-        courseId: number;
-        rating: number;
-        motive: string | null;
-    }[];
-    Upload: {
-        id: number;
-        createdAt: Date;
-        path: string;
-        originalName: string;
-        size: number;
-        UserId: number | null;
-    }[];
-    Inquiry: {
-        id: number;
-        userId: number | null;
-        createdAt: Date;
-        firstName: string;
-        lastName: string;
-        message: string | null;
-        courseId: number;
-        respondedAt: Date | null;
-        response: boolean | null;
-        contactInfo: Prisma.JsonValue;
-    }[];
-    Feedback: {
-        id: number;
-        userId: number | null;
-        createdAt: Date;
-        body: string;
-    }[];
-    Assigments: {
-        id: number;
-        classId: number;
-        problemId: number | null;
-        title: string;
-        description: string | null;
-        createdAt: Date;
-        dueDate: Date | null;
-    }[];
 } & {
     id: number;
     createdAt: Date;
+    email: string;
     username: string;
+    loginMethod: string;
     firstName: string;
     lastName: string;
-    email: string;
     emailValidated: boolean;
     userColor: string;
     picture: string;
@@ -206,6 +208,6 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
     activeAt: Date;
     password: string | null;
     authId: Prisma.JsonValue | null;
-    loginMethod: string;
     occupationType: import("../../generated/prisma").$Enums.OccupationType;
+    preferences: Prisma.JsonValue | null;
 })>;

@@ -98,7 +98,7 @@ html, body {
 }
 #profile .content-container a {
   color: inherit;
-  display: block;
+  font-family: inherit;
 }
 #profile .content-container:not(.open) {
   display: none;
@@ -176,8 +176,8 @@ button.warning,
 }
 
 #profile .profile-pic-large {
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 150px;
+  max-height: 150px;
   width: 20vw;
   aspect-ratio: 1;
   object-fit: cover;
@@ -195,6 +195,7 @@ button.warning,
   display: flex;
   flex-direction: column;
   gap: 1em;
+  height: 100%;
 }
 
 input[type=color] {
@@ -205,7 +206,7 @@ input[type=color] {
   display: flex;
   justify-content: space-between;
   min-width: 75%;
-  margin: auto;
+  margin: 0 auto;
   align-items: center;
 }
 .color-list span {
