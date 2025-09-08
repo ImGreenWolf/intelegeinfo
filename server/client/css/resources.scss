@@ -63,7 +63,7 @@
             box-sizing: content-box;
             // width: 200px;
             width: 100%;
-            min-height: 200px;
+            min-height: 150px;
             // aspect-ratio: 1;
             margin: 0;
             padding: 1.5em;
@@ -150,7 +150,8 @@ vl {
     width: 100%;
     padding: 0 1em;
     line-height: 3em;
-    border-radius: 1lh;
+    font-size: 1em;
+    border-radius: 1em;
     border: 2px solid gray;
     &:active
     {
@@ -175,5 +176,6 @@ vl {
     {
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
+        font-size: 0.75em;
     }
 }
