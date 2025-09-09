@@ -307,7 +307,7 @@ async function postsRequest(guideEntries, req, res, error) {
         for(const tag of document.getElementsByClassName('tags')[0].children)
         {
             tag.onclick = (ev) => {
-                const text = tag.querySelector('p').innerText
+                const text = tag.querySelector('span').innerText
                 if(params.has("tags", text))
                     params.delete("tags")
                 else
