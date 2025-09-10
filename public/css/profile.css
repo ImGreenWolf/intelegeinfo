@@ -32,7 +32,7 @@ html, body {
 }
 
 .email-verified {
-  height: 0.5lh;
+  height: 0.75em;
   display: inline;
   margin-left: 10px;
   color: green;
@@ -59,7 +59,7 @@ html, body {
   border-right: 1px solid rgba(126, 126, 126, 0.219);
 }
 #profile ul button {
-  height: 2lh;
+  height: 2.5em;
   text-wrap: nowrap;
   padding-inline: 2em;
   font-size: 1em;
@@ -119,7 +119,7 @@ html, body {
   flex-direction: column;
 }
 #profile .info-container span {
-  border-radius: 0.25lh;
+  border-radius: 0.25em;
   border: 2px solid rgba(126, 126, 126, 0.219);
   width: 100%;
   padding-inline: 1em;
