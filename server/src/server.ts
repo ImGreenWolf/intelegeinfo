@@ -479,8 +479,8 @@ function onServerStart()
 import * as https from 'https'
 import * as http from 'http'
 //          GLOBAL  SERVER  VARIABLES       //
-            const PORT = process.env.PORT || 3000;
-            const SECPORT = process.env.SECPORT || 3443;
+    const PORT = process.env.PORT || 3000;
+    const SECPORT = process.env.SECPORT || 3443;
     try  {
         var privkey = fs.readFileSync(process.env.PRIVKEYPATH)
         var fullchain = fs.readFileSync(process.env.FULLCHAINPATH)
@@ -498,19 +498,21 @@ if(process.env.NODE_ENV == 'development')
 var httpsServer = https.createServer(credentials, app);
 let httpMeter = tx2.counter('http connections')
 if(fullchain && privkey)
-    var httpServer = http.createServer(process.env.NODE_ENV == 'development' || true ? app : (req,res) => {
+    var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req,res) => {
         res.statusCode = 301;
         res.setHeader('Location', 'https://intelegeinfo.ro' + req.url);
         res.end();
         httpMeter.inc(1)
     });
-else
-var httpServer = http.createServer(app);
+else var httpServer = http.createServer(app);
+
+
 let connectionPromise: Promise<void> | undefined;
 let connectionPromiseTimeout: NodeJS.Timeout;
 const codeMap: Map<number, UUID> = new Map()
 const unsecureServer = httpServer.listen(PORT);
-export const server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(SECPORT);
+
+export const server = httpsServer.listen(SECPORT);
 server.on('listening', onServerStart)
 
     // app.listen(PORT, '0.0.0.0', onServerStart);

@@ -410,7 +410,7 @@ if (process.env.NODE_ENV == 'development')
 var httpsServer = https.createServer(credentials, app);
 let httpMeter = tx2_1.default.counter('http connections');
 if (fullchain && privkey)
-    var httpServer = http.createServer(process.env.NODE_ENV == 'development' || true ? app : (req, res) => {
+    var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req, res) => {
         res.statusCode = 301;
         res.setHeader('Location', 'https://intelegeinfo.ro' + req.url);
         res.end();
@@ -422,7 +422,7 @@ let connectionPromise;
 let connectionPromiseTimeout;
 const codeMap = new Map();
 const unsecureServer = httpServer.listen(PORT);
-exports.server = process.env.NODE_ENV == 'development' ? unsecureServer : httpsServer.listen(SECPORT);
+exports.server = httpsServer.listen(SECPORT);
 exports.server.on('listening', onServerStart);
 // app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
