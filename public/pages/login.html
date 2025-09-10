@@ -118,7 +118,8 @@
       const response = await fetch('/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        credentials: 'same-origin'
       })
       .then(function (response) {
         if(response.ok || response.code === 200)

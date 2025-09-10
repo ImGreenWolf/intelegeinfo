@@ -73,12 +73,14 @@ function onLoggedIn(user, res, req, shouldkeepLoggedIn = false) {
     let keepLoggedIn = req.body ? (req.body.keepLoggedIn ? req.body.keepLoggedIn : shouldkeepLoggedIn) : shouldkeepLoggedIn;
     if (keepLoggedIn)
         return res.cookie('token', token, {
+            sameSite: 'lax',
             httpOnly,
             secure, // Set to true in production (HTTPS)
             maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
         });
     else
         return res.cookie('token', token, {
+            sameSite: 'lax',
             httpOnly,
             secure, // Set to true in production (HTTPS)
         });
