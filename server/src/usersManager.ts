@@ -337,7 +337,7 @@ router.get('/verifyemail', (req, res) => {
     const id = parseInt(req.query.id as string);
 
     getUserData(id).then( user => {
-                if(user.emailValidated) return res.send('Your account is already verified') 
+        if(user.emailValidated) return res.send('Your account is already verified') 
 
     
     Profile.parseUserInfoInFile(id, path.join(rootDirName,'public','pages','emailCodeVerification.html')).catch(err => {
@@ -361,6 +361,9 @@ router.get('/verifyemail', (req, res) => {
             return map.has(match[1]) ? map.get(match[1]) : `${match[0]}`;
         });
 
+        const hmacCode = hmacuUtil.generateHmac(code.toString())
+        console.log('hmaccode:', hmacCode, 'code:', code)
+
         var mailOptions: nodemailer.SendMailOptions  = {
             from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
             to: user.email,
@@ -378,9 +381,10 @@ router.get('/verifyemail', (req, res) => {
             if (error) {
                 res.status(500).send({message: "error sending email",error});
             } else {
-                console.log(info)
-                res.send(parseText(file, req).replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail))
-                     }
+                
+                console.log(info, 'hmaccode:', hmacCode)
+                res.send(parseText(file, req, {code: hmacCode}).replace('#{code}', hmacCode).replace('#{emailCensored}', censoredEmail))
+                }
         })
       })
 }).catch(err => {

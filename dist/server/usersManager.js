@@ -298,6 +298,8 @@ exports.router.get('/verifyemail', (req, res) => {
             const result = fileToSend.replace(/\$\{(.*?)\}/g, (...match) => {
                 return map.has(match[1]) ? map.get(match[1]) : `${match[0]}`;
             });
+            const hmacCode = hmacuUtil.generateHmac(code.toString());
+            console.log('hmaccode:', hmacCode, 'code:', code);
             var mailOptions = {
                 from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
                 to: user.email,
@@ -314,8 +316,8 @@ exports.router.get('/verifyemail', (req, res) => {
                         res.status(500).send({ message: "error sending email", error });
                     }
                     else {
-                        console.log(info);
-                        res.send((0, server_1.parseText)(file, req).replace('#{code}', hmacuUtil.generateHmac(code.toString())).replace('#{emailCensored}', censoredEmail));
+                        console.log(info, 'hmaccode:', hmacCode);
+                        res.send((0, server_1.parseText)(file, req, { code: hmacCode }).replace('#{code}', hmacCode).replace('#{emailCensored}', censoredEmail));
                     }
                 });
         });
