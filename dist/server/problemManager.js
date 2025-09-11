@@ -387,7 +387,7 @@ const users = __importStar(require("./usersManager"));
 exports.router.get('/:sessionId/details/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const sessionId = req.params.sessionId;
-    const userId = users.getClientId(req.cookies.token);
+    const userId = users.getIdFromJWT(req);
     if (!id)
         throw 'invalid id';
     const problem = await dbClient_1.default.problem.findUnique({
@@ -436,6 +436,47 @@ exports.router.get('/:sessionId/details/:id', async (req, res) => {
     const solvesUI = problem.solves ?
         problem.solves.map(solve => `<div><span class="${['bad', 'decent', 'good', 'perfect'][Math.round(solve.score / 25) - (solve.score == 0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`) : '';
     res.send(serverSideReplace(fileBuffer, { json: { ...problem, difficulty: problem.difficulty ? problem.difficulty : '' }, sessionId, html: { solvesUI: solvesUI[0] } }));
+});
+exports.router.get('/details/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    // const sessionId = req.params.sessionId as UUID
+    const userId = users.getIdFromJWT(req);
+    if (!id)
+        throw 'invalid id';
+    const problem = await dbClient_1.default.problem.findUnique({
+        where: {
+            id
+        },
+        include: {
+            solves: {
+                orderBy: {
+                    uploadedAt: "desc"
+                },
+                where: {
+                    userId
+                },
+            },
+            _count: {
+                select: { solves: true }
+            },
+            Assignment: {
+                where: {
+                    assignedTo: {
+                        some: {
+                            id: userId
+                        }
+                    }
+                }
+            }
+        },
+        omit: {
+            tests: true,
+            sourceCode: true,
+        }
+    });
+    if (!problem)
+        throw 'couldnt find problem.';
+    res.send(problem);
 });
 exports.default = exports.router;
 const openai_1 = __importDefault(require("openai"));

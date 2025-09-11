@@ -58,12 +58,15 @@ export async function evaluate(sessionId, problemId) {
     </section>
     `;
 }
-export function init(problemId) {
+export async function init(problemId) {
     if (getAnyMultilineSample())
         document.body.classList.add('multiline-sample');
     document.getElementById('evaluate-explenation').onclick = (ev) => {
         evaluateExplenation(document.getElementById('explain').value, problemId);
     };
+    const json = await ((await fetch('/editor/problem/details/' + problemId)).json());
+    if (json.solves.find(val => val.score == 100))
+        document.body.classList.add('solved');
 }
 function getAnyMultilineSample() {
     for (const samp of document.getElementsByTagName('samp'))

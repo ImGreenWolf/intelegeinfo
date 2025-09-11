@@ -50,6 +50,7 @@ const dbClient_1 = __importDefault(require("./dbClient"));
 const signup = __importStar(require("./signup"));
 const path_1 = __importDefault(require("path"));
 const server_1 = require("./server");
+const usersManager_1 = require("./usersManager");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/login.html"));
@@ -133,7 +134,7 @@ router.get('/public-key', (req, res) => {
     res.send(publicKeyPem);
 });
 function authMiddleware(req, res, next) {
-    const token = req.cookies.token;
+    const token = (0, usersManager_1.getJWT)(req);
     if (!token)
         return res.status(401).json({ error: 'Unauthorized' });
     try {

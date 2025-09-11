@@ -124,7 +124,9 @@ button {
       transition-duration: 1s;
       transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
     }
-    .ai-button-wrapper:not(:hover) .highlight-svg {
+    
+    .ai-button-wrapper:not(:hover) .highlight-svg,
+    body:not(:is(.solved)) .ai-button-wrapper .highlight-svg {
         // animation-play-state: paused;
         // animation-duration: 10s;
         stroke-dasharray: 462 0;
@@ -157,4 +159,10 @@ button {
         font-size: 2em;
         font-weight: 800;
     }
+}
+
+body:not(:is(.solved)) {
+  .ai-button-wrapper {
+    opacity: 0.5;
+  }
 }

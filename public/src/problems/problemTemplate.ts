@@ -1,3 +1,4 @@
+import { Problem } from "../../../generated/prisma/index.js";
 import { createNode } from "../components.js"
 
 export async function test(sessionId, problemId)
@@ -73,13 +74,36 @@ export async function evaluate(sessionId, problemId)
 }
  
 
-export function init(problemId) {
+export async function init(problemId) {
    if(getAnyMultilineSample())
     document.body.classList.add('multiline-sample')
 
    document.getElementById('evaluate-explenation')!.onclick = (ev) => {
     evaluateExplenation((document.getElementById('explain')! as HTMLTextAreaElement).value, problemId)
    }
+
+   const json = await((await fetch('/editor/problem/details/'+problemId)).json()) as Problem & {solves: {
+        id: number;
+        sourceCode: string;
+        userId: number;
+        problemid: number;
+        uploadedAt: Date;
+        score: number;
+        time: number;
+    }[];
+    Assignment: {
+        description: string;
+        problemId: number;
+        id: number;
+        createdAt: Date;
+        classId: number;
+        title: string;
+        dueDate: Date;
+    }[];
+   }
+
+   if(json.solves.find(val => val.score == 100))
+    document.body.classList.add('solved')
 }
 
 function getAnyMultilineSample() {

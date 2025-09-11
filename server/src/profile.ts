@@ -127,7 +127,7 @@ router.get('/logout', (req, res) => {
 
 router.use('/', (req, res) => {
 
-       // const token = req.cookies.token
+       // const token = getIdFromJWT(req)
        
         if (!users.getJWT(req))  
         {

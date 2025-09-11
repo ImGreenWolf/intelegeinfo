@@ -139,7 +139,7 @@ router.get('/logout', (req, res) => {
     res.json({ redir: '/', message: "log out sucecsesfull!" });
 });
 router.use('/', (req, res) => {
-    // const token = req.cookies.token
+    // const token = getIdFromJWT(req)
     if (!users.getJWT(req)) {
         res.status(401).redirect('/signup');
         return;

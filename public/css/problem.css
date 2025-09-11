@@ -127,7 +127,8 @@ button {
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.ai-button-wrapper:not(:hover) .highlight-svg {
+.ai-button-wrapper:not(:hover) .highlight-svg,
+body:not(:is(.solved)) .ai-button-wrapper .highlight-svg {
   stroke-dasharray: 462 0;
 }
 
@@ -158,6 +159,10 @@ button {
 #final-score .score, #final-score .time {
   font-size: 2em;
   font-weight: 800;
+}
+
+body:not(:is(.solved)) .ai-button-wrapper {
+  opacity: 0.5;
 }
 
 /*# sourceMappingURL=problem.css.map */

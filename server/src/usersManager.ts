@@ -66,7 +66,7 @@ export function generateCode()
     return code
 } 
 
-export function getJWT(req: any)
+export function getJWT(req: any): string
 {
     return req.cookies[tokenCookieName]
 }

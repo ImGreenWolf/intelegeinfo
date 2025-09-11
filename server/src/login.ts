@@ -11,6 +11,7 @@ import * as signup from './signup'
 import path from 'path';
 import { Role } from '../../generated/prisma';
 import { tokenCookieName } from './server';
+import { getJWT } from './usersManager';
 
 const router = express.Router();
 router.use(bodyParser.json());
@@ -139,7 +140,7 @@ router.get('/public-key', (req, res) => {
 
 
 export function authMiddleware(req: any, res: Response, next:any) {
-  const token = req.cookies.token;
+  const token = getJWT(req);
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
   try {

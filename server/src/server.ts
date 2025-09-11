@@ -115,8 +115,7 @@ app.use('/editor/components.js',
             let newRender = renderer;
                 //  TODO Improve this system
             const userId =users.getIdFromJWT(req)
-            console.log(userId)
-            if(req.cookies.token && userId)
+            if(userId)
                 users.getUserData(userId).then((userdata) => {
                     if(!userdata)
                         throw 'invalid user'
@@ -404,7 +403,7 @@ app.use(cookieParser());
 const privateKeyPem = fs.readFileSync(path.join(rootDirName,'private.pem'), 'utf8');
 export function authMiddleware(req, res, next:any, role?:string) {
     // if() return res.status(403).json({ error: 'failed reading cookies' });
-    const token = req.cookies.token;
+    const token = users.getJWT(req);
 
     if (!token)  
     {

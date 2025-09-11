@@ -138,8 +138,7 @@ app.use('/editor/components.js', (req, res) => {
             let newRender = renderer;
             //  TODO Improve this system
             const userId = users.getIdFromJWT(req);
-            console.log(userId);
-            if (req.cookies.token && userId)
+            if (userId)
                 users.getUserData(userId).then((userdata) => {
                     if (!userdata)
                         throw 'invalid user';
@@ -355,7 +354,7 @@ app.use((0, cookie_parser_1.default)());
 const privateKeyPem = fs_1.default.readFileSync(path_1.default.join(exports.rootDirName, 'private.pem'), 'utf8');
 function authMiddleware(req, res, next, role) {
     // if() return res.status(403).json({ error: 'failed reading cookies' });
-    const token = req.cookies.token;
+    const token = users.getJWT(req);
     if (!token) {
         res.status(401).json({ error: 'Unauthorized' });
     }

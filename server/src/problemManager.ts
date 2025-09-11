@@ -443,7 +443,7 @@ import * as users from './usersManager'
 router.get('/:sessionId/details/:id', async (req, res) => {
     const id = parseInt(req.params.id)
     const sessionId = req.params.sessionId as UUID
-    const userId = users.getClientId(req.cookies.token)
+    const userId = users.getIdFromJWT(req)
     if(!id)
         throw 'invalid id';
     const problem = await prisma.problem.findUnique({
@@ -513,6 +513,56 @@ router.get('/:sessionId/details/:id', async (req, res) => {
     res.send(serverSideReplace(fileBuffer, {json: {...problem, difficulty: problem.difficulty ? problem.difficulty : ''}, sessionId, html: {solvesUI: solvesUI[0]}}))
 })
 
+
+router.get('/details/:id', async (req, res) => {
+    const id = parseInt(req.params.id)
+    // const sessionId = req.params.sessionId as UUID
+    const userId = users.getIdFromJWT(req)
+    if(!id)
+        throw 'invalid id';
+    const problem = await prisma.problem.findUnique({
+        where: {
+            id
+        },
+        include:
+        {
+            solves:
+            {
+                orderBy:
+                {
+                    uploadedAt: "desc"
+                },
+                where:
+                {
+                    userId
+                },
+                
+            },
+            _count: {
+                select: {solves: true}
+            },
+            Assignment: {
+                where: {
+                    assignedTo: {
+                        some: {
+                            id: userId
+                        }
+                    }
+                }
+            }
+        },
+        omit: {
+            tests: true,
+            sourceCode: true,
+        }
+    })
+    if(!problem)
+        throw 'couldnt find problem.'
+    
+    
+
+    res.send(problem)
+})
 
 
 export default router
