@@ -284,7 +284,9 @@ export async function autocompleteProblemDetails(client, openFile: EditorFile)
     
     const responseJson = JSON.parse(response.output_text) as Problem
     const tests: ProblemTest[] = responseJson.tests.map(testInput => {return {dataIn: testInput}}) as ProblemTest[]
-    return {...responseJson, ...tests}
+    responseJson.tests = tests
+
+    return responseJson
     // const createdProblem = await createProblem(responseJson, tests, openFile.session, client)
 
     

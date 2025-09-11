@@ -253,6 +253,7 @@ async function autocompleteProblemDetails(client, openFile) {
     });
     const responseJson = JSON.parse(response.output_text);
     const tests = responseJson.tests.map(testInput => { return { dataIn: testInput }; });
-    return { ...responseJson, ...tests };
+    responseJson.tests = tests;
+    return responseJson;
     // const createdProblem = await createProblem(responseJson, tests, openFile.session, client)
 }

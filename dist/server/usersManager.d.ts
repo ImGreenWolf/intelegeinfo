@@ -67,10 +67,10 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         sourceCode: string;
         score: number;
         type: import("../../generated/prisma").$Enums.SolveType;
+        time: number;
         userId: number;
         problemid: number;
         uploadedAt: Date;
-        time: number;
     }[];
     _count: {
         pictureUpload: number;
