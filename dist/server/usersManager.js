@@ -99,7 +99,7 @@ function generateCode() {
     return code;
 }
 function getJWT(req) {
-    return req.cookies.token;
+    return req.cookies[server_1.tokenCookieName];
 }
 async function getUserData(id, include) {
     if (!id)

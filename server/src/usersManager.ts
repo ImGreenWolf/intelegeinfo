@@ -68,7 +68,7 @@ export function generateCode()
 
 export function getJWT(req: any)
 {
-    return req.cookies.token
+    return req.cookies[tokenCookieName]
 }
 
 export async function getUserData<
