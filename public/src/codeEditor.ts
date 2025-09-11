@@ -135,7 +135,7 @@ class RemoteCursorSelection implements Ace.Ace.MarkerLike {
 
 class Console {
   element: HTMLDivElement;
-  stdin: string[] = []
+  stdin: string = ''
   event = new Event("open");
   compileMessage: HTMLDivElement | undefined
   noVNC: HTMLIFrameElement | undefined
@@ -160,7 +160,7 @@ class Console {
       sendDebugCommand("execute")
       ws.send(
         JSON.stringify({
-          command: this.stdin.join(" "),
+          command: this.stdin,
           // args: ["console"],
           type: WebSocketMessageType.Console,
           action: 'process'
@@ -203,9 +203,10 @@ class Console {
 
   public callbackCreate(callerConsole: Console) {
     callerConsole.stdin = this.stdin;
+    console.log(this.stdin)
   }
   public sendCommand(cmd: string) {
-    this.stdin.push(cmd)
+    this.stdin += cmd
   }
 }
 

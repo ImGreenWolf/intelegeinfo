@@ -13,7 +13,7 @@ declare class VisualCursor implements Ace.Ace.MarkerLike {
 }
 declare class Console {
     element: HTMLDivElement;
-    stdin: string[];
+    stdin: string;
     event: Event;
     compileMessage: HTMLDivElement | undefined;
     noVNC: HTMLIFrameElement | undefined;

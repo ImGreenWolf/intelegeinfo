@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { getCookie } from "./codeEditor.js";
+import { getCookie } from "./utils.js";
 declare global {
     interface Window {
         editor: any

@@ -81,7 +81,7 @@ class RemoteCursorSelection {
 }
 class Console {
     element;
-    stdin = [];
+    stdin = '';
     event = new Event("open");
     compileMessage;
     noVNC;
@@ -102,7 +102,7 @@ class Console {
         resendButton.onclick = (ev) => {
             sendDebugCommand("execute");
             ws.send(JSON.stringify({
-                command: this.stdin.join(" "),
+                command: this.stdin,
                 // args: ["console"],
                 type: WebSocketMessageType.Console,
                 action: 'process'
@@ -132,9 +132,10 @@ class Console {
     }
     callbackCreate(callerConsole) {
         callerConsole.stdin = this.stdin;
+        console.log(this.stdin);
     }
     sendCommand(cmd) {
-        this.stdin.push(cmd);
+        this.stdin += cmd;
     }
 }
 // Manager class for multiple visual cursors

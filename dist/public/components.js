@@ -1,4 +1,4 @@
-import { getCookie } from "./codeEditor.js";
+import { getCookie } from "./utils.js";
 class IElement {
     parentElement;
     constructor(parentElem) {
