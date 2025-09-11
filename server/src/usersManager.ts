@@ -12,7 +12,7 @@ import { onLoggedIn, UserState } from "./login"
 import * as Profile from './profile'
 import path from "path";
 import * as hmacuUtil from "../../dist/shared/hmacUtils";
-import { authMiddleware, parseText, sessionMap } from "./server";
+import { authMiddleware, parseText, sessionMap, tokenCookieName } from "./server";
 import * as users from './usersManager'
 import { google } from "googleapis";
 import { prepareEncrPassForDB } from "./signup";
@@ -643,7 +643,7 @@ router.get('/picture', async (req, res) => {
         const user = await updateActiveAtForUser(id, {pictureUpload: true}) //getUserData
         if(!user)
         {
-            res.clearCookie('token').status(404).redirect('/')
+            res.clearCookie(tokenCookieName).status(404).redirect('/')
             return
         }
         if(user.picture.startsWith('http'))

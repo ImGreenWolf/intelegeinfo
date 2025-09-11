@@ -8,7 +8,7 @@ const router = express.Router();
 router.use(bodyParser.json());
 export default router; 
 
-import { newWSS, parseText, rootDirName, sessionMap } from '../server';
+import { newWSS, parseText, rootDirName, sessionMap, tokenCookieName } from '../server';
 import prisma from '../dbClient';
 import { getClientId, getIdFromJWT, getJWT, getUserData } from '../usersManager';
 import { ClientObject, randomHexColor } from '../types';
@@ -427,11 +427,11 @@ function getCookie(cname, cookies) {
 // TODO Heavily rework this. This is VERY inefficient and crude, its just a temporary fix, it works - just not well
 
 activeCheckWSS.on('connection', async (ws, req) => {
-    console.log('wow',req.url)
+
     const url = new URL(req.url, 'https://intelegeinfo.ro')
 
 
-    const tokenAuth = getCookie('token', req.headers.cookie);
+    const tokenAuth = getCookie(tokenCookieName, req.headers.cookie);
     if(!tokenAuth)
         throw 'invalid token, you must be authenticated to perform this action'
     

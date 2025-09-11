@@ -2,6 +2,7 @@ import { ChildProcess } from "child_process";
 import WebSocket from "ws";
 import { EditorSession } from "./types";
 export declare const rootDirName: string;
+export declare const tokenCookieName = "iiauthtoken";
 import { UUID } from "crypto";
 export declare function authMiddleware(req: any, res: any, next: any, role?: string): void;
 import * as https from 'https';

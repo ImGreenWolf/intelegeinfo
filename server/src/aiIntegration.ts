@@ -3,8 +3,10 @@ import { EditorMode } from "./editor-modes";
 import { EditorFile } from "./types";
 import path from "path";
 import fs from 'fs';
-import { rootDirName } from "./server";
+import { rootDirName, sessionMap } from "./server";
 import { Guide } from "../../generated/prisma";
+import prisma from "./dbClient";
+import { UUID } from "crypto";
 const openai = new OpenAI();
 
 export async function transpileCode(client, openFile: EditorFile, TargetEditorMode: typeof EditorMode)
@@ -59,3 +61,135 @@ async function textToSpeach(name, text, instructions?) {
     await fs.promises.writeFile(speechFile, buffer);
     return {buffer, speechFile, fileName}
 }
+
+
+
+export async function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, problemId: number, explenation)
+{
+    const session = sessionMap.get(sessionId)
+    if(!session)
+        throw 'couldnt find session'
+    const client = session.clients[0]//session.clientsMap.get(clientId)
+    if(!client)
+        throw 'invalid client'
+    if(!client.clientData)
+        throw 'Please login first!'
+    const userId = client.clientData.id
+    if(!userId)
+        throw 'Invalid client data...'
+
+    const problem = await prisma.problem.findUnique({
+        where:
+        {
+            id: problemId
+        },
+        include:
+        {
+            solves: {
+                where: {
+                    userId
+                }
+            }
+        }
+    })
+    // const successfulSolve = problem.solves.find(solve => solve.score === 100)
+    // if(!successfulSolve)
+    //     throw 'You have to sucessfully solve the problem first!'
+    if(!problem)
+        throw 'coudlnt find problem'
+
+    const aiclient = new OpenAI();
+
+    const response = await aiclient.responses.create({
+        model: "gpt-4o-mini",
+        instructions: `
+        # Identity
+
+        You're a teacher in Romania and corector for the Bacalaureat, evaluation explenations of informatics problem 
+        for the online compiler and education platform, intelegeinfo.ro.
+        You work to teach and push users to the corect path to solve problems efficiently and corectly,
+        in a way so they learn the concepts behind it, not just copy-pasting or doing exactly what they're told.
+        They must use their own problem solving skills.
+        Your ultimate goal is to give the user an evaluation of their explenation of the problem given and they knowledge.
+
+        # Instructions
+
+        *You will be given an explenation of an algorithm, which you must give feedback on.
+        *The problems are taken from the Romanian Bacalaureat.
+        *You must give your response to conform with the bac programa.
+        *Your explenation must be directed to the user, since it will be shown to them.
+        *Think about how another teacher reviewing this explanation at the bacalaureat might grade it and say about it.
+        *Dont give direct instructions on how to improve the explenation (only indirect, like "you could think about how..." or ")
+        `,
+        input:
+        `
+        *Name: ${problem.name}
+        *Class Grade: ${problem.grade}
+        *Problem Category: ${problem.category}
+        *Problem Difficulty: ${problem.difficulty}
+        *Problem Tags (separated by ,): ${problem.tags.join(', ')}
+        *Description: ${problem.description}
+
+        *Restrictions and requirements: 
+        ${problem.requirement}
+
+        *This is the user's explenation:
+        ${explenation}
+        `,
+        temperature: 0.5,
+        user: client.clientId,
+        text: {
+            format: {
+                type: "json_schema",
+                ...codeMentorExplainFeedback
+            }
+        }
+
+    });
+
+    console.log(response.output_text);
+    return response.output_text
+    
+}
+
+const codeMentorExplainFeedback = {
+  "name": "code_mentor_explain_feedback",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "review": {
+        "type": "string",
+        "description": "The review of the user's explenation of the algorithm. Dont give a conclusion here.",
+        "minLength": 10
+      },
+      "scoreConclusion": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "number",
+            "description": "Final score given to the explenation, on a 0 to 100 scale in increments of 5",
+            "minimum": 0,
+            "maximum": 100,
+            "multipleOf": 5
+          },
+          "conclusion": {
+            "type": "string",
+            "description": "Final overall evaluation and concise conclusion of the code, problem solving process, and progress.",
+            "minLength": 10
+          },
+        },
+        "required": [
+          "score",
+          "conclusion"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "required": [
+      "review",
+      "scoreConclusion"
+    ],
+    "additionalProperties": false
+  },
+  "strict": true
+};

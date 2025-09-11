@@ -105,9 +105,19 @@ ${htmlHead(guide.name, req, guide.description, guide.category)}
         const content = document.getElementById('content');
         preview.innerHTML = content.value;
         content.oninput = (ev) => {
-            preview.innerHTML = ev.target.value;
+            preview.innerHTML = ev.target.value; 
         }
-        
+        var editor = ace.edit('content');
+                editor.setOptions({
+                    // autoScrollEditorIntoView: true,
+                    highlightActiveLine: false,
+                    // printMargin: false,
+                    // showGutter: false,
+                    mode: "ace/mode/c_cpp",
+                    minLines: 3,
+                    maxLines: 100,
+                    theme: "ace/theme/editor-theme"
+                });
     </script>
 </body>
 </html>`;

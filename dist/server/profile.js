@@ -94,7 +94,7 @@ router.post('/update', async (req, res) => {
                     id: userId
                 }
             }).finally(() => {
-                res.clearCookie('token').send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro');
+                res.clearCookie(server_1.tokenCookieName).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro');
                 return;
             });
         }
@@ -134,7 +134,7 @@ router.post('/update', async (req, res) => {
     }
 });
 router.get('/logout', (req, res) => {
-    res.clearCookie('token');
+    res.clearCookie(server_1.tokenCookieName);
     res.json({ redir: '/', message: "log out sucecsesfull!" });
 });
 router.use('/', (req, res) => {
@@ -144,7 +144,7 @@ router.use('/', (req, res) => {
         return;
     }
     if (req.query.logout) {
-        res.clearCookie('token');
+        res.clearCookie(server_1.tokenCookieName);
         res.json({ redir: '/', message: "log out sucecsesfull!" });
         return;
     }
@@ -183,7 +183,7 @@ router.use('/', (req, res) => {
                     res.send((0, server_1.parseText)(file, req));
                 }).catch(err => {
                     if (err.userNoExist) {
-                        res.clearCookie('token').status(401).json({ error: "Couldnt find account" });
+                        res.clearCookie(server_1.tokenCookieName).status(401).json({ error: "Couldnt find account" });
                     }
                     console.error('error parsing user info in file: ' + err.err);
                 });

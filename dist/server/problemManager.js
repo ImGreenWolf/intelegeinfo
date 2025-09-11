@@ -434,13 +434,19 @@ exports.router.get('/:sessionId/details/:id', async (req, res) => {
         return buffer;
     });
     const solvesUI = problem.solves ?
-        problem.solves.map(solve => `<div><span class="${['bad', 'decent', 'good', 'perfect'][Math.round(solve.score / 25) - (solve.score == 0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`).join('\n') : '';
-    res.send(serverSideReplace(fileBuffer, { json: { ...problem, difficulty: problem.difficulty ? problem.difficulty : '' }, sessionId, html: { solvesUI } }));
+        problem.solves.map(solve => `<div><span class="${['bad', 'decent', 'good', 'perfect'][Math.round(solve.score / 25) - (solve.score == 0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`) : '';
+    res.send(serverSideReplace(fileBuffer, { json: { ...problem, difficulty: problem.difficulty ? problem.difficulty : '' }, sessionId, html: { solvesUI: solvesUI[0] } }));
 });
 exports.default = exports.router;
 const openai_1 = __importDefault(require("openai"));
-exports.router.get('/:sessionId/details/:id/evaluate', async (req, res) => {
-    res.send(await aiEvaluateSource(req.params.sessionId, undefined, parseInt(req.params.id)));
+const aiIntegration_1 = require("./aiIntegration");
+exports.router.post('/:sessionId/details/:id/evaluate', async (req, res) => {
+    const { explenation, source } = req.body;
+    if (source)
+        res.send(await aiEvaluateSource(req.params.sessionId, undefined, parseInt(req.params.id)));
+    else if (explenation) {
+        res.send(await (0, aiIntegration_1.aiEvaluateExplenation)(req.params.sessionId, undefined, parseInt(req.params.id), explenation));
+    }
 });
 async function aiEvaluateSource(sessionId, clientId, problemId) {
     const session = server_1.sessionMap.get(sessionId);

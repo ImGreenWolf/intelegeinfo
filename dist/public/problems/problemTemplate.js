@@ -20,7 +20,11 @@ export async function test(sessionId, problemId) {
 export async function evaluate(sessionId, problemId) {
     const output = document.getElementById('output');
     output.innerHTML = 'Programul se evalueaza...';
-    const res = await fetch(`./${problemId}/evaluate`);
+    const res = await fetch(`./${problemId}/evaluate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: true })
+    });
     if (!res.ok)
         output.innerHTML = await res.text();
     const json = await res.json();
@@ -54,14 +58,37 @@ export async function evaluate(sessionId, problemId) {
     </section>
     `;
 }
-init();
-function init() {
+export function init(problemId) {
     if (getAnyMultilineSample())
         document.body.classList.add('multiline-sample');
+    document.getElementById('evaluate-explenation').onclick = (ev) => {
+        evaluateExplenation(document.getElementById('explain').value, problemId);
+    };
 }
 function getAnyMultilineSample() {
     for (const samp of document.getElementsByTagName('samp'))
         if (samp.innerText.includes('\n'))
             return true;
     return false;
+}
+async function evaluateExplenation(explenation, problemId) {
+    const output = document.getElementById('output');
+    output.innerHTML = 'Explicatia se evalueaza...';
+    const res = await fetch(`./${problemId}/evaluate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ explenation })
+    });
+    if (!res.ok)
+        output.innerHTML = await res.text();
+    const json = await res.json();
+    output.innerHTML = `
+    
+    <p>${json.review}</p>
+
+    <p>Scor: <span>${json.scoreConclusion.score}</span></p>
+
+    <p>${json.scoreConclusion.conclusion}</p>
+
+    `;
 }

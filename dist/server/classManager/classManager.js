@@ -352,9 +352,8 @@ function getCookie(cname, cookies) {
 }
 // TODO Heavily rework this. This is VERY inefficient and crude, its just a temporary fix, it works - just not well
 activeCheckWSS.on('connection', async (ws, req) => {
-    console.log('wow', req.url);
     const url = new URL(req.url, 'https://intelegeinfo.ro');
-    const tokenAuth = getCookie('token', req.headers.cookie);
+    const tokenAuth = getCookie(server_1.tokenCookieName, req.headers.cookie);
     if (!tokenAuth)
         throw 'invalid token, you must be authenticated to perform this action';
     const userId = (0, usersManager_1.getClientId)(tokenAuth);

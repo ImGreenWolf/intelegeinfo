@@ -2293,7 +2293,7 @@ export let ws;
     // }
     const params = new URLSearchParams();
     if (sessionId && !inIframe) {
-        if (doesHttpOnlyCookieExist('token')) {
+        if (doesHttpOnlyCookieExist('iiauthtoken')) {
             if (getCookie('savedName'))
                 document.cookie = 'savedName=';
         }

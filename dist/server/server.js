@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.rootDirName = void 0;
+exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.tokenCookieName = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
 exports.newWSS = newWSS;
 exports.sendFile = sendFile;
@@ -60,6 +60,7 @@ exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\inteleg
 const app = (0, express_1.default)();
 const compression = require('compression');
 var websocketReg = new Map();
+exports.tokenCookieName = 'iiauthtoken';
 const sessionStore_1 = __importDefault(require("./sessionStore"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const login_js_1 = __importDefault(require("./login.js"));
@@ -144,7 +145,7 @@ app.use('/editor/components.js', (req, res) => {
                         throw 'invalid user';
                     newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`);
                     res.contentType('js').send(newRender);
-                }).catch(err => res.clearCookie('token').contentType('js').send(newRender));
+                }).catch(err => res.clearCookie(exports.tokenCookieName).contentType('js').send(newRender));
             else
                 res.contentType('js').send(newRender);
         });
@@ -365,7 +366,7 @@ function authMiddleware(req, res, next, role) {
             next();
     }
     catch (err) {
-        res.clearCookie('token').status(403).json({ error: 'Invalid token' });
+        res.clearCookie(exports.tokenCookieName).status(403).json({ error: 'Invalid token' });
     }
 }
 function handle404(req, res, next) {
@@ -407,8 +408,8 @@ const credentials = { key: process.env.NODE_ENV == 'development' ? '' : privkey 
     cert: process.env.NODE_ENV == 'development' ? '' : fullchain || '' };
 if (process.env.NODE_ENV == 'development')
     console.log('SERVER RUNNING IN DEV MODE');
-var httpsServer = https.createServer(credentials, app);
 let httpMeter = tx2_1.default.counter('http connections');
+var httpsServer = https.createServer(credentials, app);
 if (fullchain && privkey)
     var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req, res) => {
         res.statusCode = 301;
@@ -421,8 +422,8 @@ else
 let connectionPromise;
 let connectionPromiseTimeout;
 const codeMap = new Map();
-const unsecureServer = httpServer.listen(PORT);
 exports.server = httpsServer.listen(SECPORT);
+httpServer.listen(PORT);
 exports.server.on('listening', onServerStart);
 // app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });
@@ -548,7 +549,7 @@ exports.wss.addListener('connection', async (ws, req) => {
     function getJWTCookie(cookies) {
         return cookies
             ?.split("; ")
-            .find((c) => c.startsWith("token="))
+            .find((c) => c.startsWith(exports.tokenCookieName + "="))
             ?.split("=")[1];
     }
     const recoveredSession = cookies

@@ -508,9 +508,9 @@ router.get('/:sessionId/details/:id', async (req, res) => {
     
     const solvesUI = problem.solves ?
      problem.solves.map(solve => 
-        `<div><span class="${['bad', 'decent','good', 'perfect'][Math.round(solve.score/25)- (solve.score==0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`).join('\n') : ''
+        `<div><span class="${['bad', 'decent','good', 'perfect'][Math.round(solve.score/25)- (solve.score==0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`) : ''
 
-    res.send(serverSideReplace(fileBuffer, {json: {...problem, difficulty: problem.difficulty ? problem.difficulty : ''}, sessionId, html: {solvesUI}}))
+    res.send(serverSideReplace(fileBuffer, {json: {...problem, difficulty: problem.difficulty ? problem.difficulty : ''}, sessionId, html: {solvesUI: solvesUI[0]}}))
 })
 
 
@@ -519,11 +519,16 @@ export default router
 
 import OpenAI from "openai";
 import { WebSocketMessageType } from "./../../dist/shared/types";
+import { aiEvaluateExplenation } from "./aiIntegration";
 
 
-router.get('/:sessionId/details/:id/evaluate', async (req, res) => {
-
-    res.send(await aiEvaluateSource(req.params.sessionId as UUID, undefined, parseInt(req.params.id)))
+router.post('/:sessionId/details/:id/evaluate', async (req, res) => {
+    const { explenation, source } = req.body;
+    if(source)
+        res.send(await aiEvaluateSource(req.params.sessionId as UUID, undefined, parseInt(req.params.id)))
+    else if(explenation) {
+        res.send(await aiEvaluateExplenation(req.params.sessionId as UUID, undefined, parseInt(req.params.id), explenation))
+    }
 })
 
 

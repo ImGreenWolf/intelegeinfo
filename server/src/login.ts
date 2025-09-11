@@ -10,6 +10,7 @@ import prisma from './dbClient';
 import * as signup from './signup'
 import path from 'path';
 import { Role } from '../../generated/prisma';
+import { tokenCookieName } from './server';
 
 const router = express.Router();
 router.use(bodyParser.json());
@@ -43,14 +44,14 @@ export function onLoggedIn(user: unknown, res: Response, req: Request, shouldkee
   const httpOnly = true;
   let keepLoggedIn =  req.body ? (req.body.keepLoggedIn ? req.body.keepLoggedIn : shouldkeepLoggedIn) : shouldkeepLoggedIn;
   if(keepLoggedIn)
-    return res.cookie('token', token, {
+    return res.cookie(tokenCookieName, token, {
         sameSite: 'lax',
         httpOnly,
         secure, // Set to true in production (HTTPS)
         maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
       });
   else
-      return res.cookie('token', token, {
+      return res.cookie(tokenCookieName, token, {
         sameSite: 'lax',
         httpOnly,
         secure, // Set to true in production (HTTPS)

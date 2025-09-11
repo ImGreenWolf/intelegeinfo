@@ -48,6 +48,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const signup = __importStar(require("./signup"));
 const path_1 = __importDefault(require("path"));
+const server_1 = require("./server");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/login.html"));
@@ -72,14 +73,14 @@ function onLoggedIn(user, res, req, shouldkeepLoggedIn = false) {
     const httpOnly = true;
     let keepLoggedIn = req.body ? (req.body.keepLoggedIn ? req.body.keepLoggedIn : shouldkeepLoggedIn) : shouldkeepLoggedIn;
     if (keepLoggedIn)
-        return res.cookie('token', token, {
+        return res.cookie(server_1.tokenCookieName, token, {
             sameSite: 'lax',
             httpOnly,
             secure, // Set to true in production (HTTPS)
             maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
         });
     else
-        return res.cookie('token', token, {
+        return res.cookie(server_1.tokenCookieName, token, {
             sameSite: 'lax',
             httpOnly,
             secure, // Set to true in production (HTTPS)

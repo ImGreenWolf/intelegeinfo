@@ -18,7 +18,8 @@ export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo'
 // import { v4 as uuidv4 } from 'uuid';
 const app = express();
 const compression = require('compression')
-    var websocketReg = new Map<string, WebSocketServer>()
+var websocketReg = new Map<string, WebSocketServer>()
+export const tokenCookieName = 'iiauthtoken'
 
 import SharedStateManager from "./sessionStore"
 import { Prisma, Problem } from "../../generated/prisma";
@@ -121,7 +122,7 @@ app.use('/editor/components.js',
                         throw 'invalid user'
                     newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`)
                     res.contentType('js').send(newRender)
-                    }).catch(err =>  res.clearCookie('token').contentType('js').send(newRender))
+                    }).catch(err =>  res.clearCookie(tokenCookieName).contentType('js').send(newRender))
             else
                 res.contentType('js').send(newRender)
 
@@ -416,7 +417,7 @@ export function authMiddleware(req, res, next:any, role?:string) {
         // req.user = user;
         next();
     } catch (err) {
-        res.clearCookie('token').status(403).json({ error: 'Invalid token' });
+        res.clearCookie(tokenCookieName).status(403).json({ error: 'Invalid token' });
     }
 }
 function handle404(req:any, res:any, next:NextFunction) 
@@ -495,8 +496,9 @@ import * as http from 'http'
 if(process.env.NODE_ENV == 'development')
     console.log('SERVER RUNNING IN DEV MODE')
 
-var httpsServer = https.createServer(credentials, app);
 let httpMeter = tx2.counter('http connections')
+var httpsServer = https.createServer(credentials, app);
+
 if(fullchain && privkey)
     var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req,res) => {
         res.statusCode = 301;
@@ -510,9 +512,10 @@ else var httpServer = http.createServer(app);
 let connectionPromise: Promise<void> | undefined;
 let connectionPromiseTimeout: NodeJS.Timeout;
 const codeMap: Map<number, UUID> = new Map()
-const unsecureServer = httpServer.listen(PORT);
+
 
 export const server = httpsServer.listen(SECPORT);
+httpServer.listen(PORT);
 server.on('listening', onServerStart)
 
     // app.listen(PORT, '0.0.0.0', onServerStart);
@@ -676,7 +679,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     const jwtCookie = getJWTCookie(cookies)
       function getJWTCookie(cookies) { return cookies
       ?.split("; ")
-      .find((c) => c.startsWith("token="))
+      .find((c) => c.startsWith(tokenCookieName + "=")) 
       ?.split("=")[1];}
     const recoveredSession: UUID | undefined = cookies
       ?.split("; ")

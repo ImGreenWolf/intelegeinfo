@@ -509,7 +509,7 @@ exports.router.get('/picture', async (req, res) => {
     if (id) {
         const user = await updateActiveAtForUser(id, { pictureUpload: true }); //getUserData
         if (!user) {
-            res.clearCookie('token').status(404).redirect('/');
+            res.clearCookie(server_1.tokenCookieName).status(404).redirect('/');
             return;
         }
         if (user.picture.startsWith('http'))

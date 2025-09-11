@@ -71,17 +71,26 @@
     </div>
   </div>
 
-      <div id="output">
+  <div id="output">
 
-      </div>
-      <div><span id="final-score"></span></div>
   </div>
+  <div>
+    <span id="final-score"></span>
+  </div>
+  <div>
+    <h2>Explica solutia in limbaj natural</h2>
+    <button id="evaluate-explenation">Evalueaza</button>
+    <textarea name="explain" id="explain" rows="5"></textarea>
+  </div>
+
 
 
 
 <!-- <script type="module" src="/client/scripts/problemTemplate.js"></script>    -->
 <script type="module">
   import * as problem from '/client/scripts/problems/problemTemplate.js'
-  window.problem = problem</script>
+  window.problem = problem
+  problem.init(`${json.id}`)
+  </script>
 </body>
 </html>

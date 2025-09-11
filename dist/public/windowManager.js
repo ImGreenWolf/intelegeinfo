@@ -152,8 +152,9 @@ export class EditorWindow {
         this.editor.container.onwheel = (ev) => {
             if (ev.ctrlKey) {
                 ev.preventDefault();
-                zoomFontSize = Math.max(6, Math.min(40, zoomFontSize + ev.deltaY / -100));
-                if (zoomFontSize % 2 == 0)
+                const delta = [ev.deltaY / -100, ev.deltaY / -100 * 16, ev.deltaY / -100 * document.body.clientHeight][ev.deltaMode];
+                zoomFontSize = Math.max(6, Math.min(40, zoomFontSize + delta));
+                if (Math.round(zoomFontSize) % 2 == 0)
                     this.editor?.setFontSize(zoomFontSize);
             }
         };
