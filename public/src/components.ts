@@ -252,7 +252,7 @@ export class Toolbox extends IElement {
 
     render(): HTMLElement {
 
-        const loggedIn = false;
+        const loggedIn = getCookie('iiauthstate') == 'true';
         const username = '';
         const loggedinbuttons = 
         loggedIn ?

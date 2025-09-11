@@ -199,7 +199,7 @@ export function createButton(icon, options) {
 }
 export class Toolbox extends IElement {
     render() {
-        const loggedIn = false;
+        const loggedIn = getCookie('iiauthstate') == 'true';
         const username = '';
         const loggedinbuttons = loggedIn ?
             [
