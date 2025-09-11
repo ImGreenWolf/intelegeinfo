@@ -115,7 +115,6 @@ type CursorPosition = {
     column: number;
 };
 export declare let isRemoteChange: boolean;
-export declare function getCookie(cname: any): string;
 export declare function displayMessagePopup(message: any): void;
 export declare function displayConfirmPopup(message: any, confirmText?: string, rejectText?: string): Promise<{
     value: boolean;

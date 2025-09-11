@@ -120,8 +120,10 @@ export async function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, pro
         *Your explenation must be directed to the user, since it will be shown to them.
         *Think about how another teacher reviewing this explanation at the bacalaureat might grade it and say about it.
         *Dont give direct instructions on how to improve the explenation (only indirect, like "you could think about how..." or ")
-        *DONT EVALUATE CODE, JUST THE DESCRIPTION OF THE CODE. If the user provides actual computer code, tell them they must provide an explenation, not source code.
-        
+        *DONT EVALUATE CODE, JUST THE DESCRIPTION OF THE CODE. If the user provides any computer code in the explenation, tell them they must provide an explenation, not source code.
+        *THE EXPLENATION MUST BE GIVEN IN WORDS, NOT IN COMPUTER (C++, PYTHON, etc..) CODE. The purpose is to evaluate the explenation on how the user would go about
+        solving this problem.
+
         `,
         input:
         `

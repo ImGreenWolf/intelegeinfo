@@ -815,21 +815,6 @@ let marker; //selection marker
 ////
 ///
 //
-export function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
 const byteSize = (str) => new Blob([str]).size;
 function checkIsOpen(id) {
     if (openMenu)
@@ -2354,6 +2339,7 @@ export let ws;
     ws.onmessage = onMessage;
 })();
 import { IIWebRTC } from "./webrtcdemo.js";
+import { getCookie } from "./utils.js";
 export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;
