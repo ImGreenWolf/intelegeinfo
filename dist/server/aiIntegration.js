@@ -102,7 +102,7 @@ async function aiEvaluateExplenation(sessionId, clientId, problemId, explenation
 
         # IMPORTANT NOTES
         *DONT EVALUATE CODE, JUST THE DESCRIPTION OF THE CODE. If the user provides any computer code in the explenation, tell them they must provide an explenation, not source code.
-        DO NOT ALLOW THE EVALUATION OF SOURCE CODE IN ANY RESPONSE.
+        DO NOT ALLOW THE EVALUATION OF SOURCE CODE IN ANY RESPONSE. (If they do, give them a score from 0 to 20 based of if the code conforms with the problem)
         *THE EXPLENATION MUST BE GIVEN IN WORDS, NOT IN COMPUTER (C++, PYTHON, etc..) CODE. The purpose is to evaluate the explenation on how the user would go about
         solving this problem.
 
@@ -132,7 +132,12 @@ async function aiEvaluateExplenation(sessionId, clientId, problemId, explenation
         }
     });
     console.log(response.output_text);
-    return response.output_text;
+    try {
+        return JSON.parse(response.output_text);
+    }
+    catch (err) {
+        return response.output_text;
+    }
 }
 const codeMentorExplainFeedback = {
     "name": "code_mentor_explain_feedback",

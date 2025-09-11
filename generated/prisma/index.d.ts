@@ -136,6 +136,14 @@ export const Difficulty: {
 
 export type Difficulty = (typeof Difficulty)[keyof typeof Difficulty]
 
+
+export const SolveType: {
+  CODE: 'CODE',
+  EXPLAIN: 'EXPLAIN'
+};
+
+export type SolveType = (typeof SolveType)[keyof typeof SolveType]
+
 }
 
 export type OccupationType = $Enums.OccupationType
@@ -149,6 +157,10 @@ export const Role: typeof $Enums.Role
 export type Difficulty = $Enums.Difficulty
 
 export const Difficulty: typeof $Enums.Difficulty
+
+export type SolveType = $Enums.SolveType
+
+export const SolveType: typeof $Enums.SolveType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -13315,6 +13327,7 @@ export namespace Prisma {
     sourceCode: string | null
     uploadedAt: Date | null
     score: number | null
+    type: $Enums.SolveType | null
     time: number | null
   }
 
@@ -13325,6 +13338,7 @@ export namespace Prisma {
     sourceCode: string | null
     uploadedAt: Date | null
     score: number | null
+    type: $Enums.SolveType | null
     time: number | null
   }
 
@@ -13335,6 +13349,7 @@ export namespace Prisma {
     sourceCode: number
     uploadedAt: number
     score: number
+    type: number
     time: number
     _all: number
   }
@@ -13363,6 +13378,7 @@ export namespace Prisma {
     sourceCode?: true
     uploadedAt?: true
     score?: true
+    type?: true
     time?: true
   }
 
@@ -13373,6 +13389,7 @@ export namespace Prisma {
     sourceCode?: true
     uploadedAt?: true
     score?: true
+    type?: true
     time?: true
   }
 
@@ -13383,6 +13400,7 @@ export namespace Prisma {
     sourceCode?: true
     uploadedAt?: true
     score?: true
+    type?: true
     time?: true
     _all?: true
   }
@@ -13480,6 +13498,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt: Date
     score: number
+    type: $Enums.SolveType
     time: number
     _count: SolveCountAggregateOutputType | null
     _avg: SolveAvgAggregateOutputType | null
@@ -13509,6 +13528,7 @@ export namespace Prisma {
     sourceCode?: boolean
     uploadedAt?: boolean
     score?: boolean
+    type?: boolean
     time?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
@@ -13521,6 +13541,7 @@ export namespace Prisma {
     sourceCode?: boolean
     uploadedAt?: boolean
     score?: boolean
+    type?: boolean
     time?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
@@ -13533,6 +13554,7 @@ export namespace Prisma {
     sourceCode?: boolean
     uploadedAt?: boolean
     score?: boolean
+    type?: boolean
     time?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
@@ -13545,10 +13567,11 @@ export namespace Prisma {
     sourceCode?: boolean
     uploadedAt?: boolean
     score?: boolean
+    type?: boolean
     time?: boolean
   }
 
-  export type SolveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "problemid" | "sourceCode" | "uploadedAt" | "score" | "time", ExtArgs["result"]["solve"]>
+  export type SolveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "problemid" | "sourceCode" | "uploadedAt" | "score" | "type" | "time", ExtArgs["result"]["solve"]>
   export type SolveInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
@@ -13575,6 +13598,7 @@ export namespace Prisma {
       sourceCode: string
       uploadedAt: Date
       score: number
+      type: $Enums.SolveType
       time: number
     }, ExtArgs["result"]["solve"]>
     composites: {}
@@ -14007,6 +14031,7 @@ export namespace Prisma {
     readonly sourceCode: FieldRef<"Solve", 'String'>
     readonly uploadedAt: FieldRef<"Solve", 'DateTime'>
     readonly score: FieldRef<"Solve", 'Int'>
+    readonly type: FieldRef<"Solve", 'SolveType'>
     readonly time: FieldRef<"Solve", 'Int'>
   }
     
@@ -23901,6 +23926,7 @@ export namespace Prisma {
     sourceCode: 'sourceCode',
     uploadedAt: 'uploadedAt',
     score: 'score',
+    type: 'type',
     time: 'time'
   };
 
@@ -24327,6 +24353,20 @@ export namespace Prisma {
    * Reference to a field of type 'Difficulty[]'
    */
   export type ListEnumDifficultyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Difficulty[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'SolveType'
+   */
+  export type EnumSolveTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SolveType'>
+    
+
+
+  /**
+   * Reference to a field of type 'SolveType[]'
+   */
+  export type ListEnumSolveTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SolveType[]'>
     
   /**
    * Deep Input Types
@@ -25013,6 +25053,7 @@ export namespace Prisma {
     sourceCode?: StringFilter<"Solve"> | string
     uploadedAt?: DateTimeFilter<"Solve"> | Date | string
     score?: IntFilter<"Solve"> | number
+    type?: EnumSolveTypeFilter<"Solve"> | $Enums.SolveType
     time?: IntFilter<"Solve"> | number
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     problem?: XOR<ProblemScalarRelationFilter, ProblemWhereInput>
@@ -25025,6 +25066,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    type?: SortOrder
     time?: SortOrder
     user?: UserOrderByWithRelationInput
     problem?: ProblemOrderByWithRelationInput
@@ -25041,6 +25083,7 @@ export namespace Prisma {
     sourceCode?: StringFilter<"Solve"> | string
     uploadedAt?: DateTimeFilter<"Solve"> | Date | string
     score?: IntFilter<"Solve"> | number
+    type?: EnumSolveTypeFilter<"Solve"> | $Enums.SolveType
     time?: IntFilter<"Solve"> | number
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     problem?: XOR<ProblemScalarRelationFilter, ProblemWhereInput>
@@ -25053,6 +25096,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    type?: SortOrder
     time?: SortOrder
     _count?: SolveCountOrderByAggregateInput
     _avg?: SolveAvgOrderByAggregateInput
@@ -25071,6 +25115,7 @@ export namespace Prisma {
     sourceCode?: StringWithAggregatesFilter<"Solve"> | string
     uploadedAt?: DateTimeWithAggregatesFilter<"Solve"> | Date | string
     score?: IntWithAggregatesFilter<"Solve"> | number
+    type?: EnumSolveTypeWithAggregatesFilter<"Solve"> | $Enums.SolveType
     time?: IntWithAggregatesFilter<"Solve"> | number
   }
 
@@ -26353,6 +26398,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
     user: UserCreateNestedOneWithoutSolvesInput
     problem: ProblemCreateNestedOneWithoutSolvesInput
@@ -26365,6 +26411,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
   }
 
@@ -26372,6 +26419,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
     user?: UserUpdateOneRequiredWithoutSolvesNestedInput
     problem?: ProblemUpdateOneRequiredWithoutSolvesNestedInput
@@ -26384,6 +26432,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
   }
 
@@ -26394,6 +26443,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
   }
 
@@ -26401,6 +26451,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
   }
 
@@ -26411,6 +26462,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
   }
 
@@ -27822,6 +27874,13 @@ export namespace Prisma {
     _max?: NestedEnumDifficultyNullableFilter<$PrismaModel>
   }
 
+  export type EnumSolveTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SolveType | EnumSolveTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SolveType[] | ListEnumSolveTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SolveType[] | ListEnumSolveTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSolveTypeFilter<$PrismaModel> | $Enums.SolveType
+  }
+
   export type SolveOrderByRelevanceInput = {
     fields: SolveOrderByRelevanceFieldEnum | SolveOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -27835,6 +27894,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    type?: SortOrder
     time?: SortOrder
   }
 
@@ -27853,6 +27913,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    type?: SortOrder
     time?: SortOrder
   }
 
@@ -27863,6 +27924,7 @@ export namespace Prisma {
     sourceCode?: SortOrder
     uploadedAt?: SortOrder
     score?: SortOrder
+    type?: SortOrder
     time?: SortOrder
   }
 
@@ -27872,6 +27934,16 @@ export namespace Prisma {
     problemid?: SortOrder
     score?: SortOrder
     time?: SortOrder
+  }
+
+  export type EnumSolveTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SolveType | EnumSolveTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SolveType[] | ListEnumSolveTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SolveType[] | ListEnumSolveTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSolveTypeWithAggregatesFilter<$PrismaModel> | $Enums.SolveType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSolveTypeFilter<$PrismaModel>
+    _max?: NestedEnumSolveTypeFilter<$PrismaModel>
   }
 
   export type UploadNullableScalarRelationFilter = {
@@ -29345,6 +29417,10 @@ export namespace Prisma {
     connect?: ProblemWhereUniqueInput
   }
 
+  export type EnumSolveTypeFieldUpdateOperationsInput = {
+    set?: $Enums.SolveType
+  }
+
   export type UserUpdateOneRequiredWithoutSolvesNestedInput = {
     create?: XOR<UserCreateWithoutSolvesInput, UserUncheckedCreateWithoutSolvesInput>
     connectOrCreate?: UserCreateOrConnectWithoutSolvesInput
@@ -30102,6 +30178,23 @@ export namespace Prisma {
     _max?: NestedEnumDifficultyNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumSolveTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SolveType | EnumSolveTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SolveType[] | ListEnumSolveTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SolveType[] | ListEnumSolveTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSolveTypeFilter<$PrismaModel> | $Enums.SolveType
+  }
+
+  export type NestedEnumSolveTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SolveType | EnumSolveTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SolveType[] | ListEnumSolveTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SolveType[] | ListEnumSolveTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSolveTypeWithAggregatesFilter<$PrismaModel> | $Enums.SolveType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSolveTypeFilter<$PrismaModel>
+    _max?: NestedEnumSolveTypeFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -30378,6 +30471,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
     problem: ProblemCreateNestedOneWithoutSolvesInput
   }
@@ -30388,6 +30482,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
   }
 
@@ -30797,6 +30892,7 @@ export namespace Prisma {
     sourceCode?: StringFilter<"Solve"> | string
     uploadedAt?: DateTimeFilter<"Solve"> | Date | string
     score?: IntFilter<"Solve"> | number
+    type?: EnumSolveTypeFilter<"Solve"> | $Enums.SolveType
     time?: IntFilter<"Solve"> | number
   }
 
@@ -31705,6 +31801,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
     user: UserCreateNestedOneWithoutSolvesInput
   }
@@ -31715,6 +31812,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
   }
 
@@ -33939,6 +34037,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
   }
 
@@ -34048,6 +34147,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
     problem?: ProblemUpdateOneRequiredWithoutSolvesNestedInput
   }
@@ -34058,6 +34158,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
   }
 
@@ -34067,6 +34168,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
   }
 
@@ -34408,6 +34510,7 @@ export namespace Prisma {
     sourceCode: string
     uploadedAt?: Date | string
     score: number
+    type?: $Enums.SolveType
     time?: number
   }
 
@@ -34439,6 +34542,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
     user?: UserUpdateOneRequiredWithoutSolvesNestedInput
   }
@@ -34449,6 +34553,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
   }
 
@@ -34458,6 +34563,7 @@ export namespace Prisma {
     sourceCode?: StringFieldUpdateOperationsInput | string
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     score?: IntFieldUpdateOperationsInput | number
+    type?: EnumSolveTypeFieldUpdateOperationsInput | $Enums.SolveType
     time?: IntFieldUpdateOperationsInput | number
   }
 

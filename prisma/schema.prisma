@@ -171,10 +171,14 @@ model Solve {
   sourceCode String
   uploadedAt DateTime @default(now())
   score Int
+  type SolveType @default(CODE)
   time Int @default(-1)
 }
 
-
+enum SolveType {
+  CODE
+  EXPLAIN
+}
 model Course {
   id Int @id @default(autoincrement())
   user User @relation(fields: [userId], references: [id])

@@ -66,6 +66,7 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         id: number;
         sourceCode: string;
         score: number;
+        type: import("../../generated/prisma").$Enums.SolveType;
         userId: number;
         problemid: number;
         uploadedAt: Date;
@@ -104,6 +105,12 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
         tags: string[];
         grade: number;
+    }[];
+    Feedback: {
+        id: number;
+        createdAt: Date;
+        body: string;
+        userId: number | null;
     }[];
     pictureUpload: {
         id: number;
@@ -158,18 +165,12 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         createdAt: Date;
         firstName: string;
         lastName: string;
+        message: string | null;
         userId: number | null;
         courseId: number;
         respondedAt: Date | null;
         response: boolean | null;
         contactInfo: Prisma.JsonValue;
-        message: string | null;
-    }[];
-    Feedback: {
-        id: number;
-        createdAt: Date;
-        userId: number | null;
-        body: string;
     }[];
     JoinedClass: {
         userId: number;

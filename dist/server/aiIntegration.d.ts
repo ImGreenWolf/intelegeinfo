@@ -8,4 +8,10 @@ export declare function guideTTS(guide: Guide): Promise<{
     speechFile: string;
     fileName: string;
 }>;
-export declare function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, problemId: number, explenation: any): Promise<string>;
+export declare function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, problemId: number, explenation: any): Promise<{
+    review: string;
+    scoreConclusion: {
+        score: number;
+        conclusion: string;
+    };
+}>;

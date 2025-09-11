@@ -219,6 +219,7 @@ exports.Prisma.SolveScalarFieldEnum = {
   sourceCode: 'sourceCode',
   uploadedAt: 'uploadedAt',
   score: 'score',
+  type: 'type',
   time: 'time'
 };
 
@@ -441,6 +442,11 @@ exports.Difficulty = exports.$Enums.Difficulty = {
   Hard: 'Hard',
   Exam: 'Exam',
   Competition: 'Competition'
+};
+
+exports.SolveType = exports.$Enums.SolveType = {
+  CODE: 'CODE',
+  EXPLAIN: 'EXPLAIN'
 };
 
 exports.Prisma.ModelName = {
