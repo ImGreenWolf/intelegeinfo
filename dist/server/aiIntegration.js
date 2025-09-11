@@ -209,7 +209,7 @@ async function autocompleteProblemDetails(client, openFile) {
                 description: "The main concept and topic of the problem (optional). Keep short and concise.",
                 nullable: true
             },
-            requirements: {
+            requirement: {
                 type: "string",
                 description: "The limits and requirements of the inputs and notes regarding the problem.",
                 nullable: true
@@ -239,6 +239,9 @@ async function autocompleteProblemDetails(client, openFile) {
     Analyze this source code and create a problem entry based on it.
     Your response must be Romanian.
     Dont specify headers or libraries to include, only what the code should do.
+
+      Other details:
+    For matricies, usually, you will need to read the dimensions of it, and then the values of it.
     `,
         temperature: 0.25,
         user: client.clientId,
