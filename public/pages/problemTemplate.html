@@ -56,32 +56,42 @@
     </div>
   </div>
 
-  <div class="button-container">
-    <button class="openProblem" onclick="window.problem.test(`${sessionId}`, `${json.id}`)">Testeaza</button>
-    <div class="ai-button-wrapper">
-      <button class="openProblem ai-button" onclick="window.problem.evaluate(`${sessionId}`, `${json.id}`)">AI Feedback</button>
+  <div class="controls-wrapper">
+      <nav><button onclick="this.parentElement.parentElement.classList.remove('switch')">Testeaza Cod</button>
+        <button onclick="this.parentElement.parentElement.classList.add('switch')">Explica</button></nav>
 
-      <svg class="highlight-svg" viewBox="0 0 220 56" preserveAspectRatio="none" aria-hidden="true">
-        <!-- background static outline -->
-        <rect class="static-outline" x="1.5" y="1.5" width="217" height="53" rx="12" ry="12"></rect>
+    <div>
+      <div class="button-container">
+        <button class="openProblem" onclick="window.problem.test(`${sessionId}`, `${json.id}`)">Testeaza</button>
+        <div class="ai-button-wrapper">
+          <button class="openProblem ai-button" onclick="window.problem.evaluate(`${sessionId}`, `${json.id}`)" 
+          title="Primeste feedback despre solutia ta atunci cand resolvi problema 100%.">AI Feedback</button>
 
-        <!-- moving dash. The rect dimensions match the static outline. Perimeter used in CSS animation is ~500 (2*(217+53) =~ 540 but small differences are OK) -->
-        <rect class="moving" x="1.5" y="1.5" width="217" height="53" rx="12" ry="12"></rect>
-      </svg>
+          <svg class="highlight-svg" viewBox="0 0 220 56" preserveAspectRatio="none" aria-hidden="true">
+            <!-- background static outline -->
+            <rect class="static-outline" x="1.5" y="1.5" width="217" height="53" rx="12" ry="12"></rect>
+
+            <!-- moving dash. The rect dimensions match the static outline. Perimeter used in CSS animation is ~500 (2*(217+53) =~ 540 but small differences are OK) -->
+            <rect class="moving" x="1.5" y="1.5" width="217" height="53" rx="12" ry="12"></rect>
+          </svg>
+        </div>
+      </div>
+
+      <div class="explain-container">
+        <h2>Explica solutia in limbaj natural</h2>
+        <textarea name="explain" id="explain" rows="3"></textarea>
+        <button id="evaluate-explenation">Evalueaza</button>
+      </div>
+
     </div>
   </div>
-
   <div id="output">
 
   </div>
   <div>
     <span id="final-score"></span>
   </div>
-  <div>
-    <h2>Explica solutia in limbaj natural</h2>
-    <button id="evaluate-explenation">Evalueaza</button>
-    <textarea name="explain" id="explain" rows="5"></textarea>
-  </div>
+  
 
 
 

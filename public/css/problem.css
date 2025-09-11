@@ -5,6 +5,7 @@ body {
   display: grid;
   grid-template-rows: 1fr;
   gap: 1em;
+  font-size: 14px;
 }
 
 output {
@@ -41,8 +42,7 @@ span {
   display: flex;
   justify-content: stretch;
   flex-direction: row;
-  width: 100%;
-  gap: 4em;
+  gap: 5em;
 }
 .sample-container > div {
   display: inline;
@@ -163,6 +163,48 @@ body:not(:is(.solved)) .ai-button-wrapper .highlight-svg {
 
 body:not(:is(.solved)) .ai-button-wrapper {
   opacity: 0.5;
+}
+
+.explain-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.explain-container textarea {
+  font-family: inherit;
+  border-radius: 1em;
+  background-color: transparent;
+  color: white;
+  padding: 1em;
+  border: 2px solid rgba(126, 126, 126, 0.219);
+  outline-color: rgb(71, 71, 71);
+}
+
+.controls-wrapper nav {
+  display: flex;
+  gap: 2em;
+  margin-bottom: 1em;
+  border-bottom: 2px solid rgba(126, 126, 126, 0.219);
+}
+.controls-wrapper nav button {
+  background-color: transparent;
+  border: 3px solid rgba(126, 126, 126, 0.219);
+  border-bottom-color: transparent;
+  color: white;
+  font-size: 0.75em;
+  transition-duration: 0.2s;
+}
+.controls-wrapper.switch nav > :nth-child(1) {
+  opacity: 0.5;
+}
+.controls-wrapper:not(.switch) nav > :nth-child(2) {
+  opacity: 0.5;
+}
+.controls-wrapper:not(.switch) > div > :nth-child(2) {
+  display: none;
+}
+.controls-wrapper.switch > div > :nth-child(1) {
+  display: none;
 }
 
 /*# sourceMappingURL=problem.css.map */

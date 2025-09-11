@@ -1,3 +1,5 @@
+  @use 'theme';
+  
   body {
     width: 75%;
     margin: auto;
@@ -5,7 +7,7 @@
     display: grid;
     grid-template-rows: 1fr;
     gap: 1em;
-    
+    font-size: 14px;
   }
   output {
     width: 75%;
@@ -38,10 +40,8 @@
     display: flex;
     justify-content: stretch;
     flex-direction: row;
-    width: 100%;
-    gap: 4em;
+    gap: 5em;
     &>div {
-        // width: 50%;
         display: inline;
         flex-grow: 1;
         p {
@@ -164,5 +164,51 @@ button {
 body:not(:is(.solved)) {
   .ai-button-wrapper {
     opacity: 0.5;
+  }
+}
+
+.explain-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
+  textarea {
+    font-family: inherit;
+    border-radius: 1em;
+    background-color: transparent;
+    color: theme.$text-color;
+    padding: 1em;
+    border: 2px solid theme.$border-color;
+    outline-color: rgb(71, 71, 71);
+  }
+}
+
+.controls-wrapper {
+  nav {
+    display: flex;
+    gap: 2em;
+    margin-bottom: 1em;
+    border-bottom: 2px solid theme.$border-color;
+  }
+  nav button {
+    background-color: transparent;
+    border: 3px solid theme.$border-color;
+    border-bottom-color: transparent;
+    color: white;
+    font-size: 0.75em;
+    transition-duration: 0.2s;
+  }
+  &.switch nav>:nth-child(1) {
+    opacity: 0.5;
+  }
+  &:not(.switch) nav>:nth-child(2) {
+    opacity: 0.5;
+  }
+  &:not(.switch)>div>:nth-child(2) {
+    display: none;
+  }
+
+  &.switch>div>:nth-child(1) {
+    display: none;
   }
 }
