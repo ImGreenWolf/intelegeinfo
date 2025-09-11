@@ -483,10 +483,23 @@ const openai_1 = __importDefault(require("openai"));
 const aiIntegration_1 = require("./aiIntegration");
 exports.router.post('/:sessionId/details/:id/evaluate', async (req, res) => {
     const { explenation, source } = req.body;
+    const problemId = parseInt(req.params.id);
+    const userId = users.getIdFromJWT(req);
     if (source)
-        res.send(await aiEvaluateSource(req.params.sessionId, undefined, parseInt(req.params.id)));
+        res.send(await aiEvaluateSource(req.params.sessionId, undefined, problemId));
     else if (explenation) {
-        res.send(await (0, aiIntegration_1.aiEvaluateExplenation)(req.params.sessionId, undefined, parseInt(req.params.id), explenation));
+        const evalRes = await (0, aiIntegration_1.aiEvaluateExplenation)(req.params.sessionId, undefined, problemId, explenation);
+        if (userId)
+            await dbClient_1.default.solve.create({
+                data: {
+                    score: evalRes.scoreConclusion.score,
+                    type: 'EXPLAIN',
+                    problemid: problemId,
+                    sourceCode: explenation,
+                    userId
+                }
+            });
+        res.send(evalRes);
     }
 });
 async function aiEvaluateSource(sessionId, clientId, problemId) {
