@@ -258,7 +258,7 @@ export async function autocompleteProblemDetails(client, openFile: EditorFile)
         description: "Romanian school grade (5-12) that this problem is intended for."
       }
     },
-    required: ["name", "category", "difficulty", "requirements", "description", "tests", "tags", "grade"],
+    required: ["name", "category", "difficulty", "requirement", "description", "tests", "tags", "grade"],
     additionalProperties: false
   };
   
