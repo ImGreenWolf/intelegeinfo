@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { getCookie } from "./codeEditor";
 declare global {
     interface Window {
         editor: any
@@ -79,7 +80,7 @@ export class Dock extends IElement {
     
 
     render() {
-        const loggedIn = false;
+        const loggedIn = getCookie('iiauthstate') == 'true';
         const username = '';
         
         const t = loggedIn ? 

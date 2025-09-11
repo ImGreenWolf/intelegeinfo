@@ -1,3 +1,4 @@
+import { getCookie } from "./codeEditor";
 class IElement {
     parentElement;
     constructor(parentElem) {
@@ -50,7 +51,7 @@ export function createNode(tag, options) {
 }
 export class Dock extends IElement {
     render() {
-        const loggedIn = false;
+        const loggedIn = getCookie('iiauthstate') == 'true';
         const username = '';
         const t = loggedIn ?
             `<img src="../media/icons/home.svg"><p>home</p>,
