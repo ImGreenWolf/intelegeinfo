@@ -314,8 +314,9 @@
   margin: 0.1em;
 }
 
-body {
+body, html {
   padding: 0;
+  height: 100%;
 }
 
 .container {
@@ -328,7 +329,7 @@ body {
   padding: 0.5em;
   min-height: 50%;
   gap: 0.5em;
-  height: 100dvh;
+  height: 100%;
   box-sizing: border-box;
 }
 .container #editor-container {

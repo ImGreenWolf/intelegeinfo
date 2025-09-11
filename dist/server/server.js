@@ -422,8 +422,9 @@ else
 let connectionPromise;
 let connectionPromiseTimeout;
 const codeMap = new Map();
-exports.server = httpsServer.listen(SECPORT);
-httpServer.listen(PORT);
+const unsecureServer = httpServer.listen(PORT);
+const secureServer = httpsServer.listen(SECPORT);
+exports.server = process.env.NODE_ENV == 'development' ? unsecureServer : secureServer;
 exports.server.on('listening', onServerStart);
 // app.listen(PORT, '0.0.0.0', onServerStart);
 // export const wss = new WebSocket.Server({server: server, clientTracking: true,  });

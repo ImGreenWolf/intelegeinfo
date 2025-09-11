@@ -513,9 +513,10 @@ let connectionPromise: Promise<void> | undefined;
 let connectionPromiseTimeout: NodeJS.Timeout;
 const codeMap: Map<number, UUID> = new Map()
 
+const unsecureServer = httpServer.listen(PORT);
+const secureServer = httpsServer.listen(SECPORT)
+export const server = process.env.NODE_ENV == 'development' ? unsecureServer : secureServer;
 
-export const server = httpsServer.listen(SECPORT);
-httpServer.listen(PORT);
 server.on('listening', onServerStart)
 
     // app.listen(PORT, '0.0.0.0', onServerStart);
@@ -551,17 +552,17 @@ server.on('listening', onServerStart)
             switch(pathname){
         case '/api': 
             wssAPI.handleUpgrade(request, socket, head, function done(ws) {
-            wssAPI.emit('connection', ws, request);
+                wssAPI.emit('connection', ws, request);
             });
             break
         case '/directSharing': 
             wssFS.handleUpgrade(request, socket, head, function done(ws) {
-            wssFS.emit('connection', ws, request);
+                wssFS.emit('connection', ws, request);
             });
             break
         case '/editor':
             wss.handleUpgrade(request, socket, head, function done(ws) {
-            wss.emit('connection', ws, request);
+                wss.emit('connection', ws, request);
             });
             break;
         case '/rtc':

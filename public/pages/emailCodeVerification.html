@@ -37,7 +37,6 @@
                 <div></div>
             </div>
         </div>
-        <input type="text" value="#{code}"hidden id="hmac">
         <div class="button-container">
             <button  type="submit">Verifica</button>
             <a onclick="location.reload()" style="text-decoration: underline;">Retrimite linkul</a>
@@ -59,7 +58,7 @@
     {
         let code = codeInput.value;
         const id = new URLSearchParams(window.location.search).get('id')
-        const hmac = document.getElementById('hmac').value
+        const hmac = '#{code}'; // set by the server
         codeInput.value = '';
         await fetch('', {
             method: 'post',

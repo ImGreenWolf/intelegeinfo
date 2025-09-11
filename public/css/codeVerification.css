@@ -1,7 +1,8 @@
         form#codeForm
         {
             position: absolute;
-            width: 500px;
+            max-width: 500px;
+            width: 75%;
             height: 400px;
             color: white;
             top: 50%;
@@ -10,26 +11,31 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 50px;
+            gap: 3em;
+            justify-content: space-around;
             align-items: center;
             padding: 1em;
             background-color: rgb(17, 17, 17);
             border-radius: 1em;
-            border: 2px solid rgb(32, 32, 32)
+            border: 2px solid rgb(32, 32, 32);
+            font-family: Poppins;
         }
         form#codeForm .input-container
         {
             position: relative;
+            width: 100%;
+            max-width: 430px;
+
         }
         form#codeForm input[type=number]
         {
-                height: 2lh;
-                width: 430px;
+                height: 2em;
+                width: 100%;
                 padding-left: 3.5ch;
                 padding-block: 0;
                 letter-spacing: 3ch;
                 text-align: start;
-                font-size: 32px;
+                font-size: 1em;
                 border: 0;
                 outline: none !important;
                 background-color: transparent;
@@ -47,10 +53,11 @@
             left: 0;
             transform: translateY(-50%);
             top: 50%;
-            width: 500px;
+            max-width: 500px;
+            width: 100%;
             display: flex;
             /* padding-left: 3.5ch; */
-            font-size: 32px;
+            font-size: 2em;
             pointer-events: none;
             gap: 1.5ch;
             justify-content: center;
@@ -77,10 +84,11 @@
         {
             transition-duration: 0.2s;
             transition-timing-function: cubic-bezier(0.6, -0.28, 0.735, 0.045); /* cubic-bezier(0.74, -0.39, 0, 1.56); */
-            height: 2lh;
-            width: 2.5ch;
+            height: 2em;
+            width: 2ch;
             border: 2px ridge white;
-            border-radius: 0.5lh;
+            border-radius: 1em;
+            font-size: 1em;
             display: block;
             box-sizing: border-box;
             text-align: center;
@@ -108,7 +116,7 @@
 
         form#codeForm .text-container
         {
-            width: 400px;
+            width: 100%;
             /* margin-left: 45px; */
             font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
             
@@ -125,16 +133,16 @@
         {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 1em;
             flex-direction: column;
             & button 
             {
                 background-color: transparent;
                 border: 3px solid white;
-                border-radius: 2lh;
+                border-radius: 2em;
                 height: 2lh;
                 color: white;
-                font-size: 20px;
+                font-size: 1.5em;
                 width: 15ch;
                 transition-duration: 0.5s;
             }
@@ -144,5 +152,11 @@
                 color: white;
                 font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
                 text-decoration: underline;
+            }
+        }
+
+        @media screen and (max-width: 512px) {
+            :root {
+                font-size: 0.75em;
             }
         }
