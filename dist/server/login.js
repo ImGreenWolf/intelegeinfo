@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.privateKey = void 0;
 exports.onLoggedIn = onLoggedIn;
+exports.clearAuthCookies = clearAuthCookies;
 exports.authMiddleware = authMiddleware;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
@@ -72,19 +73,20 @@ function onLoggedIn(user, res, req, shouldkeepLoggedIn = false) {
     const secure = req.secure;
     const httpOnly = true;
     let keepLoggedIn = req.body ? (req.body.keepLoggedIn ? req.body.keepLoggedIn : shouldkeepLoggedIn) : shouldkeepLoggedIn;
-    if (keepLoggedIn)
-        return res.cookie(server_1.tokenCookieName, token, {
-            sameSite: 'lax',
-            httpOnly,
-            secure, // Set to true in production (HTTPS)
-            maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
-        });
-    else
-        return res.cookie(server_1.tokenCookieName, token, {
-            sameSite: 'lax',
-            httpOnly,
-            secure, // Set to true in production (HTTPS)
-        });
+    const cookieOption = keepLoggedIn ? {
+        sameSite: 'lax',
+        httpOnly,
+        secure, // Set to true in production (HTTPS)
+        maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
+    } : {
+        sameSite: 'lax',
+        httpOnly,
+        secure, // Set to true in production (HTTPS)
+    };
+    return res.cookie(server_1.tokenCookieName, token, cookieOption).cookie('iiauthstate', true, { ...keepLoggedIn, httpOnly: false });
+}
+function clearAuthCookies(res) {
+    return res.clearCookie(server_1.tokenCookieName).clearCookie('iiauthstate');
 }
 // Routes
 router.post('/', (req, res) => {

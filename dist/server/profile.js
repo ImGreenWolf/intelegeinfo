@@ -44,6 +44,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dbClient_1 = __importDefault(require("./dbClient"));
 const users = __importStar(require("./usersManager"));
 const server_1 = require("./server");
+const login_1 = require("./login");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use((0, cookie_parser_1.default)());
@@ -94,7 +95,7 @@ router.post('/update', async (req, res) => {
                     id: userId
                 }
             }).finally(() => {
-                res.clearCookie(server_1.tokenCookieName).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro');
+                (0, login_1.clearAuthCookies)(res).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro');
                 return;
             });
         }
@@ -134,7 +135,7 @@ router.post('/update', async (req, res) => {
     }
 });
 router.get('/logout', (req, res) => {
-    res.clearCookie(server_1.tokenCookieName);
+    (0, login_1.clearAuthCookies)(res);
     res.json({ redir: '/', message: "log out sucecsesfull!" });
 });
 router.use('/', (req, res) => {
@@ -144,7 +145,7 @@ router.use('/', (req, res) => {
         return;
     }
     if (req.query.logout) {
-        res.clearCookie(server_1.tokenCookieName);
+        (0, login_1.clearAuthCookies)(res);
         res.json({ redir: '/', message: "log out sucecsesfull!" });
         return;
     }
@@ -183,7 +184,7 @@ router.use('/', (req, res) => {
                     res.send((0, server_1.parseText)(file, req));
                 }).catch(err => {
                     if (err.userNoExist) {
-                        res.clearCookie(server_1.tokenCookieName).status(401).json({ error: "Couldnt find account" });
+                        (0, login_1.clearAuthCookies)(res).status(401).json({ error: "Couldnt find account" });
                     }
                     console.error('error parsing user info in file: ' + err.err);
                 });

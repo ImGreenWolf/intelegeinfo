@@ -63,7 +63,7 @@ var websocketReg = new Map();
 exports.tokenCookieName = 'iiauthtoken';
 const sessionStore_1 = __importDefault(require("./sessionStore"));
 const dbClient_1 = __importDefault(require("./dbClient"));
-const login_js_1 = __importDefault(require("./login.js"));
+const login_js_1 = __importStar(require("./login.js"));
 const signup_js_1 = __importDefault(require("./signup.js"));
 const profile_js_1 = __importDefault(require("./profile.js"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -145,7 +145,7 @@ app.use('/editor/components.js', (req, res) => {
                         throw 'invalid user';
                     newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`);
                     res.contentType('js').send(newRender);
-                }).catch(err => res.clearCookie(exports.tokenCookieName).contentType('js').send(newRender));
+                }).catch(err => (0, login_js_1.clearAuthCookies)(res).contentType('js').send(newRender));
             else
                 res.contentType('js').send(newRender);
         });
@@ -366,7 +366,7 @@ function authMiddleware(req, res, next, role) {
             next();
     }
     catch (err) {
-        res.clearCookie(exports.tokenCookieName).status(403).json({ error: 'Invalid token' });
+        (0, login_js_1.clearAuthCookies)(res).status(403).json({ error: 'Invalid token' });
     }
 }
 function handle404(req, res, next) {

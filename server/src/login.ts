@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { CookieOptions, Request, Response } from 'express';
 import fs from 'fs';
 import bodyParser from 'body-parser';
 import forge from 'node-forge';
@@ -43,20 +43,25 @@ export function onLoggedIn(user: unknown, res: Response, req: Request, shouldkee
   const secure = req.secure;
   const httpOnly = true;
   let keepLoggedIn =  req.body ? (req.body.keepLoggedIn ? req.body.keepLoggedIn : shouldkeepLoggedIn) : shouldkeepLoggedIn;
-  if(keepLoggedIn)
-    return res.cookie(tokenCookieName, token, {
+
+  const cookieOption: CookieOptions = keepLoggedIn ? {
         sameSite: 'lax',
         httpOnly,
         secure, // Set to true in production (HTTPS)
         maxAge: 1000 * 60 * 60 * 24 * 31, // 31 days // 1 hour
-      });
-  else
-      return res.cookie(tokenCookieName, token, {
+      } : {
         sameSite: 'lax',
         httpOnly,
         secure, // Set to true in production (HTTPS)
-      });
+      }
 
+  return res.cookie(tokenCookieName, token, cookieOption).cookie('iiauthstate', true, {...keepLoggedIn, httpOnly: false});
+
+
+}
+
+export function clearAuthCookies(res: Response) {
+  return res.clearCookie(tokenCookieName).clearCookie('iiauthstate')
 }
 
 

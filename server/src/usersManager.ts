@@ -8,7 +8,7 @@ import prisma from "./dbClient";
 import { Prisma, User } from "../../generated/prisma";
 import fs from "fs";
 import nodemailer from "nodemailer"
-import { onLoggedIn, UserState } from "./login"
+import { clearAuthCookies, onLoggedIn, UserState } from "./login"
 import * as Profile from './profile'
 import path from "path";
 import * as hmacuUtil from "../../dist/shared/hmacUtils";
@@ -643,7 +643,7 @@ router.get('/picture', async (req, res) => {
         const user = await updateActiveAtForUser(id, {pictureUpload: true}) //getUserData
         if(!user)
         {
-            res.clearCookie(tokenCookieName).status(404).redirect('/')
+            clearAuthCookies(res).status(404).redirect('/')
             return
         }
         if(user.picture.startsWith('http'))

@@ -8,6 +8,7 @@ import { Project, User } from "../../generated/prisma";
 import * as users from './usersManager'
 import path from "path";
 import { parseText, tokenCookieName } from "./server";
+import { clearAuthCookies } from "./login";
 const router = express.Router();
 router.use(bodyParser.json());
 router.use(cookieParser())
@@ -72,7 +73,7 @@ router.post('/update', async (req, res) => {
                     id: userId
                 }
             }).finally(() => {
-                res.clearCookie(tokenCookieName).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro')
+                clearAuthCookies(res).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro')
                 return;
             })
         }
@@ -120,7 +121,7 @@ router.post('/update', async (req, res) => {
 
 router.get('/logout', (req, res) => {
 
-    res.clearCookie(tokenCookieName)
+    clearAuthCookies(res)
     res.json({redir: '/', message: "log out sucecsesfull!"})
 })
 
@@ -134,7 +135,7 @@ router.use('/', (req, res) => {
             return
         }
         if(req.query.logout) {
-            res.clearCookie(tokenCookieName)
+            clearAuthCookies(res)
             res.json({redir: '/', message: "log out sucecsesfull!"})
             return
         }
@@ -192,7 +193,7 @@ router.use('/', (req, res) => {
                         if(err.userNoExist)
                         {  
                             
-                            res.clearCookie(tokenCookieName).status(401).json({ error: "Couldnt find account" });
+                            clearAuthCookies(res).status(401).json({ error: "Couldnt find account" });
                         }
                         console.error('error parsing user info in file: ' + err.err)
                     })

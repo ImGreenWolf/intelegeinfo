@@ -2988,7 +2988,7 @@ export class TokenTooltip extends Tooltip {
     if(sessionId && !inIframe)
     {
             
-            if(doesHttpOnlyCookieExist('iiauthtoken'))
+            if(getCookie('iiauthstate'))
             {  
                if(getCookie('savedName'))
                 document.cookie = 'savedName='

@@ -24,7 +24,7 @@ export const tokenCookieName = 'iiauthtoken'
 import SharedStateManager from "./sessionStore"
 import { Prisma, Problem } from "../../generated/prisma";
 import prisma from "./dbClient";
-import loginManager from './login.js'
+import loginManager, { clearAuthCookies } from './login.js'
 import signupManager from './signup.js'
 import profileManager from './profile.js'
 import { UUID } from "crypto";
@@ -122,7 +122,7 @@ app.use('/editor/components.js',
                         throw 'invalid user'
                     newRender = newRender.replaceAll(`loggedIn = false`, `loggedIn = true`).replaceAll(`const username = ''`, `const username = "${userdata.username}"`)
                     res.contentType('js').send(newRender)
-                    }).catch(err =>  res.clearCookie(tokenCookieName).contentType('js').send(newRender))
+                    }).catch(err =>  clearAuthCookies(res).contentType('js').send(newRender))
             else
                 res.contentType('js').send(newRender)
 
@@ -417,7 +417,7 @@ export function authMiddleware(req, res, next:any, role?:string) {
         // req.user = user;
         next();
     } catch (err) {
-        res.clearCookie(tokenCookieName).status(403).json({ error: 'Invalid token' });
+       clearAuthCookies(res).status(403).json({ error: 'Invalid token' });
     }
 }
 function handle404(req:any, res:any, next:NextFunction) 

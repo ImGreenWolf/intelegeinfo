@@ -10,4 +10,5 @@ export interface UserState {
     role: Role;
 }
 export declare function onLoggedIn(user: unknown, res: Response, req: Request, shouldkeepLoggedIn?: boolean): express.Response<any, Record<string, any>>;
+export declare function clearAuthCookies(res: Response): express.Response<any, Record<string, any>>;
 export declare function authMiddleware(req: any, res: Response, next: any): express.Response<any, Record<string, any>>;
