@@ -2312,7 +2312,7 @@ export let ws;
     if (sessionId)
         params.set('session', sessionId.toString());
     params.set('embeded', inIframe.toString());
-    const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + "/editor" + (params.size ? "?" : "") + params.toString();
+    const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + "/editor" + (params.size != 0 ? "?" : "") + params.toString();
     ws = new WebSocket(WSUrl);
     ws.addEventListener('open', (ev) => {
         const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
