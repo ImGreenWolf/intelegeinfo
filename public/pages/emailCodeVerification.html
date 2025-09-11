@@ -58,7 +58,9 @@
     {
         let code = codeInput.value;
         const id = new URLSearchParams(window.location.search).get('id')
-        const hmac = '#{code}'; // set by the server
+        const hmac = '^{*code}'; // set by the server
+        if(!hmac)
+            return window.alert('Am intampinat o problema in verificarea codului introdus, va rugam incercati mai tarziu!')
         codeInput.value = '';
         await fetch('', {
             method: 'post',
