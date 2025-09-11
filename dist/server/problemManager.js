@@ -53,7 +53,7 @@ const problemCreator = new Map();
 class ProblemCreator {
     editorSession;
 }
-async function createProblem({ name, description, difficulty, tags, category, requirement, grade }, tests, editorSession, clientObj, req, id) {
+async function createProblem({ name, description, difficulty, tags, category, requirement, grade }, tests, editorSession, clientObj, req, problemId) {
     // const problemManager = problemCreator.get(editorSession.sessionId)
     // if(!editorSession.sessionContainer)
     //     console.error('no running container')
@@ -131,7 +131,7 @@ async function createProblem({ name, description, difficulty, tags, category, re
         const parsedTags = tags.split(',');
         const params = {
             name: name || "unnamed",
-            authorId: users.getIdFromJWT(req),
+            authorId: clientObj.clientData ? clientObj.clientData.id : users.getIdFromJWT(req),
             category,
             description,
             requirement,
@@ -153,10 +153,10 @@ async function createProblem({ name, description, difficulty, tags, category, re
                 })),
             },
         };
-        if (id)
+        if (problemId)
             await dbClient_1.default.problem.upsert({
                 where: {
-                    id: id
+                    id: problemId
                 },
                 update: params,
                 create: params,
@@ -229,6 +229,22 @@ exports.router.post('/create', (req, res) => {
         res.status(200).send(tests[0].dataIn);
     }
     catch (err) {
+        res.status(500).send(err);
+    }
+});
+exports.router.post('/create/auto', async (req, res) => {
+    try {
+        const { clientId, sessionId } = req.body;
+        const session = server_1.sessionMap.get(sessionId);
+        if (!session)
+            throw 'Deschide creatorul intr-un editor!';
+        const client = session.getClientObjectById(clientId);
+        if (!client || !sessionId)
+            throw 'invalid client or session';
+        res.send(await (0, aiIntegration_1.autocompleteProblemDetails)(client, client.openFile[0]));
+    }
+    catch (err) {
+        console.error(err);
         res.status(500).send(err);
     }
 });

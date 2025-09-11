@@ -4,9 +4,10 @@ import { EditorFile } from "./types";
 import path from "path";
 import fs from 'fs';
 import { rootDirName, sessionMap } from "./server";
-import { Guide } from "../../generated/prisma";
+import { Guide, Problem } from "../../generated/prisma";
 import prisma from "./dbClient";
 import { UUID } from "crypto";
+import { createProblem, ProblemTest } from "./problemManager";
 const openai = new OpenAI();
 
 export async function transpileCode(client, openFile: EditorFile, TargetEditorMode: typeof EditorMode)
@@ -35,9 +36,6 @@ export async function transpileCode(client, openFile: EditorFile, TargetEditorMo
     
     console.log(response.output_text);
     return response.output_text
-        
-    
-
     
 }
 
@@ -121,8 +119,9 @@ export async function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, pro
         *Think about how another teacher reviewing this explanation at the bacalaureat might grade it and say about it.
         *Dont give direct instructions on how to improve the explenation (only indirect, like "you could think about how..." or ")
         *For correct awnser: - coherent description of the algorithm; -justification of efficiency and/or memory elements based of the problem description.
-        *Dont expect the user to give super detailed explenations, basic steps are "enough", though more nuanced explenations are encouraged.
-        
+        *Dont expect the user to give super detailed explenations or effects of efficiency or memory usage, basic steps are "enough",
+        though more nuanced explenations are encouraged.
+
         # IMPORTANT NOTES
         *DONT EVALUATE CODE, JUST THE DESCRIPTION OF THE CODE. If the user provides any computer code in the explenation, tell them they must provide an explenation, not source code.
         DO NOT ALLOW THE EVALUATION OF SOURCE CODE IN ANY RESPONSE.
@@ -208,3 +207,86 @@ const codeMentorExplainFeedback = {
   },
   "strict": true
 };
+
+
+export async function autocompleteProblemDetails(client, openFile: EditorFile)
+{
+
+  const tags = await prisma.tag.findMany({
+      select: {name: true}
+    })
+
+  const problemSchema = {
+    type: "object",
+    properties: {
+      name: {
+        type: "string",
+        description: "The title of the problem."
+      },
+      description: {
+        type: "string",
+        description: "The problem statement and requirements based on the source code."
+      },
+      tests: {
+        type: "array",
+        items: { type: "string" },
+        description: "Example input test cases for the problem. Must include only the data that will be read by the program, nothing else. If there is no input, leave an empty string."
+      },
+      category: {
+        type: "string",
+        description: "The main concept and topic of the problem (optional). Keep short and concise.",
+        nullable: true
+      },
+      requirements: {
+        type: "string",
+        description: "The limits and requirements of the inputs and notes regarding the problem.",
+        nullable: true
+      },
+      difficulty: {
+        type: "string",
+        enum: ["Beginner", "Easy", "Medium", "Hard", "Exam", "Competition"],
+        description: "Difficulty level of the problem (optional).",
+        nullable: true
+      },
+      tags: {
+        type: "array",
+        items: { type: "string" },
+        description: `Choose a tags from the tags list, or a new one if you cant find an appropiate tag in it. TAGS LIST (separated by ','): ${tags.map(tag => tag.name).join(', ')}`
+      },
+      grade: {
+        type: "integer",
+        description: "Romanian school grade (5-12) that this problem is intended for."
+      }
+    },
+    required: ["name", "category", "difficulty", "requirements", "description", "tests", "tags", "grade"],
+    additionalProperties: false
+  };
+  
+    const response = await openai.responses.create({
+        model: "gpt-4o-mini",
+        instructions: `
+    Analyze this source code and create a problem entry based on it.
+    Your response must be Romanian.
+    Dont specify headers or libraries to include, only what the code should do.
+    `,
+    temperature: 0.25,
+    user: client.clientId,
+    input: openFile.content,
+    text: {
+      format: {
+        type: "json_schema",
+        name: 'AutocompleteProblem',
+        schema: problemSchema
+      }
+    }
+    
+    });
+    
+    const responseJson = JSON.parse(response.output_text) as Problem
+    const tests: ProblemTest[] = responseJson.tests.map(testInput => {return {dataIn: testInput}}) as ProblemTest[]
+    return {...responseJson, ...tests}
+    // const createdProblem = await createProblem(responseJson, tests, openFile.session, client)
+
+    
+  }
+

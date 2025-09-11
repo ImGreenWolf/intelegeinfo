@@ -15,7 +15,7 @@ export declare function createProblem({ name, description, difficulty, tags, cat
     category: any;
     requirement: any;
     grade: any;
-}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, req: any, id?: number): Promise<void>;
+}, tests: ProblemTest[], editorSession: EditorSession, clientObj: ClientObject, req?: any, problemId?: number): Promise<void>;
 export declare function testProblem(tests: ProblemTest[], clientObj: ClientObject, clientSession: any, res: any): Promise<PromiseSettledResult<{
     status: string;
     error: boolean;

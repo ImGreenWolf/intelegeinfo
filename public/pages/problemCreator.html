@@ -54,15 +54,18 @@
         <label for="function">File name</label>
         <input type="text" name="function" placeholder="File name...">
         <input type="submit" value="Submit">
+        <button type="button" onclick="autocomplete()" id="autocomplete">Autocomplete</button>
     </form>
 
 <script>
 
     const updateId = undefined
-    function addTest()
+    function addTest(value)
     {
         const elem = document.createElement('textarea')
         document.getElementById('tests').appendChild(elem)
+        if(value)
+            elem.value = value
     }
     const clientId = new URLSearchParams(location.search).get('clientId')
     const sessionId = new URLSearchParams(location.search).get('sessionId')
@@ -131,8 +134,28 @@
             elem.value = val
         }
     }
-
     updateValues()
+    document.getElementById('autocomplete').onclick = autocomplete
+    async function autocomplete() {
+        const res = await ((await fetch(`/editor/problem/create/auto`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({sessionId, clientId}),
+        })).json())
+        console.log(res)
+
+        for(const [key, val] of Object.entries(res))
+        {
+            const elem = document.getElementById(key)
+            if(!elem)
+                continue;
+            elem.value = val
+        }
+
+        for(const test of res.tests) 
+            addTest(test.dataIn)
+    }
+
 </script>
 </body>
 </html>
