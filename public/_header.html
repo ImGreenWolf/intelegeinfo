@@ -65,6 +65,7 @@
                     document.cookie = 'ii_lang='+ev.target.value
                     location.reload()
                 }
+                
                 function getCookie(cname) {
                     let name = cname + "=";
                     let decodedCookie = decodeURIComponent(document.cookie);
@@ -81,16 +82,8 @@
                     return undefined;
                 }
 
-                function doesHttpOnlyCookieExist(cookiename) {
-                    var d = new Date();
-                    d.setTime(d.getTime() + (1000));
-                    var expires = "expires=" + d.toUTCString();
-
-                    document.cookie = cookiename + "=new_value;path=/;" + expires;
-                    return document.cookie.indexOf(cookiename + '=') == -1;
-                }
                
-                    if(doesHttpOnlyCookieExist('iiauthtoken'))
+                    if(getCookie('iiauthstate'))
                     {
                         const cont = document.getElementById('login-container')
                         const profilePage = document.createElement('a')
