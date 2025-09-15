@@ -2707,7 +2707,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 if (clientSession.process) {
                     let timer;
                     if (!process.killed) {
-                        process.kill(0);
+                        process.kill(15);
                         
                         process.addListener(('close'), (code) => {
                             if(timer)
@@ -2869,14 +2869,6 @@ process.on('SIGUSR2', () => {
 
 	setTimeout(() => (console.log('Exiting now.'), process.exit(0)), 5000);
 });
-
-
-
-
-function windowsPathToDocker(path: string): string {
-    const drive = path[0].toLowerCase();
-    return `/${drive}${path.slice(2).replace(/\\/g, '/')}`;
-  }
 
 import { execSync } from 'child_process';
 import { randomUUID } from 'crypto';

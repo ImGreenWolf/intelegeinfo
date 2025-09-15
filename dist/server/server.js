@@ -2165,7 +2165,7 @@ bash `.trim().replaceAll('\n', "");
                     if (clientSession.process) {
                         let timer;
                         if (!process.killed) {
-                            process.kill(0);
+                            process.kill(15);
                             process.addListener(('close'), (code) => {
                                 if (timer)
                                     clearTimeout(timer);
@@ -2295,10 +2295,6 @@ process.on('SIGUSR2', () => {
     console.log('Recv. SIGUSR2');
     setTimeout(() => (console.log('Exiting now.'), process.exit(0)), 5000);
 });
-function windowsPathToDocker(path) {
-    const drive = path[0].toLowerCase();
-    return `/${drive}${path.slice(2).replace(/\\/g, '/')}`;
-}
 const child_process_2 = require("child_process");
 const gdbUtilities_1 = require("./gdbUtilities");
 const aiIntegration_1 = require("./aiIntegration");
