@@ -6,22 +6,24 @@ function initInput(inputElem, options, type) {
             options.expression = expr;
         else
             options.valExpression = expr;
-        table.replaceChildren(...updateTableElements(options));
+        cacheTableElements(options);
     };
 }
+let cachedVal;
 function updateTableElements(options) {
     let rowElems = [];
     for (let row = 0 + options.indexOffset; row < options.rows + options.indexOffset; row++) {
         const colomElems = [];
         for (let column = 0 + options.indexOffset; column < options.columns + options.indexOffset; column++) {
             const value = getExpressionValue(options, row, column);
+            if (value.err)
+                return undefined;
             colomElems.push(createNode('th', { innerText: value.text, css: value.css }));
         }
         rowElems.push(createNode('tr', { html: colomElems }));
     }
     return rowElems;
 }
-let cachedVal;
 function getExpressionValue(options, row, column) {
     let rexExpr = options.expression.replaceAll('i', row).replaceAll('j', column).replaceAll('n', options.rows).replaceAll('m', options.columns);
     let rexValExpr = options.valExpression.replaceAll('i', row).replaceAll('j', column).replaceAll('n', options.rows).replaceAll('m', options.columns);
@@ -31,16 +33,19 @@ function getExpressionValue(options, row, column) {
         let text = `${row}, ${column}`;
         if (typeof resVal == 'number' || typeof resVal == 'string') {
             text = resVal.toString();
-            if (typeof res == 'boolean') {
-                cachedVal = { css: res ? 'background-color: lime' : '', text };
-                return cachedVal;
-            }
+            if (typeof res == 'boolean')
+                return { css: res ? 'background-color: lime' : '', text };
         }
-        return cachedVal || { err: 'Incorrect input type' };
+        return { err: 'Incorrect input type' };
     }
     catch (err) {
         return { err };
     }
+}
+function cacheTableElements(options) {
+    const tableElems = updateTableElements(options) ?? cachedVal;
+    cachedVal = tableElems;
+    table.replaceChildren(...tableElems);
 }
 function initDisplay(parentElem, indexOffset) {
     const input = document.getElementById('sandbox-input');
@@ -49,12 +54,12 @@ function initDisplay(parentElem, indexOffset) {
     const row = document.getElementById('sandbox-row');
     row.oninput = () => {
         options.rows = Math.min(20, row.valueAsNumber);
-        table.replaceChildren(...updateTableElements(options));
+        cacheTableElements(options);
     };
     const column = document.getElementById('sandbox-column');
     column.oninput = () => {
         options.columns = Math.min(20, column.valueAsNumber);
-        table.replaceChildren(...updateTableElements(options));
+        cacheTableElements(options);
     };
     table = createNode('table', { html: updateTableElements(options), className: 'matricie' });
     const container = createNode('div', { html: [table] });

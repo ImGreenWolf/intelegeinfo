@@ -17,11 +17,14 @@ function initInput(inputElem, options: TableOptions, type: "b" | 'v') {
             options.expression = expr
         else 
             options.valExpression = expr
-        table.replaceChildren(...updateTableElements(options))
+        cacheTableElements(options)
+
         
     }
 
 }
+
+let cachedVal;
 
 function updateTableElements(options: TableOptions) {
     let rowElems: HTMLElement[] = [];
@@ -31,6 +34,8 @@ function updateTableElements(options: TableOptions) {
         for(let column=0 + options.indexOffset; column < options.columns + options.indexOffset; column++)
         {
             const value = getExpressionValue(options, row, column)
+            if(value.err)
+                return undefined;
             colomElems.push(createNode('th', {innerText: value.text, css: value.css}))
         }
             
@@ -41,7 +46,6 @@ function updateTableElements(options: TableOptions) {
 }
 
 
-let cachedVal;
 
 function getExpressionValue(options: TableOptions, row: number, column: number)
 {
@@ -56,15 +60,12 @@ function getExpressionValue(options: TableOptions, row: number, column: number)
         {
             text = resVal.toString()
             if(typeof res == 'boolean')
-            {
-                cachedVal = {css: res ? 'background-color: lime' : '', text}
-                return cachedVal;
-            }
+                return {css: res ? 'background-color: lime' : '', text}
         }
        
            
 
-        return cachedVal || {err: 'Incorrect input type'}
+        return {err: 'Incorrect input type'}
     }
     catch(err) {
         return {err}
@@ -73,7 +74,11 @@ function getExpressionValue(options: TableOptions, row: number, column: number)
     
 }
 
-
+function cacheTableElements(options) {
+     const tableElems = updateTableElements(options) ?? cachedVal
+    cachedVal = tableElems;
+    table.replaceChildren(...tableElems)
+}
 function initDisplay(parentElem: HTMLElement, indexOffset: number)
 {
     const input = document.getElementById('sandbox-input') as HTMLInputElement
@@ -83,14 +88,15 @@ function initDisplay(parentElem: HTMLElement, indexOffset: number)
     const row =  document.getElementById('sandbox-row') as HTMLInputElement
     row.oninput = () => {
         options.rows = Math.min(20, row.valueAsNumber)
-        table.replaceChildren(...updateTableElements(options))
+         cacheTableElements(options)
         
     }
 
     const column =  document.getElementById('sandbox-column') as HTMLInputElement
     column.oninput = () => {
         options.columns =  Math.min(20, column.valueAsNumber)
-        table.replaceChildren(...updateTableElements(options))
+        cacheTableElements(options)
+
         
     }
     
