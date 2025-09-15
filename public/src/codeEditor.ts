@@ -1574,51 +1574,45 @@ export function displayBlankEditor(index)
   client?.editorSession[index].editor!.setValue('Create a new file!')
   client?.editorSession[index].editor!.setMode('txt')
 }
+function onRenameFile(fileName, newName) {
+  if(!editorSessions.has(fileName)) 
+    return false;
+  codeWindow.getEditor().session.setMode(aceModes.getModeForPath(newName).mode);
+  editorSessions.get(fileName)!.fileElement!.nameElement.innerText = newName;
+  if(!editorSessions.get(fileName) || editorSessions.has(newName))
+    return;
+  editorSessions.get(fileName)!.fileElement!.name = newName
+  editorSessions.get(fileName)!.fileName = newName
+  const index = client!.editorSession.findIndex(val => val.fileName == fileName)
+  client!.editorSession[index]! = editorSessions.get(fileName)!
+  editorSessions.set(newName, editorSessions.get(fileName)!)
 
-function renameFile(fileName: string, newName?: string) {
-  return new Promise<void>((resolve, reject) => {
+
+  // editorSessions.get(fileName)?.fileElement?.Users.forEach(user => {
+  //   clients.get(user.id)?.editorSession 
+  // })
+  
+  editorSessions.delete(fileName)
+
+}
+async function renameFile(fileName: string, newName?: string) {
 
   
   if(!editorSessions.has(fileName)) return false;
-  if(newName)
-  {
-    codeWindow.getEditor().session.setMode(aceModes.getModeForPath(newName).mode);
-    editorSessions.get(fileName)!.fileElement!.nameElement.innerText = newName;
-    if(!editorSessions.get(fileName) || editorSessions.has(newName))
-      return;
-    editorSessions.get(fileName)!.fileElement!.name = newName
-    editorSessions.get(fileName)!.fileName = newName
-    const index = client!.editorSession.findIndex(val => val.fileName == fileName)
-    client!.editorSession[index]! = editorSessions.get(fileName)!
-    editorSessions.set(newName, editorSessions.get(fileName)!)
 
+    editorSessions.get(fileName)!.fileElement!.fileElem.style.display = 'none';
 
-    // editorSessions.get(fileName)?.fileElement?.Users.forEach(user => {
-    //   clients.get(user.id)?.editorSession 
-    // })
-    
-    editorSessions.delete(fileName)
-    resolve()
-  }
-    
-  else
-  { 
-     editorSessions.get(fileName)!.fileElement!.fileElem.style.display = 'none';
-    awaitFileNamePrompt(fileName).then(name => {
-      
-      editorSessions.get(fileName)!.fileElement!.fileElem.style.display = '';
-      // editorSessions.get(fileName)!.fileElement!.fileElem.innerText = name; 
-      codeWindow.getEditor().session.setMode(aceModes.getModeForPath(name).mode);
-      ws.send(JSON.stringify({
-        type: WebSocketMessageType.FileManagement,
-        command: FileManagementCommands.Rename,
-        name: fileName,
-        newName: name
-      }));
-      resolve()
-    })
-  }
-})
+    const name = newName ?? await awaitFileNamePrompt(fileName)
+    editorSessions.get(fileName)!.fileElement!.fileElem.style.display = '';
+    codeWindow.getEditor().session.setMode(aceModes.getModeForPath(name).mode);
+    ws.send(JSON.stringify({
+      type: WebSocketMessageType.FileManagement,
+      command: FileManagementCommands.Rename,
+      name: fileName,
+      newName: name
+    }));
+
+  
 
 }
 interface User {
@@ -1673,7 +1667,7 @@ class FileElement extends EditorWindowTab
         awaitFileNamePrompt(fileName).then(name => {
           
           editorSessions.get(fileName)!.fileElement!.fileElem.style.display = '';
-          ws.send(JSON.stringify({type: WebSocketMessageType.Utilities, util: 'transpile', target: name.split('.').at(-1), fileName}))
+          ws.send(JSON.stringify({type: WebSocketMessageType.Utilities, util: 'transpile', target: name, fileName}))
         })
       }}))
       contextMenu.id = 'context-menu'
@@ -3675,15 +3669,16 @@ function getEditorSession(fileName)
   switch (messageJson.type) {
   case WebSocketMessageType.Utilities:
 
-  switch (messageJson.util) {
-    case 'transpile':
-        const target = getEditorSession(messageJson.fileName)
-        target.editor?.setValue(messageJson.response)
-            
-    break;
-}
+    switch (messageJson.util) {
+      case 'transpile':
+          const target = getEditorSession(messageJson.fileName)
+          renameFile(messageJson.fileName,messageJson.target)
+          target.editor?.setValue(messageJson.response)
+              
+      break;
+  }
 
-break;
+  break;
     case WebSocketMessageType.RTC:
       // if(eventJson.end)
       // {
@@ -4032,12 +4027,16 @@ break;
     case WebSocketMessageType.CompileResult:
 
 
+      
+      if(messageJson.saved)
+       cleanFile(messageJson.fileName)
+      if(!messageJson.body)
+        break;
       const compileErrors = JSON.parse(messageJson.body);
       const index = client?.editorSession.findIndex(file => file.fileName === messageJson.fileName)!
       const session = client?.editorSession[index].editor!
+    
 
-      if(messageJson.saved)
-        cleanFile(messageJson.fileName)
     for(const elem of document.getElementsByClassName('console-error'))
           elem.remove()
        session.setAnnotations([])
@@ -4413,7 +4412,7 @@ break;
 
           break;
         case FileManagementCommands.Rename:
-          renameFile(messageJson.name, messageJson.newName)
+          onRenameFile(messageJson.name, messageJson.newName)
           break;
         case FileManagementCommands.Open:
           const fileName: string = messageJson.fileName;

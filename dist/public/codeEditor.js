@@ -1188,42 +1188,36 @@ export function displayBlankEditor(index) {
     client?.editorSession[index].editor.setValue('Create a new file!');
     client?.editorSession[index].editor.setMode('txt');
 }
-function renameFile(fileName, newName) {
-    return new Promise((resolve, reject) => {
-        if (!editorSessions.has(fileName))
-            return false;
-        if (newName) {
-            codeWindow.getEditor().session.setMode(aceModes.getModeForPath(newName).mode);
-            editorSessions.get(fileName).fileElement.nameElement.innerText = newName;
-            if (!editorSessions.get(fileName) || editorSessions.has(newName))
-                return;
-            editorSessions.get(fileName).fileElement.name = newName;
-            editorSessions.get(fileName).fileName = newName;
-            const index = client.editorSession.findIndex(val => val.fileName == fileName);
-            client.editorSession[index] = editorSessions.get(fileName);
-            editorSessions.set(newName, editorSessions.get(fileName));
-            // editorSessions.get(fileName)?.fileElement?.Users.forEach(user => {
-            //   clients.get(user.id)?.editorSession 
-            // })
-            editorSessions.delete(fileName);
-            resolve();
-        }
-        else {
-            editorSessions.get(fileName).fileElement.fileElem.style.display = 'none';
-            awaitFileNamePrompt(fileName).then(name => {
-                editorSessions.get(fileName).fileElement.fileElem.style.display = '';
-                // editorSessions.get(fileName)!.fileElement!.fileElem.innerText = name; 
-                codeWindow.getEditor().session.setMode(aceModes.getModeForPath(name).mode);
-                ws.send(JSON.stringify({
-                    type: WebSocketMessageType.FileManagement,
-                    command: FileManagementCommands.Rename,
-                    name: fileName,
-                    newName: name
-                }));
-                resolve();
-            });
-        }
-    });
+function onRenameFile(fileName, newName) {
+    if (!editorSessions.has(fileName))
+        return false;
+    codeWindow.getEditor().session.setMode(aceModes.getModeForPath(newName).mode);
+    editorSessions.get(fileName).fileElement.nameElement.innerText = newName;
+    if (!editorSessions.get(fileName) || editorSessions.has(newName))
+        return;
+    editorSessions.get(fileName).fileElement.name = newName;
+    editorSessions.get(fileName).fileName = newName;
+    const index = client.editorSession.findIndex(val => val.fileName == fileName);
+    client.editorSession[index] = editorSessions.get(fileName);
+    editorSessions.set(newName, editorSessions.get(fileName));
+    // editorSessions.get(fileName)?.fileElement?.Users.forEach(user => {
+    //   clients.get(user.id)?.editorSession 
+    // })
+    editorSessions.delete(fileName);
+}
+async function renameFile(fileName, newName) {
+    if (!editorSessions.has(fileName))
+        return false;
+    editorSessions.get(fileName).fileElement.fileElem.style.display = 'none';
+    const name = newName ?? await awaitFileNamePrompt(fileName);
+    editorSessions.get(fileName).fileElement.fileElem.style.display = '';
+    codeWindow.getEditor().session.setMode(aceModes.getModeForPath(name).mode);
+    ws.send(JSON.stringify({
+        type: WebSocketMessageType.FileManagement,
+        command: FileManagementCommands.Rename,
+        name: fileName,
+        newName: name
+    }));
 }
 class FileElement extends EditorWindowTab {
     Users = [];
@@ -1265,7 +1259,7 @@ class FileElement extends EditorWindowTab {
                     editorSessions.get(fileName).fileElement.fileElem.style.display = 'none';
                     awaitFileNamePrompt(fileName).then(name => {
                         editorSessions.get(fileName).fileElement.fileElem.style.display = '';
-                        ws.send(JSON.stringify({ type: WebSocketMessageType.Utilities, util: 'transpile', target: name.split('.').at(-1), fileName }));
+                        ws.send(JSON.stringify({ type: WebSocketMessageType.Utilities, util: 'transpile', target: name, fileName }));
                     });
                 } }));
             contextMenu.id = 'context-menu';
@@ -2782,6 +2776,7 @@ function onMessage(event) {
             switch (messageJson.util) {
                 case 'transpile':
                     const target = getEditorSession(messageJson.fileName);
+                    renameFile(messageJson.fileName, messageJson.target);
                     target.editor?.setValue(messageJson.response);
                     break;
             }
@@ -3044,11 +3039,13 @@ function onMessage(event) {
             }
             break;
         case WebSocketMessageType.CompileResult:
+            if (messageJson.saved)
+                cleanFile(messageJson.fileName);
+            if (!messageJson.body)
+                break;
             const compileErrors = JSON.parse(messageJson.body);
             const index = client?.editorSession.findIndex(file => file.fileName === messageJson.fileName);
             const session = client?.editorSession[index].editor;
-            if (messageJson.saved)
-                cleanFile(messageJson.fileName);
             for (const elem of document.getElementsByClassName('console-error'))
                 elem.remove();
             session.setAnnotations([]);
@@ -3325,7 +3322,7 @@ function onMessage(event) {
                     });
                     break;
                 case FileManagementCommands.Rename:
-                    renameFile(messageJson.name, messageJson.newName);
+                    onRenameFile(messageJson.name, messageJson.newName);
                     break;
                 case FileManagementCommands.Open:
                     const fileName = messageJson.fileName;

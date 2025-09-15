@@ -660,7 +660,10 @@ Tralalero Tralala`.split('\n')
  
              
              const fileName = this.name
-             if(!(clientObj.getFile(this.name) && clientObj.getFile(fileName).editorMode && clientObj.getFile(fileName).editorMode.checkCodeSyntax))
+             if(!clientObj.getFile(this.name))
+                return;
+            
+             if(!clientObj.getFile(fileName).editorMode.checkCodeSyntax)
                 // send saved file message if doesnt have syntax checker
                  this.session.replicateFunction((clientWs, localClientId) => {
                      if(this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))

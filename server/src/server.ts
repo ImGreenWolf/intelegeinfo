@@ -1931,14 +1931,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                     switch (messageJSON.util) {
                         case 'transpile':
-                            const target = messageJSON.target
+                            const target = messageJSON.target.split('.').at(-1)
                             if(!messageJSON.fileName)
                                 break;
                             const targetMode = EditorModes.modes.find(mode => mode.name === target || mode.extension.includes(target))
                             if(targetMode)
                                 transpileCode(clientObj, clientObj.openFile.find(file => file.name === messageJSON.fileName), targetMode).then(val => {
-                            ws.send(JSON.stringify({type: WebSocketMessageType.Utilities, util: messageJSON.util, response: val, fileName: messageJSON.fileName}))
-                            })
+                                    ws.send(JSON.stringify({type: WebSocketMessageType.Utilities, util: messageJSON.util, response: val, fileName: messageJSON.fileName, target: messageJSON.target}))
+                                })
                                 
                         break;
                     }

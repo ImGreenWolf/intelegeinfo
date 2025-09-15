@@ -62,12 +62,19 @@ async function fetchProblems() {
 
             
         });
+
+
+         for(const problem of document.getElementsByClassName('problem-card') as HTMLCollectionOf<HTMLElement>)
+        problem.style.height = problem.clientHeight + "px", problem.style.maxHeight = problem.clientHeight + "px"
     } catch (error) {
         console.error('Error fetching directory:', error);
     }
 }
 
 fetchProblems();
+
+
+
 
 type problems = ({
     tagsLinked: {
