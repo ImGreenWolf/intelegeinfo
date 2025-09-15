@@ -54,7 +54,7 @@ async function fetchProblems() {
                 className: `problem-card grade-color-${item.grade}` }));
         });
         for (const problem of document.getElementsByClassName('problem-card'))
-            problem.style.height = problem.clientHeight + "px", problem.style.maxHeight = problem.clientHeight + "px";
+            problem.style.maxHeight = problem.clientHeight + "px", problem.style.height = problem.clientHeight + "px";
     }
     catch (error) {
         console.error('Error fetching directory:', error);
