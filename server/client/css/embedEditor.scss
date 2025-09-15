@@ -64,6 +64,9 @@
         "buttons"
         "output";
     }
+    .container #editor-container {
+        resize: vertical;
+    }
 
     .buttons button
     {

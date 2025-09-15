@@ -2461,6 +2461,9 @@ button.glowing:active::before {
     gap: 5px;
     grid-template-areas: "main" "buttons" "output";
   }
+  .container #editor-container {
+    resize: vertical;
+  }
   .buttons button {
     min-width: 25px;
     min-height: 25px;
