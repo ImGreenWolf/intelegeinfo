@@ -628,7 +628,10 @@ function cleanUp() {
     EditorModes.modes.forEach(element => {
         filter += `--filter ancestor=${buildTag}_${element.dockerSafeTag} `
     });
-    console.log("Removing previous sandbox containers: " + execSync(`docker ps ${filter} -q |  xargs --no-run-if-empty docker rm --force `, {timeout: 5000}))
+    console.log("Async removing previous sandbox builds...")
+    exec(`docker system prune`, {timeout: 3000}, (err, data) => console.log(data))
+
+    console.log("Removing previous sandbox containers: " + execSync(`docker ps ${filter} -q |  xargs --no-run-if-empty docker rm --force | docker system prune`, {timeout: 5000}))
 });
 
 }
@@ -1789,6 +1792,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     let spawnDate = Date.now()
     let programTimeout;
     gdbBuffer = "";
+    let errorBuffer = ''
+
 
     if(messageJSON.textMode)
         programTimeout = setTimeout(() => {
@@ -1802,6 +1807,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     clientSession.program?.on("spawn", async () => {
         console.log("Program spawned")
+        
         spawnDate = Date.now()
         res.editorMode.onSpawn(clientSession);
         replicateFunction((ws,id, obj) => obj.sendMessage({spawn: 1}, WebSocketMessageType.ExecuteStatus))
@@ -1867,13 +1873,11 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     });
 
 
-    // clientSession.program?.stderr?.addListener("data", (data) => {
-    //     // gdbBuffer += data.toString();
+    clientSession.program?.stderr?.addListener("data", (data) => {
+        errorBuffer += data.toString() + '\n';
 
-    //     replicateFunction((clientWs) => {
-    //         clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
-    //     });
-    // });
+        
+    });
 
     clientSession.program?.addListener("close", (code) => {
 
@@ -1881,9 +1885,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         clearTimeout(programTimeout)
         switch(code)
         {
-            case 0:
             default:
-            onClosedProgram(code, ( Date.now() - spawnDate), "Programul a iesit cu codul: " + (code?.toString() || '-1'))
+                if(errorBuffer)
+                {
+                    onClosedProgram(code, ( Date.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim())
+                    break;
+                }
+            case 0:
+             onClosedProgram(code, ( Date.now() - spawnDate), "Programul a iesit cu codul: " + (code?.toString() || '-1'))
             break;
             case 136:
             case 138:

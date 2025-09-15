@@ -512,7 +512,9 @@ function cleanUp() {
         EditorModes.modes.forEach(element => {
             filter += `--filter ancestor=${buildTag}_${element.dockerSafeTag} `;
         });
-        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps ${filter} -q |  xargs --no-run-if-empty docker rm --force `, { timeout: 5000 }));
+        console.log("Async removing previous sandbox builds...");
+        (0, child_process_1.exec)(`docker system prune`, { timeout: 3000 }, (err, data) => console.log(data));
+        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps ${filter} -q |  xargs --no-run-if-empty docker rm --force | docker system prune`, { timeout: 5000 }));
     });
 }
 function getClientFilesPath(sessionId) {
@@ -1417,6 +1419,7 @@ bash `.trim().replaceAll('\n', "");
                 let spawnDate = Date.now();
                 let programTimeout;
                 gdbBuffer = "";
+                let errorBuffer = '';
                 if (messageJSON.textMode)
                     programTimeout = setTimeout(() => {
                         onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program timed out!</span>");
@@ -1479,18 +1482,19 @@ bash `.trim().replaceAll('\n', "");
                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                     }, 100);
                 });
-                // clientSession.program?.stderr?.addListener("data", (data) => {
-                //     // gdbBuffer += data.toString();
-                //     replicateFunction((clientWs) => {
-                //         clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
-                //     });
-                // });
+                clientSession.program?.stderr?.addListener("data", (data) => {
+                    errorBuffer += data.toString() + '\n';
+                });
                 clientSession.program?.addListener("close", (code) => {
                     clearTimeout(dataTimeout);
                     clearTimeout(programTimeout);
                     switch (code) {
-                        case 0:
                         default:
+                            if (errorBuffer) {
+                                onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim());
+                                break;
+                            }
+                        case 0:
                             onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu codul: " + (code?.toString() || '-1'));
                             break;
                         case 136:
