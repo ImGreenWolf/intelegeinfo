@@ -1479,12 +1479,12 @@ bash `.trim().replaceAll('\n', "");
                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                     }, 100);
                 });
-                clientSession.program?.stderr?.addListener("data", (data) => {
-                    // gdbBuffer += data.toString();
-                    replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
-                    });
-                });
+                // clientSession.program?.stderr?.addListener("data", (data) => {
+                //     // gdbBuffer += data.toString();
+                //     replicateFunction((clientWs) => {
+                //         clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+                //     });
+                // });
                 clientSession.program?.addListener("close", (code) => {
                     clearTimeout(dataTimeout);
                     clearTimeout(programTimeout);

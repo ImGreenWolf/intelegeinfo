@@ -1867,13 +1867,13 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     });
 
 
-    clientSession.program?.stderr?.addListener("data", (data) => {
-        // gdbBuffer += data.toString();
+    // clientSession.program?.stderr?.addListener("data", (data) => {
+    //     // gdbBuffer += data.toString();
 
-        replicateFunction((clientWs) => {
-            clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
-        });
-    });
+    //     replicateFunction((clientWs) => {
+    //         clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+    //     });
+    // });
 
     clientSession.program?.addListener("close", (code) => {
 
