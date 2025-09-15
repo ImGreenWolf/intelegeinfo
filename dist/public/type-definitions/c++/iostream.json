@@ -1,0 +1,90 @@
+{
+    "name": "iostream",
+    "namespace": "std",
+    "included": ["string", "utility"],
+    "description": "The <iostream> library provides objects which can read user input and output data to the console or to a file.",
+    "members": {
+        "cin": {
+            "desc": "An input stream to read data from standard input (keyboard).",
+            "type": "std::istream"
+        },
+        "cout": {
+            "desc": "An output stream to write data to standard output (console).",
+            "type": "std::ostream"
+        },
+        "cerr": {
+            "desc": "An output stream for error messages.",
+            "type": "std::ostream"
+        },
+        "clog": {
+            "desc": "An output stream to log program information.",
+            "type": "std::ostream"
+        }
+    },
+    "methods": {
+        "getline": {
+            "desc": "Reads a line of text from the input stream into a string.",
+            "returnType": "std::istream&",
+            "params": ["std::istream&", "std::string&"]
+        },
+        "flush": {
+            "desc": "Flushes the output stream.",
+            "returnType": "std::ostream&",
+            "params": []
+        }
+    },
+    "types": {
+        "istream": {
+            "desc": "Base class for input streams.",
+            "methods": {
+                "get": {
+                    "desc": "Reads a single character from the input stream.",
+                    "returnType": "int",
+                    "params": []
+                },
+                "ignore": {
+                    "desc": "Ignores characters in the input stream up to a limit or until a delimiter.",
+                    "returnType": "std::istream&",
+                    "params": ["int", "int"]
+                },
+                "read": {
+                    "desc": "Reads a block of characters from the input stream.",
+                    "returnType": "std::istream&",
+                    "params": ["char*", "std::streamsize"]
+                },
+                "peek": {
+                    "desc": "Returns the next character without extracting it.",
+                    "returnType": "int",
+                    "params": []
+                },
+                "eof": {
+                    "desc": "Checks if the end of the stream has been reached.",
+                    "returnType": "bool",
+                    "params": []
+                }
+            },
+            "members": {}
+        },
+        "ostream": {
+            "desc": "Base class for output streams.",
+            "methods": {
+                "put": {
+                    "desc": "Writes a single character to the output stream.",
+                    "returnType": "std::ostream&",
+                    "params": ["char"]
+                },
+                "write": {
+                    "desc": "Writes a block of characters to the output stream.",
+                    "returnType": "std::ostream&",
+                    "params": ["const char*", "std::streamsize"]
+                },
+                "flush": {
+                    "desc": "Flushes the output buffer to the output device.",
+                    "returnType": "std::ostream&",
+                    "params": []
+                }
+            },
+            "members": {}
+        }
+    }
+}

@@ -503,14 +503,22 @@ header {
   backdrop-filter: blur(4px);
   overflow: visible;
   display: flex;
-  transform: translate(0, 0.8rlh);
+  position: relative;
+  top: 90%;
+  left: -25%;
   font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "Source Code Pro", "source-code-pro", monospace;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  min-width: 100px;
+  width: fit-content;
 }
 .compile-error-tooltip :any-link {
   color: white;
+}
+
+.ace_editor.ace_autocomplete {
+  width: 400px !important;
 }
 
 .ace_cursor {
@@ -2369,6 +2377,34 @@ button.glowing:active::before {
   flex-flow: wrap;
   gap: 0.5em;
   box-sizing: border-box;
+}
+
+.c_, .c_function, .c_array, .c_object, .c_keyword, .c_snippet {
+  width: 1em;
+  height: 1em;
+  background-position: center center;
+  background-size: cover;
+  margin-right: 0.5em;
+}
+
+.c_snippet {
+  background-image: url(/media/icons/editor/data_snippet.svg);
+}
+
+.c_keyword {
+  background-image: url(/media/icons/editor/data_keyword.svg);
+}
+
+.c_object {
+  background-image: url(/media/icons/editor/data_object.svg);
+}
+
+.c_array {
+  background-image: url(/media/icons/editor/data_array.svg);
+}
+
+.c_function {
+  background-image: url(/media/icons/editor/data_function.svg);
 }
 
 /*# sourceMappingURL=codeEditor.css.map */

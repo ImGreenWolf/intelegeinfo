@@ -215,7 +215,7 @@ export declare function parseCode(): {
         tokenIndex: number;
         functionName: string;
     }[];
-};
+} | undefined;
 export declare function indexToFunctionName(parsedCode: any, index: any): any;
 export declare function downloadEditorFiles(): Promise<void>;
 export declare function onFileSessionUpdated(newFileName: any, client: SessionClient): void;

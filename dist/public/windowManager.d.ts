@@ -53,4 +53,39 @@ export declare class TerminalTab extends EditorWindowTab {
     write(data: string): void;
 }
 export declare function findTabByName(name: any): EditorWindowTab;
+export declare class TreeSitterCompleter {
+    private parser;
+    private language;
+    private tree;
+    private editor;
+    private symbols;
+    private typeDefs;
+    private typeDefSymbols;
+    private classes;
+    private libraries;
+    private namespaces;
+    constructor(editor: any);
+    /**
+     * Initialize Tree-sitter and load language
+     */
+    init(wasmPath: string): Promise<void>;
+    /**
+     * Re-parse and rebuild symbol table
+     */
+    private reparse;
+    private loadTypeDef;
+    /**
+     * Build a list of variables and functions with scope ranges
+     */
+    private extractSymbols;
+    /**
+     * Get visible symbols at a given cursor position (scoped)
+     */
+    private getSymbolsInScope;
+    /**
+     * Register Ace completer
+     */
+    private registerCompleter;
+    private autocompleteMethods;
+}
 export {};

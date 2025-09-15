@@ -125,6 +125,8 @@
         
         p {
             margin: calc(var(--radius) / 4);
+            flex-grow: 1;
+            max-lines: 2;
         }
 
         .button {

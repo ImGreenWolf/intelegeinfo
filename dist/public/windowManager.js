@@ -1,5 +1,6 @@
-import { compileErrorObjs, createFile, dirtyFile, displayMessagePopup, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
+import { compileErrorObjs, createFile, dirtyFile, displayMessagePopup, editorSessions, isRemoteChange, MultiCursorManager, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
 import { createNode } from "./components.js";
+// declare const TreeSitter: any
 export const cursorManagers = new Map();
 const preloadTabs = false;
 var draggedTab;
@@ -219,15 +220,19 @@ export class EditorWindow {
                     return;
                 // TODO add marke events only to errored tokens
                 marker.elem.addEventListener('mouseover', ev => {
-                    if (errorDisplay)
+                    if (errorDisplay && errorDisplay.parentElement == marker.elem)
                         return;
+                    if (errorDisplay) {
+                        errorDisplay.remove();
+                        errorDisplay = undefined;
+                    }
                     if (errorDisplayTimeout)
                         clearTimeout(errorDisplayTimeout);
                     errorDisplayTimeout = setTimeout(() => {
                         errorDisplay = document.createElement('div');
                         const top = marker.elem.getBoundingClientRect().top;
                         const left = marker.elem.getBoundingClientRect().left;
-                        errorDisplay.style.cssText = `top: ${top}px; left: ${left}px; position: absolute;`;
+                        // errorDisplay.style.cssText = `top: ${top}px; left: ${left}px; position: absolute;`
                         errorDisplay.innerText = compileErrorObjs.get(marker.marker.id).text;
                         errorDisplay.classList.add('compile-error-tooltip');
                         const errorInfo = getErrorInfo(compileErrorObjs.get(marker.marker.id));
@@ -237,9 +242,15 @@ export class EditorWindow {
                                 errorInfo.fixFunction();
                             }, }));
                         errorDisplay.appendChild(actionsContainer);
-                        document.body.appendChild(errorDisplay);
+                        marker.elem.appendChild(errorDisplay);
                         compileErrorObjs.get(marker.marker.id).display = errorDisplay;
                     }, 200);
+                    marker.elem.onmouseleave = () => {
+                        if (!errorDisplay)
+                            return;
+                        errorDisplay.remove();
+                        errorDisplay = undefined;
+                    };
                 });
                 if (errorDisplay)
                     if (!errorDisplay.checkVisibility()) {
@@ -303,6 +314,8 @@ export class EditorWindow {
                 type: WebSocketMessageType.CodeSelection,
             })); // Send code to server on change
         });
+        let treesitter = new TreeSitterCompleter(this.editor);
+        treesitter.init('/client/scripts/libs/treesitter/tree-sitter-cpp.wasm');
         // TODO finish this
         const customCompleter = {
             getCompletions: function (editor, session, pos, prefix, callback) {
@@ -323,33 +336,35 @@ export class EditorWindow {
                     }));
                     // callback(null, completions);
                 }
-                else {
-                    if (!parsedCode)
-                        return callback(null, []);
-                    if (!parsedCode.functions)
-                        return callback(null, []);
-                    completions = parsedCode.functions
-                        //  .filter(c => {return c.name == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.name == undefined})
-                        .map(c => ({
-                        caption: c.name, snippet: c.value, meta: "function", score: 100,
-                        docHTML: `${c.type} <b>${c.name}</b><pre>${c.content}</pre>`
-                    }))
-                        .concat(parsedCode.variables
-                        .filter(c => { return c.functionName == indexToFunctionName(parsedCode, editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.functionName == undefined; })
-                        .map(c => ({
-                        caption: c.name, value: c.name, meta: `${c.type} variable : ${c.functionName ? c.functionName : "Global"}`, score: 100,
-                        docHTML: `${c.type} <b>${c.name}</b>`
-                    })));
-                }
-                console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start));
-                console.log(indexToFunctionName(parsedCode, editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name);
+                // else
+                // {
+                //     if(!parsedCode) return callback(null, []);
+                //     if(!parsedCode.functions)  return callback(null, []);
+                //     completions = parsedCode.functions
+                //     //  .filter(c => {return c.name == indexToFunctionName(editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.name == undefined})
+                //     .map(c => ({
+                //     caption: c.name, snippet: c.value, meta: "function", score: 100,
+                //     docHTML: `${c.type} <b>${c.name}</b><pre>${c.content}</pre>`
+                //     }))
+                //     .concat(parsedCode.variables
+                //     .filter(c => {return c.functionName == indexToFunctionName(parsedCode, editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name || c.functionName == undefined})
+                //     .map(c => ({
+                //     caption: c.name, value: c.name, meta: `${c.type} variable : ${c.functionName ? c.functionName : "Global"}`, score: 100,
+                //     docHTML: `${c.type} <b>${c.name}</b>`
+                //     })))
+                // }
+                // console.log(editor.session.doc.positionToIndex(editor.selection.getRange().start))
+                // console.log(indexToFunctionName(parsedCode, editor.session.doc.positionToIndex(editor.selection.getRange().start))?.name)
                 callback(null, completions);
             }
         };
         // Register it
-        ace.require("ace/ext/language_tools").addCompleter(customCompleter);
+        const languageTools = ace.require("ace/ext/language_tools");
+        // const Autocomplete = ace.require("ace/autocomplete").Autocomplete;
         var codeLens = ace.require("ace/ext/code_lens");
         const editor = this.editor;
+        // languageTools.setCompleters([customCompleter])
+        languageTools.addCompleter(customCompleter);
         const commandId = "createFileCommand";
         editor.commands.addCommand({
             name: commandId,
@@ -530,7 +545,7 @@ export function updateCatalouge(sessionId, clientId) {
     const tabs = [
         createWindowTab('Subiecte', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] })),
         createWindowTab('Pbinfo', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://www.pbinfo.ro/' }, { name: 'allow', value: "encrypted-media" }] })),
-        createIframeTab('/pages/problems.html?sessionId=' + sessionId, "Probleme"),
+        createIframeTab('/pages/problems.html?sessionId=' + sessionId + '&clientId=' + clientId, "Probleme"),
         new TerminalTab(),
     ];
     fetch('/user/jwt').then(async (loggedin) => {
@@ -954,4 +969,469 @@ export function findTabByName(name) {
     for (const window_ of windows)
         found = window_.tabs.find(tab => tab.name == name);
     return found;
+}
+//@ts-expect-error
+import { Parser, Language } from "./libs/treesitter/web-tree-sitter.js";
+/////////////////////// helpers ///////////////////////
+// Recursively search for the identifier token inside declarator-like nodes
+function findIdentifierInDeclarator(node) {
+    if (!node)
+        return null;
+    // If this node itself is an identifier (common in many grammars)
+    if (node.type === "identifier" || node.type === "field_identifier")
+        return node.text;
+    // Some declarators have a field named "declarator" pointing to inner declarator
+    const fieldDeclarator = node.childForFieldName?.("declarator");
+    if (fieldDeclarator) {
+        const found = findIdentifierInDeclarator(fieldDeclarator);
+        if (found)
+            return found;
+    }
+    // Recursively search children: pointer_declarator, reference_declarator, array_declarator, etc.
+    for (let i = 0; i < node.childCount; i++) {
+        const c = node.child(i);
+        const found = findIdentifierInDeclarator(c);
+        if (found)
+            return found;
+    }
+    return null;
+}
+// Best-effort way to extract a type string for a declaration node
+function extractTypeTextFromDeclaration(node) {
+    // Prefer a field named "type"
+    const tn = node.childForFieldName?.("type");
+    if (tn && tn.text)
+        return tn.text.trim();
+    // Fallback: common type node names (type_identifier, primitive_type, template_type)
+    for (let i = 0; i < node.childCount; i++) {
+        const c = node.child(i);
+        if (["type_identifier", "primitive_type", "scoped_identifier", "template_type"].includes(c.type)) {
+            return c.text.trim();
+        }
+    }
+    // If nothing found, return undefined
+    return undefined;
+}
+export class TreeSitterCompleter {
+    parser;
+    language;
+    tree = null;
+    editor;
+    symbols = [];
+    typeDefs = [];
+    typeDefSymbols = [];
+    classes = new Map();
+    libraries = new Map();
+    namespaces = [];
+    constructor(editor) {
+        this.editor = editor;
+    }
+    /**
+     * Initialize Tree-sitter and load language
+     */
+    async init(wasmPath) {
+        await Parser.init();
+        this.parser = new Parser();
+        this.language = await Language.load(wasmPath);
+        this.parser.setLanguage(this.language);
+        const languageTools = ace.require("ace/ext/language_tools");
+        this.reparse();
+        this.editor.commands.on("afterExec", (e) => {
+            console.log(e);
+            if (e.command.name === "insertstring" && (e.args === "." || e.args === ">")) {
+                // Special case: only trigger on '>' if the previous char is '-'
+                // if (e.args === ">" && !this.isAfterArrow()) return;
+                this.editor.execCommand("startAutocomplete");
+            }
+        });
+        this.registerCompleter();
+    }
+    /**
+     * Re-parse and rebuild symbol table
+     */
+    async reparse() {
+        const code = this.editor.getValue();
+        this.tree = this.parser.parse(code);
+        const extraction = this.extractSymbols();
+        this.symbols = extraction.symbols;
+        this.namespaces = extraction.namespaces;
+        if (extraction.libraries.length != this.typeDefs.length) {
+            //    this.typeDefs = []
+            //    this.typeDefSymbols = []
+            for (const lib of extraction.libraries) {
+                const loaded = await this.loadTypeDef(lib);
+                if (!loaded)
+                    continue;
+                this.typeDefs.push(...loaded.typeDefs);
+                this.typeDefSymbols.push(...loaded.typeDefSymbols);
+                this.libraries.set(lib, loaded);
+            }
+        }
+    }
+    async loadTypeDef(library) {
+        if (this.libraries.has(library))
+            return undefined;
+        const baseURL = '/client/scripts/type-definitions';
+        const res = await fetch(baseURL + '/' + 'c++' + '/' + library.split('.')[0] + '.json');
+        const typeDefs = [];
+        const typeDefSymbols = [];
+        if (!res.ok)
+            return {};
+        const json = await res.json();
+        if (json.included)
+            for (const include of json.included) {
+                const loaded = await this.loadTypeDef(include);
+                if (!loaded)
+                    continue;
+                typeDefs.push(...loaded.typeDefs);
+                typeDefSymbols.push(...loaded.typeDefSymbols);
+                this.libraries.set(include, loaded);
+            }
+        const scopeStart = 0;
+        const scopeEnd = this.editor.session.getLength();
+        for (const [name, obj] of Object.entries(json.members))
+            typeDefs.push({ caption: (json.namespace && false ? json.namespace + '::' : '') + name, meta: 'member', value: name, score: 20, docHTML: obj.desc, varType: obj.type }),
+                typeDefSymbols.push({ name, type: obj.type, kind: "variable", scopeEnd, scopeStart });
+        for (const [name, obj] of Object.entries(json.methods))
+            typeDefs.push({ caption: (json.namespace && false ? json.namespace + '::' : '') + name, meta: 'method', value: name, score: 30, docHTML: obj.desc,
+                funcType: "returns " + (obj.returnType ?? "void"),
+                snippet: `${name}(${obj.params ? obj.params.map((val, i) => `\${${i + 1}:${val}}`).join(', ') : ''})`, }),
+                typeDefSymbols.push({ name, type: obj.returnType, params: obj.params, kind: "function", scopeEnd, scopeStart });
+        for (const [name, obj] of Object.entries(json.types))
+            this.classes.set((json.namespace ? json.namespace + '::' : '') + name, { name, scopeStart, scopeEnd,
+                methods: Object.entries(obj.methods).map(([methodName, method]) => { return { name: methodName, kind: 'function', scopeStart, scopeEnd, params: method.params, type: method.returnType }; }),
+                members: Object.entries(obj.members).map(([memberName, member]) => { return { name: memberName, kind: 'variable', scopeStart, scopeEnd, type: member.type }; }) });
+        return { typeDefs, typeDefSymbols };
+    }
+    /**
+     * Build a list of variables and functions with scope ranges
+     */
+    extractSymbols() {
+        if (!this.tree)
+            return { symbols: [], libraries: [], namespaces: [] };
+        const symbols = [];
+        const libraries = [];
+        const namespaces = [];
+        const sourceLen = this.editor.getValue().length;
+        // Helper to extract libraries from preproc_include nodes
+        const extractInclude = (node) => {
+            for (let i = 0; i < node.childCount; i++) {
+                const c = node.child(i);
+                if (!c)
+                    continue;
+                if (c.type === 'system_lib_string' || c.type === "string_literal" || c.type === "angled_string_literal") {
+                    const text = c.text.replace(/^["<]|[">]$/g, "");
+                    libraries.push(text);
+                }
+            }
+        };
+        // Helper to extract libraries from preproc_include nodes
+        const extractUsingNamespace = (node) => {
+            namespaces.push(node.children.at(-2).text);
+        };
+        // Walk with currentScope bounds (start/end indices)
+        const walk = (node, scopeStart, scopeEnd) => {
+            // --- HANDLE INCLUDE DIRECTIVES
+            if (node.type === "preproc_include") {
+                extractInclude(node);
+            }
+            if (node.type === "using_declaration") {
+                extractUsingNamespace(node);
+            }
+            // --- HANDLE FUNCTION DEFINITIONS
+            if (node.type === "function_definition" || node.type === "function_declaration") {
+                const declarator = node.childForFieldName("declarator") ?? node.childForFieldName("name");
+                const name = findIdentifierInDeclarator(declarator) ?? (() => {
+                    for (let i = 0; i < node.childCount; i++) {
+                        const c = node.child(i);
+                        const n = findIdentifierInDeclarator(c);
+                        if (n)
+                            return n;
+                    }
+                    return null;
+                })();
+                // params
+                const params = [];
+                const paramNode = node.childForFieldName("parameters") ?? node.childForFieldName("parameter_list");
+                if (paramNode) {
+                    for (let i = 0; i < paramNode.childCount; i++) {
+                        const p = paramNode.child(i);
+                        if (!p)
+                            continue;
+                        if (p.type === "parameter_declaration" || p.type === "parameter") {
+                            const pType = extractTypeTextFromDeclaration(p) ?? "";
+                            const pName = findIdentifierInDeclarator(p.childForFieldName("declarator")) ?? findIdentifierInDeclarator(p);
+                            params.push([pType, pName].filter(Boolean).join(" ").trim());
+                        }
+                    }
+                }
+                if (name) {
+                    symbols.push({
+                        name,
+                        type: node.childForFieldName("type")?.text ?? undefined,
+                        params,
+                        kind: "function",
+                        scopeStart,
+                        scopeEnd,
+                    });
+                }
+                for (let i = 0; i < node.childCount; i++) {
+                    const c = node.child(i);
+                    if (c.type === "compound_statement") {
+                        walk(c, c.startIndex, c.endIndex);
+                    }
+                    else {
+                        walk(c, scopeStart, scopeEnd);
+                    }
+                }
+                return;
+            }
+            // --- HANDLE DECLARATIONS (variables)
+            if (node.type === "declaration" || node.type === "field_declaration") {
+                const typeText = extractTypeTextFromDeclaration(node);
+                for (let i = 0; i < node.childCount; i++) {
+                    const c = node.child(i);
+                    if (!c)
+                        continue;
+                    if (c.type === "init_declarator" || c.type.endsWith("declarator") || c.type === "declarator") {
+                        const name = findIdentifierInDeclarator(c);
+                        if (name) {
+                            symbols.push({
+                                name,
+                                type: typeText,
+                                kind: "variable",
+                                scopeStart,
+                                scopeEnd,
+                            });
+                        }
+                    }
+                    if (c.type === "init_declarator_list" || c.type === "declarator_list") {
+                        for (let j = 0; j < c.childCount; j++) {
+                            const item = c.child(j);
+                            const name = findIdentifierInDeclarator(item);
+                            if (name) {
+                                symbols.push({
+                                    name,
+                                    type: typeText,
+                                    kind: "variable",
+                                    scopeStart,
+                                    scopeEnd,
+                                });
+                            }
+                        }
+                    }
+                    if (c.type === "identifier") {
+                        const name = c.text;
+                        if (name) {
+                            symbols.push({
+                                name,
+                                type: typeText,
+                                kind: "variable",
+                                scopeStart,
+                                scopeEnd,
+                            });
+                        }
+                    }
+                }
+            }
+            // --- HANDLE PARAMETER DECLARATIONS outside function_definition
+            if (node.type === "parameter_declaration") {
+                const pType = extractTypeTextFromDeclaration(node);
+                const pName = findIdentifierInDeclarator(node.childForFieldName("declarator")) ?? findIdentifierInDeclarator(node);
+                if (pName) {
+                    symbols.push({
+                        name: pName,
+                        type: pType,
+                        kind: "variable",
+                        scopeStart,
+                        scopeEnd,
+                    });
+                }
+            }
+            // --- HANDLE CLASS / STRUCT DEFINITIONS
+            if (node.type === "class_specifier" || node.type === "struct_specifier") {
+                const nameNode = node.childForFieldName("name");
+                if (!nameNode)
+                    return;
+                const className = nameNode.text;
+                const classInfo = {
+                    name: className,
+                    methods: [],
+                    members: [],
+                    scopeStart: node.startIndex,
+                    scopeEnd: node.endIndex,
+                };
+                // Walk the class body to collect members
+                const bodyNode = node.childForFieldName("body");
+                if (bodyNode) {
+                    for (let i = 0; i < bodyNode.childCount; i++) {
+                        const c = bodyNode.child(i);
+                        if (!c)
+                            continue;
+                        // Member variables
+                        if (c.type === "field_declaration" || c.type === "declaration") {
+                            const typeText = extractTypeTextFromDeclaration(c);
+                            for (let j = 0; j < c.childCount; j++) {
+                                const child = c.child(j);
+                                const name = findIdentifierInDeclarator(child);
+                                if (name) {
+                                    classInfo.members.push({
+                                        name,
+                                        type: typeText,
+                                        kind: "variable",
+                                        scopeStart: child.startIndex,
+                                        scopeEnd: child.endIndex,
+                                    });
+                                }
+                            }
+                        }
+                        // Member functions
+                        if (c.type === "function_definition" || c.type === "function_declaration") {
+                            const declarator = c.childForFieldName("declarator") ?? c.childForFieldName("name");
+                            const name = findIdentifierInDeclarator(declarator);
+                            const params = [];
+                            const paramNode = c.childForFieldName("parameters") ?? c.childForFieldName("parameter_list");
+                            if (paramNode) {
+                                for (let k = 0; k < paramNode.childCount; k++) {
+                                    const p = paramNode.child(k);
+                                    if (!p)
+                                        continue;
+                                    const pType = extractTypeTextFromDeclaration(p) ?? "";
+                                    const pName = findIdentifierInDeclarator(p.childForFieldName("declarator")) ?? findIdentifierInDeclarator(p);
+                                    params.push([pType, pName].filter(Boolean).join(" ").trim());
+                                }
+                            }
+                            if (name) {
+                                classInfo.methods.push({
+                                    name,
+                                    params,
+                                    type: c.childForFieldName("type")?.text,
+                                    kind: "function",
+                                    scopeStart: c.startIndex,
+                                    scopeEnd: c.endIndex,
+                                });
+                            }
+                        }
+                    }
+                }
+                // Save class info
+                this.classes[className] = classInfo;
+                return; // skip recursing into this class node further
+            }
+            // --- RECURSE into children
+            for (let i = 0; i < node.childCount; i++) {
+                const child = node.child(i);
+                if (!child)
+                    continue;
+                if (child.type === "compound_statement") {
+                    walk(child, child.startIndex, child.endIndex);
+                }
+                else {
+                    walk(child, scopeStart, scopeEnd);
+                }
+            }
+        };
+        // top-level walk
+        walk(this.tree.rootNode, 0, sourceLen);
+        console.log(this.tree.rootNode);
+        // Deduplicate symbols
+        const uniq = [];
+        const seen = new Set();
+        for (const s of symbols) {
+            const key = `${s.kind}|${s.name}|${s.scopeStart}|${s.scopeEnd}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                uniq.push(s);
+            }
+        }
+        return { symbols: uniq, libraries, namespaces };
+    }
+    /**
+     * Get visible symbols at a given cursor position (scoped)
+     */
+    getSymbolsInScope(cursorIndex) {
+        return this.symbols.filter((sym) => cursorIndex >= sym.scopeStart && cursorIndex <= sym.scopeEnd);
+    }
+    /**
+     * Register Ace completer
+     */
+    registerCompleter() {
+        const langTools = ace.require("ace/ext/language_tools");
+        const completer = {
+            getCompletions: async (editor, session, pos, prefix, callback) => {
+                await this.reparse();
+                const cursorIndex = session.doc.positionToIndex(pos);
+                const visibleSymbols = this.getSymbolsInScope(cursorIndex);
+                let completions = visibleSymbols.map((sym) => {
+                    // Higher score for symbols declared closer to the cursor
+                    const distance = Math.max(cursorIndex - sym.scopeStart, 0);
+                    const baseScore = sym.kind === "function" ? 90 : 80;
+                    const score = Math.max(baseScore - distance, 30); // min score 10
+                    if (sym.kind === "function") {
+                        const placeholders = sym.params?.map((p, i) => `\${${i + 1}:${p}}`) ?? [];
+                        const snippet = `${sym.name}(${placeholders.join(", ")})`;
+                        return {
+                            caption: `${sym.name}(${sym.params?.join(", ") ?? ""})`,
+                            value: sym.name,
+                            meta: 'function',
+                            snippet,
+                            funcType: "returns " + (sym.type ?? "void"),
+                            score,
+                        };
+                    }
+                    else {
+                        return {
+                            caption: sym.name,
+                            value: sym.name,
+                            meta: "variable",
+                            varType: sym.type,
+                            score,
+                        };
+                    }
+                });
+                // add typedef to the completions array
+                completions.push(...this.typeDefs);
+                const objCompletion = this.autocompleteMethods(visibleSymbols);
+                completions = objCompletion ?? completions;
+                // Filter prefix and sort by score descending
+                const filtered = completions
+                    .filter((c) => c.value.startsWith(prefix))
+                    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+                callback(null, filtered);
+            }
+        };
+        langTools.addCompleter(completer);
+    }
+    autocompleteMethods(visibleSymbols) {
+        const pos = this.editor.getCursorPosition();
+        const line = this.editor.session.getLine(pos.row);
+        const beforeCursor = line.slice(0, pos.column);
+        if (!(beforeCursor.endsWith('.') || beforeCursor.endsWith('->')))
+            return undefined;
+        const objName = beforeCursor.split(/\.|(->)/).at(0)?.split(' ').at(-1)?.trim();
+        const objSymbol = visibleSymbols.find(s => s.name === objName) ?? this.typeDefSymbols.find(def => def.name == objName); // does variable exist
+        if (!objSymbol)
+            return undefined;
+        const objectTypeNamespaces = this.namespaces.length == 0 ? [this.classes.get(objSymbol.type || "")] : this.namespaces.map(namespace => this.classes.get(namespace + '::' + objSymbol.type));
+        const classInfo = objectTypeNamespaces.find(objectType => objectType != undefined);
+        if (classInfo)
+            return [
+                ...classInfo.methods.map(m => ({
+                    caption: m.name + '(' + (m.params?.join(', ') ?? '') + ')',
+                    snippet: `${m.name}(${m.params?.map((p, i) => `\${${i + 1}:${p}}`).join(',')})`,
+                    meta: 'method',
+                    score: 100,
+                    value: m.name,
+                    funcType: 'returns ' + m.type + ' ' + (classInfo.name ? classInfo.name + '::' : '') + m.name,
+                })),
+                ...classInfo.members.map(v => ({
+                    caption: v.name,
+                    value: v.name,
+                    meta: 'member',
+                    varType: v.type + ' ' + classInfo.name + (classInfo.name ? classInfo.name + '::' : '') + v.name,
+                    score: 90,
+                }))
+            ];
+        return [];
+    }
 }

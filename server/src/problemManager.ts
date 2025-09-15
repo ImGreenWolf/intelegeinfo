@@ -190,7 +190,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 pipeStream.push(null)
                 console.log("Test started")
 
-                startTime = Date.now()
+                startTime = performance.now()
             })
   
             program.stdout.addListener('data', (data) => {
@@ -202,7 +202,7 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
                 if(code != 0)
                     resolve({status: "Program returned non-zero status code!", error: true, index: i, score: 0})
                 else if(outputBuffer.trim() === expectedStoud.trim())
-                    resolve({status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length, time: startTime ?  Date.now() - startTime : undefined})
+                    resolve({status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length, time: startTime ?  performance.now() - startTime : undefined})
                 else
                     resolve({status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0, result: (i <= 2 ? {input: stdin} : undefined)}) // TODO Determine if i should leave expected output
             })
@@ -311,7 +311,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
         const session = sessionMap.get(req.params.sessionId as UUID) 
         if(!session)
             throw 'couldnt find session'
-
+        
         // const client = session.clientsMap.get(data.clientId)
         // if(!client)
         //     {
@@ -320,9 +320,16 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
         //     } 
         if(!session.executeProblemChecker)
             throw 'No problem checker...'
-        const client = session.clients[0];
+        if(!req.query.clientId)
+            throw 'no client id supplied'
+        const client = session.getClientObjectById(req.query.clientId as UUID);
+        if(!client.clientData)
+            throw 'Ca sa testezi problema, trebuie sa fi logat!'
+        if(!client.openFile[0])
+            throw 'Trebuie sa deschizi un fisier pentru a testa problema!'
+
         session.executeProblemChecker(problemId)
-        .then((testResults) =>  {
+        .then(async (testResults) =>  {
             // testResults is an array of PromiseSettledResult objects
             console.log('Testing finished, results:', testResults)
             let score = 0;
@@ -339,31 +346,36 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
                         timeIndex++;
                     }
                 }
-            const solve = {
-                userId: client.clientData.id,
-                score: score,
-                sourceCode: client.openFile[0].content,
-                time: time ? time/timeIndex : -1
-            }
-            prisma.problem.update({
-                where: {
-                    id: problemId
-                },
-                data:
-                {
-                    solves: {
-                        create:
-                        {
-                            ...solve
-                        }
+                if(client.clientData && client.openFile[0]) {
+                     const solve = {
+                        userId: client.clientData.id,
+                        score: score,
+                        sourceCode: client.openFile[0].content,
+                        time: time ? time/timeIndex : -1
                     }
-                },
-                
-            }).then(problem => res.status(200).send({results: testResults, solve}))
-            
-                
-            
-            
+                    await prisma.problem.update({
+                        where: {
+                            id: problemId
+                        },
+                        data:
+                        {
+                            solves: {
+                                create:
+                                {
+                                    ...solve
+                                }
+                            }
+                        },
+                        
+                    })
+
+                        res.status(200).send({results: testResults, solve})
+
+                } else 
+                    throw 'Nu am salvat solutia ta.'
+                    
+
+ 
         })
         // .catch((err) =>  res.status(500).send({error: err || true, result: false}))
        
@@ -463,6 +475,7 @@ import * as users from './usersManager'
 router.get('/:sessionId/details/:id', async (req, res) => {
     const id = parseInt(req.params.id)
     const sessionId = req.params.sessionId as UUID
+    const clientId = req.query.clientId as UUID
     const userId = users.getIdFromJWT(req)
     if(!id)
         throw 'invalid id';
@@ -470,25 +483,25 @@ router.get('/:sessionId/details/:id', async (req, res) => {
         where: {
             id
         },
-        include:
+        include: userId ?
         {
             solves:
             {
-                take: 5,
+                take: 1,
                 orderBy:
                 {
                     uploadedAt: "desc"
                 },
                 where:
                 {
-                    userId: userId ? userId : 0
+                    userId
                 },
                 
             },
             _count: {
                 select: {solves: true}
             }
-        }
+        } : undefined
     })
     if(!problem)
         throw 'couldnt find problem.'
@@ -528,9 +541,9 @@ router.get('/:sessionId/details/:id', async (req, res) => {
     
     const solvesUI = problem.solves ?
      problem.solves.map(solve => 
-        `<div><span class="${['bad', 'decent','good', 'perfect'][Math.round(solve.score/25)- (solve.score==0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`) : ''
+        `<div><span class="${['bad', 'decent','good', 'perfect'][Math.round(solve.score/25)- (solve.score==0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`) : ['']
 
-    res.send(serverSideReplace(fileBuffer, {json: {...problem, difficulty: problem.difficulty ? problem.difficulty : ''}, sessionId, html: {solvesUI: solvesUI[0]}}))
+    res.send(serverSideReplace(fileBuffer, {json: {...problem, difficulty: problem.difficulty ? problem.difficulty : ''}, sessionId, clientId, html: {solvesUI: solvesUI[0]}}))
 })
 
 

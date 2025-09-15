@@ -1,0 +1,49 @@
+{
+    "name": "utility",
+    "namespace": "std",
+    "description": "This represents common utility functions that are part of the C++ standard library and available in most programs by including headers such as <utility> or <algorithm>.",
+    "members": {},
+    "methods": {
+        "swap": {
+            "desc": "Exchanges the values of two objects.",
+            "returnType": "void",
+            "params": ["a", "b"]
+        },
+        "move": {
+            "desc": "Converts an object to an rvalue reference to enable move semantics.",
+            "returnType": "typename std::remove_reference<T>::type&&",
+            "params": ["T&&"]
+        },
+        "forward": {
+            "desc": "Perfectly forwards an argument to another function while preserving its value category (lvalue/rvalue).",
+            "returnType": "T&&",
+            "params": ["typename std::remove_reference<T>::type& "]
+        },
+        "exchange": {
+            "desc": "Replaces the value of an object with a new value and returns the old value.",
+            "returnType": "T",
+            "params": ["T&", "U&&"]
+        },
+        "as_const": {
+            "desc": "Obtains a const reference to an object.",
+            "returnType": "const T&",
+            "params": ["T&"]
+        },
+        "min": {
+            "desc": "Returns the smaller of two values (or smallest in an initializer_list).",
+            "returnType": "const T&",
+            "params": ["const T&", "const T&"]
+        },
+        "max": {
+            "desc": "Returns the larger of two values (or largest in an initializer_list).",
+            "returnType": "const T&",
+            "params": ["const T&", "const T&"]
+        },
+        "clamp": {
+            "desc": "Returns a value clamped between a lower and an upper bound.",
+            "returnType": "const T&",
+            "params": ["const T&", "const T&", "const T&"]
+        }
+    },
+    "types": {}
+}

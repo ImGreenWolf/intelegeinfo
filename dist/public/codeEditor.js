@@ -3649,80 +3649,101 @@ export function displaynoVNC(container) {
 const types = ("asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|" +
     "_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|" +
     "class|wchar_t|template|char16_t|char32_t").split("|");
+var Tokenizer = ace.require("./tokenizer").Tokenizer;
 export function parseCode() {
-    const code = codeWindow.getEditor().session.getLines(0, 1000);
-    let breadth = 0;
-    const functions = [];
-    const variables = [];
-    let buffer = '';
-    let args = '';
-    let tokenIndex = 0;
-    const tokens = [];
-    for (const line of code)
-        for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (([' ', '\n', '\\n', '{', '}', ';'].includes(char) && buffer.trim() != '' && (args.at(-1) == ')' || args == ''))) // why?
-             {
-                tokens.push({ body: args, name: buffer.trim(), breadth: breadth, tokenIndex });
-                args = '';
-                buffer = '';
-                continue;
-            }
-            else {
-                switch (char) {
-                    case "{":
-                        breadth++;
-                        continue;
-                    case "}":
-                        tokenIndex++;
-                        breadth--;
-                        continue;
-                    case ";":
-                        continue;
-                    case '(':
-                        args += char;
-                        buffer += char;
-                        break;
-                    case ')':
-                        args += char;
-                        buffer += char;
-                        break;
-                }
-                if (args[0] != '(')
-                    buffer += char;
-                else if (char != '(' && char != ')')
-                    args += char;
-            }
+    return;
+    if (true) {
+        const session = codeWindow.getEditor().getSession();
+        const lines = session.getLength(); // number of lines in the document
+        for (let i = 0; i < lines; i++) {
+            const tokens = session.getTokens(i);
+            console.log(`Line ${i}:`, tokens);
+            let buffer = { name: null, type: null, depth: null, tokenIndex: null };
+            // for(const token of tokens)
+            //   token.type =
+            // variables.push({name: v, type: tokens[index-1].name, depth: token.breadth, functionName,tokenIndex: token.tokenIndex})
+            // functions.push({name: funcName+token.body, value: addPlaceholdersToFunction(funcName, token), type: tokens[index-1].name, depth: token.breadth, content,tokenIndex: token.tokenIndex})
         }
-    console.log(tokens);
-    tokens.forEach((token, index) => {
-        if (index != 0) // start from second token
-            if (types.includes(tokens[index - 1].name)) // get token before this token, think int name. name is current token, the one before will be the type.
-             { // this will be valid for functions and variables.
-                if (token.name.endsWith('()')) {
-                    if (tokens[index + 1] == undefined)
-                        return;
-                    let content = tokens[index + 1].body;
-                    let j = index + 1;
-                    if (j < tokens.length && tokens[j].breadth != undefined)
-                        while (tokens[j].breadth > token.breadth && j <= tokens.length && tokens[j + 1] != undefined)
-                            content += tokens[++j].body;
-                    const funcName = token.name.substring(0, token.name.length - 2);
-                    functions.push({ name: funcName + token.body, value: addPlaceholdersToFunction(funcName, token), type: tokens[index - 1].name, depth: token.breadth, content, tokenIndex: token.tokenIndex });
+        // return {functions, variables}
+    }
+    else {
+        const code = codeWindow.getEditor().session.getLines(0, 1000);
+        let breadth = 0;
+        const functions = [];
+        const variables = [];
+        let buffer = '';
+        let args = '';
+        let tokenIndex = 0;
+        const tokens = [];
+        for (const line of code)
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (([' ', '\n', '\\n', '{', '}', ';'].includes(char) && buffer.trim() != '' && (args.at(-1) == ')' || args == ''))) // why?
+                 {
+                    tokens.push({ body: args, name: buffer.trim(), breadth: breadth, tokenIndex });
+                    args = '';
+                    buffer = '';
+                    continue;
                 }
                 else {
-                    const functionName = functions.find(value => {
-                        return value.tokenIndex == token.tokenIndex;
-                    })?.value;
-                    token.name.split(',').map(v => {
-                        if (isNaN(parseInt(v)))
-                            variables.push({ name: v, type: tokens[index - 1].name, depth: token.breadth, functionName, tokenIndex: token.tokenIndex });
-                    });
+                    switch (char) {
+                        case "{":
+                            breadth++;
+                            args += char;
+                            continue;
+                        case "}":
+                            tokenIndex++;
+                            args += char;
+                            breadth--;
+                            continue;
+                        case ";":
+                            continue;
+                        case '(':
+                            args += char;
+                            buffer += char;
+                            break;
+                        case ')':
+                            args += char;
+                            buffer += char;
+                            break;
+                    }
+                    if (args[0] != '(')
+                        buffer += char;
+                    else if (char != '(' && char != ')')
+                        args += char;
                 }
             }
-    });
-    console.log(variables);
-    return { functions, variables };
+        console.log(tokens);
+        tokens.forEach((token, index) => {
+            if (index != 0) // start from second token
+                if (types.includes(tokens[index - 1].name)) // get token before this token, think int name. name is current token, the one before will be the type.
+                 { // this will be valid for functions and variables.
+                    if (token.name.endsWith('()')) {
+                        if (tokens[index + 1] == undefined)
+                            return;
+                        console.log(tokens[index + 1]);
+                        let content = tokens[index + 1].body;
+                        let j = index + 1;
+                        if (j < tokens.length && tokens[j].breadth != undefined)
+                            while (tokens[j].breadth > token.breadth && j <= tokens.length && tokens[j + 1] != undefined)
+                                content += tokens[++j].body;
+                        const funcName = token.name.substring(0, token.name.length - 2);
+                        functions.push({ name: funcName + token.body, value: addPlaceholdersToFunction(funcName, token), type: tokens[index - 1].name, depth: token.breadth, content, tokenIndex: token.tokenIndex });
+                    }
+                    else {
+                        const functionName = functions.find(value => {
+                            return value.tokenIndex == token.tokenIndex;
+                        })?.value;
+                        token.name.split(',').map(v => {
+                            if (isNaN(parseInt(v)))
+                                variables.push({ name: v, type: tokens[index - 1].name, depth: token.breadth, functionName, tokenIndex: token.tokenIndex });
+                        });
+                    }
+                }
+        });
+        console.log(variables);
+        return { functions, variables };
+    }
 }
 function addPlaceholdersToFunction(funcName, token) {
     /*

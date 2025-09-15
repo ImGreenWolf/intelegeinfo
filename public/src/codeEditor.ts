@@ -4822,9 +4822,31 @@ export function displaynoVNC(container)
  const types = ("asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|" +
     "_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|" +
     "class|wchar_t|template|char16_t|char32_t").split("|")
+var Tokenizer = ace.require("./tokenizer").Tokenizer;
 
 export function parseCode()
 {
+  return
+    if(true) {
+      const session = codeWindow.getEditor().getSession();
+      const lines = session.getLength(); // number of lines in the document
+
+      for (let i = 0; i < lines; i++) {
+        const tokens = session.getTokens(i);
+        console.log(`Line ${i}:`, tokens);
+        let buffer = {name: null, type: null, depth: null,tokenIndex: null}
+        // for(const token of tokens)
+        //   token.type =
+
+        // variables.push({name: v, type: tokens[index-1].name, depth: token.breadth, functionName,tokenIndex: token.tokenIndex})
+        // functions.push({name: funcName+token.body, value: addPlaceholdersToFunction(funcName, token), type: tokens[index-1].name, depth: token.breadth, content,tokenIndex: token.tokenIndex})
+
+      }
+
+    // return {functions, variables}
+
+    } else {
+      
     const code = codeWindow.getEditor().session.getLines(0, 1000)
     let breadth = 0;
     const functions:{name: string, value: string, type: string, depth: number, tokenIndex:number, content: string}[] = [];
@@ -4853,9 +4875,11 @@ export function parseCode()
           {
             case "{":
               breadth++;
+              args+=char
             continue
             case "}":
               tokenIndex++
+              args+=char
               breadth--;
               continue
             case ";":
@@ -4892,6 +4916,7 @@ console.log(tokens)
           if(token.name.endsWith('()'))
           {
             if(tokens[index+1] == undefined) return;
+            console.log(tokens[index+1])
             let content = tokens[index+1].body;
             let j=index+1;
             if(j<tokens.length && tokens[j].breadth !=undefined)
@@ -4919,6 +4944,9 @@ console.log(tokens)
     console.log(variables)
 
     return {functions, variables}
+
+    
+    }
 }
 
 function addPlaceholdersToFunction(funcName, token)

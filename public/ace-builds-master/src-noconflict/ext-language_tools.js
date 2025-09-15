@@ -1170,6 +1170,20 @@ var AcePopup = /** @class */ (function () {
             var filterText = (popup.filterText || "").toLowerCase();
             var lastIndex = 0;
             var lastI = 0;
+            var icons = {
+                'snippet': 'c_snippet',
+                'keyword': 'c_keyword',
+                'variable': 'c_object',
+                'array': 'c_array',
+                'function': 'c_function',
+                'default': "c_object",
+                'member': 'c_object',
+                'method': 'c_function',
+
+            }
+
+            tokens.push({ type: "completion-icon "+ (icons[data.meta] || icons.default), value: '' });
+
             for (var i = 0; i <= filterText.length; i++) {
                 if (i != lastI && (data.matchMask & (1 << i) || i == filterText.length)) {
                     var sub = filterText.slice(lastI, i);
@@ -1182,10 +1196,14 @@ var AcePopup = /** @class */ (function () {
                     addToken(caption.slice(index, lastIndex), "completion-highlight");
                 }
             }
+           
             addToken(caption.slice(lastIndex, caption.length), "");
+
             tokens.push({ type: "completion-spacer", value: " " });
-            if (data.meta)
+            if (data.meta && !(data.varType || data.funcType))
                 tokens.push({ type: "completion-meta", value: data.meta });
+            else if(data.varType || data.funcType) 
+                tokens.push({ type: "completion-meta", value: data.varType || data.funcType });
             if (data.message)
                 tokens.push({ type: "completion-message", value: data.message });
             return tokens;
@@ -1546,7 +1564,7 @@ var Autocomplete = /** @class */ (function () {
         this.autoSelect = true;
         this.autoShown = false;
         this.exactMatch = false;
-        this.inlineEnabled = false;
+        this.inlineEnabled = true; // 
         this.keyboardHandler = new HashHandler();
         this.keyboardHandler.bindKeys(this.commands);
         this.parentNode = null;
@@ -2473,7 +2491,9 @@ var snippetCompleter = {
     },
     id: "snippetCompleter"
 };
-var completers = [snippetCompleter, textCompleter, keyWordCompleter];
+// var completers = [snippetCompleter, textCompleter, keyWordCompleter];
+var completers = [snippetCompleter, keyWordCompleter];
+
 exports.setCompleters = function (val) {
     completers.length = 0;
     if (val)

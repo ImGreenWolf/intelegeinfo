@@ -1,0 +1,147 @@
+{
+    "name": "string",
+    "namespace": "std",
+    "included": ["utility"],
+    "description": "The <string> library provides the std::string class and related functions for working with sequences of characters.",
+    "members": {},
+    "methods": {
+        "to_string": {
+            "desc": "Converts a numeric value to its string representation.",
+            "returnType": "std::string",
+            "params": ["int | long | long long | float | double | long double"]
+        },
+        "stoi": {
+            "desc": "Converts a string to an int.",
+            "returnType": "int",
+            "params": ["const std::string& str", "size_t* pos (optional)", "int base (optional)"]
+        },
+        "stol": {
+            "desc": "Converts a string to a long.",
+            "returnType": "long",
+            "params": ["const std::string& str", "size_t* pos (optional)", "int base (optional)"]
+        },
+        "stoll": {
+            "desc": "Converts a string to a long long.",
+            "returnType": "long long",
+            "params": ["const std::string& str", "size_t* pos (optional)", "int base (optional)"]
+        },
+        "stof": {
+            "desc": "Converts a string to a float.",
+            "returnType": "float",
+            "params": ["const std::string& str", "size_t* pos (optional)"]
+        },
+        "stod": {
+            "desc": "Converts a string to a double.",
+            "returnType": "double",
+            "params": ["const std::string& str", "size_t* pos (optional)"]
+        },
+        "stold": {
+            "desc": "Converts a string to a long double.",
+            "returnType": "long double",
+            "params": ["const std::string& str", "size_t* pos (optional)"]
+        }
+    },
+    "types": {
+        "string": {
+            "desc": "Represents a sequence of characters, implemented as a dynamic array with various utility methods.",
+            "methods": {
+                "c_str": {
+                    "desc": "Returns a pointer to a null-terminated character array with the contents of the string.",
+                    "returnType": "const char*",
+                    "params": []
+                },
+                "size": {
+                    "desc": "Returns the number of characters in the string.",
+                    "returnType": "size_t",
+                    "params": []
+                },
+                "length": {
+                    "desc": "Returns the number of characters in the string (same as size()).",
+                    "returnType": "size_t",
+                    "params": []
+                },
+                "empty": {
+                    "desc": "Checks if the string is empty.",
+                    "returnType": "bool",
+                    "params": []
+                },
+                "clear": {
+                    "desc": "Removes all characters from the string.",
+                    "returnType": "void",
+                    "params": []
+                },
+                "append": {
+                    "desc": "Appends characters to the end of the string.",
+                    "returnType": "std::string&",
+                    "params": ["const std::string& str"]
+                },
+                "push_back": {
+                    "desc": "Appends a single character to the end of the string.",
+                    "returnType": "void",
+                    "params": ["char c"]
+                },
+                "pop_back": {
+                    "desc": "Removes the last character from the string.",
+                    "returnType": "void",
+                    "params": []
+                },
+                "substr": {
+                    "desc": "Returns a substring starting at a position with a specified length.",
+                    "returnType": "std::string",
+                    "params": ["size_t pos", "size_t count (optional)"]
+                },
+                "find": {
+                    "desc": "Finds the first occurrence of a substring or character.",
+                    "returnType": "size_t",
+                    "params": ["const std::string& str", "size_t pos (optional)"]
+                },
+                "rfind": {
+                    "desc": "Finds the last occurrence of a substring or character.",
+                    "returnType": "size_t",
+                    "params": ["const std::string& str", "size_t pos (optional)"]
+                },
+                "replace": {
+                    "desc": "Replaces part of the string with another string.",
+                    "returnType": "std::string&",
+                    "params": ["size_t pos", "size_t count", "const std::string& str"]
+                },
+                "insert": {
+                    "desc": "Inserts characters at a specified position.",
+                    "returnType": "std::string&",
+                    "params": ["size_t pos", "const std::string& str"]
+                },
+                "erase": {
+                    "desc": "Erases characters from the string.",
+                    "returnType": "std::string&",
+                    "params": ["size_t pos", "size_t count (optional)"]
+                },
+                "compare": {
+                    "desc": "Compares two strings lexicographically.",
+                    "returnType": "int",
+                    "params": ["const std::string& str"]
+                },
+                "operator[]": {
+                    "desc": "Accesses a character at a given index (no bounds checking).",
+                    "returnType": "char&",
+                    "params": ["size_t pos"]
+                },
+                "at": {
+                    "desc": "Accesses a character at a given index with bounds checking.",
+                    "returnType": "char&",
+                    "params": ["size_t pos"]
+                },
+                "begin": {
+                    "desc": "Returns an iterator to the first character.",
+                    "returnType": "iterator",
+                    "params": []
+                },
+                "end": {
+                    "desc": "Returns an iterator to one past the last character.",
+                    "returnType": "iterator",
+                    "params": []
+                }
+            },
+            "members": {}
+        }
+    }
+}

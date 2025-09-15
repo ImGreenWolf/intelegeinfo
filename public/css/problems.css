@@ -102,6 +102,8 @@
 }
 .problem-card .info-container p {
   margin: calc(var(--radius) / 4);
+  flex-grow: 1;
+  max-lines: 2;
 }
 .problem-card .info-container .button {
   border-radius: 1em;

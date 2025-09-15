@@ -1,8 +1,12 @@
 import { createNode } from "../components.js";
-export async function test(sessionId, problemId) {
+export async function test(sessionId, problemId, clientId) {
     const output = document.getElementById('output');
     output.innerHTML = 'Programul se verifica...';
-    const res = await fetch(`../test/${problemId}`);
+    const res = await fetch(`../test/${problemId}?clientId=` + clientId);
+    if (!res.ok) {
+        output.innerHTML = (await res.json()).err;
+        return;
+    }
     const json = await res.json();
     const elems = [];
     if (!(json.results && res.ok))

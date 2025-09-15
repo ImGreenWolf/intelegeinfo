@@ -63,7 +63,9 @@
 
     <div>
       <div class="button-container">
-        <button class="openProblem" onclick="window.problem.test(`${sessionId}`, `${json.id}`)">Testeaza</button>
+        <button class="openProblem" onclick="window.problem.test(`${sessionId}`,
+         `${json.id}`,
+         `${clientId}`)">Testeaza</button>
         <div class="ai-button-wrapper">
           <button class="openProblem ai-button" onclick="window.problem.evaluate(`${sessionId}`, `${json.id}`)" 
           title="Primeste feedback despre solutia ta atunci cand resolvi problema 100%.">AI Feedback</button>

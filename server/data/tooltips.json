@@ -431,7 +431,7 @@
         "getline": {
             "description": "Reads a line from an input stream into a string.",
             "category": "io",
-            "example": "getline(cin, line);"
+            "example": "string line; \ngetline(cin, line);"
         },
         "to_string": {
             "description": "Converts a numeric value to a string.",
@@ -446,7 +446,7 @@
         "abs": {
             "description": "Returns the absolute value of a number.",
             "category": "math",
-            "example": "abs(-5);"
+            "example": "abs(-5) == 5"
         },
         "max": {
             "description": "Returns the larger of two values.",

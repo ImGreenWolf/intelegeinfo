@@ -1,0 +1,69 @@
+{
+    "name": "cmath",
+    "namespace": "",
+    "description": "The <cmath> (or <math.h>) library provides common mathematical functions such as trigonometric, exponential, logarithmic, and power functions.",
+    "members": {},
+    "methods": {
+        "abs": {
+            "desc": "Returns the absolute value of a number.",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "sin": {
+            "desc": "Computes the sine of an angle (in radians).",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "cos": {
+            "desc": "Computes the cosine of an angle (in radians).",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "tan": {
+            "desc": "Computes the tangent of an angle (in radians).",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "exp": {
+            "desc": "Computes the exponential function of a number (e^x).",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "log": {
+            "desc": "Computes the natural logarithm (base e) of a number.",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "log10": {
+            "desc": "Computes the common logarithm (base 10) of a number.",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "pow": {
+            "desc": "Raises a number to the given power.",
+            "returnType": "double",
+            "params": ["double", "double"]
+        },
+        "sqrt": {
+            "desc": "Computes the square root of a number.",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "ceil": {
+            "desc": "Rounds a number up to the nearest integer.",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "floor": {
+            "desc": "Rounds a number down to the nearest integer.",
+            "returnType": "double",
+            "params": ["double"]
+        },
+        "fmod": {
+            "desc": "Computes the remainder of division of two numbers.",
+            "returnType": "double",
+            "params": ["double", "double"]
+        }
+    },
+    "types": {}
+}

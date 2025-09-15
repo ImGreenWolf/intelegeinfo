@@ -185,7 +185,7 @@ function testProblem(tests, clientObj, clientSession, res) {
                 pipeStream.push(stdin);
                 pipeStream.push(null);
                 console.log("Test started");
-                startTime = Date.now();
+                startTime = performance.now();
             });
             program.stdout.addListener('data', (data) => {
                 outputBuffer += data.toString();
@@ -195,7 +195,7 @@ function testProblem(tests, clientObj, clientSession, res) {
                 if (code != 0)
                     resolve({ status: "Program returned non-zero status code!", error: true, index: i, score: 0 });
                 else if (outputBuffer.trim() === expectedStoud.trim())
-                    resolve({ status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length, time: startTime ? Date.now() - startTime : undefined });
+                    resolve({ status: "Corect.", error: false, index: i, score: test.score || 100 / tests.length, time: startTime ? performance.now() - startTime : undefined });
                 else
                     resolve({ status: "Programul nu a returnat rezultatul corect!", error: true, index: i, score: 0, result: (i <= 2 ? { input: stdin } : undefined) }); // TODO Determine if i should leave expected output
             });
@@ -289,9 +289,15 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
         //     } 
         if (!session.executeProblemChecker)
             throw 'No problem checker...';
-        const client = session.clients[0];
+        if (!req.query.clientId)
+            throw 'no client id supplied';
+        const client = session.getClientObjectById(req.query.clientId);
+        if (!client.clientData)
+            throw 'Ca sa testezi problema, trebuie sa fi logat!';
+        if (!client.openFile[0])
+            throw 'Trebuie sa deschizi un fisier pentru a testa problema!';
         session.executeProblemChecker(problemId)
-            .then((testResults) => {
+            .then(async (testResults) => {
             // testResults is an array of PromiseSettledResult objects
             console.log('Testing finished, results:', testResults);
             let score = 0;
@@ -306,24 +312,29 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
                         timeIndex++;
                     }
                 }
-            const solve = {
-                userId: client.clientData.id,
-                score: score,
-                sourceCode: client.openFile[0].content,
-                time: time ? time / timeIndex : -1
-            };
-            dbClient_1.default.problem.update({
-                where: {
-                    id: problemId
-                },
-                data: {
-                    solves: {
-                        create: {
-                            ...solve
+            if (client.clientData && client.openFile[0]) {
+                const solve = {
+                    userId: client.clientData.id,
+                    score: score,
+                    sourceCode: client.openFile[0].content,
+                    time: time ? time / timeIndex : -1
+                };
+                await dbClient_1.default.problem.update({
+                    where: {
+                        id: problemId
+                    },
+                    data: {
+                        solves: {
+                            create: {
+                                ...solve
+                            }
                         }
-                    }
-                },
-            }).then(problem => res.status(200).send({ results: testResults, solve }));
+                    },
+                });
+                res.status(200).send({ results: testResults, solve });
+            }
+            else
+                throw 'Nu am salvat solutia ta.';
         });
         // .catch((err) =>  res.status(500).send({error: err || true, result: false}))
         // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
@@ -403,6 +414,7 @@ const users = __importStar(require("./usersManager"));
 exports.router.get('/:sessionId/details/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const sessionId = req.params.sessionId;
+    const clientId = req.query.clientId;
     const userId = users.getIdFromJWT(req);
     if (!id)
         throw 'invalid id';
@@ -410,20 +422,21 @@ exports.router.get('/:sessionId/details/:id', async (req, res) => {
         where: {
             id
         },
-        include: {
-            solves: {
-                take: 5,
-                orderBy: {
-                    uploadedAt: "desc"
+        include: userId ?
+            {
+                solves: {
+                    take: 1,
+                    orderBy: {
+                        uploadedAt: "desc"
+                    },
+                    where: {
+                        userId
+                    },
                 },
-                where: {
-                    userId: userId ? userId : 0
-                },
-            },
-            _count: {
-                select: { solves: true }
-            }
-        }
+                _count: {
+                    select: { solves: true }
+                }
+            } : undefined
     });
     if (!problem)
         throw 'couldnt find problem.';
@@ -450,8 +463,8 @@ exports.router.get('/:sessionId/details/:id', async (req, res) => {
         return buffer;
     });
     const solvesUI = problem.solves ?
-        problem.solves.map(solve => `<div><span class="${['bad', 'decent', 'good', 'perfect'][Math.round(solve.score / 25) - (solve.score == 0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`) : '';
-    res.send(serverSideReplace(fileBuffer, { json: { ...problem, difficulty: problem.difficulty ? problem.difficulty : '' }, sessionId, html: { solvesUI: solvesUI[0] } }));
+        problem.solves.map(solve => `<div><span class="${['bad', 'decent', 'good', 'perfect'][Math.round(solve.score / 25) - (solve.score == 0 ? 0 : 1)]}">${solve.score}</span> ${dateDeltaToString(solve.uploadedAt)}</div>`) : [''];
+    res.send(serverSideReplace(fileBuffer, { json: { ...problem, difficulty: problem.difficulty ? problem.difficulty : '' }, sessionId, clientId, html: { solvesUI: solvesUI[0] } }));
 });
 exports.router.get('/details/:id', async (req, res) => {
     const id = parseInt(req.params.id);

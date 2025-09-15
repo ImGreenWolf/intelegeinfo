@@ -6,6 +6,7 @@ async function fetchProblems() {
             throw new Error('Failed to fetch directory data');
         }
         const sessionId = new URLSearchParams(location.search).get('sessionId');
+        const clientId = new URLSearchParams(location.search).get('clientId');
         const data = await response.json();
         const list = document.getElementById('problem-list');
         list.innerHTML = '';
@@ -13,7 +14,7 @@ async function fetchProblems() {
         data.forEach(item => {
             const listItem = document.createElement('li');
             const link = document.createElement('a');
-            const href = `../editor/problem/${sessionId}/details/${item.id}`;
+            const href = `../editor/problem/${sessionId}/details/${item.id}?clientId=${clientId}`;
             link.textContent = item.name;
             listItem.appendChild(link);
             const progress = item.solves && item.solves.length != 0 ? item.solves[0].score : 0;

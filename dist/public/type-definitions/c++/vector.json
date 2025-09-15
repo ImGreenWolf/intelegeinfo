@@ -1,0 +1,71 @@
+{
+    "name": "vector",
+    "namespace": "std",
+    "included": ["utility"],
+    "description": "The <vector> library provides the std::vector container, a dynamic array that can resize itself automatically when elements are inserted or removed.",
+    "members": {},
+    "methods": {},
+    "types": {
+        "vector": {
+            "desc": "A sequence container that encapsulates dynamic size arrays.",
+            "methods": {
+                "push_back": {
+                    "desc": "Adds an element to the end of the vector.",
+                    "returnType": "void",
+                    "params": ["const T&"]
+                },
+                "pop_back": {
+                    "desc": "Removes the last element from the vector.",
+                    "returnType": "void",
+                    "params": []
+                },
+                "size": {
+                    "desc": "Returns the number of elements in the vector.",
+                    "returnType": "size_t",
+                    "params": []
+                },
+                "capacity": {
+                    "desc": "Returns the number of elements that can be held in currently allocated storage.",
+                    "returnType": "size_t",
+                    "params": []
+                },
+                "empty": {
+                    "desc": "Checks whether the vector is empty.",
+                    "returnType": "bool",
+                    "params": []
+                },
+                "resize": {
+                    "desc": "Changes the number of elements stored in the vector.",
+                    "returnType": "void",
+                    "params": ["size_t", "const T& (optional)"]
+                },
+                "clear": {
+                    "desc": "Removes all elements from the vector.",
+                    "returnType": "void",
+                    "params": []
+                },
+                "at": {
+                    "desc": "Accesses an element at a specified index with bounds checking.",
+                    "returnType": "T&",
+                    "params": ["size_t"]
+                },
+                "operator[]": {
+                    "desc": "Accesses an element at a specified index without bounds checking.",
+                    "returnType": "T&",
+                    "params": ["size_t"]
+                },
+                "begin": {
+                    "desc": "Returns an iterator to the first element of the vector.",
+                    "returnType": "iterator",
+                    "params": []
+                },
+                "end": {
+                    "desc": "Returns an iterator to the element following the last element of the vector.",
+                    "returnType": "iterator",
+                    "params": []
+                }
+            },
+            "members": {}
+        }
+    }
+}

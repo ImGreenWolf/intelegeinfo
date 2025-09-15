@@ -10,7 +10,8 @@
       "esModuleInterop": true,
       "moduleResolution": "node",
       "skipLibCheck": true,
-      "noImplicitAny": false
+      "noImplicitAny": false,
+      "baseUrl": "/dist/public/"
 
     },
     "include": ["src"],
