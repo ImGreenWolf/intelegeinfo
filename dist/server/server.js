@@ -2165,7 +2165,7 @@ bash `.trim().replaceAll('\n', "");
                     if (clientSession.process) {
                         let timer;
                         if (!process.killed) {
-                            process.kill(15);
+                            process.kill(2);
                             process.addListener(('close'), (code) => {
                                 if (timer)
                                     clearTimeout(timer);
