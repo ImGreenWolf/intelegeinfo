@@ -1396,7 +1396,7 @@ bash `.trim().replaceAll('\n', "");
                 clientSession.program.stderr.removeAllListeners();
             }
             replicateFunction((clientWs) => {
-                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: message, clientId: clientId })); // Send GDB output to the client
+                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: '\n' + message.trim(), clientId: clientId })); // Send GDB output to the client
             });
             if (code != 0)
                 return;
@@ -1464,6 +1464,8 @@ bash `.trim().replaceAll('\n', "");
                     //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
                     // });
                     // gdbBuffer = "";
+                    if (clientSession.program.killed)
+                        return;
                     if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
                      {
                         closeProcess(program).then(() => onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"));
@@ -1489,7 +1491,7 @@ bash `.trim().replaceAll('\n', "");
                     switch (code) {
                         case 0:
                         default:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu codul: " + code?.toString() || -1);
+                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu codul: " + (code?.toString() || '-1'));
                             break;
                         case 136:
                         case 138:
@@ -2165,7 +2167,7 @@ bash `.trim().replaceAll('\n', "");
                     if (clientSession.process) {
                         let timer;
                         if (!process.killed) {
-                            process.kill(2);
+                            process.kill(9);
                             process.addListener(('close'), (code) => {
                                 if (timer)
                                     clearTimeout(timer);
