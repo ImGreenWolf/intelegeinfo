@@ -1,5 +1,6 @@
 abstract class DebugProcess {
     abstract sendCommand: (string) => void
+    abstract sendProgramInput: (command) => void
     protected onResponse: (buffer: Buffer) => void
     abstract addDataListener: (onDataFunc: (data: string) => void) => void
     abstract removeDataListener: (onDataFunc: (data: string) => void) => void

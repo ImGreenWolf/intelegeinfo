@@ -77,6 +77,10 @@ Avantaje: Rulează în browser și pe server, multe framework-uri.`
  class JSDebugger extends DebugProcess
     {
         sendCommand: (string: any) => void;
+
+        sendProgramInput: (command) => void = (command) => {
+        }
+
         kill: () => void = () =>
         {
             this.session.disconnect()

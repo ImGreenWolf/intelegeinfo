@@ -22,6 +22,7 @@ declare class javascript extends EditorMode {
 }
 declare class JSDebugger extends DebugProcess {
     sendCommand: (string: any) => void;
+    sendProgramInput: (command: any) => void;
     kill: () => void;
     addListener: (ev: any, func: (code: any) => void) => void;
     addDataListener: (onDataFunc: (data: string) => void) => void;

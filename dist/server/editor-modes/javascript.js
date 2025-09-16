@@ -65,6 +65,8 @@ Avantaje: Rulează în browser și pe server, multe framework-uri.`;
 }
 class JSDebugger extends ProcessTypes_1.default {
     sendCommand;
+    sendProgramInput = (command) => {
+    };
     kill = () => {
         this.session.disconnect();
         this.session.removeAllListeners();

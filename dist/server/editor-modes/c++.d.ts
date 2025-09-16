@@ -20,12 +20,14 @@ declare class CppMode extends EditorMode {
 }
 declare class CPPDebugger extends DebugProcess {
     sendCommand: (command: string) => void;
+    sendProgramInput: (command: any) => void;
     addDataListener: (onDataFunc: (data: string) => void) => void;
     removeDataListener: (func: any) => void;
     kill: (code: any) => void;
     addListener: (ev: any, func: (code: any) => void) => void;
     process: nodepty.IPty;
     clientSession: EditorSession;
+    inputTerminal: nodepty.IPty;
     private dataListeners;
     constructor(res: any, clientObj: ClientObject, clientSession: EditorSession);
 }

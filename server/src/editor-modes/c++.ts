@@ -3,7 +3,7 @@ import EditorMode from "./BaseEditorMode";
 import { ClientObject, EditorFile, EditorSession } from "../types";
 import path from "path";
 import DebugProcess from "./ProcessTypes";
-import { WebSocketMessageType } from "../../../dist/shared/types";
+import { ConsoleMessageType, WebSocketMessageType } from "../../../dist/shared/types";
 import * as nodepty from "node-pty"
 
 
@@ -169,6 +169,10 @@ int main() {
 
             this.process.write(command+' \n')
         }
+        sendProgramInput: (command) => void = (command) => {
+            this.inputTerminal.write(command)
+        }
+
         
         addDataListener: (onDataFunc: (data: string) => void) => void = (func) => {
             console.log('ADDED DATA LISTENER')
@@ -191,7 +195,7 @@ int main() {
 
         addListener: (ev: any, func: (code: any) => void) => void 
         = function (this:CPPDebugger, ev, func) {
-            switch (ev) 
+            switch (ev)     
             { 
                 case 'close':
                     this.process.onExit(func)
@@ -201,13 +205,14 @@ int main() {
 
         process: nodepty.IPty
         clientSession: EditorSession
+        public inputTerminal: nodepty.IPty
         private dataListeners = new Map<Function, nodepty.IDisposable>()
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
             this.clientSession = clientSession;
             
             
-                const tty = nodepty.spawn("docker", [
+                this.inputTerminal = nodepty.spawn("docker", [
                 "exec", "-it", res.imageName, 'bash'
                 ], {
                     name: "xterm-color",
@@ -223,26 +228,32 @@ int main() {
                     // cwd: './clientFiles'
                     handleFlowControl: true,
                 })
-                tty.write('tty\n')
-                const ttyLoc = tty.onData((data) => {
+
+
+                this.inputTerminal.write('tty\n')
+
+
+                const ttyLoc = this.inputTerminal.onData((data) => {
                     if(!data.toString().includes('/dev/'))
                         return
                     console.log('tty:', data.toString())
                     this.sendCommand('set inferior-tty ' + data.toString())
                     this.sendCommand('-exec-run')
                     ttyLoc.dispose()
-                    setInterval(() => {
-                        tty.write('10 \n')
-                        
-                    }, 1000);
+                    
                 })
-
-                tty.onExit((e) => {
+                this.inputTerminal.onData(data => {
+                    clientSession.replicateFunction((clientWs, id, clientObj) => {
+                        clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
+                    });
+                   
+                })
+                this.inputTerminal.onExit((e) => {
                     console.error('TTY EXITED WITH CODE', e)
                 })
 
                 this.process.onExit(() => {
-                    tty.kill('SIGKILL')
+                    this.inputTerminal.kill('SIGKILL')
                 })
                
                 // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
