@@ -4,7 +4,9 @@ import { ClientObject, EditorFile, EditorSession } from "../types";
 import path from "path";
 import DebugProcess from "./ProcessTypes";
 import { WebSocketMessageType } from "../../../dist/shared/types";
-import pty from 'node-pty'
+// import pty from 'node-pty'
+
+
 class CppMode extends EditorMode {
 
     static name = 'C++'
@@ -197,24 +199,29 @@ int main() {
             return func
         }).call(this)
 
-        process: pty.IPty
+        process: any
         clientSession: EditorSession
 
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
             this.clientSession = clientSession
-            if(!pty)
-                throw 'invalid pty module'
-            this.process = pty.spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
-        {
 
-        })
-            // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
-            console.log('Spawned debug process with id', this.process.pid)
+            async () => {
+                const pty = await import("node-pty");
+                if(!pty)
+                    throw 'invalid pty module'
+                 this.process = pty.spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
+                {
 
-            clientSession.replicateFunction((clientWs, id, clientObj) => {
-                clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
-            });
+                })
+                // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+                console.log('Spawned debug process with id', this.process.pid)
+
+                clientSession.replicateFunction((clientWs, id, clientObj) => {
+                    clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
+                });
+            }
+           
 
             
         }
