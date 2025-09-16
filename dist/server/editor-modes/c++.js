@@ -225,6 +225,9 @@ class CPPDebugger extends ProcessTypes_1.default {
                 tty.write('10 \n');
             }, 1000);
         });
+        tty.onExit((e) => {
+            console.error('TTY EXITED WITH CODE', e);
+        });
         // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
         clientSession.replicateFunction((clientWs, id, clientObj) => {
