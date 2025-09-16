@@ -220,18 +220,18 @@ class CPPDebugger extends ProcessTypes_1.default {
             handleFlowControl: true,
         });
         this.inputTerminal.write('tty\n');
-        const ttyLoc = this.inputTerminal.onData((data) => {
-            if (!data.toString().includes('/dev/'))
+        let loaded = false;
+        this.inputTerminal.onData((data) => {
+            if (loaded)
+                clientSession.replicateFunction((clientWs, id, clientObj) => {
+                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
+                });
+            else if (!data.toString().includes('/dev/'))
                 return;
             console.log('tty:', data.toString());
             this.sendCommand('set inferior-tty ' + data.toString());
             this.sendCommand('-exec-run');
-            ttyLoc.dispose();
-        });
-        this.inputTerminal.onData(data => {
-            clientSession.replicateFunction((clientWs, id, clientObj) => {
-                clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
-            });
+            loaded = true;
         });
         this.inputTerminal.onExit((e) => {
             console.error('TTY EXITED WITH CODE', e);

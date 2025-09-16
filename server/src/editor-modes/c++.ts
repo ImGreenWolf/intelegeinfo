@@ -232,22 +232,21 @@ int main() {
 
                 this.inputTerminal.write('tty\n')
 
-
-                const ttyLoc = this.inputTerminal.onData((data) => {
-                    if(!data.toString().includes('/dev/'))
+                let loaded= false
+                this.inputTerminal.onData((data) => {
+                    if(loaded)
+                         clientSession.replicateFunction((clientWs, id, clientObj) => {
+                            clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
+                        });
+                    else if(!data.toString().includes('/dev/'))
                         return
                     console.log('tty:', data.toString())
                     this.sendCommand('set inferior-tty ' + data.toString())
                     this.sendCommand('-exec-run')
-                    ttyLoc.dispose()
+                    loaded=true
                     
                 })
-                this.inputTerminal.onData(data => {
-                    clientSession.replicateFunction((clientWs, id, clientObj) => {
-                        clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
-                    });
-                   
-                })
+                
                 this.inputTerminal.onExit((e) => {
                     console.error('TTY EXITED WITH CODE', e)
                 })
