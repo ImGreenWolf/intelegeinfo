@@ -228,8 +228,8 @@ class CPPDebugger extends ProcessTypes_1.default {
                 });
             else if (!data.toString().includes('/dev/'))
                 return;
-            console.log('tty:', data.toString());
-            this.sendCommand('set inferior-tty ' + data.toString());
+            console.log('tty:', data.toString(), data.toString().split('/dev/').at(-1));
+            this.sendCommand('set inferior-tty ' + '/dev/' + data.toString().split('/dev/').at(-1));
             this.sendCommand('-exec-run');
             loaded = true;
         });

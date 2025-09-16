@@ -239,9 +239,10 @@ int main() {
                             clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
                         });
                     else if(!data.toString().includes('/dev/'))
-                        return
-                    console.log('tty:', data.toString())
-                    this.sendCommand('set inferior-tty ' + data.toString())
+                        return;
+
+                    console.log('tty:', data.toString(), data.toString().split('/dev/').at(-1))
+                    this.sendCommand('set inferior-tty ' + '/dev/'+data.toString().split('/dev/').at(-1))
                     this.sendCommand('-exec-run')
                     loaded=true
                     
