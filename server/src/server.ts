@@ -1636,7 +1636,7 @@ const runCommand =
 ${process.env.DISABLE_CONTAINER_LIMITS == 'false' ? `-m ${256*parseInt(process.env.CONT_MEM_MUlTI||"1")}MB \
 --cpus=${0.25*parseInt(process.env.CONT_MEM_MUlTI||"1")}` : ''} \
 -a stdin -a stdout \
--it \
+-i \
 --rm \
 ${clientObj.openFile[0].editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
