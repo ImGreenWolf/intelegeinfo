@@ -235,7 +235,7 @@ int main() {
                 let loaded= false
                 this.inputTerminal.onData((data) => {
                     if(loaded)
-                         clientSession.replicateFunction((clientWs, id, clientObj) => {
+                        return clientSession.replicateFunction((clientWs, id, clientObj) => {
                             clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
                         });
                     else if(!data.toString().includes('/dev/'))

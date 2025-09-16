@@ -223,7 +223,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         let loaded = false;
         this.inputTerminal.onData((data) => {
             if (loaded)
-                clientSession.replicateFunction((clientWs, id, clientObj) => {
+                return clientSession.replicateFunction((clientWs, id, clientObj) => {
                     clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
                 });
             else if (!data.toString().includes('/dev/'))
