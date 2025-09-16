@@ -213,7 +213,7 @@ int main() {
             
             
                 this.inputTerminal = nodepty.spawn("docker", [
-                "exec", "-it", res.imageName, 'sh'
+                "exec", "-it", res.imageName, 'bash'
                 ], {
                     name: "xterm-color",
                     cols: 80,
@@ -235,7 +235,7 @@ int main() {
                 let loaded= false
                 this.inputTerminal.onData((data) => {
                     if(loaded)
-                        if(data.includes('to set controlling terminal'))
+                        if(data.includes('to set controlling terminal') || (data.includes('not found') && data.includes('bash')))
                             return;
                         else
                             return clientSession.replicateFunction((clientWs, id, clientObj) => {

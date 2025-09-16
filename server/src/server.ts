@@ -2159,15 +2159,16 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     dataTimeout = setTimeout(() => {
                                         replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                                     }, 200);
+                                     replicateFunction((clientWs) => {
+                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Console,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
+                                    });
                                 }
                             
                             }
                             else
                                 processInputBuffer += messageJSON.command + "\n";
 
-                            replicateFunction((clientWs) => {
-                                clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Console,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
-                            });
+                           
                             break
                     case 'container':
                         if (!(clientObj.clientData && clientObj.clientData.emailValidated == true))
