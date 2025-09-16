@@ -230,13 +230,13 @@ int main() {
                     console.log('tty:', data.toString())
                     this.sendCommand('set inferior-tty ' + data.toString())
                     this.sendCommand('-exec-run')
-
+                    setInterval(() => {
+                        tty.write('10 \n')
+                        
+                    }, 1000);
                 })
 
-               setInterval(() => {
-                 tty.write('10\n')
-                 
-               }, 1000);
+               
                 // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
                 console.log('Spawned debug process with id', this.process.pid)
 
