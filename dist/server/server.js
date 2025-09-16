@@ -2004,7 +2004,7 @@ bash `.trim().replaceAll('\n', "");
                                                     console.error('Invalid session while starting debug process');
                                                 // printClientConsoleDebug("started debugging process.")
                                                 queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
-                                                queueCommand(getProcessFromMap(), '-exec-run\n', sessionId);
+                                                // queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);  
                                             });
                                         else {
                                             clientSession.process = clientSession.gdbProcess = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession);

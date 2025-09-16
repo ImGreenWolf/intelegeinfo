@@ -200,12 +200,6 @@ class CPPDebugger extends ProcessTypes_1.default {
     constructor(res, clientObj, clientSession) {
         super();
         this.clientSession = clientSession;
-        if (!nodepty)
-            throw 'invalid pty module';
-        this.process = nodepty.spawn("docker", ["exec", '-it', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {
-            // cwd: './clientFiles'
-            handleFlowControl: true,
-        });
         const tty = nodepty.spawn("docker", [
             "exec", "-it", res.imageName, 'bash', '-c', "tty"
         ], {
@@ -215,9 +209,16 @@ class CPPDebugger extends ProcessTypes_1.default {
             cwd: process.cwd(),
             env: process.env
         });
+        if (!nodepty)
+            throw 'invalid pty module';
+        this.process = nodepty.spawn("docker", ["exec", '-it', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {
+            // cwd: './clientFiles'
+            handleFlowControl: true,
+        });
         tty.onData((data) => {
             console.log('tty:', data.toString());
             this.sendCommand('set inferior-tty ' + data.toString());
+            this.sendCommand('-exec-run');
         });
         setInterval(() => {
             tty.write('10\n');

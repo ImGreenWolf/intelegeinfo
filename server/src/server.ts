@@ -2507,7 +2507,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     // printClientConsoleDebug("started debugging process.")
                                
                                     queueCommand(getProcessFromMap(),'-break-insert 1\n', sessionId);
-                                    queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);  
+                                    // queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);  
 
                                     
 
