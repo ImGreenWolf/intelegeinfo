@@ -213,7 +213,7 @@ int main() {
             
             
                 this.inputTerminal = nodepty.spawn("docker", [
-                "exec", "-it", res.imageName, 'bash'
+                "exec", "-it", res.imageName, 'sh'
                 ], {
                     name: "xterm-color",
                     cols: 80,
