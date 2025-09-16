@@ -169,15 +169,15 @@ class CPPDebugger extends ProcessTypes_1.default {
     //     return func
     // }
     sendCommand = (command) => {
-        this.process.write(command + '\n');
+        this.process.write(command + ' \n');
     };
     addDataListener = (func) => {
         console.log('ADDED DATA LISTENER');
         this.removeDataListener(func);
-        this.process.onData(func);
+        this.dataListeners.set(func, this.process.onData(func));
     };
     removeDataListener = (func) => {
-        this.process.onData(undefined);
+        this.dataListeners.get(func).dispose();
     };
     kill = (code) => {
         this.process.kill(code);
@@ -195,6 +195,7 @@ class CPPDebugger extends ProcessTypes_1.default {
     }).call(this);
     process;
     clientSession;
+    dataListeners = new Map();
     constructor(res, clientObj, clientSession) {
         super();
         this.clientSession = clientSession;
@@ -208,6 +209,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         clientSession.replicateFunction((clientWs, id, clientObj) => {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
         });
+        this.process.onData((data) => console.log(data));
     }
 }
 exports.default = CppMode;

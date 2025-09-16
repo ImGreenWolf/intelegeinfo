@@ -26,6 +26,7 @@ declare class CPPDebugger extends DebugProcess {
     addListener: (ev: any, func: (code: any) => void) => void;
     process: nodepty.IPty;
     clientSession: EditorSession;
+    private dataListeners;
     constructor(res: any, clientObj: ClientObject, clientSession: EditorSession);
 }
 export default CppMode;

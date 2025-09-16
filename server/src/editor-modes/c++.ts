@@ -167,18 +167,18 @@ int main() {
 
         sendCommand: (command: string) => void = (command) => {
 
-            this.process.write(command+'\n')
+            this.process.write(command+' \n')
         }
-
+        
         addDataListener: (onDataFunc: (data: string) => void) => void = (func) => {
             console.log('ADDED DATA LISTENER')
-            this.removeDataListener(func)
-            this.process.onData(func)
+            // this.removeDataListener(func)
+            this.dataListeners.set(func, this.process.onData(func))
         }
 
         removeDataListener = (func) => {
 
-            this.process.onData(undefined)
+            this.dataListeners.get(func).dispose()
         }
 
         kill: (code) => void = (code) => {
@@ -201,7 +201,7 @@ int main() {
 
         process: nodepty.IPty
         clientSession: EditorSession
-
+        private dataListeners = new Map<Function, nodepty.IDisposable>()
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
             this.clientSession = clientSession;
@@ -220,6 +220,8 @@ int main() {
                 clientSession.replicateFunction((clientWs, id, clientObj) => {
                     clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
                 });
+
+                this.process.onData((data) => console.log(data))
             
            
 
