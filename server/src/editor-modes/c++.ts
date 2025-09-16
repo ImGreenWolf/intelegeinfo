@@ -216,7 +216,7 @@ int main() {
                     handleFlowControl: true,
                 })
                 const tty = nodepty.spawn("docker", [
-                "exec", "-it", res.imageName, 'bash -c "tty"'
+                "exec", "-it", res.imageName, 'sh -c "tty"'
                 ], {
                     name: "xterm-color",
                     cols: 80,
