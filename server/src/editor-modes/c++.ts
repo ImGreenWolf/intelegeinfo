@@ -210,7 +210,7 @@ int main() {
             
                 if(!nodepty)
                     throw 'invalid pty module'
-                 this.process = nodepty.spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
+                 this.process = nodepty.spawn("docker", ["exec", '-it', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
                 {
 
                 })
