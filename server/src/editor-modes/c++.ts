@@ -208,7 +208,7 @@ int main() {
             
             
                 const tty = nodepty.spawn("docker", [
-                "exec", "-it", res.imageName, 'bash', '-c', "tty"
+                "exec", "-it", res.imageName, 'bash', '-c'
                 ], {
                     name: "xterm-color",
                     cols: 80,
@@ -223,7 +223,7 @@ int main() {
                     // cwd: './clientFiles'
                     handleFlowControl: true,
                 })
-                
+                tty.write('tty\n')
                 tty.onData((data) => {
                     if(!data.toString().includes('/'))
                         return
