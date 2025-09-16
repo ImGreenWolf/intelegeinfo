@@ -198,8 +198,7 @@ class CPPDebugger extends ProcessTypes_1.default {
     constructor(res, clientObj, clientSession) {
         super();
         this.clientSession = clientSession;
-        (async () => {
-            const pty = await Promise.resolve().then(() => __importStar(require("node-pty")));
+        Promise.resolve().then(() => __importStar(require("node-pty"))).then(pty => {
             if (!pty)
                 throw 'invalid pty module';
             this.process = pty.spawn("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {});
@@ -208,7 +207,7 @@ class CPPDebugger extends ProcessTypes_1.default {
             clientSession.replicateFunction((clientWs, id, clientObj) => {
                 clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
             });
-        })();
+        });
     }
 }
 exports.default = CppMode;

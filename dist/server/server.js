@@ -1990,6 +1990,7 @@ bash `.trim().replaceAll('\n', "");
                                                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compilat!', clientId: clientId })); // Send GDB output to the client
                                                     });
                                                     clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession);
+                                                    await new Promise(resolve => setTimeout(resolve, 100));
                                                     clientSession.gdbProcess.addDataListener(onData);
                                                     if (!clientSession.gdbProcess)
                                                         throw 'invalid debug process';

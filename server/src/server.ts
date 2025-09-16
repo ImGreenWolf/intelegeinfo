@@ -2492,6 +2492,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         });
 
                                         clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession)
+                                        await new Promise(resolve =>  setTimeout(resolve, 100))
                                         clientSession.gdbProcess.addDataListener(onData)
                                         if(!clientSession.gdbProcess)
                                             throw 'invalid debug process'
