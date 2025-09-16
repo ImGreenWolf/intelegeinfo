@@ -225,6 +225,8 @@ int main() {
                 })
                 
                 tty.onData((data) => {
+                    if(!data.toString().includes('/'))
+                        return
                     console.log('tty:', data.toString())
                     this.sendCommand('set inferior-tty ' + data.toString())
                     this.sendCommand('-exec-run')
