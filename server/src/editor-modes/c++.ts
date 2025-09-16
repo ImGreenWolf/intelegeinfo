@@ -203,6 +203,8 @@ int main() {
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
             this.clientSession = clientSession
+            if(!pty)
+                throw 'invalid pty module'
             this.process = pty.spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
         {
 

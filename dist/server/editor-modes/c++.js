@@ -165,6 +165,8 @@ class CPPDebugger extends ProcessTypes_1.default {
     constructor(res, clientObj, clientSession) {
         super();
         this.clientSession = clientSession;
+        if (!node_pty_1.default)
+            throw 'invalid pty module';
         this.process = node_pty_1.default.spawn("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {});
         // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
