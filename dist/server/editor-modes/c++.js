@@ -206,12 +206,25 @@ class CPPDebugger extends ProcessTypes_1.default {
             // cwd: './clientFiles'
             handleFlowControl: true,
         });
+        const tty = nodepty.spawn("docker", [
+            "exec", "-it", res.imageName, "bash"
+        ], {
+            name: "xterm-color",
+            cols: 80,
+            rows: 30,
+            cwd: process.cwd(),
+            env: process.env
+        });
+        this.sendCommand('set inferior-tty /dev/pts/2');
+        setInterval(() => {
+            tty.write('10\n');
+        }, 1000);
         // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
         clientSession.replicateFunction((clientWs, id, clientObj) => {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
         });
-        this.process.onData((data) => console.log(data));
+        // this.process.onData((data) => console.log(data))
     }
 }
 exports.default = CppMode;
