@@ -36,6 +36,7 @@ import  challanges  from './challanges/challangesManager'
 import { router as usersManager } from './usersManager'
 import GuideCreator from "./guideCreator"
 import { privateKey } from "./login.js";
+import pty from 'node-pty'
 
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
