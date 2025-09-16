@@ -205,7 +205,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         super();
         this.clientSession = clientSession;
         this.inputTerminal = nodepty.spawn("docker", [
-            "exec", "-it", '--privileged', res.imageName, 'bash'
+            "exec", "-it", res.imageName, 'bash'
         ], {
             name: "xterm-color",
             cols: 80,
@@ -223,13 +223,16 @@ class CPPDebugger extends ProcessTypes_1.default {
         let loaded = false;
         this.inputTerminal.onData((data) => {
             if (loaded)
-                return clientSession.replicateFunction((clientWs, id, clientObj) => {
-                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
-                });
+                if (data.includes('to set controlling terminal'))
+                    return;
+                else
+                    return clientSession.replicateFunction((clientWs, id, clientObj) => {
+                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
+                    });
             else if (!data.toString().includes('/dev/'))
                 return;
-            console.log('tty:', data.toString(), data.toString().split('/dev/').at(-1));
-            this.sendCommand('set inferior-tty ' + '/dev/' + data.toString().split('/dev/').at(-1));
+            console.log('tty:', data.toString());
+            this.sendCommand('set inferior-tty ' + data.toString());
             this.sendCommand('-break-insert 1');
             this.sendCommand('-exec-run');
             loaded = true;
@@ -237,8 +240,8 @@ class CPPDebugger extends ProcessTypes_1.default {
         this.inputTerminal.onExit((e) => {
             console.error('TTY EXITED WITH CODE', e);
         });
-        this.process.onExit(() => {
-            this.inputTerminal.kill('SIGKILL');
+        this.process.onExit((code) => {
+            this.inputTerminal.kill();
         });
         // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
