@@ -204,9 +204,9 @@ int main() {
 
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {
             super()
-            this.clientSession = clientSession
+            this.clientSession = clientSession;
 
-            async () => {
+            (async () => {
                 const pty = await import("node-pty");
                 if(!pty)
                     throw 'invalid pty module'
@@ -220,7 +220,7 @@ int main() {
                 clientSession.replicateFunction((clientWs, id, clientObj) => {
                     clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
                 });
-            }
+            })()
            
 
             
