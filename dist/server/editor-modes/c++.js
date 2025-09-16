@@ -205,7 +205,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         super();
         this.clientSession = clientSession;
         this.inputTerminal = nodepty.spawn("docker", [
-            "exec", "-it", res.imageName, 'bash'
+            "exec", "-it", '--privileged', res.imageName, 'bash'
         ], {
             name: "xterm-color",
             cols: 80,
