@@ -169,7 +169,7 @@ class CPPDebugger extends ProcessTypes_1.default {
     //     return func
     // }
     sendCommand = (command) => {
-        this.process.write(command);
+        this.process.write(command + '\n');
     };
     addDataListener = (func) => {
         console.log('ADDED DATA LISTENER');

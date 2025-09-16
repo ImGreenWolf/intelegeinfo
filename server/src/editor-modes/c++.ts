@@ -167,7 +167,7 @@ int main() {
 
         sendCommand: (command: string) => void = (command) => {
 
-            this.process.write(command)
+            this.process.write(command+'\n')
         }
 
         addDataListener: (onDataFunc: (data: string) => void) => void = (func) => {
