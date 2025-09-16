@@ -216,12 +216,13 @@ class CPPDebugger extends ProcessTypes_1.default {
             handleFlowControl: true,
         });
         tty.write('tty\n');
-        tty.onData((data) => {
-            if (!data.toString().includes('/'))
+        const ttyLoc = tty.onData((data) => {
+            if (!data.toString().includes('/dev/'))
                 return;
             console.log('tty:', data.toString());
             this.sendCommand('set inferior-tty ' + data.toString());
             this.sendCommand('-exec-run');
+            ttyLoc.dispose();
             setInterval(() => {
                 tty.write('10 \n');
             }, 1000);
