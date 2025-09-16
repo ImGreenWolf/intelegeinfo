@@ -170,13 +170,13 @@ int main() {
             this.process.write(command)
         }
 
-        addDataListener: (onDataFunc: (string) => void) => void = (func) => {
+        addDataListener: (onDataFunc: (data: string) => void) => void = (func) => {
             console.log('ADDED DATA LISTENER')
             this.removeDataListener(func)
             this.process.onData(func)
         }
 
-        removeDataListener: (onDataFunc: typeof this.onResponse) => void = (func) => {
+        removeDataListener = (func) => {
 
             this.process.onData(undefined)
         }
@@ -199,7 +199,7 @@ int main() {
             return func
         }).call(this)
 
-        process: any
+        process: nodepty.IPty
         clientSession: EditorSession
 
         constructor(res, clientObj:ClientObject, clientSession: EditorSession) {

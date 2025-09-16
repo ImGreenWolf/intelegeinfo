@@ -88,10 +88,10 @@ Avantaje: Rulează în browser și pe server, multe framework-uri.`
         {
             func(0)
         }
-        addDataListener = (onDataFunc: typeof this.onResponse) => {
+        addDataListener = (onDataFunc: (data: string) => void) => {
            
         };
-        removeDataListener = (onDataFunc: typeof this.onResponse) => {
+        removeDataListener = (onDataFunc: (data: string) => void) => {
             
         };
 

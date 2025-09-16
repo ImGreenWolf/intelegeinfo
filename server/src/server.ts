@@ -1343,7 +1343,7 @@ function endConnectionPromise()
    }
 
 
-       const onData = (data: Buffer) => {
+       const onData = (data: string) => {
                 
                 const buffer = sanitizeGdbOutput(data)
                 console.log(buffer)
