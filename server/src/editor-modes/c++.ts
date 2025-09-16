@@ -4,7 +4,7 @@ import { ClientObject, EditorFile, EditorSession } from "../types";
 import path from "path";
 import DebugProcess from "./ProcessTypes";
 import { WebSocketMessageType } from "../../../dist/shared/types";
-import pty from 'node-pty'
+import * as nodepty from "node-pty"
 
 
 class CppMode extends EditorMode {
@@ -208,9 +208,9 @@ int main() {
 
             
             
-                if(!pty)
+                if(!nodepty)
                     throw 'invalid pty module'
-                 this.process = pty.spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
+                 this.process = nodepty.spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
                 {
 
                 })
