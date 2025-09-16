@@ -207,7 +207,7 @@ class CPPDebugger extends ProcessTypes_1.default {
             handleFlowControl: true,
         });
         const tty = nodepty.spawn("docker", [
-            "exec", "-it", res.imageName, "bash"
+            "exec", "-it", res.imageName, 'bash -c "tty"'
         ], {
             name: "xterm-color",
             cols: 80,
@@ -215,7 +215,10 @@ class CPPDebugger extends ProcessTypes_1.default {
             cwd: process.cwd(),
             env: process.env
         });
-        this.sendCommand('set inferior-tty /dev/pts/2');
+        tty.onData((data) => {
+            console.log('tty:', data.toString());
+            this.sendCommand('set inferior-tty ' + data.toString());
+        });
         setInterval(() => {
             tty.write('10\n');
         }, 1000);
