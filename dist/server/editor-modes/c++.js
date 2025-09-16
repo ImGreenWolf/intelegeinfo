@@ -173,11 +173,12 @@ class CPPDebugger extends ProcessTypes_1.default {
     };
     addDataListener = (func) => {
         console.log('ADDED DATA LISTENER');
-        this.removeDataListener(func);
+        // this.removeDataListener(func)
         this.dataListeners.set(func, this.process.onData(func));
     };
     removeDataListener = (func) => {
-        this.dataListeners.get(func).dispose();
+        if (this.dataListeners.has(func))
+            this.dataListeners.get(func).dispose();
     };
     kill = (code) => {
         this.process.kill(code);
@@ -202,7 +203,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         if (!nodepty)
             throw 'invalid pty module';
         this.process = nodepty.spawn("docker", ["exec", '-it', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {
-            cwd: './clientFiles'
+        // cwd: './clientFiles'
         });
         // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
