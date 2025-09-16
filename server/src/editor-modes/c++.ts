@@ -243,6 +243,7 @@ int main() {
 
                     console.log('tty:', data.toString(), data.toString().split('/dev/').at(-1))
                     this.sendCommand('set inferior-tty ' + '/dev/'+data.toString().split('/dev/').at(-1))
+                    this.sendCommand('-break-insert 1')
                     this.sendCommand('-exec-run')
                     loaded=true
                     
