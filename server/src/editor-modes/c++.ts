@@ -208,7 +208,7 @@ int main() {
             
             
                 const tty = nodepty.spawn("docker", [
-                "exec", "-it", res.imageName, 'bash', '-c'
+                "exec", "-it", res.imageName, 'bash'
                 ], {
                     name: "xterm-color",
                     cols: 80,
