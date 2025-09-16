@@ -240,6 +240,9 @@ int main() {
                     console.error('TTY EXITED WITH CODE', e)
                 })
 
+                this.process.onExit(() => {
+                    tty.kill('SIGKILL')
+                })
                
                 // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
                 console.log('Spawned debug process with id', this.process.pid)
