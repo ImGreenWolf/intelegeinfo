@@ -1,7 +1,7 @@
-import { ChildProcess } from "child_process";
 import EditorMode from "./BaseEditorMode";
 import { ClientObject, EditorFile, EditorSession } from "../types";
 import DebugProcess from "./ProcessTypes";
+import pty from 'node-pty';
 declare class CppMode extends EditorMode {
     static name: string;
     static logoSrc: string;
@@ -20,11 +20,11 @@ declare class CppMode extends EditorMode {
 }
 declare class CPPDebugger extends DebugProcess {
     sendCommand: (command: string) => void;
-    addDataListener: (onDataFunc: typeof this.onResponse) => void;
+    addDataListener: (onDataFunc: (string: any) => void) => void;
     removeDataListener: (onDataFunc: typeof this.onResponse) => void;
     kill: (code: any) => void;
     addListener: (ev: any, func: (code: any) => void) => void;
-    process: ChildProcess;
+    process: pty.IPty;
     clientSession: EditorSession;
     constructor(res: any, clientObj: ClientObject, clientSession: EditorSession);
 }

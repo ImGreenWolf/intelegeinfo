@@ -8,6 +8,7 @@ const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 const ProcessTypes_1 = __importDefault(require("./ProcessTypes"));
 const types_1 = require("../../../dist/shared/types");
+const node_pty_1 = __importDefault(require("node-pty"));
 class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
     static logoSrc = 'c++-logo.png';
@@ -107,16 +108,43 @@ int main() {
     };
 }
 class CPPDebugger extends ProcessTypes_1.default {
+    // sendCommand: (command: string) => void = (command) => {
+    //     this.process.stdin?.write(command+'\n');
+    // }
+    // addDataListener: (onDataFunc: typeof this.onResponse) => void = (func) => {
+    //     console.log('ADDED DATA LISTENER')
+    //     this.removeDataListener(func)
+    //     this.process.stdout?.on("data", func);
+    // }
+    // removeDataListener: (onDataFunc: typeof this.onResponse) => void = (func) => {
+    //     this.process.stdout?.off("data", func);
+    // }
+    // kill: (code) => void = (code) => {
+    //     this.process.kill(code)
+    //     this.killed = true
+    //     this.clientSession.replicateFunction((clientWs, id, clientObj) => {
+    //         clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "end", code});  // Send GDB output to the client
+    //     });
+    // };
+    // addListener: (ev: any, func: (code: any) => void) => void 
+    // = function (ev, func) {
+    //     switch (ev) 
+    //     { 
+    //         case 'close':
+    //             this.process.addListener(ev, func)
+    //     }
+    //     return func
+    // }
     sendCommand = (command) => {
-        this.process.stdin?.write(command + '\n');
+        this.process.write(command);
     };
     addDataListener = (func) => {
         console.log('ADDED DATA LISTENER');
         this.removeDataListener(func);
-        this.process.stdout?.on("data", func);
+        this.process.onData(func);
     };
     removeDataListener = (func) => {
-        this.process.stdout?.off("data", func);
+        this.process.onData(undefined);
     };
     kill = (code) => {
         this.process.kill(code);
@@ -125,19 +153,20 @@ class CPPDebugger extends ProcessTypes_1.default {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "end", code }); // Send GDB output to the client
         });
     };
-    addListener = function (ev, func) {
+    addListener = (function (ev, func) {
         switch (ev) {
             case 'close':
-                process.addListener(ev, func);
+                this.process.onExit(func);
         }
         return func;
-    };
+    }).call(this);
     process;
     clientSession;
     constructor(res, clientObj, clientSession) {
         super();
         this.clientSession = clientSession;
-        this.process = (0, child_process_1.spawn)("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], { stdio: 'pipe' }); //"-ex", "set pagination off", 
+        this.process = node_pty_1.default.spawn("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {});
+        // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
         clientSession.replicateFunction((clientWs, id, clientObj) => {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
