@@ -1,37 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -41,7 +8,7 @@ const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 const ProcessTypes_1 = __importDefault(require("./ProcessTypes"));
 const types_1 = require("../../../dist/shared/types");
-// import pty from 'node-pty'
+const node_pty_1 = __importDefault(require("node-pty"));
 class CppMode extends BaseEditorMode_1.default {
     static name = 'C++';
     static logoSrc = 'c++-logo.png';
@@ -198,15 +165,13 @@ class CPPDebugger extends ProcessTypes_1.default {
     constructor(res, clientObj, clientSession) {
         super();
         this.clientSession = clientSession;
-        Promise.resolve().then(() => __importStar(require("node-pty"))).then(pty => {
-            if (!pty)
-                throw 'invalid pty module';
-            this.process = pty.spawn("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {});
-            // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
-            console.log('Spawned debug process with id', this.process.pid);
-            clientSession.replicateFunction((clientWs, id, clientObj) => {
-                clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
-            });
+        if (!node_pty_1.default)
+            throw 'invalid pty module';
+        this.process = node_pty_1.default.spawn("docker", ["exec", '-i', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {});
+        // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
+        console.log('Spawned debug process with id', this.process.pid);
+        clientSession.replicateFunction((clientWs, id, clientObj) => {
+            clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
         });
     }
 }

@@ -4,7 +4,7 @@ import { ClientObject, EditorFile, EditorSession } from "../types";
 import path from "path";
 import DebugProcess from "./ProcessTypes";
 import { WebSocketMessageType } from "../../../dist/shared/types";
-// import pty from 'node-pty'
+import pty from 'node-pty'
 
 
 class CppMode extends EditorMode {
@@ -207,7 +207,7 @@ int main() {
             this.clientSession = clientSession;
 
             
-            import("node-pty").then(pty => {
+            
                 if(!pty)
                     throw 'invalid pty module'
                  this.process = pty.spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
@@ -220,7 +220,7 @@ int main() {
                 clientSession.replicateFunction((clientWs, id, clientObj) => {
                     clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
                 });
-            })
+            
            
 
             
