@@ -190,14 +190,14 @@ int main() {
         };
 
         addListener: (ev: any, func: (code: any) => void) => void 
-        = (function (this:CPPDebugger, ev, func) {
+        = function (this:CPPDebugger, ev, func) {
             switch (ev) 
             { 
                 case 'close':
                     this.process.onExit(func)
             }
             return func
-        }).call(this)
+        }
 
         process: nodepty.IPty
         clientSession: EditorSession
@@ -213,6 +213,7 @@ int main() {
                  this.process = nodepty.spawn("docker", ["exec", '-it', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],
                 {
                     // cwd: './clientFiles'
+                    handleFlowControl: true,
                 })
                 // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
                 console.log('Spawned debug process with id', this.process.pid)

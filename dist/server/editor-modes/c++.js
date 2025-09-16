@@ -187,13 +187,13 @@ class CPPDebugger extends ProcessTypes_1.default {
             clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "end", code }); // Send GDB output to the client
         });
     };
-    addListener = (function (ev, func) {
+    addListener = function (ev, func) {
         switch (ev) {
             case 'close':
                 this.process.onExit(func);
         }
         return func;
-    }).call(this);
+    };
     process;
     clientSession;
     dataListeners = new Map();
@@ -203,7 +203,8 @@ class CPPDebugger extends ProcessTypes_1.default {
         if (!nodepty)
             throw 'invalid pty module';
         this.process = nodepty.spawn("docker", ["exec", '-it', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {
-        // cwd: './clientFiles'
+            // cwd: './clientFiles'
+            handleFlowControl: true,
         });
         // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
