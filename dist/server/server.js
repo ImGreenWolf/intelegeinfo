@@ -73,7 +73,7 @@ const courses_1 = __importDefault(require("./views/courses"));
 const challangesManager_1 = __importDefault(require("./challanges/challangesManager"));
 const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
-const node_pty_1 = __importDefault(require("node-pty"));
+const nodepty = __importStar(require("node-pty"));
 const crypto_1 = __importDefault(require("crypto"));
 const EditorModes = __importStar(require("./editor-modes/"));
 const metrics_1 = __importStar(require("./metrics"));
@@ -1310,7 +1310,7 @@ bash `.trim().replaceAll('\n', "");
                     console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                     console.log(runCommand);
                     // Return the child process for external handling
-                    const childProcess = node_pty_1.default.spawn('docker', runCommand, {});
+                    const childProcess = nodepty.spawn('docker', runCommand, {});
                     clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode };
                     // childProcess.?.on("spawn", () => {
                     console.log("Docker container spawned");
