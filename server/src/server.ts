@@ -36,7 +36,7 @@ import  challanges  from './challanges/challangesManager'
 import { router as usersManager } from './usersManager'
 import GuideCreator from "./guideCreator"
 import { privateKey } from "./login.js";
-import pty from 'node-pty'
+import nodepty from 'node-pty'
 
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
@@ -1651,7 +1651,7 @@ bash `.trim().replaceAll('\n', "")
   console.log(runCommand)
 
   // Return the child process for external handling
-    const childProcess = pty.spawn('docker', runCommand, {});
+    const childProcess = nodepty.spawn('docker', runCommand, {});
     clientSession.sessionContainer = {process: childProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
 
     // childProcess.?.on("spawn", () => {
