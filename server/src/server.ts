@@ -1666,7 +1666,13 @@ clientSession.currentbuildTag,
   console.log(runCommand)
 
   // Return the child process for external handling
-    const childProcess = nodepty.spawn('docker', cmdArgs, {});
+    const childProcess = nodepty.spawn('docker', cmdArgs, {
+        name: "xterm-color",
+        cols: 80,
+        rows: 30,
+        cwd: process.cwd(),
+        env: process.env
+    });
     clientSession.sessionContainer = {process: childProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
 
     // childProcess.?.on("spawn", () => {
@@ -1683,7 +1689,7 @@ clientSession.currentbuildTag,
             }
                 
             resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-        }, 1000);        
+        }, 3000);        
     // })
 
     

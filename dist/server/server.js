@@ -1324,7 +1324,13 @@ bash `.trim().replaceAll('\n', "");
                     console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                     console.log(runCommand);
                     // Return the child process for external handling
-                    const childProcess = nodepty.spawn('docker', runCommand.split(' '), {});
+                    const childProcess = nodepty.spawn('docker', cmdArgs, {
+                        name: "xterm-color",
+                        cols: 80,
+                        rows: 30,
+                        cwd: process.cwd(),
+                        env: process.env
+                    });
                     clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode };
                     // childProcess.?.on("spawn", () => {
                     console.log("Docker container spawned");
