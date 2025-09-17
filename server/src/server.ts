@@ -1668,7 +1668,7 @@ bash `.trim().replaceAll('\n', "")
             }
                 
             resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-        }, 100);        
+        }, 1000);        
     // })
 
     
