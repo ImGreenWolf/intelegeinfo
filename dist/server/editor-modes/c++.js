@@ -223,7 +223,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         let loaded = false;
         this.inputTerminal.onData((data) => {
             if (loaded)
-                if (data.includes('to set controlling terminal') || (data.includes('not found') && data.includes('bash')))
+                if (data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
                     return;
                 else
                     return clientSession.replicateFunction((clientWs, id, clientObj) => {
