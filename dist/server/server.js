@@ -1294,7 +1294,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFile[0].name, clientObj.openFile);
                     if (clientSession.sessionContainer)
                         (0, child_process_2.execSync)('rm -f ' + clientSession.sessionContainer.imageName);
-                    const runCommand = `docker run \
+                    const runCommand = `run \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
