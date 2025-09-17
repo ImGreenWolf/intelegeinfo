@@ -1651,7 +1651,7 @@ bash `.trim().replaceAll('\n', "")
   console.log(runCommand)
 
   // Return the child process for external handling
-    const childProcess = nodepty.spawn('docker', runCommand, {});
+    const childProcess = nodepty.spawn('docker', runCommand.split(' '), {});
     clientSession.sessionContainer = {process: childProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
 
     // childProcess.?.on("spawn", () => {
