@@ -1343,7 +1343,7 @@ bash `.trim().replaceAll('\n', "");
                             clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj);
                         }
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-                    }, 1000);
+                    }, 3000);
                     // })
                     // childProcess.stdout.on('data', data => {
                     //     // console.log("CONTAINER ID:" + data.toString())
@@ -1351,6 +1351,7 @@ bash `.trim().replaceAll('\n', "");
                     //     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
                     // })
                     childProcess.onData(e => {
+                        console.log(e);
                         replicateFunction((ws, client, obj) => obj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: e.toString() }));
                     });
                     // childProcess.stderr.on('data', data => {

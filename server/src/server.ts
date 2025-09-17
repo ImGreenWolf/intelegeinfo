@@ -1700,6 +1700,7 @@ clientSession.currentbuildTag,
     //     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
     // })
     childProcess.onData(e => {
+        console.log(e)
         replicateFunction((ws, client, obj) =>  obj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: e.toString()}))
     })
     // childProcess.stderr.on('data', data => {
