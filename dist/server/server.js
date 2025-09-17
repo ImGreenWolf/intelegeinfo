@@ -1306,6 +1306,20 @@ ${process.env.DISABLE_CONTAINER_LIMITS == 'false' ? `-m ${256 * parseInt(process
 ${clientObj.openFile[0].editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
 bash `.trim().replaceAll('\n', "");
+                    const cmdArgs = [
+                        `run`,
+                        `--name ${imageName}`,
+                        `-v "${sessionFolder}:/app" `,
+                        `-w /app`,
+                        process.env.DISABLE_CONTAINER_LIMITS == 'false' ? `-m ${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB \
+--cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")}` : '',
+                        `-a stdin -a stdout`,
+                        `-it`,
+                        `--rm`,
+                        clientObj.openFile[0].editorMode.runParams(clientObj),
+                        clientSession.currentbuildTag,
+                        `bash `
+                    ];
                     //  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
                     console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                     console.log(runCommand);
