@@ -7,6 +7,7 @@ import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import fs, { WatchEventType } from 'fs';
 import { WebSocketMessage } from "../../shared/src/messageTypes";
+import pty from 'node-pty';
 export declare class ClientObject {
     sessionId: UUID;
     clientId: UUID;
@@ -68,7 +69,7 @@ export declare class EditorSession {
     brainrotNames: string[];
     currentbuildTag: string;
     sessionContainer: {
-        process: ChildProcess;
+        process: pty.IPty;
         imageName: string;
         fileName: string;
         editorMode: EditorMode;

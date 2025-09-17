@@ -28,7 +28,7 @@ declare const sha256: any
 import modelist from "ace-builds/src-noconflict/ext-modelist";
 import { Project } from "../../generated/prisma"
 import { HandshakeMessage, WebSocketMessage } from "../../shared/src/messageTypes"
-import { createWindowTab, cursorManagers, EditorWindow, EditorWindowTab, findTabByName, showDefaultScreen, TerminalTab, updateCatalouge } from "./windowManager.js";
+import { createWindowTab, cursorManagers, EditorWindow, EditorWindowTab, findTabByName, showDefaultScreen, updateCatalouge } from "./windowManager.js";
 
 const AceRange = ace.require("ace/range").Range;
 const aceModes: typeof modelist = ace.require("ace/ext/modelist");
@@ -3061,6 +3061,7 @@ export class TokenTooltip extends Tooltip {
 
 import { IIWebRTC } from "./webrtcdemo.js";
 import { getCookie } from "./utils.js";
+import TerminalTab from "./terminal.js";
 
 
 

@@ -541,12 +541,12 @@ export class EditorWindowTab {
     }
 }
 const draggedIdName = 'dragged';
-export function updateCatalouge(sessionId, clientId) {
+export async function updateCatalouge(sessionId, clientId) {
     const tabs = [
         createWindowTab('Subiecte', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/subiecte' }] })),
         createWindowTab('Pbinfo', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://www.pbinfo.ro/' }, { name: 'allow', value: "encrypted-media" }] })),
         createIframeTab('/pages/problems.html?sessionId=' + sessionId + '&clientId=' + clientId, "Probleme"),
-        new TerminalTab(),
+        new (await import('./terminal.js')).default,
     ];
     fetch('/user/jwt').then(async (loggedin) => {
         if (loggedin.ok && (await loggedin.json()).role == 'ADMIN') // TODO check if user is admin
@@ -586,7 +586,7 @@ export function createIframeTab(url, name) {
     };
     return tab;
 }
-function createTabElement(name) {
+export function createTabElement(name) {
     return createNode('span', { className: "file-tab", html: [createNode('p', { innerText: name })] });
 }
 export function createWindowTab(name, content, disableDrag) {
@@ -901,68 +901,6 @@ class TokenTooltip extends Tooltip {
         delete this.editor.tokenTooltip;
     }
     ;
-}
-export class TerminalTab extends EditorWindowTab {
-    terminal;
-    prompt = "$ ";
-    constructor() {
-        const terminalElem = createNode('div', { className: 'terminal' });
-        let terminal = ace.edit(terminalElem, {
-            showGutter: false,
-            enableBasicAutocompletion: false,
-            displayIndentGuides: false,
-            fontSize: 16,
-            showLineNumbers: false,
-            highlightActiveLine: false,
-            showPrintMargin: false,
-            wrap: true,
-            theme: 'ace/theme/terminal'
-        });
-        terminal.setShowPrintMargin(false);
-        terminal.renderer.setShowGutter(false);
-        super('Terminal', createTabElement('Terminal'), terminalElem);
-        terminal.setValue(this.prompt, -1); // set prompt and move cursor to end
-        this.terminal = terminal;
-        const prompt = this.prompt;
-        // Intercept Enter key to run command
-        terminal.commands.addCommand({
-            name: "runTerminalCommand",
-            bindKey: { win: "Enter", mac: "Enter" },
-            exec: function (editor) {
-                const lines = editor.session.getDocument().getAllLines();
-                const lastLine = lines[lines.length - 1];
-                const command = lastLine.slice(prompt.length).trim();
-                // runCommand(command);
-                if (!command)
-                    return;
-                ws.send(JSON.stringify({ type: WebSocketMessageType.Console, action: 'container', body: command }));
-            }
-        });
-        // Prevent backspacing the prompt
-        terminal.commands.addCommand({
-            name: "preventBackspacePrompt",
-            bindKey: { win: "Backspace", mac: "Backspace" },
-            exec: function (editor) {
-                const pos = editor.getCursorPosition();
-                const line = editor.session.getLine(pos.row);
-                if (pos.column <= prompt.length)
-                    return;
-                editor.remove("left");
-            }
-        });
-        // Prevent editing previous lines
-        terminal.on("change", function (delta) {
-            const lines = terminal.session.getDocument().getAllLines();
-            const lastLine = lines[lines.length - 1];
-            const cursor = terminal.getCursorPosition();
-            if (cursor.row < lines.length - 1 || cursor.column < prompt.length) {
-                terminal.gotoLine(lines.length, prompt.length);
-            }
-        });
-    }
-    write(data) {
-        this.terminal.session.insert({ row: this.terminal.session.getLength() + 1, column: 0 }, "\n" + data + "\n" + this.prompt);
-    }
 }
 export function findTabByName(name) {
     let found;

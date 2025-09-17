@@ -8,11 +8,14 @@
       "rootDir": "src",
       "strict": true,
       "esModuleInterop": true,
-      "moduleResolution": "node",
+      "moduleResolution": "node10",
       "skipLibCheck": true,
       "noImplicitAny": false,
-      "baseUrl": "/dist/public/"
-
+      "baseUrl": "/dist/public/",
+      "paths": {
+        "client/modules/*": ["./../../node_modules/*"],
+        "client/modules/xterm": ["./../../node_modules/@xterm/xterm/src/browser/Index.d.ts"]
+      }
     },
     "include": ["src"],
     "references": [

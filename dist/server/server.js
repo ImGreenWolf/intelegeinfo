@@ -73,6 +73,7 @@ const courses_1 = __importDefault(require("./views/courses"));
 const challangesManager_1 = __importDefault(require("./challanges/challangesManager"));
 const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
+const node_pty_1 = __importDefault(require("node-pty"));
 const crypto_1 = __importDefault(require("crypto"));
 const EditorModes = __importStar(require("./editor-modes/"));
 const metrics_1 = __importStar(require("./metrics"));
@@ -130,6 +131,7 @@ app.post('/github/onpull', (req, res) => {
     }
 });
 app.use('/client/scripts', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public')));
+app.use('/client/modules', express_1.default.static(path_1.default.join(exports.rootDirName, 'node_modules')));
 app.use('/editor/codeEditor.js', express_1.default.static(path_1.default.join(exports.rootDirName, 'dist', 'public', 'codeEditor.js')));
 app.use('/editor/components.js', (req, res) => {
     try {
@@ -1291,7 +1293,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     const hasGUI = clientObj.openFile[0].name.toLowerCase().includes("gui");
                     console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFile[0].name, clientObj.openFile);
                     if (clientSession.sessionContainer)
-                        (0, child_process_2.execSync)('docker rm -f ' + clientSession.sessionContainer.imageName);
+                        (0, child_process_2.execSync)('rm -f ' + clientSession.sessionContainer.imageName);
                     const runCommand = `docker run \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
@@ -1299,7 +1301,7 @@ exports.wss.addListener('connection', async (ws, req) => {
 ${process.env.DISABLE_CONTAINER_LIMITS == 'false' ? `-m ${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB \
 --cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")}` : ''} \
 -a stdin -a stdout \
--i \
+-it \
 --rm \
 ${clientObj.openFile[0].editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
@@ -1308,31 +1310,34 @@ bash `.trim().replaceAll('\n', "");
                     console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                     console.log(runCommand);
                     // Return the child process for external handling
-                    const childProcess = (0, child_process_1.spawn)(runCommand, { shell: true, stdio: 'pipe' });
+                    const childProcess = node_pty_1.default.spawn('docker', runCommand, {});
                     clientSession.sessionContainer = { process: childProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode };
-                    childProcess?.on("spawn", () => {
-                        console.log("Docker container spawned");
-                        setTimeout(async () => {
-                            // TODO Spawn GUI on client 
-                            //   TODO maybe remove ignore self client to show when its ready and compiling
-                            replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'container-spawn' }, types_1.WebSocketMessageType.ExecuteStatus));
-                            if (hasGUI && clientSession.displayServer == 0) // doesnt have display server
-                             {
-                                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj);
-                            }
-                            resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-                        }, 1000);
+                    // childProcess.?.on("spawn", () => {
+                    console.log("Docker container spawned");
+                    setTimeout(async () => {
+                        // TODO Spawn GUI on client 
+                        //   TODO maybe remove ignore self client to show when its ready and compiling
+                        replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'container-spawn' }, types_1.WebSocketMessageType.ExecuteStatus));
+                        if (hasGUI && clientSession.displayServer == 0) // doesnt have display server
+                         {
+                            clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj);
+                        }
+                        resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
+                    }, 100);
+                    // })
+                    // childProcess.stdout.on('data', data => {
+                    //     // console.log("CONTAINER ID:" + data.toString())
+                    //     console.log(data.toString())
+                    //     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
+                    // })
+                    childProcess.onData(e => {
+                        replicateFunction((ws, client, obj) => obj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: e.toString() }));
                     });
-                    childProcess.stdout.on('data', data => {
-                        // console.log("CONTAINER ID:" + data.toString())
-                        console.log(data.toString());
-                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: data.toString() });
-                    });
-                    childProcess.stderr.on('data', data => {
-                        console.log('[Docker Container Error]' + data.toString());
-                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: 'container', body: data.toString() });
-                        // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
-                    });
+                    // childProcess.stderr.on('data', data => {
+                    //     console.log('[Docker Container Error]' + data.toString())
+                    //     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
+                    //     // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
+                    // })
                 }).catch(err => [
                     console.error(err)
                 ]);
@@ -1758,7 +1763,7 @@ bash `.trim().replaceAll('\n', "");
                                 }
                                 if (!messageJSON.body)
                                     console.error('invalid body');
-                                clientSession.sessionContainer.process.stdin.write(messageJSON.body + '\n');
+                                clientSession.sessionContainer.process.write(messageJSON.body);
                         }
                         break;
                     case types_1.WebSocketMessageType.Chat:

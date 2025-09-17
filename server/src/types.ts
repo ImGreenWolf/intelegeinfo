@@ -14,7 +14,7 @@ import path from 'path';
 import { rootDirName } from './server';
 import { WebSocketMessage } from "../../shared/src/messageTypes"
 import { sha256, sha224 } from 'js-sha256';
-
+import pty from 'node-pty'
 
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
@@ -140,7 +140,7 @@ export class EditorSession {
     msgMap: Map<number, WSMessage> = new Map();
     brainrotNames: string[];
     currentbuildTag = '';
-    sessionContainer: {process: ChildProcess, imageName: string, fileName: string, editorMode: EditorMode};
+    sessionContainer: {process:  pty.IPty, imageName: string, fileName: string, editorMode: EditorMode};
     gdbProcess: DebugProcess | undefined;
     program: ChildProcess | undefined;
     displayServer: number = 0;

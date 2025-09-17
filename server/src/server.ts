@@ -105,6 +105,7 @@ app.post('/github/onpull', (req, res) => {
 
 
 app.use('/client/scripts',express.static(path.join(rootDirName, 'dist', 'public')));
+app.use('/client/modules',express.static(path.join(rootDirName, 'node_modules')));
 
 app.use('/editor/codeEditor.js', express.static(path.join(rootDirName,'dist', 'public', 'codeEditor.js')))
 app.use('/editor/components.js', 
@@ -1627,7 +1628,7 @@ console.log('Skipping build stage.')
 const hasGUI = clientObj.openFile[0].name.toLowerCase().includes("gui")
 console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFile[0].name, clientObj.openFile)
 if(clientSession.sessionContainer)
-    execSync('docker rm -f ' + clientSession.sessionContainer.imageName)
+    execSync('rm -f ' + clientSession.sessionContainer.imageName)
 const runCommand = 
 `docker run \
 --name ${imageName} \
@@ -1636,7 +1637,7 @@ const runCommand =
 ${process.env.DISABLE_CONTAINER_LIMITS == 'false' ? `-m ${256*parseInt(process.env.CONT_MEM_MUlTI||"1")}MB \
 --cpus=${0.25*parseInt(process.env.CONT_MEM_MUlTI||"1")}` : ''} \
 -a stdin -a stdout \
--i \
+-it \
 --rm \
 ${clientObj.openFile[0].editorMode.runParams(clientObj)} \
 ${clientSession.currentbuildTag} \
@@ -1650,10 +1651,10 @@ bash `.trim().replaceAll('\n', "")
   console.log(runCommand)
 
   // Return the child process for external handling
-    const childProcess = spawn(runCommand, { shell: true, stdio: 'pipe'});
-    clientSession.sessionContainer = {process: childProcess as ChildProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
+    const childProcess = pty.spawn('docker', runCommand, {});
+    clientSession.sessionContainer = {process: childProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
 
-    childProcess?.on("spawn", () => {
+    // childProcess.?.on("spawn", () => {
         console.log("Docker container spawned") 
         setTimeout(async () => {
                     // TODO Spawn GUI on client 
@@ -1667,20 +1668,24 @@ bash `.trim().replaceAll('\n', "")
             }
                 
             resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-        }, 1000);        
-    })
+        }, 100);        
+    // })
+
     
-    childProcess.stdout.on('data', data => {
-        // console.log("CONTAINER ID:" + data.toString())
-        console.log(data.toString())
-        clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
-    })
     
-    childProcess.stderr.on('data', data => {
-        console.log('[Docker Container Error]' + data.toString())
-        clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
-        // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
+    // childProcess.stdout.on('data', data => {
+    //     // console.log("CONTAINER ID:" + data.toString())
+    //     console.log(data.toString())
+    //     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
+    // })
+    childProcess.onData(e => {
+        replicateFunction((ws, client, obj) =>  obj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: e.toString()}))
     })
+    // childProcess.stderr.on('data', data => {
+    //     console.log('[Docker Container Error]' + data.toString())
+    //     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
+    //     // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
+    // })
 
 
 }).catch(err => [
@@ -2182,7 +2187,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 }
                             if(!messageJSON.body)
                                 console.error('invalid body')
-                            clientSession.sessionContainer.process.stdin.write((messageJSON.body as string)+'\n')
+                            clientSession.sessionContainer.process.write(messageJSON.body as string)
                                
                     }
                      

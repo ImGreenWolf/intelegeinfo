@@ -31,8 +31,9 @@ export declare class EditorWindowTab {
     onOpenTab(elem: any): void;
     remove(): void;
 }
-export declare function updateCatalouge(sessionId: any, clientId: any): void;
+export declare function updateCatalouge(sessionId: any, clientId: any): Promise<void>;
 export declare function createIframeTab(url: string, name: any): EditorWindowTab;
+export declare function createTabElement(name: any): HTMLSpanElement;
 export declare function createWindowTab(name: any, content: any, disableDrag?: any): EditorWindowTab;
 export declare function showDefaultScreen(): Promise<void>;
 declare var Tooltip: any;
@@ -45,12 +46,6 @@ declare class TokenTooltip extends Tooltip {
     onMouseOut(e: any): void;
     setPosition(x: any, y: any): void;
     destroy(): void;
-}
-export declare class TerminalTab extends EditorWindowTab {
-    terminal: Ace.Editor;
-    prompt: string;
-    constructor();
-    write(data: string): void;
 }
 export declare function findTabByName(name: any): EditorWindowTab;
 export declare class TreeSitterCompleter {
