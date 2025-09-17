@@ -1630,7 +1630,7 @@ console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFile[0].name
 if(clientSession.sessionContainer)
     execSync('rm -f ' + clientSession.sessionContainer.imageName)
 const runCommand = 
-`docker run \
+`run \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
 -w /app \
