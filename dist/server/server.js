@@ -278,27 +278,26 @@ app.post('/editor/startsession/:id', (req, res) => {
     try {
         const id = req.params.id;
         if (!req.body && !id)
-            res.status(501);
+            throw 'invalid input';
         if (exports.sessionMap.has(id)) {
             const { chat, codePermission, voice, sandbox, externals, anonymous, language } = req.body;
-            exports.sessionMap.get(id).makeSessionPublic({ enableChat: checkboxValue(chat),
+            const session = exports.sessionMap.get(id);
+            session.makeSessionPublic({ enableChat: checkboxValue(chat),
                 editorPermission: codePermission,
                 enableVoice: checkboxValue(voice),
                 sandboxUsers: checkboxValue(sandbox),
                 externalLinks: checkboxValue(externals),
                 anonymousNames: checkboxValue(anonymous),
                 allowedLanguage: EditorModes.modes.find(mode => mode.name == language) });
-            if (exports.sessionMap.get(id).isPublic) {
-                res.status(200);
+            if (session.isPublic) {
+                res.status(200).send(session.joinCode);
                 return;
             }
-            res.status(201).send('');
+            res.status(201).send(session.joinCode);
             return;
         }
-        else {
-            res.status(500);
-            return;
-        }
+        else
+            throw '';
     }
     catch (err) {
         res.status(500).send(err);

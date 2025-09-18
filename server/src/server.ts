@@ -296,12 +296,12 @@ function checkboxValue(checkbox)
 app.post('/editor/startsession/:id', (req, res) => {
     try{
         const id: UUID = req.params.id as UUID;
-        if(!req.body && !id) res.status(501)
+        if(!req.body && !id) throw 'invalid input';
         if(sessionMap.has(id))
         {
             const { chat, codePermission, voice, sandbox, externals, anonymous, language } = req.body
-
-            sessionMap.get(id).makeSessionPublic({enableChat: checkboxValue(chat), 
+            const session = sessionMap.get(id)
+            session.makeSessionPublic({enableChat: checkboxValue(chat), 
                 editorPermission: codePermission as EditorPermission,
                 enableVoice: checkboxValue(voice),
                 sandboxUsers: checkboxValue(sandbox),
@@ -310,18 +310,15 @@ app.post('/editor/startsession/:id', (req, res) => {
                 allowedLanguage: EditorModes.modes.find(mode => mode.name == language)
             })
 
-            if(sessionMap.get(id).isPublic)
+            if(session.isPublic)
             {
-                res.status(200)
+                res.status(200).send(session.joinCode)
                 return;
             }
-            res.status(201).send('')
+            res.status(201).send(session.joinCode)
             return
         }
-        else {
-            res.status(500)
-            return;
-        }
+        else throw ''
     }
     catch(err)
     {

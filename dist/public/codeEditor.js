@@ -1941,9 +1941,9 @@ export function copySessionLink() {
         onOpenMenu("share");
         // shareContainer.animate()
     };
-    document.getElementById('createSessionForm').onsubmit = function (ev) {
-        ev.preventDefault();
-    };
+    //  document.getElementById('createSessionForm')!.onsubmit =  function (this, ev) {
+    //       ev.preventDefault()
+    //  }
     if (session) {
         document.getElementById('connect-data-container')?.classList.add('created');
         document.getElementById('data.code').innerText = session.code;
@@ -1959,38 +1959,7 @@ export function copySessionLink() {
             document.getElementById('data.code').innerText = data.code;
             document.getElementById('data.qrurl').src = data.qrsvg;
             gtag('event', 'session_share', {});
-            // const shareContainer = document.createElement('div')
-            // shareContainer.classList.add('share-container');
-            // shareContainer.innerHTML =
-            // `
-            // <form id="createSessionForm" action="/editor/startsession/${wsSessionId}" method="POST">
-            //   <button id='close-share-session'>x</button>
-            //   <label for="chat">Enable Chat <input type="checkbox" name="chat" checked></label>
-            //   <label for="code-permission">Editor Permission 
-            //       <select id='code-permission' name='codePermission'>
-            //         <option value='0'>Everyone</option>
-            //         <option value='2'>Only host</option>
-            //         <option value='1'>Require Permission</option>
-            //       </select>
-            //   </label>
-            //   <button type="submit" id="submit-create-session">Create Session</button>
-            // </form>
-            // <div id='connect-data-container'>
-            //   <div id='connect-data-inner'>
-            //     <img src="${data.qrsvg}">
-            //     <p>or</p>
-            //     <div class='connect-info'>
-            //       <p class='code'>${data.code}</p><button id='copy-link'>copy</button>
-            //     </div>
-            //   </div>
-            // </div>
-            // `
-            // document.body.appendChild(shareContainer)
-            // document.getElementById('close-share-session')!.onclick = function (this, ev) {
-            //   shareContainer.remove();
-            //   // shareContainer.animate()
-            // }
-            document.getElementById('createSessionForm').onsubmit = function (ev) {
+            document.getElementById('createSessionForm').onsubmit = async function (ev) {
                 ev.preventDefault();
                 const formData = new FormData(ev.target);
                 try {
@@ -2000,24 +1969,21 @@ export function copySessionLink() {
                     if (!wsSessionId)
                         throw "Invalid session id.";
                     const startedSessionId = wsSessionId;
-                    fetch('/editor/startsession/' + wsSessionId, {
+                    await fetch('/editor/startsession/' + wsSessionId, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(entryData)
-                    }).then(res => {
-                        document.getElementById('connect-data-container')?.classList.add('created');
-                        const sessionCodeNode = document.createElement('h2');
-                        sessionCodeNode.innerText = data.code;
-                        sessionCodeNode.classList.add('session-code');
-                        if (DockElement)
-                            DockElement.getElementsByClassName('toolbar-container')[0].prepend(createNode('h2', { innerText: data.code, css: "font-size: 1em; align-self: center; margin-inline: 1em; color: gray; font-family: 'Poppins';" }));
-                        // document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'))
-                        // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
-                        if (!window.location.search.includes("session=") && startedSessionId != undefined)
-                            window.history.pushState({ page: "updated session info" }, "intelge info", window.location.search + (window.location.search ? "&" : "?") + "session=" + startedSessionId);
-                    }).catch(err => {
-                        throw err;
                     });
+                    document.getElementById('connect-data-container')?.classList.add('created');
+                    const sessionCodeNode = document.createElement('h2');
+                    sessionCodeNode.innerText = data.code;
+                    sessionCodeNode.classList.add('session-code');
+                    if (DockElement)
+                        DockElement.getElementsByClassName('toolbar-container')[0].prepend(createNode('h2', { innerText: data.code, css: "font-size: 1em; align-self: center; margin-inline: 1em; color: gray; font-family: 'Poppins';" }));
+                    // document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'))
+                    // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
+                    if (!window.location.search.includes("session=") && startedSessionId != undefined)
+                        window.history.pushState({ page: "updated session info" }, "intelge info", window.location.search + (window.location.search ? "&" : "?") + "session=" + startedSessionId);
                 }
                 catch (err) {
                     if (typeof err == "string")
