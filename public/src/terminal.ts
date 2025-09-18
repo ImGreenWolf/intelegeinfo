@@ -35,7 +35,7 @@ class TerminalTab extends EditorWindowTab {
        
         super('Terminal', createTabElement('Terminal'), terminalElem)
 
-        this.terminal = new Terminal()
+        this.terminal = new Terminal({fontFamily: 'Poppins'})
         this.terminal.open(terminalElem)
         this.terminal.onData((arg1, arg2) => {
             ws.send(JSON.stringify({type: WebSocketMessageType.Console, action: 'container', body: arg1}))

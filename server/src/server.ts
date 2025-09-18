@@ -1706,7 +1706,7 @@ const cmdArgs = [
     // })
     childProcess.onData(e => {
         console.log(e)
-        replicateFunction((ws, client, obj) =>  obj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: e.toString()}))
+        replicateFunction((ws, client, obj) =>  obj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: e.toString() + '\n'}))
     })
     // childProcess.stderr.on('data', data => {
     //     console.log('[Docker Container Error]' + data.toString())
