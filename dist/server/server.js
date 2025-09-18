@@ -1348,7 +1348,7 @@ bash `.trim().replaceAll('\n', "");
                             clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj);
                         }
                         resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-                    }, 3000);
+                    }, 1000);
                     // })
                     // childProcess.stdout.on('data', data => {
                     //     // console.log("CONTAINER ID:" + data.toString())

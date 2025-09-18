@@ -1694,7 +1694,7 @@ const cmdArgs = [
             }
                 
             resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-        }, 3000);        
+        }, 1000);        
     // })
 
     
