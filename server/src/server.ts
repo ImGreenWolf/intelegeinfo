@@ -500,7 +500,7 @@ var httpsServer = https.createServer(credentials, app);
 if(fullchain && privkey)
     var httpServer = http.createServer(process.env.NODE_ENV == 'development' ? app : (req,res) => {
         res.statusCode = 301;
-        res.setHeader('Location', 'https://' + req.headers.host + '/' + req.url);
+        res.setHeader('Location', (req.headers.host == 'intelegeinfo.ro' ? 'http://' : 'https://') + req.headers.host + '/' + req.url);
         res.end();
         httpMeter.inc(1)
     });
