@@ -58,7 +58,51 @@ model User {
     CreatedClasses Class[] @relation(name: "ClassToCreator")
     Assigments Assignment[]
 
+    SentMessages Message[]  @relation(name: "SentMessages")
+    ReceivedMessages Message[]  @relation(name: "ReceivedMessages")
+
+    // Friendships where this user is the one who initiated
+    sentRequests FriendRelation[]    @relation("InitiatorRequests")
+
+    // Friendships where this user is the one who received
+    receivedRequests FriendRelation[] @relation("ReceiverRequests")
+
+    Friends FriendRelation[]
 }
+
+model FriendRelation {
+  id Int @id @default(autoincrement())
+  initiator    User    @relation("InitiatorRequests", fields: [initiatorId], references: [id])
+  initiatorId  Int
+
+  receiver     User    @relation("ReceiverRequests", fields: [receiverId], references: [id])
+  receiverId   Int
+  users User[]
+  accepted     Boolean @default(false)
+  createdDate  DateTime @default(now())
+  messages Message[]
+  @@unique([initiatorId, receiverId]) // composite PK, prevents duplicates
+	@@map("FriendRequest")
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+
+  from User @relation(name: "SentMessages", fields: [fromId], references: [id])
+  fromId Int
+
+  to User @relation(name: "ReceivedMessages", fields: [toId], references: [id])
+  toId Int
+
+  sendDate DateTime @default(now())
+
+  content String
+
+  FriendRelation FriendRelation @relation(fields: [relationId], references: [id])
+  relationId Int @default(1)
+
+}
+
 enum OccupationType {
   None
   Student

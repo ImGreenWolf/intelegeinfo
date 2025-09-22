@@ -15,7 +15,6 @@ const dbClient_1 = __importDefault(require("../dbClient"));
 const usersManager_1 = require("../usersManager");
 const types_1 = require("../types");
 const prisma_1 = require("../../../generated/prisma");
-const sqids_1 = __importDefault(require("sqids"));
 const htmlPath = path_1.default.join(server_1.rootDirName, 'server', 'src', 'classManager', 'html');
 router.get('/', async (req, res) => {
     const classPath = path_1.default.join(htmlPath, 'index.html');
@@ -287,13 +286,9 @@ router.get('/join', async (req, res) => {
         res.redirect('/classes');
     }
 });
-const sqid = new sqids_1.default({
-    alphabet: 'abcdefghijklmnopqrstuvwxyz',
-    minLength: 6
-});
 router.post('/join', async (req, res) => {
     const { code: encodedId } = req.body;
-    const id = sqid.decode(encodedId)[0];
+    const id = server_1.sqid.decode(encodedId)[0];
     const userId = (0, usersManager_1.getIdFromJWT)(req);
     try {
         if (!userId)
@@ -312,7 +307,7 @@ router.post('/join', async (req, res) => {
                 }
             }
         });
-        res.redirect('/classes/' + sqid.encode([joinedClass.id]));
+        res.redirect('/classes/' + server_1.sqid.encode([joinedClass.id]));
     }
     catch (error) {
         res.status(error.code.startsWith('P') || !error.code ? 500 : error.code).send(handlePrismaError(error));

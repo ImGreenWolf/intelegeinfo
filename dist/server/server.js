@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.tokenCookieName = exports.rootDirName = void 0;
+exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.tokenCookieName = exports.sqid = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
 exports.newWSS = newWSS;
 exports.sendFile = sendFile;
@@ -52,6 +52,7 @@ const types_2 = require("./types");
 const qrcode = __importStar(require("qrcode"));
 const archiver_1 = __importDefault(require("archiver"));
 exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
+const sqids_1 = __importDefault(require("sqids"));
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -60,6 +61,10 @@ exports.rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\inteleg
 const app = (0, express_1.default)();
 const compression = require('compression');
 var websocketReg = new Map();
+exports.sqid = new sqids_1.default({
+    alphabet: 'abcdefghijklmnopqrstuvwxyz',
+    minLength: 6
+});
 exports.tokenCookieName = 'iiauthtoken';
 const sessionStore_1 = __importDefault(require("./sessionStore"));
 const dbClient_1 = __importDefault(require("./dbClient"));
@@ -411,7 +416,7 @@ if (process.env.NODE_ENV == 'development')
 let httpMeter = tx2_1.default.counter('http connections');
 var httpsServer = https.createServer(credentials, app);
 if (fullchain && privkey)
-    var httpServer = http.createServer(process.env.NODE_ENV == 'production' ? app : (req, res) => {
+    var httpServer = http.createServer(process.env.NODE_ENV != 'production' ? app : (req, res) => {
         res.statusCode = 301;
         res.setHeader('Location', 'https://' + req.headers.host + req.url);
         res.end();

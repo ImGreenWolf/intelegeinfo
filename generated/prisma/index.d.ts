@@ -24,6 +24,16 @@ export type Project = $Result.DefaultSelection<Prisma.$ProjectPayload>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model FriendRelation
+ * 
+ */
+export type FriendRelation = $Result.DefaultSelection<Prisma.$FriendRelationPayload>
+/**
+ * Model Message
+ * 
+ */
+export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
+/**
  * Model Code
  * 
  */
@@ -306,6 +316,26 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.friendRelation`: Exposes CRUD operations for the **FriendRelation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FriendRelations
+    * const friendRelations = await prisma.friendRelation.findMany()
+    * ```
+    */
+  get friendRelation(): Prisma.FriendRelationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.message`: Exposes CRUD operations for the **Message** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Messages
+    * const messages = await prisma.message.findMany()
+    * ```
+    */
+  get message(): Prisma.MessageDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.code`: Exposes CRUD operations for the **Code** model.
@@ -908,6 +938,8 @@ export namespace Prisma {
   export const ModelName: {
     Project: 'Project',
     User: 'User',
+    FriendRelation: 'FriendRelation',
+    Message: 'Message',
     Code: 'Code',
     RefreshToken: 'RefreshToken',
     Guide: 'Guide',
@@ -942,7 +974,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "project" | "user" | "code" | "refreshToken" | "guide" | "tag" | "guideTag" | "problemTag" | "problem" | "solve" | "course" | "inquiry" | "review" | "upload" | "feedback" | "class" | "studentsInCourse" | "assignment"
+      modelProps: "project" | "user" | "friendRelation" | "message" | "code" | "refreshToken" | "guide" | "tag" | "guideTag" | "problemTag" | "problem" | "solve" | "course" | "inquiry" | "review" | "upload" | "feedback" | "class" | "studentsInCourse" | "assignment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1091,6 +1123,154 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      FriendRelation: {
+        payload: Prisma.$FriendRelationPayload<ExtArgs>
+        fields: Prisma.FriendRelationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FriendRelationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FriendRelationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>
+          }
+          findFirst: {
+            args: Prisma.FriendRelationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FriendRelationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>
+          }
+          findMany: {
+            args: Prisma.FriendRelationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>[]
+          }
+          create: {
+            args: Prisma.FriendRelationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>
+          }
+          createMany: {
+            args: Prisma.FriendRelationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FriendRelationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>[]
+          }
+          delete: {
+            args: Prisma.FriendRelationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>
+          }
+          update: {
+            args: Prisma.FriendRelationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>
+          }
+          deleteMany: {
+            args: Prisma.FriendRelationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FriendRelationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FriendRelationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>[]
+          }
+          upsert: {
+            args: Prisma.FriendRelationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FriendRelationPayload>
+          }
+          aggregate: {
+            args: Prisma.FriendRelationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFriendRelation>
+          }
+          groupBy: {
+            args: Prisma.FriendRelationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FriendRelationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FriendRelationCountArgs<ExtArgs>
+            result: $Utils.Optional<FriendRelationCountAggregateOutputType> | number
+          }
+        }
+      }
+      Message: {
+        payload: Prisma.$MessagePayload<ExtArgs>
+        fields: Prisma.MessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+          }
+          findFirst: {
+            args: Prisma.MessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+          }
+          findMany: {
+            args: Prisma.MessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>[]
+          }
+          create: {
+            args: Prisma.MessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+          }
+          createMany: {
+            args: Prisma.MessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>[]
+          }
+          delete: {
+            args: Prisma.MessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+          }
+          update: {
+            args: Prisma.MessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.MessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MessageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>[]
+          }
+          upsert: {
+            args: Prisma.MessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessagePayload>
+          }
+          aggregate: {
+            args: Prisma.MessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMessage>
+          }
+          groupBy: {
+            args: Prisma.MessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MessageCountArgs<ExtArgs>
+            result: $Utils.Optional<MessageCountAggregateOutputType> | number
           }
         }
       }
@@ -2364,6 +2544,8 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     project?: ProjectOmit
     user?: UserOmit
+    friendRelation?: FriendRelationOmit
+    message?: MessageOmit
     code?: CodeOmit
     refreshToken?: RefreshTokenOmit
     guide?: GuideOmit
@@ -2485,6 +2667,11 @@ export namespace Prisma {
     JoinedClass: number
     CreatedClasses: number
     Assigments: number
+    SentMessages: number
+    ReceivedMessages: number
+    sentRequests: number
+    receivedRequests: number
+    Friends: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2499,6 +2686,11 @@ export namespace Prisma {
     JoinedClass?: boolean | UserCountOutputTypeCountJoinedClassArgs
     CreatedClasses?: boolean | UserCountOutputTypeCountCreatedClassesArgs
     Assigments?: boolean | UserCountOutputTypeCountAssigmentsArgs
+    SentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
+    ReceivedMessages?: boolean | UserCountOutputTypeCountReceivedMessagesArgs
+    sentRequests?: boolean | UserCountOutputTypeCountSentRequestsArgs
+    receivedRequests?: boolean | UserCountOutputTypeCountReceivedRequestsArgs
+    Friends?: boolean | UserCountOutputTypeCountFriendsArgs
   }
 
   // Custom InputTypes
@@ -2587,6 +2779,81 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAssigmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AssignmentWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSentMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReceivedMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FriendRelationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReceivedRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FriendRelationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountFriendsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FriendRelationWhereInput
+  }
+
+
+  /**
+   * Count Type FriendRelationCountOutputType
+   */
+
+  export type FriendRelationCountOutputType = {
+    users: number
+    messages: number
+  }
+
+  export type FriendRelationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | FriendRelationCountOutputTypeCountUsersArgs
+    messages?: boolean | FriendRelationCountOutputTypeCountMessagesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * FriendRelationCountOutputType without action
+   */
+  export type FriendRelationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelationCountOutputType
+     */
+    select?: FriendRelationCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * FriendRelationCountOutputType without action
+   */
+  export type FriendRelationCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
+  }
+
+  /**
+   * FriendRelationCountOutputType without action
+   */
+  export type FriendRelationCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageWhereInput
   }
 
 
@@ -4261,6 +4528,11 @@ export namespace Prisma {
     JoinedClass?: boolean | User$JoinedClassArgs<ExtArgs>
     CreatedClasses?: boolean | User$CreatedClassesArgs<ExtArgs>
     Assigments?: boolean | User$AssigmentsArgs<ExtArgs>
+    SentMessages?: boolean | User$SentMessagesArgs<ExtArgs>
+    ReceivedMessages?: boolean | User$ReceivedMessagesArgs<ExtArgs>
+    sentRequests?: boolean | User$sentRequestsArgs<ExtArgs>
+    receivedRequests?: boolean | User$receivedRequestsArgs<ExtArgs>
+    Friends?: boolean | User$FriendsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4338,6 +4610,11 @@ export namespace Prisma {
     JoinedClass?: boolean | User$JoinedClassArgs<ExtArgs>
     CreatedClasses?: boolean | User$CreatedClassesArgs<ExtArgs>
     Assigments?: boolean | User$AssigmentsArgs<ExtArgs>
+    SentMessages?: boolean | User$SentMessagesArgs<ExtArgs>
+    ReceivedMessages?: boolean | User$ReceivedMessagesArgs<ExtArgs>
+    sentRequests?: boolean | User$sentRequestsArgs<ExtArgs>
+    receivedRequests?: boolean | User$receivedRequestsArgs<ExtArgs>
+    Friends?: boolean | User$FriendsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4363,6 +4640,11 @@ export namespace Prisma {
       JoinedClass: Prisma.$StudentsInCoursePayload<ExtArgs>[]
       CreatedClasses: Prisma.$ClassPayload<ExtArgs>[]
       Assigments: Prisma.$AssignmentPayload<ExtArgs>[]
+      SentMessages: Prisma.$MessagePayload<ExtArgs>[]
+      ReceivedMessages: Prisma.$MessagePayload<ExtArgs>[]
+      sentRequests: Prisma.$FriendRelationPayload<ExtArgs>[]
+      receivedRequests: Prisma.$FriendRelationPayload<ExtArgs>[]
+      Friends: Prisma.$FriendRelationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -4788,6 +5070,11 @@ export namespace Prisma {
     JoinedClass<T extends User$JoinedClassArgs<ExtArgs> = {}>(args?: Subset<T, User$JoinedClassArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentsInCoursePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     CreatedClasses<T extends User$CreatedClassesArgs<ExtArgs> = {}>(args?: Subset<T, User$CreatedClassesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Assigments<T extends User$AssigmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$AssigmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    SentMessages<T extends User$SentMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$SentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ReceivedMessages<T extends User$ReceivedMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$ReceivedMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sentRequests<T extends User$sentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$sentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    receivedRequests<T extends User$receivedRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Friends<T extends User$FriendsArgs<ExtArgs> = {}>(args?: Subset<T, User$FriendsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5512,6 +5799,126 @@ export namespace Prisma {
   }
 
   /**
+   * User.SentMessages
+   */
+  export type User$SentMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    where?: MessageWhereInput
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    cursor?: MessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * User.ReceivedMessages
+   */
+  export type User$ReceivedMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    where?: MessageWhereInput
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    cursor?: MessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * User.sentRequests
+   */
+  export type User$sentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    where?: FriendRelationWhereInput
+    orderBy?: FriendRelationOrderByWithRelationInput | FriendRelationOrderByWithRelationInput[]
+    cursor?: FriendRelationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FriendRelationScalarFieldEnum | FriendRelationScalarFieldEnum[]
+  }
+
+  /**
+   * User.receivedRequests
+   */
+  export type User$receivedRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    where?: FriendRelationWhereInput
+    orderBy?: FriendRelationOrderByWithRelationInput | FriendRelationOrderByWithRelationInput[]
+    cursor?: FriendRelationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FriendRelationScalarFieldEnum | FriendRelationScalarFieldEnum[]
+  }
+
+  /**
+   * User.Friends
+   */
+  export type User$FriendsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    where?: FriendRelationWhereInput
+    orderBy?: FriendRelationOrderByWithRelationInput | FriendRelationOrderByWithRelationInput[]
+    cursor?: FriendRelationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FriendRelationScalarFieldEnum | FriendRelationScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5527,6 +5934,2305 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model FriendRelation
+   */
+
+  export type AggregateFriendRelation = {
+    _count: FriendRelationCountAggregateOutputType | null
+    _avg: FriendRelationAvgAggregateOutputType | null
+    _sum: FriendRelationSumAggregateOutputType | null
+    _min: FriendRelationMinAggregateOutputType | null
+    _max: FriendRelationMaxAggregateOutputType | null
+  }
+
+  export type FriendRelationAvgAggregateOutputType = {
+    id: number | null
+    initiatorId: number | null
+    receiverId: number | null
+  }
+
+  export type FriendRelationSumAggregateOutputType = {
+    id: number | null
+    initiatorId: number | null
+    receiverId: number | null
+  }
+
+  export type FriendRelationMinAggregateOutputType = {
+    id: number | null
+    initiatorId: number | null
+    receiverId: number | null
+    accepted: boolean | null
+    createdDate: Date | null
+  }
+
+  export type FriendRelationMaxAggregateOutputType = {
+    id: number | null
+    initiatorId: number | null
+    receiverId: number | null
+    accepted: boolean | null
+    createdDate: Date | null
+  }
+
+  export type FriendRelationCountAggregateOutputType = {
+    id: number
+    initiatorId: number
+    receiverId: number
+    accepted: number
+    createdDate: number
+    _all: number
+  }
+
+
+  export type FriendRelationAvgAggregateInputType = {
+    id?: true
+    initiatorId?: true
+    receiverId?: true
+  }
+
+  export type FriendRelationSumAggregateInputType = {
+    id?: true
+    initiatorId?: true
+    receiverId?: true
+  }
+
+  export type FriendRelationMinAggregateInputType = {
+    id?: true
+    initiatorId?: true
+    receiverId?: true
+    accepted?: true
+    createdDate?: true
+  }
+
+  export type FriendRelationMaxAggregateInputType = {
+    id?: true
+    initiatorId?: true
+    receiverId?: true
+    accepted?: true
+    createdDate?: true
+  }
+
+  export type FriendRelationCountAggregateInputType = {
+    id?: true
+    initiatorId?: true
+    receiverId?: true
+    accepted?: true
+    createdDate?: true
+    _all?: true
+  }
+
+  export type FriendRelationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FriendRelation to aggregate.
+     */
+    where?: FriendRelationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FriendRelations to fetch.
+     */
+    orderBy?: FriendRelationOrderByWithRelationInput | FriendRelationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FriendRelationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FriendRelations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FriendRelations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FriendRelations
+    **/
+    _count?: true | FriendRelationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FriendRelationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FriendRelationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FriendRelationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FriendRelationMaxAggregateInputType
+  }
+
+  export type GetFriendRelationAggregateType<T extends FriendRelationAggregateArgs> = {
+        [P in keyof T & keyof AggregateFriendRelation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFriendRelation[P]>
+      : GetScalarType<T[P], AggregateFriendRelation[P]>
+  }
+
+
+
+
+  export type FriendRelationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FriendRelationWhereInput
+    orderBy?: FriendRelationOrderByWithAggregationInput | FriendRelationOrderByWithAggregationInput[]
+    by: FriendRelationScalarFieldEnum[] | FriendRelationScalarFieldEnum
+    having?: FriendRelationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FriendRelationCountAggregateInputType | true
+    _avg?: FriendRelationAvgAggregateInputType
+    _sum?: FriendRelationSumAggregateInputType
+    _min?: FriendRelationMinAggregateInputType
+    _max?: FriendRelationMaxAggregateInputType
+  }
+
+  export type FriendRelationGroupByOutputType = {
+    id: number
+    initiatorId: number
+    receiverId: number
+    accepted: boolean
+    createdDate: Date
+    _count: FriendRelationCountAggregateOutputType | null
+    _avg: FriendRelationAvgAggregateOutputType | null
+    _sum: FriendRelationSumAggregateOutputType | null
+    _min: FriendRelationMinAggregateOutputType | null
+    _max: FriendRelationMaxAggregateOutputType | null
+  }
+
+  type GetFriendRelationGroupByPayload<T extends FriendRelationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FriendRelationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FriendRelationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FriendRelationGroupByOutputType[P]>
+            : GetScalarType<T[P], FriendRelationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FriendRelationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    initiatorId?: boolean
+    receiverId?: boolean
+    accepted?: boolean
+    createdDate?: boolean
+    initiator?: boolean | UserDefaultArgs<ExtArgs>
+    receiver?: boolean | UserDefaultArgs<ExtArgs>
+    users?: boolean | FriendRelation$usersArgs<ExtArgs>
+    messages?: boolean | FriendRelation$messagesArgs<ExtArgs>
+    _count?: boolean | FriendRelationCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["friendRelation"]>
+
+  export type FriendRelationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    initiatorId?: boolean
+    receiverId?: boolean
+    accepted?: boolean
+    createdDate?: boolean
+    initiator?: boolean | UserDefaultArgs<ExtArgs>
+    receiver?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["friendRelation"]>
+
+  export type FriendRelationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    initiatorId?: boolean
+    receiverId?: boolean
+    accepted?: boolean
+    createdDate?: boolean
+    initiator?: boolean | UserDefaultArgs<ExtArgs>
+    receiver?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["friendRelation"]>
+
+  export type FriendRelationSelectScalar = {
+    id?: boolean
+    initiatorId?: boolean
+    receiverId?: boolean
+    accepted?: boolean
+    createdDate?: boolean
+  }
+
+  export type FriendRelationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "initiatorId" | "receiverId" | "accepted" | "createdDate", ExtArgs["result"]["friendRelation"]>
+  export type FriendRelationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiator?: boolean | UserDefaultArgs<ExtArgs>
+    receiver?: boolean | UserDefaultArgs<ExtArgs>
+    users?: boolean | FriendRelation$usersArgs<ExtArgs>
+    messages?: boolean | FriendRelation$messagesArgs<ExtArgs>
+    _count?: boolean | FriendRelationCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type FriendRelationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiator?: boolean | UserDefaultArgs<ExtArgs>
+    receiver?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FriendRelationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiator?: boolean | UserDefaultArgs<ExtArgs>
+    receiver?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $FriendRelationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FriendRelation"
+    objects: {
+      initiator: Prisma.$UserPayload<ExtArgs>
+      receiver: Prisma.$UserPayload<ExtArgs>
+      users: Prisma.$UserPayload<ExtArgs>[]
+      messages: Prisma.$MessagePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      initiatorId: number
+      receiverId: number
+      accepted: boolean
+      createdDate: Date
+    }, ExtArgs["result"]["friendRelation"]>
+    composites: {}
+  }
+
+  type FriendRelationGetPayload<S extends boolean | null | undefined | FriendRelationDefaultArgs> = $Result.GetResult<Prisma.$FriendRelationPayload, S>
+
+  type FriendRelationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FriendRelationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FriendRelationCountAggregateInputType | true
+    }
+
+  export interface FriendRelationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FriendRelation'], meta: { name: 'FriendRelation' } }
+    /**
+     * Find zero or one FriendRelation that matches the filter.
+     * @param {FriendRelationFindUniqueArgs} args - Arguments to find a FriendRelation
+     * @example
+     * // Get one FriendRelation
+     * const friendRelation = await prisma.friendRelation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FriendRelationFindUniqueArgs>(args: SelectSubset<T, FriendRelationFindUniqueArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FriendRelation that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FriendRelationFindUniqueOrThrowArgs} args - Arguments to find a FriendRelation
+     * @example
+     * // Get one FriendRelation
+     * const friendRelation = await prisma.friendRelation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FriendRelationFindUniqueOrThrowArgs>(args: SelectSubset<T, FriendRelationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FriendRelation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FriendRelationFindFirstArgs} args - Arguments to find a FriendRelation
+     * @example
+     * // Get one FriendRelation
+     * const friendRelation = await prisma.friendRelation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FriendRelationFindFirstArgs>(args?: SelectSubset<T, FriendRelationFindFirstArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FriendRelation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FriendRelationFindFirstOrThrowArgs} args - Arguments to find a FriendRelation
+     * @example
+     * // Get one FriendRelation
+     * const friendRelation = await prisma.friendRelation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FriendRelationFindFirstOrThrowArgs>(args?: SelectSubset<T, FriendRelationFindFirstOrThrowArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FriendRelations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FriendRelationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FriendRelations
+     * const friendRelations = await prisma.friendRelation.findMany()
+     * 
+     * // Get first 10 FriendRelations
+     * const friendRelations = await prisma.friendRelation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const friendRelationWithIdOnly = await prisma.friendRelation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FriendRelationFindManyArgs>(args?: SelectSubset<T, FriendRelationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FriendRelation.
+     * @param {FriendRelationCreateArgs} args - Arguments to create a FriendRelation.
+     * @example
+     * // Create one FriendRelation
+     * const FriendRelation = await prisma.friendRelation.create({
+     *   data: {
+     *     // ... data to create a FriendRelation
+     *   }
+     * })
+     * 
+     */
+    create<T extends FriendRelationCreateArgs>(args: SelectSubset<T, FriendRelationCreateArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FriendRelations.
+     * @param {FriendRelationCreateManyArgs} args - Arguments to create many FriendRelations.
+     * @example
+     * // Create many FriendRelations
+     * const friendRelation = await prisma.friendRelation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FriendRelationCreateManyArgs>(args?: SelectSubset<T, FriendRelationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FriendRelations and returns the data saved in the database.
+     * @param {FriendRelationCreateManyAndReturnArgs} args - Arguments to create many FriendRelations.
+     * @example
+     * // Create many FriendRelations
+     * const friendRelation = await prisma.friendRelation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FriendRelations and only return the `id`
+     * const friendRelationWithIdOnly = await prisma.friendRelation.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FriendRelationCreateManyAndReturnArgs>(args?: SelectSubset<T, FriendRelationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FriendRelation.
+     * @param {FriendRelationDeleteArgs} args - Arguments to delete one FriendRelation.
+     * @example
+     * // Delete one FriendRelation
+     * const FriendRelation = await prisma.friendRelation.delete({
+     *   where: {
+     *     // ... filter to delete one FriendRelation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FriendRelationDeleteArgs>(args: SelectSubset<T, FriendRelationDeleteArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FriendRelation.
+     * @param {FriendRelationUpdateArgs} args - Arguments to update one FriendRelation.
+     * @example
+     * // Update one FriendRelation
+     * const friendRelation = await prisma.friendRelation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FriendRelationUpdateArgs>(args: SelectSubset<T, FriendRelationUpdateArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FriendRelations.
+     * @param {FriendRelationDeleteManyArgs} args - Arguments to filter FriendRelations to delete.
+     * @example
+     * // Delete a few FriendRelations
+     * const { count } = await prisma.friendRelation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FriendRelationDeleteManyArgs>(args?: SelectSubset<T, FriendRelationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FriendRelations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FriendRelationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FriendRelations
+     * const friendRelation = await prisma.friendRelation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FriendRelationUpdateManyArgs>(args: SelectSubset<T, FriendRelationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FriendRelations and returns the data updated in the database.
+     * @param {FriendRelationUpdateManyAndReturnArgs} args - Arguments to update many FriendRelations.
+     * @example
+     * // Update many FriendRelations
+     * const friendRelation = await prisma.friendRelation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FriendRelations and only return the `id`
+     * const friendRelationWithIdOnly = await prisma.friendRelation.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FriendRelationUpdateManyAndReturnArgs>(args: SelectSubset<T, FriendRelationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FriendRelation.
+     * @param {FriendRelationUpsertArgs} args - Arguments to update or create a FriendRelation.
+     * @example
+     * // Update or create a FriendRelation
+     * const friendRelation = await prisma.friendRelation.upsert({
+     *   create: {
+     *     // ... data to create a FriendRelation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FriendRelation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FriendRelationUpsertArgs>(args: SelectSubset<T, FriendRelationUpsertArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FriendRelations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FriendRelationCountArgs} args - Arguments to filter FriendRelations to count.
+     * @example
+     * // Count the number of FriendRelations
+     * const count = await prisma.friendRelation.count({
+     *   where: {
+     *     // ... the filter for the FriendRelations we want to count
+     *   }
+     * })
+    **/
+    count<T extends FriendRelationCountArgs>(
+      args?: Subset<T, FriendRelationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FriendRelationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FriendRelation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FriendRelationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FriendRelationAggregateArgs>(args: Subset<T, FriendRelationAggregateArgs>): Prisma.PrismaPromise<GetFriendRelationAggregateType<T>>
+
+    /**
+     * Group by FriendRelation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FriendRelationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FriendRelationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FriendRelationGroupByArgs['orderBy'] }
+        : { orderBy?: FriendRelationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FriendRelationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFriendRelationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FriendRelation model
+   */
+  readonly fields: FriendRelationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FriendRelation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FriendRelationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    initiator<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    receiver<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    users<T extends FriendRelation$usersArgs<ExtArgs> = {}>(args?: Subset<T, FriendRelation$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    messages<T extends FriendRelation$messagesArgs<ExtArgs> = {}>(args?: Subset<T, FriendRelation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FriendRelation model
+   */
+  interface FriendRelationFieldRefs {
+    readonly id: FieldRef<"FriendRelation", 'Int'>
+    readonly initiatorId: FieldRef<"FriendRelation", 'Int'>
+    readonly receiverId: FieldRef<"FriendRelation", 'Int'>
+    readonly accepted: FieldRef<"FriendRelation", 'Boolean'>
+    readonly createdDate: FieldRef<"FriendRelation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FriendRelation findUnique
+   */
+  export type FriendRelationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * Filter, which FriendRelation to fetch.
+     */
+    where: FriendRelationWhereUniqueInput
+  }
+
+  /**
+   * FriendRelation findUniqueOrThrow
+   */
+  export type FriendRelationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * Filter, which FriendRelation to fetch.
+     */
+    where: FriendRelationWhereUniqueInput
+  }
+
+  /**
+   * FriendRelation findFirst
+   */
+  export type FriendRelationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * Filter, which FriendRelation to fetch.
+     */
+    where?: FriendRelationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FriendRelations to fetch.
+     */
+    orderBy?: FriendRelationOrderByWithRelationInput | FriendRelationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FriendRelations.
+     */
+    cursor?: FriendRelationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FriendRelations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FriendRelations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FriendRelations.
+     */
+    distinct?: FriendRelationScalarFieldEnum | FriendRelationScalarFieldEnum[]
+  }
+
+  /**
+   * FriendRelation findFirstOrThrow
+   */
+  export type FriendRelationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * Filter, which FriendRelation to fetch.
+     */
+    where?: FriendRelationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FriendRelations to fetch.
+     */
+    orderBy?: FriendRelationOrderByWithRelationInput | FriendRelationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FriendRelations.
+     */
+    cursor?: FriendRelationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FriendRelations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FriendRelations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FriendRelations.
+     */
+    distinct?: FriendRelationScalarFieldEnum | FriendRelationScalarFieldEnum[]
+  }
+
+  /**
+   * FriendRelation findMany
+   */
+  export type FriendRelationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * Filter, which FriendRelations to fetch.
+     */
+    where?: FriendRelationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FriendRelations to fetch.
+     */
+    orderBy?: FriendRelationOrderByWithRelationInput | FriendRelationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FriendRelations.
+     */
+    cursor?: FriendRelationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FriendRelations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FriendRelations.
+     */
+    skip?: number
+    distinct?: FriendRelationScalarFieldEnum | FriendRelationScalarFieldEnum[]
+  }
+
+  /**
+   * FriendRelation create
+   */
+  export type FriendRelationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FriendRelation.
+     */
+    data: XOR<FriendRelationCreateInput, FriendRelationUncheckedCreateInput>
+  }
+
+  /**
+   * FriendRelation createMany
+   */
+  export type FriendRelationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FriendRelations.
+     */
+    data: FriendRelationCreateManyInput | FriendRelationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FriendRelation createManyAndReturn
+   */
+  export type FriendRelationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * The data used to create many FriendRelations.
+     */
+    data: FriendRelationCreateManyInput | FriendRelationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FriendRelation update
+   */
+  export type FriendRelationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FriendRelation.
+     */
+    data: XOR<FriendRelationUpdateInput, FriendRelationUncheckedUpdateInput>
+    /**
+     * Choose, which FriendRelation to update.
+     */
+    where: FriendRelationWhereUniqueInput
+  }
+
+  /**
+   * FriendRelation updateMany
+   */
+  export type FriendRelationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FriendRelations.
+     */
+    data: XOR<FriendRelationUpdateManyMutationInput, FriendRelationUncheckedUpdateManyInput>
+    /**
+     * Filter which FriendRelations to update
+     */
+    where?: FriendRelationWhereInput
+    /**
+     * Limit how many FriendRelations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FriendRelation updateManyAndReturn
+   */
+  export type FriendRelationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * The data used to update FriendRelations.
+     */
+    data: XOR<FriendRelationUpdateManyMutationInput, FriendRelationUncheckedUpdateManyInput>
+    /**
+     * Filter which FriendRelations to update
+     */
+    where?: FriendRelationWhereInput
+    /**
+     * Limit how many FriendRelations to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FriendRelation upsert
+   */
+  export type FriendRelationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FriendRelation to update in case it exists.
+     */
+    where: FriendRelationWhereUniqueInput
+    /**
+     * In case the FriendRelation found by the `where` argument doesn't exist, create a new FriendRelation with this data.
+     */
+    create: XOR<FriendRelationCreateInput, FriendRelationUncheckedCreateInput>
+    /**
+     * In case the FriendRelation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FriendRelationUpdateInput, FriendRelationUncheckedUpdateInput>
+  }
+
+  /**
+   * FriendRelation delete
+   */
+  export type FriendRelationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+    /**
+     * Filter which FriendRelation to delete.
+     */
+    where: FriendRelationWhereUniqueInput
+  }
+
+  /**
+   * FriendRelation deleteMany
+   */
+  export type FriendRelationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FriendRelations to delete
+     */
+    where?: FriendRelationWhereInput
+    /**
+     * Limit how many FriendRelations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FriendRelation.users
+   */
+  export type FriendRelation$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * FriendRelation.messages
+   */
+  export type FriendRelation$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    where?: MessageWhereInput
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    cursor?: MessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * FriendRelation without action
+   */
+  export type FriendRelationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FriendRelation
+     */
+    select?: FriendRelationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FriendRelation
+     */
+    omit?: FriendRelationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FriendRelationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Message
+   */
+
+  export type AggregateMessage = {
+    _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
+    _min: MessageMinAggregateOutputType | null
+    _max: MessageMaxAggregateOutputType | null
+  }
+
+  export type MessageAvgAggregateOutputType = {
+    id: number | null
+    fromId: number | null
+    toId: number | null
+    relationId: number | null
+  }
+
+  export type MessageSumAggregateOutputType = {
+    id: number | null
+    fromId: number | null
+    toId: number | null
+    relationId: number | null
+  }
+
+  export type MessageMinAggregateOutputType = {
+    id: number | null
+    fromId: number | null
+    toId: number | null
+    sendDate: Date | null
+    content: string | null
+    relationId: number | null
+  }
+
+  export type MessageMaxAggregateOutputType = {
+    id: number | null
+    fromId: number | null
+    toId: number | null
+    sendDate: Date | null
+    content: string | null
+    relationId: number | null
+  }
+
+  export type MessageCountAggregateOutputType = {
+    id: number
+    fromId: number
+    toId: number
+    sendDate: number
+    content: number
+    relationId: number
+    _all: number
+  }
+
+
+  export type MessageAvgAggregateInputType = {
+    id?: true
+    fromId?: true
+    toId?: true
+    relationId?: true
+  }
+
+  export type MessageSumAggregateInputType = {
+    id?: true
+    fromId?: true
+    toId?: true
+    relationId?: true
+  }
+
+  export type MessageMinAggregateInputType = {
+    id?: true
+    fromId?: true
+    toId?: true
+    sendDate?: true
+    content?: true
+    relationId?: true
+  }
+
+  export type MessageMaxAggregateInputType = {
+    id?: true
+    fromId?: true
+    toId?: true
+    sendDate?: true
+    content?: true
+    relationId?: true
+  }
+
+  export type MessageCountAggregateInputType = {
+    id?: true
+    fromId?: true
+    toId?: true
+    sendDate?: true
+    content?: true
+    relationId?: true
+    _all?: true
+  }
+
+  export type MessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Message to aggregate.
+     */
+    where?: MessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Messages to fetch.
+     */
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Messages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Messages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Messages
+    **/
+    _count?: true | MessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MessageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MessageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MessageMaxAggregateInputType
+  }
+
+  export type GetMessageAggregateType<T extends MessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMessage[P]>
+      : GetScalarType<T[P], AggregateMessage[P]>
+  }
+
+
+
+
+  export type MessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageWhereInput
+    orderBy?: MessageOrderByWithAggregationInput | MessageOrderByWithAggregationInput[]
+    by: MessageScalarFieldEnum[] | MessageScalarFieldEnum
+    having?: MessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MessageCountAggregateInputType | true
+    _avg?: MessageAvgAggregateInputType
+    _sum?: MessageSumAggregateInputType
+    _min?: MessageMinAggregateInputType
+    _max?: MessageMaxAggregateInputType
+  }
+
+  export type MessageGroupByOutputType = {
+    id: number
+    fromId: number
+    toId: number
+    sendDate: Date
+    content: string
+    relationId: number
+    _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
+    _min: MessageMinAggregateOutputType | null
+    _max: MessageMaxAggregateOutputType | null
+  }
+
+  type GetMessageGroupByPayload<T extends MessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MessageGroupByOutputType[P]>
+            : GetScalarType<T[P], MessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fromId?: boolean
+    toId?: boolean
+    sendDate?: boolean
+    content?: boolean
+    relationId?: boolean
+    from?: boolean | UserDefaultArgs<ExtArgs>
+    to?: boolean | UserDefaultArgs<ExtArgs>
+    FriendRelation?: boolean | FriendRelationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["message"]>
+
+  export type MessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fromId?: boolean
+    toId?: boolean
+    sendDate?: boolean
+    content?: boolean
+    relationId?: boolean
+    from?: boolean | UserDefaultArgs<ExtArgs>
+    to?: boolean | UserDefaultArgs<ExtArgs>
+    FriendRelation?: boolean | FriendRelationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["message"]>
+
+  export type MessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fromId?: boolean
+    toId?: boolean
+    sendDate?: boolean
+    content?: boolean
+    relationId?: boolean
+    from?: boolean | UserDefaultArgs<ExtArgs>
+    to?: boolean | UserDefaultArgs<ExtArgs>
+    FriendRelation?: boolean | FriendRelationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["message"]>
+
+  export type MessageSelectScalar = {
+    id?: boolean
+    fromId?: boolean
+    toId?: boolean
+    sendDate?: boolean
+    content?: boolean
+    relationId?: boolean
+  }
+
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fromId" | "toId" | "sendDate" | "content" | "relationId", ExtArgs["result"]["message"]>
+  export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    from?: boolean | UserDefaultArgs<ExtArgs>
+    to?: boolean | UserDefaultArgs<ExtArgs>
+    FriendRelation?: boolean | FriendRelationDefaultArgs<ExtArgs>
+  }
+  export type MessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    from?: boolean | UserDefaultArgs<ExtArgs>
+    to?: boolean | UserDefaultArgs<ExtArgs>
+    FriendRelation?: boolean | FriendRelationDefaultArgs<ExtArgs>
+  }
+  export type MessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    from?: boolean | UserDefaultArgs<ExtArgs>
+    to?: boolean | UserDefaultArgs<ExtArgs>
+    FriendRelation?: boolean | FriendRelationDefaultArgs<ExtArgs>
+  }
+
+  export type $MessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Message"
+    objects: {
+      from: Prisma.$UserPayload<ExtArgs>
+      to: Prisma.$UserPayload<ExtArgs>
+      FriendRelation: Prisma.$FriendRelationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      fromId: number
+      toId: number
+      sendDate: Date
+      content: string
+      relationId: number
+    }, ExtArgs["result"]["message"]>
+    composites: {}
+  }
+
+  type MessageGetPayload<S extends boolean | null | undefined | MessageDefaultArgs> = $Result.GetResult<Prisma.$MessagePayload, S>
+
+  type MessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MessageCountAggregateInputType | true
+    }
+
+  export interface MessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Message'], meta: { name: 'Message' } }
+    /**
+     * Find zero or one Message that matches the filter.
+     * @param {MessageFindUniqueArgs} args - Arguments to find a Message
+     * @example
+     * // Get one Message
+     * const message = await prisma.message.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MessageFindUniqueArgs>(args: SelectSubset<T, MessageFindUniqueArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Message that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MessageFindUniqueOrThrowArgs} args - Arguments to find a Message
+     * @example
+     * // Get one Message
+     * const message = await prisma.message.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MessageFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Message that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageFindFirstArgs} args - Arguments to find a Message
+     * @example
+     * // Get one Message
+     * const message = await prisma.message.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MessageFindFirstArgs>(args?: SelectSubset<T, MessageFindFirstArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Message that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageFindFirstOrThrowArgs} args - Arguments to find a Message
+     * @example
+     * // Get one Message
+     * const message = await prisma.message.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MessageFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Messages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Messages
+     * const messages = await prisma.message.findMany()
+     * 
+     * // Get first 10 Messages
+     * const messages = await prisma.message.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const messageWithIdOnly = await prisma.message.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MessageFindManyArgs>(args?: SelectSubset<T, MessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Message.
+     * @param {MessageCreateArgs} args - Arguments to create a Message.
+     * @example
+     * // Create one Message
+     * const Message = await prisma.message.create({
+     *   data: {
+     *     // ... data to create a Message
+     *   }
+     * })
+     * 
+     */
+    create<T extends MessageCreateArgs>(args: SelectSubset<T, MessageCreateArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Messages.
+     * @param {MessageCreateManyArgs} args - Arguments to create many Messages.
+     * @example
+     * // Create many Messages
+     * const message = await prisma.message.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MessageCreateManyArgs>(args?: SelectSubset<T, MessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Messages and returns the data saved in the database.
+     * @param {MessageCreateManyAndReturnArgs} args - Arguments to create many Messages.
+     * @example
+     * // Create many Messages
+     * const message = await prisma.message.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Messages and only return the `id`
+     * const messageWithIdOnly = await prisma.message.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MessageCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Message.
+     * @param {MessageDeleteArgs} args - Arguments to delete one Message.
+     * @example
+     * // Delete one Message
+     * const Message = await prisma.message.delete({
+     *   where: {
+     *     // ... filter to delete one Message
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MessageDeleteArgs>(args: SelectSubset<T, MessageDeleteArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Message.
+     * @param {MessageUpdateArgs} args - Arguments to update one Message.
+     * @example
+     * // Update one Message
+     * const message = await prisma.message.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MessageUpdateArgs>(args: SelectSubset<T, MessageUpdateArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Messages.
+     * @param {MessageDeleteManyArgs} args - Arguments to filter Messages to delete.
+     * @example
+     * // Delete a few Messages
+     * const { count } = await prisma.message.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MessageDeleteManyArgs>(args?: SelectSubset<T, MessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Messages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Messages
+     * const message = await prisma.message.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MessageUpdateManyArgs>(args: SelectSubset<T, MessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Messages and returns the data updated in the database.
+     * @param {MessageUpdateManyAndReturnArgs} args - Arguments to update many Messages.
+     * @example
+     * // Update many Messages
+     * const message = await prisma.message.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Messages and only return the `id`
+     * const messageWithIdOnly = await prisma.message.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MessageUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Message.
+     * @param {MessageUpsertArgs} args - Arguments to update or create a Message.
+     * @example
+     * // Update or create a Message
+     * const message = await prisma.message.upsert({
+     *   create: {
+     *     // ... data to create a Message
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Message we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MessageUpsertArgs>(args: SelectSubset<T, MessageUpsertArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Messages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageCountArgs} args - Arguments to filter Messages to count.
+     * @example
+     * // Count the number of Messages
+     * const count = await prisma.message.count({
+     *   where: {
+     *     // ... the filter for the Messages we want to count
+     *   }
+     * })
+    **/
+    count<T extends MessageCountArgs>(
+      args?: Subset<T, MessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Message.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MessageAggregateArgs>(args: Subset<T, MessageAggregateArgs>): Prisma.PrismaPromise<GetMessageAggregateType<T>>
+
+    /**
+     * Group by Message.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MessageGroupByArgs['orderBy'] }
+        : { orderBy?: MessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Message model
+   */
+  readonly fields: MessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Message.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    from<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    to<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    FriendRelation<T extends FriendRelationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FriendRelationDefaultArgs<ExtArgs>>): Prisma__FriendRelationClient<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Message model
+   */
+  interface MessageFieldRefs {
+    readonly id: FieldRef<"Message", 'Int'>
+    readonly fromId: FieldRef<"Message", 'Int'>
+    readonly toId: FieldRef<"Message", 'Int'>
+    readonly sendDate: FieldRef<"Message", 'DateTime'>
+    readonly content: FieldRef<"Message", 'String'>
+    readonly relationId: FieldRef<"Message", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Message findUnique
+   */
+  export type MessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * Filter, which Message to fetch.
+     */
+    where: MessageWhereUniqueInput
+  }
+
+  /**
+   * Message findUniqueOrThrow
+   */
+  export type MessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * Filter, which Message to fetch.
+     */
+    where: MessageWhereUniqueInput
+  }
+
+  /**
+   * Message findFirst
+   */
+  export type MessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * Filter, which Message to fetch.
+     */
+    where?: MessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Messages to fetch.
+     */
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Messages.
+     */
+    cursor?: MessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Messages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Messages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Messages.
+     */
+    distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * Message findFirstOrThrow
+   */
+  export type MessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * Filter, which Message to fetch.
+     */
+    where?: MessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Messages to fetch.
+     */
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Messages.
+     */
+    cursor?: MessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Messages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Messages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Messages.
+     */
+    distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * Message findMany
+   */
+  export type MessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * Filter, which Messages to fetch.
+     */
+    where?: MessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Messages to fetch.
+     */
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Messages.
+     */
+    cursor?: MessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Messages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Messages.
+     */
+    skip?: number
+    distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * Message create
+   */
+  export type MessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Message.
+     */
+    data: XOR<MessageCreateInput, MessageUncheckedCreateInput>
+  }
+
+  /**
+   * Message createMany
+   */
+  export type MessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Messages.
+     */
+    data: MessageCreateManyInput | MessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Message createManyAndReturn
+   */
+  export type MessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * The data used to create many Messages.
+     */
+    data: MessageCreateManyInput | MessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Message update
+   */
+  export type MessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Message.
+     */
+    data: XOR<MessageUpdateInput, MessageUncheckedUpdateInput>
+    /**
+     * Choose, which Message to update.
+     */
+    where: MessageWhereUniqueInput
+  }
+
+  /**
+   * Message updateMany
+   */
+  export type MessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Messages.
+     */
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyInput>
+    /**
+     * Filter which Messages to update
+     */
+    where?: MessageWhereInput
+    /**
+     * Limit how many Messages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Message updateManyAndReturn
+   */
+  export type MessageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * The data used to update Messages.
+     */
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyInput>
+    /**
+     * Filter which Messages to update
+     */
+    where?: MessageWhereInput
+    /**
+     * Limit how many Messages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Message upsert
+   */
+  export type MessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Message to update in case it exists.
+     */
+    where: MessageWhereUniqueInput
+    /**
+     * In case the Message found by the `where` argument doesn't exist, create a new Message with this data.
+     */
+    create: XOR<MessageCreateInput, MessageUncheckedCreateInput>
+    /**
+     * In case the Message was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MessageUpdateInput, MessageUncheckedUpdateInput>
+  }
+
+  /**
+   * Message delete
+   */
+  export type MessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    /**
+     * Filter which Message to delete.
+     */
+    where: MessageWhereUniqueInput
+  }
+
+  /**
+   * Message deleteMany
+   */
+  export type MessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Messages to delete
+     */
+    where?: MessageWhereInput
+    /**
+     * Limit how many Messages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Message without action
+   */
+  export type MessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
   }
 
 
@@ -23834,6 +26540,29 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const FriendRelationScalarFieldEnum: {
+    id: 'id',
+    initiatorId: 'initiatorId',
+    receiverId: 'receiverId',
+    accepted: 'accepted',
+    createdDate: 'createdDate'
+  };
+
+  export type FriendRelationScalarFieldEnum = (typeof FriendRelationScalarFieldEnum)[keyof typeof FriendRelationScalarFieldEnum]
+
+
+  export const MessageScalarFieldEnum: {
+    id: 'id',
+    fromId: 'fromId',
+    toId: 'toId',
+    sendDate: 'sendDate',
+    content: 'content',
+    relationId: 'relationId'
+  };
+
+  export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
   export const CodeScalarFieldEnum: {
     code: 'code',
     value: 'value',
@@ -24105,6 +26834,13 @@ export namespace Prisma {
   };
 
   export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+
+
+  export const MessageOrderByRelevanceFieldEnum: {
+    content: 'content'
+  };
+
+  export type MessageOrderByRelevanceFieldEnum = (typeof MessageOrderByRelevanceFieldEnum)[keyof typeof MessageOrderByRelevanceFieldEnum]
 
 
   export const CodeOrderByRelevanceFieldEnum: {
@@ -24469,6 +27205,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseListRelationFilter
     CreatedClasses?: ClassListRelationFilter
     Assigments?: AssignmentListRelationFilter
+    SentMessages?: MessageListRelationFilter
+    ReceivedMessages?: MessageListRelationFilter
+    sentRequests?: FriendRelationListRelationFilter
+    receivedRequests?: FriendRelationListRelationFilter
+    Friends?: FriendRelationListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -24501,6 +27242,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseOrderByRelationAggregateInput
     CreatedClasses?: ClassOrderByRelationAggregateInput
     Assigments?: AssignmentOrderByRelationAggregateInput
+    SentMessages?: MessageOrderByRelationAggregateInput
+    ReceivedMessages?: MessageOrderByRelationAggregateInput
+    sentRequests?: FriendRelationOrderByRelationAggregateInput
+    receivedRequests?: FriendRelationOrderByRelationAggregateInput
+    Friends?: FriendRelationOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
 
@@ -24537,6 +27283,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseListRelationFilter
     CreatedClasses?: ClassListRelationFilter
     Assigments?: AssignmentListRelationFilter
+    SentMessages?: MessageListRelationFilter
+    ReceivedMessages?: MessageListRelationFilter
+    sentRequests?: FriendRelationListRelationFilter
+    receivedRequests?: FriendRelationListRelationFilter
+    Friends?: FriendRelationListRelationFilter
   }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -24583,6 +27334,142 @@ export namespace Prisma {
     loginMethod?: StringWithAggregatesFilter<"User"> | string
     occupationType?: EnumOccupationTypeWithAggregatesFilter<"User"> | $Enums.OccupationType
     preferences?: JsonNullableWithAggregatesFilter<"User">
+  }
+
+  export type FriendRelationWhereInput = {
+    AND?: FriendRelationWhereInput | FriendRelationWhereInput[]
+    OR?: FriendRelationWhereInput[]
+    NOT?: FriendRelationWhereInput | FriendRelationWhereInput[]
+    id?: IntFilter<"FriendRelation"> | number
+    initiatorId?: IntFilter<"FriendRelation"> | number
+    receiverId?: IntFilter<"FriendRelation"> | number
+    accepted?: BoolFilter<"FriendRelation"> | boolean
+    createdDate?: DateTimeFilter<"FriendRelation"> | Date | string
+    initiator?: XOR<UserScalarRelationFilter, UserWhereInput>
+    receiver?: XOR<UserScalarRelationFilter, UserWhereInput>
+    users?: UserListRelationFilter
+    messages?: MessageListRelationFilter
+  }
+
+  export type FriendRelationOrderByWithRelationInput = {
+    id?: SortOrder
+    initiatorId?: SortOrder
+    receiverId?: SortOrder
+    accepted?: SortOrder
+    createdDate?: SortOrder
+    initiator?: UserOrderByWithRelationInput
+    receiver?: UserOrderByWithRelationInput
+    users?: UserOrderByRelationAggregateInput
+    messages?: MessageOrderByRelationAggregateInput
+  }
+
+  export type FriendRelationWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    initiatorId_receiverId?: FriendRelationInitiatorIdReceiverIdCompoundUniqueInput
+    AND?: FriendRelationWhereInput | FriendRelationWhereInput[]
+    OR?: FriendRelationWhereInput[]
+    NOT?: FriendRelationWhereInput | FriendRelationWhereInput[]
+    initiatorId?: IntFilter<"FriendRelation"> | number
+    receiverId?: IntFilter<"FriendRelation"> | number
+    accepted?: BoolFilter<"FriendRelation"> | boolean
+    createdDate?: DateTimeFilter<"FriendRelation"> | Date | string
+    initiator?: XOR<UserScalarRelationFilter, UserWhereInput>
+    receiver?: XOR<UserScalarRelationFilter, UserWhereInput>
+    users?: UserListRelationFilter
+    messages?: MessageListRelationFilter
+  }, "id" | "initiatorId_receiverId">
+
+  export type FriendRelationOrderByWithAggregationInput = {
+    id?: SortOrder
+    initiatorId?: SortOrder
+    receiverId?: SortOrder
+    accepted?: SortOrder
+    createdDate?: SortOrder
+    _count?: FriendRelationCountOrderByAggregateInput
+    _avg?: FriendRelationAvgOrderByAggregateInput
+    _max?: FriendRelationMaxOrderByAggregateInput
+    _min?: FriendRelationMinOrderByAggregateInput
+    _sum?: FriendRelationSumOrderByAggregateInput
+  }
+
+  export type FriendRelationScalarWhereWithAggregatesInput = {
+    AND?: FriendRelationScalarWhereWithAggregatesInput | FriendRelationScalarWhereWithAggregatesInput[]
+    OR?: FriendRelationScalarWhereWithAggregatesInput[]
+    NOT?: FriendRelationScalarWhereWithAggregatesInput | FriendRelationScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"FriendRelation"> | number
+    initiatorId?: IntWithAggregatesFilter<"FriendRelation"> | number
+    receiverId?: IntWithAggregatesFilter<"FriendRelation"> | number
+    accepted?: BoolWithAggregatesFilter<"FriendRelation"> | boolean
+    createdDate?: DateTimeWithAggregatesFilter<"FriendRelation"> | Date | string
+  }
+
+  export type MessageWhereInput = {
+    AND?: MessageWhereInput | MessageWhereInput[]
+    OR?: MessageWhereInput[]
+    NOT?: MessageWhereInput | MessageWhereInput[]
+    id?: IntFilter<"Message"> | number
+    fromId?: IntFilter<"Message"> | number
+    toId?: IntFilter<"Message"> | number
+    sendDate?: DateTimeFilter<"Message"> | Date | string
+    content?: StringFilter<"Message"> | string
+    relationId?: IntFilter<"Message"> | number
+    from?: XOR<UserScalarRelationFilter, UserWhereInput>
+    to?: XOR<UserScalarRelationFilter, UserWhereInput>
+    FriendRelation?: XOR<FriendRelationScalarRelationFilter, FriendRelationWhereInput>
+  }
+
+  export type MessageOrderByWithRelationInput = {
+    id?: SortOrder
+    fromId?: SortOrder
+    toId?: SortOrder
+    sendDate?: SortOrder
+    content?: SortOrder
+    relationId?: SortOrder
+    from?: UserOrderByWithRelationInput
+    to?: UserOrderByWithRelationInput
+    FriendRelation?: FriendRelationOrderByWithRelationInput
+    _relevance?: MessageOrderByRelevanceInput
+  }
+
+  export type MessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: MessageWhereInput | MessageWhereInput[]
+    OR?: MessageWhereInput[]
+    NOT?: MessageWhereInput | MessageWhereInput[]
+    fromId?: IntFilter<"Message"> | number
+    toId?: IntFilter<"Message"> | number
+    sendDate?: DateTimeFilter<"Message"> | Date | string
+    content?: StringFilter<"Message"> | string
+    relationId?: IntFilter<"Message"> | number
+    from?: XOR<UserScalarRelationFilter, UserWhereInput>
+    to?: XOR<UserScalarRelationFilter, UserWhereInput>
+    FriendRelation?: XOR<FriendRelationScalarRelationFilter, FriendRelationWhereInput>
+  }, "id">
+
+  export type MessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    fromId?: SortOrder
+    toId?: SortOrder
+    sendDate?: SortOrder
+    content?: SortOrder
+    relationId?: SortOrder
+    _count?: MessageCountOrderByAggregateInput
+    _avg?: MessageAvgOrderByAggregateInput
+    _max?: MessageMaxOrderByAggregateInput
+    _min?: MessageMinOrderByAggregateInput
+    _sum?: MessageSumOrderByAggregateInput
+  }
+
+  export type MessageScalarWhereWithAggregatesInput = {
+    AND?: MessageScalarWhereWithAggregatesInput | MessageScalarWhereWithAggregatesInput[]
+    OR?: MessageScalarWhereWithAggregatesInput[]
+    NOT?: MessageScalarWhereWithAggregatesInput | MessageScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Message"> | number
+    fromId?: IntWithAggregatesFilter<"Message"> | number
+    toId?: IntWithAggregatesFilter<"Message"> | number
+    sendDate?: DateTimeWithAggregatesFilter<"Message"> | Date | string
+    content?: StringWithAggregatesFilter<"Message"> | string
+    relationId?: IntWithAggregatesFilter<"Message"> | number
   }
 
   export type CodeWhereInput = {
@@ -25787,6 +28674,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -25818,6 +28710,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserUpdateInput = {
@@ -25848,6 +28745,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -25879,6 +28781,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -25934,6 +28841,122 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type FriendRelationCreateInput = {
+    accepted?: boolean
+    createdDate?: Date | string
+    initiator: UserCreateNestedOneWithoutSentRequestsInput
+    receiver: UserCreateNestedOneWithoutReceivedRequestsInput
+    users?: UserCreateNestedManyWithoutFriendsInput
+    messages?: MessageCreateNestedManyWithoutFriendRelationInput
+  }
+
+  export type FriendRelationUncheckedCreateInput = {
+    id?: number
+    initiatorId: number
+    receiverId: number
+    accepted?: boolean
+    createdDate?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutFriendsInput
+    messages?: MessageUncheckedCreateNestedManyWithoutFriendRelationInput
+  }
+
+  export type FriendRelationUpdateInput = {
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiator?: UserUpdateOneRequiredWithoutSentRequestsNestedInput
+    receiver?: UserUpdateOneRequiredWithoutReceivedRequestsNestedInput
+    users?: UserUpdateManyWithoutFriendsNestedInput
+    messages?: MessageUpdateManyWithoutFriendRelationNestedInput
+  }
+
+  export type FriendRelationUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    initiatorId?: IntFieldUpdateOperationsInput | number
+    receiverId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutFriendsNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutFriendRelationNestedInput
+  }
+
+  export type FriendRelationCreateManyInput = {
+    id?: number
+    initiatorId: number
+    receiverId: number
+    accepted?: boolean
+    createdDate?: Date | string
+  }
+
+  export type FriendRelationUpdateManyMutationInput = {
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FriendRelationUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    initiatorId?: IntFieldUpdateOperationsInput | number
+    receiverId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageCreateInput = {
+    sendDate?: Date | string
+    content: string
+    from: UserCreateNestedOneWithoutSentMessagesInput
+    to: UserCreateNestedOneWithoutReceivedMessagesInput
+    FriendRelation?: FriendRelationCreateNestedOneWithoutMessagesInput
+  }
+
+  export type MessageUncheckedCreateInput = {
+    id?: number
+    fromId: number
+    toId: number
+    sendDate?: Date | string
+    content: string
+    relationId?: number
+  }
+
+  export type MessageUpdateInput = {
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    from?: UserUpdateOneRequiredWithoutSentMessagesNestedInput
+    to?: UserUpdateOneRequiredWithoutReceivedMessagesNestedInput
+    FriendRelation?: FriendRelationUpdateOneRequiredWithoutMessagesNestedInput
+  }
+
+  export type MessageUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    fromId?: IntFieldUpdateOperationsInput | number
+    toId?: IntFieldUpdateOperationsInput | number
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    relationId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type MessageCreateManyInput = {
+    id?: number
+    fromId: number
+    toId: number
+    sendDate?: Date | string
+    content: string
+    relationId?: number
+  }
+
+  export type MessageUpdateManyMutationInput = {
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type MessageUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    fromId?: IntFieldUpdateOperationsInput | number
+    toId?: IntFieldUpdateOperationsInput | number
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    relationId?: IntFieldUpdateOperationsInput | number
   }
 
   export type CodeCreateInput = {
@@ -27319,6 +30342,18 @@ export namespace Prisma {
     none?: AssignmentWhereInput
   }
 
+  export type MessageListRelationFilter = {
+    every?: MessageWhereInput
+    some?: MessageWhereInput
+    none?: MessageWhereInput
+  }
+
+  export type FriendRelationListRelationFilter = {
+    every?: FriendRelationWhereInput
+    some?: FriendRelationWhereInput
+    none?: FriendRelationWhereInput
+  }
+
   export type ProjectOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -27360,6 +30395,14 @@ export namespace Prisma {
   }
 
   export type AssignmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FriendRelationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -27475,6 +30518,109 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOccupationTypeFilter<$PrismaModel>
     _max?: NestedEnumOccupationTypeFilter<$PrismaModel>
+  }
+
+  export type UserListRelationFilter = {
+    every?: UserWhereInput
+    some?: UserWhereInput
+    none?: UserWhereInput
+  }
+
+  export type UserOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FriendRelationInitiatorIdReceiverIdCompoundUniqueInput = {
+    initiatorId: number
+    receiverId: number
+  }
+
+  export type FriendRelationCountOrderByAggregateInput = {
+    id?: SortOrder
+    initiatorId?: SortOrder
+    receiverId?: SortOrder
+    accepted?: SortOrder
+    createdDate?: SortOrder
+  }
+
+  export type FriendRelationAvgOrderByAggregateInput = {
+    id?: SortOrder
+    initiatorId?: SortOrder
+    receiverId?: SortOrder
+  }
+
+  export type FriendRelationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    initiatorId?: SortOrder
+    receiverId?: SortOrder
+    accepted?: SortOrder
+    createdDate?: SortOrder
+  }
+
+  export type FriendRelationMinOrderByAggregateInput = {
+    id?: SortOrder
+    initiatorId?: SortOrder
+    receiverId?: SortOrder
+    accepted?: SortOrder
+    createdDate?: SortOrder
+  }
+
+  export type FriendRelationSumOrderByAggregateInput = {
+    id?: SortOrder
+    initiatorId?: SortOrder
+    receiverId?: SortOrder
+  }
+
+  export type FriendRelationScalarRelationFilter = {
+    is?: FriendRelationWhereInput
+    isNot?: FriendRelationWhereInput
+  }
+
+  export type MessageOrderByRelevanceInput = {
+    fields: MessageOrderByRelevanceFieldEnum | MessageOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type MessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    fromId?: SortOrder
+    toId?: SortOrder
+    sendDate?: SortOrder
+    content?: SortOrder
+    relationId?: SortOrder
+  }
+
+  export type MessageAvgOrderByAggregateInput = {
+    id?: SortOrder
+    fromId?: SortOrder
+    toId?: SortOrder
+    relationId?: SortOrder
+  }
+
+  export type MessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    fromId?: SortOrder
+    toId?: SortOrder
+    sendDate?: SortOrder
+    content?: SortOrder
+    relationId?: SortOrder
+  }
+
+  export type MessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    fromId?: SortOrder
+    toId?: SortOrder
+    sendDate?: SortOrder
+    content?: SortOrder
+    relationId?: SortOrder
+  }
+
+  export type MessageSumOrderByAggregateInput = {
+    id?: SortOrder
+    fromId?: SortOrder
+    toId?: SortOrder
+    relationId?: SortOrder
   }
 
   export type CodeOrderByRelevanceInput = {
@@ -28259,17 +31405,7 @@ export namespace Prisma {
     none?: CourseWhereInput
   }
 
-  export type UserListRelationFilter = {
-    every?: UserWhereInput
-    some?: UserWhereInput
-    none?: UserWhereInput
-  }
-
   export type CourseOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type UserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -28607,6 +31743,40 @@ export namespace Prisma {
     connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
   }
 
+  export type MessageCreateNestedManyWithoutFromInput = {
+    create?: XOR<MessageCreateWithoutFromInput, MessageUncheckedCreateWithoutFromInput> | MessageCreateWithoutFromInput[] | MessageUncheckedCreateWithoutFromInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutFromInput | MessageCreateOrConnectWithoutFromInput[]
+    createMany?: MessageCreateManyFromInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type MessageCreateNestedManyWithoutToInput = {
+    create?: XOR<MessageCreateWithoutToInput, MessageUncheckedCreateWithoutToInput> | MessageCreateWithoutToInput[] | MessageUncheckedCreateWithoutToInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutToInput | MessageCreateOrConnectWithoutToInput[]
+    createMany?: MessageCreateManyToInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type FriendRelationCreateNestedManyWithoutInitiatorInput = {
+    create?: XOR<FriendRelationCreateWithoutInitiatorInput, FriendRelationUncheckedCreateWithoutInitiatorInput> | FriendRelationCreateWithoutInitiatorInput[] | FriendRelationUncheckedCreateWithoutInitiatorInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutInitiatorInput | FriendRelationCreateOrConnectWithoutInitiatorInput[]
+    createMany?: FriendRelationCreateManyInitiatorInputEnvelope
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+  }
+
+  export type FriendRelationCreateNestedManyWithoutReceiverInput = {
+    create?: XOR<FriendRelationCreateWithoutReceiverInput, FriendRelationUncheckedCreateWithoutReceiverInput> | FriendRelationCreateWithoutReceiverInput[] | FriendRelationUncheckedCreateWithoutReceiverInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutReceiverInput | FriendRelationCreateOrConnectWithoutReceiverInput[]
+    createMany?: FriendRelationCreateManyReceiverInputEnvelope
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+  }
+
+  export type FriendRelationCreateNestedManyWithoutUsersInput = {
+    create?: XOR<FriendRelationCreateWithoutUsersInput, FriendRelationUncheckedCreateWithoutUsersInput> | FriendRelationCreateWithoutUsersInput[] | FriendRelationUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutUsersInput | FriendRelationCreateOrConnectWithoutUsersInput[]
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+  }
+
   export type ProjectUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
@@ -28687,6 +31857,40 @@ export namespace Prisma {
     create?: XOR<AssignmentCreateWithoutAssignedToInput, AssignmentUncheckedCreateWithoutAssignedToInput> | AssignmentCreateWithoutAssignedToInput[] | AssignmentUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: AssignmentCreateOrConnectWithoutAssignedToInput | AssignmentCreateOrConnectWithoutAssignedToInput[]
     connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+  }
+
+  export type MessageUncheckedCreateNestedManyWithoutFromInput = {
+    create?: XOR<MessageCreateWithoutFromInput, MessageUncheckedCreateWithoutFromInput> | MessageCreateWithoutFromInput[] | MessageUncheckedCreateWithoutFromInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutFromInput | MessageCreateOrConnectWithoutFromInput[]
+    createMany?: MessageCreateManyFromInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type MessageUncheckedCreateNestedManyWithoutToInput = {
+    create?: XOR<MessageCreateWithoutToInput, MessageUncheckedCreateWithoutToInput> | MessageCreateWithoutToInput[] | MessageUncheckedCreateWithoutToInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutToInput | MessageCreateOrConnectWithoutToInput[]
+    createMany?: MessageCreateManyToInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput = {
+    create?: XOR<FriendRelationCreateWithoutInitiatorInput, FriendRelationUncheckedCreateWithoutInitiatorInput> | FriendRelationCreateWithoutInitiatorInput[] | FriendRelationUncheckedCreateWithoutInitiatorInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutInitiatorInput | FriendRelationCreateOrConnectWithoutInitiatorInput[]
+    createMany?: FriendRelationCreateManyInitiatorInputEnvelope
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+  }
+
+  export type FriendRelationUncheckedCreateNestedManyWithoutReceiverInput = {
+    create?: XOR<FriendRelationCreateWithoutReceiverInput, FriendRelationUncheckedCreateWithoutReceiverInput> | FriendRelationCreateWithoutReceiverInput[] | FriendRelationUncheckedCreateWithoutReceiverInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutReceiverInput | FriendRelationCreateOrConnectWithoutReceiverInput[]
+    createMany?: FriendRelationCreateManyReceiverInputEnvelope
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+  }
+
+  export type FriendRelationUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<FriendRelationCreateWithoutUsersInput, FriendRelationUncheckedCreateWithoutUsersInput> | FriendRelationCreateWithoutUsersInput[] | FriendRelationUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutUsersInput | FriendRelationCreateOrConnectWithoutUsersInput[]
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -28876,6 +32080,75 @@ export namespace Prisma {
     deleteMany?: AssignmentScalarWhereInput | AssignmentScalarWhereInput[]
   }
 
+  export type MessageUpdateManyWithoutFromNestedInput = {
+    create?: XOR<MessageCreateWithoutFromInput, MessageUncheckedCreateWithoutFromInput> | MessageCreateWithoutFromInput[] | MessageUncheckedCreateWithoutFromInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutFromInput | MessageCreateOrConnectWithoutFromInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutFromInput | MessageUpsertWithWhereUniqueWithoutFromInput[]
+    createMany?: MessageCreateManyFromInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutFromInput | MessageUpdateWithWhereUniqueWithoutFromInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutFromInput | MessageUpdateManyWithWhereWithoutFromInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type MessageUpdateManyWithoutToNestedInput = {
+    create?: XOR<MessageCreateWithoutToInput, MessageUncheckedCreateWithoutToInput> | MessageCreateWithoutToInput[] | MessageUncheckedCreateWithoutToInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutToInput | MessageCreateOrConnectWithoutToInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutToInput | MessageUpsertWithWhereUniqueWithoutToInput[]
+    createMany?: MessageCreateManyToInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutToInput | MessageUpdateWithWhereUniqueWithoutToInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutToInput | MessageUpdateManyWithWhereWithoutToInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type FriendRelationUpdateManyWithoutInitiatorNestedInput = {
+    create?: XOR<FriendRelationCreateWithoutInitiatorInput, FriendRelationUncheckedCreateWithoutInitiatorInput> | FriendRelationCreateWithoutInitiatorInput[] | FriendRelationUncheckedCreateWithoutInitiatorInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutInitiatorInput | FriendRelationCreateOrConnectWithoutInitiatorInput[]
+    upsert?: FriendRelationUpsertWithWhereUniqueWithoutInitiatorInput | FriendRelationUpsertWithWhereUniqueWithoutInitiatorInput[]
+    createMany?: FriendRelationCreateManyInitiatorInputEnvelope
+    set?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    disconnect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    delete?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    update?: FriendRelationUpdateWithWhereUniqueWithoutInitiatorInput | FriendRelationUpdateWithWhereUniqueWithoutInitiatorInput[]
+    updateMany?: FriendRelationUpdateManyWithWhereWithoutInitiatorInput | FriendRelationUpdateManyWithWhereWithoutInitiatorInput[]
+    deleteMany?: FriendRelationScalarWhereInput | FriendRelationScalarWhereInput[]
+  }
+
+  export type FriendRelationUpdateManyWithoutReceiverNestedInput = {
+    create?: XOR<FriendRelationCreateWithoutReceiverInput, FriendRelationUncheckedCreateWithoutReceiverInput> | FriendRelationCreateWithoutReceiverInput[] | FriendRelationUncheckedCreateWithoutReceiverInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutReceiverInput | FriendRelationCreateOrConnectWithoutReceiverInput[]
+    upsert?: FriendRelationUpsertWithWhereUniqueWithoutReceiverInput | FriendRelationUpsertWithWhereUniqueWithoutReceiverInput[]
+    createMany?: FriendRelationCreateManyReceiverInputEnvelope
+    set?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    disconnect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    delete?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    update?: FriendRelationUpdateWithWhereUniqueWithoutReceiverInput | FriendRelationUpdateWithWhereUniqueWithoutReceiverInput[]
+    updateMany?: FriendRelationUpdateManyWithWhereWithoutReceiverInput | FriendRelationUpdateManyWithWhereWithoutReceiverInput[]
+    deleteMany?: FriendRelationScalarWhereInput | FriendRelationScalarWhereInput[]
+  }
+
+  export type FriendRelationUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<FriendRelationCreateWithoutUsersInput, FriendRelationUncheckedCreateWithoutUsersInput> | FriendRelationCreateWithoutUsersInput[] | FriendRelationUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutUsersInput | FriendRelationCreateOrConnectWithoutUsersInput[]
+    upsert?: FriendRelationUpsertWithWhereUniqueWithoutUsersInput | FriendRelationUpsertWithWhereUniqueWithoutUsersInput[]
+    set?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    disconnect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    delete?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    update?: FriendRelationUpdateWithWhereUniqueWithoutUsersInput | FriendRelationUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: FriendRelationUpdateManyWithWhereWithoutUsersInput | FriendRelationUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: FriendRelationScalarWhereInput | FriendRelationScalarWhereInput[]
+  }
+
   export type ProjectUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
@@ -29037,6 +32310,225 @@ export namespace Prisma {
     update?: AssignmentUpdateWithWhereUniqueWithoutAssignedToInput | AssignmentUpdateWithWhereUniqueWithoutAssignedToInput[]
     updateMany?: AssignmentUpdateManyWithWhereWithoutAssignedToInput | AssignmentUpdateManyWithWhereWithoutAssignedToInput[]
     deleteMany?: AssignmentScalarWhereInput | AssignmentScalarWhereInput[]
+  }
+
+  export type MessageUncheckedUpdateManyWithoutFromNestedInput = {
+    create?: XOR<MessageCreateWithoutFromInput, MessageUncheckedCreateWithoutFromInput> | MessageCreateWithoutFromInput[] | MessageUncheckedCreateWithoutFromInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutFromInput | MessageCreateOrConnectWithoutFromInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutFromInput | MessageUpsertWithWhereUniqueWithoutFromInput[]
+    createMany?: MessageCreateManyFromInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutFromInput | MessageUpdateWithWhereUniqueWithoutFromInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutFromInput | MessageUpdateManyWithWhereWithoutFromInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type MessageUncheckedUpdateManyWithoutToNestedInput = {
+    create?: XOR<MessageCreateWithoutToInput, MessageUncheckedCreateWithoutToInput> | MessageCreateWithoutToInput[] | MessageUncheckedCreateWithoutToInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutToInput | MessageCreateOrConnectWithoutToInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutToInput | MessageUpsertWithWhereUniqueWithoutToInput[]
+    createMany?: MessageCreateManyToInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutToInput | MessageUpdateWithWhereUniqueWithoutToInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutToInput | MessageUpdateManyWithWhereWithoutToInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput = {
+    create?: XOR<FriendRelationCreateWithoutInitiatorInput, FriendRelationUncheckedCreateWithoutInitiatorInput> | FriendRelationCreateWithoutInitiatorInput[] | FriendRelationUncheckedCreateWithoutInitiatorInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutInitiatorInput | FriendRelationCreateOrConnectWithoutInitiatorInput[]
+    upsert?: FriendRelationUpsertWithWhereUniqueWithoutInitiatorInput | FriendRelationUpsertWithWhereUniqueWithoutInitiatorInput[]
+    createMany?: FriendRelationCreateManyInitiatorInputEnvelope
+    set?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    disconnect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    delete?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    update?: FriendRelationUpdateWithWhereUniqueWithoutInitiatorInput | FriendRelationUpdateWithWhereUniqueWithoutInitiatorInput[]
+    updateMany?: FriendRelationUpdateManyWithWhereWithoutInitiatorInput | FriendRelationUpdateManyWithWhereWithoutInitiatorInput[]
+    deleteMany?: FriendRelationScalarWhereInput | FriendRelationScalarWhereInput[]
+  }
+
+  export type FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput = {
+    create?: XOR<FriendRelationCreateWithoutReceiverInput, FriendRelationUncheckedCreateWithoutReceiverInput> | FriendRelationCreateWithoutReceiverInput[] | FriendRelationUncheckedCreateWithoutReceiverInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutReceiverInput | FriendRelationCreateOrConnectWithoutReceiverInput[]
+    upsert?: FriendRelationUpsertWithWhereUniqueWithoutReceiverInput | FriendRelationUpsertWithWhereUniqueWithoutReceiverInput[]
+    createMany?: FriendRelationCreateManyReceiverInputEnvelope
+    set?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    disconnect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    delete?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    update?: FriendRelationUpdateWithWhereUniqueWithoutReceiverInput | FriendRelationUpdateWithWhereUniqueWithoutReceiverInput[]
+    updateMany?: FriendRelationUpdateManyWithWhereWithoutReceiverInput | FriendRelationUpdateManyWithWhereWithoutReceiverInput[]
+    deleteMany?: FriendRelationScalarWhereInput | FriendRelationScalarWhereInput[]
+  }
+
+  export type FriendRelationUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<FriendRelationCreateWithoutUsersInput, FriendRelationUncheckedCreateWithoutUsersInput> | FriendRelationCreateWithoutUsersInput[] | FriendRelationUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutUsersInput | FriendRelationCreateOrConnectWithoutUsersInput[]
+    upsert?: FriendRelationUpsertWithWhereUniqueWithoutUsersInput | FriendRelationUpsertWithWhereUniqueWithoutUsersInput[]
+    set?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    disconnect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    delete?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    connect?: FriendRelationWhereUniqueInput | FriendRelationWhereUniqueInput[]
+    update?: FriendRelationUpdateWithWhereUniqueWithoutUsersInput | FriendRelationUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: FriendRelationUpdateManyWithWhereWithoutUsersInput | FriendRelationUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: FriendRelationScalarWhereInput | FriendRelationScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutSentRequestsInput = {
+    create?: XOR<UserCreateWithoutSentRequestsInput, UserUncheckedCreateWithoutSentRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSentRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReceivedRequestsInput = {
+    create?: XOR<UserCreateWithoutReceivedRequestsInput, UserUncheckedCreateWithoutReceivedRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReceivedRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedManyWithoutFriendsInput = {
+    create?: XOR<UserCreateWithoutFriendsInput, UserUncheckedCreateWithoutFriendsInput> | UserCreateWithoutFriendsInput[] | UserUncheckedCreateWithoutFriendsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutFriendsInput | UserCreateOrConnectWithoutFriendsInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type MessageCreateNestedManyWithoutFriendRelationInput = {
+    create?: XOR<MessageCreateWithoutFriendRelationInput, MessageUncheckedCreateWithoutFriendRelationInput> | MessageCreateWithoutFriendRelationInput[] | MessageUncheckedCreateWithoutFriendRelationInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutFriendRelationInput | MessageCreateOrConnectWithoutFriendRelationInput[]
+    createMany?: MessageCreateManyFriendRelationInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutFriendsInput = {
+    create?: XOR<UserCreateWithoutFriendsInput, UserUncheckedCreateWithoutFriendsInput> | UserCreateWithoutFriendsInput[] | UserUncheckedCreateWithoutFriendsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutFriendsInput | UserCreateOrConnectWithoutFriendsInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type MessageUncheckedCreateNestedManyWithoutFriendRelationInput = {
+    create?: XOR<MessageCreateWithoutFriendRelationInput, MessageUncheckedCreateWithoutFriendRelationInput> | MessageCreateWithoutFriendRelationInput[] | MessageUncheckedCreateWithoutFriendRelationInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutFriendRelationInput | MessageCreateOrConnectWithoutFriendRelationInput[]
+    createMany?: MessageCreateManyFriendRelationInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutSentRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutSentRequestsInput, UserUncheckedCreateWithoutSentRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSentRequestsInput
+    upsert?: UserUpsertWithoutSentRequestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSentRequestsInput, UserUpdateWithoutSentRequestsInput>, UserUncheckedUpdateWithoutSentRequestsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutReceivedRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutReceivedRequestsInput, UserUncheckedCreateWithoutReceivedRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReceivedRequestsInput
+    upsert?: UserUpsertWithoutReceivedRequestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReceivedRequestsInput, UserUpdateWithoutReceivedRequestsInput>, UserUncheckedUpdateWithoutReceivedRequestsInput>
+  }
+
+  export type UserUpdateManyWithoutFriendsNestedInput = {
+    create?: XOR<UserCreateWithoutFriendsInput, UserUncheckedCreateWithoutFriendsInput> | UserCreateWithoutFriendsInput[] | UserUncheckedCreateWithoutFriendsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutFriendsInput | UserCreateOrConnectWithoutFriendsInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutFriendsInput | UserUpsertWithWhereUniqueWithoutFriendsInput[]
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutFriendsInput | UserUpdateWithWhereUniqueWithoutFriendsInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutFriendsInput | UserUpdateManyWithWhereWithoutFriendsInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type MessageUpdateManyWithoutFriendRelationNestedInput = {
+    create?: XOR<MessageCreateWithoutFriendRelationInput, MessageUncheckedCreateWithoutFriendRelationInput> | MessageCreateWithoutFriendRelationInput[] | MessageUncheckedCreateWithoutFriendRelationInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutFriendRelationInput | MessageCreateOrConnectWithoutFriendRelationInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutFriendRelationInput | MessageUpsertWithWhereUniqueWithoutFriendRelationInput[]
+    createMany?: MessageCreateManyFriendRelationInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutFriendRelationInput | MessageUpdateWithWhereUniqueWithoutFriendRelationInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutFriendRelationInput | MessageUpdateManyWithWhereWithoutFriendRelationInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutFriendsNestedInput = {
+    create?: XOR<UserCreateWithoutFriendsInput, UserUncheckedCreateWithoutFriendsInput> | UserCreateWithoutFriendsInput[] | UserUncheckedCreateWithoutFriendsInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutFriendsInput | UserCreateOrConnectWithoutFriendsInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutFriendsInput | UserUpsertWithWhereUniqueWithoutFriendsInput[]
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutFriendsInput | UserUpdateWithWhereUniqueWithoutFriendsInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutFriendsInput | UserUpdateManyWithWhereWithoutFriendsInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type MessageUncheckedUpdateManyWithoutFriendRelationNestedInput = {
+    create?: XOR<MessageCreateWithoutFriendRelationInput, MessageUncheckedCreateWithoutFriendRelationInput> | MessageCreateWithoutFriendRelationInput[] | MessageUncheckedCreateWithoutFriendRelationInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutFriendRelationInput | MessageCreateOrConnectWithoutFriendRelationInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutFriendRelationInput | MessageUpsertWithWhereUniqueWithoutFriendRelationInput[]
+    createMany?: MessageCreateManyFriendRelationInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutFriendRelationInput | MessageUpdateWithWhereUniqueWithoutFriendRelationInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutFriendRelationInput | MessageUpdateManyWithWhereWithoutFriendRelationInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutSentMessagesInput = {
+    create?: XOR<UserCreateWithoutSentMessagesInput, UserUncheckedCreateWithoutSentMessagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSentMessagesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReceivedMessagesInput = {
+    create?: XOR<UserCreateWithoutReceivedMessagesInput, UserUncheckedCreateWithoutReceivedMessagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReceivedMessagesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type FriendRelationCreateNestedOneWithoutMessagesInput = {
+    create?: XOR<FriendRelationCreateWithoutMessagesInput, FriendRelationUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutMessagesInput
+    connect?: FriendRelationWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutSentMessagesNestedInput = {
+    create?: XOR<UserCreateWithoutSentMessagesInput, UserUncheckedCreateWithoutSentMessagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSentMessagesInput
+    upsert?: UserUpsertWithoutSentMessagesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSentMessagesInput, UserUpdateWithoutSentMessagesInput>, UserUncheckedUpdateWithoutSentMessagesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutReceivedMessagesNestedInput = {
+    create?: XOR<UserCreateWithoutReceivedMessagesInput, UserUncheckedCreateWithoutReceivedMessagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReceivedMessagesInput
+    upsert?: UserUpsertWithoutReceivedMessagesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReceivedMessagesInput, UserUpdateWithoutReceivedMessagesInput>, UserUncheckedUpdateWithoutReceivedMessagesInput>
+  }
+
+  export type FriendRelationUpdateOneRequiredWithoutMessagesNestedInput = {
+    create?: XOR<FriendRelationCreateWithoutMessagesInput, FriendRelationUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: FriendRelationCreateOrConnectWithoutMessagesInput
+    upsert?: FriendRelationUpsertWithoutMessagesInput
+    connect?: FriendRelationWhereUniqueInput
+    update?: XOR<XOR<FriendRelationUpdateToOneWithWhereWithoutMessagesInput, FriendRelationUpdateWithoutMessagesInput>, FriendRelationUncheckedUpdateWithoutMessagesInput>
   }
 
   export type UserCreateNestedOneWithoutGuideInput = {
@@ -30310,6 +33802,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
@@ -30340,6 +33837,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -30385,6 +33887,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -30415,6 +33922,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UploadCreateWithoutProfilePicturesInput = {
@@ -30806,6 +34318,132 @@ export namespace Prisma {
   export type AssignmentCreateOrConnectWithoutAssignedToInput = {
     where: AssignmentWhereUniqueInput
     create: XOR<AssignmentCreateWithoutAssignedToInput, AssignmentUncheckedCreateWithoutAssignedToInput>
+  }
+
+  export type MessageCreateWithoutFromInput = {
+    sendDate?: Date | string
+    content: string
+    to: UserCreateNestedOneWithoutReceivedMessagesInput
+    FriendRelation?: FriendRelationCreateNestedOneWithoutMessagesInput
+  }
+
+  export type MessageUncheckedCreateWithoutFromInput = {
+    id?: number
+    toId: number
+    sendDate?: Date | string
+    content: string
+    relationId?: number
+  }
+
+  export type MessageCreateOrConnectWithoutFromInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutFromInput, MessageUncheckedCreateWithoutFromInput>
+  }
+
+  export type MessageCreateManyFromInputEnvelope = {
+    data: MessageCreateManyFromInput | MessageCreateManyFromInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MessageCreateWithoutToInput = {
+    sendDate?: Date | string
+    content: string
+    from: UserCreateNestedOneWithoutSentMessagesInput
+    FriendRelation?: FriendRelationCreateNestedOneWithoutMessagesInput
+  }
+
+  export type MessageUncheckedCreateWithoutToInput = {
+    id?: number
+    fromId: number
+    sendDate?: Date | string
+    content: string
+    relationId?: number
+  }
+
+  export type MessageCreateOrConnectWithoutToInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutToInput, MessageUncheckedCreateWithoutToInput>
+  }
+
+  export type MessageCreateManyToInputEnvelope = {
+    data: MessageCreateManyToInput | MessageCreateManyToInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FriendRelationCreateWithoutInitiatorInput = {
+    accepted?: boolean
+    createdDate?: Date | string
+    receiver: UserCreateNestedOneWithoutReceivedRequestsInput
+    users?: UserCreateNestedManyWithoutFriendsInput
+    messages?: MessageCreateNestedManyWithoutFriendRelationInput
+  }
+
+  export type FriendRelationUncheckedCreateWithoutInitiatorInput = {
+    id?: number
+    receiverId: number
+    accepted?: boolean
+    createdDate?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutFriendsInput
+    messages?: MessageUncheckedCreateNestedManyWithoutFriendRelationInput
+  }
+
+  export type FriendRelationCreateOrConnectWithoutInitiatorInput = {
+    where: FriendRelationWhereUniqueInput
+    create: XOR<FriendRelationCreateWithoutInitiatorInput, FriendRelationUncheckedCreateWithoutInitiatorInput>
+  }
+
+  export type FriendRelationCreateManyInitiatorInputEnvelope = {
+    data: FriendRelationCreateManyInitiatorInput | FriendRelationCreateManyInitiatorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FriendRelationCreateWithoutReceiverInput = {
+    accepted?: boolean
+    createdDate?: Date | string
+    initiator: UserCreateNestedOneWithoutSentRequestsInput
+    users?: UserCreateNestedManyWithoutFriendsInput
+    messages?: MessageCreateNestedManyWithoutFriendRelationInput
+  }
+
+  export type FriendRelationUncheckedCreateWithoutReceiverInput = {
+    id?: number
+    initiatorId: number
+    accepted?: boolean
+    createdDate?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutFriendsInput
+    messages?: MessageUncheckedCreateNestedManyWithoutFriendRelationInput
+  }
+
+  export type FriendRelationCreateOrConnectWithoutReceiverInput = {
+    where: FriendRelationWhereUniqueInput
+    create: XOR<FriendRelationCreateWithoutReceiverInput, FriendRelationUncheckedCreateWithoutReceiverInput>
+  }
+
+  export type FriendRelationCreateManyReceiverInputEnvelope = {
+    data: FriendRelationCreateManyReceiverInput | FriendRelationCreateManyReceiverInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FriendRelationCreateWithoutUsersInput = {
+    accepted?: boolean
+    createdDate?: Date | string
+    initiator: UserCreateNestedOneWithoutSentRequestsInput
+    receiver: UserCreateNestedOneWithoutReceivedRequestsInput
+    messages?: MessageCreateNestedManyWithoutFriendRelationInput
+  }
+
+  export type FriendRelationUncheckedCreateWithoutUsersInput = {
+    id?: number
+    initiatorId: number
+    receiverId: number
+    accepted?: boolean
+    createdDate?: Date | string
+    messages?: MessageUncheckedCreateNestedManyWithoutFriendRelationInput
+  }
+
+  export type FriendRelationCreateOrConnectWithoutUsersInput = {
+    where: FriendRelationWhereUniqueInput
+    create: XOR<FriendRelationCreateWithoutUsersInput, FriendRelationUncheckedCreateWithoutUsersInput>
   }
 
   export type UploadUpsertWithoutProfilePicturesInput = {
@@ -31210,6 +34848,928 @@ export namespace Prisma {
     dueDate?: DateTimeNullableFilter<"Assignment"> | Date | string | null
   }
 
+  export type MessageUpsertWithWhereUniqueWithoutFromInput = {
+    where: MessageWhereUniqueInput
+    update: XOR<MessageUpdateWithoutFromInput, MessageUncheckedUpdateWithoutFromInput>
+    create: XOR<MessageCreateWithoutFromInput, MessageUncheckedCreateWithoutFromInput>
+  }
+
+  export type MessageUpdateWithWhereUniqueWithoutFromInput = {
+    where: MessageWhereUniqueInput
+    data: XOR<MessageUpdateWithoutFromInput, MessageUncheckedUpdateWithoutFromInput>
+  }
+
+  export type MessageUpdateManyWithWhereWithoutFromInput = {
+    where: MessageScalarWhereInput
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutFromInput>
+  }
+
+  export type MessageScalarWhereInput = {
+    AND?: MessageScalarWhereInput | MessageScalarWhereInput[]
+    OR?: MessageScalarWhereInput[]
+    NOT?: MessageScalarWhereInput | MessageScalarWhereInput[]
+    id?: IntFilter<"Message"> | number
+    fromId?: IntFilter<"Message"> | number
+    toId?: IntFilter<"Message"> | number
+    sendDate?: DateTimeFilter<"Message"> | Date | string
+    content?: StringFilter<"Message"> | string
+    relationId?: IntFilter<"Message"> | number
+  }
+
+  export type MessageUpsertWithWhereUniqueWithoutToInput = {
+    where: MessageWhereUniqueInput
+    update: XOR<MessageUpdateWithoutToInput, MessageUncheckedUpdateWithoutToInput>
+    create: XOR<MessageCreateWithoutToInput, MessageUncheckedCreateWithoutToInput>
+  }
+
+  export type MessageUpdateWithWhereUniqueWithoutToInput = {
+    where: MessageWhereUniqueInput
+    data: XOR<MessageUpdateWithoutToInput, MessageUncheckedUpdateWithoutToInput>
+  }
+
+  export type MessageUpdateManyWithWhereWithoutToInput = {
+    where: MessageScalarWhereInput
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutToInput>
+  }
+
+  export type FriendRelationUpsertWithWhereUniqueWithoutInitiatorInput = {
+    where: FriendRelationWhereUniqueInput
+    update: XOR<FriendRelationUpdateWithoutInitiatorInput, FriendRelationUncheckedUpdateWithoutInitiatorInput>
+    create: XOR<FriendRelationCreateWithoutInitiatorInput, FriendRelationUncheckedCreateWithoutInitiatorInput>
+  }
+
+  export type FriendRelationUpdateWithWhereUniqueWithoutInitiatorInput = {
+    where: FriendRelationWhereUniqueInput
+    data: XOR<FriendRelationUpdateWithoutInitiatorInput, FriendRelationUncheckedUpdateWithoutInitiatorInput>
+  }
+
+  export type FriendRelationUpdateManyWithWhereWithoutInitiatorInput = {
+    where: FriendRelationScalarWhereInput
+    data: XOR<FriendRelationUpdateManyMutationInput, FriendRelationUncheckedUpdateManyWithoutInitiatorInput>
+  }
+
+  export type FriendRelationScalarWhereInput = {
+    AND?: FriendRelationScalarWhereInput | FriendRelationScalarWhereInput[]
+    OR?: FriendRelationScalarWhereInput[]
+    NOT?: FriendRelationScalarWhereInput | FriendRelationScalarWhereInput[]
+    id?: IntFilter<"FriendRelation"> | number
+    initiatorId?: IntFilter<"FriendRelation"> | number
+    receiverId?: IntFilter<"FriendRelation"> | number
+    accepted?: BoolFilter<"FriendRelation"> | boolean
+    createdDate?: DateTimeFilter<"FriendRelation"> | Date | string
+  }
+
+  export type FriendRelationUpsertWithWhereUniqueWithoutReceiverInput = {
+    where: FriendRelationWhereUniqueInput
+    update: XOR<FriendRelationUpdateWithoutReceiverInput, FriendRelationUncheckedUpdateWithoutReceiverInput>
+    create: XOR<FriendRelationCreateWithoutReceiverInput, FriendRelationUncheckedCreateWithoutReceiverInput>
+  }
+
+  export type FriendRelationUpdateWithWhereUniqueWithoutReceiverInput = {
+    where: FriendRelationWhereUniqueInput
+    data: XOR<FriendRelationUpdateWithoutReceiverInput, FriendRelationUncheckedUpdateWithoutReceiverInput>
+  }
+
+  export type FriendRelationUpdateManyWithWhereWithoutReceiverInput = {
+    where: FriendRelationScalarWhereInput
+    data: XOR<FriendRelationUpdateManyMutationInput, FriendRelationUncheckedUpdateManyWithoutReceiverInput>
+  }
+
+  export type FriendRelationUpsertWithWhereUniqueWithoutUsersInput = {
+    where: FriendRelationWhereUniqueInput
+    update: XOR<FriendRelationUpdateWithoutUsersInput, FriendRelationUncheckedUpdateWithoutUsersInput>
+    create: XOR<FriendRelationCreateWithoutUsersInput, FriendRelationUncheckedCreateWithoutUsersInput>
+  }
+
+  export type FriendRelationUpdateWithWhereUniqueWithoutUsersInput = {
+    where: FriendRelationWhereUniqueInput
+    data: XOR<FriendRelationUpdateWithoutUsersInput, FriendRelationUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type FriendRelationUpdateManyWithWhereWithoutUsersInput = {
+    where: FriendRelationScalarWhereInput
+    data: XOR<FriendRelationUpdateManyMutationInput, FriendRelationUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type UserCreateWithoutSentRequestsInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryCreateNestedManyWithoutUserInput
+    Problem?: ProblemCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutSentRequestsInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryUncheckedCreateNestedManyWithoutUserInput
+    Problem?: ProblemUncheckedCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserCreateOrConnectWithoutSentRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSentRequestsInput, UserUncheckedCreateWithoutSentRequestsInput>
+  }
+
+  export type UserCreateWithoutReceivedRequestsInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryCreateNestedManyWithoutUserInput
+    Problem?: ProblemCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutReceivedRequestsInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryUncheckedCreateNestedManyWithoutUserInput
+    Problem?: ProblemUncheckedCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserCreateOrConnectWithoutReceivedRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReceivedRequestsInput, UserUncheckedCreateWithoutReceivedRequestsInput>
+  }
+
+  export type UserCreateWithoutFriendsInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryCreateNestedManyWithoutUserInput
+    Problem?: ProblemCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+  }
+
+  export type UserUncheckedCreateWithoutFriendsInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryUncheckedCreateNestedManyWithoutUserInput
+    Problem?: ProblemUncheckedCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+  }
+
+  export type UserCreateOrConnectWithoutFriendsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFriendsInput, UserUncheckedCreateWithoutFriendsInput>
+  }
+
+  export type MessageCreateWithoutFriendRelationInput = {
+    sendDate?: Date | string
+    content: string
+    from: UserCreateNestedOneWithoutSentMessagesInput
+    to: UserCreateNestedOneWithoutReceivedMessagesInput
+  }
+
+  export type MessageUncheckedCreateWithoutFriendRelationInput = {
+    id?: number
+    fromId: number
+    toId: number
+    sendDate?: Date | string
+    content: string
+  }
+
+  export type MessageCreateOrConnectWithoutFriendRelationInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutFriendRelationInput, MessageUncheckedCreateWithoutFriendRelationInput>
+  }
+
+  export type MessageCreateManyFriendRelationInputEnvelope = {
+    data: MessageCreateManyFriendRelationInput | MessageCreateManyFriendRelationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutSentRequestsInput = {
+    update: XOR<UserUpdateWithoutSentRequestsInput, UserUncheckedUpdateWithoutSentRequestsInput>
+    create: XOR<UserCreateWithoutSentRequestsInput, UserUncheckedCreateWithoutSentRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSentRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSentRequestsInput, UserUncheckedUpdateWithoutSentRequestsInput>
+  }
+
+  export type UserUpdateWithoutSentRequestsInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSentRequestsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUncheckedUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUncheckedUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUpsertWithoutReceivedRequestsInput = {
+    update: XOR<UserUpdateWithoutReceivedRequestsInput, UserUncheckedUpdateWithoutReceivedRequestsInput>
+    create: XOR<UserCreateWithoutReceivedRequestsInput, UserUncheckedCreateWithoutReceivedRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReceivedRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReceivedRequestsInput, UserUncheckedUpdateWithoutReceivedRequestsInput>
+  }
+
+  export type UserUpdateWithoutReceivedRequestsInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReceivedRequestsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUncheckedUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUncheckedUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutFriendsInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutFriendsInput, UserUncheckedUpdateWithoutFriendsInput>
+    create: XOR<UserCreateWithoutFriendsInput, UserUncheckedCreateWithoutFriendsInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutFriendsInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutFriendsInput, UserUncheckedUpdateWithoutFriendsInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutFriendsInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutFriendsInput>
+  }
+
+  export type UserScalarWhereInput = {
+    AND?: UserScalarWhereInput | UserScalarWhereInput[]
+    OR?: UserScalarWhereInput[]
+    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
+    id?: IntFilter<"User"> | number
+    username?: StringFilter<"User"> | string
+    firstName?: StringFilter<"User"> | string
+    lastName?: StringFilter<"User"> | string
+    email?: StringFilter<"User"> | string
+    emailValidated?: BoolFilter<"User"> | boolean
+    userColor?: StringFilter<"User"> | string
+    picture?: StringFilter<"User"> | string
+    role?: EnumRoleFilter<"User"> | $Enums.Role
+    createdAt?: DateTimeFilter<"User"> | Date | string
+    activeAt?: DateTimeFilter<"User"> | Date | string
+    password?: StringNullableFilter<"User"> | string | null
+    authId?: JsonNullableFilter<"User">
+    loginMethod?: StringFilter<"User"> | string
+    occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
+    preferences?: JsonNullableFilter<"User">
+  }
+
+  export type MessageUpsertWithWhereUniqueWithoutFriendRelationInput = {
+    where: MessageWhereUniqueInput
+    update: XOR<MessageUpdateWithoutFriendRelationInput, MessageUncheckedUpdateWithoutFriendRelationInput>
+    create: XOR<MessageCreateWithoutFriendRelationInput, MessageUncheckedCreateWithoutFriendRelationInput>
+  }
+
+  export type MessageUpdateWithWhereUniqueWithoutFriendRelationInput = {
+    where: MessageWhereUniqueInput
+    data: XOR<MessageUpdateWithoutFriendRelationInput, MessageUncheckedUpdateWithoutFriendRelationInput>
+  }
+
+  export type MessageUpdateManyWithWhereWithoutFriendRelationInput = {
+    where: MessageScalarWhereInput
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutFriendRelationInput>
+  }
+
+  export type UserCreateWithoutSentMessagesInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryCreateNestedManyWithoutUserInput
+    Problem?: ProblemCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutSentMessagesInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryUncheckedCreateNestedManyWithoutUserInput
+    Problem?: ProblemUncheckedCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserCreateOrConnectWithoutSentMessagesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSentMessagesInput, UserUncheckedCreateWithoutSentMessagesInput>
+  }
+
+  export type UserCreateWithoutReceivedMessagesInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryCreateNestedManyWithoutUserInput
+    Problem?: ProblemCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutReceivedMessagesInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryUncheckedCreateNestedManyWithoutUserInput
+    Problem?: ProblemUncheckedCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserCreateOrConnectWithoutReceivedMessagesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReceivedMessagesInput, UserUncheckedCreateWithoutReceivedMessagesInput>
+  }
+
+  export type FriendRelationCreateWithoutMessagesInput = {
+    accepted?: boolean
+    createdDate?: Date | string
+    initiator: UserCreateNestedOneWithoutSentRequestsInput
+    receiver: UserCreateNestedOneWithoutReceivedRequestsInput
+    users?: UserCreateNestedManyWithoutFriendsInput
+  }
+
+  export type FriendRelationUncheckedCreateWithoutMessagesInput = {
+    id?: number
+    initiatorId: number
+    receiverId: number
+    accepted?: boolean
+    createdDate?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutFriendsInput
+  }
+
+  export type FriendRelationCreateOrConnectWithoutMessagesInput = {
+    where: FriendRelationWhereUniqueInput
+    create: XOR<FriendRelationCreateWithoutMessagesInput, FriendRelationUncheckedCreateWithoutMessagesInput>
+  }
+
+  export type UserUpsertWithoutSentMessagesInput = {
+    update: XOR<UserUpdateWithoutSentMessagesInput, UserUncheckedUpdateWithoutSentMessagesInput>
+    create: XOR<UserCreateWithoutSentMessagesInput, UserUncheckedCreateWithoutSentMessagesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSentMessagesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSentMessagesInput, UserUncheckedUpdateWithoutSentMessagesInput>
+  }
+
+  export type UserUpdateWithoutSentMessagesInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSentMessagesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUncheckedUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUncheckedUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUpsertWithoutReceivedMessagesInput = {
+    update: XOR<UserUpdateWithoutReceivedMessagesInput, UserUncheckedUpdateWithoutReceivedMessagesInput>
+    create: XOR<UserCreateWithoutReceivedMessagesInput, UserUncheckedCreateWithoutReceivedMessagesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReceivedMessagesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReceivedMessagesInput, UserUncheckedUpdateWithoutReceivedMessagesInput>
+  }
+
+  export type UserUpdateWithoutReceivedMessagesInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReceivedMessagesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUncheckedUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUncheckedUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type FriendRelationUpsertWithoutMessagesInput = {
+    update: XOR<FriendRelationUpdateWithoutMessagesInput, FriendRelationUncheckedUpdateWithoutMessagesInput>
+    create: XOR<FriendRelationCreateWithoutMessagesInput, FriendRelationUncheckedCreateWithoutMessagesInput>
+    where?: FriendRelationWhereInput
+  }
+
+  export type FriendRelationUpdateToOneWithWhereWithoutMessagesInput = {
+    where?: FriendRelationWhereInput
+    data: XOR<FriendRelationUpdateWithoutMessagesInput, FriendRelationUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type FriendRelationUpdateWithoutMessagesInput = {
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiator?: UserUpdateOneRequiredWithoutSentRequestsNestedInput
+    receiver?: UserUpdateOneRequiredWithoutReceivedRequestsNestedInput
+    users?: UserUpdateManyWithoutFriendsNestedInput
+  }
+
+  export type FriendRelationUncheckedUpdateWithoutMessagesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    initiatorId?: IntFieldUpdateOperationsInput | number
+    receiverId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutFriendsNestedInput
+  }
+
   export type UserCreateWithoutGuideInput = {
     username: string
     firstName: string
@@ -31237,6 +35797,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutGuideInput = {
@@ -31267,6 +35832,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutGuideInput = {
@@ -31330,6 +35900,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGuideInput = {
@@ -31360,6 +35935,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type GuideTagUpsertWithWhereUniqueWithoutGuideInput = {
@@ -31740,6 +36320,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutProblemInput = {
@@ -31770,6 +36355,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutProblemInput = {
@@ -31893,6 +36483,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProblemInput = {
@@ -31923,6 +36518,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type ProblemTagUpsertWithWhereUniqueWithoutProblemInput = {
@@ -32000,6 +36600,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutSolvesInput = {
@@ -32030,6 +36635,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutSolvesInput = {
@@ -32123,6 +36733,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSolvesInput = {
@@ -32153,6 +36768,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type ProblemUpsertWithoutSolvesInput = {
@@ -32236,6 +36856,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutCourseInput = {
@@ -32266,6 +36891,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutCourseInput = {
@@ -32394,6 +37024,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCourseInput = {
@@ -32424,6 +37059,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UploadUpsertWithoutCourseInput = {
@@ -32555,6 +37195,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutInquiryInput = {
@@ -32585,6 +37230,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutInquiryInput = {
@@ -32676,6 +37326,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInquiryInput = {
@@ -32706,6 +37361,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UserCreateWithoutReviewInput = {
@@ -32735,6 +37395,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutReviewInput = {
@@ -32765,6 +37430,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutReviewInput = {
@@ -32850,6 +37520,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewInput = {
@@ -32880,6 +37555,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type CourseUpsertWithoutReviewsInput = {
@@ -32955,6 +37635,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutUploadInput = {
@@ -32985,6 +37670,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutUploadInput = {
@@ -33064,6 +37754,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutPictureUploadInput = {
@@ -33094,6 +37789,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutPictureUploadInput = {
@@ -33144,6 +37844,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadInput = {
@@ -33174,6 +37879,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type CourseUpsertWithWhereUniqueWithoutVideoSummaryInput = {
@@ -33228,28 +37938,6 @@ export namespace Prisma {
     data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutPictureUploadInput>
   }
 
-  export type UserScalarWhereInput = {
-    AND?: UserScalarWhereInput | UserScalarWhereInput[]
-    OR?: UserScalarWhereInput[]
-    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
-    id?: IntFilter<"User"> | number
-    username?: StringFilter<"User"> | string
-    firstName?: StringFilter<"User"> | string
-    lastName?: StringFilter<"User"> | string
-    email?: StringFilter<"User"> | string
-    emailValidated?: BoolFilter<"User"> | boolean
-    userColor?: StringFilter<"User"> | string
-    picture?: StringFilter<"User"> | string
-    role?: EnumRoleFilter<"User"> | $Enums.Role
-    createdAt?: DateTimeFilter<"User"> | Date | string
-    activeAt?: DateTimeFilter<"User"> | Date | string
-    password?: StringNullableFilter<"User"> | string | null
-    authId?: JsonNullableFilter<"User">
-    loginMethod?: StringFilter<"User"> | string
-    occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
-    preferences?: JsonNullableFilter<"User">
-  }
-
   export type UserCreateWithoutFeedbackInput = {
     username: string
     firstName: string
@@ -33277,6 +37965,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutFeedbackInput = {
@@ -33307,6 +38000,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutFeedbackInput = {
@@ -33352,6 +38050,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedbackInput = {
@@ -33382,6 +38085,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UserCreateWithoutCreatedClassesInput = {
@@ -33411,6 +38119,11 @@ export namespace Prisma {
     Feedback?: FeedbackCreateNestedManyWithoutUserInput
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutCreatedClassesInput = {
@@ -33441,6 +38154,11 @@ export namespace Prisma {
     Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutCreatedClassesInput = {
@@ -33535,6 +38253,11 @@ export namespace Prisma {
     Feedback?: FeedbackUpdateManyWithoutUserNestedInput
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedClassesInput = {
@@ -33565,6 +38288,11 @@ export namespace Prisma {
     Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type StudentsInCourseUpsertWithWhereUniqueWithoutClassInput = {
@@ -33626,6 +38354,11 @@ export namespace Prisma {
     Feedback?: FeedbackCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutJoinedClassInput = {
@@ -33656,6 +38389,11 @@ export namespace Prisma {
     Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
     Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutJoinedClassInput = {
@@ -33725,6 +38463,11 @@ export namespace Prisma {
     Feedback?: FeedbackUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutJoinedClassInput = {
@@ -33755,6 +38498,11 @@ export namespace Prisma {
     Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type ClassUpsertWithoutStudentsInput = {
@@ -33886,6 +38634,11 @@ export namespace Prisma {
     Feedback?: FeedbackCreateNestedManyWithoutUserInput
     JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutAssigmentsInput = {
@@ -33916,6 +38669,11 @@ export namespace Prisma {
     Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
     JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
     CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type UserCreateOrConnectWithoutAssigmentsInput = {
@@ -34118,6 +38876,36 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     color?: string
+  }
+
+  export type MessageCreateManyFromInput = {
+    id?: number
+    toId: number
+    sendDate?: Date | string
+    content: string
+    relationId?: number
+  }
+
+  export type MessageCreateManyToInput = {
+    id?: number
+    fromId: number
+    sendDate?: Date | string
+    content: string
+    relationId?: number
+  }
+
+  export type FriendRelationCreateManyInitiatorInput = {
+    id?: number
+    receiverId: number
+    accepted?: boolean
+    createdDate?: Date | string
+  }
+
+  export type FriendRelationCreateManyReceiverInput = {
+    id?: number
+    initiatorId: number
+    accepted?: boolean
+    createdDate?: Date | string
   }
 
   export type ProjectUpdateWithoutUserInput = {
@@ -34445,6 +39233,244 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type MessageUpdateWithoutFromInput = {
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    to?: UserUpdateOneRequiredWithoutReceivedMessagesNestedInput
+    FriendRelation?: FriendRelationUpdateOneRequiredWithoutMessagesNestedInput
+  }
+
+  export type MessageUncheckedUpdateWithoutFromInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    toId?: IntFieldUpdateOperationsInput | number
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    relationId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type MessageUncheckedUpdateManyWithoutFromInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    toId?: IntFieldUpdateOperationsInput | number
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    relationId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type MessageUpdateWithoutToInput = {
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    from?: UserUpdateOneRequiredWithoutSentMessagesNestedInput
+    FriendRelation?: FriendRelationUpdateOneRequiredWithoutMessagesNestedInput
+  }
+
+  export type MessageUncheckedUpdateWithoutToInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    fromId?: IntFieldUpdateOperationsInput | number
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    relationId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type MessageUncheckedUpdateManyWithoutToInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    fromId?: IntFieldUpdateOperationsInput | number
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    relationId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type FriendRelationUpdateWithoutInitiatorInput = {
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    receiver?: UserUpdateOneRequiredWithoutReceivedRequestsNestedInput
+    users?: UserUpdateManyWithoutFriendsNestedInput
+    messages?: MessageUpdateManyWithoutFriendRelationNestedInput
+  }
+
+  export type FriendRelationUncheckedUpdateWithoutInitiatorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    receiverId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutFriendsNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutFriendRelationNestedInput
+  }
+
+  export type FriendRelationUncheckedUpdateManyWithoutInitiatorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    receiverId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FriendRelationUpdateWithoutReceiverInput = {
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiator?: UserUpdateOneRequiredWithoutSentRequestsNestedInput
+    users?: UserUpdateManyWithoutFriendsNestedInput
+    messages?: MessageUpdateManyWithoutFriendRelationNestedInput
+  }
+
+  export type FriendRelationUncheckedUpdateWithoutReceiverInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    initiatorId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutFriendsNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutFriendRelationNestedInput
+  }
+
+  export type FriendRelationUncheckedUpdateManyWithoutReceiverInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    initiatorId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FriendRelationUpdateWithoutUsersInput = {
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiator?: UserUpdateOneRequiredWithoutSentRequestsNestedInput
+    receiver?: UserUpdateOneRequiredWithoutReceivedRequestsNestedInput
+    messages?: MessageUpdateManyWithoutFriendRelationNestedInput
+  }
+
+  export type FriendRelationUncheckedUpdateWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    initiatorId?: IntFieldUpdateOperationsInput | number
+    receiverId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: MessageUncheckedUpdateManyWithoutFriendRelationNestedInput
+  }
+
+  export type FriendRelationUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    initiatorId?: IntFieldUpdateOperationsInput | number
+    receiverId?: IntFieldUpdateOperationsInput | number
+    accepted?: BoolFieldUpdateOperationsInput | boolean
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageCreateManyFriendRelationInput = {
+    id?: number
+    fromId: number
+    toId: number
+    sendDate?: Date | string
+    content: string
+  }
+
+  export type UserUpdateWithoutFriendsInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFriendsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUncheckedUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUncheckedUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutFriendsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type MessageUpdateWithoutFriendRelationInput = {
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    from?: UserUpdateOneRequiredWithoutSentMessagesNestedInput
+    to?: UserUpdateOneRequiredWithoutReceivedMessagesNestedInput
+  }
+
+  export type MessageUncheckedUpdateWithoutFriendRelationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    fromId?: IntFieldUpdateOperationsInput | number
+    toId?: IntFieldUpdateOperationsInput | number
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type MessageUncheckedUpdateManyWithoutFriendRelationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    fromId?: IntFieldUpdateOperationsInput | number
+    toId?: IntFieldUpdateOperationsInput | number
+    sendDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
   }
 
   export type GuideTagCreateManyGuideInput = {
@@ -34785,6 +39811,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPictureUploadInput = {
@@ -34815,6 +39846,11 @@ export namespace Prisma {
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
     Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutPictureUploadInput = {
@@ -34919,6 +39955,11 @@ export namespace Prisma {
     Feedback?: FeedbackUpdateManyWithoutUserNestedInput
     JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssigmentsInput = {
@@ -34949,6 +39990,11 @@ export namespace Prisma {
     Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
     JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
     CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutAssigmentsInput = {

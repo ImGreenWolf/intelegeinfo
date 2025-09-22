@@ -148,6 +148,23 @@ exports.Prisma.UserScalarFieldEnum = {
   preferences: 'preferences'
 };
 
+exports.Prisma.FriendRelationScalarFieldEnum = {
+  id: 'id',
+  initiatorId: 'initiatorId',
+  receiverId: 'receiverId',
+  accepted: 'accepted',
+  createdDate: 'createdDate'
+};
+
+exports.Prisma.MessageScalarFieldEnum = {
+  id: 'id',
+  fromId: 'fromId',
+  toId: 'toId',
+  sendDate: 'sendDate',
+  content: 'content',
+  relationId: 'relationId'
+};
+
 exports.Prisma.CodeScalarFieldEnum = {
   code: 'code',
   value: 'value',
@@ -349,6 +366,10 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   loginMethod: 'loginMethod'
 };
 
+exports.Prisma.MessageOrderByRelevanceFieldEnum = {
+  content: 'content'
+};
+
 exports.Prisma.CodeOrderByRelevanceFieldEnum = {
   code: 'code',
   value: 'value'
@@ -452,6 +473,8 @@ exports.SolveType = exports.$Enums.SolveType = {
 exports.Prisma.ModelName = {
   Project: 'Project',
   User: 'User',
+  FriendRelation: 'FriendRelation',
+  Message: 'Message',
   Code: 'Code',
   RefreshToken: 'RefreshToken',
   Guide: 'Guide',

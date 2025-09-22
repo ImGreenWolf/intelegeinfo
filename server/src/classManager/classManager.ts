@@ -8,12 +8,11 @@ const router = express.Router();
 router.use(bodyParser.json());
 export default router; 
 
-import { newWSS, parseText, rootDirName, sessionMap, tokenCookieName } from '../server';
+import { newWSS, parseText, rootDirName, sessionMap, sqid, tokenCookieName } from '../server';
 import prisma from '../dbClient';
 import { getClientId, getIdFromJWT, getJWT, getUserData } from '../usersManager';
 import { ClientObject, randomHexColor } from '../types';
 import { Assignment, Prisma } from '../../../generated/prisma';
-import sqids from 'sqids'
 const htmlPath = path.join(rootDirName, 'server', 'src','classManager','html')
 
 router.get('/', async (req,res) => {
@@ -354,10 +353,7 @@ router.get('/join', async (req, res) => {
    
 })
 
-const sqid = new sqids({
-    alphabet: 'abcdefghijklmnopqrstuvwxyz',
-    minLength: 6
-})
+
 router.post('/join', async (req, res) => {
         const {code: encodedId} = req.body;
         const id = sqid.decode(encodedId)[0]

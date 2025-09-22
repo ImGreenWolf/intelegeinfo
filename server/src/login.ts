@@ -3,15 +3,15 @@ import fs from 'fs';
 import bodyParser from 'body-parser';
 import forge from 'node-forge';
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 import { UUID } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from './dbClient';
 import * as signup from './signup'
 import path from 'path';
 import { Role } from '../../generated/prisma';
-import { tokenCookieName } from './server';
-import { getJWT } from './usersManager';
+import { sqid, tokenCookieName } from './server';
+import { getJWT, transporter } from './usersManager';
 
 const router = express.Router();
 router.use(bodyParser.json());
@@ -93,24 +93,13 @@ router.post('/', (req, res) => {
               if (email === user?.email && passwordsMatch)  {
                   // login succsessfull
 
-                  // var token = createToken(user)
-
-                  // res.cookie('token', token, {
-                  //     httpOnly: true,
-                  //     secure: false, // Set to true in production (HTTPS)
-                  //     maxAge: 3600000, // 1 hour
-                  //   });
-
-                  
-
+                  console.log(`User ${user.username} with id ${user.id} logged in using credentials`)
                   onLoggedIn(user, res, req).status(200).json({ message: 'Login successful! Hello ' + user.username});
 
 
 
                   } else {
-                  // const hasedPassword = bcrypt.hashSync(decryptedPassword, salt);
-                  // const user = new UserObject("test", hasedPassword);
-                  console.log(user)
+                  console.log(`Faild auth for ${user.username}`)
                   
 
                   res.status(401).json({ message: 'Invalid credentials'});
@@ -130,8 +119,218 @@ router.post('/', (req, res) => {
 
    
   });
- 
 
+  
+
+router.get('/one-time-code', (req, res) => {
+  
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cere Aprobare</title>
+        <link rel="stylesheet" href="/css/password-reset.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        
+    </head>
+    <body>
+    <div class="pass-container">
+      <h1 id="title">Introdu adresa de email</h1>
+      <p id='details'></p>
+      <form id='form'>
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" placeholder="Adresa email al contului">
+            <button type="submit">Trimite</button>
+      </form>
+
+      <script>
+
+      main() 
+
+      async function main() {
+       const form = document.getElementById('form')
+        const email = await new Promise((resolve, reject) => {
+          const email = document.getElementById('email')
+          email.onkeydown = (ev) => {
+            if (!(ev.key === "Enter" && !ev.shiftKey))
+              return;
+
+            ev.preventDefault()
+            resolve(email.value)
+          }
+         
+          form.onsubmit = (ev) => {
+            ev.preventDefault()
+            
+            resolve(email.value)
+          }
+        
+        })
+        
+        if(!email)
+          return
+        const res = await fetch('./one-time-code', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            email,
+            keepLoggedIn: false,
+          })
+        })
+        document.getElementById('title').innerText = res.ok ? 'Am trimis emailul.' : "A aparut o eroare"
+        document.getElementById('details').innerText = res.ok ? 'Va rugam aprobati apasand butonul primit pe email la ' + email : "Va rugam incercati alta metoda.."
+        form.style.display = 'none';
+        const token = (await res.json()).token
+          if(!token)
+            return
+
+        setInterval(async () => {
+          const res = await fetch('./one-time-code/verify?token=' + token)
+          if(!res.ok)
+            return;
+          location.href = '/profile';
+        }, 5000);
+
+      }
+      </script>
+      </div>
+    </body>
+    </html>
+    
+    `)
+})
+
+router.post('/one-time-code', async (req, res) => {
+    try {
+      const {email, keepLoggedIn} = req.body; 
+      const token = jwt.sign({email, keepLoggedIn, date: Date.now()}, privateKeyPem, {algorithm: 'RS256', expiresIn: 3600})
+      console.log(`https://intelegeinfo.ro/login/one-time-code/callback?token=${token}`)
+      const user = await prisma.user.findFirst({
+        where: {
+          email
+        }
+      })
+      if(!user) {
+         res.status(404).send({msg: 'Nu am gasit contul asociat cu emailul dat...'})
+        return;
+      }
+
+      transporter.sendMail({
+        to: email,
+        from: 'IntelegeInfo <noreply@intelegeinfo.ro>',
+        subject: 'Aprobare Logare Intelegeinfo',
+        html: 
+        `
+        <div>
+          <h1>Cerere de logare in contul ${user.username}</h1>
+          <p>Apasa pe butonul de mai jos pentru a aproba logarea, iar apoi reveniti la pagina initiala si veti avea access la contul dumneavoastra</p>
+          <a href='https://intelegeinfo.ro/login/one-time-code/callback?token=${token}' style='background-color: #3393ca; border-radius: 0.5em; color: white; font-family: Poppins; padding: 1em 3em;text-decoration: none;'>Aproba</a>
+
+          <p>Aprobarea expria intr-o ora!</p>
+          <p>
+          Daca nu ai cerut acest cod, contul tau nu este in pericol, dar inseamna
+          ca cineva a incercat sa-ti acceseze contul!
+          </p>
+        </div>
+        `
+      }, (err, info) => {
+        if(err)
+          throw err;
+  
+        res.send({msg: 'Done! Am trimis linkul cu codul de logare!', token})
+      })
+    } catch (error) {
+      res.status(500).send(error)
+    }
+})
+
+router.get('/one-time-code/callback', (req, res) => {
+   try {
+     const token = req.query.token as string; 
+     if(!jwt.verify(token, privateKeyPem))
+       throw 'cod invalid!';
+ 
+     const obj = jwt.decode(token) as JwtPayload
+     const keepLoggedIn = obj.keepLoggedIn
+     const email = obj.email as string
+     codeVerifiedAcc.set(email, obj)
+     res.send(`
+      <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cerere Aprobata</title>
+        <link rel="stylesheet" href="/css/password-reset.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        
+    </head>
+    <body>
+      <div class="pass-container">
+        <h1 id="title">Cerere Aprobata</h1>
+        <p id='details'>Intoarceti-va la pagina initiala pentru a continua. Spor la programat!</p>
+      </div>
+    </body>
+    </html>
+      
+      `)
+   } catch (error) {
+      res.status(500).send(error)
+    
+   }
+
+})
+const codeVerifiedAcc = new Map<string, JwtPayload>()
+router.get('/one-time-code/verify', async (req, res) => {
+ try {
+     const token = req.query.token as string; 
+     const keepLoggedIn = req.query.keepLoggedIn == 'true';
+     if(!jwt.verify(token, privateKeyPem))
+       throw 'invalid token';
+ 
+     const clobj = jwt.decode(token) as JwtPayload
+     
+     const clemail = clobj.email as string
+     const verifiedEmail = codeVerifiedAcc.get(clemail)
+     if(!verifiedEmail)
+       throw 'email is not verified';
+ 
+ 
+     const obj = verifiedEmail
+     if(!obj)
+       throw 'invalid object';
+ 
+      console.error(clobj.date - obj.date)
+
+     if(clobj.date > obj.date) 
+      throw 'token has been issued before'
+
+     const email = obj.email as string
+ 
+     if(clemail != email)
+       throw 'emails dont match';
+ 
+     codeVerifiedAcc.delete(clemail)
+ 
+     const user = await prisma.user.findFirst({
+       where: {
+         email
+       }
+     })
+ 
+     onLoggedIn(user, res, req, keepLoggedIn).send(true)
+ } catch (error) {
+      res.status(401).send(error)
+  
+ }
+
+})
 
 router.get('/public-key', (req, res) => {
     res.send(publicKeyPem);
@@ -215,7 +414,6 @@ router.get('/callback', async (req:any, res:any) => {
     });
 
     const tokenData = (await tokenRes.json()) as GoogleTokenResponse;
-    console.log(tokenData.refresh_token)
 
     // Step 4: Fetch user info using access token
     const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
@@ -225,24 +423,31 @@ router.get('/callback', async (req:any, res:any) => {
     const userInfo = (await userInfoRes.json()) as GoogleUserInfo;
 
 
-    const userExists = await prisma.user.update({
+    const userExists = await prisma.user.findFirst({
       where: {
         email: userInfo.email
-      },
-      data: {
-        authId: tokenData ? tokenData : null
       }
     })
 
     const keepLoggedIn = true
     if(userExists) {
+
+      prisma.user.update({
+        where: {
+          email: userInfo.email,
+          loginMethod: 'google'
+        },
+        data: {
+          authId: tokenData ? tokenData : null
+        }
+      })
+
       if(userExists.loginMethod==='google')
       {
-        console.log(userExists.password)
         if(userExists.password!==userExists.loginMethod)
         {
 
-
+        console.log(`User ${userExists.username} with id ${userExists.id} logged in using Google`)
         onLoggedIn(userExists, res, req, keepLoggedIn)
          
         res.redirect('/')
@@ -314,68 +519,11 @@ router.get('/callback', async (req:any, res:any) => {
         
       }
         
-  //       fetch('https://intelegeinfo.ro/signup',  {
-  //         method: 'POST',
-  //         headers: {'Content-Type': 'application/json'},
-  //         body: JSON.stringify({email: userInfo.email, password:  'google' , name: userInfo.name, loginMethod: 'google' })
-  //       }).then(signRes =>{
-  //         res.send('Created account! Hello ' + await signRes.json().jres.name))
-  // //         res.send(`
-  // //           <h>Please set a password for your account.</h>
-  // //           <form action='/login/createGoogleAcc' method="POST" id="loginForm">
-  // //           <input type="hidden" name="email" value="${userInfo.email}">
-  // //           <input type=password name="password">
-  // //           <button type='submit'>Set Password</button>
-  // //           <p id="message"></p>
-  // //           </form>
-  // // <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/0.10.0/forge.min.js"></script>
-
-  // //             <script>
-  // //           document.getElementById("loginForm").addEventListener("submit", async function (e) {
-  // //           e.preventDefault();
-  // //           const formData = new FormData(e.target);
-            
-            
-  // //           const pubKeyPem = await fetch('/signup/public-key').then(res => res.text());
-  // //           const publicKey = forge.pki.publicKeyFromPem(pubKeyPem);
-
-            
-  // //           const encrypted = publicKey.encrypt(formData.get('password'), 'RSA-OAEP');
-  // //           const encryptedBase64 = forge.util.encode64(encrypted);
-  // //           formData.set("password", encryptedBase64)
-
-  // //           const data = Object.fromEntries(formData.entries());
-
-
-  // //           const response = await fetch('/login/createGoogleAcc', {
-  // //               method: 'POST',
-  // //               headers: {'Content-Type': 'application/json'},
-  // //               body: JSON.stringify(data)
-  // //           });
-
-  // //             const result = await response.json();
-  // //             document.getElementById("message").textContent = result.message ? result.message : result.error;
-  // //           });
-
-            
-  // //         </script>
-  // //           `)
-  //       }).catch(err => {
-  
-  //         res.status(401).send('Failed creating new user: ' + err)
-  //       })
-       
-
     }
-    
-    // res.send(`
-    //   <h1>Welcome, ${userInfo.name}</h1>
-    //   <img src="${userInfo.picture}" alt="Profile picture" />
-    //   <p>Email: ${userInfo.email}</p>
-    // `);
+
   } catch (error) {
     console.error('OAuth Error:', error);
-    res.status(500).send('Authentication failed');
+    res.status(500).send('Am intampinat o eroare la autentificare. Ne cerem mii de scuze si va rugam din suflet sa ne contactati pe email la office@intelegeinfo.ro si va raspundem cat mai curand posibil. \n Erroare: \n' + error);
   }
 });
 

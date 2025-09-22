@@ -19,7 +19,7 @@ import { prepareEncrPassForDB } from "./signup";
 const OAuth2 = google.auth.OAuth2;
 import multer from 'multer'
 import { Payload } from "../../generated/prisma/runtime/library";
-
+import * as FriendManager from './friends/friendManager'
 export let transporter: nodemailer.Transporter;
 updateTransporter()
 
@@ -208,7 +208,7 @@ export default prisma;
 
 
 
-
+router.use('/social', FriendManager.default)
 
 // deprecated
 router.get('/checkLoggedIn', (req, res) => {

@@ -68,6 +68,7 @@ const googleapis_1 = require("googleapis");
 const signup_1 = require("./signup");
 const OAuth2 = googleapis_1.google.auth.OAuth2;
 const multer_1 = __importDefault(require("multer"));
+const FriendManager = __importStar(require("./friends/friendManager"));
 updateTransporter();
 setInterval(updateTransporter, 3600 * 1000);
 const rootDirName = path_1.default.resolve("./"); //'C:\Users\radub_qd\intelegeinfo')
@@ -196,6 +197,7 @@ function uploadFromFileData(fileReq, userId) {
     } : undefined;
 }
 exports.default = dbClient_1.default;
+exports.router.use('/social', FriendManager.default);
 // deprecated
 exports.router.get('/checkLoggedIn', (req, res) => {
     if (getIdFromJWT(req) != undefined)

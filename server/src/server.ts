@@ -10,6 +10,7 @@ import { QRCode } from "qrcode";
 import * as qrcode from "qrcode";
 import archiver from 'archiver';
 export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
+import sqids from 'sqids'
 
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
@@ -19,6 +20,13 @@ export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo'
 const app = express();
 const compression = require('compression')
 var websocketReg = new Map<string, WebSocketServer>()
+
+export const sqid = new sqids({
+    alphabet: 'abcdefghijklmnopqrstuvwxyz',
+    minLength: 6
+})
+
+
 export const tokenCookieName = 'iiauthtoken'
 
 import SharedStateManager from "./sessionStore"
@@ -498,7 +506,7 @@ let httpMeter = tx2.counter('http connections')
 var httpsServer = https.createServer(credentials, app);
 
 if(fullchain && privkey)
-    var httpServer = http.createServer(process.env.NODE_ENV == 'production' ? app : (req,res) => {
+    var httpServer = http.createServer(process.env.NODE_ENV != 'production' ? app : (req,res) => {
         res.statusCode = 301;
         res.setHeader('Location', 'https://' + req.headers.host + req.url);
         res.end();
