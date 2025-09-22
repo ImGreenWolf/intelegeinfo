@@ -140,7 +140,7 @@ router.get('/one-time-code', (req, res) => {
     <body>
     <div class="pass-container">
       <h1 id="title">Introdu adresa de email</h1>
-      <p id='details'></p>
+      <p id='details'>Completeaza emailul contului tau si primeste un email cu aprobare pentru a-ti accesa contul fara a mai introduce parola.</p>
       <form id='form'>
             <label for="email">Email</label>
             <input type="email" name="email" id="email" placeholder="Adresa email al contului">
@@ -229,11 +229,10 @@ router.post('/one-time-code', async (req, res) => {
           <h1>Cerere de logare in contul ${user.username}</h1>
           <p>Apasa pe butonul de mai jos pentru a aproba logarea, iar apoi reveniti la pagina initiala si veti avea access la contul dumneavoastra</p>
           <a href='https://intelegeinfo.ro/login/one-time-code/callback?token=${token}' style='background-color: #3393ca; border-radius: 0.5em; color: white; font-family: Poppins; padding: 1em 3em;text-decoration: none;'>Aproba</a>
-
-          <p>Aprobarea expria intr-o ora!</p>
+          <br>
+          <p>Cererea expria intr-o ora!</p>
           <p>
-          Daca nu ai cerut acest cod, contul tau nu este in pericol, dar inseamna
-          ca cineva a incercat sa-ti acceseze contul!
+          Daca nu ai cerut acest cod, apasa refuza si vom bloca accesul. Contul tau nu este in pericol, dar inseamna ca cineva a incercat sa-ti acceseze contul!
           </p>
         </div>
         `

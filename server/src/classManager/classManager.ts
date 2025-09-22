@@ -387,7 +387,7 @@ router.post('/join', async (req, res) => {
 })
 
 
-function handlePrismaError(error: any) {
+export function handlePrismaError(error: any) {
     if(!(error instanceof Prisma.PrismaClientKnownRequestError) || !error.clientVersion)
         return error;
     else

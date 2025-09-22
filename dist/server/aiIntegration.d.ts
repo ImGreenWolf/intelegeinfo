@@ -16,21 +16,21 @@ export declare function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, p
     };
 }>;
 export declare function autocompleteProblemDetails(client: any, openFile: EditorFile): Promise<{
+    id: number;
     name: string;
     description: string | null;
-    difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
-    tags: string[];
-    category: string | null;
-    requirement: import("../../generated/prisma/runtime/library").JsonValue | null;
-    grade: number;
-    id: number;
     createdAt: Date;
-    sourceCode: string | null;
     updatedAt: Date;
     authorId: number;
     positiveRatings: number;
     negativeRatings: number;
+    requirement: import("../../generated/prisma/runtime/library").JsonValue | null;
     tests: import("../../generated/prisma/runtime/library").JsonValue[];
     averageTimeLimit: number;
     averageMemLimit: number;
+    category: string | null;
+    sourceCode: string | null;
+    difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
+    tags: string[];
+    grade: number;
 }>;
