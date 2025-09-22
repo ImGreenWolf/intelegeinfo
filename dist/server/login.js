@@ -437,7 +437,7 @@ router.get('/callback', async (req, res) => {
         else {
             try {
                 const result = await signup.onSignedIn({ email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, null, req, keepLoggedIn, tokenData);
-                result.res.send(result.json);
+                result.res.redirect('/profile');
             }
             catch (err) {
                 res.send('Am intampinat o erroare! Ne cerem scuze.. Eroare: ' + err);

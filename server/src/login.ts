@@ -507,7 +507,7 @@ router.get('/callback', async (req:any, res:any) => {
         const result = await signup.onSignedIn(
           {email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture}
           , res, null, req, keepLoggedIn, tokenData)
-        result.res.send(result.json)
+        result.res.redirect('/profile')
        
       }
       catch(err)
