@@ -9,7 +9,7 @@ html, body {
 }
 body {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: min-content 1fr;
     grid-template-rows: 1fr auto;
     font-family: Poppins;
     background-color: theme.$background-color;
@@ -39,7 +39,9 @@ body {
     flex-direction: column;
 
     button {
-        width: 100%;
+        max-width: 300px;
+        width: 30vw;
+        min-width: 100px;
         background-color: rgb(71, 71, 71);
         padding-block: 1em;
         color: white;

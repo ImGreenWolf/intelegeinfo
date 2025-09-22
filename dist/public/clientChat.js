@@ -1,7 +1,7 @@
 import { createNode } from "./components.js";
 main();
 async function main() {
-    const res = await fetch('/user/social/chat/list');
+    const res = await fetch('/user/social/list');
     if (!res.ok)
         return;
     const json = await res.json();

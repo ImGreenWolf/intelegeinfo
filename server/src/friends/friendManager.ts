@@ -48,6 +48,13 @@ export async function getFriends(id) {
          ...user.sentRequests.map(req => { return {...req, receiver: undefined, user: req.receiver}})]
 }
 
+router.get('/list', async (req, res) => {
+    const id = getIdFromJWT(req)
+    if(!id)
+        throw 'Please login';
+    res.send({friends: await getFriends(id)});
+})
+
 
 router.get('/add', async (req, res) => {
     try {

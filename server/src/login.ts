@@ -431,15 +431,19 @@ router.get('/callback', async (req:any, res:any) => {
     const keepLoggedIn = true
     if(userExists) {
 
-      prisma.user.update({
-        where: {
-          email: userInfo.email,
-          loginMethod: 'google'
-        },
-        data: {
-          authId: tokenData ? tokenData : null
-        }
-      })
+     try {
+       prisma.user.update({
+         where: {
+           email: userInfo.email,
+           loginMethod: 'google'
+         },
+         data: {
+           authId: tokenData ? tokenData : null
+         }
+       })
+     } catch (error) {
+        console.error('failed to update user while logging in:', error)
+     }
 
       if(userExists.loginMethod==='google')
       {
@@ -447,9 +451,7 @@ router.get('/callback', async (req:any, res:any) => {
         {
 
         console.log(`User ${userExists.username} with id ${userExists.id} logged in using Google`)
-        onLoggedIn(userExists, res, req, keepLoggedIn)
-         
-        res.redirect('/')
+        onLoggedIn(userExists, res, req, keepLoggedIn).redirect('/')
 
         }else
         {

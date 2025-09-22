@@ -75,6 +75,12 @@ async function getFriends(id) {
     return [...user.receivedRequests.map(req => { return { ...req, initiator: undefined, user: req.initiator }; }),
         ...user.sentRequests.map(req => { return { ...req, receiver: undefined, user: req.receiver }; })];
 }
+router.get('/list', async (req, res) => {
+    const id = (0, usersManager_1.getIdFromJWT)(req);
+    if (!id)
+        throw 'Please login';
+    res.send({ friends: await getFriends(id) });
+});
 router.get('/add', async (req, res) => {
     try {
         const targetId = parseInt(req.query.user);

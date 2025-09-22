@@ -373,20 +373,24 @@ router.get('/callback', async (req, res) => {
         });
         const keepLoggedIn = true;
         if (userExists) {
-            dbClient_1.default.user.update({
-                where: {
-                    email: userInfo.email,
-                    loginMethod: 'google'
-                },
-                data: {
-                    authId: tokenData ? tokenData : null
-                }
-            });
+            try {
+                dbClient_1.default.user.update({
+                    where: {
+                        email: userInfo.email,
+                        loginMethod: 'google'
+                    },
+                    data: {
+                        authId: tokenData ? tokenData : null
+                    }
+                });
+            }
+            catch (error) {
+                console.error('failed to update user while logging in:', error);
+            }
             if (userExists.loginMethod === 'google') {
                 if (userExists.password !== userExists.loginMethod) {
                     console.log(`User ${userExists.username} with id ${userExists.id} logged in using Google`);
-                    onLoggedIn(userExists, res, req, keepLoggedIn);
-                    res.redirect('/');
+                    onLoggedIn(userExists, res, req, keepLoggedIn).redirect('/');
                 }
                 else {
                     res.send(`
