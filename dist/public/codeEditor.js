@@ -85,8 +85,8 @@ class Console {
     consoleInput;
     content = '';
     constructor() {
-        if (outputConsoles.length > 0)
-            outputConsoles.at(-1).callbackCreate(this);
+        // if(outputConsoles.length>0)
+        //   outputConsoles.at(-1)!.callbackCreate(this)
         const thisConsole = document.createElement('div');
         outputConsoles.push(this);
         if (outputArea)
@@ -104,7 +104,7 @@ class Console {
                 type: WebSocketMessageType.Console,
                 action: 'process'
             }));
-            this.stdin = '';
+            // this.stdin = ''
         };
         thisConsole.appendChild(resendButton);
         this.element = thisConsole;

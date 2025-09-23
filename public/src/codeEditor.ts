@@ -146,8 +146,8 @@ class Console {
 
 
   constructor () {
-    if(outputConsoles.length>0)
-      outputConsoles.at(-1)!.callbackCreate(this)
+    // if(outputConsoles.length>0)
+    //   outputConsoles.at(-1)!.callbackCreate(this)
 
     const thisConsole = document.createElement('div')
     outputConsoles.push(this)
@@ -170,7 +170,7 @@ class Console {
           action: 'process'
         })
       );
-      this.stdin = ''
+      // this.stdin = ''
 
     }
     thisConsole.appendChild(resendButton);
