@@ -193,6 +193,7 @@ class Console {
     this.consoleInput = {terminal: new Terminal(), elem: document.createElement('div')}//document.createElement('textarea')as HTMLTextAreaElement;
     this.element.appendChild(this.consoleInput.elem)
     this.consoleInput.terminal.open(this.consoleInput.elem)
+
     this.consoleInput.terminal.onData((data) => {
       this.sendCommand(data)
     })
@@ -2347,7 +2348,9 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
           // if(document.getElementById('active-console'))
           //   messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
           // messageGroup.innerHTML += `<pre class="console-program-${message.type == WebSocketMessageType.End ? "return" : message.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
-          
+          if(activeConsole)
+            activeConsole.receivePTYChunk(data)
+
           if(textArea)
           textArea.innerHTML += data
             
@@ -2355,6 +2358,9 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
 
         break;
         case ConsoleMessageType.Console:
+          if(activeConsole)
+        return activeConsole.receivePTYChunk(data)
+
           if(textArea)
             textArea.innerHTML += data + " \n"
         else 

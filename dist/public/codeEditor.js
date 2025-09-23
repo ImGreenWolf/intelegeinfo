@@ -1755,10 +1755,14 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                     // if(document.getElementById('active-console'))
                     //   messageGroup = document.getElementById('active-console')!.querySelector(' div')!                        // TODO improve this selection
                     // messageGroup.innerHTML += `<pre class="console-program-${message.type == WebSocketMessageType.End ? "return" : message.type == WebSocketMessageType.Console  ? "input" :"output"}">${data} </pre>`;
+                    if (activeConsole)
+                        activeConsole.receivePTYChunk(data);
                     if (textArea)
                         textArea.innerHTML += data;
                     break;
                 case ConsoleMessageType.Console:
+                    if (activeConsole)
+                        return activeConsole.receivePTYChunk(data);
                     if (textArea)
                         textArea.innerHTML += data + " \n";
                     else
