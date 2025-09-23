@@ -170,7 +170,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         this.process.write(command + ' \n');
     };
     sendProgramInput = (command) => {
-        this.inputTerminal.write(command + '\n');
+        this.inputTerminal.write(command);
     };
     addDataListener = (func) => {
         console.log('ADDED DATA LISTENER');
@@ -211,7 +211,7 @@ class CPPDebugger extends ProcessTypes_1.default {
             // cwd: './clientFiles'
             handleFlowControl: true,
         });
-        this.inputTerminal.write('tty\n');
+        this.inputTerminal.write('tty\n\r');
         let loaded = false;
         this.inputTerminal.onData((data) => {
             if (loaded)
