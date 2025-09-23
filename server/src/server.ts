@@ -1839,7 +1839,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     spawnPromise = new Promise<void>((resolve, reject) => {
 
-    clientSession.program?.on("spawn", async () => {
+    // clientSession.program?.on("spawn", async () => {
         console.log("Program spawned")
         
         spawnDate = Date.now()
@@ -1877,7 +1877,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         }, 400);
         resolve()
 
-    })
+    // })
 
     })
 

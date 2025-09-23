@@ -1458,37 +1458,37 @@ bash `.trim().replaceAll('\n', "");
                     }, 1000);
                 // if(programTimeout) clearTimeout(programTimeout)
                 spawnPromise = new Promise((resolve, reject) => {
-                    clientSession.program?.on("spawn", async () => {
-                        console.log("Program spawned");
-                        spawnDate = Date.now();
-                        res.editorMode.onSpawn(clientSession);
-                        replicateFunction((ws, id, obj) => obj.sendMessage({ spawn: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
-                        // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-                        if (processInputBuffer)
-                            clientSession.program.write(processInputBuffer); // write buffer
-                        if (!clientSession.fileWatcher) {
-                            clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath()), null, (event, fileNameBuf) => {
-                                const fileName = fileNameBuf.toString();
-                                if (!fileName)
-                                    throw new Error('Invalid file name in watcher');
-                                const changedFile = clientSession.files.find(file => file.name == fileName);
-                                if (!changedFile) {
-                                    console.error('Couldnt find file to update in watcher.');
-                                    if (event == 'rename') {
-                                        new types_2.EditorFile(clientSession, fileName, null, { abstract: true });
-                                        console.warn('Created new file from rename event!');
-                                    }
+                    // clientSession.program?.on("spawn", async () => {
+                    console.log("Program spawned");
+                    spawnDate = Date.now();
+                    res.editorMode.onSpawn(clientSession);
+                    replicateFunction((ws, id, obj) => obj.sendMessage({ spawn: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
+                    // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
+                    if (processInputBuffer)
+                        clientSession.program.write(processInputBuffer); // write buffer
+                    if (!clientSession.fileWatcher) {
+                        clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath()), null, (event, fileNameBuf) => {
+                            const fileName = fileNameBuf.toString();
+                            if (!fileName)
+                                throw new Error('Invalid file name in watcher');
+                            const changedFile = clientSession.files.find(file => file.name == fileName);
+                            if (!changedFile) {
+                                console.error('Couldnt find file to update in watcher.');
+                                if (event == 'rename') {
+                                    new types_2.EditorFile(clientSession, fileName, null, { abstract: true });
+                                    console.warn('Created new file from rename event!');
                                 }
-                                changedFile.onFileWatched(event, clientObj);
-                            });
-                        }
-                        dataTimeout =
-                            setTimeout(() => {
-                                replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
-                                // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-                            }, 400);
-                        resolve();
-                    });
+                            }
+                            changedFile.onFileWatched(event, clientObj);
+                        });
+                    }
+                    dataTimeout =
+                        setTimeout(() => {
+                            replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
+                            // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
+                        }, 400);
+                    resolve();
+                    // })
                 });
                 clientSession.program.onData((data) => {
                     if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
