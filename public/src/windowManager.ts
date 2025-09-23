@@ -727,8 +727,13 @@ export async function updateCatalouge(sessionId, clientId)
 
         if(loggedin.ok && (await loggedin.json()).role == 'ADMIN') // TODO check if user is admin
         {
-            const tab = createWindowTab('Problem Creator',createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problemCreator.html?sessionId='+sessionId+'&clientId='+clientId}]}))
-            tabs.push(tab)
+            const tabs = [
+                createWindowTab('Problem Creator',createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problemCreator.html?sessionId='+sessionId+'&clientId='+clientId}]})),
+                createWindowTab('minecraft',createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: 'https://eaglercraft1-8.github.io/'}]}))
+
+            ]
+            tabs.push(...tabs)
+            for(const tab of tabs)
             addtab(tab)
         }
             
@@ -748,7 +753,7 @@ export async function updateCatalouge(sessionId, clientId)
     for(const tab of tabs)
         addtab(tab)
     
-    function addtab(tab) {
+    function addtab(tab: EditorWindowTab) {
         tab.element.ondragend = () => 
         {
             catalouge?.parentElement?.classList.remove('open')

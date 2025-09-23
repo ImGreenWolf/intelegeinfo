@@ -551,9 +551,13 @@ export async function updateCatalouge(sessionId, clientId) {
     fetch('/user/jwt').then(async (loggedin) => {
         if (loggedin.ok && (await loggedin.json()).role == 'ADMIN') // TODO check if user is admin
          {
-            const tab = createWindowTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] }));
-            tabs.push(tab);
-            addtab(tab);
+            const tabs = [
+                createWindowTab('Problem Creator', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: '/pages/problemCreator.html?sessionId=' + sessionId + '&clientId=' + clientId }] })),
+                createWindowTab('minecraft', createNode('iframe', { css: 'width: 100%; height: 100%; border: none', attributes: [{ name: 'src', value: 'https://eaglercraft1-8.github.io/' }] }))
+            ];
+            tabs.push(...tabs);
+            for (const tab of tabs)
+                addtab(tab);
         }
     });
     if (new URLSearchParams(location.search).has('problem'))
