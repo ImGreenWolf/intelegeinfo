@@ -120,6 +120,10 @@ class Console {
             return;
         this.consoleInput = { terminal: new Terminal(), elem: document.createElement('div') }; //document.createElement('textarea')as HTMLTextAreaElement;
         this.element.appendChild(this.consoleInput.elem);
+        this.consoleInput.terminal.open(this.consoleInput.elem);
+        this.consoleInput.terminal.onData((data) => {
+            this.sendCommand(data);
+        });
     }
     onProcessEnd() {
         if (this.consoleInput)
@@ -133,6 +137,17 @@ class Console {
     }
     sendCommand(cmd) {
         this.stdin += cmd;
+        ws.send(JSON.stringify({
+            command: cmd,
+            // args: ["console"],
+            type: WebSocketMessageType.Console,
+            action: 'process'
+        }));
+    }
+    receivePTYChunk(chunk) {
+        if (!this.consoleInput)
+            return;
+        this.consoleInput.terminal.write(chunk);
     }
 }
 // Manager class for multiple visual cursors
@@ -1759,15 +1774,17 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
         }
         else {
             if (activeConsole) {
-                textArea = activeConsole.element.getElementsByTagName('pre')[0];
-                if (!textArea) {
-                    textArea = createNode('pre');
-                    activeConsole.element.prepend(textArea);
-                }
+                activeConsole.receivePTYChunk(data);
+                //    textArea = activeConsole.element.getElementsByTagName('pre')[0]
+                //   if(!textArea)
+                //   {
+                //     textArea = createNode('pre')
+                //     activeConsole.element.prepend(textArea)
+                //   }
             }
-            // outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${msgText}</pre>`;
-            if (textArea)
-                textArea.innerHTML += data;
+            // // outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${msgText}</pre>`;
+            // if(textArea)
+            //     textArea.innerHTML += data
         }
         // outputArea.textContent += "\n";
         if (!manuallScroll)

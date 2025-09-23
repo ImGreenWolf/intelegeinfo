@@ -37,11 +37,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
-const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
+const BaseEditorMode_1 = __importStar(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 const server_1 = require("../server");
 const fs = __importStar(require("fs"));
 const types_1 = require("../../../dist/shared/types");
+const Nodepty = __importStar(require("node-pty"));
 class Python extends BaseEditorMode_1.default {
     static name = 'Python';
     static logoSrc = 'python-logo.webp';
@@ -208,9 +209,7 @@ CMD bash `;
         //  Xvfb :1 -screen 0 1024x768x16
         //   export DISPLAY=:1
         // execSync('docker exec -i '+res.imageName + ' sh -c "pip install opencv-python"')
-        const proc = (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "(cd ./clientFiles && python -u " + res.fileName + ")"], {
-            stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
-        });
+        const proc = Nodepty.spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "(cd ./clientFiles && python -u " + res.fileName + ")"], BaseEditorMode_1.executeOptions);
         if (sessionObj && this.hasGUI)
             sessionObj.replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawnGUI' }, types_1.WebSocketMessageType.ExecuteStatus));
         // proc.addListener('close', code => {

@@ -37,7 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
-const BaseEditorMode_1 = __importDefault(require("./BaseEditorMode"));
+const BaseEditorMode_1 = __importStar(require("./BaseEditorMode"));
 const path_1 = __importDefault(require("path"));
 const ProcessTypes_1 = __importDefault(require("./ProcessTypes"));
 const types_1 = require("../../../dist/shared/types");
@@ -83,9 +83,7 @@ int main() {
     }
     execute(res) {
         // execSync('docker exec -i ' + res.imageName + ' bash -c "ls"', {stdio: 'inherit'})
-        return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", `(cd ./clientFiles && exec ../${res.fileName.split('.')[0]})`], {
-            stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
-        });
+        return nodepty.spawn('docker', ['exec', "-it", res.imageName, "bash", "-c", `(cd ./clientFiles && exec ../${res.fileName.split('.')[0]})`], BaseEditorMode_1.executeOptions);
     }
     compile(res, file, isDebugging = false) {
         return new Promise((resolve, reject) => {
@@ -206,13 +204,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         this.clientSession = clientSession;
         this.inputTerminal = nodepty.spawn("docker", [
             "exec", "-it", res.imageName, 'bash'
-        ], {
-            name: "xterm-color",
-            cols: 80,
-            rows: 30,
-            cwd: process.cwd(),
-            env: process.env
-        });
+        ], BaseEditorMode_1.executeOptions);
         if (!nodepty)
             throw 'invalid pty module';
         this.process = nodepty.spawn("docker", ["exec", '-it', res.imageName, "gdb", "-q", "-interpreter=mi", res.fileName.split('.')[0]], {

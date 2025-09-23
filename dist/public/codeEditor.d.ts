@@ -28,6 +28,7 @@ declare class Console {
     onProcessEnd(): void;
     callbackCreate(callerConsole: Console): void;
     sendCommand(cmd: string): void;
+    receivePTYChunk(chunk: any): void;
 }
 export declare class MultiCursorManager {
     private editor;

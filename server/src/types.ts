@@ -14,7 +14,8 @@ import path from 'path';
 import { rootDirName } from './server';
 import { WebSocketMessage } from "../../shared/src/messageTypes"
 import { sha256, sha224 } from 'js-sha256';
-import pty from 'node-pty'
+import * as Nodepty from "node-pty"
+import { EventEmitter } from "events";
 
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
@@ -136,13 +137,13 @@ export class EditorSession {
     clientsSockets: Map<UUID, WebSocket> = new Map();
     messageIndex: number = 1;
     clientCommandBuffer: Map<UUID, CommandBuffer> = new Map();
-    process: DebugProcess | ChildProcess | undefined;
+    process: DebugProcess | (Nodepty.IPty & EventEmitter ) | undefined;
     msgMap: Map<number, WSMessage> = new Map();
     brainrotNames: string[];
     currentbuildTag = '';
-    sessionContainer: {process:  pty.IPty, imageName: string, fileName: string, editorMode: EditorMode};
+    sessionContainer: {process:  Nodepty.IPty, imageName: string, fileName: string, editorMode: EditorMode};
     gdbProcess: DebugProcess | undefined;
-    program: ChildProcess | undefined;
+    program: (Nodepty.IPty & EventEmitter )| undefined;
     displayServer: number = 0;
     fileWatcher: fs.FSWatcher
     hostClient: ClientObject

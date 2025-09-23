@@ -1,5 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.executeOptions = void 0;
+exports.executeOptions = {
+    name: "xterm-color",
+    cols: 80,
+    rows: 30,
+    cwd: './clientFiles'
+};
 // maybe change from class to interface
 class EditorMode {
     static name;

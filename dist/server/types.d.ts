@@ -1,13 +1,13 @@
 import { UUID } from "crypto";
 import WebSocket from 'ws';
-import { ChildProcess } from 'child_process';
 import { WSMessage } from '../../shared/src/types';
 import { WebSocketMessageType } from '../../dist/shared/types';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import fs, { WatchEventType } from 'fs';
 import { WebSocketMessage } from "../../shared/src/messageTypes";
-import pty from 'node-pty';
+import * as Nodepty from "node-pty";
+import { EventEmitter } from "events";
 export declare class ClientObject {
     sessionId: UUID;
     clientId: UUID;
@@ -64,18 +64,18 @@ export declare class EditorSession {
     clientsSockets: Map<UUID, WebSocket>;
     messageIndex: number;
     clientCommandBuffer: Map<UUID, CommandBuffer>;
-    process: DebugProcess | ChildProcess | undefined;
+    process: DebugProcess | (Nodepty.IPty & EventEmitter) | undefined;
     msgMap: Map<number, WSMessage>;
     brainrotNames: string[];
     currentbuildTag: string;
     sessionContainer: {
-        process: pty.IPty;
+        process: Nodepty.IPty;
         imageName: string;
         fileName: string;
         editorMode: EditorMode;
     };
     gdbProcess: DebugProcess | undefined;
-    program: ChildProcess | undefined;
+    program: (Nodepty.IPty & EventEmitter) | undefined;
     displayServer: number;
     fileWatcher: fs.FSWatcher;
     hostClient: ClientObject;

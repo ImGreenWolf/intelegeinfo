@@ -78,7 +78,7 @@ const courses_1 = __importDefault(require("./views/courses"));
 const challangesManager_1 = __importDefault(require("./challanges/challangesManager"));
 const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
-const nodepty = __importStar(require("node-pty"));
+const Nodepty = __importStar(require("node-pty"));
 const crypto_1 = __importDefault(require("crypto"));
 const EditorModes = __importStar(require("./editor-modes/"));
 const metrics_1 = __importStar(require("./metrics"));
@@ -1333,7 +1333,7 @@ bash `.trim().replaceAll('\n', "");
                     console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
                     console.log(runCommand);
                     // Return the child process for external handling
-                    const childProcess = nodepty.spawn('docker', cmdArgs, {
+                    const childProcess = Nodepty.spawn('docker', cmdArgs, {
                         name: "xterm-color",
                         cols: 80,
                         rows: 30,
@@ -1427,11 +1427,6 @@ bash `.trim().replaceAll('\n', "");
         async function onClosedProgram(code, time, message, error) {
             let notes = "";
             processInputBuffer = '';
-            // const time = 
-            if (clientSession.program) {
-                clientSession.program.stdout.removeAllListeners();
-                clientSession.program.stderr.removeAllListeners();
-            }
             replicateFunction((clientWs) => {
                 clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: '\n' + message.trim(), clientId: clientId })); // Send GDB output to the client
             });
@@ -1469,9 +1464,8 @@ bash `.trim().replaceAll('\n', "");
                         res.editorMode.onSpawn(clientSession);
                         replicateFunction((ws, id, obj) => obj.sendMessage({ spawn: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                         // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-                        if (clientSession.program.stdin && processInputBuffer)
-                            if (clientSession.program?.stdin?.writable)
-                                clientSession.program.stdin.write(processInputBuffer); // write buffer
+                        if (processInputBuffer)
+                            clientSession.program.write(processInputBuffer); // write buffer
                         if (!clientSession.fileWatcher) {
                             clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath()), null, (event, fileNameBuf) => {
                                 const fileName = fileNameBuf.toString();
@@ -1496,14 +1490,7 @@ bash `.trim().replaceAll('\n', "");
                         resolve();
                     });
                 });
-                clientSession.program.stdout?.addListener("data", (data) => {
-                    // gdbBuffer += data.toString();
-                    // replicateFunction((clientWs) => {
-                    //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
-                    // });
-                    // gdbBuffer = "";
-                    if (clientSession.program.killed)
-                        return;
+                clientSession.program.onData((data) => {
                     if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
                      {
                         closeProcess(program).then(() => onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"));
@@ -1517,30 +1504,27 @@ bash `.trim().replaceAll('\n', "");
                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                     }, 100);
                 });
-                clientSession.program?.stderr?.addListener("data", (data) => {
-                    errorBuffer += data.toString() + '\n';
-                });
-                clientSession.program?.addListener("close", (code) => {
+                clientSession.program.onExit(({ exitCode }) => {
                     clearTimeout(dataTimeout);
                     clearTimeout(programTimeout);
-                    switch (code) {
+                    switch (exitCode) {
                         default:
                             if (errorBuffer) {
-                                onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim());
+                                onClosedProgram(exitCode, (Date.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim());
                                 break;
                             }
                         case 0:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu codul: " + (code?.toString() || '-1'));
+                            onClosedProgram(exitCode, (Date.now() - spawnDate), "Programul a iesit cu codul: " + (exitCode?.toString() || '-1'));
                             break;
                         case 136:
                         case 138:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Arithmetic devided by 0</a>", true);
+                            onClosedProgram(exitCode, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + exitCode?.toString() + ">Arithmetic devided by 0</a>", true);
                             break;
                         case 139:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">Segmentation Fault</a>", true);
+                            onClosedProgram(exitCode, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + exitCode?.toString() + ">Segmentation Fault</a>", true);
                             break;
                         case 3221225477:
-                            onClosedProgram(code, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + code?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
+                            onClosedProgram(exitCode, (Date.now() - spawnDate), "Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session=" + sessionId + "' title=Learn how to fix here. | Error code: " + exitCode?.toString() + ">MEMMORY ACCESS VIOLATION!</a>", true);
                             break;
                     }
                     gdbBuffer = "";
@@ -1768,9 +1752,7 @@ bash `.trim().replaceAll('\n', "");
                                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                     }
                                     else {
-                                        if (!getProcessFromMap().stdin)
-                                            return;
-                                        getProcessFromMap().stdin.write(messageJSON.command + "\n");
+                                        getProcessFromMap().write(messageJSON.command);
                                         dataTimeout = setTimeout(() => {
                                             replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                         }, 200);
@@ -2153,15 +2135,8 @@ bash `.trim().replaceAll('\n', "");
                                     }).catch(err => console.error('queue command err: ' + err));
                                 }
                                 else if (clientSession.program != undefined) {
-                                    if (clientSession.program?.stdin?.writable) {
-                                        clientSession.program?.stdin?.write(command); //program.stdin.write(message + "\n");
-                                        replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
-                                    }
-                                    else
-                                        console.error("stdin isnt writeable");
-                                    // dataTimeout = setTimeout(() => {
-                                    // }, 200);
-                                    // console.log("sent to program")
+                                    clientSession.program?.write(command); //program.stdin.write(message + "\n");
+                                    replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                 }
                                 else
                                     console.error('no process was found');
@@ -2206,7 +2181,7 @@ bash `.trim().replaceAll('\n', "");
                 return await new Promise((resolve, reject) => {
                     if (clientSession.process) {
                         let timer;
-                        if (!process.killed) {
+                        if (process) {
                             process.kill(9);
                             process.addListener(('close'), (code) => {
                                 if (timer)

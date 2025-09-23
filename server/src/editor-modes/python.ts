@@ -1,10 +1,12 @@
 import { ChildProcess, exec, execSync, spawn } from "child_process";
-import EditorMode from "./BaseEditorMode";
+import EditorMode, { executeOptions } from "./BaseEditorMode";
 import path from "path";
 import { rootDirName } from "../server";
 import * as fs from 'fs'
 import { ClientObject, EditorFile, EditorSession } from "../types";
 import { WebSocketMessageType } from '../../../dist/shared/types';
+import * as Nodepty from "node-pty"
+
 class Python extends EditorMode {
 
     static name = 'Python'
@@ -210,9 +212,7 @@ async onBuild(res, clientSession: EditorSession, clientObj: ClientObject): Promi
         //   export DISPLAY=:1
         // execSync('docker exec -i '+res.imageName + ' sh -c "pip install opencv-python"')
          
-        const proc = spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","(cd ./clientFiles && python -u "+ res.fileName + ")"], {
-            stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
-        });
+        const proc = Nodepty.spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","(cd ./clientFiles && python -u "+ res.fileName + ")"], executeOptions);
         if(sessionObj && this.hasGUI)
            sessionObj.replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawnGUI'}, WebSocketMessageType.ExecuteStatus))
 

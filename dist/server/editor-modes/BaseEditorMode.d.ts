@@ -1,6 +1,12 @@
-import { ChildProcess } from "child_process";
 import { ClientObject, EditorFile, EditorSession } from "../types";
 import DebugProcess from "./ProcessTypes";
+import * as Nodepty from "node-pty";
+export declare const executeOptions: {
+    name: string;
+    cols: number;
+    rows: number;
+    cwd: string;
+};
 declare abstract class EditorMode {
     static name: string;
     static logoSrc: string;
@@ -15,7 +21,7 @@ declare abstract class EditorMode {
     static isExecutable: boolean;
     runParams(clientObj: any): string;
     static isInterpreter: boolean;
-    abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): ChildProcess | Promise<ChildProcess> | undefined;
+    abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Nodepty.IPty | Promise<Nodepty.IPty> | undefined;
     abstract compile(res: any, file: EditorFile, isDebugging?: boolean): any;
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<any>;
     shouldRebuild(sessionObj: EditorSession, clientObj: ClientObject): boolean;

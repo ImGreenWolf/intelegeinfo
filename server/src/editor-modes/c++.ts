@@ -1,5 +1,5 @@
 import { ChildProcess, execSync, spawn } from "child_process";
-import EditorMode from "./BaseEditorMode";
+import EditorMode, { executeOptions } from "./BaseEditorMode";
 import { ClientObject, EditorFile, EditorSession } from "../types";
 import path from "path";
 import DebugProcess from "./ProcessTypes";
@@ -58,9 +58,7 @@ int main() {
 
     execute(res) {
         // execSync('docker exec -i ' + res.imageName + ' bash -c "ls"', {stdio: 'inherit'})
-         return spawn('docker', ['exec', "-i", res.imageName, "bash","-c", `(cd ./clientFiles && exec ../${res.fileName.split('.')[0]})`], {
-            stdio: 'pipe'  // pipe gives you access to stdin, stdout, stderr
-        });
+         return nodepty.spawn('docker', ['exec', "-it", res.imageName, "bash","-c", `(cd ./clientFiles && exec ../${res.fileName.split('.')[0]})`], executeOptions);
     }
 
     compile(res, file:EditorFile, isDebugging=false) {
@@ -214,13 +212,7 @@ int main() {
             
                 this.inputTerminal = nodepty.spawn("docker", [
                 "exec", "-it", res.imageName, 'bash'
-                ], {
-                    name: "xterm-color",
-                    cols: 80,
-                    rows: 30,
-                    cwd: process.cwd(),
-                    env: process.env
-                });
+                ], executeOptions);
                 if(!nodepty)
                     throw 'invalid pty module'
                  this.process = nodepty.spawn("docker", ["exec", '-it', res.imageName, "gdb","-q",  "-interpreter=mi", res.fileName.split('.')[0]],

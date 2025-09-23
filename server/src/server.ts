@@ -11,7 +11,6 @@ import * as qrcode from "qrcode";
 import archiver from 'archiver';
 export const rootDirName = path.resolve("./") //'C:\Users\radub_qd\intelegeinfo')
 import sqids from 'sqids'
-
 // import {RedisStore} from "connect-redis"
 // // import {Redis} from "redis"
 // import Redis, { Cluster } from 'ioredis';
@@ -44,7 +43,8 @@ import  challanges  from './challanges/challangesManager'
 import { router as usersManager } from './usersManager'
 import GuideCreator from "./guideCreator"
 import { privateKey } from "./login.js";
-import * as nodepty from "node-pty"
+import * as Nodepty from "node-pty"
+import { EventEmitter } from "events";
 
 import crypto from 'crypto';
 import bodyParser from 'body-parser';
@@ -1020,14 +1020,14 @@ function endConnectionPromise()
     
     }
 
-    function addProcessToMap(sessionId: UUID, process: DebugProcess | ChildProcess) {
+    function addProcessToMap(sessionId: UUID, process: DebugProcess | (Nodepty.IPty & EventEmitter )) {
         getThisClientSession().process = process; 
     }
     
     function removeRunningProcessFromMap() {
         getThisClientSession().process = undefined;
     }
-    function getProcessFromMap(clientSession?: EditorSession): DebugProcess | ChildProcess | undefined {
+    function getProcessFromMap(clientSession?: EditorSession): DebugProcess | (Nodepty.IPty & EventEmitter ) | undefined {
         if(clientSession)
             return clientSession.process;
         else
@@ -1462,7 +1462,7 @@ function endConnectionPromise()
     
     let CommandQueue = Promise.resolve();
 
-    function queueCommand(process: ChildProcess | DebugProcess,command: string, sessionId: UUID): Promise<void> {
+    function queueCommand(process: (Nodepty.IPty & EventEmitter ) | DebugProcess,command: string, sessionId: UUID): Promise<void> {
         CommandQueue = CommandQueue.then(() => executeCommand(process as DebugProcess, command, sessionId)).catch((err) =>
         {
             printClientConsoleError("failed to queue debugger command: " + err)
@@ -1677,7 +1677,7 @@ const cmdArgs = [
   console.log(runCommand)
 
   // Return the child process for external handling
-    const childProcess = nodepty.spawn('docker', cmdArgs, {
+    const childProcess = Nodepty.spawn('docker', cmdArgs, {
         name: "xterm-color",
         cols: 80,
         rows: 30,
@@ -1798,12 +1798,7 @@ async function onClosedProgram(code,time, message: string, error?)
     {
         let notes: string = "";
         processInputBuffer = '';
-        // const time = 
-        if(clientSession.program)
-        {
-            clientSession.program.stdout.removeAllListeners()
-            clientSession.program.stderr.removeAllListeners()
-        }
+        
         replicateFunction((clientWs) => {
             clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body:'\n'+ message.trim(), clientId: clientId}));  // Send GDB output to the client
         });
@@ -1851,9 +1846,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         res.editorMode.onSpawn(clientSession);
         replicateFunction((ws,id, obj) => obj.sendMessage({spawn: 1}, WebSocketMessageType.ExecuteStatus))
         // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
-        if( clientSession.program.stdin && processInputBuffer)
-            if(clientSession.program?.stdin?.writable)
-                clientSession.program.stdin.write(processInputBuffer) // write buffer
+        if(processInputBuffer)
+                clientSession.program.write(processInputBuffer) // write buffer
 
         if(!clientSession.fileWatcher)
         {
@@ -1887,14 +1881,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     })
 
-    clientSession.program.stdout?.addListener("data", (data) => {
-        // gdbBuffer += data.toString();
-        // replicateFunction((clientWs) => {
-        //     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
-        // });
-        // gdbBuffer = "";
-        if(clientSession.program.killed)
-            return;
+    clientSession.program.onData((data) => {
+
          if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
         {
             closeProcess(program).then(() => onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"))        
@@ -1911,37 +1899,30 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     });
 
-
-    clientSession.program?.stderr?.addListener("data", (data) => {
-        errorBuffer += data.toString() + '\n';
-
-        
-    });
-
-    clientSession.program?.addListener("close", (code) => {
+    clientSession.program.onExit(({exitCode}) => {
 
         clearTimeout(dataTimeout);
         clearTimeout(programTimeout)
-        switch(code)
+        switch(exitCode)
         {
             default:
                 if(errorBuffer)
                 {
-                    onClosedProgram(code, ( Date.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim())
+                    onClosedProgram(exitCode, ( Date.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim())
                     break;
                 }
             case 0:
-             onClosedProgram(code, ( Date.now() - spawnDate), "Programul a iesit cu codul: " + (code?.toString() || '-1'))
+             onClosedProgram(exitCode, ( Date.now() - spawnDate), "Programul a iesit cu codul: " + (exitCode?.toString() || '-1'))
             break;
             case 136:
             case 138:
-            onClosedProgram(code, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Arithmetic devided by 0</a>", true)
+            onClosedProgram(exitCode, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Arithmetic devided by 0</a>", true)
             break;
             case 139:
-            onClosedProgram(code, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">Segmentation Fault</a>", true)
+            onClosedProgram(exitCode, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Segmentation Fault</a>", true)
             break;
             case 3221225477:
-            onClosedProgram(code, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + code?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
+            onClosedProgram(exitCode, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
             break;
         }
 
@@ -2191,9 +2172,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 }
                                 else
                                 {   
-                                    if(!(getProcessFromMap() as ChildProcess).stdin)
-                                    return
-                                    (getProcessFromMap() as ChildProcess).stdin.write(messageJSON.command + "\n");
+                                    (getProcessFromMap() as (Nodepty.IPty & EventEmitter )).write(messageJSON.command);
                                     dataTimeout = setTimeout(() => {
                                         replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                                     }, 200);
@@ -2432,7 +2411,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     });
                                                 }
                                                 
-                                                clientSession.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession)
+                                                clientSession.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession) as Nodepty.IPty & EventEmitter
 
 
 
@@ -2694,17 +2673,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             }).catch(err => console.error('queue command err: ' + err))
                         } else if(clientSession.program!=undefined)
                             {
-                                if(clientSession.program?.stdin?.writable)
-                                {
-                                        clientSession.program?.stdin?.write(command); //program.stdin.write(message + "\n");
+                                        clientSession.program?.write(command); //program.stdin.write(message + "\n");
                                         replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
-                                }
-                                else
-                                    console.error("stdin isnt writeable")
-                                // dataTimeout = setTimeout(() => {
-                                                            
-                                                        // }, 200);
-                                // console.log("sent to program")
                             }
                             else
                             console.error('no process was found')
@@ -2751,13 +2721,13 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         //   fs.unlinkSync(filePath)
     }
 
-    async function closeProcess(process: DebugProcess | ChildProcess, processId?: UUID): Promise<void>
+    async function closeProcess(process: DebugProcess | (Nodepty.IPty & EventEmitter), processId?: UUID): Promise<void>
     {
         try {
             return await new Promise<void>((resolve, reject) => {
                 if (clientSession.process) {
                     let timer;
-                    if (!process.killed) {
+                    if (process) {
                         process.kill(9);
                         
                         process.addListener(('close'), (code) => {

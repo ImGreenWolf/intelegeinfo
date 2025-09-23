@@ -192,6 +192,11 @@ class Console {
 
     this.consoleInput = {terminal: new Terminal(), elem: document.createElement('div')}//document.createElement('textarea')as HTMLTextAreaElement;
     this.element.appendChild(this.consoleInput.elem)
+    this.consoleInput.terminal.open(this.consoleInput.elem)
+    this.consoleInput.terminal.onData((data) => {
+      this.sendCommand(data)
+    })
+
   }
 
   public onProcessEnd()
@@ -207,9 +212,27 @@ class Console {
     callerConsole.stdin = this.stdin;
     console.log(this.stdin)
   }
+
+
   public sendCommand(cmd: string) {
     this.stdin += cmd
+     ws.send(
+      JSON.stringify({
+        command: cmd,
+        // args: ["console"],
+        type: WebSocketMessageType.Console,
+        action: 'process'
+      })
+    );
+    
   }
+
+  public receivePTYChunk(chunk) {
+    if(!this.consoleInput)
+      return
+    this.consoleInput.terminal.write(chunk)
+  }
+
 }
 
 // Manager class for multiple visual cursors
@@ -2347,16 +2370,18 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
     } else {
       if(activeConsole)
       {
-         textArea = activeConsole.element.getElementsByTagName('pre')[0]
-        if(!textArea)
-        {
-          textArea = createNode('pre')
-          activeConsole.element.prepend(textArea)
-        }
+
+        activeConsole.receivePTYChunk(data)
+      //    textArea = activeConsole.element.getElementsByTagName('pre')[0]
+      //   if(!textArea)
+      //   {
+      //     textArea = createNode('pre')
+      //     activeConsole.element.prepend(textArea)
+      //   }
       }
-      // outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${msgText}</pre>`;
-      if(textArea)
-          textArea.innerHTML += data
+      // // outputArea.innerHTML += `<pre class="console-output" msg-id="${msgId}">${msgText}</pre>`;
+      // if(textArea)
+      //     textArea.innerHTML += data
     }
     // outputArea.textContent += "\n";
 
@@ -4541,7 +4566,8 @@ export function sendDebugCommand(cmd: string) {
   if (cmd == "-exec-next" || cmd == "-exec-continue")
     sendWebsocketCommand("-stack-list-variables --all-values ", []); // ws.send({command: 'info locals' , args: []});
   const consoleElem = document.getElementById("console") as HTMLTextAreaElement;
-  if (cmd == "-exec-execute" && consoleElem?.value != "") submitConsole(consoleElem, WebSocketMessageType.Console, activeConsole);
+  if (cmd == "-exec-execute" && consoleElem?.value != "") 
+    submitConsole(consoleElem, WebSocketMessageType.Console, activeConsole);
 }
 
 let playbackSpeed = 1;

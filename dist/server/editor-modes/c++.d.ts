@@ -13,7 +13,7 @@ declare class CppMode extends EditorMode {
     static dockerFile: string;
     HandleClientInput(): void;
     constructor();
-    execute(res: any): import("child_process").ChildProcessWithoutNullStreams;
+    execute(res: any): nodepty.IPty;
     compile(res: any, file: EditorFile, isDebugging?: boolean): Promise<void>;
     startDebugging(res: any, clientObj: any, clientSession: any): CPPDebugger;
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<string>;

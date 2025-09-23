@@ -1,6 +1,17 @@
 import { ChildProcess } from "child_process";
 import { ClientObject, EditorFile, EditorSession } from "../types";
 import DebugProcess from "./ProcessTypes";
+import * as Nodepty from "node-pty"
+
+
+
+export const executeOptions = 
+{
+    name: "xterm-color",
+    cols: 80,
+    rows: 30,
+    cwd: './clientFiles'
+}
 
 // maybe change from class to interface
 abstract class EditorMode {
@@ -23,7 +34,7 @@ abstract class EditorMode {
         return '';
     }
     static isInterpreter: boolean = false; // used for JIT languages like python or js
-    abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): ChildProcess | Promise<ChildProcess> | undefined
+    abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Nodepty.IPty | Promise<Nodepty.IPty> | undefined
     abstract compile(res: any, file: EditorFile, isDebugging?: boolean)
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<any>
 
