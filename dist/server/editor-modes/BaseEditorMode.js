@@ -5,7 +5,6 @@ exports.executeOptions = {
     name: "xterm-color",
     cols: 80,
     rows: 30,
-    cwd: './clientFiles'
 };
 // maybe change from class to interface
 class EditorMode {

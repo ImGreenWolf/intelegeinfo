@@ -5,7 +5,6 @@ export declare const executeOptions: {
     name: string;
     cols: number;
     rows: number;
-    cwd: string;
 };
 declare abstract class EditorMode {
     static name: string;
