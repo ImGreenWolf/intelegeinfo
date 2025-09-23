@@ -101,7 +101,6 @@ class Console {
             sendDebugCommand("execute");
             ws.send(JSON.stringify({
                 command: this.stdin,
-                // args: ["console"],
                 type: WebSocketMessageType.Console,
                 action: 'process'
             }));
@@ -119,7 +118,7 @@ class Console {
             this.compileMessage.remove();
         if (this.consoleInput)
             return;
-        this.consoleInput = { terminal: new Terminal(), elem: document.createElement('div') }; //document.createElement('textarea')as HTMLTextAreaElement;
+        this.consoleInput = { terminal: new Terminal({ cursorBlink: true, rows: 10, theme: { background: 'rgb(10,10,10)' } }), elem: document.createElement('div') }; //document.createElement('textarea')as HTMLTextAreaElement;
         this.element.appendChild(this.consoleInput.elem);
         this.consoleInput.terminal.open(this.consoleInput.elem);
         this.consoleInput.terminal.onData((data) => {
@@ -1740,6 +1739,8 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                     break;
                 case ConsoleMessageType.Debug:
                     // activeConsole!.element!.innerHTML += `<div  msg-id="${msgId}"><pre class="console-debug">${msgText}</pre></div>`;
+                    if (activeConsole)
+                        return activeConsole.receivePTYChunk(data);
                     if (textArea)
                         textArea.innerHTML += data;
                     break;
@@ -1751,6 +1752,8 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
                     //   groupDebug.innerHTML += `<span class="console-debug">${msgText}</span>`;
                     // else
                     //   outputArea.innerHTML += `<div class="debug-program" msg-id="${msgId}"><button onclick="toggleConsoleDebugProgram(this.parentElement)">x</button><div class="debug-program-container"></div></div>`;
+                    if (activeConsole)
+                        return activeConsole.receivePTYChunk(data);
                     if (textArea)
                         textArea.innerHTML += data;
                     break;
