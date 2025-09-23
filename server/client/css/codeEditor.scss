@@ -571,7 +571,8 @@ header
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    min-width: 300px;
+    max-width: 1024px;
+    width: 75%;
     min-height: 500px;
     padding: 30px;
     justify-content: space-between;
@@ -580,22 +581,29 @@ header
 .project-list-container ul
 {
     padding: 0;
+    width: 100%;
+    display: grid;
+    margin: auto;
+    grid-template-columns: repeat(auto-fit, 300px);
+    justify-content: space-around;
 }
 .project-list-container ul li
 {
-    width: 200px;
     margin: 0.25em;
+    align-items: center;
     display: flex;
     
     & button:first-child {
         width: 100%;
+            padding: 1em 2em;
         margin: 0 5px;
     }
 }
 
 .project-list-container>button:last-child
 {
-    width: 150px;
+    max-width: 250px;
+    padding: 0 2em;
     height: 2lh;
     border-radius: 2lh;
     justify-self: flex-end;
