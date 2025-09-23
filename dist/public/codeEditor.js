@@ -1,7 +1,4 @@
 // Ensure Ace Editor is globally available or import it properly
-// import QRCode from 'qrcode'
-// import { WebSocketMessageType } from "../../dist/shared/types";
-// const WebSocketMessageType = require("../../dist/shared/types")
 import { createButton, createNode, EditorCanvas, LoadingThrobber, Toolbox } from "./components.js";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
@@ -121,12 +118,12 @@ class Console {
             this.compileMessage.remove();
         if (this.consoleInput)
             return;
-        this.consoleInput = document.createElement('textarea');
-        this.element.appendChild(this.consoleInput);
+        this.consoleInput = { terminal: new Terminal(), elem: document.createElement('div') }; //document.createElement('textarea')as HTMLTextAreaElement;
+        this.element.appendChild(this.consoleInput.elem);
     }
     onProcessEnd() {
         if (this.consoleInput)
-            this.consoleInput.remove();
+            this.consoleInput.elem.remove();
         this.compileMessage?.remove();
         this.element.id = '';
     }
@@ -3114,21 +3111,21 @@ function onMessage(event) {
                             const console = activeConsole.consoleInput;
                             if (!console)
                                 return;
-                            console.id = 'console-input';
-                            activeConsole?.element.appendChild(console);
-                            activeConsole.element.onclick = (ev) => console.focus();
-                            const listener = (e) => {
-                                if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
-                                    e.preventDefault();
-                                    submitConsole(console, WebSocketMessageType.Console, activeConsole);
-                                    console.innerText = '';
-                                    console.value = '';
-                                    console.removeEventListener("keypress", listener);
-                                    // console.remove()
-                                }
-                            };
-                            console.addEventListener("keypress", listener);
-                            console.focus();
+                            // console.id = 'console-input'
+                            // activeConsole?.element.appendChild(console) 
+                            // activeConsole!.element.onclick = (ev) => console.focus()
+                            // const listener = (e: KeyboardEvent) => {
+                            //   if (e.key === "Enter" && !e.shiftKey || e.key === " ") {
+                            //     e.preventDefault();
+                            //     submitConsole(console, WebSocketMessageType.Console, activeConsole)
+                            //     console.innerText = ''
+                            //     console.value = ''
+                            //     console.removeEventListener("keypress", listener)
+                            //     // console.remove()
+                            //   }
+                            // }
+                            // console.addEventListener("keypress", listener);
+                            // console.focus();
                         }
                         session.setAnnotations([]);
                         document.getElementById('buttons')?.classList.add('compiled');

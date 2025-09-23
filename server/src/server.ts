@@ -2372,7 +2372,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     
 
                     async function handleCommand(command: string, sockets: Map<UUID, WebSocket>) {
-                        const filePath = path.join(rootDirName, "cache", sessionId);
+                        const folderPath = path.join(rootDirName, "cache", sessionId);
                     try {
                         console.log('handle command: ' + command)
                         if(command == "execute")
@@ -2390,12 +2390,12 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                     const mainPromise = new Promise<void>((resolve, reject) => {   
                                         if(!clientSession.clientsActiveFile.get(clientId))
                                         {
-                                            onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`)
+                                            onClosedProgram(-2, 0, `<span class="console-error">Please open a file first!</span>`)
                                             return reject('Client appears to not have an active open file')
                                         }
 
                                         if(!clientObj.editorMode.clientCompile)
-                                        buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
+                                        buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                             if(res == null) return resolve()
                                             if(!clientObj.getFile(res.fileName))
@@ -2436,7 +2436,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
 
 
-                                                readStdio(clientSession.program, messageJSON, res).then(()=> resolve())
+                                                readStdio(clientSession.program, messageJSON, res).then(resolve)
 
 
 
@@ -2504,7 +2504,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             
                             if(!getProcessFromMap()) {
                                 if(!clientObj.editorMode.clientCompile)
-                                buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then(async res => {
+                                buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then(async res => {
                                                
                                     mode="debug"; //set mode to debug
                                     try {

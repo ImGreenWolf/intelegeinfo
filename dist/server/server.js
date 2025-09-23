@@ -1913,7 +1913,7 @@ bash `.trim().replaceAll('\n', "");
                             break;
                         handleCommand(command, exports.clients); // pass all the clients in the session
                         async function handleCommand(command, sockets) {
-                            const filePath = path_1.default.join(exports.rootDirName, "cache", sessionId);
+                            const folderPath = path_1.default.join(exports.rootDirName, "cache", sessionId);
                             try {
                                 console.log('handle command: ' + command);
                                 if (command == "execute") {
@@ -1926,11 +1926,11 @@ bash `.trim().replaceAll('\n', "");
                                                     resolveExectute();
                                                 const mainPromise = new Promise((resolve, reject) => {
                                                     if (!clientSession.clientsActiveFile.get(clientId)) {
-                                                        onClosedProgram(-1, 0, `<span class="console-error">Please open a file first!</span>`);
+                                                        onClosedProgram(-2, 0, `<span class="console-error">Please open a file first!</span>`);
                                                         return reject('Client appears to not have an active open file');
                                                     }
                                                     if (!clientObj.editorMode.clientCompile)
-                                                        buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                                                        buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
                                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                             if (res == null)
                                                                 return resolve();
@@ -1958,7 +1958,7 @@ bash `.trim().replaceAll('\n', "");
                                                                     });
                                                                 }
                                                                 clientSession.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession);
-                                                                readStdio(clientSession.program, messageJSON, res).then(() => resolve());
+                                                                readStdio(clientSession.program, messageJSON, res).then(resolve);
                                                             }
                                                             catch (err) {
                                                                 console.error("Failed to run docker commands: " + err);
@@ -2005,7 +2005,7 @@ bash `.trim().replaceAll('\n', "");
                                 else if (command == "-exec-run") {
                                     if (!getProcessFromMap()) {
                                         if (!clientObj.editorMode.clientCompile)
-                                            buildAndRunCppSandbox(filePath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                                            buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
                                                 mode = "debug"; //set mode to debug
                                                 try {
                                                     clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal) => {

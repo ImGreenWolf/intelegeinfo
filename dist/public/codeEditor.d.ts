@@ -1,5 +1,6 @@
 import Ace from "ace-builds";
 import { UUID } from "crypto";
+import xtermType from '@xterm/xterm';
 import { EditorWindow, EditorWindowTab } from "./windowManager.js";
 declare class VisualCursor implements Ace.Ace.MarkerLike {
     color: any;
@@ -17,7 +18,10 @@ declare class Console {
     event: Event;
     compileMessage: HTMLDivElement | undefined;
     noVNC: HTMLIFrameElement | undefined;
-    consoleInput: HTMLTextAreaElement | undefined;
+    consoleInput: {
+        terminal: xtermType.Terminal;
+        elem: HTMLDivElement;
+    } | undefined;
     constructor();
     onCompileStart(message?: string): void;
     onProcessStart(): void;

@@ -7,17 +7,10 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const dbClient_1 = __importDefault(require("../dbClient"));
 const usersManager_1 = require("../usersManager");
-const friendManager_1 = require("./friendManager");
 const server_1 = require("../server");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 exports.default = router;
-router.get('/list', async (req, res) => {
-    const id = (0, usersManager_1.getIdFromJWT)(req);
-    if (!id)
-        throw 'Please login';
-    res.send({ friends: await (0, friendManager_1.getFriends)(id) });
-});
 router.get('/channel/:chatId', async (req, res) => {
     const id = (0, usersManager_1.getIdFromJWT)(req);
     if (!id)

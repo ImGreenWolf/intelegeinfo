@@ -17,12 +17,7 @@ export default router;
 
 
 
-router.get('/list', async (req, res) => {
-    const id = getIdFromJWT(req)
-    if(!id)
-        throw 'Please login';
-    res.send({friends: await getFriends(id)});
-})
+
 
 router.get('/channel/:chatId', async (req, res) => {
     const id = getIdFromJWT(req)
