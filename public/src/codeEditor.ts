@@ -170,6 +170,7 @@ class Console {
           action: 'process'
         })
       );
+      this.stdin = ''
 
     }
     thisConsole.appendChild(resendButton);
@@ -196,12 +197,12 @@ class Console {
     this.consoleInput = {terminal: new Terminal({cursorBlink: true, rows: 10,  ignoreBracketedPasteMode: true, theme: {background: 'rgb(10,10,10)'}}), elem: document.createElement('div')}//document.createElement('textarea')as HTMLTextAreaElement;
     this.element.appendChild(this.consoleInput.elem)
     this.consoleInput.terminal.open(this.consoleInput.elem)
-  this.consoleInput.terminal.attachCustomKeyEventHandler((event) => {
-  if (event.type === "keydown" && event.key === "v" && event.ctrlKey) {
-    return false;
-  }
-  return true;
-});
+    this.consoleInput.terminal.attachCustomKeyEventHandler((event) => {
+      if (event.type === "keydown" && event.key === "v" && event.ctrlKey) {
+        return false;
+      }
+      return true;
+    });
     this.consoleInput.terminal.onData((data) => {
       this.sendCommand(data)
     })
@@ -221,8 +222,7 @@ class Console {
   }
 
   public callbackCreate(callerConsole: Console) {
-    callerConsole.stdin = this.stdin;
-    console.log(this.stdin)
+    callerConsole.stdin = this.stdin
   }
 
 

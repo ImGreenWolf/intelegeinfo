@@ -104,6 +104,7 @@ class Console {
                 type: WebSocketMessageType.Console,
                 action: 'process'
             }));
+            this.stdin = '';
         };
         thisConsole.appendChild(resendButton);
         this.element = thisConsole;
@@ -140,7 +141,6 @@ class Console {
     }
     callbackCreate(callerConsole) {
         callerConsole.stdin = this.stdin;
-        console.log(this.stdin);
     }
     sendCommand(cmd) {
         this.stdin += cmd;
