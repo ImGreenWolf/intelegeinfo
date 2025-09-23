@@ -208,7 +208,7 @@ class Console {
            const buf = this.consoleInput.terminal.buffer.normal
              
            for(let y = buf.baseY; y<=buf.viewportY; y++)
-             previewContent += buf.getLine(y)+'\n'
+             previewContent += buf.getLine(y)?.translateToString()+'\n'
          
  
              this.consoleInput.elem.outerHTML =
