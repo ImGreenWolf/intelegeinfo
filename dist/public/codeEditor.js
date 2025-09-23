@@ -126,14 +126,16 @@ class Console {
         });
     }
     onProcessEnd() {
-        if (this.consoleInput) {
-            let previewContent = '';
-            const buf = this.consoleInput.terminal.buffer.normal;
-            for (let y = buf.baseY; y < buf.viewportY; y++)
-                previewContent += buf.getLine(y) + '\n';
-            this.consoleInput.elem.outerHTML =
-                `<pre>${previewContent}</pre>`;
-        }
+        setTimeout(() => {
+            if (this.consoleInput) {
+                let previewContent = '';
+                const buf = this.consoleInput.terminal.buffer.normal;
+                for (let y = buf.baseY; y <= buf.viewportY; y++)
+                    previewContent += buf.getLine(y) + '\n';
+                this.consoleInput.elem.outerHTML =
+                    `<pre>${previewContent}</pre>`;
+            }
+        }, 50);
         this.compileMessage?.remove();
         this.element.id = '';
     }
