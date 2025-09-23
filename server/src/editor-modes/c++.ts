@@ -168,7 +168,7 @@ int main() {
             this.process.write(command+' \n')
         }
         sendProgramInput: (command) => void = (command) => {
-            this.inputTerminal.write(command)
+            this.inputTerminal.write(command+'\n')
         }
 
         

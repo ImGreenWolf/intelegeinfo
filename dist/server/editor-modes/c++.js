@@ -170,7 +170,7 @@ class CPPDebugger extends ProcessTypes_1.default {
         this.process.write(command + ' \n');
     };
     sendProgramInput = (command) => {
-        this.inputTerminal.write(command);
+        this.inputTerminal.write(command + '\n');
     };
     addDataListener = (func) => {
         console.log('ADDED DATA LISTENER');
