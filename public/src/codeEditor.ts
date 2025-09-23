@@ -193,10 +193,15 @@ class Console {
     if(this.consoleInput )
       return
 
-    this.consoleInput = {terminal: new Terminal({cursorBlink: true, rows: 10, ignoreBracketedPasteMode: true, theme: {background: 'rgb(10,10,10)'}}), elem: document.createElement('div')}//document.createElement('textarea')as HTMLTextAreaElement;
+    this.consoleInput = {terminal: new Terminal({cursorBlink: true, rows: 10,  ignoreBracketedPasteMode: true, theme: {background: 'rgb(10,10,10)'}}), elem: document.createElement('div')}//document.createElement('textarea')as HTMLTextAreaElement;
     this.element.appendChild(this.consoleInput.elem)
     this.consoleInput.terminal.open(this.consoleInput.elem)
-
+  this.consoleInput.terminal.attachCustomKeyEventHandler((event) => {
+  if (event.type === "keydown" && event.key === "v" && event.ctrlKey) {
+    return false;
+  }
+  return true;
+});
     this.consoleInput.terminal.onData((data) => {
       this.sendCommand(data)
     })
