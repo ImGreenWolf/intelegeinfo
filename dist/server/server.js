@@ -1748,7 +1748,7 @@ bash `.trim().replaceAll('\n', "");
                             case 'process':
                                 if (getProcessFromMap() != undefined) {
                                     if (getProcessFromMap().sendCommand) {
-                                        getProcessFromMap().sendProgramInput(messageJSON.command + '\n');
+                                        getProcessFromMap().sendProgramInput(messageJSON.command);
                                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                     }
                                     else {

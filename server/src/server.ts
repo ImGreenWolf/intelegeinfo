@@ -2167,7 +2167,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             {
                                 if((getProcessFromMap() as DebugProcess).sendCommand)
                                 {
-                                    (getProcessFromMap() as DebugProcess).sendProgramInput(messageJSON.command + '\n')
+                                    (getProcessFromMap() as DebugProcess).sendProgramInput(messageJSON.command)
                                     replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                                 }
                                 else
