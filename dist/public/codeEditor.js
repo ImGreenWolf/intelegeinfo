@@ -83,6 +83,7 @@ class Console {
     compileMessage;
     noVNC;
     consoleInput;
+    content = '';
     constructor() {
         if (outputConsoles.length > 0)
             outputConsoles.at(-1).callbackCreate(this);
@@ -126,16 +127,9 @@ class Console {
         });
     }
     onProcessEnd() {
-        setTimeout(() => {
-            if (this.consoleInput) {
-                let previewContent = '';
-                const buf = this.consoleInput.terminal.buffer.normal;
-                for (let y = buf.baseY; y <= buf.viewportY; y++)
-                    previewContent += buf.getLine(y)?.translateToString() + '\n';
-                this.consoleInput.elem.outerHTML =
-                    `<pre>${previewContent}</pre>`;
-            }
-        }, 50);
+        if (this.consoleInput)
+            this.consoleInput.elem.outerHTML =
+                `<pre>${this.content}</pre>`;
         this.compileMessage?.remove();
         this.element.id = '';
     }
@@ -156,6 +150,7 @@ class Console {
         if (!this.consoleInput)
             return;
         this.consoleInput.terminal.write(chunk);
+        this.content += chunk;
     }
 }
 // Manager class for multiple visual cursors

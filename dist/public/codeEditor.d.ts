@@ -22,6 +22,7 @@ declare class Console {
         terminal: xtermType.Terminal;
         elem: HTMLDivElement;
     } | undefined;
+    content: string;
     constructor();
     onCompileStart(message?: string): void;
     onProcessStart(): void;
