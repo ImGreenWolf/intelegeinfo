@@ -202,8 +202,18 @@ class Console {
 
   public onProcessEnd()
   {
-    if(this.consoleInput)
-      this.consoleInput.elem.remove()
+        if(this.consoleInput) {
+          let previewContent = ''
+          const buf = this.consoleInput.terminal.buffer.normal
+            
+          for(let y = buf.baseY; y<buf.viewportY; y++)
+            previewContent += buf.getLine(y)+'\n'
+        
+
+            this.consoleInput.elem.outerHTML =
+          `<pre>${previewContent}</pre>`
+        }
+    
     this.compileMessage?.remove()
 
     this.element.id = '';
