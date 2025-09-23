@@ -2182,9 +2182,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             else
                                 processInputBuffer += messageJSON.command + "\n";
 
-                            replicateFunction((clientWs) => {
-                                clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Console,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
-                            });
+                            // replicateFunction((clientWs) => {
+                            //     clientWs.send(JSON.stringify({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Console,  body: messageJSON.command, clientDisplayName: clientObj?.displayName, clientId: clientId}));  // Send GDB output to the client
+                            // });
                             break
                     case 'container':
                         if (!(clientObj.clientData && clientObj.clientData.emailValidated == true))
