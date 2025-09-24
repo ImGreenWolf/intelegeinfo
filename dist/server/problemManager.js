@@ -43,6 +43,7 @@ exports.createProblem = createProblem;
 exports.testProblem = testProblem;
 exports.dateDeltaToString = dateDeltaToString;
 const dbClient_1 = __importDefault(require("./dbClient"));
+const Nodepty = __importStar(require("node-pty"));
 function handleSucces(index, clientObj) {
     clientObj.sendMessage({ index, succes: true });
 }
@@ -177,10 +178,11 @@ function testProblem(tests, clientObj, clientSession, res) {
             const stdin = test.dataIn;
             const expectedStoud = test.dataOut;
             let outputBuffer = '';
-            const program = process.env.NODE_ENV == "development" ? (0, child_process_1.spawn)(`${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, { stdio: 'pipe', shell: true, timeout: 5000 }) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession);
+            const program = process.env.NODE_ENV == "development" ? Nodepty.spawn(`${path_1.default.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, '', {}) :
+                await clientObj.openFile[0].editorMode.directExecute(res, clientObj, clientSession);
             const pipeStream = new stream_1.Readable();
             let startTime;
-            program.addListener('spawn', () => {
+            program.on('spawn', () => {
                 pipeStream.pipe(program.stdin);
                 pipeStream.push(stdin);
                 pipeStream.push(null);
