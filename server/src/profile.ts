@@ -181,7 +181,7 @@ router.use('/', (req, res) => {
                          params.projectsList=''
                         for(const project of projects)
                         {
-                            params.projectsList += `<a class="project" href="/editor?save=${sqid.encode([project.id])}"><h3>${project.Project.name}</h3><button>x</button></a>`
+                            params.projectsList += `<a class="project" href="/editor?save=${sqid.encode([project.id])}"><h3>${project.name}</h3><button>x</button></a>`
                         }
 
                     }

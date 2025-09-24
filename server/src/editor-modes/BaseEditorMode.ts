@@ -34,6 +34,7 @@ abstract class EditorMode {
     }
     static isInterpreter: boolean = false; // used for JIT languages like python or js
     abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Nodepty.IPty | Promise<Nodepty.IPty> | undefined
+    abstract directExecute(res, clientObj, sessionObj)
     abstract compile(res: any, file: EditorFile, isDebugging?: boolean)
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<any>
 

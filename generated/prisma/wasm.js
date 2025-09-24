@@ -125,7 +125,6 @@ exports.Prisma.ProjectScalarFieldEnum = {
   name: 'name',
   fileUUID: 'fileUUID',
   createdAt: 'createdAt',
-  userId: 'userId',
   metadata: 'metadata'
 };
 
@@ -138,6 +137,7 @@ exports.Prisma.FileScalarFieldEnum = {
 
 exports.Prisma.SavedProjectScalarFieldEnum = {
   id: 'id',
+  name: 'name',
   projectId: 'projectId',
   creatorId: 'creatorId',
   savedAt: 'savedAt',
@@ -147,6 +147,8 @@ exports.Prisma.SavedProjectScalarFieldEnum = {
 exports.Prisma.SharedProjectScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
+  creatorId: 'creatorId',
+  openedAt: 'openedAt',
   sharedAt: 'sharedAt'
 };
 
@@ -379,6 +381,10 @@ exports.Prisma.ProjectOrderByRelevanceFieldEnum = {
 exports.Prisma.FileOrderByRelevanceFieldEnum = {
   name: 'name',
   content: 'content'
+};
+
+exports.Prisma.SavedProjectOrderByRelevanceFieldEnum = {
+  name: 'name'
 };
 
 exports.Prisma.UserOrderByRelevanceFieldEnum = {

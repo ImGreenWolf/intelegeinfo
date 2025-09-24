@@ -18,11 +18,9 @@ datasource db {
 
 model Project {
   id Int  @id @default(autoincrement())
-  name String
+  name String?
   fileUUID String?
   createdAt DateTime @default(now())
-  user User @relation(fields: [userId], references: [id])
-  userId Int
   metadata Json? // TODO implement
 
   files File[]
@@ -31,16 +29,20 @@ model Project {
 }
 
 model File {
-  name String @unique
+  name String
   content String
 
   updatedAt DateTime @default(now()) @updatedAt
   Project Project @relation(fields: [projectId], references: [id])
   projectId Int
+
+  @@unique([name,projectId])
 }
 
 model SavedProject {
   id Int @id @default(autoincrement())
+  name String?
+
   Project Project @relation(fields: [projectId], references: [id])
   projectId Int
 
@@ -57,6 +59,11 @@ model SharedProject {
   id Int @id @default(autoincrement())
   Project Project @relation(fields: [projectId], references: [id])
   projectId Int
+
+  createdBy User? @relation(fields: [creatorId], references: [id])
+  creatorId Int?
+
+  openedAt DateTime @default(now())
   sharedAt DateTime @default(now())
 }
 
@@ -79,7 +86,6 @@ model User {
   occupationType OccupationType @default(None)
   preferences Json?
   // relations
-    projects Project[]
     solves Solve[]
     Guide Guide[] // guides written by user
     Course Course? // course offered 
@@ -104,6 +110,8 @@ model User {
     Friends FriendRelation[]
 
     SavedProject SavedProject[]
+
+  SharedProject SharedProject[]
 }
 
 model FriendRelation {

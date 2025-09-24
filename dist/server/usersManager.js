@@ -42,6 +42,7 @@ exports.getJWT = getJWT;
 exports.getUserData = getUserData;
 exports.getIdFromJWT = getIdFromJWT;
 exports.addProject = addProject;
+exports.shareProject = shareProject;
 exports.listAllProjects = listAllProjects;
 exports.getClientJWTValue = getClientJWTValue;
 exports.getClientId = getClientId;
@@ -113,22 +114,49 @@ async function getUserData(id, include) {
 function getIdFromJWT(req) {
     return getClientId(getJWT(req));
 }
-async function addProject(userId, projId, data) {
+async function addProject(userId, projId, session, name) {
     return await dbClient_1.default.savedProject.create({
         data: {
+            name: name,
             createdBy: {
                 connect: { id: userId }
             },
-            Project: projId
-                ? {
-                    connectOrCreate: {
-                        create: data,
-                        where: projId
-                    }
+            Project: getProjectInput(projId, session)
+        }
+    });
+}
+function getProjectInput(projId, session) {
+    const data = {
+        files: {
+            createMany: {
+                data: session.files.map(file => { return { name: file.name, content: file.content }; }),
+                skipDuplicates: true
+            }
+        }
+    };
+    console.log(data.files.createMany.data);
+    return projId
+        ? {
+            connectOrCreate: {
+                create: data,
+                where: {
+                    id: projId
                 }
-                : {
-                    create: data
+            }
+        }
+        : {
+            create: data
+        };
+}
+async function shareProject(userId, projId, session) {
+    return await dbClient_1.default.sharedProject.create({
+        data: {
+            createdBy: {
+                connect: {
+                    id: userId
                 }
+            },
+            Project: getProjectInput(undefined, session)
         }
     });
 }
@@ -356,6 +384,11 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
         if (projectId && server_1.sqid.decode(projectId)[0]) {
             try {
                 const session = server_1.sessionMap.get(saveSessionId);
+                const proj = await dbClient_1.default.savedProject.findUnique({
+                    where: {
+                        id: server_1.sqid.decode(projectId)[0]
+                    }
+                });
                 const foundProj = await dbClient_1.default.savedProject.update({
                     where: {
                         id: server_1.sqid.decode(projectId)[0]
@@ -374,13 +407,17 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
                         }
                     },
                     data: {
+                        name: name,
                         Project: {
                             update: {
                                 files: {
                                     upsert: session.files.map(file => {
                                         return {
                                             where: {
-                                                name: file.name
+                                                name_projectId: {
+                                                    name: file.name,
+                                                    projectId: proj.id
+                                                }
                                             },
                                             create: {
                                                 name: file.name,
@@ -434,15 +471,28 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
             const session = server_1.sessionMap.get(saveSessionId);
             const sessionProj = session.savedProject;
             //create new saved project
-            const savedProj = await addProject(userId, sessionProj ? sessionProj.id : undefined, { name, user: { connect: { id: userId } }, files: {
-                    createMany: {
-                        data: session.files.map(file => { return { name: file.name, content: file.content }; }),
-                        skipDuplicates: true
-                    }
-                }
-            });
+            const savedProj = await addProject(userId, sessionProj ? sessionProj.id : undefined, session, name);
             res.status(200).json({ message: "sucsess", projectId: server_1.sqid.encode([savedProj.id]) });
         }
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send((0, server_1.handlePrismaError)(error));
+    }
+});
+exports.router.get('/shareProject', server_1.authMiddleware, async (req, res) => {
+    try {
+        const saveSessionId = req.query.sessionId;
+        const userId = users.getIdFromJWT(req);
+        if (!server_1.sessionMap.has(saveSessionId)) {
+            res.status(500).json({ message: "Sesiunea este invalida" });
+            return;
+        }
+        const session = server_1.sessionMap.get(saveSessionId);
+        const sessionProj = session.savedProject;
+        //create new saved project
+        const sharedProj = await shareProject(userId, sessionProj ? sessionProj.id : undefined, session);
+        res.status(200).json({ message: "sucsess", shareLink: `${req.secure ? 'https' : 'http'}://${req.host}/editor?share=${server_1.sqid.encode([sharedProj.id, sharedProj.projectId])}` });
     }
     catch (error) {
         console.error(error);

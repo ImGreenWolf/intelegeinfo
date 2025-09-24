@@ -1,6 +1,6 @@
 import jwt, { Jwt, JwtPayload } from "jsonwebtoken"
 import forge from 'node-forge';
-import crypto, { randomUUID } from "crypto";
+import crypto, { randomUUID, UUID } from "crypto";
 import express, { Request, Response } from 'express';
 import bodyParser, { text } from 'body-parser';
 // import cookieParser from 'cookie-parser'
@@ -20,6 +20,7 @@ const OAuth2 = google.auth.OAuth2;
 import multer from 'multer'
 import { Payload } from "../../generated/prisma/runtime/library";
 import * as FriendManager from './friends/friendManager'
+import { EditorSession } from "./types";
 export let transporter: nodemailer.Transporter;
 updateTransporter()
 
@@ -102,23 +103,61 @@ export function getIdFromJWT(req: any)
 export async function addProject(
     userId: number,
     projId: any,
-    data: Prisma.ProjectCreateInput
+    session: EditorSession,
+    name: string
 ) {
     return await prisma.savedProject.create({
         data: {
+            name: name,
             createdBy: {
                 connect: { id: userId }
             },
-            Project: projId
-                ? {
-                      connectOrCreate: {
-                          create: data,
-                          where: projId
-                      }
-                  }
-                : {
-                      create: data
-                  }
+            Project: getProjectInput(projId, session)
+        }
+    });
+}
+
+function getProjectInput(projId: any, session: EditorSession) {
+    const data = 
+    {
+        files:  {
+            createMany: {
+                data: session.files.map(file => {return {name: file.name, content: file.content}}),
+                skipDuplicates: true
+            }
+        }
+    }
+    console.log(data.files.createMany.data)
+
+    return projId
+        ? {
+                connectOrCreate: {
+                    create: data,
+                    where: {
+                        id: projId
+                    }
+                }
+            }
+        : {
+                create: data
+            }
+        
+}
+
+
+export async function shareProject(
+    userId: number,
+    projId: any,
+    session: EditorSession
+) {
+    return await prisma.sharedProject.create({
+        data: {
+            createdBy: {
+                connect: {
+                    id: userId
+                }
+            },
+            Project: getProjectInput(undefined, session)
         }
     });
 }
@@ -438,6 +477,11 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
     
             try {
                 const session = sessionMap.get(saveSessionId)
+                const proj = await prisma.savedProject.findUnique({
+                    where: {
+                        id: sqid.decode(projectId)[0]
+                    }
+                })
                 const foundProj = await prisma.savedProject.update({
                     where: {
                         id: sqid.decode(projectId)[0]
@@ -456,13 +500,17 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
                         }
                     },
                     data: {
+                        name: name,
                         Project: {
                             update: {
                                 files: 
                                  {
                                     upsert: session.files.map(file => {return {
                                         where: {
-                                            name: file.name
+                                            name_projectId: {
+                                                name: file.name,
+                                                projectId: proj.id
+                                            }
                                         },
                                         create: {
                                             name: file.name,
@@ -520,15 +568,7 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
             const session = sessionMap.get(saveSessionId)
             const sessionProj = session.savedProject
             //create new saved project
-            const savedProj = await addProject(userId, sessionProj ? sessionProj.id : undefined,
-             {name, user: {connect: {id: userId}}, files:  {
-                createMany: {
-                    data: session.files.map(file => {return {name: file.name, content: file.content}}),
-                    skipDuplicates: true
-                }
-             }
-            
-            })
+            const savedProj = await addProject(userId, sessionProj ? sessionProj.id : undefined, session, name)
 
             res.status(200).json({message: "sucsess", projectId: sqid.encode([savedProj.id])})
         }
@@ -542,6 +582,35 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
    
   });
 
+
+  router.get('/shareProject', authMiddleware, async (req, res) => {
+   
+    try {
+        const saveSessionId = req.query.sessionId as UUID;
+    
+        const userId = users.getIdFromJWT(req)
+
+        if(!sessionMap.has(saveSessionId)) {
+            res.status(500).json({message: "Sesiunea este invalida"})
+            return
+        }
+
+        const session = sessionMap.get(saveSessionId)
+        const sessionProj = session.savedProject
+        //create new saved project
+        const sharedProj = await shareProject(userId, sessionProj ? sessionProj.id : undefined, session)
+
+        res.status(200).json({message: "sucsess", shareLink: `${req.secure ? 'https' : 'http'}://${req.host}/editor?share=${sqid.encode([sharedProj.id, sharedProj.projectId])}`})
+        
+             
+       
+    
+    } catch (error) {
+        console.error(error)
+        res.status(500).send(handlePrismaError(error))
+    }
+   
+  });
 
 
 

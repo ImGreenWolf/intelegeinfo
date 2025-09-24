@@ -21,6 +21,7 @@ declare abstract class EditorMode {
     runParams(clientObj: any): string;
     static isInterpreter: boolean;
     abstract execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Nodepty.IPty | Promise<Nodepty.IPty> | undefined;
+    abstract directExecute(res: any, clientObj: any, sessionObj: any): any;
     abstract compile(res: any, file: EditorFile, isDebugging?: boolean): any;
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<any>;
     shouldRebuild(sessionObj: EditorSession, clientObj: ClientObject): boolean;

@@ -735,29 +735,25 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     })
     .finally(() => {
         
-    async function loadProject(saveId, creatorId)
-    {
-        
-        if(!saveId) throw 'cant load project: no id was supplied, or is invalid';
+async function loadProject(saveId, creatorId)
+{
+    
+    if(!saveId) throw 'cant load project: no id was supplied, or is invalid';
 
-        return prisma.savedProject.findUnique({
-        where:
-        {
-            id: saveId
-        },
-        include: {
-            Project: {
-                include: {
-                    files: true
-                }
+    return prisma.savedProject.findUnique({
+    where:
+    {
+        id: saveId
+    },
+    include: {
+        Project: {
+            include: {
+                files: true
             }
         }
-        })
-                        
-        
-    
-
     }
+    })
+}
 
 
 function endConnectionPromise()
@@ -983,11 +979,9 @@ function endConnectionPromise()
                 endConnectionPromise()
             }).then(() => 
             {
-                
               if(connectionPromiseTimeout)
-        clearTimeout(connectionPromiseTimeout)
-    connectionPromiseTimeout=undefined
-                
+                clearTimeout(connectionPromiseTimeout)
+                connectionPromiseTimeout=undefined
             })
 
         //  connectionPromiseTimeout = setTimeout(() => {
@@ -1221,20 +1215,57 @@ function endConnectionPromise()
 
     async function loadSave(saveUUID, clientObj: ClientObject)
     {
-         try
+        if(saveUUID == undefined)
+            return
+        const projectId = sqid.decode(saveUUID)[0]
+        if(!projectId)
+            return
+        onLoadProject(clientObj, await loadProject(projectId, clientObj.clientData.id))
+    }
+
+    async function loadShare(saveUUID: string, clientObj: ClientObject) {
+        if(saveUUID == undefined)
+            return
+        const projectId = sqid.decode(saveUUID)[0]
+        if(!projectId)
+            return
+        onLoadProject(clientObj, await loadShareProject(projectId))
+    }
+    async function loadShareProject(shareId)
+    {
+        
+        if(!shareId) throw 'cant load project: no id was supplied, or is invalid';
+
+        return prisma.sharedProject.update({
+        where:
+        {
+            id: shareId
+        },
+        data: {
+            openedAt: new Date()
+        },
+        include: {
+            Project: {
+                include: {
+                    files: true
+                }
+            }
+        }
+        })
+    }
+
+    function onLoadProject(clientObj: ClientObject, savedProject) {
+        try
          {
             if(!clientObj.clientData) {
                 throw {message: 'Nu ai access la acest proiect sau nu esti logat.'}
             }
-            const projectId = sqid.decode(saveUUID)[0]
 
-            let savedProject = await loadProject(projectId, clientObj.clientData.id)
-            console.log(savedProject)
             if(!savedProject.Project)
                 throw {message: "Am intampinat o eroare..."}
             fs.mkdirSync(clientFilesPath, { recursive: true })
 
-            if(savedProject.Project.files.length !=0) {
+            if(savedProject.Project.files.length !=0 && savedProject.Project.fileUUID == null) {
 
                 clientSession.files = savedProject.Project.files.map(file => new EditorFile(clientSession, file.name, file.content))
                 clientSession.savedProject = savedProject.Project;
@@ -1262,6 +1293,8 @@ function endConnectionPromise()
             let savedProject: Project | undefined;
             if(urlParams.has("save"))
                 await loadSave(urlParams.get('save'), clientObj)
+            else if(urlParams.has("share"))
+                await loadShare(urlParams.get('share'), clientObj)
             
             
         

@@ -2087,7 +2087,7 @@ export function listProjects()
         })
        
       }
-      button.innerText = project.Project.name;
+      button.innerText = project.name!;
       if(currentSaveId === project.id)
         button.classList.add('active')
       button.onclick = ( () => {
@@ -2519,8 +2519,11 @@ export function copySessionLink() {
       care are linkul, codul de 6 cifre sau codul qr.</p>
 
       <p id='session-create-error'></p>
-
-      <button type="submit" id="submit-create-session" class="glowing" style='height: 2lh'>Partajeaza Editor</button>
+      <div>
+        <button type="submit" id="submit-create-session" class="glowing" style='height: 2lh'>Deschide Sesiune</button>
+        <button type="button" id="share-editor-content" style='height: 2lh'>Partajeaza Editor</button>
+      </div>
+      
       
     </form>
     <div id='connect-data-container'>
@@ -2539,6 +2542,17 @@ export function copySessionLink() {
     
   
     document.body.appendChild(shareContainer)
+    document.getElementById('share-editor-content')!.onclick = async (ev) => {
+      const res = await fetch('/user/shareProject?sessionId='+wsSessionId)
+
+      if(!res.ok)
+        return displayMessagePopup('Nu am putut partaja editorul... Cod: ' + res.status);
+      const json = await res.json();
+      const link = json.shareLink;
+
+      displayMessagePopup('Am copiat linkul catre editor.')
+      navigator.clipboard.writeText(link)
+    }
     onOpenMenu("share", shareContainer)
     document.getElementById('close-share-session')!.onclick = function (this, ev) {
       shareContainer.remove();
@@ -2915,7 +2929,7 @@ export class TokenTooltip extends Tooltip {
         
         
     // }
-    const params = new URLSearchParams()
+    const params = new URLSearchParams(location.search)
     if(sessionId && !inIframe)
     {
             

@@ -2978,7 +2978,6 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    projects: number
     solves: number
     Guide: number
     Review: number
@@ -2995,10 +2994,10 @@ export namespace Prisma {
     receivedRequests: number
     Friends: number
     SavedProject: number
+    SharedProject: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    projects?: boolean | UserCountOutputTypeCountProjectsArgs
     solves?: boolean | UserCountOutputTypeCountSolvesArgs
     Guide?: boolean | UserCountOutputTypeCountGuideArgs
     Review?: boolean | UserCountOutputTypeCountReviewArgs
@@ -3015,6 +3014,7 @@ export namespace Prisma {
     receivedRequests?: boolean | UserCountOutputTypeCountReceivedRequestsArgs
     Friends?: boolean | UserCountOutputTypeCountFriendsArgs
     SavedProject?: boolean | UserCountOutputTypeCountSavedProjectArgs
+    SharedProject?: boolean | UserCountOutputTypeCountSharedProjectArgs
   }
 
   // Custom InputTypes
@@ -3026,13 +3026,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the UserCountOutputType
      */
     select?: UserCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProjectWhereInput
   }
 
   /**
@@ -3145,6 +3138,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSavedProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SavedProjectWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSharedProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SharedProjectWhereInput
   }
 
 
@@ -3477,12 +3477,10 @@ export namespace Prisma {
 
   export type ProjectAvgAggregateOutputType = {
     id: number | null
-    userId: number | null
   }
 
   export type ProjectSumAggregateOutputType = {
     id: number | null
-    userId: number | null
   }
 
   export type ProjectMinAggregateOutputType = {
@@ -3490,7 +3488,6 @@ export namespace Prisma {
     name: string | null
     fileUUID: string | null
     createdAt: Date | null
-    userId: number | null
   }
 
   export type ProjectMaxAggregateOutputType = {
@@ -3498,7 +3495,6 @@ export namespace Prisma {
     name: string | null
     fileUUID: string | null
     createdAt: Date | null
-    userId: number | null
   }
 
   export type ProjectCountAggregateOutputType = {
@@ -3506,7 +3502,6 @@ export namespace Prisma {
     name: number
     fileUUID: number
     createdAt: number
-    userId: number
     metadata: number
     _all: number
   }
@@ -3514,12 +3509,10 @@ export namespace Prisma {
 
   export type ProjectAvgAggregateInputType = {
     id?: true
-    userId?: true
   }
 
   export type ProjectSumAggregateInputType = {
     id?: true
-    userId?: true
   }
 
   export type ProjectMinAggregateInputType = {
@@ -3527,7 +3520,6 @@ export namespace Prisma {
     name?: true
     fileUUID?: true
     createdAt?: true
-    userId?: true
   }
 
   export type ProjectMaxAggregateInputType = {
@@ -3535,7 +3527,6 @@ export namespace Prisma {
     name?: true
     fileUUID?: true
     createdAt?: true
-    userId?: true
   }
 
   export type ProjectCountAggregateInputType = {
@@ -3543,7 +3534,6 @@ export namespace Prisma {
     name?: true
     fileUUID?: true
     createdAt?: true
-    userId?: true
     metadata?: true
     _all?: true
   }
@@ -3636,10 +3626,9 @@ export namespace Prisma {
 
   export type ProjectGroupByOutputType = {
     id: number
-    name: string
+    name: string | null
     fileUUID: string | null
     createdAt: Date
-    userId: number
     metadata: JsonValue | null
     _count: ProjectCountAggregateOutputType | null
     _avg: ProjectAvgAggregateOutputType | null
@@ -3667,9 +3656,7 @@ export namespace Prisma {
     name?: boolean
     fileUUID?: boolean
     createdAt?: boolean
-    userId?: boolean
     metadata?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     files?: boolean | Project$filesArgs<ExtArgs>
     Saves?: boolean | Project$SavesArgs<ExtArgs>
     Shares?: boolean | Project$SharesArgs<ExtArgs>
@@ -3681,9 +3668,7 @@ export namespace Prisma {
     name?: boolean
     fileUUID?: boolean
     createdAt?: boolean
-    userId?: boolean
     metadata?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3691,9 +3676,7 @@ export namespace Prisma {
     name?: boolean
     fileUUID?: boolean
     createdAt?: boolean
-    userId?: boolean
     metadata?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectScalar = {
@@ -3701,39 +3684,31 @@ export namespace Prisma {
     name?: boolean
     fileUUID?: boolean
     createdAt?: boolean
-    userId?: boolean
     metadata?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "fileUUID" | "createdAt" | "userId" | "metadata", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "fileUUID" | "createdAt" | "metadata", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     files?: boolean | Project$filesArgs<ExtArgs>
     Saves?: boolean | Project$SavesArgs<ExtArgs>
     Shares?: boolean | Project$SharesArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
+  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       files: Prisma.$FilePayload<ExtArgs>[]
       Saves: Prisma.$SavedProjectPayload<ExtArgs>[]
       Shares: Prisma.$SharedProjectPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      name: string
+      name: string | null
       fileUUID: string | null
       createdAt: Date
-      userId: number
       metadata: Prisma.JsonValue | null
     }, ExtArgs["result"]["project"]>
     composites: {}
@@ -4129,7 +4104,6 @@ export namespace Prisma {
    */
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     files<T extends Project$filesArgs<ExtArgs> = {}>(args?: Subset<T, Project$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Saves<T extends Project$SavesArgs<ExtArgs> = {}>(args?: Subset<T, Project$SavesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Shares<T extends Project$SharesArgs<ExtArgs> = {}>(args?: Subset<T, Project$SharesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SharedProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4166,7 +4140,6 @@ export namespace Prisma {
     readonly name: FieldRef<"Project", 'String'>
     readonly fileUUID: FieldRef<"Project", 'String'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
-    readonly userId: FieldRef<"Project", 'Int'>
     readonly metadata: FieldRef<"Project", 'Json'>
   }
     
@@ -4386,7 +4359,7 @@ export namespace Prisma {
     /**
      * The data needed to create a Project.
      */
-    data: XOR<ProjectCreateInput, ProjectUncheckedCreateInput>
+    data?: XOR<ProjectCreateInput, ProjectUncheckedCreateInput>
   }
 
   /**
@@ -4417,10 +4390,6 @@ export namespace Prisma {
      */
     data: ProjectCreateManyInput | ProjectCreateManyInput[]
     skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProjectIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4491,10 +4460,6 @@ export namespace Prisma {
      * Limit how many Projects to update.
      */
     limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProjectIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -5759,6 +5724,7 @@ export namespace Prisma {
 
   export type SavedProjectMinAggregateOutputType = {
     id: number | null
+    name: string | null
     projectId: number | null
     creatorId: number | null
     savedAt: Date | null
@@ -5767,6 +5733,7 @@ export namespace Prisma {
 
   export type SavedProjectMaxAggregateOutputType = {
     id: number | null
+    name: string | null
     projectId: number | null
     creatorId: number | null
     savedAt: Date | null
@@ -5775,6 +5742,7 @@ export namespace Prisma {
 
   export type SavedProjectCountAggregateOutputType = {
     id: number
+    name: number
     projectId: number
     creatorId: number
     savedAt: number
@@ -5797,6 +5765,7 @@ export namespace Prisma {
 
   export type SavedProjectMinAggregateInputType = {
     id?: true
+    name?: true
     projectId?: true
     creatorId?: true
     savedAt?: true
@@ -5805,6 +5774,7 @@ export namespace Prisma {
 
   export type SavedProjectMaxAggregateInputType = {
     id?: true
+    name?: true
     projectId?: true
     creatorId?: true
     savedAt?: true
@@ -5813,6 +5783,7 @@ export namespace Prisma {
 
   export type SavedProjectCountAggregateInputType = {
     id?: true
+    name?: true
     projectId?: true
     creatorId?: true
     savedAt?: true
@@ -5908,6 +5879,7 @@ export namespace Prisma {
 
   export type SavedProjectGroupByOutputType = {
     id: number
+    name: string | null
     projectId: number
     creatorId: number
     savedAt: Date
@@ -5935,6 +5907,7 @@ export namespace Prisma {
 
   export type SavedProjectSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    name?: boolean
     projectId?: boolean
     creatorId?: boolean
     savedAt?: boolean
@@ -5945,6 +5918,7 @@ export namespace Prisma {
 
   export type SavedProjectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    name?: boolean
     projectId?: boolean
     creatorId?: boolean
     savedAt?: boolean
@@ -5955,6 +5929,7 @@ export namespace Prisma {
 
   export type SavedProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    name?: boolean
     projectId?: boolean
     creatorId?: boolean
     savedAt?: boolean
@@ -5965,13 +5940,14 @@ export namespace Prisma {
 
   export type SavedProjectSelectScalar = {
     id?: boolean
+    name?: boolean
     projectId?: boolean
     creatorId?: boolean
     savedAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SavedProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "creatorId" | "savedAt" | "updatedAt", ExtArgs["result"]["savedProject"]>
+  export type SavedProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "projectId" | "creatorId" | "savedAt" | "updatedAt", ExtArgs["result"]["savedProject"]>
   export type SavedProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
@@ -5993,6 +5969,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
+      name: string | null
       projectId: number
       creatorId: number
       savedAt: Date
@@ -6423,6 +6400,7 @@ export namespace Prisma {
    */
   interface SavedProjectFieldRefs {
     readonly id: FieldRef<"SavedProject", 'Int'>
+    readonly name: FieldRef<"SavedProject", 'String'>
     readonly projectId: FieldRef<"SavedProject", 'Int'>
     readonly creatorId: FieldRef<"SavedProject", 'Int'>
     readonly savedAt: FieldRef<"SavedProject", 'DateTime'>
@@ -6856,28 +6834,36 @@ export namespace Prisma {
   export type SharedProjectAvgAggregateOutputType = {
     id: number | null
     projectId: number | null
+    creatorId: number | null
   }
 
   export type SharedProjectSumAggregateOutputType = {
     id: number | null
     projectId: number | null
+    creatorId: number | null
   }
 
   export type SharedProjectMinAggregateOutputType = {
     id: number | null
     projectId: number | null
+    creatorId: number | null
+    openedAt: Date | null
     sharedAt: Date | null
   }
 
   export type SharedProjectMaxAggregateOutputType = {
     id: number | null
     projectId: number | null
+    creatorId: number | null
+    openedAt: Date | null
     sharedAt: Date | null
   }
 
   export type SharedProjectCountAggregateOutputType = {
     id: number
     projectId: number
+    creatorId: number
+    openedAt: number
     sharedAt: number
     _all: number
   }
@@ -6886,28 +6872,36 @@ export namespace Prisma {
   export type SharedProjectAvgAggregateInputType = {
     id?: true
     projectId?: true
+    creatorId?: true
   }
 
   export type SharedProjectSumAggregateInputType = {
     id?: true
     projectId?: true
+    creatorId?: true
   }
 
   export type SharedProjectMinAggregateInputType = {
     id?: true
     projectId?: true
+    creatorId?: true
+    openedAt?: true
     sharedAt?: true
   }
 
   export type SharedProjectMaxAggregateInputType = {
     id?: true
     projectId?: true
+    creatorId?: true
+    openedAt?: true
     sharedAt?: true
   }
 
   export type SharedProjectCountAggregateInputType = {
     id?: true
     projectId?: true
+    creatorId?: true
+    openedAt?: true
     sharedAt?: true
     _all?: true
   }
@@ -7001,6 +6995,8 @@ export namespace Prisma {
   export type SharedProjectGroupByOutputType = {
     id: number
     projectId: number
+    creatorId: number | null
+    openedAt: Date
     sharedAt: Date
     _count: SharedProjectCountAggregateOutputType | null
     _avg: SharedProjectAvgAggregateOutputType | null
@@ -7026,49 +7022,66 @@ export namespace Prisma {
   export type SharedProjectSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    creatorId?: boolean
+    openedAt?: boolean
     sharedAt?: boolean
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
+    createdBy?: boolean | SharedProject$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["sharedProject"]>
 
   export type SharedProjectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    creatorId?: boolean
+    openedAt?: boolean
     sharedAt?: boolean
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
+    createdBy?: boolean | SharedProject$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["sharedProject"]>
 
   export type SharedProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    creatorId?: boolean
+    openedAt?: boolean
     sharedAt?: boolean
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
+    createdBy?: boolean | SharedProject$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["sharedProject"]>
 
   export type SharedProjectSelectScalar = {
     id?: boolean
     projectId?: boolean
+    creatorId?: boolean
+    openedAt?: boolean
     sharedAt?: boolean
   }
 
-  export type SharedProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "sharedAt", ExtArgs["result"]["sharedProject"]>
+  export type SharedProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "creatorId" | "openedAt" | "sharedAt", ExtArgs["result"]["sharedProject"]>
   export type SharedProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
+    createdBy?: boolean | SharedProject$createdByArgs<ExtArgs>
   }
   export type SharedProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
+    createdBy?: boolean | SharedProject$createdByArgs<ExtArgs>
   }
   export type SharedProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
+    createdBy?: boolean | SharedProject$createdByArgs<ExtArgs>
   }
 
   export type $SharedProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SharedProject"
     objects: {
       Project: Prisma.$ProjectPayload<ExtArgs>
+      createdBy: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       projectId: number
+      creatorId: number | null
+      openedAt: Date
       sharedAt: Date
     }, ExtArgs["result"]["sharedProject"]>
     composites: {}
@@ -7465,6 +7478,7 @@ export namespace Prisma {
   export interface Prisma__SharedProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     Project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    createdBy<T extends SharedProject$createdByArgs<ExtArgs> = {}>(args?: Subset<T, SharedProject$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7496,6 +7510,8 @@ export namespace Prisma {
   interface SharedProjectFieldRefs {
     readonly id: FieldRef<"SharedProject", 'Int'>
     readonly projectId: FieldRef<"SharedProject", 'Int'>
+    readonly creatorId: FieldRef<"SharedProject", 'Int'>
+    readonly openedAt: FieldRef<"SharedProject", 'DateTime'>
     readonly sharedAt: FieldRef<"SharedProject", 'DateTime'>
   }
     
@@ -7893,6 +7909,25 @@ export namespace Prisma {
   }
 
   /**
+   * SharedProject.createdBy
+   */
+  export type SharedProject$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * SharedProject without action
    */
   export type SharedProjectDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8190,7 +8225,6 @@ export namespace Prisma {
     occupationType?: boolean
     preferences?: boolean
     pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
-    projects?: boolean | User$projectsArgs<ExtArgs>
     solves?: boolean | User$solvesArgs<ExtArgs>
     Guide?: boolean | User$GuideArgs<ExtArgs>
     Course?: boolean | User$CourseArgs<ExtArgs>
@@ -8208,6 +8242,7 @@ export namespace Prisma {
     receivedRequests?: boolean | User$receivedRequestsArgs<ExtArgs>
     Friends?: boolean | User$FriendsArgs<ExtArgs>
     SavedProject?: boolean | User$SavedProjectArgs<ExtArgs>
+    SharedProject?: boolean | User$SharedProjectArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -8273,7 +8308,6 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "firstName" | "lastName" | "email" | "emailValidated" | "userColor" | "picture" | "role" | "createdAt" | "activeAt" | "password" | "authId" | "loginMethod" | "occupationType" | "preferences", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     pictureUpload?: boolean | UploadDefaultArgs<ExtArgs>
-    projects?: boolean | User$projectsArgs<ExtArgs>
     solves?: boolean | User$solvesArgs<ExtArgs>
     Guide?: boolean | User$GuideArgs<ExtArgs>
     Course?: boolean | User$CourseArgs<ExtArgs>
@@ -8291,6 +8325,7 @@ export namespace Prisma {
     receivedRequests?: boolean | User$receivedRequestsArgs<ExtArgs>
     Friends?: boolean | User$FriendsArgs<ExtArgs>
     SavedProject?: boolean | User$SavedProjectArgs<ExtArgs>
+    SharedProject?: boolean | User$SharedProjectArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8304,7 +8339,6 @@ export namespace Prisma {
     name: "User"
     objects: {
       pictureUpload: Prisma.$UploadPayload<ExtArgs>
-      projects: Prisma.$ProjectPayload<ExtArgs>[]
       solves: Prisma.$SolvePayload<ExtArgs>[]
       Guide: Prisma.$GuidePayload<ExtArgs>[]
       Course: Prisma.$CoursePayload<ExtArgs> | null
@@ -8322,6 +8356,7 @@ export namespace Prisma {
       receivedRequests: Prisma.$FriendRelationPayload<ExtArgs>[]
       Friends: Prisma.$FriendRelationPayload<ExtArgs>[]
       SavedProject: Prisma.$SavedProjectPayload<ExtArgs>[]
+      SharedProject: Prisma.$SharedProjectPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -8735,7 +8770,6 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     pictureUpload<T extends UploadDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UploadDefaultArgs<ExtArgs>>): Prisma__UploadClient<$Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    projects<T extends User$projectsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     solves<T extends User$solvesArgs<ExtArgs> = {}>(args?: Subset<T, User$solvesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SolvePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Guide<T extends User$GuideArgs<ExtArgs> = {}>(args?: Subset<T, User$GuideArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuidePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Course<T extends User$CourseArgs<ExtArgs> = {}>(args?: Subset<T, User$CourseArgs<ExtArgs>>): Prisma__CourseClient<$Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -8753,6 +8787,7 @@ export namespace Prisma {
     receivedRequests<T extends User$receivedRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Friends<T extends User$FriendsArgs<ExtArgs> = {}>(args?: Subset<T, User$FriendsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     SavedProject<T extends User$SavedProjectArgs<ExtArgs> = {}>(args?: Subset<T, User$SavedProjectArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    SharedProject<T extends User$SharedProjectArgs<ExtArgs> = {}>(args?: Subset<T, User$SharedProjectArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SharedProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9194,30 +9229,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.projects
-   */
-  export type User$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Project
-     */
-    select?: ProjectSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Project
-     */
-    omit?: ProjectOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProjectInclude<ExtArgs> | null
-    where?: ProjectWhereInput
-    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
-    cursor?: ProjectWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
-  }
-
-  /**
    * User.solves
    */
   export type User$solvesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9618,6 +9629,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SavedProjectScalarFieldEnum | SavedProjectScalarFieldEnum[]
+  }
+
+  /**
+   * User.SharedProject
+   */
+  export type User$SharedProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SharedProject
+     */
+    select?: SharedProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SharedProject
+     */
+    omit?: SharedProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SharedProjectInclude<ExtArgs> | null
+    where?: SharedProjectWhereInput
+    orderBy?: SharedProjectOrderByWithRelationInput | SharedProjectOrderByWithRelationInput[]
+    cursor?: SharedProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SharedProjectScalarFieldEnum | SharedProjectScalarFieldEnum[]
   }
 
   /**
@@ -30213,7 +30248,6 @@ export namespace Prisma {
     name: 'name',
     fileUUID: 'fileUUID',
     createdAt: 'createdAt',
-    userId: 'userId',
     metadata: 'metadata'
   };
 
@@ -30232,6 +30266,7 @@ export namespace Prisma {
 
   export const SavedProjectScalarFieldEnum: {
     id: 'id',
+    name: 'name',
     projectId: 'projectId',
     creatorId: 'creatorId',
     savedAt: 'savedAt',
@@ -30244,6 +30279,8 @@ export namespace Prisma {
   export const SharedProjectScalarFieldEnum: {
     id: 'id',
     projectId: 'projectId',
+    creatorId: 'creatorId',
+    openedAt: 'openedAt',
     sharedAt: 'sharedAt'
   };
 
@@ -30562,6 +30599,13 @@ export namespace Prisma {
   export type FileOrderByRelevanceFieldEnum = (typeof FileOrderByRelevanceFieldEnum)[keyof typeof FileOrderByRelevanceFieldEnum]
 
 
+  export const SavedProjectOrderByRelevanceFieldEnum: {
+    name: 'name'
+  };
+
+  export type SavedProjectOrderByRelevanceFieldEnum = (typeof SavedProjectOrderByRelevanceFieldEnum)[keyof typeof SavedProjectOrderByRelevanceFieldEnum]
+
+
   export const UserOrderByRelevanceFieldEnum: {
     username: 'username',
     firstName: 'firstName',
@@ -30854,12 +30898,10 @@ export namespace Prisma {
     OR?: ProjectWhereInput[]
     NOT?: ProjectWhereInput | ProjectWhereInput[]
     id?: IntFilter<"Project"> | number
-    name?: StringFilter<"Project"> | string
+    name?: StringNullableFilter<"Project"> | string | null
     fileUUID?: StringNullableFilter<"Project"> | string | null
     createdAt?: DateTimeFilter<"Project"> | Date | string
-    userId?: IntFilter<"Project"> | number
     metadata?: JsonNullableFilter<"Project">
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     files?: FileListRelationFilter
     Saves?: SavedProjectListRelationFilter
     Shares?: SharedProjectListRelationFilter
@@ -30867,12 +30909,10 @@ export namespace Prisma {
 
   export type ProjectOrderByWithRelationInput = {
     id?: SortOrder
-    name?: SortOrder
+    name?: SortOrderInput | SortOrder
     fileUUID?: SortOrderInput | SortOrder
     createdAt?: SortOrder
-    userId?: SortOrder
     metadata?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
     files?: FileOrderByRelationAggregateInput
     Saves?: SavedProjectOrderByRelationAggregateInput
     Shares?: SharedProjectOrderByRelationAggregateInput
@@ -30884,12 +30924,10 @@ export namespace Prisma {
     AND?: ProjectWhereInput | ProjectWhereInput[]
     OR?: ProjectWhereInput[]
     NOT?: ProjectWhereInput | ProjectWhereInput[]
-    name?: StringFilter<"Project"> | string
+    name?: StringNullableFilter<"Project"> | string | null
     fileUUID?: StringNullableFilter<"Project"> | string | null
     createdAt?: DateTimeFilter<"Project"> | Date | string
-    userId?: IntFilter<"Project"> | number
     metadata?: JsonNullableFilter<"Project">
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     files?: FileListRelationFilter
     Saves?: SavedProjectListRelationFilter
     Shares?: SharedProjectListRelationFilter
@@ -30897,10 +30935,9 @@ export namespace Prisma {
 
   export type ProjectOrderByWithAggregationInput = {
     id?: SortOrder
-    name?: SortOrder
+    name?: SortOrderInput | SortOrder
     fileUUID?: SortOrderInput | SortOrder
     createdAt?: SortOrder
-    userId?: SortOrder
     metadata?: SortOrderInput | SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _avg?: ProjectAvgOrderByAggregateInput
@@ -30914,10 +30951,9 @@ export namespace Prisma {
     OR?: ProjectScalarWhereWithAggregatesInput[]
     NOT?: ProjectScalarWhereWithAggregatesInput | ProjectScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Project"> | number
-    name?: StringWithAggregatesFilter<"Project"> | string
+    name?: StringNullableWithAggregatesFilter<"Project"> | string | null
     fileUUID?: StringNullableWithAggregatesFilter<"Project"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
-    userId?: IntWithAggregatesFilter<"Project"> | number
     metadata?: JsonNullableWithAggregatesFilter<"Project">
   }
 
@@ -30942,15 +30978,16 @@ export namespace Prisma {
   }
 
   export type FileWhereUniqueInput = Prisma.AtLeast<{
-    name?: string
+    name_projectId?: FileNameProjectIdCompoundUniqueInput
     AND?: FileWhereInput | FileWhereInput[]
     OR?: FileWhereInput[]
     NOT?: FileWhereInput | FileWhereInput[]
+    name?: StringFilter<"File"> | string
     content?: StringFilter<"File"> | string
     updatedAt?: DateTimeFilter<"File"> | Date | string
     projectId?: IntFilter<"File"> | number
     Project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
-  }, "name">
+  }, "name_projectId">
 
   export type FileOrderByWithAggregationInput = {
     name?: SortOrder
@@ -30979,6 +31016,7 @@ export namespace Prisma {
     OR?: SavedProjectWhereInput[]
     NOT?: SavedProjectWhereInput | SavedProjectWhereInput[]
     id?: IntFilter<"SavedProject"> | number
+    name?: StringNullableFilter<"SavedProject"> | string | null
     projectId?: IntFilter<"SavedProject"> | number
     creatorId?: IntFilter<"SavedProject"> | number
     savedAt?: DateTimeFilter<"SavedProject"> | Date | string
@@ -30989,12 +31027,14 @@ export namespace Prisma {
 
   export type SavedProjectOrderByWithRelationInput = {
     id?: SortOrder
+    name?: SortOrderInput | SortOrder
     projectId?: SortOrder
     creatorId?: SortOrder
     savedAt?: SortOrder
     updatedAt?: SortOrder
     Project?: ProjectOrderByWithRelationInput
     createdBy?: UserOrderByWithRelationInput
+    _relevance?: SavedProjectOrderByRelevanceInput
   }
 
   export type SavedProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -31003,6 +31043,7 @@ export namespace Prisma {
     AND?: SavedProjectWhereInput | SavedProjectWhereInput[]
     OR?: SavedProjectWhereInput[]
     NOT?: SavedProjectWhereInput | SavedProjectWhereInput[]
+    name?: StringNullableFilter<"SavedProject"> | string | null
     projectId?: IntFilter<"SavedProject"> | number
     creatorId?: IntFilter<"SavedProject"> | number
     savedAt?: DateTimeFilter<"SavedProject"> | Date | string
@@ -31013,6 +31054,7 @@ export namespace Prisma {
 
   export type SavedProjectOrderByWithAggregationInput = {
     id?: SortOrder
+    name?: SortOrderInput | SortOrder
     projectId?: SortOrder
     creatorId?: SortOrder
     savedAt?: SortOrder
@@ -31029,6 +31071,7 @@ export namespace Prisma {
     OR?: SavedProjectScalarWhereWithAggregatesInput[]
     NOT?: SavedProjectScalarWhereWithAggregatesInput | SavedProjectScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"SavedProject"> | number
+    name?: StringNullableWithAggregatesFilter<"SavedProject"> | string | null
     projectId?: IntWithAggregatesFilter<"SavedProject"> | number
     creatorId?: IntWithAggregatesFilter<"SavedProject"> | number
     savedAt?: DateTimeWithAggregatesFilter<"SavedProject"> | Date | string
@@ -31041,15 +31084,21 @@ export namespace Prisma {
     NOT?: SharedProjectWhereInput | SharedProjectWhereInput[]
     id?: IntFilter<"SharedProject"> | number
     projectId?: IntFilter<"SharedProject"> | number
+    creatorId?: IntNullableFilter<"SharedProject"> | number | null
+    openedAt?: DateTimeFilter<"SharedProject"> | Date | string
     sharedAt?: DateTimeFilter<"SharedProject"> | Date | string
     Project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type SharedProjectOrderByWithRelationInput = {
     id?: SortOrder
     projectId?: SortOrder
+    creatorId?: SortOrderInput | SortOrder
+    openedAt?: SortOrder
     sharedAt?: SortOrder
     Project?: ProjectOrderByWithRelationInput
+    createdBy?: UserOrderByWithRelationInput
   }
 
   export type SharedProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -31058,13 +31107,18 @@ export namespace Prisma {
     OR?: SharedProjectWhereInput[]
     NOT?: SharedProjectWhereInput | SharedProjectWhereInput[]
     projectId?: IntFilter<"SharedProject"> | number
+    creatorId?: IntNullableFilter<"SharedProject"> | number | null
+    openedAt?: DateTimeFilter<"SharedProject"> | Date | string
     sharedAt?: DateTimeFilter<"SharedProject"> | Date | string
     Project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type SharedProjectOrderByWithAggregationInput = {
     id?: SortOrder
     projectId?: SortOrder
+    creatorId?: SortOrderInput | SortOrder
+    openedAt?: SortOrder
     sharedAt?: SortOrder
     _count?: SharedProjectCountOrderByAggregateInput
     _avg?: SharedProjectAvgOrderByAggregateInput
@@ -31079,6 +31133,8 @@ export namespace Prisma {
     NOT?: SharedProjectScalarWhereWithAggregatesInput | SharedProjectScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"SharedProject"> | number
     projectId?: IntWithAggregatesFilter<"SharedProject"> | number
+    creatorId?: IntNullableWithAggregatesFilter<"SharedProject"> | number | null
+    openedAt?: DateTimeWithAggregatesFilter<"SharedProject"> | Date | string
     sharedAt?: DateTimeWithAggregatesFilter<"SharedProject"> | Date | string
   }
 
@@ -31103,7 +31159,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
     preferences?: JsonNullableFilter<"User">
     pictureUpload?: XOR<UploadScalarRelationFilter, UploadWhereInput>
-    projects?: ProjectListRelationFilter
     solves?: SolveListRelationFilter
     Guide?: GuideListRelationFilter
     Course?: XOR<CourseNullableScalarRelationFilter, CourseWhereInput> | null
@@ -31121,6 +31176,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationListRelationFilter
     Friends?: FriendRelationListRelationFilter
     SavedProject?: SavedProjectListRelationFilter
+    SharedProject?: SharedProjectListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -31141,7 +31197,6 @@ export namespace Prisma {
     occupationType?: SortOrder
     preferences?: SortOrderInput | SortOrder
     pictureUpload?: UploadOrderByWithRelationInput
-    projects?: ProjectOrderByRelationAggregateInput
     solves?: SolveOrderByRelationAggregateInput
     Guide?: GuideOrderByRelationAggregateInput
     Course?: CourseOrderByWithRelationInput
@@ -31159,6 +31214,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationOrderByRelationAggregateInput
     Friends?: FriendRelationOrderByRelationAggregateInput
     SavedProject?: SavedProjectOrderByRelationAggregateInput
+    SharedProject?: SharedProjectOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
 
@@ -31183,7 +31239,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFilter<"User"> | $Enums.OccupationType
     preferences?: JsonNullableFilter<"User">
     pictureUpload?: XOR<UploadScalarRelationFilter, UploadWhereInput>
-    projects?: ProjectListRelationFilter
     solves?: SolveListRelationFilter
     Guide?: GuideListRelationFilter
     Course?: XOR<CourseNullableScalarRelationFilter, CourseWhereInput> | null
@@ -31201,6 +31256,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationListRelationFilter
     Friends?: FriendRelationListRelationFilter
     SavedProject?: SavedProjectListRelationFilter
+    SharedProject?: SharedProjectListRelationFilter
   }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -32501,11 +32557,10 @@ export namespace Prisma {
   }
 
   export type ProjectCreateInput = {
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    user: UserCreateNestedOneWithoutProjectsInput
     files?: FileCreateNestedManyWithoutProjectInput
     Saves?: SavedProjectCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectCreateNestedManyWithoutProjectInput
@@ -32513,10 +32568,9 @@ export namespace Prisma {
 
   export type ProjectUncheckedCreateInput = {
     id?: number
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
-    userId: number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     Saves?: SavedProjectUncheckedCreateNestedManyWithoutProjectInput
@@ -32524,11 +32578,10 @@ export namespace Prisma {
   }
 
   export type ProjectUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     Saves?: SavedProjectUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUpdateManyWithoutProjectNestedInput
@@ -32536,10 +32589,9 @@ export namespace Prisma {
 
   export type ProjectUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: IntFieldUpdateOperationsInput | number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     Saves?: SavedProjectUncheckedUpdateManyWithoutProjectNestedInput
@@ -32548,15 +32600,14 @@ export namespace Prisma {
 
   export type ProjectCreateManyInput = {
     id?: number
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
-    userId: number
     metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUpdateManyMutationInput = {
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -32564,10 +32615,9 @@ export namespace Prisma {
 
   export type ProjectUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: IntFieldUpdateOperationsInput | number
     metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -32620,6 +32670,7 @@ export namespace Prisma {
   }
 
   export type SavedProjectCreateInput = {
+    name?: string | null
     savedAt?: Date | string
     updatedAt?: Date | string
     Project: ProjectCreateNestedOneWithoutSavesInput
@@ -32628,6 +32679,7 @@ export namespace Prisma {
 
   export type SavedProjectUncheckedCreateInput = {
     id?: number
+    name?: string | null
     projectId: number
     creatorId: number
     savedAt?: Date | string
@@ -32635,6 +32687,7 @@ export namespace Prisma {
   }
 
   export type SavedProjectUpdateInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Project?: ProjectUpdateOneRequiredWithoutSavesNestedInput
@@ -32643,6 +32696,7 @@ export namespace Prisma {
 
   export type SavedProjectUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: IntFieldUpdateOperationsInput | number
     creatorId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32651,6 +32705,7 @@ export namespace Prisma {
 
   export type SavedProjectCreateManyInput = {
     id?: number
+    name?: string | null
     projectId: number
     creatorId: number
     savedAt?: Date | string
@@ -32658,12 +32713,14 @@ export namespace Prisma {
   }
 
   export type SavedProjectUpdateManyMutationInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SavedProjectUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: IntFieldUpdateOperationsInput | number
     creatorId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32671,40 +32728,53 @@ export namespace Prisma {
   }
 
   export type SharedProjectCreateInput = {
+    openedAt?: Date | string
     sharedAt?: Date | string
     Project: ProjectCreateNestedOneWithoutSharesInput
+    createdBy?: UserCreateNestedOneWithoutSharedProjectInput
   }
 
   export type SharedProjectUncheckedCreateInput = {
     id?: number
     projectId: number
+    creatorId?: number | null
+    openedAt?: Date | string
     sharedAt?: Date | string
   }
 
   export type SharedProjectUpdateInput = {
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Project?: ProjectUpdateOneRequiredWithoutSharesNestedInput
+    createdBy?: UserUpdateOneWithoutSharedProjectNestedInput
   }
 
   export type SharedProjectUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     projectId?: IntFieldUpdateOperationsInput | number
+    creatorId?: NullableIntFieldUpdateOperationsInput | number | null
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SharedProjectCreateManyInput = {
     id?: number
     projectId: number
+    creatorId?: number | null
+    openedAt?: Date | string
     sharedAt?: Date | string
   }
 
   export type SharedProjectUpdateManyMutationInput = {
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SharedProjectUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     projectId?: IntFieldUpdateOperationsInput | number
+    creatorId?: NullableIntFieldUpdateOperationsInput | number | null
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -32724,7 +32794,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -32742,6 +32811,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -32761,7 +32831,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -32779,6 +32848,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUpdateInput = {
@@ -32797,7 +32867,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -32815,6 +32884,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -32834,7 +32904,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -32852,6 +32921,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -34121,22 +34191,6 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type StringFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
-    mode?: QueryMode
-    not?: NestedStringFilter<$PrismaModel> | string
-  }
-
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -34187,11 +34241,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
-  }
-
   export type FileListRelationFilter = {
     every?: FileWhereInput
     some?: FileWhereInput
@@ -34238,13 +34287,11 @@ export namespace Prisma {
     name?: SortOrder
     fileUUID?: SortOrder
     createdAt?: SortOrder
-    userId?: SortOrder
     metadata?: SortOrder
   }
 
   export type ProjectAvgOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
@@ -34252,7 +34299,6 @@ export namespace Prisma {
     name?: SortOrder
     fileUUID?: SortOrder
     createdAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type ProjectMinOrderByAggregateInput = {
@@ -34260,12 +34306,10 @@ export namespace Prisma {
     name?: SortOrder
     fileUUID?: SortOrder
     createdAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type ProjectSumOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -34282,25 +34326,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -34362,6 +34387,22 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type StringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
+    mode?: QueryMode
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
   export type ProjectScalarRelationFilter = {
     is?: ProjectWhereInput
     isNot?: ProjectWhereInput
@@ -34371,6 +34412,11 @@ export namespace Prisma {
     fields: FileOrderByRelevanceFieldEnum | FileOrderByRelevanceFieldEnum[]
     sort: SortOrder
     search: string
+  }
+
+  export type FileNameProjectIdCompoundUniqueInput = {
+    name: string
+    projectId: number
   }
 
   export type FileCountOrderByAggregateInput = {
@@ -34402,6 +34448,36 @@ export namespace Prisma {
     projectId?: SortOrder
   }
 
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type SavedProjectOrderByRelevanceInput = {
+    fields: SavedProjectOrderByRelevanceFieldEnum | SavedProjectOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
   export type SavedProjectCreatorIdProjectIdCompoundUniqueInput = {
     creatorId: number
     projectId: number
@@ -34409,6 +34485,7 @@ export namespace Prisma {
 
   export type SavedProjectCountOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     projectId?: SortOrder
     creatorId?: SortOrder
     savedAt?: SortOrder
@@ -34423,6 +34500,7 @@ export namespace Prisma {
 
   export type SavedProjectMaxOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     projectId?: SortOrder
     creatorId?: SortOrder
     savedAt?: SortOrder
@@ -34431,6 +34509,7 @@ export namespace Prisma {
 
   export type SavedProjectMinOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     projectId?: SortOrder
     creatorId?: SortOrder
     savedAt?: SortOrder
@@ -34443,32 +34522,72 @@ export namespace Prisma {
     creatorId?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type SharedProjectCountOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    creatorId?: SortOrder
+    openedAt?: SortOrder
     sharedAt?: SortOrder
   }
 
   export type SharedProjectAvgOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    creatorId?: SortOrder
   }
 
   export type SharedProjectMaxOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    creatorId?: SortOrder
+    openedAt?: SortOrder
     sharedAt?: SortOrder
   }
 
   export type SharedProjectMinOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    creatorId?: SortOrder
+    openedAt?: SortOrder
     sharedAt?: SortOrder
   }
 
   export type SharedProjectSumOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    creatorId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -34493,12 +34612,6 @@ export namespace Prisma {
   export type UploadScalarRelationFilter = {
     is?: UploadWhereInput
     isNot?: UploadWhereInput
-  }
-
-  export type ProjectListRelationFilter = {
-    every?: ProjectWhereInput
-    some?: ProjectWhereInput
-    none?: ProjectWhereInput
   }
 
   export type SolveListRelationFilter = {
@@ -34576,10 +34689,6 @@ export namespace Prisma {
     every?: FriendRelationWhereInput
     some?: FriendRelationWhereInput
     none?: FriendRelationWhereInput
-  }
-
-  export type ProjectOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type SolveOrderByRelationAggregateInput = {
@@ -35373,17 +35482,6 @@ export namespace Prisma {
     views?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -35426,11 +35524,6 @@ export namespace Prisma {
   export type CourseScalarRelationFilter = {
     is?: CourseWhereInput
     isNot?: CourseWhereInput
-  }
-
-  export type UserNullableScalarRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
   }
 
   export type InquiryOrderByRelevanceInput = {
@@ -35486,22 +35579,6 @@ export namespace Prisma {
     id?: SortOrder
     courseId?: SortOrder
     userId?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -35830,12 +35907,6 @@ export namespace Prisma {
     problemId?: SortOrder
   }
 
-  export type UserCreateNestedOneWithoutProjectsInput = {
-    create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutProjectsInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type FileCreateNestedManyWithoutProjectInput = {
     create?: XOR<FileCreateWithoutProjectInput, FileUncheckedCreateWithoutProjectInput> | FileCreateWithoutProjectInput[] | FileUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: FileCreateOrConnectWithoutProjectInput | FileCreateOrConnectWithoutProjectInput[]
@@ -35878,24 +35949,12 @@ export namespace Prisma {
     connect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
   }
 
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
-  }
-
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
-  }
-
-  export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
-    create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutProjectsInput
-    upsert?: UserUpsertWithoutProjectsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProjectsInput, UserUpdateWithoutProjectsInput>, UserUncheckedUpdateWithoutProjectsInput>
   }
 
   export type FileUpdateManyWithoutProjectNestedInput = {
@@ -35996,6 +36055,10 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
+  }
+
   export type ProjectUpdateOneRequiredWithoutFilesNestedInput = {
     create?: XOR<ProjectCreateWithoutFilesInput, ProjectUncheckedCreateWithoutFilesInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutFilesInput
@@ -36038,6 +36101,12 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutSharedProjectInput = {
+    create?: XOR<UserCreateWithoutSharedProjectInput, UserUncheckedCreateWithoutSharedProjectInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSharedProjectInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type ProjectUpdateOneRequiredWithoutSharesNestedInput = {
     create?: XOR<ProjectCreateWithoutSharesInput, ProjectUncheckedCreateWithoutSharesInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutSharesInput
@@ -36046,17 +36115,28 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutSharesInput, ProjectUpdateWithoutSharesInput>, ProjectUncheckedUpdateWithoutSharesInput>
   }
 
+  export type UserUpdateOneWithoutSharedProjectNestedInput = {
+    create?: XOR<UserCreateWithoutSharedProjectInput, UserUncheckedCreateWithoutSharedProjectInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSharedProjectInput
+    upsert?: UserUpsertWithoutSharedProjectInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSharedProjectInput, UserUpdateWithoutSharedProjectInput>, UserUncheckedUpdateWithoutSharedProjectInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UploadCreateNestedOneWithoutProfilePicturesInput = {
     create?: XOR<UploadCreateWithoutProfilePicturesInput, UploadUncheckedCreateWithoutProfilePicturesInput>
     connectOrCreate?: UploadCreateOrConnectWithoutProfilePicturesInput
     connect?: UploadWhereUniqueInput
-  }
-
-  export type ProjectCreateNestedManyWithoutUserInput = {
-    create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
-    createMany?: ProjectCreateManyUserInputEnvelope
-    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
   export type SolveCreateNestedManyWithoutUserInput = {
@@ -36175,11 +36255,11 @@ export namespace Prisma {
     connect?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
   }
 
-  export type ProjectUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
-    createMany?: ProjectCreateManyUserInputEnvelope
-    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  export type SharedProjectCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<SharedProjectCreateWithoutCreatedByInput, SharedProjectUncheckedCreateWithoutCreatedByInput> | SharedProjectCreateWithoutCreatedByInput[] | SharedProjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: SharedProjectCreateOrConnectWithoutCreatedByInput | SharedProjectCreateOrConnectWithoutCreatedByInput[]
+    createMany?: SharedProjectCreateManyCreatedByInputEnvelope
+    connect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
   }
 
   export type SolveUncheckedCreateNestedManyWithoutUserInput = {
@@ -36298,6 +36378,13 @@ export namespace Prisma {
     connect?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
   }
 
+  export type SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<SharedProjectCreateWithoutCreatedByInput, SharedProjectUncheckedCreateWithoutCreatedByInput> | SharedProjectCreateWithoutCreatedByInput[] | SharedProjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: SharedProjectCreateOrConnectWithoutCreatedByInput | SharedProjectCreateOrConnectWithoutCreatedByInput[]
+    createMany?: SharedProjectCreateManyCreatedByInputEnvelope
+    connect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+  }
+
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
   }
@@ -36316,20 +36403,6 @@ export namespace Prisma {
     upsert?: UploadUpsertWithoutProfilePicturesInput
     connect?: UploadWhereUniqueInput
     update?: XOR<XOR<UploadUpdateToOneWithWhereWithoutProfilePicturesInput, UploadUpdateWithoutProfilePicturesInput>, UploadUncheckedUpdateWithoutProfilePicturesInput>
-  }
-
-  export type ProjectUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
-    upsert?: ProjectUpsertWithWhereUniqueWithoutUserInput | ProjectUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ProjectCreateManyUserInputEnvelope
-    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    update?: ProjectUpdateWithWhereUniqueWithoutUserInput | ProjectUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ProjectUpdateManyWithWhereWithoutUserInput | ProjectUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
   export type SolveUpdateManyWithoutUserNestedInput = {
@@ -36564,18 +36637,18 @@ export namespace Prisma {
     deleteMany?: SavedProjectScalarWhereInput | SavedProjectScalarWhereInput[]
   }
 
-  export type ProjectUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput> | ProjectCreateWithoutUserInput[] | ProjectUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
-    upsert?: ProjectUpsertWithWhereUniqueWithoutUserInput | ProjectUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ProjectCreateManyUserInputEnvelope
-    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    update?: ProjectUpdateWithWhereUniqueWithoutUserInput | ProjectUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ProjectUpdateManyWithWhereWithoutUserInput | ProjectUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  export type SharedProjectUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<SharedProjectCreateWithoutCreatedByInput, SharedProjectUncheckedCreateWithoutCreatedByInput> | SharedProjectCreateWithoutCreatedByInput[] | SharedProjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: SharedProjectCreateOrConnectWithoutCreatedByInput | SharedProjectCreateOrConnectWithoutCreatedByInput[]
+    upsert?: SharedProjectUpsertWithWhereUniqueWithoutCreatedByInput | SharedProjectUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: SharedProjectCreateManyCreatedByInputEnvelope
+    set?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+    disconnect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+    delete?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+    connect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+    update?: SharedProjectUpdateWithWhereUniqueWithoutCreatedByInput | SharedProjectUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: SharedProjectUpdateManyWithWhereWithoutCreatedByInput | SharedProjectUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: SharedProjectScalarWhereInput | SharedProjectScalarWhereInput[]
   }
 
   export type SolveUncheckedUpdateManyWithoutUserNestedInput = {
@@ -36808,6 +36881,20 @@ export namespace Prisma {
     update?: SavedProjectUpdateWithWhereUniqueWithoutCreatedByInput | SavedProjectUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: SavedProjectUpdateManyWithWhereWithoutCreatedByInput | SavedProjectUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: SavedProjectScalarWhereInput | SavedProjectScalarWhereInput[]
+  }
+
+  export type SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<SharedProjectCreateWithoutCreatedByInput, SharedProjectUncheckedCreateWithoutCreatedByInput> | SharedProjectCreateWithoutCreatedByInput[] | SharedProjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: SharedProjectCreateOrConnectWithoutCreatedByInput | SharedProjectCreateOrConnectWithoutCreatedByInput[]
+    upsert?: SharedProjectUpsertWithWhereUniqueWithoutCreatedByInput | SharedProjectUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: SharedProjectCreateManyCreatedByInputEnvelope
+    set?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+    disconnect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+    delete?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+    connect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+    update?: SharedProjectUpdateWithWhereUniqueWithoutCreatedByInput | SharedProjectUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: SharedProjectUpdateManyWithWhereWithoutCreatedByInput | SharedProjectUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: SharedProjectScalarWhereInput | SharedProjectScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSentRequestsInput = {
@@ -37510,14 +37597,6 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutInquiryInput, UserUpdateWithoutInquiryInput>, UserUncheckedUpdateWithoutInquiryInput>
   }
 
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type UserCreateNestedOneWithoutReviewInput = {
     create?: XOR<UserCreateWithoutReviewInput, UserUncheckedCreateWithoutReviewInput>
     connectOrCreate?: UserCreateOrConnectWithoutReviewInput
@@ -37867,21 +37946,6 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type NestedStringFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
-    not?: NestedStringFilter<$PrismaModel> | string
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -37933,24 +37997,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -38017,6 +38063,66 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedStringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -38132,33 +38238,6 @@ export namespace Prisma {
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
   }
 
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -38204,82 +38283,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type UserCreateWithoutProjectsInput = {
-    username: string
-    firstName: string
-    lastName: string
-    email: string
-    emailValidated?: boolean
-    userColor?: string
-    role?: $Enums.Role
-    createdAt?: Date | string
-    activeAt?: Date | string
-    password?: string | null
-    authId?: NullableJsonNullValueInput | InputJsonValue
-    loginMethod?: string
-    occupationType?: $Enums.OccupationType
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    solves?: SolveCreateNestedManyWithoutUserInput
-    Guide?: GuideCreateNestedManyWithoutAuthorInput
-    Course?: CourseCreateNestedOneWithoutUserInput
-    Review?: ReviewCreateNestedManyWithoutUserInput
-    Upload?: UploadCreateNestedManyWithoutUploadUserInput
-    Inquiry?: InquiryCreateNestedManyWithoutUserInput
-    Problem?: ProblemCreateNestedManyWithoutAuthorInput
-    Feedback?: FeedbackCreateNestedManyWithoutUserInput
-    JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
-    CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
-    Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
-    SentMessages?: MessageCreateNestedManyWithoutFromInput
-    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
-    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
-    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
-    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
-    SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
-  }
-
-  export type UserUncheckedCreateWithoutProjectsInput = {
-    id?: number
-    username: string
-    firstName: string
-    lastName: string
-    email: string
-    emailValidated?: boolean
-    userColor?: string
-    picture: string
-    role?: $Enums.Role
-    createdAt?: Date | string
-    activeAt?: Date | string
-    password?: string | null
-    authId?: NullableJsonNullValueInput | InputJsonValue
-    loginMethod?: string
-    occupationType?: $Enums.OccupationType
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
-    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
-    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
-    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
-    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
-    Inquiry?: InquiryUncheckedCreateNestedManyWithoutUserInput
-    Problem?: ProblemUncheckedCreateNestedManyWithoutAuthorInput
-    Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
-    JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
-    CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
-    Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
-    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
-    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
-    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
-    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
-    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
-    SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
-  }
-
-  export type UserCreateOrConnectWithoutProjectsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
-  }
-
   export type FileCreateWithoutProjectInput = {
     name: string
     content: string
@@ -38303,6 +38306,7 @@ export namespace Prisma {
   }
 
   export type SavedProjectCreateWithoutProjectInput = {
+    name?: string | null
     savedAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutSavedProjectInput
@@ -38310,6 +38314,7 @@ export namespace Prisma {
 
   export type SavedProjectUncheckedCreateWithoutProjectInput = {
     id?: number
+    name?: string | null
     creatorId: number
     savedAt?: Date | string
     updatedAt?: Date | string
@@ -38326,11 +38331,15 @@ export namespace Prisma {
   }
 
   export type SharedProjectCreateWithoutProjectInput = {
+    openedAt?: Date | string
     sharedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutSharedProjectInput
   }
 
   export type SharedProjectUncheckedCreateWithoutProjectInput = {
     id?: number
+    creatorId?: number | null
+    openedAt?: Date | string
     sharedAt?: Date | string
   }
 
@@ -38342,88 +38351,6 @@ export namespace Prisma {
   export type SharedProjectCreateManyProjectInputEnvelope = {
     data: SharedProjectCreateManyProjectInput | SharedProjectCreateManyProjectInput[]
     skipDuplicates?: boolean
-  }
-
-  export type UserUpsertWithoutProjectsInput = {
-    update: XOR<UserUpdateWithoutProjectsInput, UserUncheckedUpdateWithoutProjectsInput>
-    create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutProjectsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutProjectsInput, UserUncheckedUpdateWithoutProjectsInput>
-  }
-
-  export type UserUpdateWithoutProjectsInput = {
-    username?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailValidated?: BoolFieldUpdateOperationsInput | boolean
-    userColor?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableJsonNullValueInput | InputJsonValue
-    loginMethod?: StringFieldUpdateOperationsInput | string
-    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    solves?: SolveUpdateManyWithoutUserNestedInput
-    Guide?: GuideUpdateManyWithoutAuthorNestedInput
-    Course?: CourseUpdateOneWithoutUserNestedInput
-    Review?: ReviewUpdateManyWithoutUserNestedInput
-    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
-    Inquiry?: InquiryUpdateManyWithoutUserNestedInput
-    Problem?: ProblemUpdateManyWithoutAuthorNestedInput
-    Feedback?: FeedbackUpdateManyWithoutUserNestedInput
-    JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
-    CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
-    Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
-    SentMessages?: MessageUpdateManyWithoutFromNestedInput
-    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
-    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
-    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
-    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
-    SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutProjectsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    username?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailValidated?: BoolFieldUpdateOperationsInput | boolean
-    userColor?: StringFieldUpdateOperationsInput | string
-    picture?: StringFieldUpdateOperationsInput | string
-    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    authId?: NullableJsonNullValueInput | InputJsonValue
-    loginMethod?: StringFieldUpdateOperationsInput | string
-    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
-    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
-    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
-    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
-    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
-    Inquiry?: InquiryUncheckedUpdateManyWithoutUserNestedInput
-    Problem?: ProblemUncheckedUpdateManyWithoutAuthorNestedInput
-    Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
-    JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
-    CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
-    Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
-    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
-    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
-    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
-    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
-    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
-    SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type FileUpsertWithWhereUniqueWithoutProjectInput = {
@@ -38473,6 +38400,7 @@ export namespace Prisma {
     OR?: SavedProjectScalarWhereInput[]
     NOT?: SavedProjectScalarWhereInput | SavedProjectScalarWhereInput[]
     id?: IntFilter<"SavedProject"> | number
+    name?: StringNullableFilter<"SavedProject"> | string | null
     projectId?: IntFilter<"SavedProject"> | number
     creatorId?: IntFilter<"SavedProject"> | number
     savedAt?: DateTimeFilter<"SavedProject"> | Date | string
@@ -38501,25 +38429,25 @@ export namespace Prisma {
     NOT?: SharedProjectScalarWhereInput | SharedProjectScalarWhereInput[]
     id?: IntFilter<"SharedProject"> | number
     projectId?: IntFilter<"SharedProject"> | number
+    creatorId?: IntNullableFilter<"SharedProject"> | number | null
+    openedAt?: DateTimeFilter<"SharedProject"> | Date | string
     sharedAt?: DateTimeFilter<"SharedProject"> | Date | string
   }
 
   export type ProjectCreateWithoutFilesInput = {
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    user: UserCreateNestedOneWithoutProjectsInput
     Saves?: SavedProjectCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutFilesInput = {
     id?: number
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
-    userId: number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     Saves?: SavedProjectUncheckedCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectUncheckedCreateNestedManyWithoutProjectInput
@@ -38542,42 +38470,38 @@ export namespace Prisma {
   }
 
   export type ProjectUpdateWithoutFilesInput = {
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     Saves?: SavedProjectUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFilesInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: IntFieldUpdateOperationsInput | number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     Saves?: SavedProjectUncheckedUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutSavesInput = {
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    user: UserCreateNestedOneWithoutProjectsInput
     files?: FileCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutSavesInput = {
     id?: number
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
-    userId: number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectUncheckedCreateNestedManyWithoutProjectInput
@@ -38604,7 +38528,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -38621,6 +38544,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSavedProjectInput = {
@@ -38640,7 +38564,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -38657,6 +38580,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSavedProjectInput = {
@@ -38676,21 +38600,19 @@ export namespace Prisma {
   }
 
   export type ProjectUpdateWithoutSavesInput = {
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSavesInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: IntFieldUpdateOperationsInput | number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUncheckedUpdateManyWithoutProjectNestedInput
@@ -38723,7 +38645,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -38740,6 +38661,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSavedProjectInput = {
@@ -38759,7 +38681,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -38776,24 +38697,23 @@ export namespace Prisma {
     sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ProjectCreateWithoutSharesInput = {
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    user: UserCreateNestedOneWithoutProjectsInput
     files?: FileCreateNestedManyWithoutProjectInput
     Saves?: SavedProjectCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutSharesInput = {
     id?: number
-    name: string
+    name?: string | null
     fileUUID?: string | null
     createdAt?: Date | string
-    userId: number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     Saves?: SavedProjectUncheckedCreateNestedManyWithoutProjectInput
@@ -38802,6 +38722,82 @@ export namespace Prisma {
   export type ProjectCreateOrConnectWithoutSharesInput = {
     where: ProjectWhereUniqueInput
     create: XOR<ProjectCreateWithoutSharesInput, ProjectUncheckedCreateWithoutSharesInput>
+  }
+
+  export type UserCreateWithoutSharedProjectInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryCreateNestedManyWithoutUserInput
+    Problem?: ProblemCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
+    SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutSharedProjectInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryUncheckedCreateNestedManyWithoutUserInput
+    Problem?: ProblemUncheckedCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
+    SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutSharedProjectInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSharedProjectInput, UserUncheckedCreateWithoutSharedProjectInput>
   }
 
   export type ProjectUpsertWithoutSharesInput = {
@@ -38816,24 +38812,104 @@ export namespace Prisma {
   }
 
   export type ProjectUpdateWithoutSharesInput = {
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     files?: FileUpdateManyWithoutProjectNestedInput
     Saves?: SavedProjectUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSharesInput = {
     id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: IntFieldUpdateOperationsInput | number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     Saves?: SavedProjectUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type UserUpsertWithoutSharedProjectInput = {
+    update: XOR<UserUpdateWithoutSharedProjectInput, UserUncheckedUpdateWithoutSharedProjectInput>
+    create: XOR<UserCreateWithoutSharedProjectInput, UserUncheckedCreateWithoutSharedProjectInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSharedProjectInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSharedProjectInput, UserUncheckedUpdateWithoutSharedProjectInput>
+  }
+
+  export type UserUpdateWithoutSharedProjectInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
+    SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSharedProjectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUncheckedUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUncheckedUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
+    SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UploadCreateWithoutProfilePicturesInput = {
@@ -38859,37 +38935,6 @@ export namespace Prisma {
   export type UploadCreateOrConnectWithoutProfilePicturesInput = {
     where: UploadWhereUniqueInput
     create: XOR<UploadCreateWithoutProfilePicturesInput, UploadUncheckedCreateWithoutProfilePicturesInput>
-  }
-
-  export type ProjectCreateWithoutUserInput = {
-    name: string
-    fileUUID?: string | null
-    createdAt?: Date | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    files?: FileCreateNestedManyWithoutProjectInput
-    Saves?: SavedProjectCreateNestedManyWithoutProjectInput
-    Shares?: SharedProjectCreateNestedManyWithoutProjectInput
-  }
-
-  export type ProjectUncheckedCreateWithoutUserInput = {
-    id?: number
-    name: string
-    fileUUID?: string | null
-    createdAt?: Date | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    files?: FileUncheckedCreateNestedManyWithoutProjectInput
-    Saves?: SavedProjectUncheckedCreateNestedManyWithoutProjectInput
-    Shares?: SharedProjectUncheckedCreateNestedManyWithoutProjectInput
-  }
-
-  export type ProjectCreateOrConnectWithoutUserInput = {
-    where: ProjectWhereUniqueInput
-    create: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput>
-  }
-
-  export type ProjectCreateManyUserInputEnvelope = {
-    data: ProjectCreateManyUserInput | ProjectCreateManyUserInput[]
-    skipDuplicates?: boolean
   }
 
   export type SolveCreateWithoutUserInput = {
@@ -39360,6 +39405,7 @@ export namespace Prisma {
   }
 
   export type SavedProjectCreateWithoutCreatedByInput = {
+    name?: string | null
     savedAt?: Date | string
     updatedAt?: Date | string
     Project: ProjectCreateNestedOneWithoutSavesInput
@@ -39367,6 +39413,7 @@ export namespace Prisma {
 
   export type SavedProjectUncheckedCreateWithoutCreatedByInput = {
     id?: number
+    name?: string | null
     projectId: number
     savedAt?: Date | string
     updatedAt?: Date | string
@@ -39379,6 +39426,29 @@ export namespace Prisma {
 
   export type SavedProjectCreateManyCreatedByInputEnvelope = {
     data: SavedProjectCreateManyCreatedByInput | SavedProjectCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SharedProjectCreateWithoutCreatedByInput = {
+    openedAt?: Date | string
+    sharedAt?: Date | string
+    Project: ProjectCreateNestedOneWithoutSharesInput
+  }
+
+  export type SharedProjectUncheckedCreateWithoutCreatedByInput = {
+    id?: number
+    projectId: number
+    openedAt?: Date | string
+    sharedAt?: Date | string
+  }
+
+  export type SharedProjectCreateOrConnectWithoutCreatedByInput = {
+    where: SharedProjectWhereUniqueInput
+    create: XOR<SharedProjectCreateWithoutCreatedByInput, SharedProjectUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type SharedProjectCreateManyCreatedByInputEnvelope = {
+    data: SharedProjectCreateManyCreatedByInput | SharedProjectCreateManyCreatedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -39410,34 +39480,6 @@ export namespace Prisma {
     UserId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Course?: CourseUncheckedUpdateManyWithoutVideoSummaryNestedInput
-  }
-
-  export type ProjectUpsertWithWhereUniqueWithoutUserInput = {
-    where: ProjectWhereUniqueInput
-    update: XOR<ProjectUpdateWithoutUserInput, ProjectUncheckedUpdateWithoutUserInput>
-    create: XOR<ProjectCreateWithoutUserInput, ProjectUncheckedCreateWithoutUserInput>
-  }
-
-  export type ProjectUpdateWithWhereUniqueWithoutUserInput = {
-    where: ProjectWhereUniqueInput
-    data: XOR<ProjectUpdateWithoutUserInput, ProjectUncheckedUpdateWithoutUserInput>
-  }
-
-  export type ProjectUpdateManyWithWhereWithoutUserInput = {
-    where: ProjectScalarWhereInput
-    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type ProjectScalarWhereInput = {
-    AND?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
-    OR?: ProjectScalarWhereInput[]
-    NOT?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
-    id?: IntFilter<"Project"> | number
-    name?: StringFilter<"Project"> | string
-    fileUUID?: StringNullableFilter<"Project"> | string | null
-    createdAt?: DateTimeFilter<"Project"> | Date | string
-    userId?: IntFilter<"Project"> | number
-    metadata?: JsonNullableFilter<"Project">
   }
 
   export type SolveUpsertWithWhereUniqueWithoutUserInput = {
@@ -39903,6 +39945,22 @@ export namespace Prisma {
     data: XOR<SavedProjectUpdateManyMutationInput, SavedProjectUncheckedUpdateManyWithoutCreatedByInput>
   }
 
+  export type SharedProjectUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: SharedProjectWhereUniqueInput
+    update: XOR<SharedProjectUpdateWithoutCreatedByInput, SharedProjectUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<SharedProjectCreateWithoutCreatedByInput, SharedProjectUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type SharedProjectUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: SharedProjectWhereUniqueInput
+    data: XOR<SharedProjectUpdateWithoutCreatedByInput, SharedProjectUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type SharedProjectUpdateManyWithWhereWithoutCreatedByInput = {
+    where: SharedProjectScalarWhereInput
+    data: XOR<SharedProjectUpdateManyMutationInput, SharedProjectUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
   export type UserCreateWithoutSentRequestsInput = {
     username: string
     firstName: string
@@ -39919,7 +39977,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -39936,6 +39993,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSentRequestsInput = {
@@ -39955,7 +40013,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -39972,6 +40029,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSentRequestsInput = {
@@ -39995,7 +40053,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -40012,6 +40069,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutReceivedRequestsInput = {
@@ -40031,7 +40089,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -40048,6 +40105,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutReceivedRequestsInput = {
@@ -40071,7 +40129,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -40088,6 +40145,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutFriendsInput = {
@@ -40107,7 +40165,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -40124,6 +40181,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutFriendsInput = {
@@ -40183,7 +40241,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -40200,6 +40257,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentRequestsInput = {
@@ -40219,7 +40277,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -40236,6 +40293,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUpsertWithoutReceivedRequestsInput = {
@@ -40265,7 +40323,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -40282,6 +40339,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedRequestsInput = {
@@ -40301,7 +40359,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -40318,6 +40375,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutFriendsInput = {
@@ -40390,7 +40448,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -40407,6 +40464,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSentMessagesInput = {
@@ -40426,7 +40484,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -40443,6 +40500,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSentMessagesInput = {
@@ -40466,7 +40524,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -40483,6 +40540,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutReceivedMessagesInput = {
@@ -40502,7 +40560,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -40519,6 +40576,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutReceivedMessagesInput = {
@@ -40575,7 +40633,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -40592,6 +40649,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentMessagesInput = {
@@ -40611,7 +40669,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -40628,6 +40685,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUpsertWithoutReceivedMessagesInput = {
@@ -40657,7 +40715,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -40674,6 +40731,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedMessagesInput = {
@@ -40693,7 +40751,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -40710,6 +40767,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type FriendRelationUpsertWithoutMessagesInput = {
@@ -40756,7 +40814,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Course?: CourseCreateNestedOneWithoutUserInput
     Review?: ReviewCreateNestedManyWithoutUserInput
@@ -40773,6 +40830,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutGuideInput = {
@@ -40792,7 +40850,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
     Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -40809,6 +40866,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutGuideInput = {
@@ -40861,7 +40919,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
     Review?: ReviewUpdateManyWithoutUserNestedInput
@@ -40878,6 +40935,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGuideInput = {
@@ -40897,7 +40955,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
     Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -40914,6 +40971,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type GuideTagUpsertWithWhereUniqueWithoutGuideInput = {
@@ -41283,7 +41341,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -41300,6 +41357,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutProblemInput = {
@@ -41319,7 +41377,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -41336,6 +41393,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutProblemInput = {
@@ -41448,7 +41506,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -41465,6 +41522,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProblemInput = {
@@ -41484,7 +41542,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -41501,6 +41558,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ProblemTagUpsertWithWhereUniqueWithoutProblemInput = {
@@ -41567,7 +41625,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
     Review?: ReviewCreateNestedManyWithoutUserInput
@@ -41584,6 +41641,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSolvesInput = {
@@ -41603,7 +41661,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
     Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -41620,6 +41677,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSolvesInput = {
@@ -41702,7 +41760,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
     Review?: ReviewUpdateManyWithoutUserNestedInput
@@ -41719,6 +41776,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSolvesInput = {
@@ -41738,7 +41796,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
     Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -41755,6 +41812,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ProblemUpsertWithoutSolvesInput = {
@@ -41827,7 +41885,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Review?: ReviewCreateNestedManyWithoutUserInput
@@ -41844,6 +41901,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutCourseInput = {
@@ -41863,7 +41921,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -41880,6 +41937,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutCourseInput = {
@@ -41997,7 +42055,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Review?: ReviewUpdateManyWithoutUserNestedInput
@@ -42014,6 +42071,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCourseInput = {
@@ -42033,7 +42091,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -42050,6 +42107,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UploadUpsertWithoutCourseInput = {
@@ -42170,7 +42228,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -42187,6 +42244,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutInquiryInput = {
@@ -42206,7 +42264,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -42223,6 +42280,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutInquiryInput = {
@@ -42303,7 +42361,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -42320,6 +42377,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInquiryInput = {
@@ -42339,7 +42397,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -42356,6 +42413,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateWithoutReviewInput = {
@@ -42374,7 +42432,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -42391,6 +42448,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutReviewInput = {
@@ -42410,7 +42468,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -42427,6 +42484,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutReviewInput = {
@@ -42501,7 +42559,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -42518,6 +42575,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewInput = {
@@ -42537,7 +42595,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -42554,6 +42611,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type CourseUpsertWithoutReviewsInput = {
@@ -42618,7 +42676,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -42635,6 +42692,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutUploadInput = {
@@ -42654,7 +42712,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -42671,6 +42728,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutUploadInput = {
@@ -42738,7 +42796,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -42756,6 +42813,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutPictureUploadInput = {
@@ -42774,7 +42832,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -42792,6 +42849,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutPictureUploadInput = {
@@ -42831,7 +42889,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -42848,6 +42905,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadInput = {
@@ -42867,7 +42925,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -42884,6 +42941,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type CourseUpsertWithWhereUniqueWithoutVideoSummaryInput = {
@@ -42954,7 +43012,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -42971,6 +43028,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutFeedbackInput = {
@@ -42990,7 +43048,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -43007,6 +43064,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutFeedbackInput = {
@@ -43041,7 +43099,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -43058,6 +43115,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedbackInput = {
@@ -43077,7 +43135,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -43094,6 +43151,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateWithoutCreatedClassesInput = {
@@ -43112,7 +43170,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -43129,6 +43186,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedClassesInput = {
@@ -43148,7 +43206,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -43165,6 +43222,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedClassesInput = {
@@ -43248,7 +43306,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -43265,6 +43322,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedClassesInput = {
@@ -43284,7 +43342,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -43301,6 +43358,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type StudentsInCourseUpsertWithWhereUniqueWithoutClassInput = {
@@ -43351,7 +43409,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -43368,6 +43425,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutJoinedClassInput = {
@@ -43387,7 +43445,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -43404,6 +43461,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutJoinedClassInput = {
@@ -43462,7 +43520,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -43479,6 +43536,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutJoinedClassInput = {
@@ -43498,7 +43556,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -43515,6 +43572,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ClassUpsertWithoutStudentsInput = {
@@ -43635,7 +43693,6 @@ export namespace Prisma {
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
     solves?: SolveCreateNestedManyWithoutUserInput
     Guide?: GuideCreateNestedManyWithoutAuthorInput
     Course?: CourseCreateNestedOneWithoutUserInput
@@ -43652,6 +43709,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutAssigmentsInput = {
@@ -43671,7 +43729,6 @@ export namespace Prisma {
     loginMethod?: string
     occupationType?: $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     solves?: SolveUncheckedCreateNestedManyWithoutUserInput
     Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
     Course?: CourseUncheckedCreateNestedOneWithoutUserInput
@@ -43688,6 +43745,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutAssigmentsInput = {
@@ -43803,6 +43861,7 @@ export namespace Prisma {
 
   export type SavedProjectCreateManyProjectInput = {
     id?: number
+    name?: string | null
     creatorId: number
     savedAt?: Date | string
     updatedAt?: Date | string
@@ -43810,6 +43869,8 @@ export namespace Prisma {
 
   export type SharedProjectCreateManyProjectInput = {
     id?: number
+    creatorId?: number | null
+    openedAt?: Date | string
     sharedAt?: Date | string
   }
 
@@ -43832,6 +43893,7 @@ export namespace Prisma {
   }
 
   export type SavedProjectUpdateWithoutProjectInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutSavedProjectNestedInput
@@ -43839,6 +43901,7 @@ export namespace Prisma {
 
   export type SavedProjectUncheckedUpdateWithoutProjectInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43846,31 +43909,30 @@ export namespace Prisma {
 
   export type SavedProjectUncheckedUpdateManyWithoutProjectInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     creatorId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SharedProjectUpdateWithoutProjectInput = {
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutSharedProjectNestedInput
   }
 
   export type SharedProjectUncheckedUpdateWithoutProjectInput = {
     id?: IntFieldUpdateOperationsInput | number
+    creatorId?: NullableIntFieldUpdateOperationsInput | number | null
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SharedProjectUncheckedUpdateManyWithoutProjectInput = {
     id?: IntFieldUpdateOperationsInput | number
+    creatorId?: NullableIntFieldUpdateOperationsInput | number | null
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ProjectCreateManyUserInput = {
-    id?: number
-    name: string
-    fileUUID?: string | null
-    createdAt?: Date | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type SolveCreateManyUserInput = {
@@ -43994,38 +44056,17 @@ export namespace Prisma {
 
   export type SavedProjectCreateManyCreatedByInput = {
     id?: number
+    name?: string | null
     projectId: number
     savedAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type ProjectUpdateWithoutUserInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    files?: FileUpdateManyWithoutProjectNestedInput
-    Saves?: SavedProjectUpdateManyWithoutProjectNestedInput
-    Shares?: SharedProjectUpdateManyWithoutProjectNestedInput
-  }
-
-  export type ProjectUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    files?: FileUncheckedUpdateManyWithoutProjectNestedInput
-    Saves?: SavedProjectUncheckedUpdateManyWithoutProjectNestedInput
-    Shares?: SharedProjectUncheckedUpdateManyWithoutProjectNestedInput
-  }
-
-  export type ProjectUncheckedUpdateManyWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
+  export type SharedProjectCreateManyCreatedByInput = {
+    id?: number
+    projectId: number
+    openedAt?: Date | string
+    sharedAt?: Date | string
   }
 
   export type SolveUpdateWithoutUserInput = {
@@ -44452,6 +44493,7 @@ export namespace Prisma {
   }
 
   export type SavedProjectUpdateWithoutCreatedByInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Project?: ProjectUpdateOneRequiredWithoutSavesNestedInput
@@ -44459,6 +44501,7 @@ export namespace Prisma {
 
   export type SavedProjectUncheckedUpdateWithoutCreatedByInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -44466,9 +44509,30 @@ export namespace Prisma {
 
   export type SavedProjectUncheckedUpdateManyWithoutCreatedByInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SharedProjectUpdateWithoutCreatedByInput = {
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    Project?: ProjectUpdateOneRequiredWithoutSharesNestedInput
+  }
+
+  export type SharedProjectUncheckedUpdateWithoutCreatedByInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    projectId?: IntFieldUpdateOperationsInput | number
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SharedProjectUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    projectId?: IntFieldUpdateOperationsInput | number
+    openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MessageCreateManyFriendRelationInput = {
@@ -44495,7 +44559,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -44512,6 +44575,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFriendsInput = {
@@ -44531,7 +44595,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -44548,6 +44611,7 @@ export namespace Prisma {
     sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutFriendsInput = {
@@ -44918,7 +44982,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -44936,6 +44999,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPictureUploadInput = {
@@ -44954,7 +45018,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -44972,6 +45035,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutPictureUploadInput = {
@@ -45065,7 +45129,6 @@ export namespace Prisma {
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
     pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
     solves?: SolveUpdateManyWithoutUserNestedInput
     Guide?: GuideUpdateManyWithoutAuthorNestedInput
     Course?: CourseUpdateOneWithoutUserNestedInput
@@ -45082,6 +45145,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssigmentsInput = {
@@ -45101,7 +45165,6 @@ export namespace Prisma {
     loginMethod?: StringFieldUpdateOperationsInput | string
     occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
     Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
     Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
@@ -45118,6 +45181,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutAssigmentsInput = {

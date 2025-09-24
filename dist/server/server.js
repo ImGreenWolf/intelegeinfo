@@ -982,17 +982,49 @@ exports.wss.addListener('connection', async (ws, req) => {
                 return { clientId: clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName(), isHost: clientObj.isHost };
         }
         async function loadSave(saveUUID, clientObj) {
+            if (saveUUID == undefined)
+                return;
+            const projectId = exports.sqid.decode(saveUUID)[0];
+            if (!projectId)
+                return;
+            onLoadProject(clientObj, await loadProject(projectId, clientObj.clientData.id));
+        }
+        async function loadShare(saveUUID, clientObj) {
+            if (saveUUID == undefined)
+                return;
+            const projectId = exports.sqid.decode(saveUUID)[0];
+            if (!projectId)
+                return;
+            onLoadProject(clientObj, await loadShareProject(projectId));
+        }
+        async function loadShareProject(shareId) {
+            if (!shareId)
+                throw 'cant load project: no id was supplied, or is invalid';
+            return dbClient_1.default.sharedProject.update({
+                where: {
+                    id: shareId
+                },
+                data: {
+                    openedAt: new Date()
+                },
+                include: {
+                    Project: {
+                        include: {
+                            files: true
+                        }
+                    }
+                }
+            });
+        }
+        function onLoadProject(clientObj, savedProject) {
             try {
                 if (!clientObj.clientData) {
                     throw { message: 'Nu ai access la acest proiect sau nu esti logat.' };
                 }
-                const projectId = exports.sqid.decode(saveUUID)[0];
-                let savedProject = await loadProject(projectId, clientObj.clientData.id);
-                console.log(savedProject);
                 if (!savedProject.Project)
                     throw { message: "Am intampinat o eroare..." };
                 fs_1.default.mkdirSync(clientFilesPath, { recursive: true });
-                if (savedProject.Project.files.length != 0) {
+                if (savedProject.Project.files.length != 0 && savedProject.Project.fileUUID == null) {
                     clientSession.files = savedProject.Project.files.map(file => new types_2.EditorFile(clientSession, file.name, file.content));
                     clientSession.savedProject = savedProject.Project;
                     return;
@@ -1015,6 +1047,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                 let savedProject;
                 if (urlParams.has("save"))
                     await loadSave(urlParams.get('save'), clientObj);
+                else if (urlParams.has("share"))
+                    await loadShare(urlParams.get('share'), clientObj);
                 // printClientConsoleInfo("connected to worker: " + process.pid)
                 //create cache folder for session if its a new one
                 const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
