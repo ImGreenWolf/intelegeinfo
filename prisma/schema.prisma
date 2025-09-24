@@ -22,7 +22,7 @@ model Project {
   fileUUID String?
   createdAt DateTime @default(now())
   metadata Json? // TODO implement
-
+  userId Int?
   files File[]
   Saves SavedProject[]
   Shares SharedProject[]
