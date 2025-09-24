@@ -992,7 +992,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 if (!savedProject.Project)
                     throw { message: "Am intampinat o eroare..." };
                 fs_1.default.mkdirSync(clientFilesPath, { recursive: true });
-                if (savedProject.Project.files) {
+                if (savedProject.Project.files.length != 0) {
                     clientSession.files = savedProject.Project.files.map(file => new types_2.EditorFile(clientSession, file.name, file.content));
                     clientSession.savedProject = savedProject.Project;
                     return;

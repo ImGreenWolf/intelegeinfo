@@ -1234,7 +1234,7 @@ function endConnectionPromise()
                 throw {message: "Am intampinat o eroare..."}
             fs.mkdirSync(clientFilesPath, { recursive: true })
 
-            if(savedProject.Project.files) {
+            if(savedProject.Project.files.length !=0) {
 
                 clientSession.files = savedProject.Project.files.map(file => new EditorFile(clientSession, file.name, file.content))
                 clientSession.savedProject = savedProject.Project;
