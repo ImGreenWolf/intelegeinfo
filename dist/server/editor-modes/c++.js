@@ -85,6 +85,11 @@ int main() {
         // execSync('docker exec -i ' + res.imageName + ' bash -c "ls"', {stdio: 'inherit'})
         return nodepty.spawn('docker', ['exec', "-it", res.imageName, "bash", "-c", `(cd ./clientFiles && exec ../${res.fileName.split('.')[0]})`], BaseEditorMode_1.executeOptions);
     }
+    directExecute(res) {
+        return (0, child_process_1.spawn)('docker', ['exec', "-i", res.imageName, "bash", "-c", `(cd ./clientFiles && exec ../${res.fileName.split('.')[0]})`], {
+            stdio: 'pipe' // pipe gives you access to stdin, stdout, stderr
+        });
+    }
     compile(res, file, isDebugging = false) {
         return new Promise((resolve, reject) => {
             try {

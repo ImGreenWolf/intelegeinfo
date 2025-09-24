@@ -14,6 +14,7 @@ declare class CppMode extends EditorMode {
     HandleClientInput(): void;
     constructor();
     execute(res: any): nodepty.IPty;
+    directExecute(res: any): import("child_process").ChildProcessWithoutNullStreams;
     compile(res: any, file: EditorFile, isDebugging?: boolean): Promise<void>;
     startDebugging(res: any, clientObj: any, clientSession: any): CPPDebugger;
     checkCodeSyntax: (sessionObj: EditorSession, file: EditorFile) => Promise<string>;

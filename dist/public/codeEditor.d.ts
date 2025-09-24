@@ -27,7 +27,6 @@ declare class Console {
     onCompileStart(message?: string): void;
     onProcessStart(): void;
     onProcessEnd(): void;
-    callbackCreate(callerConsole: Console): void;
     sendCommand(cmd: string): void;
     receivePTYChunk(chunk: any): void;
 }
@@ -153,7 +152,7 @@ declare class FileElement extends EditorWindowTab {
     nameElement: any;
     constructor(fileName: string, session: HTMLElement | Ace.EditSession | undefined, index?: number);
     getDragText: () => string | undefined;
-    openTab(ev: MouseEvent): void;
+    openTab(ev?: MouseEvent): void;
     addUser(user: User, lastFileName: any): void;
     removeUser(userId: UUID): void;
     remove(): void;
@@ -162,7 +161,7 @@ export declare function createFileNamePrompt(): void;
 export declare function awaitFileNamePrompt(fileName?: string): Promise<string>;
 export declare function toggleConsoleDebugProgram(elem: HTMLElement): void;
 export declare function onConsoleInput(elem: HTMLTextAreaElement, ev?: Event): void;
-export declare function saveProject(): void;
+export declare function saveProject(): Promise<void>;
 export declare function listProjects(): boolean | undefined;
 export declare function sendWebsocketCommand(cmd: string, argsArr?: string[]): void;
 export declare function joinsession(): boolean | undefined;

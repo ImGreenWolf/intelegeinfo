@@ -125,6 +125,7 @@ class EditorSession {
     sessionId;
     clientsActiveFile = new Map(); // client , file name
     files = [];
+    savedProject;
     clientsMap = new Map();
     clients = [];
     clientsDisplayNames;
@@ -470,9 +471,11 @@ class EditorFile {
             });
         }
     }
-    delete(clientObj) {
+    delete(clientObj, clientSession) {
         try {
-            clientObj.openFile.splice(clientObj.openFile.findIndex(val => val == this), 1);
+            if (clientObj.openFile.indexOf(this) != -1)
+                clientObj.openFile.splice(clientObj.openFile.indexOf(this), 1);
+            clientSession.files.splice(clientSession.files.indexOf(this), 1);
             fs_1.default.unlink(this.filePath, (err) => {
                 if (err) {
                     throw "Error deleting file: " + err.message;
@@ -484,7 +487,7 @@ class EditorFile {
                             command: types_2.FileManagementCommands.Delete,
                             name: this.name,
                         }));
-                    }, clientObj);
+                    });
                 }
             });
         }

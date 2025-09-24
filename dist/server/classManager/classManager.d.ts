@@ -34,4 +34,3 @@ declare global {
         }
     }
 }
-export declare function handlePrismaError(error: any): any;

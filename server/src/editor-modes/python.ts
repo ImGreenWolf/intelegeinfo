@@ -224,6 +224,12 @@ async onBuild(res, clientSession: EditorSession, clientObj: ClientObject): Promi
         return proc;
        
     }
+
+    directExecute(res: any, clientObj: any, sessionObj: any) {
+      return spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","(cd ./clientFiles && python -u "+ res.fileName + ")"], {
+            stdio: 'pipe',  // pipe gives you access to stdin, stdout, stderr
+        });
+    }
     compile(res) {
       //  setTimeout(() => {
       //    return spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","pip install opencv-python"], {

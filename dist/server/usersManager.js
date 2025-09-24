@@ -50,7 +50,6 @@ exports.uploadFromFileData = uploadFromFileData;
 exports.activeAtComponent = activeAtComponent;
 exports.updateActiveAtForUser = updateActiveAtForUser;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const crypto_1 = require("crypto");
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 // import cookieParser from 'cookie-parser'
@@ -114,36 +113,33 @@ async function getUserData(id, include) {
 function getIdFromJWT(req) {
     return getClientId(getJWT(req));
 }
-function addProject(id, data) {
-    return new Promise((resolve) => {
-        dbClient_1.default.user.update({
-            where: {
-                id
+async function addProject(userId, projId, data) {
+    return await dbClient_1.default.savedProject.create({
+        data: {
+            createdBy: {
+                connect: { id: userId }
             },
-            include: {
-                projects: true,
-            },
-            data: {
-                projects: {
+            Project: projId
+                ? {
+                    connectOrCreate: {
+                        create: data,
+                        where: projId
+                    }
+                }
+                : {
                     create: data
                 }
-            }
-        }).then(user => {
-            resolve(user);
-        });
+        }
     });
 }
-function listAllProjects(userId) {
-    return new Promise((resolve, reject) => {
-        users.default.project.findMany({
-            where: {
-                userId
-            }
-        }).then(projects => {
-            resolve([...projects]);
-        }).catch(err => {
-            reject(err);
-        });
+async function listAllProjects(userId) {
+    return await dbClient_1.default.savedProject.findMany({
+        where: {
+            creatorId: userId
+        },
+        include: {
+            Project: true
+        }
     });
 }
 function getClientJWTValue(token) {
@@ -354,79 +350,122 @@ exports.router.post('/verifyemail', (req, res) => {
 });
 // router.get('/problem', problemCreator);
 exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) => {
-    const { name, sessionId: saveSessionId, projectId } = req.body;
-    console.log(saveSessionId, projectId);
-    const userId = users.getIdFromJWT(req);
-    if (projectId) {
-        const foundProj = await dbClient_1.default.project.findFirst({
-            where: {
-                fileUUID: projectId
+    try {
+        const { name, sessionId: saveSessionId, projectId } = req.body;
+        const userId = users.getIdFromJWT(req);
+        if (projectId && server_1.sqid.decode(projectId)[0]) {
+            try {
+                const session = server_1.sessionMap.get(saveSessionId);
+                const foundProj = await dbClient_1.default.savedProject.update({
+                    where: {
+                        id: server_1.sqid.decode(projectId)[0]
+                    },
+                    include: {
+                        Project: {
+                            select: {
+                                files: {
+                                    where: {
+                                        name: {
+                                            notIn: session.files.map(file => file.name)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    data: {
+                        Project: {
+                            update: {
+                                files: {
+                                    upsert: session.files.map(file => {
+                                        return {
+                                            where: {
+                                                name: file.name
+                                            },
+                                            create: {
+                                                name: file.name,
+                                                content: file.content
+                                            },
+                                            update: {
+                                                content: file.content
+                                            }
+                                        };
+                                    }),
+                                }
+                            }
+                        }
+                    }
+                });
+                if (foundProj) {
+                    console.log(foundProj.Project.files, session.files);
+                    if (foundProj.Project && foundProj.Project.files.length != 0) {
+                        await dbClient_1.default.savedProject.update({
+                            where: {
+                                id: server_1.sqid.decode(projectId)[0]
+                            },
+                            data: {
+                                Project: {
+                                    update: {
+                                        files: {
+                                            deleteMany: foundProj.Project.files
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    res.status(200).json({ isNew: false, message: "sucsess" });
+                    return;
+                }
             }
-        });
-        if (foundProj && foundProj.fileUUID) {
-            if (foundProj.userId != userId)
-                res.status(401).json({ message: 'Nu poti salva acest proiect deoarece nu este al tau!' });
-            else
-                fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", foundProj.fileUUID), { recursive: true, force: true }, (() => {
-                    try {
-                        res.status(200).json({ isNew: false, message: "sucsess" });
-                    }
-                    catch (err) {
-                        if (err.code)
-                            res.status(err.code).json({ message: err.message });
-                        else
-                            res.status(401).json('error: ' + err);
-                    }
-                }));
+            catch (error) {
+                console.error(error);
+            }
+        }
+        else if (!name) {
+            res.send({ isNew: true });
             return;
         }
-    }
-    if (!name) {
-        res.send(JSON.stringify({ isNew: true }));
-        return;
-    }
-    if (!server_1.sessionMap.has(saveSessionId))
-        return;
-    const saveId = (0, crypto_1.randomUUID)();
-    users.addProject(userId, { name: name, fileUUID: saveId }).then(user => {
-        fs_1.default.cp(path_1.default.join(rootDirName, "cache", saveSessionId), path_1.default.join(rootDirName, "saved", saveId), { recursive: true }, (() => {
-            try {
-                res.status(200).json({ message: "sucsess", projectId: saveId });
+        else {
+            if (!server_1.sessionMap.has(saveSessionId)) {
+                res.status(500).json({ message: "Sesiunea este invalida" });
+                return;
             }
-            catch (err) {
-                if (err.code)
-                    res.status(err.code).json({ message: err.message });
-                else
-                    res.status(401).json('error: ' + err);
-            }
-        }));
-    }).catch(err => {
-        res.status(500).json('error: ' + err);
-    });
-});
-exports.router.get('/loadProject/:id', server_1.authMiddleware, (req, res) => {
-    const id = parseInt(req.params.id);
-    // const { name, sessionId:saveSessionId } = req.body;
-    // console.log(saveSessionId)
-    // if(!sessionMap.has(saveSessionId)) return
-    // // sessionMap.get(saveSessionId).
-    dbClient_1.default.project.findFirst({
-        where: {
-            id
+            const session = server_1.sessionMap.get(saveSessionId);
+            const sessionProj = session.savedProject;
+            //create new saved project
+            const savedProj = await addProject(userId, sessionProj ? sessionProj.id : undefined, { name, user: { connect: { id: userId } }, files: {
+                    createMany: {
+                        data: session.files.map(file => { return { name: file.name, content: file.content }; }),
+                        skipDuplicates: true
+                    }
+                }
+            });
+            res.status(200).json({ message: "sucsess", projectId: server_1.sqid.encode([savedProj.id]) });
         }
-    }).then(project => {
-        // res.json({project})
-        // res.redirect('/editor?session=' + project?.fileUUID)
-        fs_1.default.cp(path_1.default.join(rootDirName, "saved", project?.fileUUID), path_1.default.join(rootDirName, "cache", project?.fileUUID), { recursive: true }, (() => {
-            res.status(200).json({ redirectTo: '/editor?save=' + project?.fileUUID });
-        }));
-    }).catch((err) => {
-        res.status(401).send(err);
-    });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send((0, server_1.handlePrismaError)(error));
+    }
+});
+exports.router.get('/loadProject/:id', server_1.authMiddleware, async (req, res) => {
+    const id = req.params.id;
+    try {
+        await dbClient_1.default.savedProject.findUnique({
+            where: {
+                id: server_1.sqid.decode(id)[0]
+            }
+        });
+        res.status(200).json({ redirectTo: '/editor?save=' + id });
+    }
+    catch (error) {
+        res.send((0, server_1.handlePrismaError)(error));
+    }
 });
 exports.router.get('/listProjects', server_1.authMiddleware, (req, res) => {
     listAllProjects(users.getIdFromJWT(req)).then(json => {
-        res.json(json);
+        res.json(json.map(proj => { return { ...proj, id: server_1.sqid.encode([proj.id]) }; }));
     })
         .catch(err => {
         if (err.code)

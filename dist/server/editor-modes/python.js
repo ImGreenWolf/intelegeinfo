@@ -218,6 +218,11 @@ CMD bash `;
         // })
         return proc;
     }
+    directExecute(res, clientObj, sessionObj) {
+        return (0, child_process_1.spawn)('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh", "-c", "(cd ./clientFiles && python -u " + res.fileName + ")"], {
+            stdio: 'pipe', // pipe gives you access to stdin, stdout, stderr
+        });
+    }
     compile(res) {
         //  setTimeout(() => {
         //    return spawn('docker', ['exec', "-i", '-e', 'DISPLAY=:1', res.imageName, "sh","-c","pip install opencv-python"], {

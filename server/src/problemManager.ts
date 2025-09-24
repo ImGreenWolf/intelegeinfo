@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import prisma from "./dbClient";
 import { ClientObject, EditorSession } from "./types";
-
+import * as Nodepty from 'node-pty'
 export function handleSucces(index, clientObj: ClientObject)
 {
     clientObj.sendMessage({index, succes: true})
@@ -165,7 +165,7 @@ export async function createProblem({name, description, difficulty, tags, catego
     
 }
 
-export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession, res):
+export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clientSession: EditorSession, res):
  Promise<PromiseSettledResult<{status: string, error: boolean, index: number, score: number, time?: number,  result?: {input: string, output: string}} | undefined>[]>
 {
     const promises = []
@@ -180,11 +180,12 @@ export function  testProblem(tests:  ProblemTest[], clientObj: ClientObject,clie
             const stdin = test.dataIn
             const expectedStoud = test.dataOut
             let outputBuffer = ''
-            const program = process.env.NODE_ENV=="development" ? spawn(`${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, {stdio: 'pipe', shell: true, timeout: 5000}) : await clientObj.openFile[0].editorMode.execute(res, clientObj, clientSession)
+            const program = process.env.NODE_ENV=="development" ? Nodepty.spawn(`${path.dirname(clientObj.openFile[0].filePath)}/${clientObj.openFile[0].name.split('.')[0]}.exe`, '', {}) :
+             await clientObj.openFile[0].editorMode.directExecute(res, clientObj, clientSession)
 
             const pipeStream = new Readable()
             let startTime;
-            program.addListener('spawn', () => {
+            program.on('spawn', () => {
                 pipeStream.pipe(program.stdin)
                 pipeStream.push(stdin)
                 pipeStream.push(null)

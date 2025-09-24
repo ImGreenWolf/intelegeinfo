@@ -177,7 +177,7 @@ router.use('/', (req, res) => {
                 else {
                     params.projectsList = '';
                     for (const project of projects) {
-                        params.projectsList += `<a class="project" href="/editor?save=${project.fileUUID}"><h3>${project.name}</h3><button>x</button></a>`;
+                        params.projectsList += `<a class="project" href="/editor?save=${server_1.sqid.encode([project.id])}"><h3>${project.Project.name}</h3><button>x</button></a>`;
                     }
                 }
                 parseUserInfoInFile(userId, "public/pages/profile.html", params).then(file => {

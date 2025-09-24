@@ -4,7 +4,7 @@ import WebSocket from 'ws';
 import { ChildProcess } from 'child_process';
 import { WSMessage } from '../../shared/src/types'
 import { ConsoleMessageType, WebSocketMessageType} from '../../dist/shared/types';
-import { User } from '../../generated/prisma';
+import { Project, SavedProject, User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import { CppMode } from './editor-modes';
@@ -131,14 +131,17 @@ export class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string> = new Map<UUID, string>(); // client , file name
     files: EditorFile[] = []
+    savedProject: (Project) | undefined
     clientsMap: Map<UUID,ClientObject> = new Map<UUID,ClientObject>();
     clients: ClientObject[] = []
     clientsDisplayNames: string[];
     clientsSockets: Map<UUID, WebSocket> = new Map();
+
     messageIndex: number = 1;
     clientCommandBuffer: Map<UUID, CommandBuffer> = new Map();
     process: DebugProcess | (Nodepty.IPty & EventEmitter ) | undefined;
     msgMap: Map<number, WSMessage> = new Map();
+
     brainrotNames: string[];
     currentbuildTag = '';
     sessionContainer: {process:  Nodepty.IPty, imageName: string, fileName: string, editorMode: EditorMode};
@@ -546,10 +549,15 @@ Tralalero Tralala`.split('\n')
     }
 
 
-    public delete(clientObj: ClientObject)
+    public delete(clientObj: ClientObject, clientSession: EditorSession)
     {
         try {
-            clientObj.openFile.splice(clientObj.openFile.findIndex(val => val == this), 1)
+            if(clientObj.openFile.indexOf(this) != -1)
+                clientObj.openFile.splice(clientObj.openFile.indexOf(this), 1)
+
+            clientSession.files.splice(clientSession.files.indexOf(this), 1)
+            
+
             fs.unlink(this.filePath, (err) => {
             if (err) {
                throw "Error deleting file: " + err.message;
@@ -560,7 +568,7 @@ Tralalero Tralala`.split('\n')
                     command: FileManagementCommands.Delete,
                     name: this.name,
                     }))
-                }, clientObj)
+                })
             }
         });
         }

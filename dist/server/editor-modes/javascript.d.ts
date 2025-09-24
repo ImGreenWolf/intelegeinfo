@@ -1,8 +1,8 @@
-import { ChildProcess } from "child_process";
 import EditorMode from "./BaseEditorMode";
 import { ClientObject, EditorFile, EditorSession } from "../types";
 import inspector from 'inspector';
 import DebugProcess from "./ProcessTypes";
+import * as Nodepty from "node-pty";
 declare class javascript extends EditorMode {
     static name: string;
     static logoSrc: string;
@@ -17,7 +17,7 @@ declare class javascript extends EditorMode {
     HandleClientInput(): void;
     constructor();
     compile(res: any, file: EditorFile, isDebugging?: boolean): any;
-    execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): ChildProcess | Promise<ChildProcess>;
+    execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Nodepty.IPty | Promise<Nodepty.IPty> | undefined;
     startDebugging(res: any, clientObj: ClientObject, sessionObj: EditorSession): JSDebugger;
 }
 declare class JSDebugger extends DebugProcess {

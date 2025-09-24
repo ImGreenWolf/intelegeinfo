@@ -5,14 +5,14 @@ import express, { Request, Response } from 'express';
 import bodyParser, { text } from 'body-parser';
 // import cookieParser from 'cookie-parser'
 import prisma from "./dbClient";
-import { Prisma, User } from "../../generated/prisma";
+import { Prisma, Project, User } from "../../generated/prisma";
 import fs from "fs";
 import nodemailer from "nodemailer"
 import { clearAuthCookies, onLoggedIn, UserState } from "./login"
 import * as Profile from './profile'
 import path from "path";
 import * as hmacuUtil from "../../dist/shared/hmacUtils";
-import { authMiddleware, parseText, sessionMap, tokenCookieName } from "./server";
+import { authMiddleware, handlePrismaError, parseText, sessionMap, sqid, tokenCookieName } from "./server";
 import * as users from './usersManager'
 import { google } from "googleapis";
 import { prepareEncrPassForDB } from "./signup";
@@ -99,54 +99,42 @@ export function getIdFromJWT(req: any)
     
     
 }
-
-export function addProject(id: number, data: any)
-{
-    return new Promise<User> ((resolve) => {
-            prisma.user.update({
-                where: 
-                {
-                    id
-                },
-                include: {
-                    projects: true,
-                  },
-                data: {
-                    projects: 
-                    {
-
-                        create: data
-                        
-                    }
-                        
-                }
-            }).then(user => {
-                resolve(user)
-            })
-        })
-
-
-        
-    
-    
+export async function addProject(
+    userId: number,
+    projId: any,
+    data: Prisma.ProjectCreateInput
+) {
+    return await prisma.savedProject.create({
+        data: {
+            createdBy: {
+                connect: { id: userId }
+            },
+            Project: projId
+                ? {
+                      connectOrCreate: {
+                          create: data,
+                          where: projId
+                      }
+                  }
+                : {
+                      create: data
+                  }
+        }
+    });
 }
 
- export function listAllProjects(userId)
+ export async function listAllProjects(userId)
 {
-    return new Promise<any[]>((resolve, reject) => {
-        users.default.project.findMany({
+   
+        return await prisma.savedProject.findMany({
             where:
             {
-                userId
+                creatorId: userId
+            },
+            include: {
+                Project: true
             }
-            
-        }).then(projects => {
-            resolve([...projects])
-        }).catch(err => {
-            reject(err)
-        });
-    })
-    
+        })
     
 }
 
@@ -440,91 +428,139 @@ router.post('/verifyemail', (req, res) => {
   // router.get('/problem', problemCreator);
 router.post('/saveProject', authMiddleware, async (req, res) => {
    
-    const { name, sessionId: saveSessionId, projectId } = req.body;
-    console.log(saveSessionId, projectId)
-    const userId = users.getIdFromJWT(req)
-    if(projectId)
-    {
+    try {
+        const { name, sessionId: saveSessionId, projectId } = req.body;
+    
+        const userId = users.getIdFromJWT(req)
 
-        const foundProj = await prisma.project.findFirst({
-            where: {
-                fileUUID: projectId
-            }
-        })
-        if(foundProj && foundProj.fileUUID)
+        if(projectId && sqid.decode(projectId)[0])
         {
-            if(foundProj.userId != userId)
-                 res.status(401).json({message: 'Nu poti salva acest proiect deoarece nu este al tau!'})
-            else
-             fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", foundProj.fileUUID), {recursive: true, force: true}, (() => {
-                    try {
-                        res.status(200).json({isNew: false, message: "sucsess"})
-                    } catch (err: any)
-                    {
-                        if(err.code) res.status(err.code).json({message: err.message})
-                            else res.status(401).json('error: ' + err)
-                    }
-                }))
-             return
-        }
-           
-           
-    }
-    if(!name)
-    {
-        res.send(JSON.stringify({isNew: true}))
-        return
-    }
-         
-    if(!sessionMap.has(saveSessionId)) return
-
-    const saveId = randomUUID()
-    users.addProject(userId, {  name: name, fileUUID: saveId}).then(user => {
-            fs.cp(path.join(rootDirName, "cache", saveSessionId), path.join(rootDirName,"saved", saveId), {recursive: true}, (() => {
+    
             try {
-                res.status(200).json({message: "sucsess", projectId: saveId})
-            } catch (err: any)
-            {
-                if(err.code) res.status(err.code).json({message: err.message})
-                    else res.status(401).json('error: ' + err)
+                const session = sessionMap.get(saveSessionId)
+                const foundProj = await prisma.savedProject.update({
+                    where: {
+                        id: sqid.decode(projectId)[0]
+                    },
+                    include: {
+                        Project: {
+                            select: {
+                                files: {
+                                    where: {
+                                        name: {
+                                            notIn: session.files.map(file => file.name)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    data: {
+                        Project: {
+                            update: {
+                                files: 
+                                 {
+                                    upsert: session.files.map(file => {return {
+                                        where: {
+                                            name: file.name
+                                        },
+                                        create: {
+                                            name: file.name,
+                                            content: file.content
+                                        },
+                                        update: {
+                                            content: file.content
+                                        }
+                                
+                                    }}),
+                                }
+                            }
+                        }
+                    }
+                })
+                
+                if(foundProj)
+                {
+                    console.log(foundProj.Project.files, session.files)
+                    if(foundProj.Project && foundProj.Project.files.length != 0) {
+                    await prisma.savedProject.update({
+                           where: {
+                                id: sqid.decode(projectId)[0]
+                            },
+                            data: {
+                                Project: {
+                                    update: {
+                                        files: {
+                                            deleteMany: foundProj.Project.files   
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                    }
+                    res.status(200).json({isNew: false, message: "sucsess"})
+                    return
+                }
+            } catch (error) {
+                console.error(error)
             }
-        }))
-    }).catch(err => {
-        res.status(500).json('error: ' + err)
-    })
+               
+               
+        }
+        else if(!name)
+        {
+            res.send({isNew: true})
+            return
+        } else {
+            if(!sessionMap.has(saveSessionId)) {
+                res.status(500).json({message: "Sesiunea este invalida"})
+
+                return
+            }
+            const session = sessionMap.get(saveSessionId)
+            const sessionProj = session.savedProject
+            //create new saved project
+            const savedProj = await addProject(userId, sessionProj ? sessionProj.id : undefined,
+             {name, user: {connect: {id: userId}}, files:  {
+                createMany: {
+                    data: session.files.map(file => {return {name: file.name, content: file.content}}),
+                    skipDuplicates: true
+                }
+             }
+            
+            })
+
+            res.status(200).json({message: "sucsess", projectId: sqid.encode([savedProj.id])})
+        }
+             
+       
+    
+    } catch (error) {
+        console.error(error)
+        res.status(500).send(handlePrismaError(error))
+    }
    
   });
 
 
 
 
-  router.get('/loadProject/:id', authMiddleware, (req, res) => {
-    const  id: number = parseInt(req.params.id);
-    // const { name, sessionId:saveSessionId } = req.body;
-    // console.log(saveSessionId)
-    // if(!sessionMap.has(saveSessionId)) return
-    // // sessionMap.get(saveSessionId).
-   
-    prisma.project.findFirst({
-        where:
-        {
-            id
-        }
-    }).then(project => {
+  router.get('/loadProject/:id', authMiddleware, async (req, res) => {
+    const  id: string = req.params.id;
 
-        // res.json({project})
-        // res.redirect('/editor?session=' + project?.fileUUID)
-        fs.cp(path.join(rootDirName,"saved", project?.fileUUID as string), path.join(rootDirName, "cache", project?.fileUUID as string), {recursive: true}, (() => {
-           
-            res.status(200).json({ redirectTo: '/editor?save=' + project?.fileUUID });
-    
-        }))
-
-       
-    }).catch((err) => {
-
-        res.status(401).send(err)
-    })
+   try {
+     await prisma.savedProject.findUnique({
+         where:
+         {
+             id: sqid.decode(id)[0]
+         }
+     })
+ 
+     res.status(200).json({ redirectTo: '/editor?save=' + id });
+ 
+   } catch (error) {
+        res.send(handlePrismaError(error))
+   }
 
    
 
@@ -532,14 +568,9 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
   });
 
   router.get('/listProjects', authMiddleware, (req, res) => {
-   
-
-   
-       
-        
 
         listAllProjects(users.getIdFromJWT(req)).then(json => {
-            res.json(json)
+            res.json(json.map(proj => {return {...proj,id: sqid.encode([proj.id])}}))
         })
         .catch(err => {
 

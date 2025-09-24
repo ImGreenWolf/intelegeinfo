@@ -7,7 +7,7 @@ import prisma from "./dbClient";
 import { Project, User } from "../../generated/prisma";
 import * as users from './usersManager'
 import path from "path";
-import { parseText, tokenCookieName } from "./server";
+import { parseText, sqid, tokenCookieName } from "./server";
 import { clearAuthCookies } from "./login";
 const router = express.Router();
 router.use(bodyParser.json());
@@ -179,9 +179,9 @@ router.use('/', (req, res) => {
                     else 
                     {
                          params.projectsList=''
-                        for(const project of projects as Project[])
+                        for(const project of projects)
                         {
-                            params.projectsList += `<a class="project" href="/editor?save=${project.fileUUID}"><h3>${project.name}</h3><button>x</button></a>`
+                            params.projectsList += `<a class="project" href="/editor?save=${sqid.encode([project.id])}"><h3>${project.Project.name}</h3><button>x</button></a>`
                         }
 
                     }

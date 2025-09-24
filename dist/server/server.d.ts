@@ -7,6 +7,7 @@ export declare const sqid: sqids;
 export declare const tokenCookieName = "iiauthtoken";
 import { UUID } from "crypto";
 export declare function authMiddleware(req: any, res: any, next: any, role?: string): void;
+export declare function handlePrismaError(error: any): any;
 import * as https from 'https';
 import * as http from 'http';
 export declare const server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | https.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;

@@ -29,7 +29,7 @@ export const sqid = new sqids({
 export const tokenCookieName = 'iiauthtoken'
 
 import SharedStateManager from "./sessionStore"
-import { Prisma, Problem } from "../../generated/prisma";
+import { Prisma, Problem, SavedProject } from "../../generated/prisma";
 import prisma from "./dbClient";
 import loginManager, { clearAuthCookies } from './login.js'
 import signupManager from './signup.js'
@@ -437,6 +437,22 @@ function handle404(req:any, res:any, next:NextFunction)
 }
 
 
+export function handlePrismaError(error: any) {
+    if(!(error instanceof Prisma.PrismaClientKnownRequestError) || !error.clientVersion)
+        return error;
+    else
+        switch(error.code) {
+            case 'P2025':
+                return 'Nu am gasit clasa pe care o cauti! Verifica daca ai linkul corect sau daca clasa chiar exista..';
+            case 'P2002':
+                return 'Deja te-ai alaturat acestei clase.'
+            case '401':
+                return 'Trebuie sa fi logat pentru a face aceasta actiune!'
+            default:
+                return error.message
+        }
+}
+
 
 interface CompileRequestBody {
     code: string;
@@ -679,7 +695,7 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     let gdbBuffer = "";
     let checkSyntaxTimeout;
     let dataTimeout;
-    let project;
+    let project: SavedProject;
     let processInputBuffer = '';
     let spawnPromise;
     let shouldSave:boolean = false; 
@@ -719,22 +735,26 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     })
     .finally(() => {
         
-    function loadProject(fileUUID)
+    async function loadProject(saveId, creatorId)
     {
-        return new Promise<Project|string>((resolve, reject) => {
-            if(!fileUUID) throw 'cant load project: no id was supplied, or is invalid';
-            users.default.project.findUnique({
-            where:
-            {
-                fileUUID
+        
+        if(!saveId) throw 'cant load project: no id was supplied, or is invalid';
+
+        return prisma.savedProject.findUnique({
+        where:
+        {
+            id: saveId
+        },
+        include: {
+            Project: {
+                include: {
+                    files: true
+                }
             }
-            }).then(project => {
-                resolve(project)
+        }
+        })
                         
-        }).catch(err => {
-            reject(err)
-        })
-        })
+        
     
 
     }
@@ -991,6 +1011,8 @@ function endConnectionPromise()
        
        
     }
+
+    
     
     
 
@@ -1167,7 +1189,7 @@ function endConnectionPromise()
         messageType: ConsoleMessageType.Info,
         sessionId: sessionId,
         body: welcomeMessage,
-        project,
+        project: clientSession.savedProject,
         permissions: clientObj.permissions,
         files,
         users
@@ -1197,20 +1219,36 @@ function endConnectionPromise()
         else return {clientId: clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName(), isHost: clientObj.isHost}
     }
 
-    async function loadSave(fileUUID)
+    async function loadSave(saveUUID, clientObj: ClientObject)
     {
          try
          {
-            let savedProject = (await loadProject(fileUUID)) as Project
-            // if(savedProject.userId !== id) throw 'not authorized' // TODO check if project is public/shared or private (to implement)
-            fs.cpSync(path.join(rootDirName,"saved", savedProject.fileUUID), path.join(rootDirName, "cache", sessionId), {recursive: true})
-            project = savedProject;
-            clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
-            // fs.renameSync()
-            // defaultText =  
-            // console.log(defaultText)
+            if(!clientObj.clientData) {
+                throw {message: 'Nu ai access la acest proiect sau nu esti logat.'}
+            }
+            const projectId = sqid.decode(saveUUID)[0]
+
+            let savedProject = await loadProject(projectId, clientObj.clientData.id)
+            console.log(savedProject)
+            if(!savedProject.Project)
+                throw {message: "Am intampinat o eroare..."}
+            fs.mkdirSync(clientFilesPath, { recursive: true })
+
+            if(savedProject.Project.files) {
+
+                clientSession.files = savedProject.Project.files.map(file => new EditorFile(clientSession, file.name, file.content))
+                clientSession.savedProject = savedProject.Project;
+
+                return
+            } else {
+                fs.cpSync(path.join(rootDirName,"saved", savedProject.Project.fileUUID), path.join(rootDirName, "cache", sessionId), {recursive: true})
+                clientSession.savedProject = savedProject.Project;
+                
+                clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
+            }
+           
         }catch(err) {
-            printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId))
+            printClientConsoleInfo(handlePrismaError(err))
         }
     }
 
@@ -1223,7 +1261,7 @@ function endConnectionPromise()
             const isHost = !cooperator // added for readability
             let savedProject: Project | undefined;
             if(urlParams.has("save"))
-            await loadSave(urlParams.get('save'))
+                await loadSave(urlParams.get('save'), clientObj)
             
             
         
@@ -1297,7 +1335,6 @@ function endConnectionPromise()
 
                         // openFile(clientSession.files[0].name) // load first file
                 else 
-                    
                     reject("No default file was found!") // TODO replace with async function
 
                     // resolve(session)
@@ -2316,7 +2353,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         break;
                     case FileManagementCommands.Delete:
                         if(!clientObj.permissions.canEdit) break;
-                        clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj)
+                        clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj, clientSession)
                        
                     break;
 

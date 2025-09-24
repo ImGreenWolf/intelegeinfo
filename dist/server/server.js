@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wss = exports.sessionMap = exports.runningProcesses = exports.clients = exports.server = exports.tokenCookieName = exports.sqid = exports.rootDirName = void 0;
 exports.authMiddleware = authMiddleware;
+exports.handlePrismaError = handlePrismaError;
 exports.newWSS = newWSS;
 exports.sendFile = sendFile;
 exports.parseText = parseText;
@@ -67,6 +68,7 @@ exports.sqid = new sqids_1.default({
 });
 exports.tokenCookieName = 'iiauthtoken';
 const sessionStore_1 = __importDefault(require("./sessionStore"));
+const prisma_1 = require("../../generated/prisma");
 const dbClient_1 = __importDefault(require("./dbClient"));
 const login_js_1 = __importStar(require("./login.js"));
 const signup_js_1 = __importDefault(require("./signup.js"));
@@ -381,6 +383,21 @@ function handle404(req, res, next) {
     else
         res.json('Oops! Page not found.');
 }
+function handlePrismaError(error) {
+    if (!(error instanceof prisma_1.Prisma.PrismaClientKnownRequestError) || !error.clientVersion)
+        return error;
+    else
+        switch (error.code) {
+            case 'P2025':
+                return 'Nu am gasit clasa pe care o cauti! Verifica daca ai linkul corect sau daca clasa chiar exista..';
+            case 'P2002':
+                return 'Deja te-ai alaturat acestei clase.';
+            case '401':
+                return 'Trebuie sa fi logat pentru a face aceasta actiune!';
+            default:
+                return error.message;
+        }
+}
 //                      END                      //  
 function onServerStart() {
     const err = undefined;
@@ -582,19 +599,20 @@ exports.wss.addListener('connection', async (ws, req) => {
         console.error("error retrieving client data: ", err);
     })
         .finally(() => {
-        function loadProject(fileUUID) {
-            return new Promise((resolve, reject) => {
-                if (!fileUUID)
-                    throw 'cant load project: no id was supplied, or is invalid';
-                users.default.project.findUnique({
-                    where: {
-                        fileUUID
+        async function loadProject(saveId, creatorId) {
+            if (!saveId)
+                throw 'cant load project: no id was supplied, or is invalid';
+            return dbClient_1.default.savedProject.findUnique({
+                where: {
+                    id: saveId
+                },
+                include: {
+                    Project: {
+                        include: {
+                            files: true
+                        }
                     }
-                }).then(project => {
-                    resolve(project);
-                }).catch(err => {
-                    reject(err);
-                });
+                }
             });
         }
         function endConnectionPromise() {
@@ -938,7 +956,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 messageType: types_1.ConsoleMessageType.Info,
                 sessionId: sessionId,
                 body: welcomeMessage,
-                project,
+                project: clientSession.savedProject,
                 permissions: clientObj.permissions,
                 files,
                 users
@@ -963,19 +981,30 @@ exports.wss.addListener('connection', async (ws, req) => {
             else
                 return { clientId: clientId, accountId: thisclientObj.clientData ? thisclientObj.clientData.id : undefined, displayName: clientObj.displayName, color: clientObj.color, openFile: clientObj.getFilesName(), isHost: clientObj.isHost };
         }
-        async function loadSave(fileUUID) {
+        async function loadSave(saveUUID, clientObj) {
             try {
-                let savedProject = (await loadProject(fileUUID));
-                // if(savedProject.userId !== id) throw 'not authorized' // TODO check if project is public/shared or private (to implement)
-                fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
-                project = savedProject;
-                clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
-                // fs.renameSync()
-                // defaultText =  
-                // console.log(defaultText)
+                if (!clientObj.clientData) {
+                    throw { message: 'Nu ai access la acest proiect sau nu esti logat.' };
+                }
+                const projectId = exports.sqid.decode(saveUUID)[0];
+                let savedProject = await loadProject(projectId, clientObj.clientData.id);
+                console.log(savedProject);
+                if (!savedProject.Project)
+                    throw { message: "Am intampinat o eroare..." };
+                fs_1.default.mkdirSync(clientFilesPath, { recursive: true });
+                if (savedProject.Project.files) {
+                    clientSession.files = savedProject.Project.files.map(file => new types_2.EditorFile(clientSession, file.name, file.content));
+                    clientSession.savedProject = savedProject.Project;
+                    return;
+                }
+                else {
+                    fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.Project.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
+                    clientSession.savedProject = savedProject.Project;
+                    clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
+                }
             }
             catch (err) {
-                printClientConsoleError("Couldn't find your saved project, sorry! Check that you're logged in or the URL is correct. Error: " + err, getThisClientSession().getClientObjectById(clientId));
+                printClientConsoleInfo(handlePrismaError(err));
             }
         }
         async function connectionReady(cooperator = false, req) {
@@ -985,7 +1014,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 const isHost = !cooperator; // added for readability
                 let savedProject;
                 if (urlParams.has("save"))
-                    await loadSave(urlParams.get('save'));
+                    await loadSave(urlParams.get('save'), clientObj);
                 // printClientConsoleInfo("connected to worker: " + process.pid)
                 //create cache folder for session if its a new one
                 const cacheFolderExists = fs_1.default.existsSync(path_1.default.join(exports.rootDirName, "cache", sessionId));
@@ -1871,7 +1900,7 @@ bash `.trim().replaceAll('\n', "");
                             case types_3.FileManagementCommands.Delete:
                                 if (!clientObj.permissions.canEdit)
                                     break;
-                                clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj);
+                                clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj, clientSession);
                                 break;
                             //  TODO Make this so it just return name and make seperate function for fle content, which will be called only when opening the file on the client. STORE IT IN CACHE, ADD A DIRTY VERIFICATION TO NOT SEND THE SAME SHI MULTIPLE TIMES DONT OPEN THE EDITOR UNTIL THE FILE HAS LOADED ON THE CLIENT SEND THE FILES ON  HANDSHAKE MAKE SURE IT IS ALL REPLICATED
                             case types_3.FileManagementCommands.List:

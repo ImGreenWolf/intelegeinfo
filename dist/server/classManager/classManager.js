@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handlePrismaError = handlePrismaError;
 const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
 const body_parser_1 = __importDefault(require("body-parser"));
@@ -15,7 +14,6 @@ const server_1 = require("../server");
 const dbClient_1 = __importDefault(require("../dbClient"));
 const usersManager_1 = require("../usersManager");
 const types_1 = require("../types");
-const prisma_1 = require("../../../generated/prisma");
 const htmlPath = path_1.default.join(server_1.rootDirName, 'server', 'src', 'classManager', 'html');
 router.get('/', async (req, res) => {
     const classPath = path_1.default.join(htmlPath, 'index.html');
@@ -281,7 +279,7 @@ router.get('/join', async (req, res) => {
             });
         }
         catch (error) {
-            res.status(500).send(handlePrismaError(error));
+            res.status(500).send((0, server_1.handlePrismaError)(error));
             return;
         }
         res.redirect('/classes');
@@ -311,25 +309,10 @@ router.post('/join', async (req, res) => {
         res.redirect('/classes/' + server_1.sqid.encode([joinedClass.id]));
     }
     catch (error) {
-        res.status(error.code.startsWith('P') || !error.code ? 500 : error.code).send(handlePrismaError(error));
+        res.status(error.code.startsWith('P') || !error.code ? 500 : error.code).send((0, server_1.handlePrismaError)(error));
         return;
     }
 });
-function handlePrismaError(error) {
-    if (!(error instanceof prisma_1.Prisma.PrismaClientKnownRequestError) || !error.clientVersion)
-        return error;
-    else
-        switch (error.code) {
-            case 'P2025':
-                return 'Nu am gasit clasa pe care o cauti! Verifica daca ai linkul corect sau daca clasa chiar exista..';
-            case 'P2002':
-                return 'Deja te-ai alaturat acestei clase.';
-            case '401':
-                return 'Trebuie sa fi logat pentru a face aceasta actiune!';
-            default:
-                return error.message;
-        }
-}
 const activeCheckWSS = (0, server_1.newWSS)('/classes');
 function getCookie(cname, cookies) {
     let name = cname + "=";

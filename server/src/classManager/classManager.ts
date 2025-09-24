@@ -8,7 +8,7 @@ const router = express.Router();
 router.use(bodyParser.json());
 export default router; 
 
-import { newWSS, parseText, rootDirName, sessionMap, sqid, tokenCookieName } from '../server';
+import { handlePrismaError, newWSS, parseText, rootDirName, sessionMap, sqid, tokenCookieName } from '../server';
 import prisma from '../dbClient';
 import { getClientId, getIdFromJWT, getJWT, getUserData } from '../usersManager';
 import { ClientObject, randomHexColor } from '../types';
@@ -387,21 +387,7 @@ router.post('/join', async (req, res) => {
 })
 
 
-export function handlePrismaError(error: any) {
-    if(!(error instanceof Prisma.PrismaClientKnownRequestError) || !error.clientVersion)
-        return error;
-    else
-        switch(error.code) {
-            case 'P2025':
-                return 'Nu am gasit clasa pe care o cauti! Verifica daca ai linkul corect sau daca clasa chiar exista..';
-            case 'P2002':
-                return 'Deja te-ai alaturat acestei clase.'
-            case '401':
-                return 'Trebuie sa fi logat pentru a face aceasta actiune!'
-            default:
-                return error.message
-        }
-}
+
 
 
 const activeCheckWSS = newWSS('/classes')

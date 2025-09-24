@@ -4,6 +4,7 @@ import { ClientObject, EditorFile, EditorSession } from "../types";
 import { WebSocketMessageType } from "../../../dist/shared/types.js";
 import inspector from 'inspector'
 import DebugProcess from "./ProcessTypes";
+import * as Nodepty from "node-pty"
 
 class javascript extends EditorMode {
 
@@ -35,7 +36,7 @@ Avantaje: Rulează în browser și pe server, multe framework-uri.`
     compile(res: any, file: EditorFile, isDebugging?: boolean) {
         return undefined
     }
-    execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): ChildProcess | Promise<ChildProcess> {
+    execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Nodepty.IPty | Promise<Nodepty.IPty> | undefined {
         sessionObj.replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn'}, WebSocketMessageType.ExecuteStatus))
         sessionObj.replicateFunction((clientWs) => {
             clientWs.send(JSON.stringify({type: WebSocketMessageType.End, fileName: clientObj.openFile[0].name, sandbox: clientObj.openFile[0].content, clientId: clientObj.clientId}));  // Send GDB output to the client

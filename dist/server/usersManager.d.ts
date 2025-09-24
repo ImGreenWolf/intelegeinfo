@@ -19,25 +19,29 @@ export declare function getUserData<T extends Prisma.UserInclude>(id: number, in
     include: T;
 }> : UserNoPassword | undefined>;
 export declare function getIdFromJWT(req: any): number;
-export declare function addProject(id: number, data: any): Promise<{
+export declare function addProject(userId: number, projId: any, data: Prisma.ProjectCreateInput): Promise<{
     id: number;
-    createdAt: Date;
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    emailValidated: boolean;
-    userColor: string;
-    picture: string;
-    role: import("../../generated/prisma").$Enums.Role;
-    activeAt: Date;
-    password: string | null;
-    authId: Prisma.JsonValue | null;
-    loginMethod: string;
-    occupationType: import("../../generated/prisma").$Enums.OccupationType;
-    preferences: Prisma.JsonValue | null;
+    updatedAt: Date;
+    projectId: number;
+    creatorId: number;
+    savedAt: Date;
 }>;
-export declare function listAllProjects(userId: any): Promise<any[]>;
+export declare function listAllProjects(userId: any): Promise<({
+    Project: {
+        name: string;
+        id: number;
+        metadata: Prisma.JsonValue | null;
+        createdAt: Date;
+        fileUUID: string | null;
+        userId: number;
+    };
+} & {
+    id: number;
+    updatedAt: Date;
+    projectId: number;
+    creatorId: number;
+    savedAt: Date;
+})[]>;
 export declare function getClientJWTValue(token: string): UserState;
 export declare function getClientId(token: string): number | undefined;
 export declare function createUploadFromFile(fileReq: any, userId: number): {
@@ -50,16 +54,16 @@ export declare function activeAtComponent(): {
 };
 export declare function updateActiveAtForUser(userId: number, include?: Prisma.UserInclude): Promise<false | ({
     Guide: {
-        id: number;
         name: string;
+        description: string | null;
+        category: string | null;
+        id: number;
         createdAt: Date;
         updatedAt: Date;
         authorId: number;
         positiveRatings: number;
         negativeRatings: number;
         content: string;
-        description: string | null;
-        category: string | null;
         visits: number;
     }[];
     solves: {
@@ -91,25 +95,26 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         sentRequests: number;
         receivedRequests: number;
         Friends: number;
+        SavedProject: number;
     };
     Problem: {
-        id: number;
         name: string;
+        description: string | null;
+        difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
+        tags: string[];
+        category: string | null;
+        requirement: Prisma.JsonValue | null;
+        grade: number;
+        id: number;
         createdAt: Date;
         updatedAt: Date;
         authorId: number;
         positiveRatings: number;
         negativeRatings: number;
-        description: string | null;
-        category: string | null;
-        requirement: Prisma.JsonValue | null;
         tests: Prisma.JsonValue[];
         averageTimeLimit: number;
         averageMemLimit: number;
         sourceCode: string | null;
-        difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
-        tags: string[];
-        grade: number;
     }[];
     pictureUpload: {
         id: number;
@@ -120,18 +125,18 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         UserId: number | null;
     };
     projects: {
+        name: string;
         id: number;
         metadata: Prisma.JsonValue | null;
-        name: string;
         createdAt: Date;
+        fileUUID: string | null;
         userId: number;
-        fileUUID: string;
     }[];
     Course: {
+        description: string;
         id: number;
         createdAt: Date;
         updatedAt: Date;
-        description: string;
         email: string | null;
         userId: number;
         experience: string;
@@ -183,17 +188,17 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         joinDate: Date;
     }[];
     CreatedClasses: {
-        id: number;
         name: string;
-        createdAt: Date;
         description: string | null;
+        id: number;
+        createdAt: Date;
         creatorId: number;
         color: string;
     }[];
     Assigments: {
+        description: string | null;
         id: number;
         createdAt: Date;
-        description: string | null;
         classId: number;
         problemId: number | null;
         title: string;
@@ -235,6 +240,13 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         receiverId: number;
         accepted: boolean;
         createdDate: Date;
+    }[];
+    SavedProject: {
+        id: number;
+        updatedAt: Date;
+        projectId: number;
+        creatorId: number;
+        savedAt: Date;
     }[];
 } & {
     id: number;

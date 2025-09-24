@@ -2,6 +2,7 @@ import { UUID } from "crypto";
 import WebSocket from 'ws';
 import { WSMessage } from '../../shared/src/types';
 import { WebSocketMessageType } from '../../dist/shared/types';
+import { Project } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import fs, { WatchEventType } from 'fs';
@@ -58,6 +59,7 @@ export declare class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string>;
     files: EditorFile[];
+    savedProject: (Project) | undefined;
     clientsMap: Map<UUID, ClientObject>;
     clients: ClientObject[];
     clientsDisplayNames: string[];
@@ -116,7 +118,7 @@ export declare class EditorFile {
         autoOpenClient?: ClientObject;
         linkedUser?: ClientObject;
     }, onCreate?: (this: EditorFile) => void);
-    delete(clientObj: ClientObject): void;
+    delete(clientObj: ClientObject, clientSession: EditorSession): void;
     rename(newName: any, clientObj: ClientObject): void;
     syncFileContent(): void;
     openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;

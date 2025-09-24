@@ -20,6 +20,7 @@ declare class Python extends EditorMode {
     onBuild(res: any, clientSession: EditorSession, clientObj: ClientObject): Promise<number>;
     receiveWebCam(rawData: any): void;
     execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Promise<Nodepty.IPty>;
+    directExecute(res: any, clientObj: any, sessionObj: any): import("child_process").ChildProcessWithoutNullStreams;
     compile(res: any): void;
     onSpawn(sessionObj: any): void;
 }
