@@ -2,13 +2,22 @@ import { createNode, displayInputPopup } from "./utils.js";
 let draggedSave = undefined;
 let parentFolder = undefined;
 let container;
+let cache = new Map();
 export async function loadExplorer(elem, createFolderElement) {
-    const res = await fetch('/user/listProjects');
-    if (!res.ok)
-        return;
-    const json = await res.json();
-    container = elem;
-    createFolderElement.onclick = createFolder;
+    let json;
+    if (!cache.has('root')) {
+        const res = await fetch('/user/listProjects');
+        if (!res.ok)
+            return;
+        json = await res.json();
+        cache.set('root', json);
+    }
+    else
+        json = cache.get('root');
+    if (elem)
+        container = elem;
+    if (createFolderElement)
+        createFolderElement.onclick = createFolder;
     updateExplorer(json);
 }
 export async function updateExplorer(json) {
@@ -35,10 +44,17 @@ function createFolderElement(folder, className) {
     const folderElem = createNode('button', { innerText: folder ? folder.name : 'Folder Principal',
         attributes: [{ name: 'draggable', value: 'true' }], className: 'project-folder ' + (className ?? ''),
         async onclick(ev) {
-            const res = await fetch(!folder ? '/user/listProjects' : `/user/folder/f/${folder.folderId}`);
-            if (!res.ok)
-                return;
-            updateExplorer(await res.json());
+            let json;
+            if (!cache.has(folder?.folderId) || !cache.get(folder?.folderId)) {
+                cache.set(folder?.folderId, json);
+                const res = await fetch(!folder ? '/user/listProjects' : `/user/folder/f/${folder.folderId}`);
+                if (!res.ok)
+                    return;
+                json = await res.json();
+            }
+            else
+                json = cache.get(folder?.folderId);
+            updateExplorer(json);
         }, });
     if (folder)
         folderElem.ondragstart = (event) => {
@@ -78,10 +94,12 @@ export async function createFolder() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             name,
-            parentFolderId: parentFolder.folderId
+            parentFolderUUID: parentFolder.folderId
         })
     });
     if (!res.ok)
         return;
     const json = await res.json();
+    cache.delete(parentFolder.folderId);
+    loadExplorer();
 }

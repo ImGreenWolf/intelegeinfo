@@ -170,7 +170,7 @@ export async function shareProject(
             {
                 creatorId: userId,
                 folderId: {
-                     equals: null
+                    equals: null
                 }
             },
             include: {
@@ -678,7 +678,7 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
     
     const userId = getIdFromJWT(req)
    try {
-    const parentFolderId = sqid.decode(parentFolderUUID)[0]
+    const parentFolderId = parentFolderUUID ? sqid.decode(parentFolderUUID)[0] : undefined
      const folder = await prisma.folder.create({
          data: {
             name,
@@ -690,13 +690,11 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
             ParentFolder: parentFolderId ? {
                 connect: { 
                     folderId: parentFolderId,
-                    userId
+                    userId,
+                    
                 }
             } : undefined
             
-         },
-         include: {
-
          }
      })
  

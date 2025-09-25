@@ -32480,7 +32480,7 @@ export namespace Prisma {
 
   export type FolderWhereUniqueInput = Prisma.AtLeast<{
     folderId?: number
-    name_userId?: FolderNameUserIdCompoundUniqueInput
+    name_userId_parentFolderId?: FolderNameUserIdParentFolderIdCompoundUniqueInput
     AND?: FolderWhereInput | FolderWhereInput[]
     OR?: FolderWhereInput[]
     NOT?: FolderWhereInput | FolderWhereInput[]
@@ -32492,7 +32492,7 @@ export namespace Prisma {
     Projects?: SavedProjectListRelationFilter
     ParentFolder?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
     ChildFolders?: FolderListRelationFilter
-  }, "folderId" | "name_userId">
+  }, "folderId" | "name_userId_parentFolderId">
 
   export type FolderOrderByWithAggregationInput = {
     folderId?: SortOrder
@@ -36119,9 +36119,10 @@ export namespace Prisma {
     search: string
   }
 
-  export type FolderNameUserIdCompoundUniqueInput = {
+  export type FolderNameUserIdParentFolderIdCompoundUniqueInput = {
     name: string
     userId: number
+    parentFolderId: number
   }
 
   export type FolderCountOrderByAggregateInput = {

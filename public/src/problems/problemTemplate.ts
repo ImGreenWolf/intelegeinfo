@@ -26,7 +26,7 @@ export async function test(sessionId, problemId,clientId)
 
         output!.replaceChildren(...elems)
 
-        document.getElementById('final-score')!.innerHTML = `<span>Scor</span><span class='score'>${json.solve.score}</span><span>Timp</span> <span class='time'>  ${json.solve.time}</span>`;
+        document.getElementById('final-score')!.innerHTML = `<span>Scor</span><span class='score'>${json.solve.score}</span><span>Timp</span> <span class='time'>  ${json.solve.time.toFixed()}</span>`;
         document.getElementById('final-score')!.className = ['bad', 'decent','good', 'perfect'][Math.round(json.score/25)- (json.score==0 ? 0 : 1)]
         console.log(Math.round(json.score/25)- json.score==0 ? 0 : 1, Math.round(json.score/25), json.score==0 ? 0 : 1)
 }

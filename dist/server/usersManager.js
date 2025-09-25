@@ -546,7 +546,7 @@ exports.router.post('/folder/create', server_1.authMiddleware, async (req, res) 
     const { name, parentFolderUUID } = req.body;
     const userId = getIdFromJWT(req);
     try {
-        const parentFolderId = server_1.sqid.decode(parentFolderUUID)[0];
+        const parentFolderId = parentFolderUUID ? server_1.sqid.decode(parentFolderUUID)[0] : undefined;
         const folder = await dbClient_1.default.folder.create({
             data: {
                 name,
@@ -558,11 +558,10 @@ exports.router.post('/folder/create', server_1.authMiddleware, async (req, res) 
                 ParentFolder: parentFolderId ? {
                     connect: {
                         folderId: parentFolderId,
-                        userId
+                        userId,
                     }
                 } : undefined
-            },
-            include: {}
+            }
         });
         res.status(200).json({ ...folder, folderId: server_1.sqid.encode([folder.folderId]), ParentFolder: { folderId: parentFolderUUID } });
     }

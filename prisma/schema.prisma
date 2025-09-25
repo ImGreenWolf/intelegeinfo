@@ -55,7 +55,7 @@ model Folder {
   ChildFolders Folder[] @relation(name: "ChildFolders")
 
   
-  @@unique([name, userId])
+  @@unique([name, userId, parentFolderId])
 }
 
 model SavedProject {

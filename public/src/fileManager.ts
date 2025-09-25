@@ -5,20 +5,32 @@ import { createNode, displayInputPopup } from "./utils.js";
 let draggedSave: {uuid: string, elem: HTMLElement, isFolder: boolean} | undefined = undefined
 let parentFolder: any | undefined = undefined
 let container: Element
+let cache = new Map()
 
+export async function loadExplorer(elem?: Element, createFolderElement?: HTMLButtonElement) {
 
-export async function loadExplorer(elem: Element, createFolderElement: HTMLButtonElement) {
-    const res = await fetch('/user/listProjects')
-    if(!res.ok)
-        return;
-
-    const json: {
+    let json: {
         folders: Folder[],
         projects: SavedProject[]
-    } = await res.json();
-    container = elem
+    } | undefined;
 
-    createFolderElement.onclick = createFolder
+     if(!cache.has('root')) {
+        const res = await fetch('/user/listProjects')
+        if(!res.ok)
+            return;
+
+        json = await res.json();
+        cache.set('root', json)
+    } else
+        json = cache.get('root')
+   
+    if(elem)
+        container = elem
+    
+   
+    if(createFolderElement)
+        createFolderElement.onclick = createFolder
+
     updateExplorer(json)
 }
 
@@ -56,10 +68,19 @@ export async function updateExplorer(json) {
     const folderElem = createNode('button', {innerText: folder ? folder.name : 'Folder Principal',
         attributes: [{name: 'draggable', value: 'true'}], className: 'project-folder ' + (className ?? ''),
         async onclick(ev) {
-            const res = await fetch(!folder ? '/user/listProjects' : `/user/folder/f/${folder.folderId}`)
-            if(!res.ok)
-                return;
-            updateExplorer( await res.json())
+            let json;
+             if(!cache.has(folder?.folderId) || !cache.get(folder?.folderId))
+                {
+                    cache.set(folder?.folderId, json)
+                    const res = await fetch(!folder ? '/user/listProjects' : `/user/folder/f/${folder.folderId}`)
+                    if(!res.ok)
+                        return;
+                    json = await res.json()
+                }
+            else
+                json = cache.get(folder?.folderId)
+            
+            updateExplorer(json )
             
         },})
     if(folder)
@@ -106,7 +127,7 @@ export async function createFolder() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             name,
-            parentFolderId: parentFolder.folderId
+            parentFolderUUID: parentFolder.folderId
         })
     })
     if(!res.ok)
@@ -116,5 +137,8 @@ export async function createFolder() {
         folders: Folder[],
         projects: Project[]
     } = await res.json();
+    
+    cache.delete(parentFolder.folderId)
+    loadExplorer()
 }
 
