@@ -1908,13 +1908,13 @@ export function copySessionLink() {
             <option value='Javascript'>Javascript</option>
           </select>
       </label>
-      <p class='info'>Dupa ce ati partajat editorul, sesiunea voastră v-a fi disponibilă orcărei persoane
+      <p class='info'>Dupa ce ati inceput sesiunea de colaborare, aceasta v-a fi disponibilă orcărei persoane
       care are linkul, codul de 6 cifre sau codul qr.</p>
 
       <p id='session-create-error'></p>
-      <div>
-        <button type="submit" id="submit-create-session" class="glowing" style='height: 2lh'>Deschide Sesiune</button>
-        <button type="button" id="share-editor-content" style='height: 2lh'>Partajeaza Editor</button>
+      <div style='display: flex; gap: 2em'>
+        <button type="submit" id="submit-create-session" class="glowing" style='height: 3em; flex-grow: 1;'>Deschide Sesiune</button>
+        <button type="button" id="share-editor-content" style='height: 3em; border-radius: 2em; flex-grow: 1;'>Partajeaza Editor</button>
       </div>
       
       
