@@ -1,6 +1,7 @@
 import Ace from "ace-builds";
 import { UUID } from "crypto";
 import xtermType from '@xterm/xterm';
+import { IIWebRTC } from "./webrtcdemo.js";
 import { EditorWindow, EditorWindowTab } from "./windowManager.js";
 declare class VisualCursor implements Ace.Ace.MarkerLike {
     color: any;
@@ -120,16 +121,6 @@ type CursorPosition = {
     column: number;
 };
 export declare let isRemoteChange: boolean;
-export declare function displayMessagePopup(message: any): void;
-export declare function displayConfirmPopup(message: any, confirmText?: string, rejectText?: string): Promise<{
-    value: boolean;
-    popup?: HTMLElement;
-}>;
-export declare function displayInputPopup(message: any, placeholder?: string): Promise<{
-    ok: boolean;
-    value?: string;
-    popup?: HTMLElement;
-}>;
 export declare function toggleCamera(): void;
 export declare function beautifyEditor(): void;
 export declare function undo(): void;
@@ -181,7 +172,6 @@ export declare class TokenTooltip extends Tooltip {
     destroy(): void;
 }
 export declare let ws: WebSocket;
-import { IIWebRTC } from "./webrtcdemo.js";
 export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 type FileEditorSession = {
     editor: Ace.EditSession | undefined;

@@ -1,5 +1,5 @@
-import { compileErrorObjs, createFile, dirtyFile, displayMessagePopup, editorSessions, isRemoteChange, MultiCursorManager, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
-import { createNode } from "./components.js";
+import { compileErrorObjs, createFile, dirtyFile, editorSessions, isRemoteChange, MultiCursorManager, openFile, parseCode, WebSocketMessageType, windows, ws } from "./codeEditor.js";
+import { createNode, displayMessagePopup } from "./utils.js";
 // declare const TreeSitter: any
 export const cursorManagers = new Map();
 const preloadTabs = false;

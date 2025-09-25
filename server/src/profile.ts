@@ -159,6 +159,7 @@ router.use('/', (req, res) => {
                     
                     const params: webParams = user;
                     const projects = await users.listAllProjects(userId)
+                    const explorerContent = projects.flat()
                     if(user.preferences) {
                          const spotifyLink = (user.preferences as any).spotify
                         if(spotifyLink)
@@ -174,14 +175,17 @@ router.use('/', (req, res) => {
                          return
                     }
 
-                    if(!projects || projects.length == 0)
-                        params.projectsList='<p class="empty-response">Nu ai creat niciun proiect</p>'
+                    if(!projects || explorerContent.length == 0)
+                        params.projectsList='<p class="empty-response">Nu ai creat niciun proiect sau folder</p>'
                     else 
                     {
-                         params.projectsList=''
-                        for(const project of projects)
+                       
+
+                        params.projectsList=''
+                        for(const project of projects[0])
                         {
-                            params.projectsList += `<a class="project" href="/editor?save=${sqid.encode([project.id])}"><h3>${project.name}</h3><button>x</button></a>`
+                            params.projectsList +=
+                             `<a class="project" href="/editor?save=${sqid.encode([project.id])}"><h3>${project.name}</h3><button>x</button></a>`
                         }
 
                     }

@@ -56,7 +56,8 @@ export function onLoggedIn(user: unknown, res: Response, req: Request, shouldkee
         secure, // Set to true in production (HTTPS)
       }
 
-  return res.cookie(tokenCookieName, token, cookieOption).cookie('iiauthstate', true, {...keepLoggedIn, httpOnly: false, maxAge: cookieOption.maxAge, secure: cookieOption.secure});
+  return res.cookie(tokenCookieName, token, cookieOption).cookie('iiauthstate', true,
+     {...keepLoggedIn, httpOnly: false, maxAge: cookieOption.maxAge, secure: cookieOption.secure});
 
 
 }

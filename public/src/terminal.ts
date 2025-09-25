@@ -1,12 +1,13 @@
 import  Ace, { EditSession }  from "ace-builds";
-import { createNode } from "./components.js";
+import { createNode } from "./utils.js";
 import { createTabElement, EditorWindowTab } from "./windowManager.js";
 import { WebSocketMessageType, ws } from "./codeEditor.js";
 import xtermType from '@xterm/xterm'
+declare const Terminal: typeof xtermType.Terminal;
 // import {Terminal} from '/client/modules/@xterm/xterm'
 
 declare const ace: typeof Ace;
-declare const Terminal: typeof xtermType.Terminal;
+
 
 class TerminalTab extends EditorWindowTab {
     // terminal: Ace.Editor

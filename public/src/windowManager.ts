@@ -1,6 +1,6 @@
 import  Ace, { EditSession }  from "ace-builds";
-import { client, CompileError, compileErrorObjs, createFile, dirtyFile, displayBlankEditor, displayMessagePopup, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, onFileSessionUpdated, openFile, parseCode, sendDebugCommand, sendWebsocketCommand, WebSocketMessageType, windows, ws } from "./codeEditor.js";
-import { createNode } from "./components.js";
+import { client, CompileError, compileErrorObjs, createFile, dirtyFile, editorSessions, indexToFunctionName, isRemoteChange, MultiCursorManager, onFileSessionUpdated, openFile, parseCode, sendDebugCommand, sendWebsocketCommand, WebSocketMessageType, windows, ws } from "./codeEditor.js";
+import { createNode, displayMessagePopup} from "./utils.js";
 
 // import * as TreeSitter from '/client/scripts/libs/treesitter/web-tree-sitter.js'
 declare const ace: typeof Ace;
@@ -730,7 +730,6 @@ export async function updateCatalouge(sessionId, clientId)
             const tabs = [
                 createWindowTab('Problem Creator',createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: '/pages/problemCreator.html?sessionId='+sessionId+'&clientId='+clientId}]})),
                 createWindowTab('minecraft',createNode('iframe', {css: 'width: 100%; height: 100%; border: none', attributes: [{name: 'src', value: 'https://eaglercraft1-8.github.io/'}]}))
-
             ]
             tabs.push(...tabs)
             for(const tab of tabs)

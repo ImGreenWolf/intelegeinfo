@@ -1,4 +1,4 @@
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 export async function test(sessionId, problemId, clientId) {
     const output = document.getElementById('output');
     output.innerHTML = 'Programul se verifica...';

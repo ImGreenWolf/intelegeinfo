@@ -1,5 +1,5 @@
 import { $Enums, Prisma } from "../../../generated/prisma/index.js";
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 
 async function fetchProblems() {
     try {

@@ -160,6 +160,7 @@ router.use('/', (req, res) => {
                 }
                 const params = user;
                 const projects = await users.listAllProjects(userId);
+                const explorerContent = projects.flat();
                 if (user.preferences) {
                     const spotifyLink = user.preferences.spotify;
                     if (spotifyLink)
@@ -172,12 +173,13 @@ router.use('/', (req, res) => {
                     res.status(500).send('A aparut o problema...');
                     return;
                 }
-                if (!projects || projects.length == 0)
-                    params.projectsList = '<p class="empty-response">Nu ai creat niciun proiect</p>';
+                if (!projects || explorerContent.length == 0)
+                    params.projectsList = '<p class="empty-response">Nu ai creat niciun proiect sau folder</p>';
                 else {
                     params.projectsList = '';
-                    for (const project of projects) {
-                        params.projectsList += `<a class="project" href="/editor?save=${server_1.sqid.encode([project.id])}"><h3>${project.name}</h3><button>x</button></a>`;
+                    for (const project of projects[0]) {
+                        params.projectsList +=
+                            `<a class="project" href="/editor?save=${server_1.sqid.encode([project.id])}"><h3>${project.name}</h3><button>x</button></a>`;
                     }
                 }
                 parseUserInfoInFile(userId, "public/pages/profile.html", params).then(file => {

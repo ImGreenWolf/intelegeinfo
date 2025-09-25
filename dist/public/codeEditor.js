@@ -1,5 +1,8 @@
 // Ensure Ace Editor is globally available or import it properly
-import { createButton, createNode, EditorCanvas, LoadingThrobber, Toolbox } from "./components.js";
+import { createButton, EditorCanvas, LoadingThrobber, Toolbox } from "./components.js";
+import { IIWebRTC } from "./webrtcdemo.js";
+import { displayInputPopup, displayMessagePopup, getCookie, createNode } from "./utils.js";
+import { loadExplorer } from "./fileManager.js";
 /*END IMPORTS*/
 const inIframe = window.self !== window.top;
 import { createWindowTab, cursorManagers, EditorWindow, EditorWindowTab, findTabByName, showDefaultScreen, updateCatalouge } from "./windowManager.js";
@@ -851,112 +854,6 @@ function onOpenMenu(id, elem) {
         openMenu = null;
     return false;
 }
-export function displayMessagePopup(message) {
-    function createPopup(classList, innerHTML) {
-        if (!innerHTML)
-            return;
-        const popup = document.createElement('div');
-        popup.classList.add("client-popup");
-        if (classList.split[' '])
-            for (const classname of classList.split[' '])
-                popup.classList.add(classname);
-        // popup.innerHTML = `<button class="client-popup-close"></button><div>${innerHTML}</div>`;
-        const close = createNode('button', { className: 'client-popup-close' });
-        close.onclick = () => {
-            popup.remove();
-        };
-        popup.appendChild(close);
-        popup.appendChild(createNode('div', { htmlSting: innerHTML }));
-        document.body.appendChild(popup);
-        setTimeout(() => {
-            popup.remove();
-        }, 1000 * 5);
-    }
-    createPopup('', `
-    <p>${message}</p>
-    
-    `);
-}
-function createPopup(classList, seconds, innerHTML, keepVisible = false) {
-    function addPopup() {
-        const popup = createNode('div', { className: 'client-popup ' + classList, html: innerHTML });
-        document.body.appendChild(popup);
-        return popup;
-    }
-    if (keepVisible) {
-        if (!innerHTML)
-            return;
-        return addPopup();
-    }
-    else
-        return new Promise((resolve, reject) => {
-            if (!innerHTML)
-                return;
-            const popup = addPopup();
-            setTimeout(() => {
-                popup.animate([
-                    { opacity: "100%", transform: "scale(1) translate(-50%, -50%)" },
-                    { opacity: "0%", transform: "scale(0.9) translate(-50%, -50%)" },
-                ], {
-                    duration: 500,
-                }).addEventListener('finish', () => {
-                    popup.remove();
-                    reject(popup);
-                });
-            }, 1000 * seconds);
-        });
-}
-export function displayConfirmPopup(message, confirmText = 'Accept', rejectText = 'Cancel') {
-    let popup;
-    const promise = new Promise((resolve, reject) => {
-        popup = createPopup('', 10, [
-            createNode('button', { innerText: confirmText, onclick: (ev) => resolve({ value: true, popup: ev.target.parentElement }) }),
-            createNode('button', { innerText: rejectText, onclick: (ev) => resolve({ value: false, popup: ev.target.parentElement }) }),
-            createNode('p', { innerText: message })
-        ]);
-        popup.catch(err => {
-            resolve({ value: false, popup: undefined });
-        });
-    });
-    promise.then(res => {
-        if (res.popup)
-            res.popup.animate([
-                { opacity: "100%", transform: "translate(-50%, -50%)" },
-                { opacity: "0%", transform: "translate(-50%, 0%)" },
-            ], {
-                duration: 250,
-                // easing: "ease-out"
-            }).addEventListener('finish', () => {
-                res.popup.remove();
-            });
-    });
-    return promise;
-}
-export function displayInputPopup(message, placeholder = '') {
-    let popup;
-    const promise = new Promise(async (resolve, reject) => {
-        popup = createPopup('input-popup', 10, [
-            createNode('button', { innerText: 'x', onclick: () => { resolve({ ok: false }); } }),
-            createNode('p', { innerText: message }),
-            createNode('input', { attributes: [{ name: 'type', value: "text" }, { name: 'placeholder', value: placeholder }], onchange(ev) {
-                    resolve({ ok: true, value: ev.target.value });
-                }, }),
-        ], true);
-    });
-    promise.then(() => {
-        // if(popup)
-        popup.animate([
-            { opacity: "100%", transform: "translate(-50%, -50%)" },
-            { opacity: "0%", transform: "translate(-50%, 0%)" },
-        ], {
-            duration: 250,
-            // easing: "ease-out"
-        }).addEventListener('finish', () => {
-            popup.remove();
-        });
-    });
-    return promise;
-}
 function getStreamVolume(stream, updateFreq = 50, volumeCallback) {
     const audioContext = new AudioContext();
     const audioSource = audioContext.createMediaStreamSource(stream);
@@ -1527,67 +1424,74 @@ export function listProjects() {
         return onOpenMenu("projects");
     if (!wsSessionId)
         return;
-    fetch('/user/listProjects', {
-        method: "GET",
-        headers: { 'Content-Type': 'application/json' },
-    }).then(response => response.json()).catch(err => { })
-        .then(projects => {
-        // if(data.error) throw 'unauth'
-        try {
-            if (!projects)
-                throw "invalid data";
-        }
-        catch {
-            displayMessagePopup('please log in');
-        }
-        const container = document.createElement('div');
-        container.classList.add('project-list-container');
-        const closeButton = document.createElement('button');
-        closeButton.onclick = function (ev) {
-            container.remove();
-            onOpenMenu("projects");
-        };
-        closeButton.innerText = 'x';
-        container.appendChild(closeButton);
-        const currentSaveId = new URLSearchParams(window.location.search).get('save');
-        // displayMessagePopup(JSON.stringify(data.projects))
-        const listcontainer = document.createElement('ul');
-        listcontainer.classList.add('project-list');
-        for (const project of projects) {
-            const projectElem = listcontainer.appendChild(document.createElement('li'));
-            const button = projectElem.appendChild(document.createElement('button'));
-            const deleteProject = projectElem.appendChild(document.createElement('button'));
-            deleteProject.innerText = 'x';
-            deleteProject.classList.add('remove-proj');
-            deleteProject.onclick = () => {
-                displayConfirmPopup('Vrei sa stergi acest proiect?', 'Șterge', 'Anulează').then(res => {
-                    if (res.value)
-                        fetch('../user/removeproject?id=' + project.id).then(res => {
-                            if (res.ok)
-                                projectElem.remove();
-                        });
-                });
-            };
-            button.innerText = project.name;
-            if (currentSaveId === project.id)
-                button.classList.add('active');
-            button.onclick = (() => {
-                loadProject(project.id);
-            });
-        }
-        container.appendChild(listcontainer);
-        const newProjButton = document.createElement('button');
-        newProjButton.innerText = 'New Project';
-        newProjButton.onclick = () => {
-            window.location.href = '/editor';
-        };
-        container.appendChild(newProjButton);
-        document.body.appendChild(container);
-        onOpenMenu("projects", container);
-    });
+    // fetch('/user/listProjects', {
+    //   method: "GET",
+    //   headers: {'Content-Type': 'application/json'},
+    // }).then(response => response.json()).catch(err => {})
+    // .then(projects => {
+    //   // if(data.error) throw 'unauth'
+    //   try {
+    // if(!projects) throw "invalid data"
+    //   }
+    //   catch
+    //   {
+    //     displayMessagePopup('please log in')
+    //   }
+    //   const container = document.createElement('div')
+    //   container.classList.add('project-list-container')
+    //   const closeButton = document.createElement('button');
+    //   closeButton.onclick = function (this, ev) {
+    //     container.remove();
+    //     onOpenMenu("projects")
+    //   }
+    //   closeButton.innerText = 'x';
+    //   container.appendChild(closeButton)
+    //   const currentSaveId = new URLSearchParams(window.location.search).get('save')
+    //   // displayMessagePopup(JSON.stringify(data.projects))
+    //   const listcontainer = document.createElement('ul')
+    //   listcontainer.classList.add('project-list')
+    //   for(const project of projects as (SavedProject & {Project: Project} & {id: string})[])
+    //   {
+    //     const projectElem = listcontainer.appendChild(document.createElement('li'))
+    //     const button = projectElem.appendChild(document.createElement('button'))
+    //     const deleteProject = projectElem.appendChild(document.createElement('button'))
+    //     deleteProject.innerText = 'x';
+    //     deleteProject.classList.add('remove-proj')
+    //     deleteProject.onclick = () => {
+    //       displayConfirmPopup('Vrei sa stergi acest proiect?', 'Șterge', 'Anulează').then(res => {
+    //         if(res.value)
+    //            fetch('../user/removeproject?id='+project.id).then(res => {
+    //             if(res.ok)
+    //               projectElem.remove();
+    //           })
+    //       })
+    //     }
+    //     button.innerText = project.name!;
+    //     if(currentSaveId === project.id)
+    //       button.classList.add('active')
+    //     button.onclick = ( () => {
+    //       loadProject(project.id)
+    //     })
+    //   }
+    //     container.appendChild(listcontainer)
+    //   const newProjButton = document.createElement('button')
+    //   newProjButton.innerText = 'New Project'
+    //   newProjButton.onclick = () => {
+    //     window.location.href = '/editor'
+    //   }
+    //   container.appendChild(newProjButton)
+    //   document.body.appendChild(container)
+    //   onOpenMenu("projects",container)
+    // })
     // .catch(err => {
     //   displayMessagePopup('nigger ' + err)
     // })
+    const list = createNode('div', { className: 'project-list' });
+    const button = createNode('button', { innerText: "Creaza Folder" });
+    const toolbar = createNode('div', { className: 'toolbar-project', html: [button] });
+    const container = createNode('div', { className: 'project-list-container', html: [toolbar, list] });
+    document.body.appendChild(container);
+    loadExplorer(list, button).then(() => onOpenMenu("projects", container));
 }
 // END DOCUMENT FUNCTIONS //
 // standardise the json
@@ -2250,7 +2154,7 @@ export let ws;
                 document.cookie = 'savedName=';
         }
         else if (!getCookie('savedName')) {
-            const displayName = await displayInputPopup('Alegeti un nume prietenos:');
+            const displayName = await displayInputPopup('Alege-ti un nume prietenos:');
             if (displayName.value) {
                 document.cookie = 'savedName=' + displayName.value;
                 params.set('displayName', displayName.value);
@@ -2304,8 +2208,6 @@ export let ws;
     };
     ws.onmessage = onMessage;
 })();
-import { IIWebRTC } from "./webrtcdemo.js";
-import { getCookie } from "./utils.js";
 export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;

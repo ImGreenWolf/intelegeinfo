@@ -21,6 +21,18 @@
     opacity: 1;
   }
 }
+@keyframes client-popup {
+  0% {
+    transform: translate(-50%, 0);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 100%;
+    transform: translate(-50%, -50%);
+    filter: blur(0px);
+  }
+}
 /* Apply the custom animation to the old and new page states */
 ::view-transition-old(root) {
   animation: 0.5s move-out;
@@ -403,6 +415,95 @@ header2 nav ul li:hover {
 
 .lang-dropdown:not(.open) .options-container {
   opacity: 0;
+}
+
+.button-icon {
+  margin: 0lh 0.25lh -0.3rem 0lh;
+}
+
+.icon, .client-popup .client-popup-close, .button-icon {
+  display: inline-block;
+  width: 1lh;
+  height: 1lh;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.client-popup {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  min-width: 300px;
+  max-height: 200px;
+  text-align: center;
+  padding: 0.5em 2em;
+  transform: translate(-50%, -50%);
+  font-family: Poppins;
+  z-index: 2000;
+  background-color: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(0.5em);
+  box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
+  border-radius: 0.5lh;
+  animation: 0.5s client-popup;
+  box-shadow: 0 0 20px -20px rgb(97, 97, 97) inset, 0 5px 20px -20px rgb(150, 150, 150) inset, 5px 5px 15px -20px rgb(97, 97, 97) inset, 3px 10px 20px 20px rgba(0, 0, 0, 0.212);
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+.client-popup button {
+  padding: 0.25em 1em;
+}
+.client-popup .client-popup-close {
+  background-image: url(../media/icons/close.svg);
+  border-radius: 50%;
+  background-color: transparent;
+  border: 2px solid rgba(126, 126, 126, 0.219);
+}
+.client-popup div {
+  width: 100%;
+}
+
+.pop-up {
+  position: absolute;
+  top: 150px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 110;
+  background-color: rgba(20, 20, 20, 0.25);
+  backdrop-filter: blur(0.5em);
+  box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px rgba(255, 255, 255, 0.0392156863);
+  animation: pop-up-fade 0.2s;
+}
+
+.input-popup {
+  display: block;
+  padding: 1em 2em;
+}
+.input-popup input {
+  background-color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 1lh;
+  line-height: 2em;
+  padding-inline: 1em;
+  color: white;
+  outline: none !important;
+  margin-left: 0.5em;
+}
+.input-popup p {
+  margin-block: 0;
+  margin-top: 1em;
+  width: 100%;
+}
+.input-popup button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  aspect-ratio: 1;
+  padding: 0;
 }
 
 @media screen and (max-width: 1024px) {

@@ -1,5 +1,5 @@
 @use 'theme';
-
+@use 'sass:color';
 
 @view-transition {
     navigation: auto;
@@ -32,6 +32,11 @@
 
     }
   }
+
+  @keyframes client-popup {
+    0% {transform: translate(-50%,0); opacity: 0; filter: blur(10px);}
+    100% {opacity: 100%; transform: translate(-50%,-50%); filter: blur(0px);}
+}
   
   /* Apply the custom animation to the old and new page states */
   ::view-transition-old(root) {
@@ -503,6 +508,117 @@ header2
     // display: none;
     opacity: 0;
 }
+
+.button-icon
+{
+    @extend .icon;
+     margin: 0lh 0.25lh -0.3rem 0lh;
+
+}
+.icon
+{
+    display: inline-block; 
+     width: 1lh; 
+     height: 1lh; 
+     background-repeat: no-repeat;
+     background-size: cover;
+     background-position: center;
+}
+
+
+.client-popup
+{
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    min-width: 300px;
+    max-height: 200px;
+    text-align: center;
+    padding: 0.5em 2em;
+    transform: translate(-50%, -50%);
+    font-family: Poppins;
+    z-index: 2000;
+    background-color: color.adjust($color: theme.$background-color, $alpha: -0.5);
+    backdrop-filter: blur(0.5em);
+    box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
+    // border: 1px solid theme.$border-color;
+    border-radius: 0.5lh;
+    animation: 0.5s client-popup;
+    box-shadow: 0 0 20px -20px rgb(97, 97, 97) inset,
+            0 5px 20px -20px rgb(150, 150, 150) inset,
+            5px 5px 15px -20px rgb(97, 97, 97) inset,
+            3px 10px 20px 20px rgba(0, 0, 0, 0.212);
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    button 
+    {
+        padding: 0.25em 1em;
+    }
+    .client-popup-close
+    {
+        @extend .icon;
+        background-image: url(../media/icons/close.svg);
+        border-radius: 50%;
+        // width: 25px;
+        // aspect-ratio: 1;
+        background-color: transparent;
+        border: 2px solid theme.$border-color;
+    }
+    & div
+    {
+        width: 100%;
+    }
+}
+.pop-up
+{
+    position: absolute;
+    top: 150px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 110;
+    background-color: color.adjust($color: theme.$background-color, $alpha: -0.75);
+    backdrop-filter: blur(0.5em);
+    box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px #ffffff0a;
+    animation: pop-up-fade 0.2s;
+}
+
+
+.input-popup
+{
+    display: block;
+    padding: 1em 2em;
+    input
+    {
+        background-color: theme.$button-color;
+        border: none;
+        border-radius: 1lh;
+        line-height: 2em;
+        padding-inline: 1em;
+        color: theme.$text-color;;
+        outline: none !important;
+        margin-left: 0.5em;
+    }
+    p {
+        margin-block: 0;
+        margin-top: 1em;
+        width: 100%;
+    }
+    button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        border-radius: 50%;
+        width: 2em;
+        height: 2em;
+        aspect-ratio: 1;
+        padding: 0;
+    }
+}
+
+
+
+
 
 
 

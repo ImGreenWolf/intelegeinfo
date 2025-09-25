@@ -1,4 +1,4 @@
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 async function fetchProblems() {
     try {
         const response = await fetch('/editor/problem/page'); // Adjust the endpoint as needed

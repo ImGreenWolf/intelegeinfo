@@ -161,14 +161,30 @@ async function shareProject(userId, projId, session) {
     });
 }
 async function listAllProjects(userId) {
-    return await dbClient_1.default.savedProject.findMany({
-        where: {
-            creatorId: userId
-        },
-        include: {
-            Project: true
-        }
-    });
+    return (await dbClient_1.default.$transaction([
+        dbClient_1.default.savedProject.findMany({
+            where: {
+                creatorId: userId,
+                folderId: {
+                    equals: null
+                }
+            },
+            include: {
+                Project: true
+            }
+        }),
+        dbClient_1.default.folder.findMany({
+            where: {
+                userId,
+                parentFolderId: {
+                    equals: null
+                }
+            },
+            include: {
+                _count: true
+            }
+        })
+    ]));
 }
 function getClientJWTValue(token) {
     if (!token)
@@ -435,7 +451,7 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
                 });
                 if (foundProj) {
                     console.log(foundProj.Project.files, session.files);
-                    if (foundProj.Project && foundProj.Project.files.length != 0) {
+                    if (foundProj.Project && foundProj.Project.files.length != 0)
                         await dbClient_1.default.savedProject.update({
                             where: {
                                 id: server_1.sqid.decode(projectId)[0]
@@ -450,7 +466,6 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
                                 }
                             }
                         });
-                    }
                     res.status(200).json({ isNew: false, message: "sucsess" });
                     return;
                 }
@@ -513,16 +528,131 @@ exports.router.get('/loadProject/:id', server_1.authMiddleware, async (req, res)
         res.send((0, server_1.handlePrismaError)(error));
     }
 });
-exports.router.get('/listProjects', server_1.authMiddleware, (req, res) => {
-    listAllProjects(users.getIdFromJWT(req)).then(json => {
-        res.json(json.map(proj => { return { ...proj, id: server_1.sqid.encode([proj.id]) }; }));
-    })
-        .catch(err => {
+exports.router.get('/listProjects', server_1.authMiddleware, async (req, res) => {
+    try {
+        const explorer = await listAllProjects(users.getIdFromJWT(req));
+        const folders = explorer[1].map(folder => { return { ...folder, folderId: server_1.sqid.encode([folder.folderId]) }; });
+        const projects = explorer[0].map(proj => { return { ...proj, id: server_1.sqid.encode([proj.id]) }; });
+        res.json({ folders, projects });
+    }
+    catch (err) {
         if (err.code)
             res.status(err.code).json({ message: err.message });
         else
             res.status(401).send(err); //json({message: 'error: ' + err})
-    });
+    }
+});
+exports.router.post('/folder/create', server_1.authMiddleware, async (req, res) => {
+    const { name, parentFolderUUID } = req.body;
+    const userId = getIdFromJWT(req);
+    try {
+        const parentFolderId = server_1.sqid.decode(parentFolderUUID)[0];
+        const folder = await dbClient_1.default.folder.create({
+            data: {
+                name,
+                User: {
+                    connect: {
+                        id: userId
+                    }
+                },
+                ParentFolder: parentFolderId ? {
+                    connect: {
+                        folderId: parentFolderId,
+                        userId
+                    }
+                } : undefined
+            },
+            include: {}
+        });
+        res.status(200).json({ ...folder, folderId: server_1.sqid.encode([folder.folderId]), ParentFolder: { folderId: parentFolderUUID } });
+    }
+    catch (error) {
+        res.send((0, server_1.handlePrismaError)(error));
+    }
+});
+exports.router.post('/folder/f/:folderId/add', server_1.authMiddleware, async (req, res) => {
+    const { saveUUID, folderUUID } = req.body;
+    const userId = getIdFromJWT(req);
+    const subDirectory = req.params.folderId != '_root';
+    try {
+        const parentFolderId = server_1.sqid.decode(req.params.folderId)[0];
+        if (!parentFolderId)
+            throw 'Invalid UUID';
+        if (folderUUID) {
+            const folderId = server_1.sqid.decode(folderUUID)[0];
+            const changedFolder = await dbClient_1.default.folder.update({
+                where: {
+                    folderId,
+                    userId
+                },
+                data: {
+                    ParentFolder: subDirectory ? {
+                        connect: {
+                            folderId: parentFolderId
+                        }
+                    } : {
+                        disconnect: true
+                    }
+                }
+            });
+            res.status(200).json({ changedFolder });
+            return;
+        }
+        const saveId = server_1.sqid.decode(saveUUID)[0];
+        const changedFile = await dbClient_1.default.savedProject.update({
+            where: {
+                id: saveId,
+                creatorId: userId
+            },
+            data: {
+                Folder: subDirectory ? {
+                    connect: {
+                        folderId: parentFolderId,
+                        userId
+                    }
+                } : {
+                    disconnect: true
+                }
+            }
+        });
+        res.status(200).json({ changedFile });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send((0, server_1.handlePrismaError)(error));
+    }
+});
+exports.router.get('/folder/f/:folderId', server_1.authMiddleware, async (req, res) => {
+    const userId = getIdFromJWT(req);
+    try {
+        const folderId = server_1.sqid.decode(req.params.folderId)[0];
+        if (!folderId)
+            throw 'Invalid UUID';
+        const folder = await dbClient_1.default.folder.findUnique({
+            where: {
+                userId,
+                folderId
+            },
+            include: {
+                Projects: true,
+                ChildFolders: true,
+                ParentFolder: {
+                    select: {
+                        folderId: true,
+                        name: true
+                    }
+                }
+            }
+        });
+        const folders = folder.ChildFolders.map(folder => { return { ...folder, folderId: server_1.sqid.encode([folder.folderId]), parentFolderId: server_1.sqid.encode([folder.parentFolderId]) }; });
+        const projects = folder.Projects.map(proj => { return { ...proj, id: server_1.sqid.encode([proj.id]) }; });
+        res.status(200).json({ folders, projects, ...folder, Projects: undefined, ChildFolders: undefined, folderId: req.params.folderId,
+            ParentFolder: folder.ParentFolder ? { ...folder.ParentFolder, folderId: server_1.sqid.encode([folder.ParentFolder.folderId]) } : undefined, parentFolderId: server_1.sqid.encode([folder.parentFolderId]) });
+    }
+    catch (error) {
+        console.error(error);
+        res.send((0, server_1.handlePrismaError)(error));
+    }
 });
 const passwordPagesPath = path_1.default.join(rootDirName, 'public', 'pages');
 exports.router.get('/reset-password', async (req, res) => {

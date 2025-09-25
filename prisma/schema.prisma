@@ -26,6 +26,7 @@ model Project {
   files File[]
   Saves SavedProject[]
   Shares SharedProject[]
+
 }
 
 model File {
@@ -37,6 +38,24 @@ model File {
   projectId Int
 
   @@unique([name,projectId])
+}
+
+model Folder {
+  folderId Int  @id @default(autoincrement())
+
+  name String 
+  createdAt DateTime @default(now())
+
+  userId Int
+  User User @relation(fields: [userId], references: [id])
+  Projects SavedProject[]
+
+  ParentFolder Folder? @relation(name: "ChildFolders", fields: [parentFolderId], references: [folderId])
+  parentFolderId Int?
+  ChildFolders Folder[] @relation(name: "ChildFolders")
+
+  
+  @@unique([name, userId])
 }
 
 model SavedProject {
@@ -52,6 +71,8 @@ model SavedProject {
   savedAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
+  Folder Folder? @relation(fields: [folderId], references: [folderId])
+  folderId Int?
   @@unique([creatorId, projectId])
 }
 
@@ -100,18 +121,15 @@ model User {
 
     SentMessages Message[]  @relation(name: "SentMessages")
     ReceivedMessages Message[]  @relation(name: "ReceivedMessages")
-
     // Friendships where this user is the one who initiated
     sentRequests FriendRelation[]    @relation("InitiatorRequests")
-
     // Friendships where this user is the one who received
     receivedRequests FriendRelation[] @relation("ReceiverRequests")
-
     Friends FriendRelation[]
 
     SavedProject SavedProject[]
-
-  SharedProject SharedProject[]
+    SharedProject SharedProject[]
+    Folders Folder[]
 }
 
 model FriendRelation {
@@ -139,7 +157,6 @@ model Message {
   toId Int
 
   sendDate DateTime @default(now())
-
   content String
 
   FriendRelation FriendRelation @relation(fields: [relationId], references: [id])

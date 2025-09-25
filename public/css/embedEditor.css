@@ -194,6 +194,18 @@
   background-image: conic-gradient(var(--shadow) 14.5833333333%, var(--highlight) 16.6666666667%, var(--sides) 29.1666666667%, var(--bottom), var(--bottom), var(--sides) 70.8333333333%, var(--highlight) 83.3333333333%, var(--shadow) 85.4166666667%), url(../media/noise.svg) !important;
 }
 
+.pop-up, .project-list-container, .share-container {
+  position: absolute;
+  top: 150px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 110;
+  background-color: rgba(20, 20, 20, 0.25);
+  backdrop-filter: blur(0.5em);
+  box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px rgba(255, 255, 255, 0.0392156863);
+  animation: pop-up-fade 0.2s;
+}
+
 @keyframes flicker {
   0%, 10% {
     opacity: 0.5;
@@ -300,18 +312,6 @@
   100% {
     opacity: 100%;
     transform: translateY(0);
-    filter: blur(0px);
-  }
-}
-@keyframes client-popup {
-  0% {
-    transform: translate(-50%, 0);
-    opacity: 0;
-    filter: blur(10px);
-  }
-  100% {
-    opacity: 100%;
-    transform: translate(-50%, -50%);
     filter: blur(0px);
   }
 }
@@ -646,52 +646,6 @@ header {
   width: 20px;
 }
 
-.client-popup {
-  position: absolute;
-  bottom: 100px;
-  left: 50%;
-  min-width: 300px;
-  max-height: 200px;
-  text-align: center;
-  padding: 0.5em 2em;
-  transform: translate(-50%, -50%);
-  font-family: Poppins;
-  z-index: 2000;
-  background-color: rgba(20, 20, 20, 0.5);
-  backdrop-filter: blur(0.5em);
-  box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.094);
-  border-radius: 0.5lh;
-  animation: 0.5s client-popup;
-  box-shadow: 0 0 20px -20px rgb(97, 97, 97) inset, 0 5px 20px -20px rgb(150, 150, 150) inset, 5px 5px 15px -20px rgb(97, 97, 97) inset, 3px 10px 20px 20px rgba(0, 0, 0, 0.212);
-  display: flex;
-  align-items: center;
-  gap: 1em;
-}
-.client-popup button {
-  padding: 0.25em 1em;
-}
-.client-popup .client-popup-close {
-  background-image: url(../media/icons/close.svg);
-  border-radius: 50%;
-  background-color: transparent;
-  border: 2px solid rgba(126, 126, 126, 0.219);
-}
-.client-popup div {
-  width: 100%;
-}
-
-.pop-up, .share-container, .project-list-container {
-  position: absolute;
-  top: 150px;
-  left: 50%;
-  transform: translate(-50%, 0);
-  z-index: 110;
-  background-color: rgba(20, 20, 20, 0.25);
-  backdrop-filter: blur(0.5em);
-  box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px rgba(255, 255, 255, 0.0392156863);
-  animation: pop-up-fade 0.2s;
-}
-
 .project-list-container {
   background: linear-gradient(45deg, rgba(61, 61, 61, 0.2), rgba(43, 43, 43, 0.2509803922), rgba(34, 34, 34, 0));
   border-radius: 1lh;
@@ -703,27 +657,44 @@ header {
   width: 75%;
   min-height: 500px;
   padding: 30px;
-  justify-content: space-between;
 }
 
-.project-list-container ul {
+.project-list-container .project-list {
   padding: 0;
   width: 100%;
+  height: 100%;
   display: grid;
-  margin: auto;
-  grid-template-columns: repeat(auto-fit, 300px);
+  grid-template-columns: repeat(4, 1fr);
   justify-content: space-around;
+  gap: 1em;
 }
 
-.project-list-container ul li {
-  margin: 0.25em;
+.project-list-container div .project,
+.project-list-container div button {
+  min-height: 4em;
+  position: relative;
   align-items: center;
   display: flex;
+  justify-content: space-between;
+  background-color: rgb(0, 0, 0);
+  padding: 0 2em;
+  border-radius: 0.25em;
+  text-decoration: none;
+  color: inherit;
 }
-.project-list-container ul li button:first-child {
-  width: 100%;
-  padding: 1em 2em;
-  margin: 0 5px;
+.project-list-container div .project:hover,
+.project-list-container div button:hover {
+  outline: 0.1em solid gray;
+}
+.project-list-container div .project.project-folder,
+.project-list-container div button.project-folder {
+  background-color: transparent;
+  border: 5px solid rgb(0, 0, 0);
+}
+.project-list-container div .project.project-parent-folder,
+.project-list-container div button.project-parent-folder {
+  background-color: transparent;
+  border: 3px solid gray;
 }
 
 .project-list-container > button:last-child {
@@ -2116,49 +2087,6 @@ mini-dock #joinSession {
 form#codeForm {
   background-color: transparent !important;
   border: none !important;
-}
-
-.button-icon {
-  margin: 0lh 0.25lh -0.3rem 0lh;
-}
-
-.icon, .client-popup .client-popup-close, .button-icon {
-  display: inline-block;
-  width: 1lh;
-  height: 1lh;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-}
-
-.input-popup {
-  display: block;
-  padding: 1em 2em;
-}
-.input-popup input {
-  background-color: rgb(0, 0, 0);
-  border: none;
-  border-radius: 1lh;
-  line-height: 2em;
-  padding-inline: 1em;
-  color: white;
-  outline: none !important;
-  margin-left: 0.5em;
-}
-.input-popup p {
-  margin-block: 0;
-  margin-top: 1em;
-  width: 100%;
-}
-.input-popup button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  border-radius: 50%;
-  width: 2em;
-  height: 2em;
-  aspect-ratio: 1;
-  padding: 0;
 }
 
 .session-container {

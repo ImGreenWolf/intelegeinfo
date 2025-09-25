@@ -27,6 +27,7 @@ export declare function addProject(userId: number, projId: any, session: EditorS
     creatorId: number;
     savedAt: Date;
     updatedAt: Date;
+    folderId: number | null;
 }>;
 export declare function shareProject(userId: number, projId: any, session: EditorSession): Promise<{
     id: number;
@@ -35,13 +36,14 @@ export declare function shareProject(userId: number, projId: any, session: Edito
     openedAt: Date;
     sharedAt: Date;
 }>;
-export declare function listAllProjects(userId: any): Promise<({
+export declare function listAllProjects(userId: any): Promise<[({
     Project: {
         id: number;
         name: string | null;
         createdAt: Date;
         fileUUID: string | null;
         metadata: Prisma.JsonValue | null;
+        userId: number | null;
     };
 } & {
     id: number;
@@ -50,7 +52,21 @@ export declare function listAllProjects(userId: any): Promise<({
     creatorId: number;
     savedAt: Date;
     updatedAt: Date;
-})[]>;
+    folderId: number | null;
+})[], ({
+    _count: {
+        User: number;
+        Projects: number;
+        ParentFolder: number;
+        ChildFolders: number;
+    };
+} & {
+    name: string;
+    folderId: number;
+    createdAt: Date;
+    userId: number;
+    parentFolderId: number | null;
+})[]]>;
 export declare function getClientJWTValue(token: string): UserState;
 export declare function getClientId(token: string): number | undefined;
 export declare function createUploadFromFile(fileReq: any, userId: number): {
@@ -228,6 +244,7 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         creatorId: number;
         savedAt: Date;
         updatedAt: Date;
+        folderId: number | null;
     }[];
     SharedProject: {
         id: number;
@@ -235,6 +252,13 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         creatorId: number | null;
         openedAt: Date;
         sharedAt: Date;
+    }[];
+    Folders: {
+        name: string;
+        folderId: number;
+        createdAt: Date;
+        userId: number;
+        parentFolderId: number | null;
     }[];
     _count: {
         pictureUpload: number;
@@ -256,6 +280,7 @@ export declare function updateActiveAtForUser(userId: number, include?: Prisma.U
         Friends: number;
         SavedProject: number;
         SharedProject: number;
+        Folders: number;
     };
 } & {
     id: number;

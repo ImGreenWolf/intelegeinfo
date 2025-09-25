@@ -24,6 +24,11 @@ export type Project = $Result.DefaultSelection<Prisma.$ProjectPayload>
  */
 export type File = $Result.DefaultSelection<Prisma.$FilePayload>
 /**
+ * Model Folder
+ * 
+ */
+export type Folder = $Result.DefaultSelection<Prisma.$FolderPayload>
+/**
  * Model SavedProject
  * 
  */
@@ -331,6 +336,16 @@ export class PrismaClient<
     * ```
     */
   get file(): Prisma.FileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.folder`: Exposes CRUD operations for the **Folder** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Folders
+    * const folders = await prisma.folder.findMany()
+    * ```
+    */
+  get folder(): Prisma.FolderDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.savedProject`: Exposes CRUD operations for the **SavedProject** model.
@@ -983,6 +998,7 @@ export namespace Prisma {
   export const ModelName: {
     Project: 'Project',
     File: 'File',
+    Folder: 'Folder',
     SavedProject: 'SavedProject',
     SharedProject: 'SharedProject',
     User: 'User',
@@ -1022,7 +1038,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "project" | "file" | "savedProject" | "sharedProject" | "user" | "friendRelation" | "message" | "code" | "refreshToken" | "guide" | "tag" | "guideTag" | "problemTag" | "problem" | "solve" | "course" | "inquiry" | "review" | "upload" | "feedback" | "class" | "studentsInCourse" | "assignment"
+      modelProps: "project" | "file" | "folder" | "savedProject" | "sharedProject" | "user" | "friendRelation" | "message" | "code" | "refreshToken" | "guide" | "tag" | "guideTag" | "problemTag" | "problem" | "solve" | "course" | "inquiry" | "review" | "upload" | "feedback" | "class" | "studentsInCourse" | "assignment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1171,6 +1187,80 @@ export namespace Prisma {
           count: {
             args: Prisma.FileCountArgs<ExtArgs>
             result: $Utils.Optional<FileCountAggregateOutputType> | number
+          }
+        }
+      }
+      Folder: {
+        payload: Prisma.$FolderPayload<ExtArgs>
+        fields: Prisma.FolderFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FolderFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FolderFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>
+          }
+          findFirst: {
+            args: Prisma.FolderFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FolderFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>
+          }
+          findMany: {
+            args: Prisma.FolderFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>[]
+          }
+          create: {
+            args: Prisma.FolderCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>
+          }
+          createMany: {
+            args: Prisma.FolderCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FolderCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>[]
+          }
+          delete: {
+            args: Prisma.FolderDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>
+          }
+          update: {
+            args: Prisma.FolderUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>
+          }
+          deleteMany: {
+            args: Prisma.FolderDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FolderUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FolderUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>[]
+          }
+          upsert: {
+            args: Prisma.FolderUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPayload>
+          }
+          aggregate: {
+            args: Prisma.FolderAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFolder>
+          }
+          groupBy: {
+            args: Prisma.FolderGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FolderGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FolderCountArgs<ExtArgs>
+            result: $Utils.Optional<FolderCountAggregateOutputType> | number
           }
         }
       }
@@ -2814,6 +2904,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     project?: ProjectOmit
     file?: FileOmit
+    folder?: FolderOmit
     savedProject?: SavedProjectOmit
     sharedProject?: SharedProjectOmit
     user?: UserOmit
@@ -2974,6 +3065,46 @@ export namespace Prisma {
 
 
   /**
+   * Count Type FolderCountOutputType
+   */
+
+  export type FolderCountOutputType = {
+    Projects: number
+    ChildFolders: number
+  }
+
+  export type FolderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Projects?: boolean | FolderCountOutputTypeCountProjectsArgs
+    ChildFolders?: boolean | FolderCountOutputTypeCountChildFoldersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * FolderCountOutputType without action
+   */
+  export type FolderCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderCountOutputType
+     */
+    select?: FolderCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * FolderCountOutputType without action
+   */
+  export type FolderCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SavedProjectWhereInput
+  }
+
+  /**
+   * FolderCountOutputType without action
+   */
+  export type FolderCountOutputTypeCountChildFoldersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FolderWhereInput
+  }
+
+
+  /**
    * Count Type UserCountOutputType
    */
 
@@ -2995,6 +3126,7 @@ export namespace Prisma {
     Friends: number
     SavedProject: number
     SharedProject: number
+    Folders: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3015,6 +3147,7 @@ export namespace Prisma {
     Friends?: boolean | UserCountOutputTypeCountFriendsArgs
     SavedProject?: boolean | UserCountOutputTypeCountSavedProjectArgs
     SharedProject?: boolean | UserCountOutputTypeCountSharedProjectArgs
+    Folders?: boolean | UserCountOutputTypeCountFoldersArgs
   }
 
   // Custom InputTypes
@@ -3145,6 +3278,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSharedProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SharedProjectWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountFoldersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FolderWhereInput
   }
 
 
@@ -3477,10 +3617,12 @@ export namespace Prisma {
 
   export type ProjectAvgAggregateOutputType = {
     id: number | null
+    userId: number | null
   }
 
   export type ProjectSumAggregateOutputType = {
     id: number | null
+    userId: number | null
   }
 
   export type ProjectMinAggregateOutputType = {
@@ -3488,6 +3630,7 @@ export namespace Prisma {
     name: string | null
     fileUUID: string | null
     createdAt: Date | null
+    userId: number | null
   }
 
   export type ProjectMaxAggregateOutputType = {
@@ -3495,6 +3638,7 @@ export namespace Prisma {
     name: string | null
     fileUUID: string | null
     createdAt: Date | null
+    userId: number | null
   }
 
   export type ProjectCountAggregateOutputType = {
@@ -3503,16 +3647,19 @@ export namespace Prisma {
     fileUUID: number
     createdAt: number
     metadata: number
+    userId: number
     _all: number
   }
 
 
   export type ProjectAvgAggregateInputType = {
     id?: true
+    userId?: true
   }
 
   export type ProjectSumAggregateInputType = {
     id?: true
+    userId?: true
   }
 
   export type ProjectMinAggregateInputType = {
@@ -3520,6 +3667,7 @@ export namespace Prisma {
     name?: true
     fileUUID?: true
     createdAt?: true
+    userId?: true
   }
 
   export type ProjectMaxAggregateInputType = {
@@ -3527,6 +3675,7 @@ export namespace Prisma {
     name?: true
     fileUUID?: true
     createdAt?: true
+    userId?: true
   }
 
   export type ProjectCountAggregateInputType = {
@@ -3535,6 +3684,7 @@ export namespace Prisma {
     fileUUID?: true
     createdAt?: true
     metadata?: true
+    userId?: true
     _all?: true
   }
 
@@ -3630,6 +3780,7 @@ export namespace Prisma {
     fileUUID: string | null
     createdAt: Date
     metadata: JsonValue | null
+    userId: number | null
     _count: ProjectCountAggregateOutputType | null
     _avg: ProjectAvgAggregateOutputType | null
     _sum: ProjectSumAggregateOutputType | null
@@ -3657,6 +3808,7 @@ export namespace Prisma {
     fileUUID?: boolean
     createdAt?: boolean
     metadata?: boolean
+    userId?: boolean
     files?: boolean | Project$filesArgs<ExtArgs>
     Saves?: boolean | Project$SavesArgs<ExtArgs>
     Shares?: boolean | Project$SharesArgs<ExtArgs>
@@ -3669,6 +3821,7 @@ export namespace Prisma {
     fileUUID?: boolean
     createdAt?: boolean
     metadata?: boolean
+    userId?: boolean
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3677,6 +3830,7 @@ export namespace Prisma {
     fileUUID?: boolean
     createdAt?: boolean
     metadata?: boolean
+    userId?: boolean
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectScalar = {
@@ -3685,9 +3839,10 @@ export namespace Prisma {
     fileUUID?: boolean
     createdAt?: boolean
     metadata?: boolean
+    userId?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "fileUUID" | "createdAt" | "metadata", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "fileUUID" | "createdAt" | "metadata" | "userId", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     files?: boolean | Project$filesArgs<ExtArgs>
     Saves?: boolean | Project$SavesArgs<ExtArgs>
@@ -3710,6 +3865,7 @@ export namespace Prisma {
       fileUUID: string | null
       createdAt: Date
       metadata: Prisma.JsonValue | null
+      userId: number | null
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -4141,6 +4297,7 @@ export namespace Prisma {
     readonly fileUUID: FieldRef<"Project", 'String'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
     readonly metadata: FieldRef<"Project", 'Json'>
+    readonly userId: FieldRef<"Project", 'Int'>
   }
     
 
@@ -5699,6 +5856,1191 @@ export namespace Prisma {
 
 
   /**
+   * Model Folder
+   */
+
+  export type AggregateFolder = {
+    _count: FolderCountAggregateOutputType | null
+    _avg: FolderAvgAggregateOutputType | null
+    _sum: FolderSumAggregateOutputType | null
+    _min: FolderMinAggregateOutputType | null
+    _max: FolderMaxAggregateOutputType | null
+  }
+
+  export type FolderAvgAggregateOutputType = {
+    folderId: number | null
+    userId: number | null
+    parentFolderId: number | null
+  }
+
+  export type FolderSumAggregateOutputType = {
+    folderId: number | null
+    userId: number | null
+    parentFolderId: number | null
+  }
+
+  export type FolderMinAggregateOutputType = {
+    folderId: number | null
+    name: string | null
+    createdAt: Date | null
+    userId: number | null
+    parentFolderId: number | null
+  }
+
+  export type FolderMaxAggregateOutputType = {
+    folderId: number | null
+    name: string | null
+    createdAt: Date | null
+    userId: number | null
+    parentFolderId: number | null
+  }
+
+  export type FolderCountAggregateOutputType = {
+    folderId: number
+    name: number
+    createdAt: number
+    userId: number
+    parentFolderId: number
+    _all: number
+  }
+
+
+  export type FolderAvgAggregateInputType = {
+    folderId?: true
+    userId?: true
+    parentFolderId?: true
+  }
+
+  export type FolderSumAggregateInputType = {
+    folderId?: true
+    userId?: true
+    parentFolderId?: true
+  }
+
+  export type FolderMinAggregateInputType = {
+    folderId?: true
+    name?: true
+    createdAt?: true
+    userId?: true
+    parentFolderId?: true
+  }
+
+  export type FolderMaxAggregateInputType = {
+    folderId?: true
+    name?: true
+    createdAt?: true
+    userId?: true
+    parentFolderId?: true
+  }
+
+  export type FolderCountAggregateInputType = {
+    folderId?: true
+    name?: true
+    createdAt?: true
+    userId?: true
+    parentFolderId?: true
+    _all?: true
+  }
+
+  export type FolderAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Folder to aggregate.
+     */
+    where?: FolderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Folders to fetch.
+     */
+    orderBy?: FolderOrderByWithRelationInput | FolderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FolderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Folders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Folders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Folders
+    **/
+    _count?: true | FolderCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FolderAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FolderSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FolderMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FolderMaxAggregateInputType
+  }
+
+  export type GetFolderAggregateType<T extends FolderAggregateArgs> = {
+        [P in keyof T & keyof AggregateFolder]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFolder[P]>
+      : GetScalarType<T[P], AggregateFolder[P]>
+  }
+
+
+
+
+  export type FolderGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FolderWhereInput
+    orderBy?: FolderOrderByWithAggregationInput | FolderOrderByWithAggregationInput[]
+    by: FolderScalarFieldEnum[] | FolderScalarFieldEnum
+    having?: FolderScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FolderCountAggregateInputType | true
+    _avg?: FolderAvgAggregateInputType
+    _sum?: FolderSumAggregateInputType
+    _min?: FolderMinAggregateInputType
+    _max?: FolderMaxAggregateInputType
+  }
+
+  export type FolderGroupByOutputType = {
+    folderId: number
+    name: string
+    createdAt: Date
+    userId: number
+    parentFolderId: number | null
+    _count: FolderCountAggregateOutputType | null
+    _avg: FolderAvgAggregateOutputType | null
+    _sum: FolderSumAggregateOutputType | null
+    _min: FolderMinAggregateOutputType | null
+    _max: FolderMaxAggregateOutputType | null
+  }
+
+  type GetFolderGroupByPayload<T extends FolderGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FolderGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FolderGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FolderGroupByOutputType[P]>
+            : GetScalarType<T[P], FolderGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FolderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    folderId?: boolean
+    name?: boolean
+    createdAt?: boolean
+    userId?: boolean
+    parentFolderId?: boolean
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    Projects?: boolean | Folder$ProjectsArgs<ExtArgs>
+    ParentFolder?: boolean | Folder$ParentFolderArgs<ExtArgs>
+    ChildFolders?: boolean | Folder$ChildFoldersArgs<ExtArgs>
+    _count?: boolean | FolderCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["folder"]>
+
+  export type FolderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    folderId?: boolean
+    name?: boolean
+    createdAt?: boolean
+    userId?: boolean
+    parentFolderId?: boolean
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    ParentFolder?: boolean | Folder$ParentFolderArgs<ExtArgs>
+  }, ExtArgs["result"]["folder"]>
+
+  export type FolderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    folderId?: boolean
+    name?: boolean
+    createdAt?: boolean
+    userId?: boolean
+    parentFolderId?: boolean
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    ParentFolder?: boolean | Folder$ParentFolderArgs<ExtArgs>
+  }, ExtArgs["result"]["folder"]>
+
+  export type FolderSelectScalar = {
+    folderId?: boolean
+    name?: boolean
+    createdAt?: boolean
+    userId?: boolean
+    parentFolderId?: boolean
+  }
+
+  export type FolderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"folderId" | "name" | "createdAt" | "userId" | "parentFolderId", ExtArgs["result"]["folder"]>
+  export type FolderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    Projects?: boolean | Folder$ProjectsArgs<ExtArgs>
+    ParentFolder?: boolean | Folder$ParentFolderArgs<ExtArgs>
+    ChildFolders?: boolean | Folder$ChildFoldersArgs<ExtArgs>
+    _count?: boolean | FolderCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type FolderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    ParentFolder?: boolean | Folder$ParentFolderArgs<ExtArgs>
+  }
+  export type FolderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    ParentFolder?: boolean | Folder$ParentFolderArgs<ExtArgs>
+  }
+
+  export type $FolderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Folder"
+    objects: {
+      User: Prisma.$UserPayload<ExtArgs>
+      Projects: Prisma.$SavedProjectPayload<ExtArgs>[]
+      ParentFolder: Prisma.$FolderPayload<ExtArgs> | null
+      ChildFolders: Prisma.$FolderPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      folderId: number
+      name: string
+      createdAt: Date
+      userId: number
+      parentFolderId: number | null
+    }, ExtArgs["result"]["folder"]>
+    composites: {}
+  }
+
+  type FolderGetPayload<S extends boolean | null | undefined | FolderDefaultArgs> = $Result.GetResult<Prisma.$FolderPayload, S>
+
+  type FolderCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FolderFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FolderCountAggregateInputType | true
+    }
+
+  export interface FolderDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Folder'], meta: { name: 'Folder' } }
+    /**
+     * Find zero or one Folder that matches the filter.
+     * @param {FolderFindUniqueArgs} args - Arguments to find a Folder
+     * @example
+     * // Get one Folder
+     * const folder = await prisma.folder.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FolderFindUniqueArgs>(args: SelectSubset<T, FolderFindUniqueArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Folder that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FolderFindUniqueOrThrowArgs} args - Arguments to find a Folder
+     * @example
+     * // Get one Folder
+     * const folder = await prisma.folder.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FolderFindUniqueOrThrowArgs>(args: SelectSubset<T, FolderFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Folder that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderFindFirstArgs} args - Arguments to find a Folder
+     * @example
+     * // Get one Folder
+     * const folder = await prisma.folder.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FolderFindFirstArgs>(args?: SelectSubset<T, FolderFindFirstArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Folder that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderFindFirstOrThrowArgs} args - Arguments to find a Folder
+     * @example
+     * // Get one Folder
+     * const folder = await prisma.folder.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FolderFindFirstOrThrowArgs>(args?: SelectSubset<T, FolderFindFirstOrThrowArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Folders that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Folders
+     * const folders = await prisma.folder.findMany()
+     * 
+     * // Get first 10 Folders
+     * const folders = await prisma.folder.findMany({ take: 10 })
+     * 
+     * // Only select the `folderId`
+     * const folderWithFolderIdOnly = await prisma.folder.findMany({ select: { folderId: true } })
+     * 
+     */
+    findMany<T extends FolderFindManyArgs>(args?: SelectSubset<T, FolderFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Folder.
+     * @param {FolderCreateArgs} args - Arguments to create a Folder.
+     * @example
+     * // Create one Folder
+     * const Folder = await prisma.folder.create({
+     *   data: {
+     *     // ... data to create a Folder
+     *   }
+     * })
+     * 
+     */
+    create<T extends FolderCreateArgs>(args: SelectSubset<T, FolderCreateArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Folders.
+     * @param {FolderCreateManyArgs} args - Arguments to create many Folders.
+     * @example
+     * // Create many Folders
+     * const folder = await prisma.folder.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FolderCreateManyArgs>(args?: SelectSubset<T, FolderCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Folders and returns the data saved in the database.
+     * @param {FolderCreateManyAndReturnArgs} args - Arguments to create many Folders.
+     * @example
+     * // Create many Folders
+     * const folder = await prisma.folder.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Folders and only return the `folderId`
+     * const folderWithFolderIdOnly = await prisma.folder.createManyAndReturn({
+     *   select: { folderId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FolderCreateManyAndReturnArgs>(args?: SelectSubset<T, FolderCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Folder.
+     * @param {FolderDeleteArgs} args - Arguments to delete one Folder.
+     * @example
+     * // Delete one Folder
+     * const Folder = await prisma.folder.delete({
+     *   where: {
+     *     // ... filter to delete one Folder
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FolderDeleteArgs>(args: SelectSubset<T, FolderDeleteArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Folder.
+     * @param {FolderUpdateArgs} args - Arguments to update one Folder.
+     * @example
+     * // Update one Folder
+     * const folder = await prisma.folder.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FolderUpdateArgs>(args: SelectSubset<T, FolderUpdateArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Folders.
+     * @param {FolderDeleteManyArgs} args - Arguments to filter Folders to delete.
+     * @example
+     * // Delete a few Folders
+     * const { count } = await prisma.folder.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FolderDeleteManyArgs>(args?: SelectSubset<T, FolderDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Folders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Folders
+     * const folder = await prisma.folder.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FolderUpdateManyArgs>(args: SelectSubset<T, FolderUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Folders and returns the data updated in the database.
+     * @param {FolderUpdateManyAndReturnArgs} args - Arguments to update many Folders.
+     * @example
+     * // Update many Folders
+     * const folder = await prisma.folder.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Folders and only return the `folderId`
+     * const folderWithFolderIdOnly = await prisma.folder.updateManyAndReturn({
+     *   select: { folderId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FolderUpdateManyAndReturnArgs>(args: SelectSubset<T, FolderUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Folder.
+     * @param {FolderUpsertArgs} args - Arguments to update or create a Folder.
+     * @example
+     * // Update or create a Folder
+     * const folder = await prisma.folder.upsert({
+     *   create: {
+     *     // ... data to create a Folder
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Folder we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FolderUpsertArgs>(args: SelectSubset<T, FolderUpsertArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Folders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderCountArgs} args - Arguments to filter Folders to count.
+     * @example
+     * // Count the number of Folders
+     * const count = await prisma.folder.count({
+     *   where: {
+     *     // ... the filter for the Folders we want to count
+     *   }
+     * })
+    **/
+    count<T extends FolderCountArgs>(
+      args?: Subset<T, FolderCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FolderCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Folder.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FolderAggregateArgs>(args: Subset<T, FolderAggregateArgs>): Prisma.PrismaPromise<GetFolderAggregateType<T>>
+
+    /**
+     * Group by Folder.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FolderGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FolderGroupByArgs['orderBy'] }
+        : { orderBy?: FolderGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FolderGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFolderGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Folder model
+   */
+  readonly fields: FolderFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Folder.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FolderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    User<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    Projects<T extends Folder$ProjectsArgs<ExtArgs> = {}>(args?: Subset<T, Folder$ProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ParentFolder<T extends Folder$ParentFolderArgs<ExtArgs> = {}>(args?: Subset<T, Folder$ParentFolderArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    ChildFolders<T extends Folder$ChildFoldersArgs<ExtArgs> = {}>(args?: Subset<T, Folder$ChildFoldersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Folder model
+   */
+  interface FolderFieldRefs {
+    readonly folderId: FieldRef<"Folder", 'Int'>
+    readonly name: FieldRef<"Folder", 'String'>
+    readonly createdAt: FieldRef<"Folder", 'DateTime'>
+    readonly userId: FieldRef<"Folder", 'Int'>
+    readonly parentFolderId: FieldRef<"Folder", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Folder findUnique
+   */
+  export type FolderFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * Filter, which Folder to fetch.
+     */
+    where: FolderWhereUniqueInput
+  }
+
+  /**
+   * Folder findUniqueOrThrow
+   */
+  export type FolderFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * Filter, which Folder to fetch.
+     */
+    where: FolderWhereUniqueInput
+  }
+
+  /**
+   * Folder findFirst
+   */
+  export type FolderFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * Filter, which Folder to fetch.
+     */
+    where?: FolderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Folders to fetch.
+     */
+    orderBy?: FolderOrderByWithRelationInput | FolderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Folders.
+     */
+    cursor?: FolderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Folders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Folders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Folders.
+     */
+    distinct?: FolderScalarFieldEnum | FolderScalarFieldEnum[]
+  }
+
+  /**
+   * Folder findFirstOrThrow
+   */
+  export type FolderFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * Filter, which Folder to fetch.
+     */
+    where?: FolderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Folders to fetch.
+     */
+    orderBy?: FolderOrderByWithRelationInput | FolderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Folders.
+     */
+    cursor?: FolderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Folders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Folders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Folders.
+     */
+    distinct?: FolderScalarFieldEnum | FolderScalarFieldEnum[]
+  }
+
+  /**
+   * Folder findMany
+   */
+  export type FolderFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * Filter, which Folders to fetch.
+     */
+    where?: FolderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Folders to fetch.
+     */
+    orderBy?: FolderOrderByWithRelationInput | FolderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Folders.
+     */
+    cursor?: FolderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Folders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Folders.
+     */
+    skip?: number
+    distinct?: FolderScalarFieldEnum | FolderScalarFieldEnum[]
+  }
+
+  /**
+   * Folder create
+   */
+  export type FolderCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Folder.
+     */
+    data: XOR<FolderCreateInput, FolderUncheckedCreateInput>
+  }
+
+  /**
+   * Folder createMany
+   */
+  export type FolderCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Folders.
+     */
+    data: FolderCreateManyInput | FolderCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Folder createManyAndReturn
+   */
+  export type FolderCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * The data used to create many Folders.
+     */
+    data: FolderCreateManyInput | FolderCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Folder update
+   */
+  export type FolderUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Folder.
+     */
+    data: XOR<FolderUpdateInput, FolderUncheckedUpdateInput>
+    /**
+     * Choose, which Folder to update.
+     */
+    where: FolderWhereUniqueInput
+  }
+
+  /**
+   * Folder updateMany
+   */
+  export type FolderUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Folders.
+     */
+    data: XOR<FolderUpdateManyMutationInput, FolderUncheckedUpdateManyInput>
+    /**
+     * Filter which Folders to update
+     */
+    where?: FolderWhereInput
+    /**
+     * Limit how many Folders to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Folder updateManyAndReturn
+   */
+  export type FolderUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * The data used to update Folders.
+     */
+    data: XOR<FolderUpdateManyMutationInput, FolderUncheckedUpdateManyInput>
+    /**
+     * Filter which Folders to update
+     */
+    where?: FolderWhereInput
+    /**
+     * Limit how many Folders to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Folder upsert
+   */
+  export type FolderUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Folder to update in case it exists.
+     */
+    where: FolderWhereUniqueInput
+    /**
+     * In case the Folder found by the `where` argument doesn't exist, create a new Folder with this data.
+     */
+    create: XOR<FolderCreateInput, FolderUncheckedCreateInput>
+    /**
+     * In case the Folder was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FolderUpdateInput, FolderUncheckedUpdateInput>
+  }
+
+  /**
+   * Folder delete
+   */
+  export type FolderDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    /**
+     * Filter which Folder to delete.
+     */
+    where: FolderWhereUniqueInput
+  }
+
+  /**
+   * Folder deleteMany
+   */
+  export type FolderDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Folders to delete
+     */
+    where?: FolderWhereInput
+    /**
+     * Limit how many Folders to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Folder.Projects
+   */
+  export type Folder$ProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedProject
+     */
+    select?: SavedProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedProject
+     */
+    omit?: SavedProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedProjectInclude<ExtArgs> | null
+    where?: SavedProjectWhereInput
+    orderBy?: SavedProjectOrderByWithRelationInput | SavedProjectOrderByWithRelationInput[]
+    cursor?: SavedProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SavedProjectScalarFieldEnum | SavedProjectScalarFieldEnum[]
+  }
+
+  /**
+   * Folder.ParentFolder
+   */
+  export type Folder$ParentFolderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    where?: FolderWhereInput
+  }
+
+  /**
+   * Folder.ChildFolders
+   */
+  export type Folder$ChildFoldersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    where?: FolderWhereInput
+    orderBy?: FolderOrderByWithRelationInput | FolderOrderByWithRelationInput[]
+    cursor?: FolderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FolderScalarFieldEnum | FolderScalarFieldEnum[]
+  }
+
+  /**
+   * Folder without action
+   */
+  export type FolderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model SavedProject
    */
 
@@ -5714,12 +7056,14 @@ export namespace Prisma {
     id: number | null
     projectId: number | null
     creatorId: number | null
+    folderId: number | null
   }
 
   export type SavedProjectSumAggregateOutputType = {
     id: number | null
     projectId: number | null
     creatorId: number | null
+    folderId: number | null
   }
 
   export type SavedProjectMinAggregateOutputType = {
@@ -5729,6 +7073,7 @@ export namespace Prisma {
     creatorId: number | null
     savedAt: Date | null
     updatedAt: Date | null
+    folderId: number | null
   }
 
   export type SavedProjectMaxAggregateOutputType = {
@@ -5738,6 +7083,7 @@ export namespace Prisma {
     creatorId: number | null
     savedAt: Date | null
     updatedAt: Date | null
+    folderId: number | null
   }
 
   export type SavedProjectCountAggregateOutputType = {
@@ -5747,6 +7093,7 @@ export namespace Prisma {
     creatorId: number
     savedAt: number
     updatedAt: number
+    folderId: number
     _all: number
   }
 
@@ -5755,12 +7102,14 @@ export namespace Prisma {
     id?: true
     projectId?: true
     creatorId?: true
+    folderId?: true
   }
 
   export type SavedProjectSumAggregateInputType = {
     id?: true
     projectId?: true
     creatorId?: true
+    folderId?: true
   }
 
   export type SavedProjectMinAggregateInputType = {
@@ -5770,6 +7119,7 @@ export namespace Prisma {
     creatorId?: true
     savedAt?: true
     updatedAt?: true
+    folderId?: true
   }
 
   export type SavedProjectMaxAggregateInputType = {
@@ -5779,6 +7129,7 @@ export namespace Prisma {
     creatorId?: true
     savedAt?: true
     updatedAt?: true
+    folderId?: true
   }
 
   export type SavedProjectCountAggregateInputType = {
@@ -5788,6 +7139,7 @@ export namespace Prisma {
     creatorId?: true
     savedAt?: true
     updatedAt?: true
+    folderId?: true
     _all?: true
   }
 
@@ -5884,6 +7236,7 @@ export namespace Prisma {
     creatorId: number
     savedAt: Date
     updatedAt: Date
+    folderId: number | null
     _count: SavedProjectCountAggregateOutputType | null
     _avg: SavedProjectAvgAggregateOutputType | null
     _sum: SavedProjectSumAggregateOutputType | null
@@ -5912,8 +7265,10 @@ export namespace Prisma {
     creatorId?: boolean
     savedAt?: boolean
     updatedAt?: boolean
+    folderId?: boolean
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    Folder?: boolean | SavedProject$FolderArgs<ExtArgs>
   }, ExtArgs["result"]["savedProject"]>
 
   export type SavedProjectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5923,8 +7278,10 @@ export namespace Prisma {
     creatorId?: boolean
     savedAt?: boolean
     updatedAt?: boolean
+    folderId?: boolean
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    Folder?: boolean | SavedProject$FolderArgs<ExtArgs>
   }, ExtArgs["result"]["savedProject"]>
 
   export type SavedProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5934,8 +7291,10 @@ export namespace Prisma {
     creatorId?: boolean
     savedAt?: boolean
     updatedAt?: boolean
+    folderId?: boolean
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    Folder?: boolean | SavedProject$FolderArgs<ExtArgs>
   }, ExtArgs["result"]["savedProject"]>
 
   export type SavedProjectSelectScalar = {
@@ -5945,20 +7304,24 @@ export namespace Prisma {
     creatorId?: boolean
     savedAt?: boolean
     updatedAt?: boolean
+    folderId?: boolean
   }
 
-  export type SavedProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "projectId" | "creatorId" | "savedAt" | "updatedAt", ExtArgs["result"]["savedProject"]>
+  export type SavedProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "projectId" | "creatorId" | "savedAt" | "updatedAt" | "folderId", ExtArgs["result"]["savedProject"]>
   export type SavedProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    Folder?: boolean | SavedProject$FolderArgs<ExtArgs>
   }
   export type SavedProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    Folder?: boolean | SavedProject$FolderArgs<ExtArgs>
   }
   export type SavedProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Project?: boolean | ProjectDefaultArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    Folder?: boolean | SavedProject$FolderArgs<ExtArgs>
   }
 
   export type $SavedProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5966,6 +7329,7 @@ export namespace Prisma {
     objects: {
       Project: Prisma.$ProjectPayload<ExtArgs>
       createdBy: Prisma.$UserPayload<ExtArgs>
+      Folder: Prisma.$FolderPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -5974,6 +7338,7 @@ export namespace Prisma {
       creatorId: number
       savedAt: Date
       updatedAt: Date
+      folderId: number | null
     }, ExtArgs["result"]["savedProject"]>
     composites: {}
   }
@@ -6370,6 +7735,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     Project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    Folder<T extends SavedProject$FolderArgs<ExtArgs> = {}>(args?: Subset<T, SavedProject$FolderArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6405,6 +7771,7 @@ export namespace Prisma {
     readonly creatorId: FieldRef<"SavedProject", 'Int'>
     readonly savedAt: FieldRef<"SavedProject", 'DateTime'>
     readonly updatedAt: FieldRef<"SavedProject", 'DateTime'>
+    readonly folderId: FieldRef<"SavedProject", 'Int'>
   }
     
 
@@ -6798,6 +8165,25 @@ export namespace Prisma {
      * Limit how many SavedProjects to delete.
      */
     limit?: number
+  }
+
+  /**
+   * SavedProject.Folder
+   */
+  export type SavedProject$FolderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    where?: FolderWhereInput
   }
 
   /**
@@ -8243,6 +9629,7 @@ export namespace Prisma {
     Friends?: boolean | User$FriendsArgs<ExtArgs>
     SavedProject?: boolean | User$SavedProjectArgs<ExtArgs>
     SharedProject?: boolean | User$SharedProjectArgs<ExtArgs>
+    Folders?: boolean | User$FoldersArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -8326,6 +9713,7 @@ export namespace Prisma {
     Friends?: boolean | User$FriendsArgs<ExtArgs>
     SavedProject?: boolean | User$SavedProjectArgs<ExtArgs>
     SharedProject?: boolean | User$SharedProjectArgs<ExtArgs>
+    Folders?: boolean | User$FoldersArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8357,6 +9745,7 @@ export namespace Prisma {
       Friends: Prisma.$FriendRelationPayload<ExtArgs>[]
       SavedProject: Prisma.$SavedProjectPayload<ExtArgs>[]
       SharedProject: Prisma.$SharedProjectPayload<ExtArgs>[]
+      Folders: Prisma.$FolderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -8788,6 +10177,7 @@ export namespace Prisma {
     Friends<T extends User$FriendsArgs<ExtArgs> = {}>(args?: Subset<T, User$FriendsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FriendRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     SavedProject<T extends User$SavedProjectArgs<ExtArgs> = {}>(args?: Subset<T, User$SavedProjectArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     SharedProject<T extends User$SharedProjectArgs<ExtArgs> = {}>(args?: Subset<T, User$SharedProjectArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SharedProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    Folders<T extends User$FoldersArgs<ExtArgs> = {}>(args?: Subset<T, User$FoldersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9653,6 +11043,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SharedProjectScalarFieldEnum | SharedProjectScalarFieldEnum[]
+  }
+
+  /**
+   * User.Folders
+   */
+  export type User$FoldersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Folder
+     */
+    select?: FolderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Folder
+     */
+    omit?: FolderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderInclude<ExtArgs> | null
+    where?: FolderWhereInput
+    orderBy?: FolderOrderByWithRelationInput | FolderOrderByWithRelationInput[]
+    cursor?: FolderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FolderScalarFieldEnum | FolderScalarFieldEnum[]
   }
 
   /**
@@ -30248,7 +31662,8 @@ export namespace Prisma {
     name: 'name',
     fileUUID: 'fileUUID',
     createdAt: 'createdAt',
-    metadata: 'metadata'
+    metadata: 'metadata',
+    userId: 'userId'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -30264,13 +31679,25 @@ export namespace Prisma {
   export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
 
 
+  export const FolderScalarFieldEnum: {
+    folderId: 'folderId',
+    name: 'name',
+    createdAt: 'createdAt',
+    userId: 'userId',
+    parentFolderId: 'parentFolderId'
+  };
+
+  export type FolderScalarFieldEnum = (typeof FolderScalarFieldEnum)[keyof typeof FolderScalarFieldEnum]
+
+
   export const SavedProjectScalarFieldEnum: {
     id: 'id',
     name: 'name',
     projectId: 'projectId',
     creatorId: 'creatorId',
     savedAt: 'savedAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    folderId: 'folderId'
   };
 
   export type SavedProjectScalarFieldEnum = (typeof SavedProjectScalarFieldEnum)[keyof typeof SavedProjectScalarFieldEnum]
@@ -30599,6 +32026,13 @@ export namespace Prisma {
   export type FileOrderByRelevanceFieldEnum = (typeof FileOrderByRelevanceFieldEnum)[keyof typeof FileOrderByRelevanceFieldEnum]
 
 
+  export const FolderOrderByRelevanceFieldEnum: {
+    name: 'name'
+  };
+
+  export type FolderOrderByRelevanceFieldEnum = (typeof FolderOrderByRelevanceFieldEnum)[keyof typeof FolderOrderByRelevanceFieldEnum]
+
+
   export const SavedProjectOrderByRelevanceFieldEnum: {
     name: 'name'
   };
@@ -30902,6 +32336,7 @@ export namespace Prisma {
     fileUUID?: StringNullableFilter<"Project"> | string | null
     createdAt?: DateTimeFilter<"Project"> | Date | string
     metadata?: JsonNullableFilter<"Project">
+    userId?: IntNullableFilter<"Project"> | number | null
     files?: FileListRelationFilter
     Saves?: SavedProjectListRelationFilter
     Shares?: SharedProjectListRelationFilter
@@ -30913,6 +32348,7 @@ export namespace Prisma {
     fileUUID?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     metadata?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
     files?: FileOrderByRelationAggregateInput
     Saves?: SavedProjectOrderByRelationAggregateInput
     Shares?: SharedProjectOrderByRelationAggregateInput
@@ -30928,6 +32364,7 @@ export namespace Prisma {
     fileUUID?: StringNullableFilter<"Project"> | string | null
     createdAt?: DateTimeFilter<"Project"> | Date | string
     metadata?: JsonNullableFilter<"Project">
+    userId?: IntNullableFilter<"Project"> | number | null
     files?: FileListRelationFilter
     Saves?: SavedProjectListRelationFilter
     Shares?: SharedProjectListRelationFilter
@@ -30939,6 +32376,7 @@ export namespace Prisma {
     fileUUID?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     metadata?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _avg?: ProjectAvgOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
@@ -30955,6 +32393,7 @@ export namespace Prisma {
     fileUUID?: StringNullableWithAggregatesFilter<"Project"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     metadata?: JsonNullableWithAggregatesFilter<"Project">
+    userId?: IntNullableWithAggregatesFilter<"Project"> | number | null
   }
 
   export type FileWhereInput = {
@@ -31011,6 +32450,74 @@ export namespace Prisma {
     projectId?: IntWithAggregatesFilter<"File"> | number
   }
 
+  export type FolderWhereInput = {
+    AND?: FolderWhereInput | FolderWhereInput[]
+    OR?: FolderWhereInput[]
+    NOT?: FolderWhereInput | FolderWhereInput[]
+    folderId?: IntFilter<"Folder"> | number
+    name?: StringFilter<"Folder"> | string
+    createdAt?: DateTimeFilter<"Folder"> | Date | string
+    userId?: IntFilter<"Folder"> | number
+    parentFolderId?: IntNullableFilter<"Folder"> | number | null
+    User?: XOR<UserScalarRelationFilter, UserWhereInput>
+    Projects?: SavedProjectListRelationFilter
+    ParentFolder?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
+    ChildFolders?: FolderListRelationFilter
+  }
+
+  export type FolderOrderByWithRelationInput = {
+    folderId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrder
+    parentFolderId?: SortOrderInput | SortOrder
+    User?: UserOrderByWithRelationInput
+    Projects?: SavedProjectOrderByRelationAggregateInput
+    ParentFolder?: FolderOrderByWithRelationInput
+    ChildFolders?: FolderOrderByRelationAggregateInput
+    _relevance?: FolderOrderByRelevanceInput
+  }
+
+  export type FolderWhereUniqueInput = Prisma.AtLeast<{
+    folderId?: number
+    name_userId?: FolderNameUserIdCompoundUniqueInput
+    AND?: FolderWhereInput | FolderWhereInput[]
+    OR?: FolderWhereInput[]
+    NOT?: FolderWhereInput | FolderWhereInput[]
+    name?: StringFilter<"Folder"> | string
+    createdAt?: DateTimeFilter<"Folder"> | Date | string
+    userId?: IntFilter<"Folder"> | number
+    parentFolderId?: IntNullableFilter<"Folder"> | number | null
+    User?: XOR<UserScalarRelationFilter, UserWhereInput>
+    Projects?: SavedProjectListRelationFilter
+    ParentFolder?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
+    ChildFolders?: FolderListRelationFilter
+  }, "folderId" | "name_userId">
+
+  export type FolderOrderByWithAggregationInput = {
+    folderId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrder
+    parentFolderId?: SortOrderInput | SortOrder
+    _count?: FolderCountOrderByAggregateInput
+    _avg?: FolderAvgOrderByAggregateInput
+    _max?: FolderMaxOrderByAggregateInput
+    _min?: FolderMinOrderByAggregateInput
+    _sum?: FolderSumOrderByAggregateInput
+  }
+
+  export type FolderScalarWhereWithAggregatesInput = {
+    AND?: FolderScalarWhereWithAggregatesInput | FolderScalarWhereWithAggregatesInput[]
+    OR?: FolderScalarWhereWithAggregatesInput[]
+    NOT?: FolderScalarWhereWithAggregatesInput | FolderScalarWhereWithAggregatesInput[]
+    folderId?: IntWithAggregatesFilter<"Folder"> | number
+    name?: StringWithAggregatesFilter<"Folder"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Folder"> | Date | string
+    userId?: IntWithAggregatesFilter<"Folder"> | number
+    parentFolderId?: IntNullableWithAggregatesFilter<"Folder"> | number | null
+  }
+
   export type SavedProjectWhereInput = {
     AND?: SavedProjectWhereInput | SavedProjectWhereInput[]
     OR?: SavedProjectWhereInput[]
@@ -31021,8 +32528,10 @@ export namespace Prisma {
     creatorId?: IntFilter<"SavedProject"> | number
     savedAt?: DateTimeFilter<"SavedProject"> | Date | string
     updatedAt?: DateTimeFilter<"SavedProject"> | Date | string
+    folderId?: IntNullableFilter<"SavedProject"> | number | null
     Project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    Folder?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
   }
 
   export type SavedProjectOrderByWithRelationInput = {
@@ -31032,8 +32541,10 @@ export namespace Prisma {
     creatorId?: SortOrder
     savedAt?: SortOrder
     updatedAt?: SortOrder
+    folderId?: SortOrderInput | SortOrder
     Project?: ProjectOrderByWithRelationInput
     createdBy?: UserOrderByWithRelationInput
+    Folder?: FolderOrderByWithRelationInput
     _relevance?: SavedProjectOrderByRelevanceInput
   }
 
@@ -31048,8 +32559,10 @@ export namespace Prisma {
     creatorId?: IntFilter<"SavedProject"> | number
     savedAt?: DateTimeFilter<"SavedProject"> | Date | string
     updatedAt?: DateTimeFilter<"SavedProject"> | Date | string
+    folderId?: IntNullableFilter<"SavedProject"> | number | null
     Project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    Folder?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
   }, "id" | "creatorId_projectId">
 
   export type SavedProjectOrderByWithAggregationInput = {
@@ -31059,6 +32572,7 @@ export namespace Prisma {
     creatorId?: SortOrder
     savedAt?: SortOrder
     updatedAt?: SortOrder
+    folderId?: SortOrderInput | SortOrder
     _count?: SavedProjectCountOrderByAggregateInput
     _avg?: SavedProjectAvgOrderByAggregateInput
     _max?: SavedProjectMaxOrderByAggregateInput
@@ -31076,6 +32590,7 @@ export namespace Prisma {
     creatorId?: IntWithAggregatesFilter<"SavedProject"> | number
     savedAt?: DateTimeWithAggregatesFilter<"SavedProject"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SavedProject"> | Date | string
+    folderId?: IntNullableWithAggregatesFilter<"SavedProject"> | number | null
   }
 
   export type SharedProjectWhereInput = {
@@ -31177,6 +32692,7 @@ export namespace Prisma {
     Friends?: FriendRelationListRelationFilter
     SavedProject?: SavedProjectListRelationFilter
     SharedProject?: SharedProjectListRelationFilter
+    Folders?: FolderListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -31215,6 +32731,7 @@ export namespace Prisma {
     Friends?: FriendRelationOrderByRelationAggregateInput
     SavedProject?: SavedProjectOrderByRelationAggregateInput
     SharedProject?: SharedProjectOrderByRelationAggregateInput
+    Folders?: FolderOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
 
@@ -31257,6 +32774,7 @@ export namespace Prisma {
     Friends?: FriendRelationListRelationFilter
     SavedProject?: SavedProjectListRelationFilter
     SharedProject?: SharedProjectListRelationFilter
+    Folders?: FolderListRelationFilter
   }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -32561,6 +34079,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
     files?: FileCreateNestedManyWithoutProjectInput
     Saves?: SavedProjectCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectCreateNestedManyWithoutProjectInput
@@ -32572,6 +34091,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     Saves?: SavedProjectUncheckedCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectUncheckedCreateNestedManyWithoutProjectInput
@@ -32582,6 +34102,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     files?: FileUpdateManyWithoutProjectNestedInput
     Saves?: SavedProjectUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUpdateManyWithoutProjectNestedInput
@@ -32593,6 +34114,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     Saves?: SavedProjectUncheckedUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUncheckedUpdateManyWithoutProjectNestedInput
@@ -32604,6 +34126,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
   }
 
   export type ProjectUpdateManyMutationInput = {
@@ -32611,6 +34134,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ProjectUncheckedUpdateManyInput = {
@@ -32619,6 +34143,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type FileCreateInput = {
@@ -32669,12 +34194,72 @@ export namespace Prisma {
     projectId?: IntFieldUpdateOperationsInput | number
   }
 
+  export type FolderCreateInput = {
+    name: string
+    createdAt?: Date | string
+    User: UserCreateNestedOneWithoutFoldersInput
+    Projects?: SavedProjectCreateNestedManyWithoutFolderInput
+    ParentFolder?: FolderCreateNestedOneWithoutChildFoldersInput
+    ChildFolders?: FolderCreateNestedManyWithoutParentFolderInput
+  }
+
+  export type FolderUncheckedCreateInput = {
+    folderId?: number
+    name: string
+    createdAt?: Date | string
+    userId: number
+    parentFolderId?: number | null
+    Projects?: SavedProjectUncheckedCreateNestedManyWithoutFolderInput
+    ChildFolders?: FolderUncheckedCreateNestedManyWithoutParentFolderInput
+  }
+
+  export type FolderUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    User?: UserUpdateOneRequiredWithoutFoldersNestedInput
+    Projects?: SavedProjectUpdateManyWithoutFolderNestedInput
+    ParentFolder?: FolderUpdateOneWithoutChildFoldersNestedInput
+    ChildFolders?: FolderUpdateManyWithoutParentFolderNestedInput
+  }
+
+  export type FolderUncheckedUpdateInput = {
+    folderId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: IntFieldUpdateOperationsInput | number
+    parentFolderId?: NullableIntFieldUpdateOperationsInput | number | null
+    Projects?: SavedProjectUncheckedUpdateManyWithoutFolderNestedInput
+    ChildFolders?: FolderUncheckedUpdateManyWithoutParentFolderNestedInput
+  }
+
+  export type FolderCreateManyInput = {
+    folderId?: number
+    name: string
+    createdAt?: Date | string
+    userId: number
+    parentFolderId?: number | null
+  }
+
+  export type FolderUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderUncheckedUpdateManyInput = {
+    folderId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: IntFieldUpdateOperationsInput | number
+    parentFolderId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
   export type SavedProjectCreateInput = {
     name?: string | null
     savedAt?: Date | string
     updatedAt?: Date | string
     Project: ProjectCreateNestedOneWithoutSavesInput
     createdBy: UserCreateNestedOneWithoutSavedProjectInput
+    Folder?: FolderCreateNestedOneWithoutProjectsInput
   }
 
   export type SavedProjectUncheckedCreateInput = {
@@ -32684,6 +34269,7 @@ export namespace Prisma {
     creatorId: number
     savedAt?: Date | string
     updatedAt?: Date | string
+    folderId?: number | null
   }
 
   export type SavedProjectUpdateInput = {
@@ -32692,6 +34278,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Project?: ProjectUpdateOneRequiredWithoutSavesNestedInput
     createdBy?: UserUpdateOneRequiredWithoutSavedProjectNestedInput
+    Folder?: FolderUpdateOneWithoutProjectsNestedInput
   }
 
   export type SavedProjectUncheckedUpdateInput = {
@@ -32701,6 +34288,7 @@ export namespace Prisma {
     creatorId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    folderId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type SavedProjectCreateManyInput = {
@@ -32710,6 +34298,7 @@ export namespace Prisma {
     creatorId: number
     savedAt?: Date | string
     updatedAt?: Date | string
+    folderId?: number | null
   }
 
   export type SavedProjectUpdateManyMutationInput = {
@@ -32725,6 +34314,7 @@ export namespace Prisma {
     creatorId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    folderId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type SharedProjectCreateInput = {
@@ -32812,6 +34402,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -32849,6 +34440,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -32885,6 +34477,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -32922,6 +34515,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -34241,6 +35835,17 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type FileListRelationFilter = {
     every?: FileWhereInput
     some?: FileWhereInput
@@ -34288,10 +35893,12 @@ export namespace Prisma {
     fileUUID?: SortOrder
     createdAt?: SortOrder
     metadata?: SortOrder
+    userId?: SortOrder
   }
 
   export type ProjectAvgOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
@@ -34299,6 +35906,7 @@ export namespace Prisma {
     name?: SortOrder
     fileUUID?: SortOrder
     createdAt?: SortOrder
+    userId?: SortOrder
   }
 
   export type ProjectMinOrderByAggregateInput = {
@@ -34306,10 +35914,12 @@ export namespace Prisma {
     name?: SortOrder
     fileUUID?: SortOrder
     createdAt?: SortOrder
+    userId?: SortOrder
   }
 
   export type ProjectSumOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -34385,6 +35995,22 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -34472,6 +36098,68 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
+  export type FolderNullableScalarRelationFilter = {
+    is?: FolderWhereInput | null
+    isNot?: FolderWhereInput | null
+  }
+
+  export type FolderListRelationFilter = {
+    every?: FolderWhereInput
+    some?: FolderWhereInput
+    none?: FolderWhereInput
+  }
+
+  export type FolderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FolderOrderByRelevanceInput = {
+    fields: FolderOrderByRelevanceFieldEnum | FolderOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type FolderNameUserIdCompoundUniqueInput = {
+    name: string
+    userId: number
+  }
+
+  export type FolderCountOrderByAggregateInput = {
+    folderId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrder
+    parentFolderId?: SortOrder
+  }
+
+  export type FolderAvgOrderByAggregateInput = {
+    folderId?: SortOrder
+    userId?: SortOrder
+    parentFolderId?: SortOrder
+  }
+
+  export type FolderMaxOrderByAggregateInput = {
+    folderId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrder
+    parentFolderId?: SortOrder
+  }
+
+  export type FolderMinOrderByAggregateInput = {
+    folderId?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrder
+    parentFolderId?: SortOrder
+  }
+
+  export type FolderSumOrderByAggregateInput = {
+    folderId?: SortOrder
+    userId?: SortOrder
+    parentFolderId?: SortOrder
+  }
+
   export type SavedProjectOrderByRelevanceInput = {
     fields: SavedProjectOrderByRelevanceFieldEnum | SavedProjectOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -34490,12 +36178,14 @@ export namespace Prisma {
     creatorId?: SortOrder
     savedAt?: SortOrder
     updatedAt?: SortOrder
+    folderId?: SortOrder
   }
 
   export type SavedProjectAvgOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
     creatorId?: SortOrder
+    folderId?: SortOrder
   }
 
   export type SavedProjectMaxOrderByAggregateInput = {
@@ -34505,6 +36195,7 @@ export namespace Prisma {
     creatorId?: SortOrder
     savedAt?: SortOrder
     updatedAt?: SortOrder
+    folderId?: SortOrder
   }
 
   export type SavedProjectMinOrderByAggregateInput = {
@@ -34514,23 +36205,14 @@ export namespace Prisma {
     creatorId?: SortOrder
     savedAt?: SortOrder
     updatedAt?: SortOrder
+    folderId?: SortOrder
   }
 
   export type SavedProjectSumOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
     creatorId?: SortOrder
-  }
-
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+    folderId?: SortOrder
   }
 
   export type UserNullableScalarRelationFilter = {
@@ -34572,22 +36254,6 @@ export namespace Prisma {
     id?: SortOrder
     projectId?: SortOrder
     creatorId?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -35957,6 +37623,14 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type FileUpdateManyWithoutProjectNestedInput = {
     create?: XOR<FileCreateWithoutProjectInput, FileUncheckedCreateWithoutProjectInput> | FileCreateWithoutProjectInput[] | FileUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: FileCreateOrConnectWithoutProjectInput | FileCreateOrConnectWithoutProjectInput[]
@@ -36067,6 +37741,120 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutFilesInput, ProjectUpdateWithoutFilesInput>, ProjectUncheckedUpdateWithoutFilesInput>
   }
 
+  export type UserCreateNestedOneWithoutFoldersInput = {
+    create?: XOR<UserCreateWithoutFoldersInput, UserUncheckedCreateWithoutFoldersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFoldersInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type SavedProjectCreateNestedManyWithoutFolderInput = {
+    create?: XOR<SavedProjectCreateWithoutFolderInput, SavedProjectUncheckedCreateWithoutFolderInput> | SavedProjectCreateWithoutFolderInput[] | SavedProjectUncheckedCreateWithoutFolderInput[]
+    connectOrCreate?: SavedProjectCreateOrConnectWithoutFolderInput | SavedProjectCreateOrConnectWithoutFolderInput[]
+    createMany?: SavedProjectCreateManyFolderInputEnvelope
+    connect?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+  }
+
+  export type FolderCreateNestedOneWithoutChildFoldersInput = {
+    create?: XOR<FolderCreateWithoutChildFoldersInput, FolderUncheckedCreateWithoutChildFoldersInput>
+    connectOrCreate?: FolderCreateOrConnectWithoutChildFoldersInput
+    connect?: FolderWhereUniqueInput
+  }
+
+  export type FolderCreateNestedManyWithoutParentFolderInput = {
+    create?: XOR<FolderCreateWithoutParentFolderInput, FolderUncheckedCreateWithoutParentFolderInput> | FolderCreateWithoutParentFolderInput[] | FolderUncheckedCreateWithoutParentFolderInput[]
+    connectOrCreate?: FolderCreateOrConnectWithoutParentFolderInput | FolderCreateOrConnectWithoutParentFolderInput[]
+    createMany?: FolderCreateManyParentFolderInputEnvelope
+    connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+  }
+
+  export type SavedProjectUncheckedCreateNestedManyWithoutFolderInput = {
+    create?: XOR<SavedProjectCreateWithoutFolderInput, SavedProjectUncheckedCreateWithoutFolderInput> | SavedProjectCreateWithoutFolderInput[] | SavedProjectUncheckedCreateWithoutFolderInput[]
+    connectOrCreate?: SavedProjectCreateOrConnectWithoutFolderInput | SavedProjectCreateOrConnectWithoutFolderInput[]
+    createMany?: SavedProjectCreateManyFolderInputEnvelope
+    connect?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+  }
+
+  export type FolderUncheckedCreateNestedManyWithoutParentFolderInput = {
+    create?: XOR<FolderCreateWithoutParentFolderInput, FolderUncheckedCreateWithoutParentFolderInput> | FolderCreateWithoutParentFolderInput[] | FolderUncheckedCreateWithoutParentFolderInput[]
+    connectOrCreate?: FolderCreateOrConnectWithoutParentFolderInput | FolderCreateOrConnectWithoutParentFolderInput[]
+    createMany?: FolderCreateManyParentFolderInputEnvelope
+    connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutFoldersNestedInput = {
+    create?: XOR<UserCreateWithoutFoldersInput, UserUncheckedCreateWithoutFoldersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFoldersInput
+    upsert?: UserUpsertWithoutFoldersInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFoldersInput, UserUpdateWithoutFoldersInput>, UserUncheckedUpdateWithoutFoldersInput>
+  }
+
+  export type SavedProjectUpdateManyWithoutFolderNestedInput = {
+    create?: XOR<SavedProjectCreateWithoutFolderInput, SavedProjectUncheckedCreateWithoutFolderInput> | SavedProjectCreateWithoutFolderInput[] | SavedProjectUncheckedCreateWithoutFolderInput[]
+    connectOrCreate?: SavedProjectCreateOrConnectWithoutFolderInput | SavedProjectCreateOrConnectWithoutFolderInput[]
+    upsert?: SavedProjectUpsertWithWhereUniqueWithoutFolderInput | SavedProjectUpsertWithWhereUniqueWithoutFolderInput[]
+    createMany?: SavedProjectCreateManyFolderInputEnvelope
+    set?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+    disconnect?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+    delete?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+    connect?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+    update?: SavedProjectUpdateWithWhereUniqueWithoutFolderInput | SavedProjectUpdateWithWhereUniqueWithoutFolderInput[]
+    updateMany?: SavedProjectUpdateManyWithWhereWithoutFolderInput | SavedProjectUpdateManyWithWhereWithoutFolderInput[]
+    deleteMany?: SavedProjectScalarWhereInput | SavedProjectScalarWhereInput[]
+  }
+
+  export type FolderUpdateOneWithoutChildFoldersNestedInput = {
+    create?: XOR<FolderCreateWithoutChildFoldersInput, FolderUncheckedCreateWithoutChildFoldersInput>
+    connectOrCreate?: FolderCreateOrConnectWithoutChildFoldersInput
+    upsert?: FolderUpsertWithoutChildFoldersInput
+    disconnect?: FolderWhereInput | boolean
+    delete?: FolderWhereInput | boolean
+    connect?: FolderWhereUniqueInput
+    update?: XOR<XOR<FolderUpdateToOneWithWhereWithoutChildFoldersInput, FolderUpdateWithoutChildFoldersInput>, FolderUncheckedUpdateWithoutChildFoldersInput>
+  }
+
+  export type FolderUpdateManyWithoutParentFolderNestedInput = {
+    create?: XOR<FolderCreateWithoutParentFolderInput, FolderUncheckedCreateWithoutParentFolderInput> | FolderCreateWithoutParentFolderInput[] | FolderUncheckedCreateWithoutParentFolderInput[]
+    connectOrCreate?: FolderCreateOrConnectWithoutParentFolderInput | FolderCreateOrConnectWithoutParentFolderInput[]
+    upsert?: FolderUpsertWithWhereUniqueWithoutParentFolderInput | FolderUpsertWithWhereUniqueWithoutParentFolderInput[]
+    createMany?: FolderCreateManyParentFolderInputEnvelope
+    set?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    disconnect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    delete?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    update?: FolderUpdateWithWhereUniqueWithoutParentFolderInput | FolderUpdateWithWhereUniqueWithoutParentFolderInput[]
+    updateMany?: FolderUpdateManyWithWhereWithoutParentFolderInput | FolderUpdateManyWithWhereWithoutParentFolderInput[]
+    deleteMany?: FolderScalarWhereInput | FolderScalarWhereInput[]
+  }
+
+  export type SavedProjectUncheckedUpdateManyWithoutFolderNestedInput = {
+    create?: XOR<SavedProjectCreateWithoutFolderInput, SavedProjectUncheckedCreateWithoutFolderInput> | SavedProjectCreateWithoutFolderInput[] | SavedProjectUncheckedCreateWithoutFolderInput[]
+    connectOrCreate?: SavedProjectCreateOrConnectWithoutFolderInput | SavedProjectCreateOrConnectWithoutFolderInput[]
+    upsert?: SavedProjectUpsertWithWhereUniqueWithoutFolderInput | SavedProjectUpsertWithWhereUniqueWithoutFolderInput[]
+    createMany?: SavedProjectCreateManyFolderInputEnvelope
+    set?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+    disconnect?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+    delete?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+    connect?: SavedProjectWhereUniqueInput | SavedProjectWhereUniqueInput[]
+    update?: SavedProjectUpdateWithWhereUniqueWithoutFolderInput | SavedProjectUpdateWithWhereUniqueWithoutFolderInput[]
+    updateMany?: SavedProjectUpdateManyWithWhereWithoutFolderInput | SavedProjectUpdateManyWithWhereWithoutFolderInput[]
+    deleteMany?: SavedProjectScalarWhereInput | SavedProjectScalarWhereInput[]
+  }
+
+  export type FolderUncheckedUpdateManyWithoutParentFolderNestedInput = {
+    create?: XOR<FolderCreateWithoutParentFolderInput, FolderUncheckedCreateWithoutParentFolderInput> | FolderCreateWithoutParentFolderInput[] | FolderUncheckedCreateWithoutParentFolderInput[]
+    connectOrCreate?: FolderCreateOrConnectWithoutParentFolderInput | FolderCreateOrConnectWithoutParentFolderInput[]
+    upsert?: FolderUpsertWithWhereUniqueWithoutParentFolderInput | FolderUpsertWithWhereUniqueWithoutParentFolderInput[]
+    createMany?: FolderCreateManyParentFolderInputEnvelope
+    set?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    disconnect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    delete?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    update?: FolderUpdateWithWhereUniqueWithoutParentFolderInput | FolderUpdateWithWhereUniqueWithoutParentFolderInput[]
+    updateMany?: FolderUpdateManyWithWhereWithoutParentFolderInput | FolderUpdateManyWithWhereWithoutParentFolderInput[]
+    deleteMany?: FolderScalarWhereInput | FolderScalarWhereInput[]
+  }
+
   export type ProjectCreateNestedOneWithoutSavesInput = {
     create?: XOR<ProjectCreateWithoutSavesInput, ProjectUncheckedCreateWithoutSavesInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutSavesInput
@@ -36077,6 +37865,12 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutSavedProjectInput, UserUncheckedCreateWithoutSavedProjectInput>
     connectOrCreate?: UserCreateOrConnectWithoutSavedProjectInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type FolderCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<FolderCreateWithoutProjectsInput, FolderUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: FolderCreateOrConnectWithoutProjectsInput
+    connect?: FolderWhereUniqueInput
   }
 
   export type ProjectUpdateOneRequiredWithoutSavesNestedInput = {
@@ -36093,6 +37887,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutSavedProjectInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSavedProjectInput, UserUpdateWithoutSavedProjectInput>, UserUncheckedUpdateWithoutSavedProjectInput>
+  }
+
+  export type FolderUpdateOneWithoutProjectsNestedInput = {
+    create?: XOR<FolderCreateWithoutProjectsInput, FolderUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: FolderCreateOrConnectWithoutProjectsInput
+    upsert?: FolderUpsertWithoutProjectsInput
+    disconnect?: FolderWhereInput | boolean
+    delete?: FolderWhereInput | boolean
+    connect?: FolderWhereUniqueInput
+    update?: XOR<XOR<FolderUpdateToOneWithWhereWithoutProjectsInput, FolderUpdateWithoutProjectsInput>, FolderUncheckedUpdateWithoutProjectsInput>
   }
 
   export type ProjectCreateNestedOneWithoutSharesInput = {
@@ -36123,14 +37927,6 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSharedProjectInput, UserUpdateWithoutSharedProjectInput>, UserUncheckedUpdateWithoutSharedProjectInput>
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type UploadCreateNestedOneWithoutProfilePicturesInput = {
@@ -36262,6 +38058,13 @@ export namespace Prisma {
     connect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
   }
 
+  export type FolderCreateNestedManyWithoutUserInput = {
+    create?: XOR<FolderCreateWithoutUserInput, FolderUncheckedCreateWithoutUserInput> | FolderCreateWithoutUserInput[] | FolderUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FolderCreateOrConnectWithoutUserInput | FolderCreateOrConnectWithoutUserInput[]
+    createMany?: FolderCreateManyUserInputEnvelope
+    connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+  }
+
   export type SolveUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SolveCreateWithoutUserInput, SolveUncheckedCreateWithoutUserInput> | SolveCreateWithoutUserInput[] | SolveUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SolveCreateOrConnectWithoutUserInput | SolveCreateOrConnectWithoutUserInput[]
@@ -36383,6 +38186,13 @@ export namespace Prisma {
     connectOrCreate?: SharedProjectCreateOrConnectWithoutCreatedByInput | SharedProjectCreateOrConnectWithoutCreatedByInput[]
     createMany?: SharedProjectCreateManyCreatedByInputEnvelope
     connect?: SharedProjectWhereUniqueInput | SharedProjectWhereUniqueInput[]
+  }
+
+  export type FolderUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<FolderCreateWithoutUserInput, FolderUncheckedCreateWithoutUserInput> | FolderCreateWithoutUserInput[] | FolderUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FolderCreateOrConnectWithoutUserInput | FolderCreateOrConnectWithoutUserInput[]
+    createMany?: FolderCreateManyUserInputEnvelope
+    connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -36651,6 +38461,20 @@ export namespace Prisma {
     deleteMany?: SharedProjectScalarWhereInput | SharedProjectScalarWhereInput[]
   }
 
+  export type FolderUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FolderCreateWithoutUserInput, FolderUncheckedCreateWithoutUserInput> | FolderCreateWithoutUserInput[] | FolderUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FolderCreateOrConnectWithoutUserInput | FolderCreateOrConnectWithoutUserInput[]
+    upsert?: FolderUpsertWithWhereUniqueWithoutUserInput | FolderUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FolderCreateManyUserInputEnvelope
+    set?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    disconnect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    delete?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    update?: FolderUpdateWithWhereUniqueWithoutUserInput | FolderUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FolderUpdateManyWithWhereWithoutUserInput | FolderUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FolderScalarWhereInput | FolderScalarWhereInput[]
+  }
+
   export type SolveUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SolveCreateWithoutUserInput, SolveUncheckedCreateWithoutUserInput> | SolveCreateWithoutUserInput[] | SolveUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SolveCreateOrConnectWithoutUserInput | SolveCreateOrConnectWithoutUserInput[]
@@ -36895,6 +38719,20 @@ export namespace Prisma {
     update?: SharedProjectUpdateWithWhereUniqueWithoutCreatedByInput | SharedProjectUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: SharedProjectUpdateManyWithWhereWithoutCreatedByInput | SharedProjectUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: SharedProjectScalarWhereInput | SharedProjectScalarWhereInput[]
+  }
+
+  export type FolderUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FolderCreateWithoutUserInput, FolderUncheckedCreateWithoutUserInput> | FolderCreateWithoutUserInput[] | FolderUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FolderCreateOrConnectWithoutUserInput | FolderCreateOrConnectWithoutUserInput[]
+    upsert?: FolderUpsertWithWhereUniqueWithoutUserInput | FolderUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FolderCreateManyUserInputEnvelope
+    set?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    disconnect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    delete?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+    update?: FolderUpdateWithWhereUniqueWithoutUserInput | FolderUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FolderUpdateManyWithWhereWithoutUserInput | FolderUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FolderScalarWhereInput | FolderScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSentRequestsInput = {
@@ -37972,6 +39810,17 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -38017,17 +39866,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -38065,6 +39903,33 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -38096,33 +39961,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -38310,6 +40148,7 @@ export namespace Prisma {
     savedAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutSavedProjectInput
+    Folder?: FolderCreateNestedOneWithoutProjectsInput
   }
 
   export type SavedProjectUncheckedCreateWithoutProjectInput = {
@@ -38318,6 +40157,7 @@ export namespace Prisma {
     creatorId: number
     savedAt?: Date | string
     updatedAt?: Date | string
+    folderId?: number | null
   }
 
   export type SavedProjectCreateOrConnectWithoutProjectInput = {
@@ -38405,6 +40245,7 @@ export namespace Prisma {
     creatorId?: IntFilter<"SavedProject"> | number
     savedAt?: DateTimeFilter<"SavedProject"> | Date | string
     updatedAt?: DateTimeFilter<"SavedProject"> | Date | string
+    folderId?: IntNullableFilter<"SavedProject"> | number | null
   }
 
   export type SharedProjectUpsertWithWhereUniqueWithoutProjectInput = {
@@ -38439,6 +40280,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
     Saves?: SavedProjectCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectCreateNestedManyWithoutProjectInput
   }
@@ -38449,6 +40291,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
     Saves?: SavedProjectUncheckedCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectUncheckedCreateNestedManyWithoutProjectInput
   }
@@ -38474,6 +40317,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     Saves?: SavedProjectUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUpdateManyWithoutProjectNestedInput
   }
@@ -38484,8 +40328,318 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     Saves?: SavedProjectUncheckedUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type UserCreateWithoutFoldersInput = {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload: UploadCreateNestedOneWithoutProfilePicturesInput
+    solves?: SolveCreateNestedManyWithoutUserInput
+    Guide?: GuideCreateNestedManyWithoutAuthorInput
+    Course?: CourseCreateNestedOneWithoutUserInput
+    Review?: ReviewCreateNestedManyWithoutUserInput
+    Upload?: UploadCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryCreateNestedManyWithoutUserInput
+    Problem?: ProblemCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationCreateNestedManyWithoutUsersInput
+    SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutFoldersInput = {
+    id?: number
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    emailValidated?: boolean
+    userColor?: string
+    picture: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    activeAt?: Date | string
+    password?: string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: string
+    occupationType?: $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    solves?: SolveUncheckedCreateNestedManyWithoutUserInput
+    Guide?: GuideUncheckedCreateNestedManyWithoutAuthorInput
+    Course?: CourseUncheckedCreateNestedOneWithoutUserInput
+    Review?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    Upload?: UploadUncheckedCreateNestedManyWithoutUploadUserInput
+    Inquiry?: InquiryUncheckedCreateNestedManyWithoutUserInput
+    Problem?: ProblemUncheckedCreateNestedManyWithoutAuthorInput
+    Feedback?: FeedbackUncheckedCreateNestedManyWithoutUserInput
+    JoinedClass?: StudentsInCourseUncheckedCreateNestedManyWithoutUserInput
+    CreatedClasses?: ClassUncheckedCreateNestedManyWithoutCreatorInput
+    Assigments?: AssignmentUncheckedCreateNestedManyWithoutAssignedToInput
+    SentMessages?: MessageUncheckedCreateNestedManyWithoutFromInput
+    ReceivedMessages?: MessageUncheckedCreateNestedManyWithoutToInput
+    sentRequests?: FriendRelationUncheckedCreateNestedManyWithoutInitiatorInput
+    receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
+    Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
+    SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutFoldersInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFoldersInput, UserUncheckedCreateWithoutFoldersInput>
+  }
+
+  export type SavedProjectCreateWithoutFolderInput = {
+    name?: string | null
+    savedAt?: Date | string
+    updatedAt?: Date | string
+    Project: ProjectCreateNestedOneWithoutSavesInput
+    createdBy: UserCreateNestedOneWithoutSavedProjectInput
+  }
+
+  export type SavedProjectUncheckedCreateWithoutFolderInput = {
+    id?: number
+    name?: string | null
+    projectId: number
+    creatorId: number
+    savedAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SavedProjectCreateOrConnectWithoutFolderInput = {
+    where: SavedProjectWhereUniqueInput
+    create: XOR<SavedProjectCreateWithoutFolderInput, SavedProjectUncheckedCreateWithoutFolderInput>
+  }
+
+  export type SavedProjectCreateManyFolderInputEnvelope = {
+    data: SavedProjectCreateManyFolderInput | SavedProjectCreateManyFolderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FolderCreateWithoutChildFoldersInput = {
+    name: string
+    createdAt?: Date | string
+    User: UserCreateNestedOneWithoutFoldersInput
+    Projects?: SavedProjectCreateNestedManyWithoutFolderInput
+    ParentFolder?: FolderCreateNestedOneWithoutChildFoldersInput
+  }
+
+  export type FolderUncheckedCreateWithoutChildFoldersInput = {
+    folderId?: number
+    name: string
+    createdAt?: Date | string
+    userId: number
+    parentFolderId?: number | null
+    Projects?: SavedProjectUncheckedCreateNestedManyWithoutFolderInput
+  }
+
+  export type FolderCreateOrConnectWithoutChildFoldersInput = {
+    where: FolderWhereUniqueInput
+    create: XOR<FolderCreateWithoutChildFoldersInput, FolderUncheckedCreateWithoutChildFoldersInput>
+  }
+
+  export type FolderCreateWithoutParentFolderInput = {
+    name: string
+    createdAt?: Date | string
+    User: UserCreateNestedOneWithoutFoldersInput
+    Projects?: SavedProjectCreateNestedManyWithoutFolderInput
+    ChildFolders?: FolderCreateNestedManyWithoutParentFolderInput
+  }
+
+  export type FolderUncheckedCreateWithoutParentFolderInput = {
+    folderId?: number
+    name: string
+    createdAt?: Date | string
+    userId: number
+    Projects?: SavedProjectUncheckedCreateNestedManyWithoutFolderInput
+    ChildFolders?: FolderUncheckedCreateNestedManyWithoutParentFolderInput
+  }
+
+  export type FolderCreateOrConnectWithoutParentFolderInput = {
+    where: FolderWhereUniqueInput
+    create: XOR<FolderCreateWithoutParentFolderInput, FolderUncheckedCreateWithoutParentFolderInput>
+  }
+
+  export type FolderCreateManyParentFolderInputEnvelope = {
+    data: FolderCreateManyParentFolderInput | FolderCreateManyParentFolderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutFoldersInput = {
+    update: XOR<UserUpdateWithoutFoldersInput, UserUncheckedUpdateWithoutFoldersInput>
+    create: XOR<UserCreateWithoutFoldersInput, UserUncheckedCreateWithoutFoldersInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutFoldersInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutFoldersInput, UserUncheckedUpdateWithoutFoldersInput>
+  }
+
+  export type UserUpdateWithoutFoldersInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    pictureUpload?: UploadUpdateOneRequiredWithoutProfilePicturesNestedInput
+    solves?: SolveUpdateManyWithoutUserNestedInput
+    Guide?: GuideUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUpdateOneWithoutUserNestedInput
+    Review?: ReviewUpdateManyWithoutUserNestedInput
+    Upload?: UploadUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
+    SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFoldersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailValidated?: BoolFieldUpdateOperationsInput | boolean
+    userColor?: StringFieldUpdateOperationsInput | string
+    picture?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    authId?: NullableJsonNullValueInput | InputJsonValue
+    loginMethod?: StringFieldUpdateOperationsInput | string
+    occupationType?: EnumOccupationTypeFieldUpdateOperationsInput | $Enums.OccupationType
+    preferences?: NullableJsonNullValueInput | InputJsonValue
+    solves?: SolveUncheckedUpdateManyWithoutUserNestedInput
+    Guide?: GuideUncheckedUpdateManyWithoutAuthorNestedInput
+    Course?: CourseUncheckedUpdateOneWithoutUserNestedInput
+    Review?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    Upload?: UploadUncheckedUpdateManyWithoutUploadUserNestedInput
+    Inquiry?: InquiryUncheckedUpdateManyWithoutUserNestedInput
+    Problem?: ProblemUncheckedUpdateManyWithoutAuthorNestedInput
+    Feedback?: FeedbackUncheckedUpdateManyWithoutUserNestedInput
+    JoinedClass?: StudentsInCourseUncheckedUpdateManyWithoutUserNestedInput
+    CreatedClasses?: ClassUncheckedUpdateManyWithoutCreatorNestedInput
+    Assigments?: AssignmentUncheckedUpdateManyWithoutAssignedToNestedInput
+    SentMessages?: MessageUncheckedUpdateManyWithoutFromNestedInput
+    ReceivedMessages?: MessageUncheckedUpdateManyWithoutToNestedInput
+    sentRequests?: FriendRelationUncheckedUpdateManyWithoutInitiatorNestedInput
+    receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
+    Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
+    SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type SavedProjectUpsertWithWhereUniqueWithoutFolderInput = {
+    where: SavedProjectWhereUniqueInput
+    update: XOR<SavedProjectUpdateWithoutFolderInput, SavedProjectUncheckedUpdateWithoutFolderInput>
+    create: XOR<SavedProjectCreateWithoutFolderInput, SavedProjectUncheckedCreateWithoutFolderInput>
+  }
+
+  export type SavedProjectUpdateWithWhereUniqueWithoutFolderInput = {
+    where: SavedProjectWhereUniqueInput
+    data: XOR<SavedProjectUpdateWithoutFolderInput, SavedProjectUncheckedUpdateWithoutFolderInput>
+  }
+
+  export type SavedProjectUpdateManyWithWhereWithoutFolderInput = {
+    where: SavedProjectScalarWhereInput
+    data: XOR<SavedProjectUpdateManyMutationInput, SavedProjectUncheckedUpdateManyWithoutFolderInput>
+  }
+
+  export type FolderUpsertWithoutChildFoldersInput = {
+    update: XOR<FolderUpdateWithoutChildFoldersInput, FolderUncheckedUpdateWithoutChildFoldersInput>
+    create: XOR<FolderCreateWithoutChildFoldersInput, FolderUncheckedCreateWithoutChildFoldersInput>
+    where?: FolderWhereInput
+  }
+
+  export type FolderUpdateToOneWithWhereWithoutChildFoldersInput = {
+    where?: FolderWhereInput
+    data: XOR<FolderUpdateWithoutChildFoldersInput, FolderUncheckedUpdateWithoutChildFoldersInput>
+  }
+
+  export type FolderUpdateWithoutChildFoldersInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    User?: UserUpdateOneRequiredWithoutFoldersNestedInput
+    Projects?: SavedProjectUpdateManyWithoutFolderNestedInput
+    ParentFolder?: FolderUpdateOneWithoutChildFoldersNestedInput
+  }
+
+  export type FolderUncheckedUpdateWithoutChildFoldersInput = {
+    folderId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: IntFieldUpdateOperationsInput | number
+    parentFolderId?: NullableIntFieldUpdateOperationsInput | number | null
+    Projects?: SavedProjectUncheckedUpdateManyWithoutFolderNestedInput
+  }
+
+  export type FolderUpsertWithWhereUniqueWithoutParentFolderInput = {
+    where: FolderWhereUniqueInput
+    update: XOR<FolderUpdateWithoutParentFolderInput, FolderUncheckedUpdateWithoutParentFolderInput>
+    create: XOR<FolderCreateWithoutParentFolderInput, FolderUncheckedCreateWithoutParentFolderInput>
+  }
+
+  export type FolderUpdateWithWhereUniqueWithoutParentFolderInput = {
+    where: FolderWhereUniqueInput
+    data: XOR<FolderUpdateWithoutParentFolderInput, FolderUncheckedUpdateWithoutParentFolderInput>
+  }
+
+  export type FolderUpdateManyWithWhereWithoutParentFolderInput = {
+    where: FolderScalarWhereInput
+    data: XOR<FolderUpdateManyMutationInput, FolderUncheckedUpdateManyWithoutParentFolderInput>
+  }
+
+  export type FolderScalarWhereInput = {
+    AND?: FolderScalarWhereInput | FolderScalarWhereInput[]
+    OR?: FolderScalarWhereInput[]
+    NOT?: FolderScalarWhereInput | FolderScalarWhereInput[]
+    folderId?: IntFilter<"Folder"> | number
+    name?: StringFilter<"Folder"> | string
+    createdAt?: DateTimeFilter<"Folder"> | Date | string
+    userId?: IntFilter<"Folder"> | number
+    parentFolderId?: IntNullableFilter<"Folder"> | number | null
   }
 
   export type ProjectCreateWithoutSavesInput = {
@@ -38493,6 +40647,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
     files?: FileCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectCreateNestedManyWithoutProjectInput
   }
@@ -38503,6 +40658,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     Shares?: SharedProjectUncheckedCreateNestedManyWithoutProjectInput
   }
@@ -38545,6 +40701,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSavedProjectInput = {
@@ -38581,11 +40738,34 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSavedProjectInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutSavedProjectInput, UserUncheckedCreateWithoutSavedProjectInput>
+  }
+
+  export type FolderCreateWithoutProjectsInput = {
+    name: string
+    createdAt?: Date | string
+    User: UserCreateNestedOneWithoutFoldersInput
+    ParentFolder?: FolderCreateNestedOneWithoutChildFoldersInput
+    ChildFolders?: FolderCreateNestedManyWithoutParentFolderInput
+  }
+
+  export type FolderUncheckedCreateWithoutProjectsInput = {
+    folderId?: number
+    name: string
+    createdAt?: Date | string
+    userId: number
+    parentFolderId?: number | null
+    ChildFolders?: FolderUncheckedCreateNestedManyWithoutParentFolderInput
+  }
+
+  export type FolderCreateOrConnectWithoutProjectsInput = {
+    where: FolderWhereUniqueInput
+    create: XOR<FolderCreateWithoutProjectsInput, FolderUncheckedCreateWithoutProjectsInput>
   }
 
   export type ProjectUpsertWithoutSavesInput = {
@@ -38604,6 +40784,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     files?: FileUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUpdateManyWithoutProjectNestedInput
   }
@@ -38614,6 +40795,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     Shares?: SharedProjectUncheckedUpdateManyWithoutProjectNestedInput
   }
@@ -38662,6 +40844,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSavedProjectInput = {
@@ -38698,6 +40881,35 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type FolderUpsertWithoutProjectsInput = {
+    update: XOR<FolderUpdateWithoutProjectsInput, FolderUncheckedUpdateWithoutProjectsInput>
+    create: XOR<FolderCreateWithoutProjectsInput, FolderUncheckedCreateWithoutProjectsInput>
+    where?: FolderWhereInput
+  }
+
+  export type FolderUpdateToOneWithWhereWithoutProjectsInput = {
+    where?: FolderWhereInput
+    data: XOR<FolderUpdateWithoutProjectsInput, FolderUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type FolderUpdateWithoutProjectsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    User?: UserUpdateOneRequiredWithoutFoldersNestedInput
+    ParentFolder?: FolderUpdateOneWithoutChildFoldersNestedInput
+    ChildFolders?: FolderUpdateManyWithoutParentFolderNestedInput
+  }
+
+  export type FolderUncheckedUpdateWithoutProjectsInput = {
+    folderId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: IntFieldUpdateOperationsInput | number
+    parentFolderId?: NullableIntFieldUpdateOperationsInput | number | null
+    ChildFolders?: FolderUncheckedUpdateManyWithoutParentFolderNestedInput
   }
 
   export type ProjectCreateWithoutSharesInput = {
@@ -38705,6 +40917,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
     files?: FileCreateNestedManyWithoutProjectInput
     Saves?: SavedProjectCreateNestedManyWithoutProjectInput
   }
@@ -38715,6 +40928,7 @@ export namespace Prisma {
     fileUUID?: string | null
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: number | null
     files?: FileUncheckedCreateNestedManyWithoutProjectInput
     Saves?: SavedProjectUncheckedCreateNestedManyWithoutProjectInput
   }
@@ -38757,6 +40971,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedProjectInput = {
@@ -38793,6 +41008,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedProjectInput = {
@@ -38816,6 +41032,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     files?: FileUpdateManyWithoutProjectNestedInput
     Saves?: SavedProjectUpdateManyWithoutProjectNestedInput
   }
@@ -38826,6 +41043,7 @@ export namespace Prisma {
     fileUUID?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     files?: FileUncheckedUpdateManyWithoutProjectNestedInput
     Saves?: SavedProjectUncheckedUpdateManyWithoutProjectNestedInput
   }
@@ -38874,6 +41092,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedProjectInput = {
@@ -38910,6 +41129,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UploadCreateWithoutProfilePicturesInput = {
@@ -39409,6 +41629,7 @@ export namespace Prisma {
     savedAt?: Date | string
     updatedAt?: Date | string
     Project: ProjectCreateNestedOneWithoutSavesInput
+    Folder?: FolderCreateNestedOneWithoutProjectsInput
   }
 
   export type SavedProjectUncheckedCreateWithoutCreatedByInput = {
@@ -39417,6 +41638,7 @@ export namespace Prisma {
     projectId: number
     savedAt?: Date | string
     updatedAt?: Date | string
+    folderId?: number | null
   }
 
   export type SavedProjectCreateOrConnectWithoutCreatedByInput = {
@@ -39449,6 +41671,33 @@ export namespace Prisma {
 
   export type SharedProjectCreateManyCreatedByInputEnvelope = {
     data: SharedProjectCreateManyCreatedByInput | SharedProjectCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FolderCreateWithoutUserInput = {
+    name: string
+    createdAt?: Date | string
+    Projects?: SavedProjectCreateNestedManyWithoutFolderInput
+    ParentFolder?: FolderCreateNestedOneWithoutChildFoldersInput
+    ChildFolders?: FolderCreateNestedManyWithoutParentFolderInput
+  }
+
+  export type FolderUncheckedCreateWithoutUserInput = {
+    folderId?: number
+    name: string
+    createdAt?: Date | string
+    parentFolderId?: number | null
+    Projects?: SavedProjectUncheckedCreateNestedManyWithoutFolderInput
+    ChildFolders?: FolderUncheckedCreateNestedManyWithoutParentFolderInput
+  }
+
+  export type FolderCreateOrConnectWithoutUserInput = {
+    where: FolderWhereUniqueInput
+    create: XOR<FolderCreateWithoutUserInput, FolderUncheckedCreateWithoutUserInput>
+  }
+
+  export type FolderCreateManyUserInputEnvelope = {
+    data: FolderCreateManyUserInput | FolderCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -39961,6 +42210,22 @@ export namespace Prisma {
     data: XOR<SharedProjectUpdateManyMutationInput, SharedProjectUncheckedUpdateManyWithoutCreatedByInput>
   }
 
+  export type FolderUpsertWithWhereUniqueWithoutUserInput = {
+    where: FolderWhereUniqueInput
+    update: XOR<FolderUpdateWithoutUserInput, FolderUncheckedUpdateWithoutUserInput>
+    create: XOR<FolderCreateWithoutUserInput, FolderUncheckedCreateWithoutUserInput>
+  }
+
+  export type FolderUpdateWithWhereUniqueWithoutUserInput = {
+    where: FolderWhereUniqueInput
+    data: XOR<FolderUpdateWithoutUserInput, FolderUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FolderUpdateManyWithWhereWithoutUserInput = {
+    where: FolderScalarWhereInput
+    data: XOR<FolderUpdateManyMutationInput, FolderUncheckedUpdateManyWithoutUserInput>
+  }
+
   export type UserCreateWithoutSentRequestsInput = {
     username: string
     firstName: string
@@ -39994,6 +42259,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSentRequestsInput = {
@@ -40030,6 +42296,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSentRequestsInput = {
@@ -40070,6 +42337,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReceivedRequestsInput = {
@@ -40106,6 +42374,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReceivedRequestsInput = {
@@ -40146,6 +42415,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationCreateNestedManyWithoutReceiverInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFriendsInput = {
@@ -40182,6 +42452,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedCreateNestedManyWithoutReceiverInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFriendsInput = {
@@ -40258,6 +42529,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentRequestsInput = {
@@ -40294,6 +42566,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutReceivedRequestsInput = {
@@ -40340,6 +42613,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedRequestsInput = {
@@ -40376,6 +42650,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutFriendsInput = {
@@ -40465,6 +42740,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSentMessagesInput = {
@@ -40501,6 +42777,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSentMessagesInput = {
@@ -40541,6 +42818,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReceivedMessagesInput = {
@@ -40577,6 +42855,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReceivedMessagesInput = {
@@ -40650,6 +42929,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentMessagesInput = {
@@ -40686,6 +42966,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutReceivedMessagesInput = {
@@ -40732,6 +43013,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedMessagesInput = {
@@ -40768,6 +43050,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FriendRelationUpsertWithoutMessagesInput = {
@@ -40831,6 +43114,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutGuideInput = {
@@ -40867,6 +43151,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutGuideInput = {
@@ -40936,6 +43221,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGuideInput = {
@@ -40972,6 +43258,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GuideTagUpsertWithWhereUniqueWithoutGuideInput = {
@@ -41358,6 +43645,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProblemInput = {
@@ -41394,6 +43682,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProblemInput = {
@@ -41523,6 +43812,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProblemInput = {
@@ -41559,6 +43849,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProblemTagUpsertWithWhereUniqueWithoutProblemInput = {
@@ -41642,6 +43933,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSolvesInput = {
@@ -41678,6 +43970,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSolvesInput = {
@@ -41777,6 +44070,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSolvesInput = {
@@ -41813,6 +44107,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProblemUpsertWithoutSolvesInput = {
@@ -41902,6 +44197,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCourseInput = {
@@ -41938,6 +44234,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCourseInput = {
@@ -42072,6 +44369,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCourseInput = {
@@ -42108,6 +44406,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UploadUpsertWithoutCourseInput = {
@@ -42245,6 +44544,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInquiryInput = {
@@ -42281,6 +44581,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInquiryInput = {
@@ -42378,6 +44679,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInquiryInput = {
@@ -42414,6 +44716,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutReviewInput = {
@@ -42449,6 +44752,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReviewInput = {
@@ -42485,6 +44789,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReviewInput = {
@@ -42576,6 +44881,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewInput = {
@@ -42612,6 +44918,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CourseUpsertWithoutReviewsInput = {
@@ -42693,6 +45000,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUploadInput = {
@@ -42729,6 +45037,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUploadInput = {
@@ -42814,6 +45123,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPictureUploadInput = {
@@ -42850,6 +45160,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPictureUploadInput = {
@@ -42906,6 +45217,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadInput = {
@@ -42942,6 +45254,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CourseUpsertWithWhereUniqueWithoutVideoSummaryInput = {
@@ -43029,6 +45342,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFeedbackInput = {
@@ -43065,6 +45379,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFeedbackInput = {
@@ -43116,6 +45431,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedbackInput = {
@@ -43152,6 +45468,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCreatedClassesInput = {
@@ -43187,6 +45504,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedClassesInput = {
@@ -43223,6 +45541,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedClassesInput = {
@@ -43323,6 +45642,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedClassesInput = {
@@ -43359,6 +45679,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StudentsInCourseUpsertWithWhereUniqueWithoutClassInput = {
@@ -43426,6 +45747,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutJoinedClassInput = {
@@ -43462,6 +45784,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutJoinedClassInput = {
@@ -43537,6 +45860,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutJoinedClassInput = {
@@ -43573,6 +45897,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClassUpsertWithoutStudentsInput = {
@@ -43710,6 +46035,7 @@ export namespace Prisma {
     Friends?: FriendRelationCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssigmentsInput = {
@@ -43746,6 +46072,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedCreateNestedManyWithoutUsersInput
     SavedProject?: SavedProjectUncheckedCreateNestedManyWithoutCreatedByInput
     SharedProject?: SharedProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    Folders?: FolderUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssigmentsInput = {
@@ -43865,6 +46192,7 @@ export namespace Prisma {
     creatorId: number
     savedAt?: Date | string
     updatedAt?: Date | string
+    folderId?: number | null
   }
 
   export type SharedProjectCreateManyProjectInput = {
@@ -43897,6 +46225,7 @@ export namespace Prisma {
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutSavedProjectNestedInput
+    Folder?: FolderUpdateOneWithoutProjectsNestedInput
   }
 
   export type SavedProjectUncheckedUpdateWithoutProjectInput = {
@@ -43905,6 +46234,7 @@ export namespace Prisma {
     creatorId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    folderId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type SavedProjectUncheckedUpdateManyWithoutProjectInput = {
@@ -43913,6 +46243,7 @@ export namespace Prisma {
     creatorId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    folderId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type SharedProjectUpdateWithoutProjectInput = {
@@ -43933,6 +46264,72 @@ export namespace Prisma {
     creatorId?: NullableIntFieldUpdateOperationsInput | number | null
     openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SavedProjectCreateManyFolderInput = {
+    id?: number
+    name?: string | null
+    projectId: number
+    creatorId: number
+    savedAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FolderCreateManyParentFolderInput = {
+    folderId?: number
+    name: string
+    createdAt?: Date | string
+    userId: number
+  }
+
+  export type SavedProjectUpdateWithoutFolderInput = {
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    Project?: ProjectUpdateOneRequiredWithoutSavesNestedInput
+    createdBy?: UserUpdateOneRequiredWithoutSavedProjectNestedInput
+  }
+
+  export type SavedProjectUncheckedUpdateWithoutFolderInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: IntFieldUpdateOperationsInput | number
+    creatorId?: IntFieldUpdateOperationsInput | number
+    savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SavedProjectUncheckedUpdateManyWithoutFolderInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: IntFieldUpdateOperationsInput | number
+    creatorId?: IntFieldUpdateOperationsInput | number
+    savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderUpdateWithoutParentFolderInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    User?: UserUpdateOneRequiredWithoutFoldersNestedInput
+    Projects?: SavedProjectUpdateManyWithoutFolderNestedInput
+    ChildFolders?: FolderUpdateManyWithoutParentFolderNestedInput
+  }
+
+  export type FolderUncheckedUpdateWithoutParentFolderInput = {
+    folderId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: IntFieldUpdateOperationsInput | number
+    Projects?: SavedProjectUncheckedUpdateManyWithoutFolderNestedInput
+    ChildFolders?: FolderUncheckedUpdateManyWithoutParentFolderNestedInput
+  }
+
+  export type FolderUncheckedUpdateManyWithoutParentFolderInput = {
+    folderId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: IntFieldUpdateOperationsInput | number
   }
 
   export type SolveCreateManyUserInput = {
@@ -44060,6 +46457,7 @@ export namespace Prisma {
     projectId: number
     savedAt?: Date | string
     updatedAt?: Date | string
+    folderId?: number | null
   }
 
   export type SharedProjectCreateManyCreatedByInput = {
@@ -44067,6 +46465,13 @@ export namespace Prisma {
     projectId: number
     openedAt?: Date | string
     sharedAt?: Date | string
+  }
+
+  export type FolderCreateManyUserInput = {
+    folderId?: number
+    name: string
+    createdAt?: Date | string
+    parentFolderId?: number | null
   }
 
   export type SolveUpdateWithoutUserInput = {
@@ -44497,6 +46902,7 @@ export namespace Prisma {
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Project?: ProjectUpdateOneRequiredWithoutSavesNestedInput
+    Folder?: FolderUpdateOneWithoutProjectsNestedInput
   }
 
   export type SavedProjectUncheckedUpdateWithoutCreatedByInput = {
@@ -44505,6 +46911,7 @@ export namespace Prisma {
     projectId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    folderId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type SavedProjectUncheckedUpdateManyWithoutCreatedByInput = {
@@ -44513,6 +46920,7 @@ export namespace Prisma {
     projectId?: IntFieldUpdateOperationsInput | number
     savedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    folderId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type SharedProjectUpdateWithoutCreatedByInput = {
@@ -44533,6 +46941,30 @@ export namespace Prisma {
     projectId?: IntFieldUpdateOperationsInput | number
     openedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sharedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderUpdateWithoutUserInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    Projects?: SavedProjectUpdateManyWithoutFolderNestedInput
+    ParentFolder?: FolderUpdateOneWithoutChildFoldersNestedInput
+    ChildFolders?: FolderUpdateManyWithoutParentFolderNestedInput
+  }
+
+  export type FolderUncheckedUpdateWithoutUserInput = {
+    folderId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    parentFolderId?: NullableIntFieldUpdateOperationsInput | number | null
+    Projects?: SavedProjectUncheckedUpdateManyWithoutFolderNestedInput
+    ChildFolders?: FolderUncheckedUpdateManyWithoutParentFolderNestedInput
+  }
+
+  export type FolderUncheckedUpdateManyWithoutUserInput = {
+    folderId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    parentFolderId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MessageCreateManyFriendRelationInput = {
@@ -44576,6 +47008,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUpdateManyWithoutReceiverNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFriendsInput = {
@@ -44612,6 +47045,7 @@ export namespace Prisma {
     receivedRequests?: FriendRelationUncheckedUpdateManyWithoutReceiverNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutFriendsInput = {
@@ -45000,6 +47434,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPictureUploadInput = {
@@ -45036,6 +47471,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutPictureUploadInput = {
@@ -45146,6 +47582,7 @@ export namespace Prisma {
     Friends?: FriendRelationUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssigmentsInput = {
@@ -45182,6 +47619,7 @@ export namespace Prisma {
     Friends?: FriendRelationUncheckedUpdateManyWithoutUsersNestedInput
     SavedProject?: SavedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     SharedProject?: SharedProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    Folders?: FolderUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutAssigmentsInput = {

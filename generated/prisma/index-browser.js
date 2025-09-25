@@ -125,7 +125,8 @@ exports.Prisma.ProjectScalarFieldEnum = {
   name: 'name',
   fileUUID: 'fileUUID',
   createdAt: 'createdAt',
-  metadata: 'metadata'
+  metadata: 'metadata',
+  userId: 'userId'
 };
 
 exports.Prisma.FileScalarFieldEnum = {
@@ -135,13 +136,22 @@ exports.Prisma.FileScalarFieldEnum = {
   projectId: 'projectId'
 };
 
+exports.Prisma.FolderScalarFieldEnum = {
+  folderId: 'folderId',
+  name: 'name',
+  createdAt: 'createdAt',
+  userId: 'userId',
+  parentFolderId: 'parentFolderId'
+};
+
 exports.Prisma.SavedProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
   projectId: 'projectId',
   creatorId: 'creatorId',
   savedAt: 'savedAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  folderId: 'folderId'
 };
 
 exports.Prisma.SharedProjectScalarFieldEnum = {
@@ -383,6 +393,10 @@ exports.Prisma.FileOrderByRelevanceFieldEnum = {
   content: 'content'
 };
 
+exports.Prisma.FolderOrderByRelevanceFieldEnum = {
+  name: 'name'
+};
+
 exports.Prisma.SavedProjectOrderByRelevanceFieldEnum = {
   name: 'name'
 };
@@ -505,6 +519,7 @@ exports.SolveType = exports.$Enums.SolveType = {
 exports.Prisma.ModelName = {
   Project: 'Project',
   File: 'File',
+  Folder: 'Folder',
   SavedProject: 'SavedProject',
   SharedProject: 'SharedProject',
   User: 'User',

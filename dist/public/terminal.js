@@ -1,4 +1,4 @@
-import { createNode } from "./components.js";
+import { createNode } from "./utils.js";
 import { createTabElement, EditorWindowTab } from "./windowManager.js";
 import { WebSocketMessageType, ws } from "./codeEditor.js";
 class TerminalTab extends EditorWindowTab {

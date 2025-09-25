@@ -1,5 +1,5 @@
 import { Problem } from "../../../generated/prisma/index.js";
-import { createNode } from "../components.js"
+import { createNode } from "../utils.js"
 
 export async function test(sessionId, problemId,clientId)
 {
