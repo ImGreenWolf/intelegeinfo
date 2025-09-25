@@ -137,8 +137,10 @@ export async function createFolder() {
         folders: Folder[],
         projects: Project[]
     } = await res.json();
-    
-    cache.delete(parentFolder.folderId)
+    if(!parentFolder.folderId)
+        cache.delete('root')
+    else
+        cache.delete(parentFolder.folderId)
     loadExplorer()
 }
 

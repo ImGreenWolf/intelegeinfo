@@ -100,6 +100,9 @@ export async function createFolder() {
     if (!res.ok)
         return;
     const json = await res.json();
-    cache.delete(parentFolder.folderId);
+    if (!parentFolder.folderId)
+        cache.delete('root');
+    else
+        cache.delete(parentFolder.folderId);
     loadExplorer();
 }
