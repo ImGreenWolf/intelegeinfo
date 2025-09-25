@@ -84,7 +84,7 @@ function onLoggedIn(user, res, req, shouldkeepLoggedIn = false) {
         httpOnly,
         secure, // Set to true in production (HTTPS)
     };
-    return res.cookie(server_1.tokenCookieName, token, cookieOption).cookie('iiauthstate', true, { ...keepLoggedIn, httpOnly: false });
+    return res.cookie(server_1.tokenCookieName, token, cookieOption).cookie('iiauthstate', true, { ...keepLoggedIn, httpOnly: false, maxAge: cookieOption.maxAge, secure: cookieOption.secure });
 }
 function clearAuthCookies(res) {
     return res.clearCookie(server_1.tokenCookieName).clearCookie('iiauthstate');
