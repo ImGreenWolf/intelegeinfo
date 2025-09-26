@@ -574,8 +574,8 @@ exports.router.post('/folder/f/:folderId/add', server_1.authMiddleware, async (r
     const userId = getIdFromJWT(req);
     const subDirectory = req.params.folderId != '_root';
     try {
-        const parentFolderId = server_1.sqid.decode(req.params.folderId)[0];
-        if (!parentFolderId)
+        const parentFolderId = subDirectory ? server_1.sqid.decode(req.params.folderId)[0] : null;
+        if (!parentFolderId && subDirectory)
             throw 'Invalid UUID';
         if (folderUUID) {
             const folderId = server_1.sqid.decode(folderUUID)[0];
@@ -634,7 +634,11 @@ exports.router.get('/folder/f/:folderId', server_1.authMiddleware, async (req, r
             },
             include: {
                 Projects: true,
-                ChildFolders: true,
+                ChildFolders: {
+                    include: {
+                        _count: true
+                    }
+                },
                 ParentFolder: {
                     select: {
                         folderId: true,

@@ -656,53 +656,90 @@ header {
   max-width: 1024px;
   width: 75%;
   min-height: 500px;
+  max-height: 75%;
   padding: 30px;
 }
 
 .project-list-container .project-list {
-  padding: 0;
+  padding: 1em;
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  overflow: auto;
+  grid-template-columns: repeat(auto-fill, 200px);
   justify-content: space-around;
   gap: 1em;
 }
 
+.project-folder.filled::after {
+  content: "";
+  position: absolute;
+  margin: 0.25em;
+  top: -10px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  border-radius: 0.25em;
+  z-index: -1;
+}
+
 .project-list-container div .project,
-.project-list-container div button {
-  min-height: 4em;
+button.project-folder > div {
+  min-height: 5em;
   position: relative;
   align-items: center;
   display: flex;
   justify-content: space-between;
-  background-color: rgb(0, 0, 0);
   padding: 0 2em;
   border-radius: 0.25em;
   text-decoration: none;
   color: inherit;
-}
-.project-list-container div .project:hover,
-.project-list-container div button:hover {
-  outline: 0.1em solid gray;
-}
-.project-list-container div .project.project-folder,
-.project-list-container div button.project-folder {
-  background-color: transparent;
-  border: 5px solid rgb(0, 0, 0);
-}
-.project-list-container div .project.project-parent-folder,
-.project-list-container div button.project-parent-folder {
-  background-color: transparent;
-  border: 3px solid gray;
+  margin: 0;
+  background-color: black;
+  transition-duration: 0.3s;
 }
 
-.project-list-container > button:last-child {
-  max-width: 250px;
-  padding: 0 2em;
-  height: 2lh;
-  border-radius: 2lh;
-  justify-self: flex-end;
+.project-list-container button.project-folder {
+  min-height: 5em;
+  font-size: 1.25em;
+  position: relative;
+  background-color: rgb(85, 74, 41);
+  display: flex;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  border-top-left-radius: 0;
+  box-sizing: content-box;
+}
+.project-list-container button.project-folder:hover > div, .project-list-container button.project-folder.drag > div, .project-list-container button.project-folder:focus > div {
+  transform: skewX(-10deg) translateX(10px);
+}
+.project-list-container button.project-folder > div {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(168, 146, 79);
+}
+.project-list-container button.project-folder.project-parent-folder {
+  background-color: rgb(88, 88, 88);
+}
+.project-list-container button.project-folder.project-parent-folder > div {
+  background-color: gray;
+}
+.project-list-container button.project-folder::before {
+  position: absolute;
+  content: "";
+  top: -10px;
+  left: 0;
+  width: 25%;
+  height: 10px;
+  border-radius: 5px 25% 0 0;
+  background-color: inherit;
+  z-index: -2;
+}
+.project-list-container button.project-folder:hover {
+  outline: none;
+  border: none;
 }
 
 #createFile {

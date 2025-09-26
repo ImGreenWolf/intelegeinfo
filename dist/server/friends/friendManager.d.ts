@@ -3,10 +3,10 @@ export default router;
 export declare function getFriends(id: any): Promise<({
     initiator: any;
     user: {
+        id: number;
         username: string;
         firstName: string;
         lastName: string;
-        id: number;
         userColor: string;
         picture: string;
     };
@@ -18,10 +18,10 @@ export declare function getFriends(id: any): Promise<({
 } | {
     receiver: any;
     user: {
+        id: number;
         username: string;
         firstName: string;
         lastName: string;
-        id: number;
         userColor: string;
         picture: string;
     };
