@@ -30,8 +30,8 @@ export async function updateExplorer(json) {
     for (const folder of json.folders)
         folderArr.push(createFolderElement(folder));
     for (const project of json.projects) {
-        const projectElem = createNode('a', { attributes: [{ name: 'href', value: `/editor?save=${project.id}` }, { name: 'draggable', value: 'true' }],
-            className: 'project', htmlSting: `<h3>${project.name}</h3><button>x</button>` });
+        const projectElem = createNode('div', { attributes: [{ name: 'href', value: `/editor?save=${project.id}` }, { name: 'draggable', value: 'true' }],
+            className: 'project', htmlSting: `<a href="/editor?save=${project.id}">${project.name}</a><button>x</button>` });
         projectElem.ondragstart = (event) => {
             event.dataTransfer.setData("text/plain", project.name);
             draggedSave = { elem: projectElem, uuid: project.id, isFolder: false };
