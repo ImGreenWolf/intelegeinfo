@@ -1488,10 +1488,11 @@ export function listProjects() {
     // })
     const list = createNode('div', { className: 'project-list' });
     const button = createNode('button', { innerText: "Creaza Folder" });
-    const toolbar = createNode('div', { className: 'toolbar-project', html: [button] });
+    const path = createNode('div', { innerText: '/' });
+    const toolbar = createNode('div', { className: 'toolbar-project', html: [button, path] });
     const container = createNode('div', { className: 'project-list-container', html: [toolbar, list] });
     document.body.appendChild(container);
-    loadExplorer(list, button).then(() => onOpenMenu("projects", container));
+    loadExplorer(list, button, path).then(() => onOpenMenu("projects", container));
 }
 // END DOCUMENT FUNCTIONS //
 // standardise the json

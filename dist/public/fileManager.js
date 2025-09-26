@@ -3,7 +3,8 @@ let draggedSave = undefined;
 let parentFolder = undefined;
 let container;
 let cache = new Map();
-export async function loadExplorer(elem, createFolderElement) {
+let currentPathElem;
+export async function loadExplorer(elem, createFolderElement, pathElem) {
     let json;
     if (!cache.has('root')) {
         const res = await fetch('/user/listProjects');
@@ -16,9 +17,30 @@ export async function loadExplorer(elem, createFolderElement) {
         json = cache.get('root');
     if (elem)
         container = elem;
+    if (pathElem)
+        currentPathElem = pathElem;
     if (createFolderElement)
         createFolderElement.onclick = createFolder;
     updateExplorer(json);
+}
+function getCurrentPath(currentFolder, arr = []) {
+    // if(currentFolder.ParentFolder) 
+    //      arr.push(...getCurrentPath(currentFolder.ParentFolder, arr))
+    // else {
+    //     const folder = cache.get(currentFolder.folderId)
+    //     if(!folder || !cache.has(folder.parentFolderId))
+    //         return arr
+    //      arr.push(...getCurrentPath(folder.ParentFolder,arr))
+    // }
+    // console.log(arr)
+    // return arr
+    let string = currentFolder.name ? currentFolder.name : '/';
+    if (!currentFolder.folderId)
+        return '/';
+    if (!cache.has(currentFolder.folderId) || !cache.has(cache.get(currentFolder.folderId).parentFolderId))
+        return string;
+    else
+        return getCurrentPath(cache.get(cache.get(currentFolder.folderId).parentFolderId)) + '/' + string;
 }
 export async function updateExplorer(json) {
     const folderArr = [];
@@ -27,11 +49,19 @@ export async function updateExplorer(json) {
         folderArr.push(createFolderElement(undefined, 'project-parent-folder filled'));
     else if (json.ParentFolder)
         folderArr.push(createFolderElement(json.ParentFolder, 'project-parent-folder'));
+    if (json && currentPathElem)
+        currentPathElem.innerHTML = getCurrentPath(json);
     for (const folder of json.folders)
         folderArr.push(createFolderElement(folder));
     for (const project of json.projects) {
         const projectElem = createNode('div', { attributes: [{ name: 'href', value: `/editor?save=${project.id}` }, { name: 'draggable', value: 'true' }],
-            className: 'project', htmlSting: `<a href="/editor?save=${project.id}">${project.name}</a><button>x</button>` });
+            className: 'project', htmlSting: `<h3>${project.name}</h3><button>x</button>`, onclick(ev) {
+                const link = `/editor?save=${project.id}`;
+                if (ev.ctrlKey)
+                    open(link);
+                else
+                    location.href = link;
+            }, });
         projectElem.ondragstart = (event) => {
             event.dataTransfer.setData("text/plain", project.name);
             draggedSave = { elem: projectElem, uuid: project.id, isFolder: false };
@@ -59,7 +89,6 @@ function createFolderElement(folder, className) {
             let containerAnim;
             let index = 0;
             if (!cache.has(folder?.folderId) || !cache.get(folder?.folderId)) {
-                cache.set(folder?.folderId, json);
                 const res = await fetch(!folder ? '/user/listProjects' : `/user/folder/f/${folder.folderId}`);
                 if (!res.ok)
                     return;
@@ -81,6 +110,7 @@ function createFolderElement(folder, className) {
                         delay: 25 * index++
                     });
                 json = await res.json();
+                cache.set(folder?.folderId, json);
             }
             else
                 json = cache.get(folder?.folderId);
@@ -121,13 +151,15 @@ async function onElemDrop(folderElem, ev, folder) {
     if (!res.ok)
         return;
     folderElem.classList.add('filled');
-    let relativeLeft = draggedSave.elem.offsetLeft - folderElem.offsetLeft;
-    let relativeTop = draggedSave.elem.offsetTop - folderElem.offsetTop;
+    let relativeLeft = folderElem.offsetLeft - draggedSave.elem.offsetLeft;
+    let relativeTop = folderElem.offsetTop - draggedSave.elem.offsetTop;
     draggedSave.elem.animate([
-        { left: 0, top: 0 },
-        { left: relativeLeft + "px", top: relativeTop + "px" }
+        { left: 0, top: 0, opacity: 1 },
+        { opacity: 0 },
+        { left: relativeLeft + "px", top: relativeTop + "px", opacity: 0 }
     ], {
-        duration: 400
+        duration: 200,
+        easing: 'ease-in'
     }).onfinish = (ev) => {
         draggedSave.elem.remove();
         draggedSave = undefined;

@@ -579,6 +579,8 @@ exports.router.post('/folder/f/:folderId/add', server_1.authMiddleware, async (r
             throw 'Invalid UUID';
         if (folderUUID) {
             const folderId = server_1.sqid.decode(folderUUID)[0];
+            if (parentFolderId == folderId)
+                throw 'folder recursiv';
             const changedFolder = await dbClient_1.default.folder.update({
                 where: {
                     folderId,
@@ -650,7 +652,8 @@ exports.router.get('/folder/f/:folderId', server_1.authMiddleware, async (req, r
         const folders = folder.ChildFolders.map(folder => { return { ...folder, folderId: server_1.sqid.encode([folder.folderId]), parentFolderId: server_1.sqid.encode([folder.parentFolderId]) }; });
         const projects = folder.Projects.map(proj => { return { ...proj, id: server_1.sqid.encode([proj.id]) }; });
         res.status(200).json({ folders, projects, ...folder, Projects: undefined, ChildFolders: undefined, folderId: req.params.folderId,
-            ParentFolder: folder.ParentFolder ? { ...folder.ParentFolder, folderId: server_1.sqid.encode([folder.ParentFolder.folderId]) } : undefined, parentFolderId: server_1.sqid.encode([folder.parentFolderId]) });
+            ParentFolder: folder.ParentFolder ? { ...folder.ParentFolder, folderId: server_1.sqid.encode([folder.ParentFolder.folderId]) } : undefined,
+            parentFolderId: folder.parentFolderId ? server_1.sqid.encode([folder.parentFolderId]) : undefined });
     }
     catch (error) {
         console.error(error);

@@ -717,6 +717,8 @@ router.post('/folder/f/:folderId/add', authMiddleware, async (req, res) => {
 
     if(folderUUID) {
          const folderId = sqid.decode(folderUUID)[0]
+         if(parentFolderId == folderId)
+            throw 'folder recursiv'
         const changedFolder = await prisma.folder.update({
             where: {
                 folderId,
@@ -795,7 +797,8 @@ router.get('/folder/f/:folderId', authMiddleware, async (req, res) => {
         {return {...folder,folderId: sqid.encode([folder.folderId]), parentFolderId: sqid.encode([folder.parentFolderId])}})
     const projects = folder.Projects.map(proj => {return {...proj,id: sqid.encode([proj.id])}})
      res.status(200).json({ folders, projects, ...folder, Projects: undefined,  ChildFolders: undefined, folderId: req.params.folderId,
-        ParentFolder: folder.ParentFolder ? {...folder.ParentFolder, folderId: sqid.encode([folder.ParentFolder.folderId])} : undefined, parentFolderId: sqid.encode([folder.parentFolderId])});
+        ParentFolder: folder.ParentFolder ? {...folder.ParentFolder, folderId: sqid.encode([folder.ParentFolder.folderId])} : undefined,
+         parentFolderId: folder.parentFolderId ? sqid.encode([folder.parentFolderId]) : undefined});
  
    } catch (error) {
         console.error(error)

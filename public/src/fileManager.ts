@@ -6,8 +6,8 @@ let draggedSave: {uuid: string, elem: HTMLElement, isFolder: boolean} | undefine
 let parentFolder: any | undefined = undefined
 let container: Element
 let cache = new Map()
-
-export async function loadExplorer(elem?: Element, createFolderElement?: HTMLButtonElement) {
+let currentPathElem: HTMLDivElement
+export async function loadExplorer(elem?: Element, createFolderElement?: HTMLButtonElement, pathElem?: HTMLDivElement) {
 
     let json: {
         folders: Folder[],
@@ -26,7 +26,8 @@ export async function loadExplorer(elem?: Element, createFolderElement?: HTMLBut
    
     if(elem)
         container = elem
-    
+    if(pathElem)
+        currentPathElem = pathElem
    
     if(createFolderElement)
         createFolderElement.onclick = createFolder
@@ -34,7 +35,27 @@ export async function loadExplorer(elem?: Element, createFolderElement?: HTMLBut
     updateExplorer(json)
 }
 
+function getCurrentPath(currentFolder: {name: string, folderId: number}, arr: {name: string, folderId: number}[] = []): string {
+    
+    // if(currentFolder.ParentFolder) 
+    //      arr.push(...getCurrentPath(currentFolder.ParentFolder, arr))
+    // else {
+    //     const folder = cache.get(currentFolder.folderId)
+    //     if(!folder || !cache.has(folder.parentFolderId))
+    //         return arr
+    //      arr.push(...getCurrentPath(folder.ParentFolder,arr))
+    // }
+    // console.log(arr)
+    // return arr
+    let string = currentFolder.name ? currentFolder.name : '/'
+    if(!currentFolder.folderId)
+        return '/'
+    if(!cache.has(currentFolder.folderId) || !cache.has(cache.get(currentFolder.folderId).parentFolderId))
+        return string;
+    else
+    return  getCurrentPath(cache.get(cache.get(currentFolder.folderId).parentFolderId)) + '/' + string 
 
+}
 export async function updateExplorer(json) {
     const folderArr: HTMLElement[] = []
     parentFolder = json
@@ -43,13 +64,22 @@ export async function updateExplorer(json) {
     else if(json.ParentFolder)
         folderArr.push(createFolderElement(json.ParentFolder,'project-parent-folder'))
 
+    if(json && currentPathElem)
+    currentPathElem.innerHTML = getCurrentPath(json)
+
     for(const folder of json.folders)
         folderArr.push(createFolderElement(folder))
 
     for(const project of json.projects)
     {
         const projectElem = createNode('div', {attributes: [{name: 'href', value: `/editor?save=${project.id}`}, {name: 'draggable', value: 'true'}],
-            className: 'project',htmlSting: `<a href="/editor?save=${project.id}">${project.name}</a><button>x</button>`})
+            className: 'project',htmlSting: `<h3>${project.name}</h3><button>x</button>`, onclick(ev: MouseEvent) {
+                const link = `/editor?save=${project.id}`
+                if(ev.ctrlKey)
+                    open(link)
+                else
+                    location.href = link
+            },})
 
         projectElem.ondragstart = (event) =>
         {
@@ -84,7 +114,7 @@ export async function updateExplorer(json) {
              let index=0
              if(!cache.has(folder?.folderId) || !cache.get(folder?.folderId))
                 {
-                    cache.set(folder?.folderId, json)
+                    
                     const res = await fetch(!folder ? '/user/listProjects' : `/user/folder/f/${folder.folderId}`)
                     if(!res.ok)
                         return;
@@ -106,6 +136,7 @@ export async function updateExplorer(json) {
                             delay: 25*index++
                         })
                     json = await res.json()
+                    cache.set(folder?.folderId, json)
                 }
             else
                 json = cache.get(folder?.folderId)
@@ -156,13 +187,15 @@ async function onElemDrop(folderElem: HTMLElement,ev, folder) {
         return;
     folderElem.classList.add('filled')
 
-    let relativeLeft = draggedSave.elem.offsetLeft - folderElem.offsetLeft
-    let relativeTop =  draggedSave.elem.offsetTop - folderElem.offsetTop
+    let relativeLeft =  folderElem.offsetLeft - draggedSave.elem.offsetLeft
+    let relativeTop =  folderElem.offsetTop - draggedSave.elem.offsetTop 
     draggedSave.elem.animate([
-        {left: 0, top: 0},
-        {left: relativeLeft+"px", top: relativeTop+"px"}
+        {left: 0, top: 0, opacity: 1},
+        {opacity: 0},
+        {left: relativeLeft+"px", top: relativeTop+"px", opacity: 0}
     ], {
-        duration: 400
+        duration: 200,
+        easing: 'ease-in'
     }).onfinish = (ev) => {
         draggedSave!.elem.remove()
         draggedSave = undefined

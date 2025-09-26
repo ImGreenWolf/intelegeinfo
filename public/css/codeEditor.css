@@ -660,11 +660,16 @@ header {
   gap: 1em;
 }
 
+.toolbar-project {
+  display: flex;
+  gap: 1em;
+}
+
 .project-folder.filled::after {
   content: "";
   position: absolute;
   margin: 0.25em;
-  top: -10px;
+  top: -0.75em;
   left: 0;
   right: 0;
   bottom: 0;
@@ -687,6 +692,7 @@ button.project-folder > div {
   margin: 0;
   background-color: black;
   transition-duration: 0.3s;
+  cursor: pointer;
 }
 
 .project-list-container button.project-folder {
@@ -718,11 +724,11 @@ button.project-folder > div {
 .project-list-container button.project-folder::before {
   position: absolute;
   content: "";
-  top: -10px;
+  top: -0.5em;
   left: 0;
-  width: 25%;
-  height: 10px;
-  border-radius: 5px 25% 0 0;
+  width: 35%;
+  height: 0.5em;
+  border-radius: 0.25em 25% 0 0;
   background-color: inherit;
   z-index: -2;
 }
