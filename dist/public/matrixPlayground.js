@@ -1,4 +1,4 @@
-import { createNode } from "./components.js";
+import { createNode } from "./utils.js";
 function initInput(inputElem, options, type) {
     inputElem.oninput = (ev) => {
         const expr = inputElem.value;

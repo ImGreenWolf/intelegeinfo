@@ -1,4 +1,4 @@
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 import * as teacherScript from './teacher.js';
 const sqids = new Sqids({
     minLength: 6,

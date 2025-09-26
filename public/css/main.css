@@ -464,18 +464,6 @@ header2 nav ul li:hover {
   width: 100%;
 }
 
-.pop-up {
-  position: absolute;
-  top: 150px;
-  left: 50%;
-  transform: translate(-50%, 0);
-  z-index: 110;
-  background-color: rgba(20, 20, 20, 0.25);
-  backdrop-filter: blur(0.5em);
-  box-shadow: 0 30px 40px 20px rgba(0, 0, 0, 0.1), inset -3px 8px 14px 6px rgba(255, 255, 255, 0.0392156863);
-  animation: pop-up-fade 0.2s;
-}
-
 .input-popup {
   display: block;
   padding: 1em 2em;

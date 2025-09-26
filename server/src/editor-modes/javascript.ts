@@ -36,6 +36,9 @@ Avantaje: Rulează în browser și pe server, multe framework-uri.`
     compile(res: any, file: EditorFile, isDebugging?: boolean) {
         return undefined
     }
+    directExecute(res: any, clientObj: any, sessionObj: any) {
+        
+    }
     execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Nodepty.IPty | Promise<Nodepty.IPty> | undefined {
         sessionObj.replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn'}, WebSocketMessageType.ExecuteStatus))
         sessionObj.replicateFunction((clientWs) => {

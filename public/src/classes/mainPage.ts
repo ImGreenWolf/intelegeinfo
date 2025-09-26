@@ -1,6 +1,6 @@
 import { $Enums, Assignment, Class, Problem, Solve, User } from "../../../generated/prisma";
 import { JsonValue } from "../../../generated/prisma/runtime/library";
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 import * as teacherScript from './teacher.js'
 
 declare const Sqids: any

@@ -1,4 +1,4 @@
-import { createNode } from "./components.js";
+import { createNode } from "./utils.js";
 main();
 async function main() {
     const res = await fetch('/user/social/list');

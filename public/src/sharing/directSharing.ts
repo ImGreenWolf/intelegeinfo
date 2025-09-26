@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 import { IIWebRTC } from "../webrtcdemo.js";
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 
 declare const QRCode: any
 const ws = new WebSocket('/directSharing' + location.search)

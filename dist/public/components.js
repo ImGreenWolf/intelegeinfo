@@ -1,4 +1,4 @@
-import { getCookie } from "./utils.js";
+import { createNode, getCookie } from "./utils.js";
 class IElement {
     parentElement;
     constructor(parentElem) {
@@ -18,36 +18,6 @@ class IElement {
             });
         }
     }
-}
-export function createNode(tag, options) {
-    const elem = document.createElement(tag);
-    if (options) {
-        if (options.css)
-            elem.style.cssText = options.css;
-        if (options.className)
-            elem.className = options.className;
-        if (options.id)
-            elem.id = options.id;
-        if (options.innerText)
-            elem.innerText = options.innerText;
-        if (options.html)
-            for (const node of options.html)
-                if (node)
-                    elem.appendChild(node);
-        if (options.attributes)
-            for (const attribute of options.attributes)
-                if (attribute)
-                    elem.setAttribute(attribute.name, attribute.value);
-        if (options.htmlSting)
-            elem.innerHTML = options.htmlSting;
-        if (options.onclick)
-            elem.onclick = options.onclick;
-        if (options.onchange)
-            elem.onchange = options.onchange;
-        if (options.onhover)
-            elem.onmouseover = options.onhover;
-    }
-    return elem;
 }
 export class Dock extends IElement {
     render() {

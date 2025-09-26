@@ -2,7 +2,7 @@
 
 
 import { Solve, Assignment, User } from "../../../generated/prisma";
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 import { Class_, dateDeltaToString } from "./mainPage.js";
 
 type Context = {ctx:CanvasRenderingContext2D, w,h,sw, offset,canvas}

@@ -17,6 +17,7 @@ declare class javascript extends EditorMode {
     HandleClientInput(): void;
     constructor();
     compile(res: any, file: EditorFile, isDebugging?: boolean): any;
+    directExecute(res: any, clientObj: any, sessionObj: any): void;
     execute(res: any, clientObj: ClientObject, sessionObj: EditorSession): Nodepty.IPty | Promise<Nodepty.IPty> | undefined;
     startDebugging(res: any, clientObj: ClientObject, sessionObj: EditorSession): JSDebugger;
 }

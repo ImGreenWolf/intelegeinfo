@@ -2,7 +2,7 @@
 
 // const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname  + ":" + window.location.port + "/rtc"
 
-import { createNode } from "./components.js";
+import { createNode } from "./utils.js";
 
 
 // //@ts-ignore

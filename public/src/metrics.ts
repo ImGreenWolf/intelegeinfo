@@ -1,4 +1,4 @@
-import { createNode } from "./components.js";
+import { createNode } from "./utils.js";
 
 const monitoredValues: Monitor[] = []
 interface Monitor {

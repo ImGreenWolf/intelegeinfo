@@ -1,4 +1,4 @@
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 import { dateDeltaToString } from "./mainPage.js";
 let dialog;
 export function loadTeacher(json) {

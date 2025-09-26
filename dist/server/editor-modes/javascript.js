@@ -30,6 +30,8 @@ Avantaje: Rulează în browser și pe server, multe framework-uri.`;
     compile(res, file, isDebugging) {
         return undefined;
     }
+    directExecute(res, clientObj, sessionObj) {
+    }
     execute(res, clientObj, sessionObj) {
         sessionObj.replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawn' }, types_js_1.WebSocketMessageType.ExecuteStatus));
         sessionObj.replicateFunction((clientWs) => {

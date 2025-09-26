@@ -11,21 +11,6 @@ declare abstract class IElement {
     stylesheet(style: string): HTMLStyleElement;
     private appendRender;
 }
-export declare function createNode<K extends keyof HTMLElementTagNameMap>(tag: K, options?: {
-    innerText?: string;
-    css?: string;
-    className?: string;
-    id?: string;
-    html?: (Node | undefined)[];
-    htmlSting?: string;
-    attributes?: ({
-        name: string;
-        value: string;
-    } | undefined)[];
-    onclick?: (ev: any) => void;
-    onchange?: (ev: any) => void;
-    onhover?: (ev: MouseEvent) => void;
-}): HTMLElementTagNameMap[K];
 export declare class Dock extends IElement {
     render(): HTMLDivElement;
 }

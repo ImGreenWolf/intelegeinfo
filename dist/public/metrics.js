@@ -1,4 +1,4 @@
-import { createNode } from "./components.js";
+import { createNode } from "./utils.js";
 const monitoredValues = [];
 function UpdateProcessValues(json, rawJSON) {
     for (const monitor of monitoredValues) {

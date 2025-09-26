@@ -1,5 +1,5 @@
 import { IIWebRTC } from "../webrtcdemo.js";
-import { createNode } from "../components.js";
+import { createNode } from "../utils.js";
 const ws = new WebSocket('/directSharing' + location.search);
 let clientId;
 const codeElem = document.getElementById('code');

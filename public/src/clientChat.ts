@@ -1,5 +1,5 @@
 import { FriendRelation, User } from "../../generated/prisma";
-import { createNode } from "./components.js";
+import { createNode } from "./utils.js";
 
 
 main()
