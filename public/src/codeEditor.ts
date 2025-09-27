@@ -3807,7 +3807,7 @@ function getEditorSession(fileName)
       
       if(messageJson.share)
       {
-        const container = createNode('div', {className: 'shareInfo-container'})
+        const container = createNode('div', {className: 'shareInfo-container', css: '--userColor: #'+messageJson.share.createdBy.userColor})
         document.getElementsByClassName('session-container')[0]?.appendChild(container)
 
         const shareIcon = createNode('div', {
@@ -3818,7 +3818,6 @@ function getEditorSession(fileName)
           //       (this as any).classList.toggle('open'); 
           },
           className: 'client-container',
-          attributes: [{name: 'style', value: '--userColor: #'+messageJson.share.createdBy.userColor}],
           html: [
             createNode('p', {innerText: 'Partajat de '+messageJson.share.createdBy.username}),
             createNode('img', {attributes: [{name:'src', value: '/user/picture/'+messageJson.share.creatorId}]}),

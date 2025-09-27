@@ -11,7 +11,7 @@ import { CppMode } from './editor-modes';
 import fs, { StatsListener, StatWatcher, WatchEventType, WatchListener } from 'fs'
 import { FileManagementCommands} from '../../dist/shared/types'
 import path from 'path';
-import { rootDirName } from './server';
+import { SharedProjectType, rootDirName } from './server';
 import { WebSocketMessage } from "../../shared/src/messageTypes"
 import { sha256, sha224 } from 'js-sha256';
 import * as Nodepty from "node-pty"
@@ -115,7 +115,6 @@ export interface EditorOptions
     anonymousNames?: boolean,
     allowedLanguage?: typeof EditorMode
 }
-
 export interface ClientPermissions
 {
     canChat: boolean,
@@ -132,7 +131,7 @@ export class EditorSession {
     clientsActiveFile: Map<UUID, string> = new Map<UUID, string>(); // client , file name
     files: EditorFile[] = []
     savedProject?: Project
-    sharedProject?: SharedProject & {createdBy: User}
+    sharedProject?: SharedProjectType;
     clientsMap: Map<UUID,ClientObject> = new Map<UUID,ClientObject>();
     clients: ClientObject[] = []
     clientsDisplayNames: string[];
