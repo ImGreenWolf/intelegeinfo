@@ -90,7 +90,7 @@ class Console {
     constructor(input) {
         // if(outputConsoles.length>0)
         //   outputConsoles.at(-1)!.callbackCreate(this)
-        this.stdin = input;
+        this.stdin = input ?? '';
         const thisConsole = document.createElement('div');
         outputConsoles.push(this);
         if (outputArea)
@@ -106,6 +106,7 @@ class Console {
             // sendDebugCommand("execute")
             console.log(this.stdin);
             startProgram(this.stdin);
+            sendWebsocketCommand('execute');
             // this.stdin = ''
         };
         thisConsole.appendChild(resendButton);
