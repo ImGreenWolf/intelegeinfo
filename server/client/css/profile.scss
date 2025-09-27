@@ -338,46 +338,52 @@ input[type=color]
     }
 }
 
-.projects-container
-{
+.project-container {
     display: grid;
-    gap: 1em;
-    grid-auto-flow: dense;
-    grid-template-columns: auto auto auto;
-    font-size: 0.75em;
-    &>.project
-    {
-        // padding: 1em;
-        background-color: theme.$background-color;
-        border-radius: 10px;
-        color: inherit;
-        padding-inline: 2em;
-        padding-block: 0.5em;
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        h3
-        {
-            display: inline;
-        }
-        button 
-        {
-            margin-left: 1em;
-            border-radius: 50%;
-            aspect-ratio: 1;
-            display: inline;
-            text-align: center;
-            background-color: rgb(10,10,10);
-            color: white;
-            border: 2px solid $border-color;
-            
-        }
-        &:hover
-        {
-            background-color: rgb(30,30,30);
-        }
-    }
+    align-items: start;
+    grid-template-rows: min-content 1fr;
 }
+
+// .projects-container
+// {
+//     display: grid;
+//     gap: 1em;
+//     grid-auto-flow: dense;
+//     grid-template-columns: auto auto auto;
+//     font-size: 0.75em;
+//     &>.project
+//     {
+//         // padding: 1em;
+//         background-color: theme.$background-color;
+//         border-radius: 10px;
+//         color: inherit;
+//         padding-inline: 2em;
+//         padding-block: 0.5em;
+//         display: flex;
+//         align-items: center;
+//         text-decoration: none;
+//         h3
+//         {
+//             display: inline;
+//         }
+//         button 
+//         {
+//             margin-left: 1em;
+//             border-radius: 50%;
+//             aspect-ratio: 1;
+//             display: inline;
+//             text-align: center;
+//             background-color: rgb(10,10,10);
+//             color: white;
+//             border: 2px solid $border-color;
+            
+//         }
+//         &:hover
+//         {
+//             background-color: rgb(30,30,30);
+//         }
+//     }
+// }
 textarea {
     padding: 0.5em 1em;
     border-radius: 1em;

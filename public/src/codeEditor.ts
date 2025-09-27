@@ -1145,7 +1145,7 @@ function checkIsOpen(id)
       if(openMenu.menuid == id)
         return true
 }
-function onOpenMenu(id:string, elem?): boolean
+function toggleOpenMenu(id:string, elem?): boolean
 {
   if(!id)
     throw 'invalid id on open menu.'
@@ -1914,7 +1914,7 @@ function loadProject(id:number)
 export function listProjects()
 {
   if(checkIsOpen('projects'))
-    return onOpenMenu("projects")
+    return toggleOpenMenu("projects")
   if(!wsSessionId) return;
   // fetch('/user/listProjects', {
   //   method: "GET",
@@ -1987,12 +1987,16 @@ export function listProjects()
   const list = createNode('div', {className: 'project-list'})
   const button = createNode('button', {innerText: "Creaza Folder"})
   const path = createNode('div', {innerText: '/'})
-  const toolbar = createNode('div', {className: 'toolbar-project', html: [button, path]})
+  const close = createNode('button', {innerText: 'x', className: 'close', onclick(ev) {
+        toggleOpenMenu("projects")
+  },})
+
+  const toolbar = createNode('div', {className: 'toolbar-project', html: [close,button, path]})
 
   const container = createNode('div', {className: 'project-list-container', html: [toolbar, list]})
   document.body.appendChild(container)
 
-  loadExplorer(list, button, path).then(() =>  onOpenMenu("projects",container))
+  loadExplorer(list, button, path).then(() =>  toggleOpenMenu("projects",container))
 }
 
 
@@ -2241,7 +2245,7 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
 export function joinsession()
 {
     if(checkIsOpen('join'))
-      return onOpenMenu("join")
+      return toggleOpenMenu("join")
     const shareContainer = document.createElement('div')
     shareContainer.classList.add('share-container');
     
@@ -2282,7 +2286,7 @@ export function joinsession()
     document.body.appendChild(shareContainer)
     shareContainer.appendChild(createNode('button', {css: 'position: absolute; top: 20px; right: 20px;', innerText: 'x',onclick(ev) {
       shareContainer.remove()
-      onOpenMenu("join")
+      toggleOpenMenu("join")
     },}))
     const script = document.createElement('script')
     const file = "/client/scripts/emailCodeVerificationClient.js";
@@ -2296,7 +2300,7 @@ export function joinsession()
 
     codeInput.oninput = onCodeInput
 
-    onOpenMenu("join", shareContainer)
+    toggleOpenMenu("join", shareContainer)
     function onCodeInput()
     {
         if(codeInput!.value.length>=6)
@@ -2342,7 +2346,7 @@ export function copySessionLink() {
   const clientId = wsSessionId;
   let sessionLink: string;
   if(checkIsOpen('share'))
-    return onOpenMenu("share")
+    return toggleOpenMenu("share")
 
     sessionLink = window.location.origin + window.location.pathname + `?session=${clientId}`;
 
@@ -2436,10 +2440,10 @@ export function copySessionLink() {
       displayMessagePopup('Am copiat linkul catre editor.')
       navigator.clipboard.writeText(link)
     }
-    onOpenMenu("share", shareContainer)
+    toggleOpenMenu("share", shareContainer)
     document.getElementById('close-share-session')!.onclick = function (this, ev) {
       shareContainer.remove();
-      onOpenMenu("share")
+      toggleOpenMenu("share")
       // shareContainer.animate()
     }
 
@@ -2833,7 +2837,7 @@ export class TokenTooltip extends Tooltip {
                 }
               }
               else
-                params.set('displayName', getCookie('savedName'))
+                params.set('displayName', getCookie('savedName')!)
             
             
     }
@@ -3801,7 +3805,28 @@ function getEditorSession(fileName)
       //   document.cookie = sessionCookieName+'='+wsSessionId+';' 
       // }, 15000);
       
+      if(messageJson.share)
+      {
+        const container = createNode('div', {className: 'shareInfo-container'})
+        document.getElementsByClassName('session-container')[0]?.appendChild(container)
 
+        const shareIcon = createNode('div', {
+        onclick: function (ev: MouseEvent) {
+          // for(const child of (this as any).parentElement.children)
+          //   if(child != (this as any))
+          //     child.classList.remove('open');
+          //       (this as any).classList.toggle('open'); 
+          },
+          className: 'client-container',
+          attributes: [{name: 'style', value: '--userColor: #'+messageJson.share.createdBy.userColor}],
+          html: [
+            createNode('p', {innerText: 'Partajat de '+messageJson.share.createdBy.username}),
+            createNode('img', {attributes: [{name:'src', value: '/user/picture/'+messageJson.share.creatorId}]}),
+            createNode('div', {innerText: `Creata la ${new Date(messageJson.share.sharedAt).toLocaleString(getCookie('ii_lang')!=undefined ? getCookie('ii_lang') : navigator.language)}`, className: 'tooltip-clientName'})
+            ]
+          })
+          container.appendChild(shareIcon)
+      }
 
       messageJson.files.forEach((file: string) => {
           onFileCreate(file);

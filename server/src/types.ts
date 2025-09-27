@@ -4,7 +4,7 @@ import WebSocket from 'ws';
 import { ChildProcess } from 'child_process';
 import { WSMessage } from '../../shared/src/types'
 import { ConsoleMessageType, WebSocketMessageType} from '../../dist/shared/types';
-import { Project, SavedProject, User } from '../../generated/prisma';
+import { Project, SavedProject, SharedProject, User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import { CppMode } from './editor-modes';
@@ -131,7 +131,8 @@ export class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string> = new Map<UUID, string>(); // client , file name
     files: EditorFile[] = []
-    savedProject: (Project) | undefined
+    savedProject?: Project
+    sharedProject?: SharedProject & {createdBy: User}
     clientsMap: Map<UUID,ClientObject> = new Map<UUID,ClientObject>();
     clients: ClientObject[] = []
     clientsDisplayNames: string[];

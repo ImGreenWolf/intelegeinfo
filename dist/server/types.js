@@ -126,6 +126,7 @@ class EditorSession {
     clientsActiveFile = new Map(); // client , file name
     files = [];
     savedProject;
+    sharedProject;
     clientsMap = new Map();
     clients = [];
     clientsDisplayNames;

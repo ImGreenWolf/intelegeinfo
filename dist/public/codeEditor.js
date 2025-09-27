@@ -841,7 +841,7 @@ function checkIsOpen(id) {
         if (openMenu.menuid == id)
             return true;
 }
-function onOpenMenu(id, elem) {
+function toggleOpenMenu(id, elem) {
     if (!id)
         throw 'invalid id on open menu.';
     if (openMenu)
@@ -1421,7 +1421,7 @@ function loadProject(id) {
 }
 export function listProjects() {
     if (checkIsOpen('projects'))
-        return onOpenMenu("projects");
+        return toggleOpenMenu("projects");
     if (!wsSessionId)
         return;
     // fetch('/user/listProjects', {
@@ -1489,10 +1489,13 @@ export function listProjects() {
     const list = createNode('div', { className: 'project-list' });
     const button = createNode('button', { innerText: "Creaza Folder" });
     const path = createNode('div', { innerText: '/' });
-    const toolbar = createNode('div', { className: 'toolbar-project', html: [button, path] });
+    const close = createNode('button', { innerText: 'x', className: 'close', onclick(ev) {
+            toggleOpenMenu("projects");
+        }, });
+    const toolbar = createNode('div', { className: 'toolbar-project', html: [close, button, path] });
     const container = createNode('div', { className: 'project-list-container', html: [toolbar, list] });
     document.body.appendChild(container);
-    loadExplorer(list, button, path).then(() => onOpenMenu("projects", container));
+    loadExplorer(list, button, path).then(() => toggleOpenMenu("projects", container));
 }
 // END DOCUMENT FUNCTIONS //
 // standardise the json
@@ -1678,7 +1681,7 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
 }
 export function joinsession() {
     if (checkIsOpen('join'))
-        return onOpenMenu("join");
+        return toggleOpenMenu("join");
     const shareContainer = document.createElement('div');
     shareContainer.classList.add('share-container');
     shareContainer.innerHTML =
@@ -1715,7 +1718,7 @@ export function joinsession() {
     document.body.appendChild(shareContainer);
     shareContainer.appendChild(createNode('button', { css: 'position: absolute; top: 20px; right: 20px;', innerText: 'x', onclick(ev) {
             shareContainer.remove();
-            onOpenMenu("join");
+            toggleOpenMenu("join");
         }, }));
     const script = document.createElement('script');
     const file = "/client/scripts/emailCodeVerificationClient.js";
@@ -1726,7 +1729,7 @@ export function joinsession() {
     const form = document.getElementById('codeForm');
     const codeInput = document.getElementById('code');
     codeInput.oninput = onCodeInput;
-    onOpenMenu("join", shareContainer);
+    toggleOpenMenu("join", shareContainer);
     function onCodeInput() {
         if (codeInput.value.length >= 6)
             submit();
@@ -1759,7 +1762,7 @@ export function copySessionLink() {
     const clientId = wsSessionId;
     let sessionLink;
     if (checkIsOpen('share'))
-        return onOpenMenu("share");
+        return toggleOpenMenu("share");
     sessionLink = window.location.origin + window.location.pathname + `?session=${clientId}`;
     // if (navigator.clipboard) {
     //   navigator.clipboard.writeText(sessionLink).then(() => {
@@ -1846,10 +1849,10 @@ export function copySessionLink() {
         displayMessagePopup('Am copiat linkul catre editor.');
         navigator.clipboard.writeText(link);
     };
-    onOpenMenu("share", shareContainer);
+    toggleOpenMenu("share", shareContainer);
     document.getElementById('close-share-session').onclick = function (ev) {
         shareContainer.remove();
-        onOpenMenu("share");
+        toggleOpenMenu("share");
         // shareContainer.animate()
     };
     //  document.getElementById('createSessionForm')!.onsubmit =  function (this, ev) {
@@ -2860,6 +2863,26 @@ function onMessage(event) {
             // setTimeout(() => {
             //   document.cookie = sessionCookieName+'='+wsSessionId+';' 
             // }, 15000);
+            if (messageJson.share) {
+                const container = createNode('div', { className: 'shareInfo-container' });
+                document.getElementsByClassName('session-container')[0]?.appendChild(container);
+                const shareIcon = createNode('div', {
+                    onclick: function (ev) {
+                        // for(const child of (this as any).parentElement.children)
+                        //   if(child != (this as any))
+                        //     child.classList.remove('open');
+                        //       (this as any).classList.toggle('open'); 
+                    },
+                    className: 'client-container',
+                    attributes: [{ name: 'style', value: '--userColor: #' + messageJson.share.createdBy.userColor }],
+                    html: [
+                        createNode('p', { innerText: 'Partajat de ' + messageJson.share.createdBy.username }),
+                        createNode('img', { attributes: [{ name: 'src', value: '/user/picture/' + messageJson.share.creatorId }] }),
+                        createNode('div', { innerText: `Creata la ${new Date(messageJson.share.sharedAt).toLocaleString(getCookie('ii_lang') != undefined ? getCookie('ii_lang') : navigator.language)}`, className: 'tooltip-clientName' })
+                    ]
+                });
+                container.appendChild(shareIcon);
+            }
             messageJson.files.forEach((file) => {
                 onFileCreate(file);
             });

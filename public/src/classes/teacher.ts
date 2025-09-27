@@ -266,7 +266,8 @@ function drawSolutions(context:Context ,assignments: Assignment[], problemSolves
 
     context.ctx.strokeStyle = 'rgba(0, 45, 0, 0.1)'
     function transformPos(x,y) {
-        return {x, y: context.h-y}
+        
+        return {x: (x - startDate)/(Date.now() - startDate) * context.w + context.offset, y: context.h-y}
     }
     const posisitons: {pos: {x,y}, solve: Solve, score: number}[] = []
     const startDate =  new Date(Date.now() - 1000*60*60*24*scaleInDays).valueOf() //4 days
@@ -279,9 +280,8 @@ function drawSolutions(context:Context ,assignments: Assignment[], problemSolves
         for(const solve of problemSolves.get(assign.problemId)!) {
             // for each assignment, get the solutions
             const solveDate = new Date(solve.uploadedAt).valueOf()
-            const lw = (solveDate - startDate)/(Date.now() - startDate) * context.w + context.offset
             sum += (solve.score)
-            const pos = transformPos(lw, sum/index++)
+            const pos = transformPos(solveDate, sum/index++)
             
             posisitons.push({pos, solve, score: sum})
         }
@@ -307,10 +307,12 @@ function drawSolutions(context:Context ,assignments: Assignment[], problemSolves
             last = {lw: point.pos.x, lh: point.pos.y}
             index++;
     }
+
     if(sortedPositions.at(-1) != undefined)
         context.ctx.lineTo(sortedPositions.at(-1)?.pos.x, context.h)
     if(sortedPositions.at(0) != undefined)
         context.ctx.lineTo(Math.max(0, sortedPositions.at(0)?.pos.x), context.h)
+
     context.ctx.closePath()
     context.ctx.fillStyle = gradient
     context.ctx.stroke()

@@ -2,7 +2,7 @@ import { UUID } from "crypto";
 import WebSocket from 'ws';
 import { WSMessage } from '../../shared/src/types';
 import { WebSocketMessageType } from '../../dist/shared/types';
-import { Project } from '../../generated/prisma';
+import { Project, SharedProject, User } from '../../generated/prisma';
 import { UserNoPassword } from './usersManager';
 import { EditorMode } from './editor-modes';
 import fs, { WatchEventType } from 'fs';
@@ -59,7 +59,10 @@ export declare class EditorSession {
     sessionId: UUID;
     clientsActiveFile: Map<UUID, string>;
     files: EditorFile[];
-    savedProject: (Project) | undefined;
+    savedProject?: Project;
+    sharedProject?: SharedProject & {
+        createdBy: User;
+    };
     clientsMap: Map<UUID, ClientObject>;
     clients: ClientObject[];
     clientsDisplayNames: string[];

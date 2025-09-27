@@ -1,4 +1,4 @@
-export declare function getCookie(cname: any): string;
+export declare function getCookie(cname: any): string | undefined;
 export declare function displayInputPopup(message: any, placeholder?: string): Promise<{
     ok: boolean;
     value?: string;

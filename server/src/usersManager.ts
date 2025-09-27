@@ -5,7 +5,7 @@ import express, { Request, Response } from 'express';
 import bodyParser, { text } from 'body-parser';
 // import cookieParser from 'cookie-parser'
 import prisma from "./dbClient";
-import { Prisma, Project, User } from "../../generated/prisma";
+import { File, Prisma, Project, User } from "../../generated/prisma";
 import fs from "fs";
 import nodemailer from "nodemailer"
 import { clearAuthCookies, onLoggedIn, UserState } from "./login"
@@ -18,7 +18,6 @@ import { google } from "googleapis";
 import { prepareEncrPassForDB } from "./signup";
 const OAuth2 = google.auth.OAuth2;
 import multer from 'multer'
-import { Payload } from "../../generated/prisma/runtime/library";
 import * as FriendManager from './friends/friendManager'
 import { EditorSession } from "./types";
 export let transporter: nodemailer.Transporter;
@@ -659,7 +658,7 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
 
         try {
 
-            const explorer = await listAllProjects(users.getIdFromJWT(req))
+            const explorer = await listAllProjects(getIdFromJWT(req))
             
             const folders = explorer[1].map(folder => {return {...folder,folderId: sqid.encode([folder.folderId])}})
             const projects = explorer[0].map(proj => {return {...proj,id: sqid.encode([proj.id])}})
@@ -668,6 +667,43 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
 
 
         } catch (err) {
+            if(err.code) res.status(err.code).json({message: err.message})
+                    else res.status(401).send(err)//json({message: 'error: ' + err})
+        }
+  });
+
+    router.get('/listProjects/content', authMiddleware, async (req, res) => {
+
+        try {
+            const userId = getIdFromJWT(req)
+            const projects = await prisma.savedProject.findMany({
+                where:
+                {
+                    creatorId: userId,
+                    folderId: {
+                        equals: null
+                    }
+                },
+                include: {
+                    Project: {
+                        include: {
+                            files: {
+                                take: 1
+                            }
+                        }
+                    }
+                }
+            })
+            
+
+            res.json({projects: projects.map(proj => {return {...proj,id: sqid.encode([proj.id]),
+                 Project: {files: {...proj.Project.files[0], content: proj.Project.files[0] ? proj.Project.files[0].content.substring(0, 500) : undefined}}
+                }})})
+            
+
+
+        } catch (err) {
+            console.error(err)
             if(err.code) res.status(err.code).json({message: err.message})
                     else res.status(401).send(err)//json({message: 'error: ' + err})
         }
@@ -793,11 +829,115 @@ router.get('/folder/f/:folderId', authMiddleware, async (req, res) => {
          }
      })
  
+    enforceFolderResponse(folder, req,res)
+
+ 
+   } catch (error) {
+        console.error(error)
+        res.send(handlePrismaError(error))
+   }
+  });
+
+  router.post('/folder/f/:folderId/update', authMiddleware, async (req, res) => {
+   try {
+    const {name} = req.body
+    const userId = getIdFromJWT(req)
+    const folderId = sqid.decode(req.params.folderId)[0]
+    if(!folderId)
+        throw 'Invalid UUID'
+     const folder = await prisma.folder.update({
+         where: {
+            userId,
+            folderId
+         },
+         data: {
+            name
+         },
+         include: {
+            Projects: true,
+            ChildFolders: {
+                include: {
+                    _count: true
+                }
+            },
+            ParentFolder: {
+                select: {
+                    folderId: true,
+                    name: true
+                }
+            }
+         }
+     })
+ 
+     enforceFolderResponse(folder, req,res)
+ 
+   } catch (error) {
+        console.error(error)
+        res.send(handlePrismaError(error))
+   }
+  });
+async function enforceFolderResponse(folder, req, res) {
+    if(!folder)
+        {
+            const explorer = await listAllProjects(getIdFromJWT(req))
+            
+            const folders = explorer[1].map(folder => {return {...folder,folderId: sqid.encode([folder.folderId])}})
+            const projects = explorer[0].map(proj => {return {...proj,id: sqid.encode([proj.id])}})
+            res.json({folders, projects})
+            return;
+        }
      const folders = folder.ChildFolders.map(folder => 
-        {return {...folder,folderId: sqid.encode([folder.folderId]), parentFolderId: sqid.encode([folder.parentFolderId])}})
+        {return {
+            ...folder,
+            folderId: sqid.encode([folder.folderId]),
+             parentFolderId: sqid.encode([folder.parentFolderId])
+        }})
     const projects = folder.Projects.map(proj => {return {...proj,id: sqid.encode([proj.id])}})
-     res.status(200).json({ folders, projects, ...folder, Projects: undefined,  ChildFolders: undefined, folderId: req.params.folderId,
-        ParentFolder: folder.ParentFolder ? {...folder.ParentFolder, folderId: sqid.encode([folder.ParentFolder.folderId])} : undefined,
+
+     res.status(200).json({
+        folders,
+        projects,
+        ...folder,
+        Projects: undefined,  ChildFolders: undefined,
+        folderId: req.params.folderId,
+        ParentFolder: folder.ParentFolder ? {...folder.ParentFolder, 
+        folderId: sqid.encode([folder.ParentFolder.folderId])} : undefined,
+        parentFolderId: folder.parentFolderId ? sqid.encode([folder.parentFolderId]) : undefined});
+
+    return res;
+}
+  router.get('/folder/f/:folderId/content', authMiddleware, async (req, res) => {
+    const userId = getIdFromJWT(req)
+   try {
+    const folderId = sqid.decode(req.params.folderId)[0]
+    if(!folderId)
+        throw 'Invalid UUID'
+     const folder = await prisma.folder.findUnique({
+         where: {
+            userId,
+            folderId
+         },
+         include: {
+            Projects: {
+                include: {
+                    Project: {
+                        include: {
+                            files: {
+                                take: 1
+                            }
+                        }
+                    }
+                }
+            },
+           
+         }
+     })
+ 
+    
+    const projects = folder.Projects.map(proj => {return {...proj,id: sqid.encode([proj.id]),
+        Project: {files: {...proj.Project.files[0], content: trimFilePreview(proj.Project.files[0])}}
+    }})
+     res.status(200).json({projects, ...folder, Projects: undefined,  ChildFolders: undefined, folderId: req.params.folderId,
          parentFolderId: folder.parentFolderId ? sqid.encode([folder.parentFolderId]) : undefined});
  
    } catch (error) {
@@ -805,6 +945,58 @@ router.get('/folder/f/:folderId', authMiddleware, async (req, res) => {
         res.send(handlePrismaError(error))
    }
   });
+
+  function trimFilePreview(file: File) {
+    if(!file)
+        return undefined
+    return file.content.replaceAll(/^\s*\n/gm, '').substring(0,200)
+  }
+
+  router.post('/project/p/:projectId/update', authMiddleware, async (req, res) => {
+   try {
+    const {name} = req.body
+    const userId = getIdFromJWT(req)
+    const id = sqid.decode(req.params.projectId)[0]
+    if(!id)
+        throw 'Invalid UUID'
+     const project = await prisma.savedProject.update({
+         where: {
+            creatorId: userId,
+            id,
+         },
+         data: {
+            name
+         },
+         include: {
+            Folder: {
+                include: {
+                    Projects: true,
+                    ChildFolders: {
+                        include: {
+                            _count: true
+                        }
+                    },
+                    ParentFolder: {
+                        select: {
+                            folderId: true,
+                            name: true
+                        }
+                    }
+                }
+            }
+         }
+     })
+ 
+     enforceFolderResponse(project.Folder, req,res)
+
+ 
+   } catch (error) {
+        console.error(error)
+        res.send(handlePrismaError(error))
+   }
+  });
+
+  
 
 
 

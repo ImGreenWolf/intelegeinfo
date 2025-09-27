@@ -1,6 +1,7 @@
 import { UUID } from "crypto";
 import { type WebSocketMessageType , type ConsoleMessageType} from "./types";
-// import { type ClientPermissions } from "../../server/src/types"
+import {Prisma} from '@prisma/client/default'
+import { Project, SavedProject, SharedProject, User } from "../../generated/prisma";
 
 // export type MessageType = {
 //     readonly [K in WebSocketMessageType]:
@@ -48,7 +49,16 @@ type HandshakeMessage = {
     body: string;
     permissions: any;
     files: string[];
-    project?: SavedProject;
+    project?: Project;
+    share?: SharedProject & {createdBy: 
+      {
+      id: number;
+      username: string;
+      firstName: string;
+      lastName: string;
+      userColor: string;
+    }, 
+    Project: any};
     isHost: boolean;
     users: {displayName: string, clientId: UUID, accountId: number | undefined, openFile: string[], color: string, isHost: boolean}[];
 };

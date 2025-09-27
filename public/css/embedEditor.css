@@ -646,108 +646,6 @@ header {
   width: 20px;
 }
 
-.project-list-container {
-  background: linear-gradient(45deg, rgba(61, 61, 61, 0.2), rgba(43, 43, 43, 0.2509803922), rgba(34, 34, 34, 0));
-  border-radius: 1lh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  max-width: 1024px;
-  width: 75%;
-  min-height: 500px;
-  max-height: 75%;
-  padding: 30px;
-}
-
-.project-list-container .project-list {
-  padding: 1em;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  overflow: auto;
-  grid-template-columns: repeat(auto-fill, 200px);
-  justify-content: space-around;
-  gap: 1em;
-}
-
-.toolbar-project {
-  display: flex;
-  gap: 1em;
-}
-
-.project-folder.filled::after {
-  content: "";
-  position: absolute;
-  margin: 0.25em;
-  top: -0.75em;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: white;
-  border-radius: 0.25em;
-  z-index: -1;
-}
-
-.project-list-container div .project,
-button.project-folder > div {
-  min-height: 5em;
-  position: relative;
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 2em;
-  border-radius: 0.25em;
-  text-decoration: none;
-  color: inherit;
-  margin: 0;
-  background-color: black;
-  transition-duration: 0.3s;
-  cursor: pointer;
-}
-
-.project-list-container button.project-folder {
-  min-height: 5em;
-  font-size: 1.25em;
-  position: relative;
-  background-color: rgb(85, 74, 41);
-  display: flex;
-  padding: 0;
-  margin: 0;
-  outline: none;
-  border-top-left-radius: 0;
-  box-sizing: content-box;
-}
-.project-list-container button.project-folder:hover > div, .project-list-container button.project-folder.drag > div, .project-list-container button.project-folder:focus > div {
-  transform: skewX(-10deg) translateX(10px);
-}
-.project-list-container button.project-folder > div {
-  width: 100%;
-  height: 100%;
-  background-color: rgb(168, 146, 79);
-}
-.project-list-container button.project-folder.project-parent-folder {
-  background-color: rgb(88, 88, 88);
-}
-.project-list-container button.project-folder.project-parent-folder > div {
-  background-color: gray;
-}
-.project-list-container button.project-folder::before {
-  position: absolute;
-  content: "";
-  top: -0.5em;
-  left: 0;
-  width: 35%;
-  height: 0.5em;
-  border-radius: 0.25em 25% 0 0;
-  background-color: inherit;
-  z-index: -2;
-}
-.project-list-container button.project-folder:hover {
-  outline: none;
-  border: none;
-}
-
 #createFile {
   color: white;
   height: 100%;
@@ -1439,6 +1337,20 @@ value {
   height: 100%;
   max-width: 100%;
   margin: auto;
+}
+
+.project-list-container {
+  background: linear-gradient(45deg, rgba(61, 61, 61, 0.2), rgba(43, 43, 43, 0.2509803922), rgba(34, 34, 34, 0));
+  border-radius: 2em;
+  display: grid;
+  align-items: start;
+  grid-template-rows: min-content 1fr;
+  gap: 5px;
+  max-width: 1024px;
+  width: 75%;
+  min-height: 500px;
+  max-height: 75%;
+  padding: 30px;
 }
 
 .share-container {
@@ -2135,25 +2047,40 @@ form#codeForm {
 .session-container {
   display: flex;
   flex-direction: row-reverse;
+  gap: 0.5em;
 }
 
-#sessionInfo-container {
+.session-container > .shareInfo-container img {
+  width: 22px;
+  height: 22px;
+}
+.session-container > .shareInfo-container p {
+  margin: 0;
+  padding-inline: 1em;
+}
+.session-container > .shareInfo-container > div {
+  font-size: 0.75em;
+  cursor: default;
+}
+
+.session-container > div {
   display: flex;
   gap: 3px;
   transition-duration: 0.3s;
   flex-direction: row-reverse;
   padding: 4px 0.5em;
   background-color: var(--userColor);
-  border-radius: 1lh;
+  border-radius: 3em;
+  font-size: 0.75em;
   transition-duration: 0.5s;
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   box-shadow: inset 0 0 10px 5px rgba(32, 32, 32, 0.514), inset 0 0 1px 1px rgba(200, 200, 200, 0.9);
   font-family: Poppins;
 }
-#sessionInfo-container:not(:has(:nth-child(1))) {
+.session-container > div:not(:has(:nth-child(1))) {
   display: none;
 }
-#sessionInfo-container img {
+.session-container > div img {
   border: 1px ridge rgba(167, 167, 167, 0.418);
   background-color: var(--userColor);
   padding: 1px;
@@ -2168,7 +2095,52 @@ form#codeForm {
   position: relative;
   user-select: none;
 }
-#sessionInfo-container > div {
+.session-container > div .tooltip-clientName {
+  position: absolute;
+  bottom: -5px;
+  right: 0;
+  transform: translate(0, 100%);
+  background-color: rgb(10, 10, 10);
+  backdrop-filter: blur(4px);
+  padding: 0.25em 0.5em;
+  font-size: 1em;
+  transition-duration: 0.4s;
+  border-radius: 1em;
+  opacity: 0.5;
+  width: fit-content;
+  word-wrap: nowrap;
+  contain: paint;
+  text-align: right;
+  pointer-events: none;
+  text-overflow: clip;
+}
+.session-container > div .tooltip-clientName::before {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 5px;
+  background-color: rgb(10, 10, 10);
+  backdrop-filter: blur(4px);
+  position: absolute;
+  top: 0;
+  right: 35%;
+  transform: translate(50%, -75%);
+}
+.session-container > div div:where(:not(:hover), .open) .tooltip-clientName {
+  opacity: 0;
+}
+.session-container > div > div {
+  box-sizing: border-box;
+  transition-duration: 0.4s;
+  display: flex;
+  justify-content: end;
+  z-index: 1;
+  position: relative;
+  align-items: center;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+}
+.session-container > div#sessionInfo-container > div {
   box-sizing: border-box;
   transition-duration: 0.4s;
   width: 22px;
@@ -2180,7 +2152,7 @@ form#codeForm {
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   cursor: pointer;
 }
-#sessionInfo-container > div:not(.localClient) {
+.session-container > div#sessionInfo-container > div:not(.localClient) {
   animation: profile-fadein 0.25s ease-out;
 }
 @keyframes profile-fadein {
@@ -2193,40 +2165,7 @@ form#codeForm {
     max-width: 22px;
   }
 }
-#sessionInfo-container > div .tooltip-clientName {
-  position: absolute;
-  bottom: -5px;
-  right: 100%;
-  transform: translate(50%, 100%);
-  background-color: rgb(10, 10, 10);
-  backdrop-filter: blur(4px);
-  padding: 0.25em 0.5em;
-  font-size: 0.75em;
-  transition-duration: 0.4s;
-  border-radius: 1em;
-  opacity: 0.5;
-  word-wrap: nowrap;
-  contain: paint;
-  text-align: right;
-  pointer-events: none;
-  text-overflow: clip;
-}
-#sessionInfo-container > div .tooltip-clientName::before {
-  content: "";
-  display: block;
-  width: 5px;
-  height: 5px;
-  background-color: rgb(10, 10, 10);
-  backdrop-filter: blur(4px);
-  position: absolute;
-  top: 0;
-  right: 35%;
-  transform: translate(50%, -75%);
-}
-#sessionInfo-container > div:where(:not(:hover), .open) .tooltip-clientName {
-  opacity: 0;
-}
-#sessionInfo-container > div .session-client-menu {
+.session-container > div#sessionInfo-container > div .session-client-menu {
   min-height: 140px;
   min-width: 170px;
   background-color: rgba(14, 15, 19, 0.548);
@@ -2240,26 +2179,26 @@ form#codeForm {
   padding: 1em 2em;
   overflow: hidden;
 }
-#sessionInfo-container > div .session-client-menu > div {
+.session-container > div#sessionInfo-container > div .session-client-menu > div {
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-#sessionInfo-container > div .session-client-menu > div a {
+.session-container > div#sessionInfo-container > div .session-client-menu > div a {
   color: inherit;
 }
-#sessionInfo-container > div .session-client-menu > div h3 {
+.session-container > div#sessionInfo-container > div .session-client-menu > div h3 {
   display: flex;
   align-items: start;
   text-wrap: nowrap;
   gap: 0.5em;
 }
-#sessionInfo-container > div .session-client-menu .img-placeholder {
+.session-container > div#sessionInfo-container > div .session-client-menu .img-placeholder {
   width: 60px;
   height: 30px;
   display: inline-block;
 }
-#sessionInfo-container > div:not(.open) .session-client-menu {
+.session-container > div#sessionInfo-container > div:not(.open) .session-client-menu {
   opacity: 0;
   transform: scale(0.8);
   pointer-events: none;
@@ -2267,24 +2206,24 @@ form#codeForm {
   transition-duration: 0.3s;
   transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 0.6);
 }
-#sessionInfo-container > div.open {
+.session-container > div#sessionInfo-container > div.open {
   width: 60px;
   height: 60px;
   transition-duration: 0.2s;
 }
-#sessionInfo-container > div.open img {
+.session-container > div#sessionInfo-container > div.open img {
   bottom: -50px;
   left: -20px;
   z-index: 2;
   transition-duration: 0.3s;
 }
-#sessionInfo-container:has(:nth-child(5)):not(:hover) > div {
+.session-container > div:has(:nth-child(5)):not(:hover) > div {
   width: 7.5px;
 }
-#sessionInfo-container:has(:nth-child(5)):not(:hover) > div img {
+.session-container > div:has(:nth-child(5)):not(:hover) > div img {
   box-shadow: 1px 0px 5px 2px rgba(32, 32, 32, 0.678);
 }
-#sessionInfo-container:has(:nth-child(5)):not(:hover) > div:last-child {
+.session-container > div:has(:nth-child(5)):not(:hover) > div:last-child {
   margin-left: 15px;
 }
 

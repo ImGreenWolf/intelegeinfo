@@ -1,0 +1,146 @@
+.project-list {
+  padding: 1em;
+  width: 100%;
+  height: 100%;
+  align-items: start;
+  display: grid;
+  overflow: auto;
+  grid-template-columns: repeat(auto-fill, 200px);
+  grid-auto-rows: max-content;
+  align-items: stretch;
+  justify-content: space-around;
+  gap: 1em;
+  font-family: Poppins;
+}
+
+.toolbar-project {
+  display: flex;
+  gap: 1em;
+}
+
+.project-folder.filled::after {
+  content: "";
+  position: absolute;
+  margin: 0.25em;
+  top: -0.5em;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  border-radius: 0.25em;
+  z-index: -2;
+}
+
+.project-list .project,
+button.project-folder > div {
+  min-height: 5em;
+  position: relative;
+  padding: 0 1em;
+  border-radius: 0.5em;
+  text-decoration: none;
+  color: inherit;
+  margin: 0;
+  background-color: black;
+  transition-duration: 0.3s;
+  cursor: pointer;
+  font-size: 0.75em;
+  display: grid;
+}
+.project-list .project > *,
+button.project-folder > div > * {
+  grid-row: 1;
+  grid-column: 1;
+}
+.project-list .project h3,
+button.project-folder > div h3 {
+  align-self: end;
+  padding: 0.5em;
+  backdrop-filter: blur(1px);
+  background-color: rgba(0, 0, 0, 0.144);
+  text-shadow: 0.1em 0.1em 0.1em black;
+}
+.project-list .project .project-sneakpeak,
+button.project-folder > div .project-sneakpeak {
+  height: 100px;
+  font-family: monospace;
+  overflow: hidden;
+  white-space: pre;
+  font-size: 0.5em;
+  margin: 2em;
+  box-sizing: border-box;
+}
+
+.project-list .project:has(.project-contextMenu),
+.project-list .project-folder:has(.project-contextMenu) {
+  z-index: 1;
+}
+
+.project-contextMenu {
+  position: absolute;
+  min-height: 100px;
+  min-width: 50px;
+  max-width: 150px;
+  background-color: black;
+  border: 1px solid rgba(126, 126, 126, 0.219);
+  padding-inline: 1em;
+  padding-block: 0.5em;
+  border-radius: 1em;
+  font-family: inherit;
+  font-size: 0.75rem;
+  z-index: 10;
+}
+.project-contextMenu > * {
+  margin: 0.5em;
+  background-color: black;
+  color: white;
+}
+.project-contextMenu > *:not(:last-of-type) {
+  border-bottom: 1px solid rgba(126, 126, 126, 0.219);
+}
+
+.project-list button.project-folder {
+  min-height: 5em;
+  font-size: 1.25em;
+  position: relative;
+  background-color: rgb(85, 74, 41);
+  display: flex;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  border-top-left-radius: 0;
+  box-sizing: content-box;
+  z-index: 0;
+}
+.project-list button.project-folder:hover > div, .project-list button.project-folder.drag > div, .project-list button.project-folder:focus > div {
+  transform: skewX(-10deg) translateX(10px);
+}
+.project-list button.project-folder > div {
+  width: 100%;
+  background-color: rgb(168, 146, 79);
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+}
+.project-list button.project-folder.project-parent-folder {
+  background-color: rgb(88, 88, 88);
+}
+.project-list button.project-folder.project-parent-folder > div {
+  background-color: gray;
+}
+.project-list button.project-folder::before {
+  position: absolute;
+  content: "";
+  top: -0.5em;
+  left: 0;
+  width: 35%;
+  height: 0.5em;
+  border-radius: 0.25em 25% 0 0;
+  background-color: inherit;
+  z-index: -2;
+}
+.project-list button.project-folder:hover {
+  outline: none;
+  border: none;
+}
+
+/*# sourceMappingURL=folderManager.css.map */

@@ -547,6 +547,34 @@ function updateUserMeter() {
     meter.reset();
     meter.inc(exports.wss.clients.size);
 }
+async function loadShareProject(shareId) {
+    if (!shareId)
+        throw 'cant load project: no id was supplied, or is invalid';
+    return await dbClient_1.default.sharedProject.update({
+        where: {
+            id: shareId
+        },
+        data: {
+            openedAt: new Date()
+        },
+        include: {
+            Project: {
+                include: {
+                    files: true
+                }
+            },
+            createdBy: {
+                select: {
+                    userColor: true,
+                    username: true,
+                    firstName: true,
+                    lastName: true,
+                    id: true
+                }
+            }
+        }
+    });
+}
 const baseUrl = 'https://intelegeinfo.ro';
 exports.wss.addListener('connection', async (ws, req) => {
     updateUserMeter();
@@ -957,6 +985,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 sessionId: sessionId,
                 body: welcomeMessage,
                 project: clientSession.savedProject,
+                share: clientSession.sharedProject,
                 permissions: clientObj.permissions,
                 files,
                 users
@@ -995,26 +1024,9 @@ exports.wss.addListener('connection', async (ws, req) => {
             const projectId = exports.sqid.decode(saveUUID)[0];
             if (!projectId)
                 return;
-            onLoadProject(clientObj, await loadShareProject(projectId));
-        }
-        async function loadShareProject(shareId) {
-            if (!shareId)
-                throw 'cant load project: no id was supplied, or is invalid';
-            return dbClient_1.default.sharedProject.update({
-                where: {
-                    id: shareId
-                },
-                data: {
-                    openedAt: new Date()
-                },
-                include: {
-                    Project: {
-                        include: {
-                            files: true
-                        }
-                    }
-                }
-            });
+            const sharedProj = await loadShareProject(projectId);
+            clientSession.sharedProject = sharedProj;
+            onLoadProject(clientObj, sharedProj);
         }
         function onLoadProject(clientObj, savedProject) {
             try {
@@ -1094,9 +1106,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                             console.log('Opened file');
                             resolve(session);
                         });
-                    // openFile(clientSession.files[0].name) // load first file
-                    else
-                        reject("No default file was found!"); // TODO replace with async function
+                    // else 
+                    // reject("No default file was found!") // TODO replace with async function
                     // resolve(session)
                 }
             });

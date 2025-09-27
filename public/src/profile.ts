@@ -5,7 +5,7 @@ main()
 
 async function main() {
     const button = createNode('button', {onclick: () => createFolder(), innerText: 'Creaza Fisier'})
-     loadExplorer(document.getElementsByClassName('projects-container')[0], button)
+     loadExplorer(document.getElementsByClassName('project-list')[0], button)
 
     document.getElementById('project-toolbar')!.prepend(button)
 }

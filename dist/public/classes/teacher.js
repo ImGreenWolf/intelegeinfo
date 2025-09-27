@@ -206,7 +206,7 @@ function drawSolutions(context, assignments, problemSolves, solves, scaleInDays 
     context.ctx.fillStyle = gradient;
     context.ctx.strokeStyle = 'rgba(0, 45, 0, 0.1)';
     function transformPos(x, y) {
-        return { x, y: context.h - y };
+        return { x: (x - startDate) / (Date.now() - startDate) * context.w + context.offset, y: context.h - y };
     }
     const posisitons = [];
     const startDate = new Date(Date.now() - 1000 * 60 * 60 * 24 * scaleInDays).valueOf(); //4 days
@@ -218,9 +218,8 @@ function drawSolutions(context, assignments, problemSolves, solves, scaleInDays 
             for (const solve of problemSolves.get(assign.problemId)) {
                 // for each assignment, get the solutions
                 const solveDate = new Date(solve.uploadedAt).valueOf();
-                const lw = (solveDate - startDate) / (Date.now() - startDate) * context.w + context.offset;
                 sum += (solve.score);
-                const pos = transformPos(lw, sum / index++);
+                const pos = transformPos(solveDate, sum / index++);
                 posisitons.push({ pos, solve, score: sum });
             }
     }

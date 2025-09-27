@@ -677,6 +677,40 @@ function updateUserMeter()
     meter.inc(wss.clients.size)
 }
 
+export type SharedProjectType = Awaited<ReturnType<typeof loadShareProject>>
+
+async function loadShareProject(shareId)
+{
+    
+    if(!shareId) throw 'cant load project: no id was supplied, or is invalid';
+
+    return await prisma.sharedProject.update({
+        where:
+        {
+            id: shareId
+        },
+        data: {
+            openedAt: new Date()
+        },
+        include: {
+            Project: {
+                include: {
+                    files: true
+                }
+            },
+            createdBy: {
+                select: {
+                    userColor: true,
+                    username: true,
+                    firstName: true,
+                    lastName: true,
+                    id: true
+                }
+            }
+        }
+    })
+}
+
 
 const baseUrl = 'https://intelegeinfo.ro'
 wss.addListener('connection', async (ws: WebSocket, req) => {
@@ -1184,6 +1218,7 @@ function endConnectionPromise()
         sessionId: sessionId,
         body: welcomeMessage,
         project: clientSession.savedProject,
+        share: clientSession.sharedProject,
         permissions: clientObj.permissions,
         files,
         users
@@ -1229,30 +1264,11 @@ function endConnectionPromise()
         const projectId = sqid.decode(saveUUID)[0]
         if(!projectId)
             return
-        onLoadProject(clientObj, await loadShareProject(projectId))
+        const sharedProj = await loadShareProject(projectId)
+        clientSession.sharedProject = sharedProj
+        onLoadProject(clientObj, sharedProj)
     }
-    async function loadShareProject(shareId)
-    {
-        
-        if(!shareId) throw 'cant load project: no id was supplied, or is invalid';
-
-        return prisma.sharedProject.update({
-        where:
-        {
-            id: shareId
-        },
-        data: {
-            openedAt: new Date()
-        },
-        include: {
-            Project: {
-                include: {
-                    files: true
-                }
-            }
-        }
-        })
-    }
+    
 
     function onLoadProject(clientObj: ClientObject, savedProject) {
         try
@@ -1294,7 +1310,7 @@ function endConnectionPromise()
             if(urlParams.has("save"))
                 await loadSave(urlParams.get('save'), clientObj)
             else if(urlParams.has("share"))
-                await loadShare(urlParams.get('share'), clientObj)
+                 await loadShare(urlParams.get('share'), clientObj)
             
             
         
@@ -1365,10 +1381,8 @@ function endConnectionPromise()
                             console.log('Opened file')
                             resolve(session)
                         })
-
-                        // openFile(clientSession.files[0].name) // load first file
-                else 
-                    reject("No default file was found!") // TODO replace with async function
+                    // else 
+                        // reject("No default file was found!") // TODO replace with async function
 
                     // resolve(session)
             
