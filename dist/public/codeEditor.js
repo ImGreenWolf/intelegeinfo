@@ -103,7 +103,9 @@ class Console {
         resendButton.classList = 'retry-program custom-button';
         resendButton.onclick = (ev) => {
             // spawnConsole(this.stdin)
-            sendDebugCommand("execute");
+            // sendDebugCommand("execute")
+            console.log(this.stdin);
+            startProgram(this.stdin);
             // this.stdin = ''
         };
         thisConsole.appendChild(resendButton);
@@ -3428,10 +3430,10 @@ function spawnConsole(input) {
         document.getElementById('active-console').id = '';
     return new Console(input);
 }
-function startProgram() {
+function startProgram(input) {
     if (activeConsole || processRunning)
         return;
-    activeConsole = spawnConsole();
+    activeConsole = spawnConsole(input);
     activeConsole.element.parentElement.scrollTop = activeConsole.element.parentElement.scrollHeight;
     if (activeConsole?.noVNC)
         activeConsole?.noVNC?.remove();
