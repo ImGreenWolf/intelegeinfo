@@ -98,18 +98,6 @@ class Console {
         thisConsole.id = 'active-console';
         thisConsole.className = 'output-console-container';
         // thisConsole.innerHTML = "<div class='program-output'></div>"
-        const resendButton = document.createElement('button');
-        resendButton.innerText = '↻';
-        resendButton.classList = 'retry-program custom-button';
-        resendButton.onclick = (ev) => {
-            // spawnConsole(this.stdin)
-            // sendDebugCommand("execute")
-            console.log(this.stdin);
-            startProgram(this.stdin);
-            sendWebsocketCommand('execute');
-            // this.stdin = ''
-        };
-        thisConsole.appendChild(resendButton);
         this.element = thisConsole;
         this.onCompileStart();
     }
@@ -145,6 +133,14 @@ class Console {
         if (this.consoleInput)
             this.consoleInput.elem.outerHTML =
                 `<pre>${this.content}</pre>`;
+        const resendButton = document.createElement('button');
+        resendButton.innerText = '↻';
+        resendButton.classList = 'retry-program custom-button';
+        resendButton.onclick = (ev) => {
+            startProgram(this.stdin);
+            sendWebsocketCommand('execute');
+        };
+        this.element.appendChild(resendButton);
         this.compileMessage?.remove();
         this.element.id = '';
     }
