@@ -1016,7 +1016,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             const projectId = exports.sqid.decode(saveUUID)[0];
             if (!projectId)
                 return;
-            onLoadProject(clientObj, await loadProject(projectId, clientObj.clientData.id));
+            onLoadProject(clientObj, await loadProject(projectId, clientObj.clientData.id), false);
         }
         async function loadShare(saveUUID, clientObj) {
             if (saveUUID == undefined)
@@ -1026,11 +1026,11 @@ exports.wss.addListener('connection', async (ws, req) => {
                 return;
             const sharedProj = await loadShareProject(projectId);
             clientSession.sharedProject = sharedProj;
-            onLoadProject(clientObj, sharedProj);
+            onLoadProject(clientObj, sharedProj, true);
         }
-        function onLoadProject(clientObj, savedProject) {
+        function onLoadProject(clientObj, savedProject, isPublic) {
             try {
-                if (!clientObj.clientData) {
+                if (!clientObj.clientData && !isPublic) {
                     throw { message: 'Nu ai access la acest proiect sau nu esti logat.' };
                 }
                 if (!savedProject.Project)
@@ -1048,7 +1048,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
             }
             catch (err) {
-                printClientConsoleInfo(handlePrismaError(err));
+                printClientConsoleInfo(handlePrismaError(err).message);
             }
         }
         async function connectionReady(cooperator = false, req) {
