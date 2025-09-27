@@ -87,9 +87,10 @@ class Console {
     noVNC;
     consoleInput;
     content = '';
-    constructor() {
+    constructor(input) {
         // if(outputConsoles.length>0)
         //   outputConsoles.at(-1)!.callbackCreate(this)
+        this.stdin = input;
         const thisConsole = document.createElement('div');
         outputConsoles.push(this);
         if (outputArea)
@@ -101,12 +102,8 @@ class Console {
         resendButton.innerText = '↻';
         resendButton.classList = 'retry-program custom-button';
         resendButton.onclick = (ev) => {
+            // spawnConsole(this.stdin)
             sendDebugCommand("execute");
-            ws.send(JSON.stringify({
-                command: this.stdin,
-                type: WebSocketMessageType.Console,
-                action: 'process'
-            }));
             // this.stdin = ''
         };
         thisConsole.appendChild(resendButton);
@@ -125,6 +122,12 @@ class Console {
         this.consoleInput = { terminal: new Terminal({ cursorBlink: true, rows: 10, ignoreBracketedPasteMode: true, theme: { background: 'rgb(10,10,10)' } }), elem: document.createElement('div') }; //document.createElement('textarea')as HTMLTextAreaElement;
         this.element.appendChild(this.consoleInput.elem);
         this.consoleInput.terminal.open(this.consoleInput.elem);
+        if (this.stdin)
+            ws.send(JSON.stringify({
+                command: this.stdin,
+                type: WebSocketMessageType.Console,
+                action: 'process'
+            }));
         this.consoleInput.terminal.attachCustomKeyEventHandler((event) => {
             if (event.type === "keydown" && event.key === "v" && event.ctrlKey) {
                 return false;
@@ -3418,12 +3421,12 @@ function onRun() {
     });
     // TODO Add separate input area for interactive console.
 }
-function spawnConsole() {
+function spawnConsole(input) {
     document.getElementById('compile-status').innerText = 'Communicating with server...';
     document.getElementById('compile-status').style.opacity = '0.25';
     if (document.getElementById('active-console'))
         document.getElementById('active-console').id = '';
-    return new Console();
+    return new Console(input);
 }
 function startProgram() {
     if (activeConsole || processRunning)

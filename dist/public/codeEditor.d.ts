@@ -24,7 +24,7 @@ declare class Console {
         elem: HTMLDivElement;
     } | undefined;
     content: string;
-    constructor();
+    constructor(input: any);
     onCompileStart(message?: string): void;
     onProcessStart(): void;
     onProcessEnd(): void;
