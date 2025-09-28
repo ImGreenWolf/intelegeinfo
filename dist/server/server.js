@@ -89,6 +89,7 @@ const tx2_1 = __importDefault(require("tx2"));
 const types_3 = require("../../dist/shared/types");
 const problemManager_1 = __importStar(require("./problemManager"));
 const classManager_1 = __importDefault(require("./classManager/classManager"));
+const gdb_mi_parser_1 = __importDefault(require("gdb-mi-parser"));
 app.use(compression());
 app.use(express_1.default.json({
     verify: (req, res, buf) => {
@@ -1164,7 +1165,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             // console.log(nonPrint, Math.max(1, buffer.length))
             // if(nonPrint / Math.max(1, buffer.length) > 0.01)
             //     return 
-            if (true) {
+            if (false) {
                 // We have everything, remove listener
                 // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                 for (const element of buffer.split('\n')) {
@@ -1218,6 +1219,42 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 ;
                 // }
+            }
+            else {
+                const parsed = (0, gdb_mi_parser_1.default)(buffer);
+                const response = {
+                    type: types_1.WebSocketMessageType.Debug,
+                    state: "running",
+                    body: parsed,
+                    line: parsed.frame?.line ? parsed.frame.line : undefined,
+                    variables: parsed.variables ? parsed.variables : undefined,
+                    // raw: element
+                    // error: gdbOutput.err ? gdbOutput.err : undefined,
+                    // input: false,
+                    // type: WebSocketMessageType.Output,
+                    // messageType: ConsoleMessageType.DebugProgram,
+                    // clientId: clientId,
+                    // body: gdbOutput.json ? gdbOutput.json : undefined,
+                    // raw: element,
+                    // message: 'next', //deprecated - remove
+                    // msgId: clientSession.gdbProcess?.pid || -1,
+                    // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                    // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
+                };
+                getThisClientSession()?.clientsMap.forEach((client, id) => {
+                    //send response to all clients 
+                    const clientSocket = exports.clients.get(client.clientId);
+                    if (!clientSocket) {
+                        //sessions.delete(sessionId);
+                        if (getThisClientSession()?.clientsMap.has(clientId))
+                            console.error("Client not found in session while manually replicating to client  " + sessionId);
+                        else
+                            getThisClientSession()?.clientsMap.delete(client.clientId);
+                        exports.clients.delete(client.clientId);
+                        return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
+                    }
+                    clientSocket?.send(JSON.stringify(response));
+                });
             }
         };
         // debug mode only for now

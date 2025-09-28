@@ -56,6 +56,8 @@ import { FileManagementCommands,sessionCookieName } from "../../dist/shared/type
 import { HandshakeMessage, WebSocketMessage } from "../../shared/src/messageTypes"
 import router, { handleExecError, handleSucces, ProblemTest, testProblem } from "./problemManager";
 import classManager from './classManager/classManager'
+import parseMI from "gdb-mi-parser";
+
 interface ResponseWRaw extends IncomingMessage 
 {
     rawBody: Buffer
@@ -1462,7 +1464,7 @@ function endConnectionPromise()
                 // if(nonPrint / Math.max(1, buffer.length) > 0.01)
                 //     return 
 
-                if (true) {
+                if (false) {
                     // We have everything, remove listener
                     // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
                     
@@ -1527,6 +1529,43 @@ function endConnectionPromise()
                     
                     // }
                     
+                } else {
+                    const parsed = parseMI(buffer)
+
+                    const response: WebSocketMessage = {
+                        type:WebSocketMessageType.Debug,
+                        state: "running",
+                        body: parsed,
+                        line: parsed.frame?.line ? parsed.frame.line : undefined,
+                        variables: parsed.variables ? parsed.variables : undefined,
+                        // raw: element
+                        // error: gdbOutput.err ? gdbOutput.err : undefined,
+                        // input: false,
+                        // type: WebSocketMessageType.Output,
+                        // messageType: ConsoleMessageType.DebugProgram,
+                        // clientId: clientId,
+                        // body: gdbOutput.json ? gdbOutput.json : undefined,
+                        // raw: element,
+                        // message: 'next', //deprecated - remove
+                        // msgId: clientSession.gdbProcess?.pid || -1,
+                        // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                        // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
+                    };
+                    getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
+                        //send response to all clients 
+                        const clientSocket = clients.get(client.clientId);
+                        if(!clientSocket)
+                            {
+                            
+                                //sessions.delete(sessionId);
+                                if(getThisClientSession()?.clientsMap.has(clientId))  console.error("Client not found in session while manually replicating to client  " + sessionId);
+                                     else getThisClientSession()?.clientsMap.delete(client.clientId);
+                                 clients.delete(client.clientId);
+
+                                return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
+                            } 
+                        clientSocket?.send(JSON.stringify(response));
+                    });
                 }
             };
 
