@@ -249,7 +249,12 @@ int main() {
                 //     loaded=true
                     
                 // })
-                
+                this.process.onData((data) => {
+                    if(data && !['^', '*','=', '&'].includes(data[0]))
+                        return clientSession.replicateFunction((clientWs, id, clientObj) => {
+                                clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
+                            });
+                })
                 // this.inputTerminal.onExit((e) => {
                 //     console.error('TTY EXITED WITH CODE', e)
                 // })
