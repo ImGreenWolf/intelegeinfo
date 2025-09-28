@@ -473,3 +473,99 @@ router.get('/callback', async (req, res) => {
 //     res.json({error: err})
 //   })
 // })
+// Step 2: Handle Google callback
+router.post('/callback', async (req, res) => {
+    const { credential } = req.body;
+    if (!credential) {
+        return res.status(400).send('Missing authorization code. Refresh the page!');
+    }
+    try {
+        const userInfo = jsonwebtoken_1.default.decode(credential);
+        const userExists = await dbClient_1.default.user.findFirst({
+            where: {
+                email: userInfo.email
+            }
+        });
+        const keepLoggedIn = true;
+        if (userExists) {
+            try {
+                dbClient_1.default.user.update({
+                    where: {
+                        email: userInfo.email,
+                        loginMethod: 'google'
+                    },
+                    data: {
+                        authId: credential ? { onetap: credential } : null
+                    }
+                });
+            }
+            catch (error) {
+                console.error('failed to update user while logging in:', error);
+            }
+            if (userExists.loginMethod === 'google') {
+                if (userExists.password !== userExists.loginMethod) {
+                    console.log(`User ${userExists.username} with id ${userExists.id} logged in using Google`);
+                    onLoggedIn(userExists, res, req, keepLoggedIn).redirect('/');
+                }
+                else {
+                    res.send(`
+            <h>Please set a password for your account.</h>
+            <form action='/login/createGoogleAcc' method="POST" id="loginForm">
+            <input type="hidden" name="email" value="${userInfo.email}">
+            <input type=password name="password">
+            <button type='submit'>Set Password</button>
+            <p id="message"></p>
+            </form>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/0.10.0/forge.min.js"></script>
+
+              <script>
+            document.getElementById("loginForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            
+            const pubKeyPem = await fetch('/signup/public-key').then(res => res.text());
+            const publicKey = forge.pki.publicKeyFromPem(pubKeyPem);
+
+            
+            const encrypted = publicKey.encrypt(formData.get('password'), 'RSA-OAEP');
+            const encryptedBase64 = forge.util.encode64(encrypted);
+            formData.set("password", encryptedBase64)
+
+            const data = Object.fromEntries(formData.entries());
+
+
+            const response = await fetch('/login/createGoogleAcc', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+              const result = await response.json();
+              document.getElementById("message").textContent = result.message ? result.message : result.error;
+            });
+
+            
+          </script>
+            `);
+                }
+            }
+            else
+                res.send('Account was not created with google. Try logging in with a different method!');
+        }
+        else {
+            try {
+                const result = await signup.onSignedIn({ email: userInfo.email, type: 'None', firstName: userInfo.given_name, lastName: userInfo.family_name, loginMethod: 'google', username: userInfo.name, profile: userInfo.picture }, res, null, req, keepLoggedIn, { onetap: credential });
+                result.res.redirect('/profile');
+            }
+            catch (err) {
+                res.send('Am intampinat o erroare! Ne cerem scuze.. Eroare: ' + err);
+                return;
+            }
+        }
+    }
+    catch (error) {
+        console.error('OAuth Error:', error);
+        res.status(500).send('Am intampinat o eroare la autentificare. Ne cerem mii de scuze si va rugam din suflet sa ne contactati pe email la office@intelegeinfo.ro si va raspundem cat mai curand posibil. \n Erroare: \n' + error);
+    }
+});
