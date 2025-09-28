@@ -252,7 +252,7 @@ int main() {
                 this.process.onData((data) => {
                     let buffer=''
                     for(const row of data.split('\n'))
-                        if(row && !['^', '*','=', '&', '-', '~"'].includes(row.trim()[0]) && row.trim() != '(gdb)') // TODO Rework this, especially ~
+                        if(row && !['^', '*','=', '&', '-', '~'].includes(row.trim()[0]) && row.trim() != '(gdb)') // TODO Rework this, especially ~
                             buffer += row+'\n';
                     clientSession.replicateFunction((clientWs, id, clientObj) => {
                         clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: buffer, data: buffer});  // Send GDB output to the client
