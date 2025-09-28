@@ -1229,7 +1229,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                             state: "running",
                             body: parsed,
                             line: parseInt(parsed.outOfBandRecords[0]?.result?.frame?.line ?? undefined) ?? undefined,
-                            variables: parsed.resultRecord?.result?.variables.map ?? undefined,
+                            variables: parsed.resultRecord?.result?.variables ?? undefined,
                             // raw: element
                             // error: gdbOutput.err ? gdbOutput.err : undefined,
                             // input: false,
