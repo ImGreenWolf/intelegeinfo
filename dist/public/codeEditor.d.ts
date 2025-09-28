@@ -40,7 +40,7 @@ export declare class MultiCursorManager {
     addCursor(cursorId: string, position: CursorPosition, color: any): VisualCursor;
     updateCursor(cursorId: string, position: CursorPosition): void;
     removeCursor(cursorId: string): boolean;
-    replicateCursor(color: any, cursorId: string, position: CursorPosition): VisualCursor | CursorPosition | undefined;
+    replicateCursor(color: any, cursorId: string, position: CursorPosition): CursorPosition | VisualCursor | undefined;
 }
 declare class EditorCursor {
     cursor: HTMLDivElement | undefined;

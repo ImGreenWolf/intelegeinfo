@@ -1823,8 +1823,8 @@ export function copySessionLink() {
 
       <p id='session-create-error'></p>
       <div style='display: flex; gap: 2em'>
-        <button type="submit" id="submit-create-session" class="glowing" style='height: 3em; flex-grow: 1;'>Deschide Sesiune</button>
-        <button type="button" id="share-editor-content" style='height: 3em; border-radius: 2em; flex-grow: 1;'>Partajeaza Editor</button>
+        <button type="submit" id="submit-create-session" class="glowing" style='height: 3em; flex-grow: 2;'>Porneste Sesiune</button>
+        <button type="button" id="share-editor-content" style='height: 3em; border-radius: 2em; flex-grow: 1;'>Partajeaza Fisiere</button>
       </div>
       
       
