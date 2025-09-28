@@ -237,11 +237,13 @@ class CPPDebugger extends ProcessTypes_1.default {
         //     loaded=true
         // })
         this.process.onData((data) => {
+            let buffer = '';
             for (const row of data.split('\n'))
-                if (row && !['^', '*', '=', '&', '-'].includes(row.trim()[0]))
-                    return clientSession.replicateFunction((clientWs, id, clientObj) => {
-                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
-                    });
+                if (row && !['^', '*', '=', '&', '-'].includes(row.trim()[0]) && row != '(gdb)')
+                    buffer += row + '\n';
+            clientSession.replicateFunction((clientWs, id, clientObj) => {
+                clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: buffer, data: buffer }); // Send GDB output to the client
+            });
         });
         // this.inputTerminal.onExit((e) => {
         //     console.error('TTY EXITED WITH CODE', e)

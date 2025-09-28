@@ -250,11 +250,13 @@ int main() {
                     
                 // })
                 this.process.onData((data) => {
+                    let buffer=''
                     for(const row of data.split('\n'))
-                        if(row && !['^', '*','=', '&', '-'].includes(row.trim()[0]))
-                            return clientSession.replicateFunction((clientWs, id, clientObj) => {
-                                    clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
-                                });
+                        if(row && !['^', '*','=', '&', '-'].includes(row.trim()[0]) && row != '(gdb)')
+                            buffer += row+'\n';
+                    clientSession.replicateFunction((clientWs, id, clientObj) => {
+                        clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: buffer, data: buffer});  // Send GDB output to the client
+                    });
                 })
                 // this.inputTerminal.onExit((e) => {
                 //     console.error('TTY EXITED WITH CODE', e)

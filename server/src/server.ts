@@ -1437,140 +1437,131 @@ function endConnectionPromise()
 
 
        const onData = (data: string) => {
-                
-                const buffer = sanitizeGdbOutput(data)
-                console.log(buffer)
-                // Check if the full response has arrived
-                function sanitizeGdbOutput(buf) {
-                    // Always work with a Buffer
-                    if (!Buffer.isBuffer(buf)) buf = Buffer.from(buf);
-
-                    return buf.toString('utf8')
-                        // Replace NUL with \0
-                        .replace(/\x00/g, '\\0')
-                        // Replace other control chars (except \n, \r, \t) with hex escapes
-                        .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, c =>
-                        '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0')
-                        );
-                }
-                
-                // if(!buffer)
-                //     return
-                // if (buffer.indexOf('\0') !== -1) return false;
-
-                // const nonPrint = (buffer.match(/\\\\/g) || []).length;
-                // // If more than 1% non-printable, treat as binary
-                // console.log(nonPrint, Math.max(1, buffer.length))
-                // if(nonPrint / Math.max(1, buffer.length) > 0.01)
-                //     return 
-
-                if (false) {
-                    // We have everything, remove listener
-                    // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
-                    
-                    for(const element of buffer.split('\n')) {
-                        if(element.trim()!='')
-                        {
-                             const gdbOutput = parseGDBString(element);
-                             if(JSON.stringify(gdbOutput.json) == '{}')
-                                continue;
-
-                        if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')
-                            {
-
-                            closeProcess(clientSession.process)
-
-                                return;
-                            }
-                        // if(!['stopped', 'done'].some(val => gdbOutput.json.message && gdbOutput.json.message.includes(val)))
-                        //     continue
-                            // if( gdbOutput.ignore)
-                            //     return
-                            //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
-                    
-                    const response: WebSocketMessage = {
-                        type:WebSocketMessageType.Debug,
-                        state: "running",
-                        body: gdbOutput ? gdbOutput.json : undefined,
-                        line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
-                        variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined,
-                        // raw: element
-                        // error: gdbOutput.err ? gdbOutput.err : undefined,
-                        // input: false,
-                        // type: WebSocketMessageType.Output,
-                        // messageType: ConsoleMessageType.DebugProgram,
-                        // clientId: clientId,
-                        // body: gdbOutput.json ? gdbOutput.json : undefined,
-                        // raw: element,
-                        // message: 'next', //deprecated - remove
-                        // msgId: clientSession.gdbProcess?.pid || -1,
-                        // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
-                        // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
-                    };
-                    getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
-                        //send response to all clients 
-                        const clientSocket = clients.get(client.clientId);
-                        if(!clientSocket)
-                            {
-                            
-                                //sessions.delete(sessionId);
-                                if(getThisClientSession()?.clientsMap.has(clientId))  console.error("Client not found in session while manually replicating to client  " + sessionId);
-                                     else getThisClientSession()?.clientsMap.delete(client.clientId);
-                                 clients.delete(client.clientId);
-
-                                return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
-                            } 
-                        clientSocket?.send(JSON.stringify(response));
-                    });
-                        }
-                   
-                    };
-                    
-                    
-                    // }
-                    
-                } else {
-                    for(const element of buffer.split('\n')) 
-                        if(element.trim()!='')
-                        {
-                            const parsed = parseMI(element)
-
-                            const response: WebSocketMessage = {
-                                type:WebSocketMessageType.Debug,
-                                state: "running",
-                                body: parsed,
-                                line: parseInt(parsed.outOfBandRecords[0]?.result?.frame?.line ?? undefined) ?? undefined ,
-                                variables: parsed.resultRecord?.result?.variables ?? undefined,
-                                // raw: element
-                                // error: gdbOutput.err ? gdbOutput.err : undefined,
-                                // input: false,
-                                // type: WebSocketMessageType.Output,
-                                // messageType: ConsoleMessageType.DebugProgram,
-                                // clientId: clientId,
-                                // body: gdbOutput.json ? gdbOutput.json : undefined,
-                                // raw: element,
-                                // message: 'next', //deprecated - remove
-                                // msgId: clientSession.gdbProcess?.pid || -1,
-                                // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
-                                // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
-                            };
-                            getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
-                                //send response to all clients 
-                                const clientSocket = clients.get(client.clientId);
-                                if(!clientSocket)
-                                    {
-                                    
-                                        //sessions.delete(sessionId);
-                                        if(getThisClientSession()?.clientsMap.has(clientId))  console.error("Client not found in session while manually replicating to client  " + sessionId);
-                                            else getThisClientSession()?.clientsMap.delete(client.clientId);
-                                        clients.delete(client.clientId);
-
-                                        return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
-                                    } 
-                                clientSocket?.send(JSON.stringify(response));
-                            });
-                        }
-                }
+              try {
+                  
+                  const buffer = sanitizeGdbOutput(data)
+                  // Check if the full response has arrived
+                  function sanitizeGdbOutput(buf) {
+                      // Always work with a Buffer
+                      if (!Buffer.isBuffer(buf)) buf = Buffer.from(buf);
+  
+                      return buf.toString('utf8')
+                          // Replace NUL with \0
+                          .replace(/\x00/g, '\\0')
+                          // Replace other control chars (except \n, \r, \t) with hex escapes
+                          .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, c =>
+                          '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0')
+                          );
+                  }
+                  
+                  // if(!buffer)
+                  //     return
+                  // if (buffer.indexOf('\0') !== -1) return false;
+  
+                  // const nonPrint = (buffer.match(/\\\\/g) || []).length;
+                  // // If more than 1% non-printable, treat as binary
+                  // console.log(nonPrint, Math.max(1, buffer.length))
+                  // if(nonPrint / Math.max(1, buffer.length) > 0.01)
+                  //     return 
+  
+                  if (false) {
+                      // We have everything, remove listener
+                      // (childProcess.stdout as NodeJS.ReadableStream).removeListener("data", onData);
+                      
+                      for(const element of buffer.split('\n')) {
+                          if(element.trim()!='')
+                          {
+                               const gdbOutput = parseGDBString(element);
+                               if(JSON.stringify(gdbOutput.json) == '{}')
+                                  continue;
+  
+                          if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')
+                              {
+  
+                              closeProcess(clientSession.process)
+  
+                                  return;
+                              }
+                          // if(!['stopped', 'done'].some(val => gdbOutput.json.message && gdbOutput.json.message.includes(val)))
+                          //     continue
+                              // if( gdbOutput.ignore)
+                              //     return
+                              //  console.log(JSON.stringify(gdbOutput.json), gdbOutput.err)
+                      
+                      const response: WebSocketMessage = {
+                          type:WebSocketMessageType.Debug,
+                          state: "running",
+                          body: gdbOutput ? gdbOutput.json : undefined,
+                          line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                          variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined,
+                          // raw: element
+                          // error: gdbOutput.err ? gdbOutput.err : undefined,
+                          // input: false,
+                          // type: WebSocketMessageType.Output,
+                          // messageType: ConsoleMessageType.DebugProgram,
+                          // clientId: clientId,
+                          // body: gdbOutput.json ? gdbOutput.json : undefined,
+                          // raw: element,
+                          // message: 'next', //deprecated - remove
+                          // msgId: clientSession.gdbProcess?.pid || -1,
+                          // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                          // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
+                      };
+                      getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
+                          //send response to all clients 
+                          const clientSocket = clients.get(client.clientId);
+                          if(!clientSocket)
+                              {
+                              
+                                  //sessions.delete(sessionId);
+                                  if(getThisClientSession()?.clientsMap.has(clientId))  console.error("Client not found in session while manually replicating to client  " + sessionId);
+                                       else getThisClientSession()?.clientsMap.delete(client.clientId);
+                                   clients.delete(client.clientId);
+  
+                                  return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
+                              } 
+                          clientSocket?.send(JSON.stringify(response));
+                      });
+                          }
+                     
+                      };
+                      
+                      
+                      // }
+                      
+                  } else {
+                      for(const element of buffer.split('\n')) 
+                          if(element.trim()!='')
+                          {
+                              const parsed = parseMI(element)
+  
+                              const response: WebSocketMessage = {
+                                  type:WebSocketMessageType.Debug,
+                                  state: "running",
+                                  body: parsed,
+                                  line: parseInt(parsed.outOfBandRecords[0]?.result?.frame?.line ?? undefined) ?? undefined ,
+                                  variables: parsed.resultRecord?.result?.variables ?? undefined,  
+                              };
+                              getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
+                                  //send response to all clients 
+                                  const clientSocket = clients.get(client.clientId);
+                                  if(!clientSocket)
+                                      {
+                                      
+                                          //sessions.delete(sessionId);
+                                          if(getThisClientSession()?.clientsMap.has(clientId))  console.error("Client not found in session while manually replicating to client  " + sessionId);
+                                              else getThisClientSession()?.clientsMap.delete(client.clientId);
+                                          clients.delete(client.clientId);
+  
+                                          return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
+                                      } 
+                                  clientSocket?.send(JSON.stringify(response));
+                              });
+                          }
+                  }
+              } catch (error) {
+                console.error('Error while debugging:', error)
+              }
             };
 
     // debug mode only for now
