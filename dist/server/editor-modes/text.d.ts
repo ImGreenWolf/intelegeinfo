@@ -8,6 +8,7 @@ declare class Text extends EditorMode {
     HandleClientInput(): void;
     constructor();
     execute(res: any): any;
+    directExecute(res: any, clientObj: any, sessionObj: any): any;
     compile(res: any): void;
 }
 export default Text;

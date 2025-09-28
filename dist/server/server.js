@@ -1231,6 +1231,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 line: parseInt(parsed.outOfBandRecords[0]?.result?.frame?.line ?? undefined) ?? undefined,
                                 variables: parsed.resultRecord?.result?.variables ?? undefined,
                             };
+                            if (parsed.outOfBandRecords[0]?.class == 'thread-group-exited') {
+                                closeProcess(clientSession.process);
+                                return;
+                            }
                             getThisClientSession()?.clientsMap.forEach((client, id) => {
                                 //send response to all clients 
                                 const clientSocket = exports.clients.get(client.clientId);

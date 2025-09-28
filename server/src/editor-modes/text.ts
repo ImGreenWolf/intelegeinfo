@@ -22,6 +22,9 @@ class Text extends EditorMode {
     execute(res) {
          return undefined;
     }
+    directExecute(res: any, clientObj: any, sessionObj: any) {
+        return undefined
+    }
 
     compile(res) {
         

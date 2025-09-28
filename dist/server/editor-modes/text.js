@@ -18,6 +18,9 @@ class Text extends BaseEditorMode_1.default {
     execute(res) {
         return undefined;
     }
+    directExecute(res, clientObj, sessionObj) {
+        return undefined;
+    }
     compile(res) {
     }
 }

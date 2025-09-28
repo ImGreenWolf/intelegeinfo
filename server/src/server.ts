@@ -1542,6 +1542,10 @@ function endConnectionPromise()
                                   line: parseInt(parsed.outOfBandRecords[0]?.result?.frame?.line ?? undefined) ?? undefined ,
                                   variables: parsed.resultRecord?.result?.variables ?? undefined,  
                               };
+                              if(parsed.outOfBandRecords[0]?.class == 'thread-group-exited') {
+                                  closeProcess(clientSession.process)
+                                  return;
+                              }
                               getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
                                   //send response to all clients 
                                   const clientSocket = clients.get(client.clientId);
