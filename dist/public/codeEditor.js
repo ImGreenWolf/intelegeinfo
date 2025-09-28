@@ -218,8 +218,10 @@ class EditorCursor {
     constructor(eventJson) {
         this.id = eventJson.clientId;
         cursors.set(this.id, this);
-        const cursorObj = this.refreshCursor(eventJson);
-        this.update(eventJson);
+        const json = eventJson.displayName ? eventJson :
+            { ...eventJson, displayName: clients.get(eventJson.clientId)?.displayName, color: clients.get(eventJson.clientId)?.color };
+        const cursorObj = this.refreshCursor(json);
+        this.update(json);
     }
     refreshCursor(eventJson) {
         if (this.cursor != undefined)
@@ -1791,7 +1793,7 @@ export function copySessionLink() {
       <label for="voice" title='Daca este pornit, veti putea comunica cu celelalte persoane prin apel vocal'>
         Porneste Voce <input type="checkbox" name="voice"></label>
 
-      <label for="code-permission" title='Alegeti cine poate edita codul - Oricine, doar tu, sau oricui ii dati permisiunea'>
+      <label for="code-permission" title='Alegeti cine poate edita codul - Oricine, doar tu, sau oricui ii acordati permisiunea'>
         Editori Cod
           <select id='code-permission' name='codePermission'>
             <option value='0'>Toata lumea</option>
@@ -2534,7 +2536,7 @@ function onMessage(event) {
         newRTC.onData = (data) => {
             const eventJson = JSON.parse(data);
             if (!cursors.has(eventJson.clientId))
-                new EditorCursor(eventJson);
+                new EditorCursor(eventJson), console.error('Forced Create Editor Cursor', eventJson);
             else
                 cursors.get(targetId).update(eventJson);
         };

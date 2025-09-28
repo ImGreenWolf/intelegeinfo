@@ -456,8 +456,9 @@ class EditorFile {
                         if (onCreate)
                             onCreate.call(this);
                         else
-                            session.replicateFunction((clientWs) => {
-                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
+                            session.replicateFunction((clientWs, id, remoteClientObj) => {
+                                if (!this.linkedUser || (this.linkedUser == remoteClientObj || remoteClientObj.editorPermission == EditorPermission.OnlyHost))
+                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, body: { content: this.name, command: types_2.FileManagementCommands.Create } }));
                             });
                         if (options && options.autoOpenClient)
                             this.openFile(options.autoOpenClient);

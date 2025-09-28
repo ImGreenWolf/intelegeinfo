@@ -492,7 +492,7 @@ Tralalero Tralala`.split('\n')
         
         this.session = session
         if(options && options.linkedUser)
-        this.linkedUser = options.linkedUser
+            this.linkedUser = options.linkedUser
 
         this.name = this.linkedUser ? this.linkedUser.displayName.replaceAll(' ', '-') + "-" + name :  name;
         this.updateFilePath()
@@ -529,7 +529,8 @@ Tralalero Tralala`.split('\n')
                     if(onCreate)
                         onCreate.call(this)
                     else
-                        session.replicateFunction((clientWs) => {
+                        session.replicateFunction((clientWs, id, remoteClientObj) => {
+                            if(!this.linkedUser || (this.linkedUser == remoteClientObj || remoteClientObj.editorPermission == EditorPermission.OnlyHost))
                             clientWs.send(JSON.stringify({type: WebSocketMessageType.FileManagement, body: {content: this.name, command: FileManagementCommands.Create}}))
                         });
 
