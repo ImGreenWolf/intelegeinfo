@@ -1,5 +1,5 @@
 import { createNode } from "../utils.js";
-import { dateDeltaToString } from "./mainPage.js";
+import { dateDeltaToString } from "./mainPageReact.js";
 let dialog;
 export function loadTeacher(json) {
     document.getElementById('flex-header')?.appendChild(createNode('button', { innerText: 'Adauga Tema', async onclick(ev) {

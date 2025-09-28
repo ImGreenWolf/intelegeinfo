@@ -344,7 +344,10 @@ header
     border: none;
     backdrop-filter: invert(100%);
 }
-
+.ace_mobile-menu>span {
+    display: flex;
+    flex-direction: column;
+}
 .ace_remote_cursor {
     transition: 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
     position: absolute;

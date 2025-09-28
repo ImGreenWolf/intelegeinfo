@@ -155,36 +155,115 @@ export function createNode
 (tag: K, options?: {innerText?: string, css?: string, className?: string, id?: string, html?: (Node | undefined)[],
  htmlSting?: string, attributes?: ({name: string, value: string}|undefined)[], onclick?: (ev) => void,
 onchange?: (ev) => void, onhover?: (ev: MouseEvent) => void}): HTMLElementTagNameMap[K]
-    {  
-        const elem = document.createElement(tag)
-        if(options)
-        {
-            if(options.css)
-                elem.style.cssText = options.css
-            if(options.className)
-                elem.className = options.className
-            if(options.id)
-                elem.id = options.id
-            if(options.innerText)
-                elem.innerText = options.innerText
-            if(options.html)
-                for(const node of options.html)
-                    if(node)
-                        elem.appendChild(node)
-            if(options.attributes)
-                for(const attribute of options.attributes)
-                    if(attribute)
-                        elem.setAttribute(attribute.name, attribute.value)
-            if(options.htmlSting)
-                elem.innerHTML = options.htmlSting;
-            if(options.onclick)
-                elem.onclick = options.onclick
-            if(options.onchange)
-                elem.onchange = options.onchange
-            if(options.onhover)
-                elem.onmouseover = options.onhover
-        }       
-        
+{  
+    const elem = document.createElement(tag)
+    if(options)
+    {
+        if(options.css)
+            elem.style.cssText = options.css
+        if(options.className)
+            elem.className = options.className
+        if(options.id)
+            elem.id = options.id
+        if(options.innerText)
+            elem.innerText = options.innerText
+        if(options.html)
+            for(const node of options.html)
+                if(node)
+                    elem.appendChild(node)
+        if(options.attributes)
+            for(const attribute of options.attributes)
+                if(attribute)
+                    elem.setAttribute(attribute.name, attribute.value)
+        if(options.htmlSting)
+            elem.innerHTML = options.htmlSting;
+        if(options.onclick)
+            elem.onclick = options.onclick
+        if(options.onchange)
+            elem.onchange = options.onchange
+        if(options.onhover)
+            elem.onmouseover = options.onhover
+    }       
+    
 
-        return elem
-    }
+    return elem
+}
+
+export enum TutorialStepAction {
+  click = 'Click',
+  hover = 'Hover',
+  custom = 'Custom',
+  confirm = 'Confirm'
+}
+type TutorialStep =  {elem: HTMLElement | string, title: string, content: string, action: TutorialStepAction, customAction?: () => void, TutorialElem?: HTMLElement, delay?: number, duration?: number}
+export async function startTutorial(steps: TutorialStep[]) {
+
+  let activeStep: TutorialStep | undefined
+  for(const step of steps)
+    await tutorialStep(step)
+
+  clearLastStep()
+
+
+  function clearLastStep() {
+     if(activeStep?.TutorialElem)
+        (activeStep.TutorialElem as HTMLElement).remove()
+      activeStep = undefined
+  }
+
+ function tutorialStep(step: TutorialStep) {
+    return new Promise<void>(async (resolve, reject) => {
+
+      if(typeof step.elem == 'string') 
+        if(document.getElementById(step.elem))
+          var parentElem = document.getElementById(step.elem)!
+        else  {
+          reject()
+          return
+        }
+      else
+        var parentElem = step.elem;
+
+     
+
+      clearLastStep()
+      
+      if(step.delay)
+        await new Promise<void>(resolve => setTimeout(resolve, step.delay))
+      if(step.duration && step.duration>0) 
+      setTimeout(() => {
+        clearLastStep()  
+        resolve()
+      }, step.duration ?? 30000);
+
+
+      if(parentElem.style.position == 'static')
+        parentElem.style.position = 'relative'
+
+      const elem = createNode('div', {htmlSting: `<h3>${step.title}</h3><p>${step.content}</p>`, css: 'position: absolute; top: -100%;'})
+      step.TutorialElem = elem;
+      parentElem.appendChild(elem)
+
+      activeStep=step;
+      
+    
+        
+        switch(step.action) {
+          case TutorialStepAction.click: 
+              parentElem.onclick = (ev) => {if(elem.contains((ev.target as HTMLElement)))  ev.stopPropagation(); else resolve()}
+
+          break;
+          case TutorialStepAction.hover: 
+          parentElem.onpointerover =(ev) => {if(elem.contains((ev.target as HTMLElement)))  ev.stopPropagation(); else resolve()}
+          break;
+          case TutorialStepAction.confirm: 
+          elem.appendChild(createNode('button', {
+            innerText: 'Ok',
+            onclick(ev) {
+            resolve()
+          },}))
+        }
+      })
+  }
+}
+

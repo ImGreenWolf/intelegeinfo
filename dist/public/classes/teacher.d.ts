@@ -1,4 +1,4 @@
-import { Class_ } from "./mainPage.js";
+import { Class_ } from "./mainPageReact.js";
 export declare function loadTeacher(json: Class_): void;
 export declare function displayStudent(id: number, classInfo: Class_): Promise<void>;
 export declare function clamp(input: number, min: number, max: number): number;

@@ -11,10 +11,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playwrite+DK+Loopet:wght@100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    
+    <script src="https://accounts.google.com/gsi/client" async></script>
 </head>
 <body>
-
+<div id="g_id_onload"
+            data-client_id="1084614977813-af126bl44fhu54nh1etlnl3n2tf5jkq5.apps.googleusercontent.com"
+            data-context="use"
+            data-ux_mode="popup"
+            data-login_uri="https://intelegeinfo.ro/login/callback"
+            data-itp_support="true">
+        </div> 
 <div class="container">
   <a class="home" href="/"></a>
   
@@ -87,7 +93,16 @@
         </div>
 
         <div class="login-method-container">
-          <button onclick="loginWithGoogle()" type="button" class="google login-method">Sign up with Google</button>
+          <!-- <button onclick="loginWithGoogle()" type="button" class="google login-method">Sign up with Google</button>-->
+           
+        <div class="g_id_signin"
+          data-type="standard"
+          data-shape="pill"
+          data-theme="outline"
+          data-text="signin_with"
+          data-size="large"
+          data-logo_alignment="left">
+      </div>
         </div>
       
       </div>

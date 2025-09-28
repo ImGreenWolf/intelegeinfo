@@ -149,3 +149,69 @@ export function createNode(tag, options) {
     }
     return elem;
 }
+export var TutorialStepAction;
+(function (TutorialStepAction) {
+    TutorialStepAction["click"] = "Click";
+    TutorialStepAction["hover"] = "Hover";
+    TutorialStepAction["custom"] = "Custom";
+    TutorialStepAction["confirm"] = "Confirm";
+})(TutorialStepAction || (TutorialStepAction = {}));
+export async function startTutorial(steps) {
+    let activeStep;
+    for (const step of steps)
+        await tutorialStep(step);
+    clearLastStep();
+    function clearLastStep() {
+        if (activeStep?.TutorialElem)
+            activeStep.TutorialElem.remove();
+        activeStep = undefined;
+    }
+    function tutorialStep(step) {
+        return new Promise(async (resolve, reject) => {
+            if (typeof step.elem == 'string')
+                if (document.getElementById(step.elem))
+                    var parentElem = document.getElementById(step.elem);
+                else {
+                    reject();
+                    return;
+                }
+            else
+                var parentElem = step.elem;
+            clearLastStep();
+            if (step.delay)
+                await new Promise(resolve => setTimeout(resolve, step.delay));
+            if (step.duration && step.duration > 0)
+                setTimeout(() => {
+                    clearLastStep();
+                    resolve();
+                }, step.duration ?? 30000);
+            if (parentElem.style.position == 'static')
+                parentElem.style.position = 'relative';
+            const elem = createNode('div', { htmlSting: `<h3>${step.title}</h3><p>${step.content}</p>`, css: 'position: absolute; top: -100%;' });
+            step.TutorialElem = elem;
+            parentElem.appendChild(elem);
+            activeStep = step;
+            switch (step.action) {
+                case TutorialStepAction.click:
+                    parentElem.onclick = (ev) => { if (elem.contains(ev.target))
+                        ev.stopPropagation();
+                    else
+                        resolve(); };
+                    break;
+                case TutorialStepAction.hover:
+                    parentElem.onpointerover = (ev) => { if (elem.contains(ev.target))
+                        ev.stopPropagation();
+                    else
+                        resolve(); };
+                    break;
+                case TutorialStepAction.confirm:
+                    elem.appendChild(createNode('button', {
+                        innerText: 'Ok',
+                        onclick(ev) {
+                            resolve();
+                        },
+                    }));
+            }
+        });
+    }
+}

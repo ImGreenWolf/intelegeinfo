@@ -12,6 +12,7 @@
       "skipLibCheck": true,
       "noImplicitAny": false,
       "baseUrl": "/dist/public/",
+      "jsx": "react",
       "paths": {
         "client/modules/*": ["./../../node_modules/*"],
         "client/modules/xterm": ["./../../node_modules/@xterm/xterm/src/browser/Index.d.ts"]

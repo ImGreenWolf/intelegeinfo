@@ -3,7 +3,7 @@
 
 import { Solve, Assignment, User } from "../../../generated/prisma";
 import { createNode } from "../utils.js";
-import { Class_, dateDeltaToString } from "./mainPage.js";
+import { Class_, dateDeltaToString } from "./mainPageReact.js";
 
 type Context = {ctx:CanvasRenderingContext2D, w,h,sw, offset,canvas}
 let dialog: HTMLDialogElement;

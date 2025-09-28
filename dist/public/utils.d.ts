@@ -24,3 +24,21 @@ export declare function createNode<K extends keyof HTMLElementTagNameMap>(tag: K
     onchange?: (ev: any) => void;
     onhover?: (ev: MouseEvent) => void;
 }): HTMLElementTagNameMap[K];
+export declare enum TutorialStepAction {
+    click = "Click",
+    hover = "Hover",
+    custom = "Custom",
+    confirm = "Confirm"
+}
+type TutorialStep = {
+    elem: HTMLElement | string;
+    title: string;
+    content: string;
+    action: TutorialStepAction;
+    customAction?: () => void;
+    TutorialElem?: HTMLElement;
+    delay?: number;
+    duration?: number;
+};
+export declare function startTutorial(steps: TutorialStep[]): Promise<void>;
+export {};

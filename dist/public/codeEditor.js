@@ -1956,6 +1956,11 @@ export function closeDefaultScreen(createdFileElement) {
                 window.editor.sendDebugCommand('execute');
             }, class: "run" }),
     ], 'execution');
+    // startTutorial([
+    //   {title: "Ruleaza cod", content: "Apasa acest buton pentru a rula codul din fisierul deschis.", action: TutorialStepAction.click,elem:'execution'},
+    //   {title: "Consola programului", content: "Aici vei putea vedea ce afiseaza programul si sa introduci date!", action: TutorialStepAction.hover,elem:'active-console', delay: 5000},
+    //   {title: "Tooluri", content: "Aici poti deschide lista cu probleme, subiecte bac, pbinfo si multe altele!", action: TutorialStepAction.click,elem:document.getElementsByClassName('controls')[0] as HTMLElement, delay: 5000},
+    // ])
 }
 function addButtons(buttons, id) {
     // const buttons = [
