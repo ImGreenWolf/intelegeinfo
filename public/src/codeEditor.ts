@@ -3616,7 +3616,7 @@ function getEditorSession(fileName)
         }, class: "debug"})], 'debug-exec-controls')
          
          activeConsole?.onProcessStart()
-         writeOutput('Started debug session', null, ConsoleMessageType.Debug)
+         writeOutput('Sesiunea de debug a inceput: Apasa pe buton cu sageata din toolbar pentru a merge mai departe.\n Poti vedea valoarea variabilelor din scope in tab-ul Debug! \n', null, ConsoleMessageType.Debug)
          if(!debugWindow)
          {
            debugWindow = new DebugWindow()
