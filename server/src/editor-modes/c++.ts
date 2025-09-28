@@ -173,7 +173,7 @@ int main() {
             this.process.write(command+' \n')
         }
         sendProgramInput: (command) => void = (command) => {
-            this.process.write(command)
+            this.inputTerminal.write(command)
         }
 
         
@@ -226,45 +226,36 @@ int main() {
                     handleFlowControl: true,
                 })
 
+
+                this.inputTerminal.write('tty\n\r')
+
+                let loaded= false
+                this.inputTerminal.onData((data) => {
+                    if(loaded)
+                        if(data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
+                            return;
+                        else
+                            return clientSession.replicateFunction((clientWs, id, clientObj) => {
+                                clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
+                            });
+                    else if(!data.toString().includes('/dev/'))
+                        return;
+
+                    console.log('tty:', data.toString())
+                    this.sendCommand('set inferior-tty ' +data.toString())
                     this.sendCommand('-break-insert 1')
                     this.sendCommand('-exec-run')
-                // this.inputTerminal.write('tty\n\r')
-
-                // let loaded= false
-                // this.inputTerminal.onData((data) => {
-                //     if(loaded)
-                //         if(data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
-                //             return;
-                //         else
-                //             return clientSession.replicateFunction((clientWs, id, clientObj) => {
-                //                 clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
-                //             });
-                //     else if(!data.toString().includes('/dev/'))
-                //         return;
-
-                //     console.log('tty:', data.toString())
-                //     this.sendCommand('set inferior-tty ' +data.toString())
-                //     this.sendCommand('-break-insert 1')
-                //     this.sendCommand('-exec-run')
-                //     loaded=true
+                    loaded=true
                     
-                // })
-                this.process.onData((data) => {
-                    let buffer=''
-                    for(const row of data.split('\n'))
-                        if(row && !['^', '*','=', '&', '-', '~'].includes(row.trim()[0]) && row.trim() != '(gdb)') // TODO Rework this, especially ~
-                            buffer += row+'\n';
-                    clientSession.replicateFunction((clientWs, id, clientObj) => {
-                        clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: buffer, data: buffer});  // Send GDB output to the client
-                    });
                 })
-                // this.inputTerminal.onExit((e) => {
-                //     console.error('TTY EXITED WITH CODE', e)
-                // })
+                
+                this.inputTerminal.onExit((e) => {
+                    console.error('TTY EXITED WITH CODE', e)
+                })
 
-                // this.process.onExit((code) => {
-                //     this.inputTerminal.kill()
-                // })
+                this.process.onExit((code) => {
+                    this.inputTerminal.kill()
+                })
                
                 // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
                 console.log('Spawned debug process with id', this.process.pid)
