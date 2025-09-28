@@ -2370,9 +2370,9 @@ function onMessage(event) {
         }
         else {
             //TODO DMDMDMDM Check if line number string contains (gdb) to prevent standard output from being parsed as line number
-            if (eventJson.body.frame && eventJson.body.frame.line) {
+            if (eventJson.line) {
                 //check if its a chunk with line number
-                debugLine = eventJson.body.frame.line; //parseInt(data.match(/^(\d)+(?=\s)?/gm)); // update debug row
+                debugLine = eventJson.line; //parseInt(data.match(/^(\d)+(?=\s)?/gm)); // update debug row
                 setDebugLineStyle(debugLine);
                 const conditionRegex = /(?:if|while)\s*\(([^(){};]+?)\)/g;
                 const forRegex = /for\s*\(([^;]*);([^;]*);[^)]*\)/g;
