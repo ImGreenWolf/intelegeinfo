@@ -124,12 +124,12 @@
         display: block;
     }
     
-    #editor,
-    button
+    #editor
     {
-        font-size: 1rem;
+        font-size: 1em;
     }
-    #output
+    #output,
+    .default-screen
     {
         font-size: 0.75rem;
     }
@@ -155,7 +155,7 @@
         grid-column: span 2;
         height: 50px;
         justify-content: space-around;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(14em, 1fr));
         gap: 1em 1.5em;
         align-items: stretch;
         height: 100%;
@@ -169,6 +169,11 @@
     .default-screen .language-info
     {
         display: none;
+    }
+
+    .share-container {
+        grid-template-columns: 1fr;
+        font-size: 0.75em;
     }
 }
 /*

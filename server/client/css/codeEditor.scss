@@ -391,8 +391,8 @@ header
 
     button
     {
-        border: 2px solid opacify($color: theme.$border-color, $amount: 0.2)
-        
+        border: 2px solid opacify($color: theme.$border-color, $amount: 0.2);
+        font-size: 1em;
     }
     .host
     {
@@ -1640,6 +1640,7 @@ button:not(.custom-button, .noanimate), #editor-tabs span:not(#active-open-file,
     user-select: none;
     outline-offset: 0.5px;
     text-align: center;
+    font-size: 1em;
     transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
     cursor: pointer;
     &:disabled
@@ -2279,7 +2280,7 @@ mini-dock
     align-self: flex-end;
     height: 100%;
     justify-content: space-around;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, 200px);
     gap: 1em 1.5em;
     box-sizing: border-box;
     align-items: center;
@@ -2301,9 +2302,9 @@ mini-dock
         border: 2px solid rgb(36, 36, 36);
         border-radius: inherit;
         font-family: Poppins;
-        height: 25px;
+        height: 1.5em;
         align-items: center;
-        border-radius: 50px;
+        border-radius: 2em;
         text-align: center;
         justify-content: center;
         transition-duration: 0.5s;

@@ -155,8 +155,8 @@
             }
         }
 
-        @media screen and (max-width: 512px) {
+        /* @media screen and (max-width: 512px) {
             :root {
                 font-size: 0.75em;
             }
-        }
+        } */
