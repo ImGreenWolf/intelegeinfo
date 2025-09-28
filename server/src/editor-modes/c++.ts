@@ -173,8 +173,7 @@ int main() {
             this.process.write(command+' \n')
         }
         sendProgramInput: (command) => void = (command) => {
-            if(this.inputTerminal)
-                this.inputTerminal.write(command)
+            this.inputTerminal.write(command)
         }
 
         
@@ -238,7 +237,7 @@ int main() {
                         else
                             return clientSession.replicateFunction((clientWs, id, clientObj) => {
                                 clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
-                            }), console.log(data)
+                            });
                     else if(!data.toString().includes('/dev/'))
                         return;
 
@@ -247,10 +246,6 @@ int main() {
                     this.sendCommand('-break-insert 1')
                     this.sendCommand('-exec-run')
                     loaded=true
-                    
-                    clientSession.replicateFunction((clientWs, id, clientObj) => {
-                        clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
-                    });
                     
                 })
                 
@@ -265,6 +260,9 @@ int main() {
                 // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
                 console.log('Spawned debug process with id', this.process.pid)
 
+                clientSession.replicateFunction((clientWs, id, clientObj) => {
+                    clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
+                });
                 
                 // this.process.onData((data) => console.log(data))
             
