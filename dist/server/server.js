@@ -1150,11 +1150,11 @@ exports.wss.addListener('connection', async (ws, req) => {
                 // Always work with a Buffer
                 if (!Buffer.isBuffer(buf))
                     buf = Buffer.from(buf);
-                return JSON.parse(buf.toString('utf8')
+                return buf.toString('utf8')
                     // Replace NUL with \0
                     .replace(/\x00/g, '\\0')
                     // Replace other control chars (except \n, \r, \t) with hex escapes
-                    .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, c => '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0')));
+                    .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, c => '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0'));
             }
             // if(!buffer)
             //     return
@@ -1187,7 +1187,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                             body: gdbOutput ? gdbOutput.json : undefined,
                             line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
                             variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined,
-                            raw: element
+                            // raw: element
                             // error: gdbOutput.err ? gdbOutput.err : undefined,
                             // input: false,
                             // type: WebSocketMessageType.Output,
