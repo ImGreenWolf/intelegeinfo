@@ -1530,42 +1530,46 @@ function endConnectionPromise()
                     // }
                     
                 } else {
-                    const parsed = parseMI(buffer)
+                    for(const element of buffer.split('\n')) 
+                        if(element.trim()!='')
+                        {
+                            const parsed = parseMI(element)
 
-                    const response: WebSocketMessage = {
-                        type:WebSocketMessageType.Debug,
-                        state: "running",
-                        body: parsed,
-                        line: parsed.frame?.line ? parsed.frame.line : undefined,
-                        variables: parsed.variables ? parsed.variables : undefined,
-                        // raw: element
-                        // error: gdbOutput.err ? gdbOutput.err : undefined,
-                        // input: false,
-                        // type: WebSocketMessageType.Output,
-                        // messageType: ConsoleMessageType.DebugProgram,
-                        // clientId: clientId,
-                        // body: gdbOutput.json ? gdbOutput.json : undefined,
-                        // raw: element,
-                        // message: 'next', //deprecated - remove
-                        // msgId: clientSession.gdbProcess?.pid || -1,
-                        // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
-                        // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
-                    };
-                    getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
-                        //send response to all clients 
-                        const clientSocket = clients.get(client.clientId);
-                        if(!clientSocket)
-                            {
-                            
-                                //sessions.delete(sessionId);
-                                if(getThisClientSession()?.clientsMap.has(clientId))  console.error("Client not found in session while manually replicating to client  " + sessionId);
-                                     else getThisClientSession()?.clientsMap.delete(client.clientId);
-                                 clients.delete(client.clientId);
+                            const response: WebSocketMessage = {
+                                type:WebSocketMessageType.Debug,
+                                state: "running",
+                                body: parsed,
+                                line: parsed.frame?.line ? parsed.frame.line : undefined,
+                                variables: parsed.variables ? parsed.variables : undefined,
+                                // raw: element
+                                // error: gdbOutput.err ? gdbOutput.err : undefined,
+                                // input: false,
+                                // type: WebSocketMessageType.Output,
+                                // messageType: ConsoleMessageType.DebugProgram,
+                                // clientId: clientId,
+                                // body: gdbOutput.json ? gdbOutput.json : undefined,
+                                // raw: element,
+                                // message: 'next', //deprecated - remove
+                                // msgId: clientSession.gdbProcess?.pid || -1,
+                                // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
+                                // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
+                            };
+                            getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
+                                //send response to all clients 
+                                const clientSocket = clients.get(client.clientId);
+                                if(!clientSocket)
+                                    {
+                                    
+                                        //sessions.delete(sessionId);
+                                        if(getThisClientSession()?.clientsMap.has(clientId))  console.error("Client not found in session while manually replicating to client  " + sessionId);
+                                            else getThisClientSession()?.clientsMap.delete(client.clientId);
+                                        clients.delete(client.clientId);
 
-                                return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
-                            } 
-                        clientSocket?.send(JSON.stringify(response));
-                    });
+                                        return console.error("\\x1b[31m Client not found, removing ids " + client + "\\x1b[0m");
+                                    } 
+                                clientSocket?.send(JSON.stringify(response));
+                            });
+                        }
                 }
             };
 
