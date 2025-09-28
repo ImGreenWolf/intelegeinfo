@@ -216,6 +216,8 @@ class CPPDebugger extends ProcessTypes_1.default {
             // cwd: './clientFiles'
             handleFlowControl: true,
         });
+        this.sendCommand('-break-insert 1');
+        this.sendCommand('-exec-run');
         // this.inputTerminal.write('tty\n\r')
         // let loaded= false
         // this.inputTerminal.onData((data) => {

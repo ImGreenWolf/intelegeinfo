@@ -226,7 +226,8 @@ int main() {
                     handleFlowControl: true,
                 })
 
-
+                    this.sendCommand('-break-insert 1')
+                    this.sendCommand('-exec-run')
                 // this.inputTerminal.write('tty\n\r')
 
                 // let loaded= false
