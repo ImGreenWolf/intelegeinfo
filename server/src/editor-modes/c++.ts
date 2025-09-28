@@ -238,7 +238,7 @@ int main() {
                         else
                             return clientSession.replicateFunction((clientWs, id, clientObj) => {
                                 clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
-                            });
+                            }), console.log(data)
                     else if(!data.toString().includes('/dev/'))
                         return;
 
