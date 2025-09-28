@@ -1539,8 +1539,8 @@ function endConnectionPromise()
                                 type:WebSocketMessageType.Debug,
                                 state: "running",
                                 body: parsed,
-                                line: parsed.frame?.line ? parsed.frame.line : undefined,
-                                variables: parsed.variables ? parsed.variables : undefined,
+                                line: parsed.outOfBandRecords[0]?.result?.frame?.line ?? undefined,
+                                variables: parsed.outOfBandRecords[0]?.result?.variables ?? undefined,
                                 // raw: element
                                 // error: gdbOutput.err ? gdbOutput.err : undefined,
                                 // input: false,
