@@ -3090,11 +3090,20 @@ export function parseText(file: string, req: any, params?)
                 throw 'invalid file path'
             if(filePath.includes('_header.html') &&  req.get('sec-fetch-dest') == 'iframe')
             {
+                // dont show header in iframes
                 text =  text.replaceAll(key, '')
                 continue
             }  
             const file = fs.readFileSync(path.resolve(rootDirName, 'public', filePath)).toString()
-            text = text.replaceAll(key, parseText(file, req)) // recursivly parse file text
+            text = text.replaceAll(key, parseText(file, req, {...params, login: req.cookies[tokenCookieName] ? '' :
+                 `<div id="g_id_onload"
+                    data-client_id="1084614977813-af126bl44fhu54nh1etlnl3n2tf5jkq5.apps.googleusercontent.com"
+                    data-context="use"
+                    data-ux_mode="popup"
+                    data-login_uri="https://intelegeinfo.ro/login/callback"
+                    data-itp_support="true">
+                </div>
+            <script src="https://accounts.google.com/gsi/client" async></script>`})) // recursivly parse file text
         } else if(key.startsWith('^{*'))
         {
             const keys = match.split('.')
