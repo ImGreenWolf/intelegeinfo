@@ -282,7 +282,7 @@ function findUserClientAndSession(userId) {
 }
 exports.router.get('/:sessionId/test/:problemId', (req, res) => {
     try {
-        if (!req.params.sessionId && !req.query.clientId) {
+        if (!req.params.sessionId != undefined && req.query.clientId != undefined) {
             const userId = users.getIdFromJWT(req);
             if (!userId)
                 throw 'Please Login';
