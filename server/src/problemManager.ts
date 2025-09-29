@@ -317,6 +317,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
             var foundData = findUserClientAndSession(userId)
             console.log(foundData)
         }
+        console.log(!req.params.sessionId, !req.query.clientId,foundData )
             const clientId = (foundData?.foundClient?.clientId ?? req.query.clientId) as UUID
         const problemId = parseInt(req.params.problemId)
         if(!problemId)
