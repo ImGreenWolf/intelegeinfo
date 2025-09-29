@@ -180,9 +180,11 @@ export class IIWebRTC {
         this.pc.onnegotiationneeded = async () => {
             try {
                 this.makingOffer = true;
-                const offer = await this.pc?.createOffer(); // 1
-                await this.pc.setLocalDescription(offer); // 2
-                signaler.send(JSON.stringify({ type: "rtc", targetId: thistargetId, description: offer })); //this.pc!.localDescription //3
+                // const offer = await this.pc?.createOffer() // 1
+                // await this.pc!.setLocalDescription(offer); // 2
+                // signaler.send(JSON.stringify({type: "rtc", targetId: thistargetId, description: offer })); //this.pc!.localDescription //3
+                await this.pc.setLocalDescription(); // 2
+                signaler.send(JSON.stringify({ type: "rtc", targetId: thistargetId, description: this.pc?.localDescription })); //this.pc!.localDescription //3
                 // console.log(this.id,'making offer. ',"target: ",thistargetId)
                 console.log(this.id, 'negotiation needed');
             }
@@ -271,21 +273,16 @@ export class IIWebRTC {
                 this.ignoreOffer = !this.polite && offerCollision;
                 if (this.ignoreOffer)
                     return;
-                this.isSettingRemoteAnswerPending = description.type === "offer";
+                this.isSettingRemoteAnswerPending = description.type === "answer";
                 console.log(this.id, 'setting remote description', description.type);
                 await this.pc.setRemoteDescription(description); // step 3: describe the remote connection
                 this.isSettingRemoteAnswerPending = false;
                 if (description.type === "offer") {
                     console.log(this.id, 'awnsered offer');
-                    // Only answer if signalingState is stable and not already setting remote answer
-                    if (this.pc.signalingState === "stable" && !this.isSettingRemoteAnswerPending) {
-                        const awnser = await this.pc?.createAnswer();
-                        await this.pc.setLocalDescription(awnser);
-                        this.signaler.send(JSON.stringify({ type: "rtc", targetId: this.thistargetId, description: this.pc.localDescription })); // this.pc!.localDescription })); // create awnser
-                    }
-                    else {
-                        console.warn(this.id, "Not answering offer because signaling state is not stable or already setting remote answer.");
-                    }
+                    await this.pc.setLocalDescription();
+                    // const awnser = await this.pc?.createAnswer()
+                    // await this.pc!.setLocalDescription(awnser);
+                    this.signaler.send(JSON.stringify({ type: "rtc", targetId: this.thistargetId, description: this.pc.localDescription })); // this.pc!.localDescription })); // create awnser
                 }
             }
             else if (candidate) {
