@@ -4065,9 +4065,7 @@ function getEditorSession(fileName)
               // if(document.getElementById('console-input'))
               //   document.getElementById('console-input')?.remove();
               
-              const console = activeConsole!.consoleInput
-              if(!console)
-                return
+              
               // console.id = 'console-input'
               // activeConsole?.element.appendChild(console) 
               // activeConsole!.element.onclick = (ev) => console.focus()

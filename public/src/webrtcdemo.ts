@@ -357,10 +357,14 @@ export class IIWebRTC
                     if (description.type === "offer") {
                         console.log(this.id,'awnsered offer')
 
-                        
-                        const awnser = await this.pc?.createAnswer()
-                        await this.pc!.setLocalDescription(awnser);
-                        this.signaler.send(JSON.stringify({type: "rtc", targetId: this.thistargetId, description: this.pc!.localDescription })) // this.pc!.localDescription })); // create awnser
+                        // Only answer if signalingState is stable and not already setting remote answer
+                        if (this.pc!.signalingState === "stable" && !this.isSettingRemoteAnswerPending) {
+                            const awnser = await this.pc?.createAnswer()
+                            await this.pc!.setLocalDescription(awnser);
+                            this.signaler.send(JSON.stringify({type: "rtc", targetId: this.thistargetId, description: this.pc!.localDescription })) // this.pc!.localDescription })); // create awnser
+                        } else {
+                            console.warn(this.id, "Not answering offer because signaling state is not stable or already setting remote answer.");
+                        }
                     }
                 } else if (candidate) {
                     try {
