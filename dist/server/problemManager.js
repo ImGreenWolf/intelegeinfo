@@ -277,7 +277,7 @@ function findUserClientAndSession(userId) {
     for (const session of Array.from(server_1.sessionMap.values())) {
         const foundClient = session.clients.find(client => client.clientData.id == userId);
         if (foundClient)
-            return [foundClient, session];
+            return { foundClient, session };
     }
 }
 exports.router.get('/:sessionId/test/:problemId', (req, res) => {
@@ -289,11 +289,11 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
             var foundData = findUserClientAndSession(userId);
             console.log(foundData);
         }
-        const clientId = (foundData[0] ?? req.query.clientId);
+        const clientId = (foundData?.foundClient?.clientId ?? req.query.clientId);
         const problemId = parseInt(req.params.problemId);
         if (!problemId)
             throw 'invalid problem id';
-        const session = server_1.sessionMap.get(foundData[1]?.sessionId ?? req.params.sessionId);
+        const session = server_1.sessionMap.get(foundData?.session?.sessionId ?? req.params.sessionId);
         if (!session)
             throw 'couldnt find session';
         // const client = session.clientsMap.get(data.clientId)

@@ -304,7 +304,7 @@ function findUserClientAndSession(userId) {
     for(const session of Array.from(sessionMap.values())) {
         const foundClient = session.clients.find(client => client.clientData.id == userId)
         if(foundClient)
-            return [foundClient, session]
+            return {foundClient, session}
     }
 }
 router.get('/:sessionId/test/:problemId', (req, res) => {
@@ -317,11 +317,11 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
             var foundData = findUserClientAndSession(userId)
             console.log(foundData)
         }
-            const clientId = (foundData[0] ?? req.query.clientId) as UUID
+            const clientId = (foundData?.foundClient?.clientId ?? req.query.clientId) as UUID
         const problemId = parseInt(req.params.problemId)
         if(!problemId)
             throw 'invalid problem id'
-        const session = sessionMap.get(foundData[1]?.sessionId ?? req.params.sessionId as UUID) 
+        const session = sessionMap.get(foundData?.session?.sessionId ?? req.params.sessionId as UUID) 
         if(!session)
             throw 'couldnt find session'
         
