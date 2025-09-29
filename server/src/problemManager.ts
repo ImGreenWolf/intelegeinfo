@@ -300,16 +300,28 @@ router.post('/update', (req, res) => {
     
 })
 
-
+function findUserClientAndSession(userId) {
+    for(const session of Array.from(sessionMap.values())) {
+        const foundClient = session.clients.find(client => client.clientData.id == userId)
+        if(foundClient)
+            return [foundClient, session]
+    }
+}
 router.get('/:sessionId/test/:problemId', (req, res) => {
     try {
-        if(!req.params.sessionId)
-            throw 'invalid session id'
-
+        if(!req.params.sessionId || !req.query.clientId)
+        {
+            const userId = users.getIdFromJWT(req)
+            if(!userId)
+                throw 'Please Login';
+            var foundData = findUserClientAndSession(userId)
+            
+        }
+            const clientId = (foundData[0] ?? req.query.clientId) as UUID
         const problemId = parseInt(req.params.problemId)
         if(!problemId)
             throw 'invalid problem id'
-        const session = sessionMap.get(req.params.sessionId as UUID) 
+        const session = sessionMap.get(foundData[1]?.sessionId ?? req.params.sessionId as UUID) 
         if(!session)
             throw 'couldnt find session'
         
@@ -321,9 +333,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
         //     } 
         if(!session.executeProblemChecker)
             throw 'No problem checker...'
-        if(!req.query.clientId)
-            throw 'no client id supplied'
-        const client = session.getClientObjectById(req.query.clientId as UUID);
+        const client = session.getClientObjectById(clientId);
         if(!client.clientData)
             throw 'Ca sa testezi problema, trebuie sa fi logat!'
         if(!client.openFile[0])
