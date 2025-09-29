@@ -477,9 +477,10 @@ router.get('/callback', async (req, res) => {
 router.post('/callback', async (req, res) => {
     const { credential } = req.body;
     if (!credential) {
-        return res.status(400).send('Missing authorization code. Refresh the page!');
+        return res.status(400).send('Empty credential. Something went wrong with the request.');
     }
     try {
+        // TODO Verify user jwt token against google's public key
         const userInfo = jsonwebtoken_1.default.decode(credential);
         const userExists = await dbClient_1.default.user.findFirst({
             where: {

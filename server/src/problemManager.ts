@@ -309,7 +309,7 @@ function findUserClientAndSession(userId) {
 }
 router.get('/:sessionId/test/:problemId', (req, res) => {
     try {
-        if(!req.params.sessionId || !req.query.clientId)
+        if(!req.params.sessionId && !req.query.clientId)
         {
             const userId = users.getIdFromJWT(req)
             if(!userId)
@@ -334,7 +334,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
         if(!session.executeProblemChecker)
             throw 'No problem checker...'
         const client = foundData?.foundClient ?? session.getClientObjectById(clientId);
-        if(!client.clientData)
+        if(!client?.clientData)
             throw 'Ca sa testezi problema, trebuie sa fi logat!'
         if(!client.openFile[0])
             throw 'Trebuie sa deschizi un fisier pentru a testa problema!'
@@ -357,7 +357,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
                         timeIndex++;
                     }
                 }
-                if(client.clientData && client.openFile[0]) {
+                if(client?.clientData && client.openFile[0]) {
                      const solve = {
                         userId: client.clientData.id,
                         score: score,

@@ -555,13 +555,13 @@ router.post('/callback', async (req:any, res:any) => {
   const {credential} = req.body
 
   if (!credential) {
-    return res.status(400).send('Missing authorization code. Refresh the page!');
+    return res.status(400).send('Empty credential. Something went wrong with the request.');
   }
   
 
   try {
 
-
+    // TODO Verify user jwt token against google's public key
     const userInfo = jwt.decode(credential) as GoogleUserInfo;
 
 
