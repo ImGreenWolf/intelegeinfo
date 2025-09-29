@@ -302,7 +302,7 @@ router.post('/update', (req, res) => {
 
 function findUserClientAndSession(userId) {
     for(const session of Array.from(sessionMap.values())) {
-        const foundClient = session.clients.find(client => client.clientData.id == userId)
+        const foundClient = session.clients.find(client => client?.clientData?.id == userId)
         if(foundClient)
             return {foundClient, session}
     }
@@ -333,7 +333,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
         //     } 
         if(!session.executeProblemChecker)
             throw 'No problem checker...'
-        const client = session.getClientObjectById(clientId);
+        const client = foundData?.foundClient ?? session.getClientObjectById(clientId);
         if(!client.clientData)
             throw 'Ca sa testezi problema, trebuie sa fi logat!'
         if(!client.openFile[0])
