@@ -287,6 +287,7 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
             if (!userId)
                 throw 'Please Login';
             var foundData = findUserClientAndSession(userId);
+            console.log(foundData);
         }
         const clientId = (foundData[0] ?? req.query.clientId);
         const problemId = parseInt(req.params.problemId);
@@ -352,6 +353,7 @@ exports.router.get('/:sessionId/test/:problemId', (req, res) => {
         // createProblem(data.name, data.author, data.description, data.category, data.requirement, tests, session, client)
     }
     catch (err) {
+        console.error(err);
         res.status(500).send({ err: err || "Unexpected error", result: false });
     }
 });

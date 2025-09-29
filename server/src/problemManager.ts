@@ -315,7 +315,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
             if(!userId)
                 throw 'Please Login';
             var foundData = findUserClientAndSession(userId)
-            
+            console.log(foundData)
         }
             const clientId = (foundData[0] ?? req.query.clientId) as UUID
         const problemId = parseInt(req.params.problemId)
@@ -396,6 +396,7 @@ router.get('/:sessionId/test/:problemId', (req, res) => {
     }
     catch(err)
     {
+        console.error(err)
         res.status(500).send({err: err || "Unexpected error", result: false})
     }
     
