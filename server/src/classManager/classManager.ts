@@ -375,7 +375,7 @@ router.post('/join', async (req, res) => {
                     }
                 }
             })
-            res.redirect('/classes/'+sqid.encode([joinedClass.id]))
+            res.redirect('/classes/?class='+encodedId)
         } catch (error) {
             res.status(error.code.startsWith('P') || !error.code ? 500 : error.code).send(handlePrismaError(error))
             return;

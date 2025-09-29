@@ -306,7 +306,7 @@ router.post('/join', async (req, res) => {
                 }
             }
         });
-        res.redirect('/classes/' + server_1.sqid.encode([joinedClass.id]));
+        res.redirect('/classes/?class=' + encodedId);
     }
     catch (error) {
         res.status(error.code.startsWith('P') || !error.code ? 500 : error.code).send((0, server_1.handlePrismaError)(error));

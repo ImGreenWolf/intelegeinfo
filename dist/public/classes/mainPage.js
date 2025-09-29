@@ -137,7 +137,7 @@ async function load(loadClass) {
             const finalSolve = solves.sort((a, b) => b.score - a.score)[0];
             console.log(finalSolve);
             const wrapper = createNode('div', {
-                className: 'assignment-wrapper' + (pastDueDate ? ' past-due-date' : '') + (finalSolve.score == 100 ? ' done' : ''),
+                className: 'assignment-wrapper' + (pastDueDate ? ' past-due-date' : '') + (finalSolve?.score == 100 ? ' done' : ''),
                 html: [createNode('div', {
                         className: 'asignment-content',
                         onclick(ev) {
@@ -154,7 +154,7 @@ async function load(loadClass) {
                     </div>
                     ${assignment.Problem ? `
                     <div class='assignment-progress'>
-                            <div style='width: ${json.Students.reduce((acc, student) => acc += student.User.solves.find(solve => solve.problemid == assignment.problemId && solve.score == 100) != undefined ? 1 : 0, 0) / json._count.Students * 100}%'></div>
+                            <div style='width: ${json.Students.reduce((acc, student) => acc += student.User?.solves?.find(solve => solve?.problemid == assignment?.problemId && solve?.score == 100) != undefined ? 1 : 0, 0) / json._count.Students * 100}%'></div>
                     </div>
                     ` : ''}
                     <div class='date-container'>

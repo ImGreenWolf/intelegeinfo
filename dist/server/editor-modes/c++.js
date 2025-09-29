@@ -175,7 +175,8 @@ class CPPDebugger extends ProcessTypes_1.default {
         this.process.write(command + ' \n');
     };
     sendProgramInput = (command) => {
-        this.inputTerminal.write(command);
+        if (this.inputTerminal)
+            this.inputTerminal.write(command);
     };
     addDataListener = (func) => {
         console.log('ADDED DATA LISTENER');
@@ -219,20 +220,23 @@ class CPPDebugger extends ProcessTypes_1.default {
         this.inputTerminal.write('tty\n\r');
         let loaded = false;
         this.inputTerminal.onData((data) => {
-            if (loaded)
-                if (data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
+            if (!loaded)
+                if (!data.toString().includes('/dev/')) // if it doesnt include the tty return
+                    return;
+                else if (data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
                     return;
                 else
                     return clientSession.replicateFunction((clientWs, id, clientObj) => {
                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
-                    });
-            else if (!data.toString().includes('/dev/'))
-                return;
+                    }), console.log(data);
             console.log('tty:', data.toString());
             this.sendCommand('set inferior-tty ' + data.toString());
             this.sendCommand('-break-insert 1');
             this.sendCommand('-exec-run');
             loaded = true;
+            clientSession.replicateFunction((clientWs, id, clientObj) => {
+                clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
+            });
         });
         this.inputTerminal.onExit((e) => {
             console.error('TTY EXITED WITH CODE', e);
@@ -242,9 +246,6 @@ class CPPDebugger extends ProcessTypes_1.default {
         });
         // this.process = spawn("docker", ["exec", '-i', res.imageName, "gdb","-q",  "-interpreter=mi", "tty ./input" res.fileName.split('.')[0]], {stdio: 'pipe'}); //"-ex", "set pagination off", 
         console.log('Spawned debug process with id', this.process.pid);
-        clientSession.replicateFunction((clientWs, id, clientObj) => {
-            clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
-        });
         // this.process.onData((data) => console.log(data))
     }
 }
