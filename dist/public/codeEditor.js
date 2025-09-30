@@ -1570,7 +1570,7 @@ function writeOutput(data, message, manuallScroll, manualMessageType) {
     if (outputArea) {
         const msgText = data;
         let textArea;
-        if (message && message.messageType) {
+        if (message && (message.messageType || manualMessageType)) {
             const localmsgId = message.id || -1;
             msgId = localmsgId;
             if (message.id === -1)
@@ -3015,6 +3015,8 @@ function onMessage(event) {
                     displaynoVNC(activeConsole.element);
                     break;
                 case 'spawn':
+                    if (!activeConsole)
+                        startProgram();
                     onRun();
                     break;
                 case 'container-spawn':

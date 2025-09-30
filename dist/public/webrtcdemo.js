@@ -279,10 +279,10 @@ export class IIWebRTC {
                 this.isSettingRemoteAnswerPending = false;
                 if (description.type === "offer") {
                     console.log(this.id, 'awnsered offer');
-                    await this.pc.setLocalDescription();
-                    // const awnser = await this.pc?.createAnswer()
-                    // await this.pc!.setLocalDescription(awnser);
-                    this.signaler.send(JSON.stringify({ type: "rtc", targetId: this.thistargetId, description: this.pc.localDescription })); // this.pc!.localDescription })); // create awnser
+                    // await this.pc!.setLocalDescription();
+                    const awnser = await this.pc?.createAnswer();
+                    await this.pc.setLocalDescription(awnser);
+                    this.signaler.send(JSON.stringify({ type: "rtc", targetId: this.thistargetId, description: awnser ?? this.pc.localDescription })); // this.pc!.localDescription })); // create awnser
                 }
             }
             else if (candidate) {

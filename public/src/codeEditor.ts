@@ -2110,7 +2110,7 @@ function writeOutput(data: string, message?: any,manuallScroll?, manualMessageTy
   if (outputArea) {
     const msgText = data
     let textArea;
-    if (message && message.messageType) {
+    if (message && (message.messageType || manualMessageType)) {
       const localmsgId = (message.id as number) || -1;
       msgId = localmsgId;
       if (message.id === -1)
@@ -3333,7 +3333,7 @@ export const compileErrorObjs: Map<number,CompileError> = new Map();
       document.onpointerdown = onCapture;
       document.onpointermove = onCapture;
       document.onpointerover = onCapture
-       function onCapture(ev) {
+      function onCapture(ev) {
 
         ws.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, pointerType:  ev.pointerType}))
 
@@ -4018,6 +4018,8 @@ function getEditorSession(fileName)
           displaynoVNC(activeConsole!.element)
         break;
         case 'spawn':
+          if(!activeConsole)
+            startProgram()
           onRun()
         break;
         case 'container-spawn':
