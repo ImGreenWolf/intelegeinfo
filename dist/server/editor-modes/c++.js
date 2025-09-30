@@ -226,7 +226,7 @@ class CPPDebugger extends ProcessTypes_1.default {
                 else if (data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
                     return;
                 else
-                    return clientSession.replicateFunction((clientWs, id, clientObj) => {
+                    clientSession.replicateFunction((clientWs, id, clientObj) => {
                         clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
                     }), console.log(data);
             console.log('tty:', data.toString());

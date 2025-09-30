@@ -239,7 +239,7 @@ int main() {
                         if(data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
                             return;
                         else
-                            return clientSession.replicateFunction((clientWs, id, clientObj) => {
+                             clientSession.replicateFunction((clientWs, id, clientObj) => {
                                 clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
                             }), console.log(data)
 
