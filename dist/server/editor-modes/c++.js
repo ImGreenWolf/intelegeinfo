@@ -223,20 +223,22 @@ class CPPDebugger extends ProcessTypes_1.default {
             if (!loaded)
                 if (!data.toString().includes('/dev/')) // if it doesnt include the tty return
                     return;
-                else if (data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
-                    return;
-                else
+                else {
+                    console.log('tty:', data.toString());
+                    this.sendCommand('set inferior-tty ' + data.toString());
+                    this.sendCommand('-break-insert 1');
+                    this.sendCommand('-exec-run');
                     clientSession.replicateFunction((clientWs, id, clientObj) => {
-                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
-                    }), console.log(data);
-            console.log('tty:', data.toString());
-            this.sendCommand('set inferior-tty ' + data.toString());
-            this.sendCommand('-break-insert 1');
-            this.sendCommand('-exec-run');
-            loaded = true;
-            clientSession.replicateFunction((clientWs, id, clientObj) => {
-                clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
-            });
+                        clientObj.sendMessage({ type: types_1.WebSocketMessageType.Debug, state: "start" }); // Send GDB output to the client
+                    });
+                    loaded = true;
+                }
+            else if (data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
+                return;
+            else
+                return clientSession.replicateFunction((clientWs, id, clientObj) => {
+                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.Console, messageType: types_1.ConsoleMessageType.Debug, body: data, data }); // Send GDB output to the client
+                }), console.log(data);
         });
         this.inputTerminal.onExit((e) => {
             console.error('TTY EXITED WITH CODE', e);

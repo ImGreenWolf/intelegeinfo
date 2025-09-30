@@ -235,23 +235,27 @@ int main() {
                     if(!loaded)
                         if(!data.toString().includes('/dev/')) // if it doesnt include the tty return
                             return;
+                        else {
+                            console.log('tty:', data.toString())
+                            this.sendCommand('set inferior-tty ' +data.toString())
+                            this.sendCommand('-break-insert 1')
+                            this.sendCommand('-exec-run')
+                             clientSession.replicateFunction((clientWs, id, clientObj) => {
+                                clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
+                            });
+                            loaded=true
+                        }
                     else 
                         if(data.includes('to set controlling terminal') || data.includes('/app#') || (data.includes('not found') && data.includes('bash')))
                             return;
                         else
-                             clientSession.replicateFunction((clientWs, id, clientObj) => {
+                            return clientSession.replicateFunction((clientWs, id, clientObj) => {
                                 clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Debug, body: data, data});  // Send GDB output to the client
                             }), console.log(data)
 
-                    console.log('tty:', data.toString())
-                    this.sendCommand('set inferior-tty ' +data.toString())
-                    this.sendCommand('-break-insert 1')
-                    this.sendCommand('-exec-run')
-                    loaded=true
+                   
                     
-                    clientSession.replicateFunction((clientWs, id, clientObj) => {
-                        clientObj.sendMessage({type: WebSocketMessageType.Debug, state: "start"});  // Send GDB output to the client
-                    });
+                   
                     
                 })
                 
