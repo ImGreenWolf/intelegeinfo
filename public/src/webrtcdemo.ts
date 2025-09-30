@@ -356,7 +356,6 @@ export class IIWebRTC
                     console.log(this.id,'setting remote description', description.type)
 
                     await this.pc!.setRemoteDescription(description); // step 3: describe the remote connection
-                    this.isSettingRemoteAnswerPending = false;
                     if (description.type === "offer") {
                         console.log(this.id,'awnsered offer')
 
@@ -366,6 +365,8 @@ export class IIWebRTC
                         await this.pc!.setLocalDescription(awnser);
                         this.signaler.send(JSON.stringify({type: "rtc", targetId: this.thistargetId, description: awnser ?? this.pc!.localDescription })) // this.pc!.localDescription })); // create awnser
                     }
+                    this.isSettingRemoteAnswerPending = false;
+
                 } else if (candidate) {
                     try {
                         // console.log('added ICE candidate: ',candidate)
