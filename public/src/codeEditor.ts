@@ -752,7 +752,7 @@ let currentFileName: string | undefined;
 let wsClientId: UUID;
 let wsSessionId: UUID;
 let isHost: boolean = false;
-let ClientOptions: {canChat:boolean, canEdit: boolean, canVoice: boolean}
+let ClientOptions: {canChat:boolean, canEdit: boolean, canVoice: boolean, isHost: boolean}
 const outputArea = document.getElementById("output");
 let testSubjectArea: HTMLIFrameElement;
 let activeClientArea = outputArea!
@@ -4244,6 +4244,7 @@ function getEditorSession(fileName)
         case "HOST":
           writeOutput(messageJson.body, messageJson, false, ConsoleMessageType.SessionInfo);
           isHost = true
+          ClientOptions
           break;
         case "JOIN":
           // a new client joined

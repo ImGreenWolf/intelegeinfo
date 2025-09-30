@@ -2365,6 +2365,7 @@ bash `.trim().replaceAll('\n', "");
                     if (clientObj.isHost) {
                         const newHost = Array.from(clientSession.clientsMap.values())[Math.floor(Math.random() * clientSession.clientsMap.size)];
                         newHost.isHost = true;
+                        newHost.permissions.isHost = true;
                         clientSession.hostClient = newHost;
                         newHost.sendMessage({ type: types_1.WebSocketMessageType.ColabData, colabCommand: "HOST", body: "Acum esti proprietarul acestei sesiuni." });
                     }

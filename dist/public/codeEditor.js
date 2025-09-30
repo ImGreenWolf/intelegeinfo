@@ -3180,6 +3180,7 @@ function onMessage(event) {
                 case "HOST":
                     writeOutput(messageJson.body, messageJson, false, ConsoleMessageType.SessionInfo);
                     isHost = true;
+                    ClientOptions;
                     break;
                 case "JOIN":
                     // a new client joined
