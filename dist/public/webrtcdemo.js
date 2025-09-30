@@ -178,13 +178,17 @@ export class IIWebRTC {
         };
         //ready to negotiate step 1
         this.pc.onnegotiationneeded = async () => {
+            if (this.pc.signalingState !== "stable") {
+                console.log(this.id, "skip negotiation, not stable");
+                return;
+            }
             try {
                 this.makingOffer = true;
-                // const offer = await this.pc?.createOffer() // 1
-                // await this.pc!.setLocalDescription(offer); // 2
-                // signaler.send(JSON.stringify({type: "rtc", targetId: thistargetId, description: offer })); //this.pc!.localDescription //3
-                await this.pc.setLocalDescription(); // 2
-                signaler.send(JSON.stringify({ type: "rtc", targetId: thistargetId, description: this.pc?.localDescription })); //this.pc!.localDescription //3
+                const offer = await this.pc?.createOffer(); // 1
+                await this.pc.setLocalDescription(offer); // 2
+                signaler.send(JSON.stringify({ type: "rtc", targetId: thistargetId, description: offer })); //this.pc!.localDescription //3
+                // await this.pc!.setLocalDescription(); // 2
+                // signaler.send(JSON.stringify({type: "rtc", targetId: thistargetId, description: this.pc?.localDescription })); //this.pc!.localDescription //3
                 // console.log(this.id,'making offer. ',"target: ",thistargetId)
                 console.log(this.id, 'negotiation needed');
             }
