@@ -33,72 +33,74 @@
                     
                 </div>
             </div>
-            <script>
-               
-                const langSel = document.getElementById('lang-selector')
-                console.log(navigator.language, getCookie('ii_lang'))
-                function setValueByName(lang)
-                {   
-                    const option = langSel.querySelector('[value=' + lang + ']')
-                    document.getElementById('selected-container').replaceChildren((option ? option : langSel.querySelector(`[value=ro-RO]`)).cloneNode(true)) 
-                }
-                if(getCookie('ii_lang') == undefined || getCookie('ii_lang') == "undefined")
-                    setValueByName( navigator.language ? navigator.language : 'en-US')
-                else
-                    setValueByName(getCookie('ii_lang') )
-                
-                langSel.onclick =
-                (ev) => {
-                    
-                    langSel.classList.toggle('open')
-                }
-                langSel.querySelector('.options-container').onclick =
-                (ev) => {
-                    
-                    document.getElementById('selected-container').replaceChildren(ev.target.cloneNode(true)) 
-                    langSel.value = ev.target.attributes['value'].value
-                    langSel.dispatchEvent(new Event('change'))
-                }
 
-                langSel.onchange = 
-                (ev) => {
-                    document.cookie = 'ii_lang='+ev.target.value
-                    location.reload()
-                }
-                
-                function getCookie(cname) {
-                    let name = cname + "=";
-                    let decodedCookie = decodeURIComponent(document.cookie);
-                    let ca = decodedCookie.split(';');
-                    for(let i = 0; i <ca.length; i++) {
-                        let c = ca[i];
-                        while (c.charAt(0) == ' ') {
-                        c = c.substring(1);
-                        }
-                        if (c.indexOf(name) == 0) {
-                        return c.substring(name.length, c.length);
-                        }
-                    }
-                    return undefined;
-                }
-
-               
-                    if(getCookie('iiauthstate'))
-                    {
-                        const cont = document.getElementById('login-container')
-                        const profilePage = document.createElement('a')
-                        profilePage.href = '/profile'
-                        const profile = document.createElement('img')
-                        const profilebg = document.createElement('img')
-                        profile.src = '/user/picture'
-                        profilebg.src = '/user/picture'
-                        profilePage.classList.add('profile')
-                        profilePage.appendChild(profilebg)
-                        profilePage.appendChild(profile)
-                        cont.replaceChildren(profilePage)
-                    }
-            
-                
-            </script>
-            ^{*login}
 </header2>
+
+<script>
+    
+    const langSel = document.getElementById('lang-selector')
+    console.log(navigator.language, getCookie('ii_lang'))
+    function setValueByName(lang)
+    {   
+        const option = langSel.querySelector('[value=' + lang + ']')
+        document.getElementById('selected-container').replaceChildren((option ? option : langSel.querySelector(`[value=ro-RO]`)).cloneNode(true)) 
+    }
+    if(getCookie('ii_lang') == undefined || getCookie('ii_lang') == "undefined")
+        setValueByName( navigator.language ? navigator.language : 'en-US')
+    else
+        setValueByName(getCookie('ii_lang') )
+    
+    langSel.onclick =
+    (ev) => {
+        
+        langSel.classList.toggle('open')
+    }
+    langSel.querySelector('.options-container').onclick =
+    (ev) => {
+        
+        document.getElementById('selected-container').replaceChildren(ev.target.cloneNode(true)) 
+        langSel.value = ev.target.attributes['value'].value
+        langSel.dispatchEvent(new Event('change'))
+    }
+
+    langSel.onchange = 
+    (ev) => {
+        document.cookie = 'ii_lang='+ev.target.value
+        location.reload()
+    }
+    
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return undefined;
+    }
+
+    
+        if(getCookie('iiauthstate'))
+        {
+            const cont = document.getElementById('login-container')
+            const profilePage = document.createElement('a')
+            profilePage.href = '/profile'
+            const profile = document.createElement('img')
+            const profilebg = document.createElement('img')
+            profile.src = '/user/picture'
+            profilebg.src = '/user/picture'
+            profilePage.classList.add('profile')
+            profilePage.appendChild(profilebg)
+            profilePage.appendChild(profile)
+            cont.replaceChildren(profilePage)
+        }
+
+    
+</script>
+^{*login}

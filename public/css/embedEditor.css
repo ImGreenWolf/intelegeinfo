@@ -2010,14 +2010,15 @@ mini-dock #joinSession {
   border: 2px solid rgb(36, 36, 36);
   border-radius: inherit;
   font-family: Poppins;
-  height: 1.5em;
+  height: 4em;
+  min-height: 100%;
   align-items: center;
   border-radius: 2em;
+  box-sizing: border-box;
   text-align: center;
   justify-content: center;
   transition-duration: 0.5s;
   background-color: rgb(20, 20, 20);
-  box-sizing: content-box;
   color: white;
   background-image: linear-gradient(30deg, rgba(20, 20, 20, 0.5), rgba(29, 29, 29, 0.301), rgba(20, 20, 20, 0.5));
   box-shadow: inset 5px 5px 25px -25px rgb(107, 107, 107), 3px 5px 15px 5px rgba(0, 0, 0, 0.24);

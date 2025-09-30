@@ -505,6 +505,7 @@ header2 nav ul li:hover {
   header2 {
     grid-template-columns: 1fr auto;
     padding: 1em;
+    font-size: 12px;
   }
   header2 nav {
     justify-self: center;

@@ -2302,14 +2302,15 @@ mini-dock
         border: 2px solid rgb(36, 36, 36);
         border-radius: inherit;
         font-family: Poppins;
-        height: 1.5em;
+        height: 4em;
+            min-height: 100%;
         align-items: center;
         border-radius: 2em;
+        box-sizing: border-box;
         text-align: center;
         justify-content: center;
         transition-duration: 0.5s;
         background-color: theme.$background-color;
-        box-sizing: content-box;
         color: theme.$text-color;
         background-image: linear-gradient(30deg,
            color.adjust($color: theme.$background-color, $alpha: -0.5),
