@@ -858,10 +858,10 @@ export async function showDefaultScreen()
         langaugeElements.push(createNode('div', 
         {   html: 
             [
-                createNode('div', {
-                    className: 'language-logo',
-                    attributes: [
-                         {name: 'draggable', value: 'false'}]}),
+                // createNode('div', {
+                //     className: 'language-logo',
+                //     attributes: [
+                //          {name: 'draggable', value: 'false'}]}),
                 createNode('p', {innerText: ''})
             ],
             attributes: [{name: 'disabled', value: 'true'}],

@@ -209,6 +209,7 @@ button,
         background-color: white;
         color: black;
         font-family: inherit;
+        font-size: inherit;
         border: none;
         border-radius: 0.25em;
         cursor: pointer;
@@ -342,6 +343,7 @@ input[type=color]
     display: grid;
     align-items: start;
     grid-template-rows: min-content 1fr;
+    max-height: 50vh;
 }
 
 // .projects-container

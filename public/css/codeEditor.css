@@ -1385,7 +1385,7 @@ value {
   transition: 0.2s ease-in-out;
 }
 .share-container #connect-data-inner img {
-  width: 75%;
+  min-width: 25%;
   aspect-ratio: 1;
   background-color: rgb(242, 242, 242);
   padding: 10px;

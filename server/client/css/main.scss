@@ -606,13 +606,17 @@ header2
 }
 
 
-
+li:has(.mobile-dropdown) {
+  display: none;
+}
 
 
 
 
  @media screen and (max-width: 1024px){
-
+   html {
+        font-size: 12px;
+    }
     footer 
     {
         grid-template-columns:  1fr;
@@ -627,9 +631,9 @@ header2
     }
     header2
     {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr;
       padding: 1em;
-      font-size: 12px;
+      font-size: 1em;
         nav 
         {
             justify-self: center;
@@ -664,8 +668,8 @@ header2
         }
         .header-buttons-container
         {
-            flex-direction: row-reverse;
-            height: 75%;
+            min-height: 75%;
+            height: auto;
             .profile img,
             .profile
             {
@@ -675,17 +679,47 @@ header2
             }
         }
 
-        h2,
-        div
+        h2
         {
 
             display: none;
         }
         .header-buttons-container {
-                    gap: 0 !important;
+                    // gap: 0 !important;
         }
     }
-
+    header2:has(.mobile-dropdown:not(.menuopen)) .header-buttons-container {
+      display: none;
+    }
+     li:has(.mobile-dropdown) {
+      display: block ;
+      anchor-name: --buttonscontainer;
+    }
+    .header-buttons-container {
+      position: absolute;
+      position-anchor: --buttonscontainer;
+      right: anchor(right);
+      font-size: 1.25em;
+      min-width: 100px;
+      bottom: -150%;
+      flex-direction: column;
+      gap: 0.5em !important;
+      background-color: rgba(5, 21, 33, 0.156);
+      backdrop-filter: blur(3px);
+      padding: 1em;
+      
+    }
+    .mobile-dropdown {
+      width: 100%;
+      height: 100%;
+      background-color: transparent !important;
+      background-image: url(/media/icons/menu.svg);
+      background-position: center;
+      background-size: 1.5em;
+      background-repeat: no-repeat;
+      outline: none !important;
+      border: none !important;
+    }
   }
 
   @media screen and (max-width: 300px) {
@@ -697,4 +731,5 @@ header2
     header2 {
       grid-template-columns: auto;
     }
+   
   }

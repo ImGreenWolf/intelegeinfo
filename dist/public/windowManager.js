@@ -654,12 +654,10 @@ export async function showDefaultScreen() {
     let langaugeElements = [];
     for (let i = 1; i <= 8; i++)
         langaugeElements.push(createNode('div', { html: [
-                createNode('div', {
-                    className: 'language-logo',
-                    attributes: [
-                        { name: 'draggable', value: 'false' }
-                    ]
-                }),
+                // createNode('div', {
+                //     className: 'language-logo',
+                //     attributes: [
+                //          {name: 'draggable', value: 'false'}]}),
                 createNode('p', { innerText: '' })
             ],
             attributes: [{ name: 'disabled', value: 'true' }],
