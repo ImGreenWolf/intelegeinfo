@@ -110,6 +110,8 @@ class Console {
             this.compileMessage.remove();
         if (this.consoleInput)
             return;
+        this.element.setAttribute('fileName', processInfo.fileName);
+        this.element.setAttribute('clientName', clients.get(processInfo.clientId)?.displayName);
         this.consoleInput = { terminal: new Terminal({ cursorBlink: true, rows: 10, ignoreBracketedPasteMode: true, theme: { background: 'rgb(10,10,10)' } }), elem: document.createElement('div') }; //document.createElement('textarea')as HTMLTextAreaElement;
         this.element.appendChild(this.consoleInput.elem);
         this.consoleInput.terminal.open(this.consoleInput.elem);

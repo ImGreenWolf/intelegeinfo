@@ -1152,7 +1152,7 @@ value
     &::before
     {   
         width: 100%;
-        content: "program output";
+        content: "program output" + attr(fileName);
         color: color.adjust($color: theme.$text-color, $alpha: -0.5);
         height: 15px;
         border-bottom: 1px solid theme.$border-color;
