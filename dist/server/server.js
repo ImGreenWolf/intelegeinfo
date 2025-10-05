@@ -1437,8 +1437,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                     // 4. Run the Docker container with access to the sandbox folder
                     const hasGUI = clientObj.openFile[0].name.toLowerCase().includes("gui");
                     console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFile[0].name, clientObj.openFile);
-                    if (clientSession.sessionContainer)
-                        (0, child_process_2.execSync)('rm -f ' + clientSession.sessionContainer.imageName);
+                    // if(clientSession.sessionContainer)
+                    //     execSync('rm -f ' + clientSession.sessionContainer.imageName)
                     const runCommand = `run \
 --name ${imageName} \
 -v "${sessionFolder}:/app" \ 
