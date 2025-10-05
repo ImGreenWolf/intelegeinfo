@@ -1603,7 +1603,7 @@ bash `.trim().replaceAll('\n', "");
                     console.log("Program spawned");
                     spawnDate = Date.now();
                     res.editorMode.onSpawn(clientSession);
-                    replicateFunction((ws, id, obj) => obj.sendMessage({ spawn: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
+                    replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawn', type: types_1.WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId }, types_1.WebSocketMessageType.ExecuteStatus));
                     // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
                     if (processInputBuffer)
                         clientSession.program.write(processInputBuffer); // write buffer

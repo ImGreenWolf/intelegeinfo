@@ -1996,7 +1996,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         
         spawnDate = Date.now()
         res.editorMode.onSpawn(clientSession);
-        replicateFunction((ws,id, obj) => obj.sendMessage({spawn: 1}, WebSocketMessageType.ExecuteStatus))
+        replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn', type: WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId}, WebSocketMessageType.ExecuteStatus))
         // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         if(processInputBuffer)
                 clientSession.program.write(processInputBuffer) // write buffer
