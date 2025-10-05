@@ -1428,7 +1428,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         }
                     }
                     else
-                        console.log('Skipping build stage.');
+                        resolve();
                 }).then(val => {
                     // -m 256MB \
                     // --cpus="0.25" \

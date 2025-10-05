@@ -1775,7 +1775,7 @@ if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag +
 
 }
 else
-console.log('Skipping build stage.')
+resolve()
 }).then(val => {
 
     // -m 256MB \
