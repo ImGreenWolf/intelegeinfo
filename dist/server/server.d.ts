@@ -21,15 +21,15 @@ export type SharedProjectType = Awaited<ReturnType<typeof loadShareProject>>;
 declare function loadShareProject(shareId: any): Promise<{
     Project: {
         files: {
-            projectId: number;
             name: string;
-            content: string;
+            projectId: number;
             updatedAt: Date;
+            content: string;
         }[];
     } & {
         id: number;
-        createdAt: Date;
         name: string | null;
+        createdAt: Date;
         fileUUID: string | null;
         metadata: Prisma.JsonValue | null;
         userId: number | null;

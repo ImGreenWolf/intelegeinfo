@@ -35,7 +35,6 @@
 button.project-folder > div {
   min-height: 5em;
   position: relative;
-  padding: 0 1em;
   border-radius: 0.5em;
   text-decoration: none;
   color: inherit;
@@ -54,8 +53,9 @@ button.project-folder > div > * {
 .project-list .project h3,
 button.project-folder > div h3 {
   align-self: end;
-  padding: 0.5em;
-  backdrop-filter: blur(1px);
+  padding: 1em;
+  margin: 0;
+  backdrop-filter: blur(0.05em);
   background-color: rgba(0, 0, 0, 0.144);
   text-shadow: 0.1em 0.1em 0.1em black;
 }
@@ -116,6 +116,7 @@ button.project-folder > div .project-sneakpeak {
 }
 .project-list button.project-folder > div {
   width: 100%;
+  padding: 1em;
   background-color: rgb(168, 146, 79);
   align-items: center;
   justify-content: space-between;

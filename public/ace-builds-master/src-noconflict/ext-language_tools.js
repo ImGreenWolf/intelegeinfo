@@ -2129,7 +2129,7 @@ Autocomplete.prototype.commands = {
     "Ctrl-Down|Ctrl-End": function (editor) { editor.completer.goTo("end"); },
     "Esc": function (editor) { editor.completer.detach(); },
     "Return": function (editor) { return editor.completer.insertMatch(); },
-    "Shift-Return": function (editor) { editor.completer.insertMatch(null, { deleteSuffix: true }); },
+    // "Shift-Return": function (editor) { editor.completer.insertMatch(null, { deleteSuffix: true }); },
     "Tab": function (editor) {
         var result = editor.completer.insertMatch();
         if (!result && !editor.tabstopManager)
@@ -2492,7 +2492,7 @@ var snippetCompleter = {
     id: "snippetCompleter"
 };
 // var completers = [snippetCompleter, textCompleter, keyWordCompleter];
-var completers = [snippetCompleter, keyWordCompleter];
+var completers = [snippetCompleter];
 
 exports.setCompleters = function (val) {
     completers.length = 0;

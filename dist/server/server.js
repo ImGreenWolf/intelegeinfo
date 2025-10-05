@@ -640,6 +640,15 @@ exports.wss.addListener('connection', async (ws, req) => {
                         include: {
                             files: true
                         }
+                    },
+                    createdBy: {
+                        select: {
+                            userColor: true,
+                            username: true,
+                            firstName: true,
+                            lastName: true,
+                            id: true
+                        }
                     }
                 }
             });
@@ -1046,6 +1055,29 @@ exports.wss.addListener('connection', async (ws, req) => {
                     fs_1.default.cpSync(path_1.default.join(exports.rootDirName, "saved", savedProject.Project.fileUUID), path_1.default.join(exports.rootDirName, "cache", sessionId), { recursive: true });
                     clientSession.savedProject = savedProject.Project;
                     clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString()); });
+                    dbClient_1.default.project.update({
+                        where: {
+                            id: savedProject.Project.id,
+                        },
+                        data: {
+                            files: {
+                                connectOrCreate: clientSession.files.map(file => {
+                                    return {
+                                        where: {
+                                            name_projectId: {
+                                                name: file.name,
+                                                projectId: savedProject.Project.id
+                                            }
+                                        },
+                                        create: {
+                                            content: file.content,
+                                            name: file.name,
+                                        }
+                                    };
+                                })
+                            }
+                        }
+                    }).then(res => console.log(res));
                 }
             }
             catch (err) {

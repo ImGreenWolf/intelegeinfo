@@ -517,7 +517,6 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
                         }
                     },
                     data: {
-                        name: name,
                         Project: {
                             update: {
                                 files: 
@@ -526,7 +525,7 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
                                         where: {
                                             name_projectId: {
                                                 name: file.name,
-                                                projectId: proj.id
+                                                projectId: proj.projectId
                                             }
                                         },
                                         create: {
@@ -546,7 +545,7 @@ router.post('/saveProject', authMiddleware, async (req, res) => {
                 
                 if(foundProj)
                 {
-                    console.log(foundProj.Project.files, session.files)
+                   
                     if(foundProj.Project && foundProj.Project.files.length != 0) 
                         await prisma.savedProject.update({
                             where: {

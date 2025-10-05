@@ -97,6 +97,7 @@ export class EditorWindow {
                 tooltipFollowsMouse: true,
                 animatedScroll: true,
                 useWorker: true,
+                fontFamily: "Google Sans Code",
                 //   fontSize: "18px",
                 //maxLines: 30,
                 wrap: true,
@@ -998,7 +999,7 @@ export class TreeSitterCompleter {
         if (extraction.libraries.length != this.typeDefs.length) {
             //    this.typeDefs = []
             //    this.typeDefSymbols = []
-            for (const lib of extraction.libraries) {
+            for (const lib of [...extraction.libraries, 'default']) {
                 const loaded = await this.loadTypeDef(lib);
                 if (!loaded)
                     continue;
@@ -1034,8 +1035,8 @@ export class TreeSitterCompleter {
                 typeDefSymbols.push({ name, type: obj.type, kind: "variable", scopeEnd, scopeStart });
         for (const [name, obj] of Object.entries(json.methods))
             typeDefs.push({ caption: (json.namespace && false ? json.namespace + '::' : '') + name, meta: 'method', value: name, score: 30, docHTML: obj.desc,
-                funcType: "returns " + (obj.returnType ?? "void"),
-                snippet: `${name}(${obj.params ? obj.params.map((val, i) => `\${${i + 1}:${val}}`).join(', ') : ''})`, }),
+                funcType: obj.flowControl ? '' : "returns " + (obj.returnType ?? "void"),
+                snippet: `${name}(${obj.params ? obj.params.map((val, i) => `\${${i + 1}:${val}}`).join(obj.flowControl ? '; ' : ', ') : ''}) ${obj.flowControl ? `{\${${obj.params.length + 2}}}` : ''}` }),
                 typeDefSymbols.push({ name, type: obj.returnType, params: obj.params, kind: "function", scopeEnd, scopeStart });
         for (const [name, obj] of Object.entries(json.types))
             this.classes.set((json.namespace ? json.namespace + '::' : '') + name, { name, scopeStart, scopeEnd,
@@ -1330,6 +1331,7 @@ export class TreeSitterCompleter {
                     }
                 });
                 // add typedef to the completions array
+                completions.push();
                 completions.push(...this.typeDefs);
                 const objCompletion = this.autocompleteMethods(visibleSymbols);
                 completions = objCompletion ?? completions;

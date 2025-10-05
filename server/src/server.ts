@@ -786,7 +786,16 @@ async function loadProject(saveId, creatorId)
             include: {
                 files: true
             }
-        }
+        },
+        createdBy: {
+                select: {
+                    userColor: true,
+                    username: true,
+                    firstName: true,
+                    lastName: true,
+                    id: true
+                }
+            }
     }
     })
 }
@@ -1272,7 +1281,7 @@ function endConnectionPromise()
     }
     
 
-    function onLoadProject(clientObj: ClientObject, savedProject, isPublic: boolean) {
+    function onLoadProject(clientObj: ClientObject, savedProject: SharedProjectType |  Awaited<ReturnType<typeof loadProject>>, isPublic: boolean) {
         try
          {
             if(!clientObj.clientData && !isPublic) {
@@ -1294,6 +1303,27 @@ function endConnectionPromise()
                 clientSession.savedProject = savedProject.Project;
                 
                 clientSession.files = fs.readdirSync(clientFilesPath).flatMap<EditorFile, string>((file) => {return new EditorFile(clientSession, file, fs.readFileSync(path.join(clientFilesPath, file)).toString())})
+                prisma.project.update({
+                    where: {
+                        id: savedProject.Project.id,
+                    },
+                    data: {
+                        files: {
+                            connectOrCreate: clientSession.files.map(file => {return {
+                                where: {
+                                    name_projectId: {
+                                        name: file.name,
+                                        projectId: savedProject.Project.id
+                                    }
+                                },
+                                create: {
+                                    content: file.content,
+                                    name: file.name,
+                                }
+                            }})
+                        }
+                    }
+                }).then(res => console.log(res))
             }
            
         }catch(err) {

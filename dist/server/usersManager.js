@@ -423,7 +423,6 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
                         }
                     },
                     data: {
-                        name: name,
                         Project: {
                             update: {
                                 files: {
@@ -432,7 +431,7 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
                                             where: {
                                                 name_projectId: {
                                                     name: file.name,
-                                                    projectId: proj.id
+                                                    projectId: proj.projectId
                                                 }
                                             },
                                             create: {
@@ -450,7 +449,6 @@ exports.router.post('/saveProject', server_1.authMiddleware, async (req, res) =>
                     }
                 });
                 if (foundProj) {
-                    console.log(foundProj.Project.files, session.files);
                     if (foundProj.Project && foundProj.Project.files.length != 0)
                         await dbClient_1.default.savedProject.update({
                             where: {
