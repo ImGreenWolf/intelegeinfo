@@ -1689,199 +1689,145 @@ function endConnectionPromise()
  * @param cacheFolderPath - The path to the cache folder that contains unique exe subfolders.
  * @returns The child process running the Docker container
  */
-async function buildAndRunCppSandbox(sessionFolder: string, fileName: string, editorMode: typeof EditorModes.EditorMode, clientId, sessionId): Promise<typeof clientSession.sessionContainer>{
+async function buildAndRunCppSandbox(
+    sessionFolder: string,
+    fileName: string,
+    editorMode: typeof EditorModes.EditorMode,
+    clientId,
+    sessionId
+): Promise<typeof clientSession.sessionContainer> {
+    return new Promise(async (resolve, reject) => {
+        const sandboxFolder = path.join(sessionFolder, "clientFiles");
+        if (!fs.existsSync(sandboxFolder)) {
+            console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
+            return reject();
+        }
 
-return new Promise(async (resolve, reject) => { // Folder containing .exe
-  const sandboxFolder = path.join(sessionFolder, 'clientFiles'); // The folder the exe will access
-  
-  // Ensure that the sandbox folder exists
-  if (!fs.existsSync(sandboxFolder)) {
-    console.error(`Sandbox folder does not exist: ${sandboxFolder}`);
-    reject()
-  }
+        if (!editorMode) {
+            printClientConsoleInfo("File can't be executed!");
+            return reject("File can't be executed! Editor mode is invalid");
+        }
 
-if(!editorMode)
-{
-    printClientConsoleInfo('File cant be executed!')
-    reject('File cant be executed! Editor mode is invalid')
-}
+        const imageTag = buildTag + "_" + editorMode.dockerSafeTag;
+        clientSession.currentbuildTag = imageTag;
 
-if(clientSession.sessionContainer && clientSession.currentbuildTag == buildTag + "_" + editorMode.dockerSafeTag)
-{
-    console.log('Container already running, executing command...')
-    replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn', type: WebSocketMessageType.ExecuteStatus, fileName, clientId}, WebSocketMessageType.ExecuteStatus))
-    resolve(clientSession.sessionContainer)
-    return;
-}
-  // Create a temporary directory for building the Docker image
-//   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
-clientSession.currentbuildTag = buildTag + "_" + editorMode.dockerSafeTag // Unique image tag to avoid collisions
-new Promise<void>((resolve,reject) => {
-if(!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "_" + editorMode.dockerSafeTag)
-{
-  
+        // Check if image exists
+        let imageExists = false;
+        try {
+            const result = execSync(`docker images -q ${imageTag}`).toString().trim();
+            imageExists = !!result;
+        } catch (err) {
+            imageExists = false;
+        }
 
-  // 1. Copy the executable to the temporary folder
-  // 2. Write the Dockerfile to the temp directory
-  const dockerfileContents = editorMode.dockerFile.trim()
-// `
-// # Base image with GCC
-// FROM gcc:bookworm
+        // Build image if not exists
+        if (!imageExists) {
+            const dockerfileContents = editorMode.dockerFile.trim();
+            const dockerfilePath = path.join(sessionFolder, "Dockerfile");
+            fs.writeFileSync(dockerfilePath, dockerfileContents);
 
-// # Set working directory inside container
-// WORKDIR /app
-// RUN apt-get update && \
-//     apt-get install -y gdb && \
-//     apt-get clean && \
-//     rm -rf /var/lib/apt/lists/*
-// # Default command can be overridden
-// CMD [ "bash" ]
-//   `.trim();
-  const dockerfilePath = path.join(sessionFolder, 'Dockerfile');
-  fs.writeFileSync(dockerfilePath, dockerfileContents);
+            console.log(`Building Docker image: ${imageTag}`);
+            replicateFunction((ws, id, obj) =>
+                obj.sendMessage(
+                    { body: "Vă rugăm așteptați.. Pregătim mediul de rulare." },
+                    WebSocketMessageType.ExecuteStatus
+                )
+            );
 
-
-    // 3. Build the Docker image
-  console.log(`Building Docker image: ${clientSession.currentbuildTag}`);
-  
-    try {
-        const builder = spawn(`docker`, ["build" ,"-t", clientSession.currentbuildTag,, '"' +sessionFolder+'"'], { stdio: 'pipe', shell: true });
-
-        replicateFunction((ws,id, obj) => obj.sendMessage({body: 'Vă rugăm așteptați.. Pregătim mediul de rulare.'}, WebSocketMessageType.ExecuteStatus))
-       
-        
-        builder.on('exit', code => {
-            if(code == 0)
-                resolve()
-            else
-                reject('Failed to build Docker image')
-            })
-            
-        builder.stdout.on('data', data => console.log(data.toString()))
-        builder.stderr.on('data', data => console.error(data.toString()))
-        builder.on('error', err => {
-            reject('Error building Docker image:' + err)
-            onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`)
-            reject(err)
-        })
-    } catch (error) {
-        onClosedProgram(-1, 0, `<span class="console-error">${error}</span>`)
-        reject(error)
-        console.error('Error building Docker image:', error);
-        return;
-    }
-  
-
-
-}
-else
-resolve()
-}).then(val => {
-
-    // -m 256MB \
-// --cpus="0.25" \
-  const imageName = `session-container-${sessionId}`;
-// fs.mkdirSync(`/tmp/vnc-${sessionId}/`)
-  // 4. Run the Docker container with access to the sandbox folder
-const hasGUI = clientObj.openFile[0].name.toLowerCase().includes("gui")
-console.log(hasGUI ? 'executing with GUI' : "no gui", clientObj.openFile[0].name, clientObj.openFile)
-// if(clientSession.sessionContainer)
-//     execSync('rm -f ' + clientSession.sessionContainer.imageName)
-const runCommand = 
-`run \
---name ${imageName} \
--v "${sessionFolder}:/app" \ 
--w /app \
-${process.env.DISABLE_CONTAINER_LIMITS == 'false' ? `-m ${256*parseInt(process.env.CONT_MEM_MUlTI||"1")}MB \
---cpus=${0.25*parseInt(process.env.CONT_MEM_MUlTI||"1")}` : ''} \
--a stdin -a stdout \
--it \
---rm \
-${clientObj.openFile[0].editorMode.runParams(clientObj)} \
-${clientSession.currentbuildTag} \
-bash `.trim().replaceAll('\n', "")
-
-const cmdArgs = [
-  'run',
-  '--name', imageName,
-  '-v', `${sessionFolder}:/app`,
-  '-w', '/app',
-  ...(process.env.DISABLE_CONTAINER_LIMITS == 'false'
-    ? [
-        '-m', `${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB`,
-        `--cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")}`
-      ]
-    : []),
-  '-a', 'stdin',
-  '-a', 'stdout',
-  '-it',
-  '--rm',
-  clientObj.openFile[0].editorMode.runParams(clientObj),
-  clientSession.currentbuildTag?.trim(), // ✅ remove extra spaces
-  'bash'
-].filter(Boolean); // ✅ removes empty strings/null/undefined
-
-
-
-
-//  --rm -c "g++ -g -v -O0 main.cpp -o main && ./main"
-  console.log(`Running Docker container ${imageName} with access to ${sandboxFolder}`);
-  console.log(runCommand)
-
-  // Return the child process for external handling
-    const childProcess = Nodepty.spawn('docker', cmdArgs, {
-        name: "xterm-color",
-        cols: 80,
-        rows: 30,
-        cwd: process.cwd(),
-        env: process.env
-    });
-    clientSession.sessionContainer = {process: childProcess, imageName, fileName, editorMode: clientObj.openFile[0].editorMode} 
-
-    // childProcess.?.on("spawn", () => {
-        console.log("Docker container spawned") 
-        setTimeout(async () => {
-                    // TODO Spawn GUI on client 
-                    //   TODO maybe remove ignore self client to show when its ready and compiling
-            replicateFunction((ws,id, obj) => obj.sendMessage({status: 'container-spawn'}, WebSocketMessageType.ExecuteStatus))
-
-            if(hasGUI && clientSession.displayServer == 0) // doesnt have display server
-            {
-                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj)
-               
+            try {
+                await new Promise<void>((resolveBuild, rejectBuild) => {
+                    const builder = spawn(
+                        "docker",
+                        ["build", "-t", imageTag, sessionFolder],
+                        { stdio: "pipe", shell: true }
+                    );
+                    builder.stdout.on("data", (data) => console.log(data.toString()));
+                    builder.stderr.on("data", (data) => console.error(data.toString()));
+                    builder.on("exit", (code) => {
+                        if (code === 0) resolveBuild();
+                        else rejectBuild("Failed to build Docker image");
+                    });
+                    builder.on("error", (err) => {
+                        rejectBuild("Error building Docker image:" + err);
+                        onClosedProgram(-1, 0, `<span class="console-error">${err}</span>`);
+                    });
+                });
+            } catch (error) {
+                onClosedProgram(-1, 0, `<span class="console-error">${error}</span>`);
+                return reject(error);
             }
-                
-            resolve(clientSession.sessionContainer); // Return the child process so it can be handled externally
-        }, 1000);        
-    // })
+        }
 
-    
-    
-    // childProcess.stdout.on('data', data => {
-    //     // console.log("CONTAINER ID:" + data.toString())
-    //     console.log(data.toString())
-    //     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
-    // })
-    childProcess.onData(e => {
-        console.log(e)
-        replicateFunction((ws, client, obj) =>  obj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: e.toString()}))
-    })
-    // childProcess.stderr.on('data', data => {
-    //     console.log('[Docker Container Error]' + data.toString())
-    //     clientObj.sendMessage({type: WebSocketMessageType.Console, action: 'container',  body: data.toString()})
-    //     // onClosedProgram(1, 0, "Failed to sandbox program: " + data.toString()).then(() => console.log('fail sent to user'))
-    // })
+        // Run container
+        const imageName = `session-container-${sessionId}`;
+        const hasGUI =
+            clientObj.openFile[0].name.toLowerCase().includes("gui") || false;
 
+        const cmdArgs = [
+            "run",
+            "--name",
+            imageName,
+            "-v",
+            `${sessionFolder}:/app`,
+            "-w",
+            "/app",
+            ...(process.env.DISABLE_CONTAINER_LIMITS == "false"
+                ? [
+                        "-m",
+                        `${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB`,
+                        `--cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")}`,
+                    ]
+                : []),
+            "-a",
+            "stdin",
+            "-a",
+            "stdout",
+            "-it",
+            "--rm",
+            clientObj.openFile[0].editorMode.runParams(clientObj),
+            imageTag,
+            "bash",
+        ].filter(Boolean);
 
-}).catch(err => [
-    console.error(err)
-])
+        console.log(
+            `Running Docker container ${imageName} with access to ${sandboxFolder}`
+        );
 
+        const childProcess = Nodepty.spawn("docker", cmdArgs, {
+            name: "xterm-color",
+            cols: 80,
+            rows: 30,
+            cwd: process.cwd(),
+            env: process.env,
+        });
+        clientSession.sessionContainer = {
+            process: childProcess,
+            imageName,
+            fileName,
+            editorMode: clientObj.openFile[0].editorMode,
+        };
 
- 
-})
-  
+        setTimeout(async () => {
+            replicateFunction((ws, id, obj) =>
+                obj.sendMessage({ status: "container-spawn" }, WebSocketMessageType.ExecuteStatus)
+            );
+            if (hasGUI && clientSession.displayServer == 0) {
+                clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(
+                    clientSession.sessionContainer,
+                    clientSession,
+                    clientObj
+                );
+            }
+            resolve(clientSession.sessionContainer);
+        }, 1000);
 
+        childProcess.onData((e) => {
+            console.log(e);
+            replicateFunction((ws, client, obj) =>
+                obj.sendMessage({ type: WebSocketMessageType.Console, action: "container", body: e.toString() })
+            );
+        });
+    });
 }
 
 
