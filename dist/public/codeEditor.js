@@ -91,7 +91,7 @@ class Console {
         // if(outputConsoles.length>0)
         //   outputConsoles.at(-1)!.callbackCreate(this)
         this.stdin = input ?? '';
-        const thisConsole = document.createElement('div');
+        const thisConsole = createNode('div');
         outputConsoles.push(this);
         if (outputArea)
             outputArea.appendChild(thisConsole);
@@ -105,7 +105,7 @@ class Console {
         this.compileMessage = createNode('div', { html: [new LoadingThrobber().render(), createNode('p', { innerText: message, css: "text-align: center; opacity: 0.75" })] });
         this.element.appendChild(this.compileMessage);
     }
-    onProcessStart() {
+    onProcessStart(processInfo) {
         if (this.compileMessage)
             this.compileMessage.remove();
         if (this.consoleInput)
@@ -2729,7 +2729,7 @@ function onMessage(event) {
                     addButtons([createButton('step_over.svg', { onclick: () => {
                                 window.editor.sendDebugCommand('-exec-next');
                             }, class: "debug" })], 'debug-exec-controls');
-                    activeConsole?.onProcessStart();
+                    activeConsole?.onProcessStart({ ...messageJson });
                     writeOutput('Sesiunea de debug a inceput: Apasa pe buton cu sageata din toolbar pentru a merge mai departe.\n\r Poti vedea valoarea variabilelor din scope in tab-ul Debug! \n\r', null, ConsoleMessageType.Debug);
                     if (!debugWindow) {
                         debugWindow = new DebugWindow();
@@ -3018,6 +3018,8 @@ function onMessage(event) {
                     if (!activeConsole)
                         startProgram();
                     onRun();
+                    if (activeConsole)
+                        activeConsole.onProcessStart({ fileName: messageJson.fileName, clientId: messageJson.clientId });
                     break;
                 case 'container-spawn':
                     onRun();
@@ -3085,9 +3087,7 @@ function onMessage(event) {
                         onRun();
                     }
                     else if (activeConsole.compileMessage)
-                        if (!messageJson.body)
-                            activeConsole.onProcessStart();
-                        else
+                        if (messageJson.body)
                             activeConsole.compileMessage.children[1].innerHTML = messageJson.body;
                     document.getElementById('compile-status').innerText = messageJson.body;
                     document.getElementById('compile-status').style.opacity = '1';

@@ -1709,7 +1709,7 @@ if(!editorMode)
 if(clientSession.sessionContainer && clientSession.currentbuildTag == buildTag + "_" + editorMode.dockerSafeTag)
 {
     console.log('Container already running, executing command...')
-    replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn'}, WebSocketMessageType.ExecuteStatus))
+    replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn', type: WebSocketMessageType.ExecuteStatus, fileName, clientId}, WebSocketMessageType.ExecuteStatus))
     resolve(clientSession.sessionContainer)
     return;
 }

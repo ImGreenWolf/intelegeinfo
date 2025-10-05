@@ -79,6 +79,8 @@ type DebugMessageEnd = {
 type DebugMessageStart = {
   type:  WebSocketMessageType.Debug;
   state: 'start';
+  fileName: string,
+  clientId: UUID
 }
 // type ColabDataMessage = {
 //     type: WebSocketMessageType.ColabData;

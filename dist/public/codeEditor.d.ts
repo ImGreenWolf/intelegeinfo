@@ -26,7 +26,10 @@ declare class Console {
     content: string;
     constructor(input?: any);
     onCompileStart(message?: string): void;
-    onProcessStart(): void;
+    onProcessStart(processInfo: {
+        fileName: string;
+        clientId: UUID;
+    }): void;
     onProcessEnd(): void;
     sendCommand(cmd: string): void;
     receivePTYChunk(chunk: any): void;

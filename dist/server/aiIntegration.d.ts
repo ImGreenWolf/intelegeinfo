@@ -17,10 +17,9 @@ export declare function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, p
 }>;
 export declare function autocompleteProblemDetails(client: any, openFile: EditorFile): Promise<{
     id: number;
+    createdAt: Date;
     name: string;
     updatedAt: Date;
-    createdAt: Date;
-    sourceCode: string | null;
     authorId: number;
     positiveRatings: number;
     negativeRatings: number;
@@ -30,6 +29,7 @@ export declare function autocompleteProblemDetails(client: any, openFile: Editor
     tests: import("../../generated/prisma/runtime/library").JsonValue[];
     averageTimeLimit: number;
     averageMemLimit: number;
+    sourceCode: string | null;
     difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
     tags: string[];
     grade: number;

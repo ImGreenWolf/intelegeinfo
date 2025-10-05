@@ -1375,7 +1375,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 if (clientSession.sessionContainer && clientSession.currentbuildTag == buildTag + "_" + editorMode.dockerSafeTag) {
                     console.log('Container already running, executing command...');
-                    replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawn' }, types_1.WebSocketMessageType.ExecuteStatus));
+                    replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawn', type: types_1.WebSocketMessageType.ExecuteStatus, fileName, clientId }, types_1.WebSocketMessageType.ExecuteStatus));
                     resolve(clientSession.sessionContainer);
                     return;
                 }
