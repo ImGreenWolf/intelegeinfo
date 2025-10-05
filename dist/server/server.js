@@ -1381,9 +1381,9 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 // Create a temporary directory for building the Docker image
                 //   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cpp-docker-'));
+                clientSession.currentbuildTag = buildTag + "_" + editorMode.dockerSafeTag; // Unique image tag to avoid collisions
                 new Promise((resolve, reject) => {
                     if (!clientSession.currentbuildTag || clientSession.currentbuildTag != buildTag + "_" + editorMode.dockerSafeTag) {
-                        clientSession.currentbuildTag = buildTag + "_" + editorMode.dockerSafeTag; // Unique image tag to avoid collisions
                         // 1. Copy the executable to the temporary folder
                         // 2. Write the Dockerfile to the temp directory
                         const dockerfileContents = editorMode.dockerFile.trim();
