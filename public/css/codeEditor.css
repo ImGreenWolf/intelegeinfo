@@ -1115,7 +1115,7 @@ value {
 }
 .output-console-container::before {
   width: 100%;
-  content: "program outputattr(fileName)";
+  content: attr(fileName);
   color: rgba(255, 255, 255, 0.5);
   height: 15px;
   border-bottom: 1px solid rgba(126, 126, 126, 0.219);
