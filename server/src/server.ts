@@ -1819,7 +1819,7 @@ async function buildAndRunCppSandbox(
                 );
             }
             resolve(clientSession.sessionContainer);
-        }, 1000);
+        }, 100);
 
         childProcess.onData((e) => {
             console.log(e);
@@ -1919,7 +1919,7 @@ async function onClosedProgram(code,time, message: string, error?)
 async function readStdio(program, messageJSON, res: typeof clientSession.sessionContainer)
 {
     return new Promise<void>((resolve, reject) => {
-    addProcessToMap(sessionId, program); // add to process map
+    // addProcessToMap(sessionId, program); // add to process map
     mode = "run";
     let spawnDate = Date.now()
     let programTimeout;

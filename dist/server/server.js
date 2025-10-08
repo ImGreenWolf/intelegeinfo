@@ -1460,7 +1460,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj);
                     }
                     resolve(clientSession.sessionContainer);
-                }, 1000);
+                }, 100);
                 childProcess.onData((e) => {
                     console.log(e);
                     replicateFunction((ws, client, obj) => obj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: "container", body: e.toString() }));
@@ -1538,7 +1538,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         async function readStdio(program, messageJSON, res) {
             return new Promise((resolve, reject) => {
-                addProcessToMap(sessionId, program); // add to process map
+                // addProcessToMap(sessionId, program); // add to process map
                 mode = "run";
                 let spawnDate = Date.now();
                 let programTimeout;
