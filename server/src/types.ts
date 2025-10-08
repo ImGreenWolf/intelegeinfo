@@ -22,9 +22,6 @@ export class ClientObject {
     sessionId: UUID;
     clientId: UUID;
     displayName: string;
-    process: (Nodepty.IPty & EventEmitter ) | DebugProcess
-    program: (Nodepty.IPty & EventEmitter ) | undefined;;
-    debugProgram: DebugProcess | undefined;;
     ping: number;
     isHost: boolean = false;
     CWebSocket: WebSocket;
@@ -483,6 +480,9 @@ Tralalero Tralala`.split('\n')
     filePath: string
     editorMode: EditorMode;
     linkedUser?: ClientObject | undefined
+    process: (Nodepty.IPty & EventEmitter ) | DebugProcess
+    program: (Nodepty.IPty & EventEmitter ) | undefined;;
+    debugProgram: DebugProcess | undefined;;
     private updateFilePath() {
         this.filePath = path.join(this.session.getClientFilesPath(), this.name)
     }

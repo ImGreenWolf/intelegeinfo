@@ -51,11 +51,6 @@ class ClientObject {
     sessionId;
     clientId;
     displayName;
-    process;
-    program;
-    ;
-    debugProgram;
-    ;
     ping;
     isHost = false;
     CWebSocket;
@@ -424,6 +419,11 @@ class EditorFile {
     filePath;
     editorMode;
     linkedUser;
+    process;
+    program;
+    ;
+    debugProgram;
+    ;
     updateFilePath() {
         this.filePath = path_1.default.join(this.session.getClientFilesPath(), this.name);
     }

@@ -14,9 +14,6 @@ export declare class ClientObject {
     sessionId: UUID;
     clientId: UUID;
     displayName: string;
-    process: (Nodepty.IPty & EventEmitter) | DebugProcess;
-    program: (Nodepty.IPty & EventEmitter) | undefined;
-    debugProgram: DebugProcess | undefined;
     ping: number;
     isHost: boolean;
     CWebSocket: WebSocket;
@@ -117,6 +114,9 @@ export declare class EditorFile {
     filePath: string;
     editorMode: EditorMode;
     linkedUser?: ClientObject | undefined;
+    process: (Nodepty.IPty & EventEmitter) | DebugProcess;
+    program: (Nodepty.IPty & EventEmitter) | undefined;
+    debugProgram: DebugProcess | undefined;
     private updateFilePath;
     constructor(session: EditorSession, name: string, content?: any, options?: {
         abstract?: boolean /**Doesnt atually create a file on disk, acts just as a variable, use if you already created the file */;
