@@ -1378,8 +1378,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 const imageTag = buildTag + "_" + editorMode.dockerSafeTag;
                 clientSession.currentbuildTag = imageTag;
-                if (clientSession.sessionContainer) {
+                if (clientSession.sessionContainer.process) {
+                    console.log('Container already exists');
                     resolve(clientSession.sessionContainer);
+                    return;
                 }
                 // Check if image exists
                 let imageExists = false;
