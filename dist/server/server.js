@@ -1374,6 +1374,9 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 const imageTag = buildTag + "_" + editorMode.dockerSafeTag;
                 clientSession.currentbuildTag = imageTag;
+                if (clientSession.sessionContainer) {
+                    resolve(clientSession.sessionContainer);
+                }
                 // Check if image exists
                 let imageExists = false;
                 try {
@@ -1455,7 +1458,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                     editorMode: clientObj.getActiveFile().editorMode,
                 };
                 setTimeout(async () => {
-                    replicateFunction((ws, id, obj) => obj.sendMessage({ status: "container-spawn" }, types_1.WebSocketMessageType.ExecuteStatus));
+                    replicateFunction((ws, id, obj) => {
+                        if (clientObj.getActiveFile().getClients().includes(obj))
+                            obj.sendMessage({ status: "container-spawn" }, types_1.WebSocketMessageType.ExecuteStatus);
+                    });
                     if (hasGUI && clientSession.displayServer == 0) {
                         clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(clientSession.sessionContainer, clientSession, clientObj);
                     }
@@ -1463,7 +1469,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }, 100);
                 childProcess.onData((e) => {
                     console.log(e);
-                    replicateFunction((ws, client, obj) => obj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: "container", body: e.toString() }));
+                    replicateFunction((ws, client, obj) => {
+                        if (clientObj.getActiveFile().getClients().includes(obj))
+                            obj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: "container", body: e.toString() });
+                    });
                 });
             });
         }

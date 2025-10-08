@@ -1710,7 +1710,9 @@ async function buildAndRunCppSandbox(
 
         const imageTag = buildTag + "_" + editorMode.dockerSafeTag;
         clientSession.currentbuildTag = imageTag;
-
+        if(clientSession.sessionContainer) {
+            resolve(clientSession.sessionContainer);
+        }
         // Check if image exists
         let imageExists = false;
         try {
@@ -1762,7 +1764,7 @@ async function buildAndRunCppSandbox(
         const imageName = `session-container-${sessionId}`;
         const hasGUI =
             clientObj.getActiveFile().name.toLowerCase().includes("gui") || false;
-
+        
         const cmdArgs = [
             "run",
             "--name",
@@ -1808,9 +1810,10 @@ async function buildAndRunCppSandbox(
         };
 
         setTimeout(async () => {
-            replicateFunction((ws, id, obj) =>
+            replicateFunction((ws, id, obj) => {
+                if(clientObj.getActiveFile().getClients().includes(obj))
                 obj.sendMessage({ status: "container-spawn" }, WebSocketMessageType.ExecuteStatus)
-            );
+            });
             if (hasGUI && clientSession.displayServer == 0) {
                 clientSession.displayServer = await clientSession.sessionContainer.editorMode.onBuild(
                     clientSession.sessionContainer,
@@ -1823,9 +1826,10 @@ async function buildAndRunCppSandbox(
 
         childProcess.onData((e) => {
             console.log(e);
-            replicateFunction((ws, client, obj) =>
+            replicateFunction((ws, client, obj) => {
+                if(clientObj.getActiveFile().getClients().includes(obj))
                 obj.sendMessage({ type: WebSocketMessageType.Console, action: "container", body: e.toString() })
-            );
+        });
         });
     });
 }
