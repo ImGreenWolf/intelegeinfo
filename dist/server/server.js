@@ -2014,7 +2014,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                             try {
                                 console.log('handle command: ' + command);
                                 if (command == "execute") {
-                                    console.log(clientObj.getActiveFile().name);
+                                    console.log(clientObj.getActiveFile().name, clientObj.openFile);
                                     // fs.accessSync(filePath) // disabled to auto compile
                                     async function executeProgram() {
                                         return new Promise((resolveExectute, reject) => {
