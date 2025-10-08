@@ -2824,18 +2824,21 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         console.log("Client " + clientId + " disconnected");
     });
     
-    function replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID, clientObj: ClientObject) => void, excludeClientObj?:ClientObject) {
+    function replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID, clientObj: ClientObject) => void, excludeClientObj?:ClientObject | ClientObject[]) {
         // if(!getThisClientSession() || !getThisClientSession().clientsSockets) return console.error(new Error("invalid session or client sockers"));
         let excludeClientId: UUID | undefined;
-        if(excludeClientObj)
+        if(excludeClientObj && !Array.isArray(excludeClientObj))
              excludeClientId = getThisClientSession().getClientId(excludeClientObj);
         if(!getThisClientSession()) return console.error('invqlid session')
         getThisClientSession().clientsSockets.forEach((thisClientWs, thisClientId) => {
 
     
             if(!thisClientWs) return;
-            if(excludeClientId != thisClientId)
-                callback(thisClientWs as WebSocket, thisClientId as UUID, clientSession.clientsMap.get(thisClientId));
+            if(Array.isArray(excludeClientObj)) {
+                 if(!excludeClientObj.find(obj => obj.clientId == thisClientId))
+                    callback(thisClientWs as WebSocket, thisClientId as UUID, clientSession.clientsMap.get(thisClientId));
+            }else if(excludeClientId != thisClientId)
+                    callback(thisClientWs as WebSocket, thisClientId as UUID, clientSession.clientsMap.get(thisClientId));
         });
     }
     

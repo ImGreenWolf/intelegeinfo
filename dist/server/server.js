@@ -2280,14 +2280,18 @@ exports.wss.addListener('connection', async (ws, req) => {
         function replicateFunction(callback, excludeClientObj) {
             // if(!getThisClientSession() || !getThisClientSession().clientsSockets) return console.error(new Error("invalid session or client sockers"));
             let excludeClientId;
-            if (excludeClientObj)
+            if (excludeClientObj && !Array.isArray(excludeClientObj))
                 excludeClientId = getThisClientSession().getClientId(excludeClientObj);
             if (!getThisClientSession())
                 return console.error('invqlid session');
             getThisClientSession().clientsSockets.forEach((thisClientWs, thisClientId) => {
                 if (!thisClientWs)
                     return;
-                if (excludeClientId != thisClientId)
+                if (Array.isArray(excludeClientObj)) {
+                    if (!excludeClientObj.find(obj => obj.clientId == thisClientId))
+                        callback(thisClientWs, thisClientId, clientSession.clientsMap.get(thisClientId));
+                }
+                else if (excludeClientId != thisClientId)
                     callback(thisClientWs, thisClientId, clientSession.clientsMap.get(thisClientId));
             });
         }
