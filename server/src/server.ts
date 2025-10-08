@@ -1693,8 +1693,8 @@ async function buildAndRunCppSandbox(
     sessionFolder: string,
     fileName: string,
     editorMode: typeof EditorModes.EditorMode,
-    clientId,
-    sessionId
+    clientId: UUID,
+    sessionId: UUID
 ): Promise<typeof clientSession.sessionContainer> {
     return new Promise(async (resolve, reject) => {
         const sandboxFolder = path.join(sessionFolder, "clientFiles");
@@ -1759,7 +1759,7 @@ async function buildAndRunCppSandbox(
         }
 
         // Run container
-        const imageName = `session-container-${sessionId}`;
+        const imageName = `session-container-${sessionId.split('-')[0]}-${clientId.split('-')[0]}`;
         const hasGUI =
             clientObj.openFile[0].name.toLowerCase().includes("gui") || false;
 
