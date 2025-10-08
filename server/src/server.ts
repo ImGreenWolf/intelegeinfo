@@ -2480,7 +2480,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         resolveExectute()
                                     
                                     const mainPromise = new Promise<void>((resolve, reject) => {   
-                                        if(!clientSession.clientsActiveFile.get(clientId))
+                                        if(!clientObj.getActiveFile())
                                         {
                                             onClosedProgram(-2, 0, `<span class="console-error">Please open a file first!</span>`)
                                             return reject('Client appears to not have an active open file')

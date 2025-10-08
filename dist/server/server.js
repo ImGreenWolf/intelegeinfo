@@ -2023,7 +2023,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                                 if (clientSession.files.length == 0)
                                                     resolveExectute();
                                                 const mainPromise = new Promise((resolve, reject) => {
-                                                    if (!clientSession.clientsActiveFile.get(clientId)) {
+                                                    if (!clientObj.getActiveFile()) {
                                                         onClosedProgram(-2, 0, `<span class="console-error">Please open a file first!</span>`);
                                                         return reject('Client appears to not have an active open file');
                                                     }
