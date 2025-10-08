@@ -14,7 +14,9 @@ export declare class ClientObject {
     sessionId: UUID;
     clientId: UUID;
     displayName: string;
+    process: (Nodepty.IPty & EventEmitter) | DebugProcess;
     program: (Nodepty.IPty & EventEmitter) | undefined;
+    debugProgram: DebugProcess | undefined;
     ping: number;
     isHost: boolean;
     CWebSocket: WebSocket;

@@ -51,7 +51,11 @@ class ClientObject {
     sessionId;
     clientId;
     displayName;
+    process;
     program;
+    ;
+    debugProgram;
+    ;
     ping;
     isHost = false;
     CWebSocket;

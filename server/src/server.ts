@@ -1090,7 +1090,7 @@ function endConnectionPromise()
     }
     function getProcessFromMap(clientSession?: EditorSession): DebugProcess | (Nodepty.IPty & EventEmitter ) | undefined {
         if(clientSession)
-            return clientSession.process;
+            return clientObj.process;
         else
          return getThisClientSession()?.process;
     }
@@ -1508,7 +1508,7 @@ function endConnectionPromise()
                           if(gdbOutput.json['exit-code']!=undefined || gdbOutput.json.reason=='exited-normally')
                               {
   
-                              closeProcess(clientSession.process)
+                              closeProcess(clientObj.process)
   
                                   return;
                               }
@@ -1533,7 +1533,7 @@ function endConnectionPromise()
                           // body: gdbOutput.json ? gdbOutput.json : undefined,
                           // raw: element,
                           // message: 'next', //deprecated - remove
-                          // msgId: clientSession.gdbProcess?.pid || -1,
+                          // msgId: clientObj.debugProgram?.pid || -1,
                           // line: gdbOutput.json?.frame?.line ? gdbOutput.json.frame.line : undefined,
                           // variables: gdbOutput.json?.variables ? gdbOutput.json.variables : undefined  
                       };
@@ -1573,7 +1573,7 @@ function endConnectionPromise()
                                   variables: parsed.resultRecord?.result?.variables ?? undefined,  
                               };
                               if(parsed.outOfBandRecords[0]?.class == 'thread-group-exited') {
-                                  closeProcess(clientSession.process)
+                                  closeProcess(clientObj.process)
                                   return;
                               }
                               getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
@@ -2261,7 +2261,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     switch(messageJSON.action) {
                         default:
                         case 'process':
-                            if(getProcessFromMap()!=undefined)
+                            if(clientObj.program!=undefined)
                             {
                                 if((getProcessFromMap() as DebugProcess).sendCommand)
                                 {
@@ -2487,7 +2487,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     // printClientConsoleError(err)
                                                     if(fatal)
                                                     {
-                                                        // closeProcess(clientSession.process)
+                                                        // closeProcess(clientObj.process)
                                                         onClosedProgram(-1, 0, `<span class="console-error">Compile error: ${err}</span>`)
                                                         resolve()
                                                     }
@@ -2509,7 +2509,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     });
                                                 }
                                                 
-                                                clientObj.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession) as Nodepty.IPty & EventEmitter
+                                                clientObj.process = clientObj.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession) as Nodepty.IPty & EventEmitter
 
 
 
@@ -2547,7 +2547,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             
 
                             // execute code normally.
-                            if(clientObj.program) // check if program is running
+                            if(clientObj.process) // check if program is running
                             {
                                 // printClientConsoleInfo('Restarting program...') // await queueCommand(program,command, sessionId);
                                 // getProcessFromMap(sessionId)?.kill(); // kill the program
@@ -2563,7 +2563,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 // onClosedProcess(sessionId);  // TODO Figure out why this was uncommented
                                 // executeProgram();
                                 
-                                closeProcess(clientObj.program,sessionId)
+                                closeProcess(clientObj.process,sessionId)
                                 // .then(() => {
                                 //     replicateFunction((clientWs) => {
                                 //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
@@ -2589,7 +2589,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             // printClientConsoleError(err)
                                             if(fatal)
                                             {
-                                                // closeProcess(clientSession.process)
+                                                // closeProcess(clientObj.process)
                                                 onClosedProgram(-1, 0, `<span class="console-error">Compile error: ${err}</span>`)
                                                 return
                                             }
@@ -2606,13 +2606,13 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilat!', clientId: clientId}));  // Send GDB output to the client
                                         });
 
-                                        clientSession.gdbProcess = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession)
+                                        clientObj.process = clientObj.debugProgram = clientObj.getFile(res.fileName).editorMode.startDebugging(res, clientObj, clientSession)
                                         await new Promise(resolve =>  setTimeout(resolve, 100))
-                                        clientSession.gdbProcess.addDataListener(onData)
-                                        if(!clientSession.gdbProcess)
+                                        clientObj.debugProgram.addDataListener(onData)
+                                        if(!clientObj.debugProgram)
                                             throw 'invalid debug process'
 
-                                        addProcessToMap(sessionId, clientSession.gdbProcess);
+                                        // addProcessToMap(sessionId, clientObj.debugProgram);
                                         replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                                     } catch (err){
                                         printClientConsoleError("docker error: " + err)
@@ -2629,12 +2629,12 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 })
                                 else 
                                 {
-                                    clientSession.process = clientSession.gdbProcess = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession)
+                                    clientObj.process = clientObj.debugProgram = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession)
                                     // clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession) 
                                 }
                             }
                             else {
-                            closeProcess(clientSession.process)
+                            closeProcess(clientObj.process)
                             //  onClosedProcess()//.then(() => {
                            
                             
@@ -2643,10 +2643,10 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 
                 
                         } else if(command==="-exec-quit") {
-                            closeProcess(clientSession.process)
+                            closeProcess(clientObj.process)
                             //  onClosedProcess()//.then(() => {
                             
-                        } else if(clientSession.gdbProcess!=undefined)
+                        } else if(clientObj.debugProgram!=undefined)
                         {
                             console.log('queue command')
                             // executeCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId).catch(err => console.error('queue command err: ' + err))
@@ -2709,7 +2709,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     {
         try {
             return await new Promise<void>((resolve, reject) => {
-                if (clientSession.process) {
+                if (clientObj.process) {
                     let timer;
                     if (process) {
                         process.kill(9);
