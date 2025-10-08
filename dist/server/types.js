@@ -419,7 +419,7 @@ class EditorFile {
     name;
     content;
     session;
-    activeClients;
+    activeClients = [];
     filePath;
     editorMode;
     linkedUser;

@@ -480,7 +480,7 @@ Tralalero Tralala`.split('\n')
     name: string;
     content: string;
     session: EditorSession;
-    activeClients: ClientObject[]
+    activeClients: ClientObject[] = []
     filePath: string
     editorMode: EditorMode;
     linkedUser?: ClientObject | undefined
