@@ -1986,9 +1986,10 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             closeProcess(program).then(() => onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"))        
             resolve()
          }
-        replicateFunction((clientWs) => {
-            clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
-         }, ...clientObj.getActiveFile().getClients());
+        replicateFunction((clientWs, id, localClientObj) => {
+            if(clientObj.getActiveFile().getClients().includes(localClientObj))
+                clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
+         });
 
         clearTimeout(dataTimeout)
             dataTimeout = setTimeout(() => {

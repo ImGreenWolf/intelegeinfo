@@ -1590,9 +1590,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                         closeProcess(program).then(() => onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"));
                         resolve();
                     }
-                    replicateFunction((clientWs) => {
-                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
-                    }, ...clientObj.getActiveFile().getClients());
+                    replicateFunction((clientWs, id, localClientObj) => {
+                        if (clientObj.getActiveFile().getClients().includes(localClientObj))
+                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
+                    });
                     clearTimeout(dataTimeout);
                     dataTimeout = setTimeout(() => {
                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
