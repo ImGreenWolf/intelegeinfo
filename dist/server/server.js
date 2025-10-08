@@ -1840,13 +1840,13 @@ exports.wss.addListener('connection', async (ws, req) => {
                         switch (messageJSON.action) {
                             default:
                             case 'process':
-                                if (clientObj.program != undefined) {
-                                    if (getProcessFromMap().sendCommand) {
-                                        getProcessFromMap().sendProgramInput(messageJSON.command);
+                                if (clientObj.process) {
+                                    if (clientObj.debugProgram) {
+                                        clientObj.debugProgram.sendProgramInput(messageJSON.command);
                                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                     }
-                                    else {
-                                        getProcessFromMap().write(messageJSON.command);
+                                    else if (clientObj.program) {
+                                        clientObj.program.write(messageJSON.command);
                                         dataTimeout = setTimeout(() => {
                                             replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                         }, 200);

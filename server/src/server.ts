@@ -2261,16 +2261,16 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     switch(messageJSON.action) {
                         default:
                         case 'process':
-                            if(clientObj.program!=undefined)
+                            if(clientObj.process)
                             {
-                                if((getProcessFromMap() as DebugProcess).sendCommand)
+                                if(clientObj.debugProgram)
                                 {
-                                    (getProcessFromMap() as DebugProcess).sendProgramInput(messageJSON.command)
+                                    clientObj.debugProgram.sendProgramInput(messageJSON.command)
                                     replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                                 }
-                                else
+                                else if(clientObj.program)
                                 {   
-                                    (getProcessFromMap() as (Nodepty.IPty & EventEmitter )).write(messageJSON.command);
+                                    clientObj.program.write(messageJSON.command);
                                     dataTimeout = setTimeout(() => {
                                         replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
                                     }, 200);
