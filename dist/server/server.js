@@ -1354,6 +1354,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.MouseUpdate, fileName, oldFileName, ...clientInfo(clientObj) })); // Send GDB output to the client  
             });
         }
+        function replicateProcessCheck(obj) {
+            if (obj && clientObj.getActiveFile())
+                return clientObj.getActiveFile().getClients().find(client => client.clientId == obj.clientId) != undefined;
+        }
         /**
          * Build and run the C++ executable in a Docker container with sandbox folder access.
          *
@@ -1459,7 +1463,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 };
                 setTimeout(async () => {
                     replicateFunction((ws, id, obj) => {
-                        if (clientObj.getActiveFile().getClients().includes(obj))
+                        if (replicateProcessCheck(obj))
                             obj.sendMessage({ status: "container-spawn" }, types_1.WebSocketMessageType.ExecuteStatus);
                     });
                     if (hasGUI && clientSession.displayServer == 0) {
@@ -1470,7 +1474,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 childProcess.onData((e) => {
                     console.log(e);
                     replicateFunction((ws, client, obj) => {
-                        if (clientObj.getActiveFile().getClients().includes(obj))
+                        if (replicateProcessCheck(obj))
                             obj.sendMessage({ type: types_1.WebSocketMessageType.Console, action: "container", body: e.toString() });
                     });
                 });
@@ -1531,7 +1535,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             let notes = "";
             processInputBuffer = '';
             replicateFunction((clientWs, id, localClientObj) => {
-                if (clientObj.getActiveFile().getClients().includes(localClientObj))
+                if (replicateProcessCheck(localClientObj))
                     clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.End, messageType: types_1.ConsoleMessageType.Output, time, notes, body: '\n' + message.trim(), clientId: clientId })); // Send GDB output to the client
             });
             if (code != 0)
@@ -1541,7 +1545,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
                     notes = "buffer exceeded 64kb, output was truncated.";
                     replicateFunction((clientWs, id, localClientObj) => {
-                        if (clientObj.getActiveFile().getClients().includes(localClientObj))
+                        if (replicateProcessCheck(localClientObj))
                             clientWs.send(JSON.stringify({ messageType: types_1.ConsoleMessageType.Output, type: types_1.WebSocketMessageType.Output, body: str.toString(), clientId: clientId })); // Send GDB output to the client
                     });
                 });
@@ -1568,7 +1572,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     spawnDate = Date.now();
                     res.editorMode.onSpawn(clientSession);
                     replicateFunction((ws, id, obj) => {
-                        if (clientObj.getActiveFile().getClients().includes(obj))
+                        if (replicateProcessCheck(obj))
                             obj.sendMessage({ status: 'spawn', type: types_1.WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId }, types_1.WebSocketMessageType.ExecuteStatus);
                     });
                     // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
@@ -1605,7 +1609,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         resolve();
                     }
                     replicateFunction((clientWs, id, localClientObj) => {
-                        if (clientObj.getActiveFile().getClients().includes(localClientObj))
+                        if (replicateProcessCheck(localClientObj))
                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
                     });
                     clearTimeout(dataTimeout);
@@ -2040,13 +2044,13 @@ exports.wss.addListener('connection', async (ws, req) => {
                                                                 };
                                                                 if (!clientObj.editorMode.isInterpreter) {
                                                                     replicateFunction((clientWs, id, localClientObj) => {
-                                                                        if (clientObj.getActiveFile().getClients().includes(localClientObj))
+                                                                        if (replicateProcessCheck(localClientObj))
                                                                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compilăm programul.', clientId: clientId })); // Send GDB output to the client
                                                                     });
                                                                     //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
                                                                     await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false);
                                                                     replicateFunction((clientWs, id, localClientObj) => {
-                                                                        if (clientObj.getActiveFile().getClients().includes(localClientObj))
+                                                                        if (replicateProcessCheck(localClientObj))
                                                                             clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compilat!', clientId: clientId })); // Send GDB output to the client
                                                                     });
                                                                 }

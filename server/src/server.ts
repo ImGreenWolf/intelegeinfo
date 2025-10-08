@@ -1681,7 +1681,10 @@ function endConnectionPromise()
                     clientWs.send(JSON.stringify({type: WebSocketMessageType.MouseUpdate, fileName, oldFileName,  ...clientInfo(clientObj)}));  // Send GDB output to the client  
         });
     }
-    
+  function replicateProcessCheck(obj: ClientObject) {
+    if(obj && clientObj.getActiveFile())
+    return clientObj.getActiveFile().getClients().find(client => client.clientId == obj.clientId) != undefined
+  }  
 /**
  * Build and run the C++ executable in a Docker container with sandbox folder access.
  * 
@@ -1811,7 +1814,7 @@ async function buildAndRunCppSandbox(
 
         setTimeout(async () => {
             replicateFunction((ws, id, obj) => {
-                if(clientObj.getActiveFile().getClients().includes(obj))
+                if(replicateProcessCheck(obj))
                 obj.sendMessage({ status: "container-spawn" }, WebSocketMessageType.ExecuteStatus)
             });
             if (hasGUI && clientSession.displayServer == 0) {
@@ -1827,7 +1830,7 @@ async function buildAndRunCppSandbox(
         childProcess.onData((e) => {
             console.log(e);
             replicateFunction((ws, client, obj) => {
-                if(clientObj.getActiveFile().getClients().includes(obj))
+                if(replicateProcessCheck(obj))
                 obj.sendMessage({ type: WebSocketMessageType.Console, action: "container", body: e.toString() })
         });
         });
@@ -1902,7 +1905,7 @@ async function onClosedProgram(code,time, message: string, error?)
         processInputBuffer = '';
         
         replicateFunction((clientWs, id, localClientObj) => {
-            if(clientObj.getActiveFile().getClients().includes(localClientObj))
+            if(replicateProcessCheck(localClientObj))
             clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body:'\n'+ message.trim(), clientId: clientId}));  // Send GDB output to the client
         });
 
@@ -1914,7 +1917,7 @@ async function onClosedProgram(code,time, message: string, error?)
             await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
                 notes = "buffer exceeded 64kb, output was truncated."
                replicateFunction((clientWs, id, localClientObj) => {
-                    if(clientObj.getActiveFile().getClients().includes(localClientObj))
+                    if(replicateProcessCheck(localClientObj))
                     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: str.toString(), clientId: clientId}));  // Send GDB output to the client
                 });
         })
@@ -1949,7 +1952,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         spawnDate = Date.now()
         res.editorMode.onSpawn(clientSession);
         replicateFunction((ws,id, obj) => {
-                     if(clientObj.getActiveFile().getClients().includes(obj))
+                     if(replicateProcessCheck(obj))
                         obj.sendMessage({status: 'spawn', type: WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId}, WebSocketMessageType.ExecuteStatus)})
         // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         if(processInputBuffer)
@@ -1995,7 +1998,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             resolve()
          }
         replicateFunction((clientWs, id, localClientObj) => {
-            if(clientObj.getActiveFile().getClients().includes(localClientObj))
+            if(replicateProcessCheck(localClientObj))
                 clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
          });
 
@@ -2507,7 +2510,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                 if(!clientObj.editorMode.isInterpreter)
                                                 {
                                                    replicateFunction((clientWs, id, localClientObj) => {
-                                                        if(clientObj.getActiveFile().getClients().includes(localClientObj))
+                                                        if(replicateProcessCheck(localClientObj))
                                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilăm programul.', clientId: clientId}));  // Send GDB output to the client
                                                     });
 
@@ -2515,7 +2518,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                                     await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
                                                     
                                                     replicateFunction((clientWs, id, localClientObj) => {
-                                                        if(clientObj.getActiveFile().getClients().includes(localClientObj))
+                                                        if(replicateProcessCheck(localClientObj))
                                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilat!', clientId: clientId}));  // Send GDB output to the client
                                                     });
                                                 }
