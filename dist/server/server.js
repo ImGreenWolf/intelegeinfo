@@ -2027,7 +2027,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                                         return reject('Client appears to not have an active open file');
                                                     }
                                                     if (!clientObj.editorMode.clientCompile)
-                                                        buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                                                        buildAndRunCppSandbox(folderPath, clientObj.getActiveFile().name, clientObj.editorMode, clientId, sessionId).then(async (res) => {
                                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                                             if (res == null)
                                                                 return resolve();
@@ -2104,7 +2104,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 else if (command == "-exec-run") {
                                     if (!clientObj.getActiveFile().process) {
                                         if (!clientObj.editorMode.clientCompile)
-                                            buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
+                                            buildAndRunCppSandbox(folderPath, clientObj.getActiveFile().name, clientObj.editorMode, clientId, sessionId).then(async (res) => {
                                                 mode = "debug"; //set mode to debug
                                                 try {
                                                     clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal) => {

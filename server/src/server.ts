@@ -2486,7 +2486,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         }
 
                                         if(!clientObj.editorMode.clientCompile)
-                                        buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then( async res => {
+                                        buildAndRunCppSandbox(folderPath, clientObj.getActiveFile().name ,clientObj.editorMode, clientId, sessionId).then( async res => {
                                             //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
                                             if(res == null) return resolve()
                                             if(!clientObj.getFile(res.fileName))
@@ -2597,7 +2597,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             
                             if(!clientObj.getActiveFile().process) {
                                 if(!clientObj.editorMode.clientCompile)
-                                buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then(async res => {
+                                buildAndRunCppSandbox(folderPath, clientObj.getActiveFile().name,clientObj.editorMode, clientId, sessionId).then(async res => {
                                                
                                     mode="debug"; //set mode to debug
                                     try {
