@@ -1413,8 +1413,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                     }
                 }
                 // Run container
-                const imageName = `session-container-${sessionId.split('-')[0]}-${clientId.split('-')[0]}`;
-                const hasGUI = clientObj.openFile[0].name.toLowerCase().includes("gui") || false;
+                const imageName = `session-container-${sessionId}}`;
+                const hasGUI = clientObj.getActiveFile().name.toLowerCase().includes("gui") || false;
                 const cmdArgs = [
                     "run",
                     "--name",
@@ -1426,8 +1426,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                     ...(process.env.DISABLE_CONTAINER_LIMITS == "false"
                         ? [
                             "-m",
-                            `${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB`,
-                            `--cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")}`,
+                            `${512 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB`,
+                            `--cpus=${0.5 * parseInt(process.env.CONT_MEM_MUlTI || "1")}`,
                         ]
                         : []),
                     "-a",
@@ -1436,7 +1436,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     "stdout",
                     "-it",
                     "--rm",
-                    clientObj.openFile[0].editorMode.runParams(clientObj),
+                    clientObj.getActiveFile().editorMode.runParams(clientObj),
                     imageTag,
                     "bash",
                 ].filter(Boolean);
@@ -1452,7 +1452,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     process: childProcess,
                     imageName,
                     fileName,
-                    editorMode: clientObj.openFile[0].editorMode,
+                    editorMode: clientObj.getActiveFile().editorMode,
                 };
                 setTimeout(async () => {
                     replicateFunction((ws, id, obj) => obj.sendMessage({ status: "container-spawn" }, types_1.WebSocketMessageType.ExecuteStatus));
@@ -1592,7 +1592,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     }
                     replicateFunction((clientWs) => {
                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.Output, messageType: types_1.ConsoleMessageType.Output, body: data.toString(), clientId: clientId })); // Send GDB output to the client
-                    });
+                    }, ...clientObj.getActiveFile().getClients());
                     clearTimeout(dataTimeout);
                     dataTimeout = setTimeout(() => {
                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
@@ -1691,7 +1691,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 console.log('added camera', clientObj.webcamid);
                             }
                             else
-                                clientObj.openFile[0].editorMode.receiveWebCam(messageJSON.buffer);
+                                clientObj.getActiveFile().editorMode.receiveWebCam(messageJSON.buffer);
                         }
                         catch (err) {
                             /// ......
@@ -2043,7 +2043,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                                             }
                                                         });
                                                     else {
-                                                        clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession);
+                                                        clientObj.getActiveFile().editorMode.execute(undefined, clientObj, clientSession);
                                                         resolve();
                                                     }
                                                 });
@@ -2118,8 +2118,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                                                 // queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);  
                                             });
                                         else {
-                                            clientObj.getActiveFile().process = clientObj.getActiveFile().debugProgram = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession);
-                                            // clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession) 
+                                            clientObj.getActiveFile().process = clientObj.getActiveFile().debugProgram = clientObj.getFile(clientObj.getActiveFile().name).editorMode.startDebugging(undefined, clientObj, clientSession);
+                                            // clientObj.getActiveFile().editorMode.execute(undefined, clientObj, clientSession) 
                                         }
                                     }
                                     else {

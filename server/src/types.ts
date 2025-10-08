@@ -93,6 +93,7 @@ export class ClientObject {
     public getActiveFile() {
         return this.openFile[0]
     }
+    
   }
 
 interface CommandBuffer {
@@ -479,6 +480,7 @@ Tralalero Tralala`.split('\n')
     name: string;
     content: string;
     session: EditorSession;
+    activeClients: ClientObject[]
     filePath: string
     editorMode: EditorMode;
     linkedUser?: ClientObject | undefined
@@ -616,24 +618,24 @@ Tralalero Tralala`.split('\n')
         const data = fs.readFileSync(this.filePath).toString()
         this.content = data
     }
-
+    public onCloseFile(clientObj: ClientObject) {
+        clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == this.name),1)
+        clientObj.openFileName.splice(clientObj.openFileName.findIndex(name => name == this.name),1)
+        this.activeClients.splice(this.activeClients.indexOf(clientObj))
+    }
 
     public async openFile(clientObj: ClientObject, shared?, closedFileName?: string)
     {
         try{
            
                 this.syncFileContent()
-                 const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName)
-                if(closedFileIndex != -1)
-                {
-                   
-                    clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == closedFileName),1)
-                    clientObj.openFileName.splice(clientObj.openFileName.findIndex(name => name == closedFileName),1)
-                }
+                const closedFile = clientObj.openFile.find(file => file.name == closedFileName)
+                if(closedFile)
+                    closedFile.onCloseFile(clientObj)
 
-                    clientObj.openFile.push(this)
-                    clientObj.openFileName.push(this.name)
-                
+                clientObj.openFile.push(this)
+                clientObj.openFileName.push(this.name)
+                this.activeClients.push(clientObj)
                
                 // Send the file content to the client
                 const oldFileName = clientObj.openFileName
@@ -664,6 +666,9 @@ Tralalero Tralala`.split('\n')
         {
             console.error(err)
         }
+    }
+    public getClients() {
+        return this.activeClients
     }
     public updateFile(clientObj: ClientObject, content?: string) {
        try {

@@ -112,6 +112,7 @@ export declare class EditorFile {
     name: string;
     content: string;
     session: EditorSession;
+    activeClients: ClientObject[];
     filePath: string;
     editorMode: EditorMode;
     linkedUser?: ClientObject | undefined;
@@ -127,7 +128,9 @@ export declare class EditorFile {
     delete(clientObj: ClientObject, clientSession: EditorSession): void;
     rename(newName: any, clientObj: ClientObject): void;
     syncFileContent(): void;
+    onCloseFile(clientObj: ClientObject): void;
     openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;
+    getClients(): ClientObject[];
     updateFile(clientObj: ClientObject, content?: string): void;
     changeContent(data: {
         content?: any;

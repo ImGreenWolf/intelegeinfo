@@ -1759,9 +1759,9 @@ async function buildAndRunCppSandbox(
         }
 
         // Run container
-        const imageName = `session-container-${sessionId.split('-')[0]}-${clientId.split('-')[0]}`;
+        const imageName = `session-container-${sessionId}}`;
         const hasGUI =
-            clientObj.openFile[0].name.toLowerCase().includes("gui") || false;
+            clientObj.getActiveFile().name.toLowerCase().includes("gui") || false;
 
         const cmdArgs = [
             "run",
@@ -1774,8 +1774,8 @@ async function buildAndRunCppSandbox(
             ...(process.env.DISABLE_CONTAINER_LIMITS == "false"
                 ? [
                         "-m",
-                        `${256 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB`,
-                        `--cpus=${0.25 * parseInt(process.env.CONT_MEM_MUlTI || "1")}`,
+                        `${512 * parseInt(process.env.CONT_MEM_MUlTI || "1")}MB`,
+                        `--cpus=${0.5 * parseInt(process.env.CONT_MEM_MUlTI || "1")}`,
                     ]
                 : []),
             "-a",
@@ -1784,7 +1784,7 @@ async function buildAndRunCppSandbox(
             "stdout",
             "-it",
             "--rm",
-            clientObj.openFile[0].editorMode.runParams(clientObj),
+            clientObj.getActiveFile().editorMode.runParams(clientObj),
             imageTag,
             "bash",
         ].filter(Boolean);
@@ -1804,7 +1804,7 @@ async function buildAndRunCppSandbox(
             process: childProcess,
             imageName,
             fileName,
-            editorMode: clientObj.openFile[0].editorMode,
+            editorMode: clientObj.getActiveFile().editorMode,
         };
 
         setTimeout(async () => {
@@ -1988,7 +1988,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
          }
         replicateFunction((clientWs) => {
             clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
-         });
+         }, ...clientObj.getActiveFile().getClients());
 
         clearTimeout(dataTimeout)
             dataTimeout = setTimeout(() => {
@@ -2106,7 +2106,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             video.on('close', data => console.log('added camera. ' + data.toString()))
                             console.log('added camera', clientObj.webcamid)
                         } else
-                          (clientObj.openFile[0].editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
+                          (clientObj.getActiveFile().editorMode as EditorModes.Python).receiveWebCam(messageJSON.buffer)
                          
                     } catch(err)
                     {
@@ -2527,7 +2527,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         });
                                         else 
                                         {
-                                            clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession) 
+                                            clientObj.getActiveFile().editorMode.execute(undefined, clientObj, clientSession) 
                                             resolve()
                                         }
                                        })
@@ -2629,8 +2629,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 })
                                 else 
                                 {
-                                    clientObj.getActiveFile().process = clientObj.getActiveFile().debugProgram = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession)
-                                    // clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession) 
+                                    clientObj.getActiveFile().process = clientObj.getActiveFile().debugProgram = clientObj.getFile(clientObj.getActiveFile().name).editorMode.startDebugging(undefined, clientObj, clientSession)
+                                    // clientObj.getActiveFile().editorMode.execute(undefined, clientObj, clientSession) 
                                 }
                             }
                             else {

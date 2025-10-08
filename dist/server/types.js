@@ -419,6 +419,7 @@ class EditorFile {
     name;
     content;
     session;
+    activeClients;
     filePath;
     editorMode;
     linkedUser;
@@ -530,16 +531,20 @@ class EditorFile {
         const data = fs_1.default.readFileSync(this.filePath).toString();
         this.content = data;
     }
+    onCloseFile(clientObj) {
+        clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == this.name), 1);
+        clientObj.openFileName.splice(clientObj.openFileName.findIndex(name => name == this.name), 1);
+        this.activeClients.splice(this.activeClients.indexOf(clientObj));
+    }
     async openFile(clientObj, shared, closedFileName) {
         try {
             this.syncFileContent();
-            const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName);
-            if (closedFileIndex != -1) {
-                clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == closedFileName), 1);
-                clientObj.openFileName.splice(clientObj.openFileName.findIndex(name => name == closedFileName), 1);
-            }
+            const closedFile = clientObj.openFile.find(file => file.name == closedFileName);
+            if (closedFile)
+                closedFile.onCloseFile(clientObj);
             clientObj.openFile.push(this);
             clientObj.openFileName.push(this.name);
+            this.activeClients.push(clientObj);
             // Send the file content to the client
             const oldFileName = clientObj.openFileName;
             // if(closedFileName)
@@ -564,6 +569,9 @@ class EditorFile {
         catch (err) {
             console.error(err);
         }
+    }
+    getClients() {
+        return this.activeClients;
     }
     updateFile(clientObj, content) {
         try {
