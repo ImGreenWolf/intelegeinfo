@@ -432,10 +432,11 @@ header2 nav ul li:hover {
 
 .client-popup {
   position: absolute;
-  bottom: 100px;
+  bottom: 20%;
   left: 50%;
   min-width: 300px;
-  max-height: 200px;
+  min-height: 100px;
+  max-height: 400px;
   text-align: center;
   padding: 0.5em 2em;
   transform: translate(-50%, -50%);
@@ -477,6 +478,7 @@ header2 nav ul li:hover {
   color: white;
   outline: none !important;
   margin-left: 0.5em;
+  margin: 1em;
 }
 .input-popup p {
   margin-block: 0;

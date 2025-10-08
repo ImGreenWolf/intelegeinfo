@@ -22,6 +22,7 @@ export class ClientObject {
     sessionId: UUID;
     clientId: UUID;
     displayName: string;
+    program: (Nodepty.IPty & EventEmitter )| undefined;
     ping: number;
     isHost: boolean = false;
     CWebSocket: WebSocket;

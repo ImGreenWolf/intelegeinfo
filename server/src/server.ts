@@ -498,7 +498,7 @@ function onServerStart()
         console.log(stdout)
     })
 
-    exec('docker image prune -f -a')
+    // exec('docker image prune -f -a')
 }
 
 import * as https from 'https'
