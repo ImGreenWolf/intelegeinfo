@@ -878,10 +878,10 @@ exports.wss.addListener('connection', async (ws, req) => {
             getThisClientSession().process = undefined;
         }
         function getProcessFromMap(clientSession) {
-            if (clientSession)
+            if (clientObj)
                 return clientObj.process;
             else
-                return getThisClientSession()?.process;
+                return undefined;
         }
         function printClientConsoleError(message, cause, client) {
             const targetClientId = client?.clientId || clientId;
@@ -2079,7 +2079,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                         executeProgram(); //buildAndRunCppSandbox(filePath, path.join(rootDirName, "cache", sessionId, "clientFiles"), clientId, sessionId) //
                                 }
                                 else if (command == "-exec-run") {
-                                    if (!getProcessFromMap()) {
+                                    if (!clientObj.process) {
                                         if (!clientObj.editorMode.clientCompile)
                                             buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId), clientObj.editorMode, clientId, sessionId).then(async (res) => {
                                                 mode = "debug"; //set mode to debug
@@ -2111,10 +2111,10 @@ exports.wss.addListener('connection', async (ws, req) => {
                                                 catch (err) {
                                                     printClientConsoleError("docker error: " + err);
                                                 }
-                                                if (!getThisClientSession().process)
+                                                if (!clientObj.debugProgram)
                                                     console.error('Invalid session while starting debug process');
                                                 // printClientConsoleDebug("started debugging process.")
-                                                queueCommand(getProcessFromMap(), '-break-insert 1\n', sessionId);
+                                                queueCommand(clientObj.debugProgram, '-break-insert 1\n', sessionId);
                                                 // queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);  
                                             });
                                         else {
@@ -2134,7 +2134,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 else if (clientObj.debugProgram != undefined) {
                                     console.log('queue command');
                                     // executeCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId).catch(err => console.error('queue command err: ' + err))
-                                    executeCommand(getProcessFromMap(), command, sessionId).then(() => {
+                                    executeCommand(clientObj.debugProgram, command, sessionId).then(() => {
                                         console.log('COMMAND');
                                     }).catch(err => console.error('queue command err: ' + err));
                                 }
@@ -2165,7 +2165,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         //    console.log("Client " + clientId + " connected to GDB server dkkkkkkkkkkk");
         // });
         function onClosedProcess() {
-            removeRunningProcessFromMap();
+            clientObj.process = clientObj.debugProgram = clientObj.program = undefined;
             if (isShared)
                 shared.removeProcess(sessionId);
             clientObj.program = undefined;

@@ -1089,10 +1089,10 @@ function endConnectionPromise()
         getThisClientSession().process = undefined;
     }
     function getProcessFromMap(clientSession?: EditorSession): DebugProcess | (Nodepty.IPty & EventEmitter ) | undefined {
-        if(clientSession)
+        if(clientObj)
             return clientObj.process;
         else
-         return getThisClientSession()?.process;
+         return undefined;
     }
     
 
@@ -2579,7 +2579,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         else if(command == "-exec-run")
                         {
                             
-                            if(!getProcessFromMap()) {
+                            if(!clientObj.process) {
                                 if(!clientObj.editorMode.clientCompile)
                                 buildAndRunCppSandbox(folderPath, clientSession.clientsActiveFile.get(clientId),clientObj.editorMode, clientId, sessionId).then(async res => {
                                                
@@ -2618,10 +2618,10 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                         printClientConsoleError("docker error: " + err)
                                     }
 
-                                    if(!getThisClientSession().process) console.error('Invalid session while starting debug process')
+                                    if(!clientObj.debugProgram) console.error('Invalid session while starting debug process')
                                     // printClientConsoleDebug("started debugging process.")
                                
-                                    queueCommand(getProcessFromMap(),'-break-insert 1\n', sessionId);
+                                    queueCommand(clientObj.debugProgram,'-break-insert 1\n', sessionId);
                                     // queueCommand(getProcessFromMap(),'-exec-run\n', sessionId);  
 
                                     
@@ -2651,7 +2651,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                             console.log('queue command')
                             // executeCommand(getProcessFromMap() as ChildProcess,'-stack-list-variables --all-values',sessionId).catch(err => console.error('queue command err: ' + err))
                             
-                                executeCommand(getProcessFromMap() as DebugProcess,command,sessionId).then(() => {
+                                executeCommand(clientObj.debugProgram,command,sessionId).then(() => {
 
                                 console.log('COMMAND')
                             }).catch(err => console.error('queue command err: ' + err))
@@ -2687,7 +2687,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     // });
 
     function onClosedProcess() {
-        removeRunningProcessFromMap();
+        clientObj.process = clientObj.debugProgram = clientObj.program = undefined;
         if(isShared) shared.removeProcess(sessionId)
         clientObj.program = undefined
 
