@@ -1715,7 +1715,12 @@ async function buildAndRunCppSandbox(
         clientSession.currentbuildTag = imageTag;
         if(clientSession.sessionContainer?.process) {
             console.log('Container already exists')
-            resolve(clientSession.sessionContainer);
+            resolve({
+                imageName: clientSession.sessionContainer.imageName,
+                process: clientSession.sessionContainer.process,
+                editorMode: clientObj.getActiveFile().editorMode,
+                fileName: clientObj.getActiveFile().name
+            });
             return;
         }
         // Check if image exists
