@@ -1710,7 +1710,7 @@ button:not(.custom-button, .noanimate), #editor-tabs span:not(#active-open-file,
             {
                 border-radius: 50% !important;
                 // padding: 0 !important;
-                //  aspect-ratio: 1;
+                 aspect-ratio: 1;
             }
         }
         &:has(:disabled)

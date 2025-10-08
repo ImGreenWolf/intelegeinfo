@@ -1897,7 +1897,8 @@ async function onClosedProgram(code,time, message: string, error?)
         let notes: string = "";
         processInputBuffer = '';
         
-        replicateFunction((clientWs) => {
+        replicateFunction((clientWs, id, localClientObj) => {
+            if(clientObj.getActiveFile().getClients().includes(localClientObj))
             clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, time, notes, body:'\n'+ message.trim(), clientId: clientId}));  // Send GDB output to the client
         });
 
@@ -1908,7 +1909,8 @@ async function onClosedProgram(code,time, message: string, error?)
         {
             await new Blob([gdbBuffer]).slice(0, 64000).text().then(str => {
                 notes = "buffer exceeded 64kb, output was truncated."
-                replicateFunction((clientWs) => {
+               replicateFunction((clientWs, id, localClientObj) => {
+                    if(clientObj.getActiveFile().getClients().includes(localClientObj))
                     clientWs.send(JSON.stringify({messageType: ConsoleMessageType.Output, type: WebSocketMessageType.Output, body: str.toString(), clientId: clientId}));  // Send GDB output to the client
                 });
         })
@@ -1942,7 +1944,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         
         spawnDate = Date.now()
         res.editorMode.onSpawn(clientSession);
-        replicateFunction((ws,id, obj) => obj.sendMessage({status: 'spawn', type: WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId}, WebSocketMessageType.ExecuteStatus))
+        replicateFunction((ws,id, obj) => {
+                     if(clientObj.getActiveFile().getClients().includes(obj))
+                        obj.sendMessage({status: 'spawn', type: WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId}, WebSocketMessageType.ExecuteStatus)})
         // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
         if(processInputBuffer)
                 clientObj.getActiveFile().program.write(processInputBuffer) // write buffer
@@ -2498,15 +2502,17 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                                                 if(!clientObj.editorMode.isInterpreter)
                                                 {
-                                                    replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilăm programul.', clientId: clientId}));  // Send GDB output to the client
+                                                   replicateFunction((clientWs, id, localClientObj) => {
+                                                        if(clientObj.getActiveFile().getClients().includes(localClientObj))
+                                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilăm programul.', clientId: clientId}));  // Send GDB output to the client
                                                     });
 
                                                     //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
                                                     await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
                                                     
-                                                    replicateFunction((clientWs) => {
-                                                        clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilat!', clientId: clientId}));  // Send GDB output to the client
+                                                    replicateFunction((clientWs, id, localClientObj) => {
+                                                        if(clientObj.getActiveFile().getClients().includes(localClientObj))
+                                                            clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilat!', clientId: clientId}));  // Send GDB output to the client
                                                     });
                                                 }
                                                 

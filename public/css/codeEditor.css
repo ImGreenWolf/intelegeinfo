@@ -1548,6 +1548,7 @@ button:not(.custom-button, .noanimate):active, button:not(.custom-button, .noani
 }
 .ridge-gradient.inset-button.circle button {
   border-radius: 50% !important;
+  aspect-ratio: 1;
 }
 .ridge-gradient.inset-button:has(:disabled) {
   opacity: 0.5;
