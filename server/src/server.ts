@@ -1759,7 +1759,7 @@ async function buildAndRunCppSandbox(
         }
 
         // Run container
-        const imageName = `session-container-${sessionId}}`;
+        const imageName = `session-container-${sessionId}`;
         const hasGUI =
             clientObj.getActiveFile().name.toLowerCase().includes("gui") || false;
 

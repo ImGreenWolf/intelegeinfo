@@ -1413,7 +1413,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     }
                 }
                 // Run container
-                const imageName = `session-container-${sessionId}}`;
+                const imageName = `session-container-${sessionId}`;
                 const hasGUI = clientObj.getActiveFile().name.toLowerCase().includes("gui") || false;
                 const cmdArgs = [
                     "run",
