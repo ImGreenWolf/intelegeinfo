@@ -1840,7 +1840,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         switch (messageJSON.action) {
                             default:
                             case 'process':
-                                if (clientObj.openFile.process) {
+                                if (clientObj.getActiveFile().process) {
                                     if (clientObj.getActiveFile().debugProgram) {
                                         clientObj.getActiveFile().debugProgram.sendProgramInput(messageJSON.command);
                                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));

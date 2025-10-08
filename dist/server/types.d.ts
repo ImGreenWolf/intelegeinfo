@@ -32,6 +32,7 @@ export declare class ClientObject {
     getFile(name: any): EditorFile;
     getFilesName(): string[];
     checkClientsFileOpen(otherClient: any): boolean;
+    getActiveFile(): EditorFile;
 }
 interface CommandBuffer {
     codeSelection: any;

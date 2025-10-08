@@ -90,7 +90,9 @@ export class ClientObject {
     {
         return this.getFilesName().findIndex(val => otherClient.getFilesName().some(other => val === other)) !== -1
     }
-    
+    public getActiveFile() {
+        return this.openFile[0]
+    }
   }
 
 interface CommandBuffer {

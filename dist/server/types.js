@@ -110,6 +110,9 @@ class ClientObject {
     checkClientsFileOpen(otherClient) {
         return this.getFilesName().findIndex(val => otherClient.getFilesName().some(other => val === other)) !== -1;
     }
+    getActiveFile() {
+        return this.openFile[0];
+    }
 }
 exports.ClientObject = ClientObject;
 var EditorPermission;
