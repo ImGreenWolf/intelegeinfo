@@ -1552,14 +1552,14 @@ exports.wss.addListener('connection', async (ws, req) => {
                     }, 1000);
                 // if(programTimeout) clearTimeout(programTimeout)
                 spawnPromise = new Promise((resolve, reject) => {
-                    // clientSession.program?.on("spawn", async () => {
+                    // clientObj.program?.on("spawn", async () => {
                     console.log("Program spawned");
                     spawnDate = Date.now();
                     res.editorMode.onSpawn(clientSession);
                     replicateFunction((ws, id, obj) => obj.sendMessage({ status: 'spawn', type: types_1.WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId }, types_1.WebSocketMessageType.ExecuteStatus));
                     // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
                     if (processInputBuffer)
-                        clientSession.program.write(processInputBuffer); // write buffer
+                        clientObj.program.write(processInputBuffer); // write buffer
                     if (!clientSession.fileWatcher) {
                         clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath()), null, (event, fileNameBuf) => {
                             const fileName = fileNameBuf.toString();
@@ -1584,7 +1584,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                     resolve();
                     // })
                 });
-                clientSession.program.onData((data) => {
+                clientObj.program.onData((data) => {
                     if (new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
                      {
                         closeProcess(program).then(() => onClosedProgram(-1, (Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"));
@@ -1598,7 +1598,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                     }, 100);
                 });
-                clientSession.program.onExit(({ exitCode }) => {
+                clientObj.program.onExit(({ exitCode }) => {
                     clearTimeout(dataTimeout);
                     clearTimeout(programTimeout);
                     switch (exitCode) {
@@ -2033,8 +2033,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                                                                         clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.ExecuteStatus, body: 'Compilat!', clientId: clientId })); // Send GDB output to the client
                                                                     });
                                                                 }
-                                                                clientSession.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession);
-                                                                readStdio(clientSession.program, messageJSON, res).then(resolve);
+                                                                clientObj.program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession);
+                                                                readStdio(clientObj.program, messageJSON, res).then(resolve);
                                                             }
                                                             catch (err) {
                                                                 console.error("Failed to run docker commands: " + err);
@@ -2054,7 +2054,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                         });
                                     }
                                     // execute code normally.
-                                    if (getProcessFromMap()) // check if program is running
+                                    if (clientObj.program) // check if program is running
                                      {
                                         // printClientConsoleInfo('Restarting program...') // await queueCommand(program,command, sessionId);
                                         // getProcessFromMap(sessionId)?.kill(); // kill the program
@@ -2066,7 +2066,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                         //  })
                                         // onClosedProcess(sessionId);  // TODO Figure out why this was uncommented
                                         // executeProgram();
-                                        closeProcess(clientSession.program, sessionId);
+                                        closeProcess(clientObj.program, sessionId);
                                         // .then(() => {
                                         //     replicateFunction((clientWs) => {
                                         //         clientWs.send(JSON.stringify({type: WebSocketMessageType.End, messageType: ConsoleMessageType.Output, body: gdbBuffer.toString(), clientId: clientId}));  // Send GDB output to the client
@@ -2121,96 +2121,6 @@ exports.wss.addListener('connection', async (ws, req) => {
                                             clientSession.process = clientSession.gdbProcess = clientObj.getFile(clientObj.openFile[0].name).editorMode.startDebugging(undefined, clientObj, clientSession);
                                             // clientObj.openFile[0].editorMode.execute(undefined, clientObj, clientSession) 
                                         }
-                                        //     fs.accessSync(filePath)
-                                        //     mode="debug"; //set mode to debug
-                                        //     gdbProcess = spawn("gdb", ["-q",  "-interpreter=mi", filePath]); //"-ex", "set pagination off", 
-                                        //     addProcessToMap(sessionId, gdbProcess);
-                                        //     if(!getThisClientSession().process) console.error('Invalid session while starting debug process')
-                                        //     printClientConsoleDebug("started debugging process.")
-                                        //     // gdbProcess.on('close', (code) => {
-                                        //     //     console.log('CLOSED DEBUG PROCESS')
-                                        //     //     onClosedProcess();
-                                        //     //     gdbProcess = undefined;
-                                        //     // })
-                                        //     // process.stdin.pipe(gdbProcess.stdin)
-                                        //         // gdbProcess.stdin.write('-file-exec-and-symbols'+filePath+'\n');
-                                        //         // gdbProcess.stdin.write();
-                                        //         queueCommand(getProcessFromMap() as ChildProcess,'-break-insert 1\n', sessionId);
-                                        //         // gdbProcess.stdin.write('-exec-run\n');
-                                        //     gdbProcess.stdout.on('data', (derr) => {
-                                        //         console.log(derr.toString())
-                                        //     })
-                                        // gdbProcess.stderr.on('data', (derr) => {
-                                        //         console.error(derr.toString())
-                                        //     })
-                                        // app.get("/requestValue", (req,res) => {
-                                        //     const command = req.query.value;
-                                        //     const cmdId: number = parseInt(req.query.cmdId as string);
-                                        //     // console.log(clientId + " " + command)
-                                        //     if(mode != "debug") res.status(400).send('Bad Request: GDB process not active');
-                                        //     if(!clientSession.gdbProcess)  res.status(400).send('Bad Request: GDB process not active');
-                                        //     if(!command)     res.status(400).send('Bad Request: invalid command');
-                                        //     //res.send({code: fs.readFileSync("user_code.cpp").toString()});
-                                        //     if(mode != "debug" || !clientSession.gdbProcess || !command) return;
-                                        //     new Promise<void>((resolve, reject) => {
-                                        //         let gdbBuffer = "";
-                                        //         const onData = (data: Buffer) => {
-                                        //                 gdbBuffer += data.toString();
-                                        //                     // Check if the full response has arrived
-                                        //             if (gdbBuffer.includes("(gdb)")) {
-                                        //                 if(parseInt((gdbBuffer.toString().match(/(?<=\$)\d*/)?.[0] as string)) === cmdId+1) {
-                                        //                 // We have everything, remove listener
-                                        //                 clientSession.gdbProcess?.stdout?.removeListener("data", onData);
-                                        //                 resolve();
-                                        //                  res.send(({
-                                        //                     error: false,
-                                        //                     input: false,
-                                        //                     type: WebSocketMessageType.Output,
-                                        //                     messageType: ConsoleMessageType.Debug,
-                                        //                     body: gdbBuffer,
-                                        //                     message: command?.toString(),
-                                        //                     cmdId: cmdId,
-                                        //                     msgId: clientSession.gdbProcess?.pid
-                                        //                 }));
-                                        //                 } else gdbBuffer = "";
-                                        //             }
-                                        //         };
-                                        //         if(clientSession.gdbProcess && clientSession.gdbProcess.stdin && clientSession.gdbProcess.stdout) 
-                                        //         {
-                                        //             // Use .on instead of .once, because GDB output can be split
-                                        //             clientSession.gdbProcess?.stdout?.on("data", onData);
-                                        //             // Send the command
-                                        //             clientSession.gdbProcess?.stdin?.write("print " + command + "\n");
-                                        //         } else console.error("GDB process not found for session " + sessionId);
-                                        //     });
-                                        // });
-                                        // try {
-                                        //     // gdbProcess.stdout?.on("data", (data) => {
-                                        //     //     console.log(data.toString())
-                                        //     // });
-                                        //     // getThisClientSession().process?.stdin?.write("-break-insert main\n-exec-run\n")
-                                        // } catch 
-                                        // {
-                                        //     console.error(new Error('failed executing starting commands'))
-                                        // }
-                                        // queueCommand(getProcessFromMap(sessionId) as ChildProcess,command, sessionId);// gdbProcess.stdin.write(message + "\n");
-                                        // queueCommand(getProcessFromMap(sessionId) as ChildProcess,"break main", sessionId);// gdbProcess.stdin.write(message + "\n");
-                                        // queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);
-                                        //  queueCommand(getProcessFromMap() as ChildProcess,'run', sessionId);
-                                        // queueCommand(getProcessFromMap() as ChildProcess,command, sessionId);
-                                        // gdbProcess.stdout.on("data", (data) => {
-                                        //     gdbBuffer += data.toString();
-                                        //     ws.send(JSON.stringify({error: false,  input: false, body: gdbBuffer.toString()}));  // Send GDB output to the client
-                                        //     gdbBuffer = "";
-                                        // });
-                                        // gdbProcess.stderr.on("data", (data) => {
-                                        //     const errorMsg = "Error: " + data.toString();
-                                        //     ws.send(JSON.stringify({error: true,  input: false, body: errorMsg}));
-                                        // });
-                                        // process.stdin.resume()
-                                        // process.stdin.on('data', function (chunk) {
-                                        //     process.stdout.write('data: ' + chunk);
-                                        // });
                                     }
                                     else {
                                         closeProcess(clientSession.process);
@@ -2228,8 +2138,8 @@ exports.wss.addListener('connection', async (ws, req) => {
                                         console.log('COMMAND');
                                     }).catch(err => console.error('queue command err: ' + err));
                                 }
-                                else if (clientSession.program != undefined) {
-                                    clientSession.program?.write(command); //program.stdin.write(message + "\n");
+                                else if (clientObj.program != undefined) {
+                                    clientObj.program?.write(command); //program.stdin.write(message + "\n");
                                     replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
                                 }
                                 else
@@ -2258,7 +2168,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             removeRunningProcessFromMap();
             if (isShared)
                 shared.removeProcess(sessionId);
-            clientSession.program = undefined;
+            clientObj.program = undefined;
             if (clientSession.fileWatcher) {
                 clientSession.fileWatcher.close();
                 clientSession.fileWatcher = undefined;
@@ -2305,7 +2215,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
         }
         function onCloseSession() {
-            const process = getProcessFromMap(clientSession);
+            const process = clientObj.program;
             const closedClientId = clientId;
             replicateSocketMessage(sessionId, clientId, true, { type: types_1.WebSocketMessageType.CodeSelection, body: "" });
             exports.clients.delete(clientId);
