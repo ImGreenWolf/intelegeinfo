@@ -2,7 +2,7 @@
   .container {
     grid-template-columns: 1fr;
     /* grid-template-rows: auto 600px 100px 600px 100px; */
-    grid-template-rows: 30px minmax(500px, auto) minmax(400px, 1fr) auto;
+    grid-template-rows: 30px minmax(700px, auto) minmax(400px, 1fr) auto;
     grid-template-areas: "header header" "main main" "output output" "sidebar sidebar";
     font-size: 1rem;
   }
@@ -63,7 +63,6 @@
   #editor {
     font-size: 1em;
   }
-  #output,
   .default-screen {
     font-size: 0.75rem;
   }

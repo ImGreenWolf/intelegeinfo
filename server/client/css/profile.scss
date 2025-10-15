@@ -19,7 +19,7 @@ $border-color: rgba(126, 126, 126, 0.219);
     min-height: 100%;
     color: black; //theme.$text-color;
     font-family: Poppins;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(80vh, 1fr) 1fr;
     gap: 1em;
     grid-template-rows: 1fr;
     align-content: stretch;
@@ -343,7 +343,6 @@ input[type=color]
     display: grid;
     align-items: start;
     grid-template-rows: min-content 1fr;
-    max-height: 50vh;
 }
 
 // .projects-container

@@ -1264,7 +1264,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 variables: parsed.resultRecord?.result?.variables ?? undefined,
                             };
                             if (parsed.outOfBandRecords[0]?.class == 'thread-group-exited') {
-                                closeProcess(clientObj.getActiveFile().process);
+                                closeProcess(clientObj.getActiveFile()?.process);
                                 return;
                             }
                             getThisClientSession()?.clientsMap.forEach((client, id) => {
@@ -2244,6 +2244,8 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
         }
         function onCloseSession() {
+            if (!clientObj.getActiveFile())
+                return;
             const process = clientObj.getActiveFile().program;
             const closedClientId = clientId;
             replicateSocketMessage(sessionId, clientId, true, { type: types_1.WebSocketMessageType.CodeSelection, body: "" });

@@ -32,7 +32,7 @@ export declare class ClientObject {
     getFile(name: any): EditorFile;
     getFilesName(): string[];
     checkClientsFileOpen(otherClient: any): boolean;
-    getActiveFile(): EditorFile;
+    getActiveFile(): EditorFile | undefined;
 }
 interface CommandBuffer {
     codeSelection: any;

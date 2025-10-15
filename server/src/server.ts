@@ -1573,7 +1573,7 @@ function endConnectionPromise()
                                   variables: parsed.resultRecord?.result?.variables ?? undefined,  
                               };
                               if(parsed.outOfBandRecords[0]?.class == 'thread-group-exited') {
-                                  closeProcess(clientObj.getActiveFile().process)
+                                  closeProcess(clientObj.getActiveFile()?.process)
                                   return;
                               }
                               getThisClientSession()?.clientsMap.forEach((client, id) => { // TODO replace with replicateFunction()
@@ -2424,17 +2424,17 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
 
                      case FileManagementCommands.Open:
-                        
                         openFile(messageJSON.body, messageJSON.closedFile)
                         console.log('clientId', clientId, 'sessionid', sessionId)
                     break;
-                        case FileManagementCommands.Create:
-                            new EditorFile(clientSession, messageJSON.name, messageJSON.body)
-                        break;
+
+                    case FileManagementCommands.Create:
+                        new EditorFile(clientSession, messageJSON.name, messageJSON.body)
+                    break;
+
                     case FileManagementCommands.Delete:
                         if(!clientObj.permissions.canEdit) break;
                         clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj, clientSession)
-                       
                     break;
 
                     //  TODO Make this so it just return name and make seperate function for fle content, which will be called only when opening the file on the client. STORE IT IN CACHE, ADD A DIRTY VERIFICATION TO NOT SEND THE SAME SHI MULTIPLE TIMES DONT OPEN THE EDITOR UNTIL THE FILE HAS LOADED ON THE CLIENT SEND THE FILES ON  HANDSHAKE MAKE SURE IT IS ALL REPLICATED
@@ -2769,7 +2769,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     }
 
     function onCloseSession() {
-
+        if(!clientObj.getActiveFile())
+            return
         const process = clientObj.getActiveFile().program;
         const closedClientId = clientId;
         replicateSocketMessage(sessionId, clientId, true, {type: WebSocketMessageType.CodeSelection, body: ""});
