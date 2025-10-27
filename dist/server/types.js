@@ -532,6 +532,7 @@ class EditorFile {
         this.content = data;
     }
     onCloseFile(clientObj) {
+        console.log(clientObj.displayName, 'closed file: ', this.name);
         clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == this.name), 1);
         clientObj.openFileName.splice(clientObj.openFileName.findIndex(name => name == this.name), 1);
         this.activeClients.splice(this.activeClients.indexOf(clientObj), 1);
