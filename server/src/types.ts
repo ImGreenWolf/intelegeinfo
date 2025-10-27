@@ -621,7 +621,7 @@ Tralalero Tralala`.split('\n')
     public onCloseFile(clientObj: ClientObject) {
         clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == this.name),1)
         clientObj.openFileName.splice(clientObj.openFileName.findIndex(name => name == this.name),1)
-        this.activeClients.splice(this.activeClients.indexOf(clientObj))
+        this.activeClients.splice(this.activeClients.indexOf(clientObj), 1)
     }
 
     public async openFile(clientObj: ClientObject, shared?, closedFileName?: string)
@@ -635,6 +635,7 @@ Tralalero Tralala`.split('\n')
 
                 clientObj.openFile.push(this)
                 clientObj.openFileName.push(this.name)
+                if(!this.activeClients.includes(clientObj))
                 this.activeClients.push(clientObj)
                
                 // Send the file content to the client

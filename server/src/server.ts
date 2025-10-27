@@ -1944,7 +1944,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     if(messageJSON.textMode)
         programTimeout = setTimeout(() => {
-            onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program timed out!</span>")
+            onClosedProgram(-1, ( performance.now() - spawnDate), "<span style='color: red'>Program timed out!</span>")
             closeProcess(program)
             resolve()
         }, 1000);
@@ -1993,7 +1993,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
          if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
         {
-            closeProcess(program).then(() => onClosedProgram(-1, ( Date.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"))        
+            closeProcess(program).then(() => onClosedProgram(-1, ( performance.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"))        
             resolve()
          }
         replicateFunction((clientWs, id, localClientObj) => {
@@ -2011,21 +2011,21 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             default:
                 if(errorBuffer)
                 {
-                    onClosedProgram(exitCode, ( Date.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim())
+                    onClosedProgram(exitCode, ( performance.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim())
                     break;
                 }
             case 0:
-             onClosedProgram(exitCode, ( Date.now() - spawnDate), "Programul a iesit cu codul: " + (exitCode?.toString() || '-1'))
+             onClosedProgram(exitCode, ( performance.now() - spawnDate), "Programul a iesit cu codul: " + (exitCode?.toString() || '-1'))
             break;
             case 136:
             case 138:
-            onClosedProgram(exitCode, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Arithmetic devided by 0</a>", true)
+            onClosedProgram(exitCode, ( performance.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Arithmetic devided by 0</a>", true)
             break;
             case 139:
-            onClosedProgram(exitCode, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Segmentation Fault</a>", true)
+            onClosedProgram(exitCode, ( performance.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Segmentation Fault</a>", true)
             break;
             case 3221225477:
-            onClosedProgram(exitCode, ( Date.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
+            onClosedProgram(exitCode, ( performance.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
             break;
         }
 
@@ -2456,6 +2456,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         console.log('handle command: ' + command)
                         if(command == "execute")
                         {
+
+                            console.table(Object.fromEntries(clientSession.files.map(file => [file.name, file.activeClients.map(client => client.displayName)])))
 
 
                             async function executeProgram(): Promise<void> {
