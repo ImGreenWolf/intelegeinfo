@@ -543,22 +543,24 @@ class EditorFile {
             const closedFile = clientObj.openFile.find(file => file.name == closedFileName);
             if (closedFile)
                 closedFile.onCloseFile(clientObj);
-            clientObj.openFile.push(this);
-            clientObj.openFileName.push(this.name);
+            if (!clientObj.openFile.includes(this)) {
+                clientObj.openFile.push(this);
+                clientObj.openFileName.push(this.name);
+                const oldFileName = clientObj.openFileName;
+                this.session.replicateFunction((cws, id, obj) => {
+                    if (obj.openFileName.some(file => oldFileName.includes(file)))
+                        cws.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeSelection, body: null }));
+                }, clientObj);
+            }
             if (!this.activeClients.includes(clientObj))
                 this.activeClients.push(clientObj);
             // Send the file content to the client
-            const oldFileName = clientObj.openFileName;
             // if(closedFileName)
             // {
             //     const closedFileIndex = clientObj.openFileName.findIndex(name => name == closedFileName)
             //     clientObj.openFile.splice(closedFileIndex,1)
             //     clientObj.openFileName.splice(closedFileIndex,1)
             // }
-            this.session.replicateFunction((cws, id, obj) => {
-                if (obj.openFileName == oldFileName)
-                    cws.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeSelection, body: null }));
-            }, clientObj);
             clientObj.editorMode = getEditorMode(this.name);
             // clientObj.openFileName = this.name
             this.session.clientsActiveFile.set(clientObj.clientId, this.name);
