@@ -1874,13 +1874,22 @@ export function copySessionLink() {
             return res.json();
         })
             .then(data => {
-            session = { code: data.code, img: data.qrsvg };
+            session = { code: data.code, img: data.qrsvg, alreadyPublic: data.alreadyPublic };
             document.getElementById('data.code').innerText = data.code;
             document.getElementById('data.qrurl').src = data.qrsvg;
             gtag('event', 'session_share', {});
-            document.getElementById('createSessionForm').onsubmit = async function (ev) {
-                ev.preventDefault();
-                const formData = new FormData(ev.target);
+            if (session.alreadyPublic)
+                document.getElementById('connect-data-container')?.classList.add('created');
+            document.getElementById('createSessionForm').onsubmit = async function (sev) {
+                sev.preventDefault();
+                if (session && session.alreadyPublic)
+                    if (isHost)
+                        displayMessagePopup('Sesiunea a fost updatata.');
+                    else {
+                        displayMessagePopup('Nu poti modifica sesiunea deoarece nu esti proprietarul acesteia.');
+                        return;
+                    }
+                const formData = new FormData(sev.target);
                 try {
                     if (!formData.has('chat'))
                         formData.set('chat', '');
@@ -1894,13 +1903,7 @@ export function copySessionLink() {
                         body: JSON.stringify(entryData)
                     });
                     document.getElementById('connect-data-container')?.classList.add('created');
-                    const sessionCodeNode = document.createElement('h2');
-                    sessionCodeNode.innerText = data.code;
-                    sessionCodeNode.classList.add('session-code');
-                    if (DockElement)
-                        DockElement.getElementsByClassName('toolbar-container')[0].prepend(createNode('h2', { innerText: data.code, css: "font-size: 1em; align-self: center; margin-inline: 1em; color: gray; font-family: 'Poppins';" }));
-                    // document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'))
-                    // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
+                    displayJoinCode(data.code);
                     if (!window.location.search.includes("session=") && startedSessionId != undefined)
                         window.history.pushState({ page: "updated session info" }, "intelge info", window.location.search + (window.location.search ? "&" : "?") + "session=" + startedSessionId);
                 }
@@ -2859,8 +2862,12 @@ function onMessage(event) {
             wsSessionId = messageJson.sessionId;
             isHost = messageJson.isHost || sessionData != undefined ? sessionData.isHost : false;
             isColabSession = sessionData != undefined;
-            if (sessionData)
+            if (messageJson.joinCode) {
+                displayJoinCode(messageJson.joinCode);
+            }
+            if (sessionData) {
                 updatePermissions(sessionData);
+            }
             writeOutput(messageJson.body, messageJson);
             updateCatalouge(wsSessionId, wsClientId);
             if (new URLSearchParams(location.search).has('content')) {
@@ -3539,6 +3546,18 @@ function getDistanceFromPosition(checkCursor, posX, posY) {
     const elemX = checkCursor.offsetLeft;
     const elemY = checkCursor.offsetTop;
     return Math.sqrt(Math.pow(elemX - posX, 2) + Math.pow(elemY - posY, 2));
+}
+function displayJoinCode(joinCode) {
+    if (document.getElementById('session-code') || !joinCode)
+        document.getElementById('session-code')?.remove();
+    if (!joinCode)
+        return;
+    const sessionCodeNode = document.createElement('h2');
+    sessionCodeNode.innerText = joinCode;
+    sessionCodeNode.classList.add('session-code');
+    sessionCodeNode.id = 'session-code';
+    if (DockElement)
+        DockElement.getElementsByClassName('toolbar-container')[0].prepend(createNode('h2', { innerText: joinCode, css: "font-size: 1em; align-self: center; margin-inline: 1em; color: gray; font-family: 'Poppins';" }));
 }
 export function displaynoVNC(container) {
     const frame = document.createElement('iframe');

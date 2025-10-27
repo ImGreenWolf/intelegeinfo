@@ -645,7 +645,7 @@ export enum ConsoleMessageType {
 interface SessionInfo  {
   code: string;
   img: any;
-  
+  alreadyPublic: boolean
 }
 
 class SessionClient {
@@ -2465,38 +2465,47 @@ export function copySessionLink() {
     return res.json();
   })
   .then(data => {
-    session = {code: data.code, img: data.qrsvg};
+    session = {code: data.code, img: data.qrsvg, alreadyPublic: data.alreadyPublic};
     document.getElementById('data.code')!.innerText = data.code;
     (document.getElementById('data.qrurl')! as HTMLImageElement).src = data.qrsvg;
       gtag('event', 'session_share', {
       });
 
 
-    document.getElementById('createSessionForm')!.onsubmit =  async function (this, ev) {
-      ev.preventDefault()
-      const formData = new FormData(ev.target as HTMLFormElement)
+    if(session.alreadyPublic)
+        document.getElementById('connect-data-container')?.classList.add('created')
+
+
+    document.getElementById('createSessionForm')!.onsubmit =  async function (this, sev) {
+      sev.preventDefault()
+
+      if(session && session.alreadyPublic)
+        if(isHost)
+          displayMessagePopup('Sesiunea a fost updatata.')
+        else {
+          displayMessagePopup('Nu poti modifica sesiunea deoarece nu esti proprietarul acesteia.')
+          return;
+        }
+
+
+      const formData = new FormData(sev.target as HTMLFormElement)
       try {
         if(!formData.has('chat'))
         formData.set('chat', '')
 
         const entryData = Object.fromEntries(formData.entries());
         if(!wsSessionId) throw "Invalid session id."
+
         const startedSessionId = wsSessionId;
         await fetch('/editor/startsession/'+wsSessionId, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(entryData)
         })
-          document.getElementById('connect-data-container')?.classList.add('created')
-          const sessionCodeNode = document.createElement('h2');
-          sessionCodeNode.innerText = data.code;
-          sessionCodeNode.classList.add('session-code');
-          if(DockElement)
-          DockElement.getElementsByClassName('toolbar-container')[0].prepend(createNode('h2', {innerText: data.code, css: "font-size: 1em; align-self: center; margin-inline: 1em; color: gray; font-family: 'Poppins';"}))
-          // document.getElementById('join-session').parentNode.insertBefore(sessionCodeNode, document.getElementById('join-session'))
-          // window.location.search += (window.location.search ? "&" : "?" ) + "session="+wsSessionId
-          if(!window.location.search.includes("session=") && startedSessionId!=undefined)
-            window.history.pushState({page: "updated session info"}, "intelge info", window.location.search + (window.location.search ? "&" : "?" ) + "session="+startedSessionId)
+        document.getElementById('connect-data-container')?.classList.add('created')
+        displayJoinCode(data.code)
+        if(!window.location.search.includes("session=") && startedSessionId!=undefined)
+          window.history.pushState({page: "updated session info"}, "intelge info", window.location.search + (window.location.search ? "&" : "?" ) + "session="+startedSessionId)
        
       }
       catch (err)
@@ -3762,6 +3771,7 @@ function getEditorSession(fileName)
 
       // console.log(ClientOptions)
       // }
+
       function updatePermissions(newPermissions) {
           if(!newPermissions.canEdit && codeWindow)
             if(codeWindow.editor)
@@ -3796,10 +3806,19 @@ function getEditorSession(fileName)
       isHost = messageJson.isHost || sessionData!=undefined ? sessionData.isHost : false
       isColabSession = sessionData!=undefined
 
-      if(sessionData)
-        updatePermissions(sessionData)
+      if(messageJson.joinCode) {
+        displayJoinCode(messageJson.joinCode)
+      }
 
+      
+      if(sessionData) {
+        
+        
+       updatePermissions(sessionData)
+      }
+       
 
+      
       writeOutput(messageJson.body, messageJson);
       updateCatalouge(wsSessionId, wsClientId)
 
@@ -4683,7 +4702,18 @@ function getDistanceFromPosition(checkCursor: HTMLDivElement, posX: number, posY
 
 
 
-
+function displayJoinCode(joinCode) {
+  if(document.getElementById('session-code') || !joinCode)
+    document.getElementById('session-code')?.remove()
+  if(!joinCode)
+    return;
+  const sessionCodeNode = document.createElement('h2');
+  sessionCodeNode.innerText = joinCode;
+  sessionCodeNode.classList.add('session-code');
+  sessionCodeNode.id = 'session-code'
+  if(DockElement)
+    DockElement.getElementsByClassName('toolbar-container')[0].prepend(createNode('h2', {innerText: joinCode, css: "font-size: 1em; align-self: center; margin-inline: 1em; color: gray; font-family: 'Poppins';"}))
+}
   
 
 

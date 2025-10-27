@@ -246,9 +246,16 @@ app.use("/guides", GuideCreator);
 
 app.use('/shared/src/',  express.static(path.join(rootDirName,'dist', 'shared')))
 
+
+export const joinsqid = new sqids({
+    alphabet: '0123456789',
+    minLength: 6
+})
+
+
 app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id as UUID;
-    const session = sessionMap[sessionId];
+    const session = sessionMap.get(sessionId);
     const link = req.protocol + "://" + req.host+'/editor?session='+sessionId
     if(!sessionId)
     {
@@ -257,45 +264,49 @@ app.get('/editor/sharesession', (req, res) => {
     }
     if(session)
     {
-        if(session.isPublic) 
+        if(session.isPublic && session.joinCode) 
         {
-            
-            res.send({qrsvg: session.qrCode, code: session.joinCode, link})
+            res.send({qrsvg: session.qrCode, code: session.joinCode, link, alreadyPublic: true})
+            return
         }
     }
     
-    const code = users.generateCode()
+    const code = parseInt(joinsqid.encode(session.sessionId.split('-')[0].split('').map(char => char.charCodeAt(0)))) % Math.pow(10, 6)
     
     qrcode.toDataURL(link+"&uri_method=qrcode", {errorCorrectionLevel: "low", type: "image/png", margin: 0, width: 100}).then(value => {
-        codeMap.set(parseInt(code), sessionId)
+        
         if(session)
         {
-            session.joinCode = code;
+            session.joinCode = code.toFixed(0);
             session.qrCode = value;
         }
 
-        res.send({qrsvg: value, code, link})
-        setTimeout(() => {
-            codeMap.delete(parseInt(code))
-        }, 60000);
+        res.send({qrsvg: value, code, link, alreadyPublic: false})
     })
 })
 app.get('/editor/joinsession', (req, res) => {
-    const code = parseInt(req.query.code as string);
+    const code = req.query.code as string;
 
-    if(codeMap.has(code) && code)
+    if(code)
     {
         
-        const sessionId = codeMap.get(code);
+        const session = Array.from(sessionMap.values()).find(session => session.joinCode == code)
+        if(!session) {
+            res.status(404).send('Nu am gasit sesiunea pe care o cautai')
+            return;
+        }
+        const sessionId = session.sessionId
         if(!sessionMap.get(sessionId).isPublic)
+        {
             res.status(403).send("Session hasn't started yet")
+            return
+        }
         const redirect = '/editor?session='+sessionId
         res.status(200).send({code, redirect})
     }
     else
     {
-   
-    res.status(500).send({error: "code expired or is invalid"})
+        res.status(500).send({error: "code expired or is invalid"})
     }
    
 })
@@ -536,7 +547,6 @@ else var httpServer = http.createServer(app);
 
 let connectionPromise: Promise<void> | undefined;
 let connectionPromiseTimeout: NodeJS.Timeout;
-const codeMap: Map<number, UUID> = new Map()
 
 const unsecureServer = httpServer.listen(PORT);
 const secureServer = httpsServer.listen(SECPORT)
@@ -1231,7 +1241,8 @@ function endConnectionPromise()
         share: clientSession.sharedProject,
         permissions: clientObj.permissions,
         files,
-        users
+        users,
+        joinCode: clientSession.joinCode
         }
 
         ws.send(JSON.stringify(message)); 
@@ -1945,7 +1956,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     if(messageJSON.textMode)
         programTimeout = setTimeout(() => {
-            onClosedProgram(-1, ( performance.now() - spawnDate), "<span style='color: red'>Program timed out!</span>")
+            onClosedProgram(-1, (performance.now() - spawnDate).toFixed(0), "<span style='color: red'>Program timed out!</span>")
             closeProcess(program)
             resolve()
         }, 1000);
@@ -1994,7 +2005,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
          if(new Blob([gdbBuffer]).size > 64000) // 1000000 is 1Mb
         {
-            closeProcess(program).then(() => onClosedProgram(-1, ( performance.now() - spawnDate), "<span style='color: red'>Program buffer size excedded!</span>"))        
+            closeProcess(program).then(() => onClosedProgram(-1, ((performance.now() - spawnDate).toFixed(0)), "<span style='color: red'>Program buffer size excedded!</span>"))        
             resolve()
          }
         replicateFunction((clientWs, id, localClientObj) => {
@@ -2007,26 +2018,27 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
     clientObj.getActiveFile().program.onExit(({exitCode}) => {
         clearTimeout(programTimeout)
+        const time = (performance.now() - spawnDate).toFixed(0)
         switch(exitCode)
         {
             default:
                 if(errorBuffer)
                 {
-                    onClosedProgram(exitCode, ( performance.now() - spawnDate), "Programul a iesit cu eroarea: " + errorBuffer.trim())
+                    onClosedProgram(exitCode, ( time), "Programul a iesit cu eroarea: " + errorBuffer.trim())
                     break;
                 }
             case 0:
-             onClosedProgram(exitCode, ( performance.now() - spawnDate), "Programul a iesit cu codul: " + (exitCode?.toString() || '-1'))
+             onClosedProgram(exitCode, ( time), "Programul a iesit cu codul: " + (exitCode?.toString() || '-1'))
             break;
             case 136:
             case 138:
-            onClosedProgram(exitCode, ( performance.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Arithmetic devided by 0</a>", true)
+            onClosedProgram(exitCode, ( time),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Arithmetic devided by 0</a>", true)
             break;
             case 139:
-            onClosedProgram(exitCode, ( performance.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Segmentation Fault</a>", true)
+            onClosedProgram(exitCode, ( time),"Programul a iesit cu eroare: <a href='/guides/aritmethicoperation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">Segmentation Fault</a>", true)
             break;
             case 3221225477:
-            onClosedProgram(exitCode, ( performance.now() - spawnDate),"Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
+            onClosedProgram(exitCode, ( time),"Programul a iesit cu eroare: <a href='/guides/errors/memaccessviolation?session="+sessionId+"' title=Learn how to fix here. | Error code: " + exitCode?.toString()+">MEMMORY ACCESS VIOLATION!</a>", true)
             break;
         }
 

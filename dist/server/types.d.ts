@@ -85,7 +85,7 @@ export declare class EditorSession {
     fileWatcher: fs.FSWatcher;
     hostClient: ClientObject;
     isPublic: boolean;
-    joinCode: number;
+    joinCode: string | undefined;
     qrCode: any;
     editorOptions: EditorOptions;
     executeProblemChecker: (problemId: any) => Promise<PromiseSettledResult<{

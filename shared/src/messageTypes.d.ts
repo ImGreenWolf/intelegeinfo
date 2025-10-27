@@ -50,6 +50,7 @@ type HandshakeMessage = {
     permissions: any;
     files: string[];
     project?: Project;
+    joinCode: string | undefined;
     share?: SharedProject & {createdBy: 
       {
       id: number;

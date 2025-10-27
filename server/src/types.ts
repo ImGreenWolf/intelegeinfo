@@ -154,7 +154,7 @@ export class EditorSession {
     fileWatcher: fs.FSWatcher
     hostClient: ClientObject
     isPublic: boolean
-    joinCode: number;
+    joinCode: string | undefined;
     qrCode;
 
     editorOptions: EditorOptions = {
