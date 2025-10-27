@@ -730,7 +730,6 @@ wss.addListener('connection', async (ws: WebSocket, req) => {
     let clientSession: EditorSession;
     let gdbBuffer = "";
     let checkSyntaxTimeout;
-    let dataTimeout;
     let project: SavedProject;
     let processInputBuffer = '';
     let spawnPromise;
@@ -1937,7 +1936,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     return new Promise<void>((resolve, reject) => {
     // addProcessToMap(sessionId, program); // add to process map
     mode = "run";
-    let spawnDate = Date.now()
+    let spawnDate = performance.now()
     let programTimeout;
     gdbBuffer = "";
     let errorBuffer = ''
@@ -1949,19 +1948,19 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             closeProcess(program)
             resolve()
         }, 1000);
-    // if(programTimeout) clearTimeout(programTimeout)
+
 
     spawnPromise = new Promise<void>((resolve, reject) => {
-
-    // clientObj.getActiveFile().program?.on("spawn", async () => {
-        console.log("Program spawned")
-        
-        spawnDate = Date.now()
+        spawnDate = performance.now()
+        // on spawn process
         res.editorMode.onSpawn(clientSession);
-        replicateFunction((ws,id, obj) => {
-                     if(replicateProcessCheck(obj))
-                        obj.sendMessage({status: 'spawn', type: WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId}, WebSocketMessageType.ExecuteStatus)})
-        // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, spawn: 1})
+        // send on spawn process message
+        replicateFunction((ws,id, remoteClientObj) => {
+            if(replicateProcessCheck(remoteClientObj))
+            remoteClientObj.sendMessage({status: 'spawn', type: WebSocketMessageType.ExecuteStatus, fileName: res.fileName, clientId}, WebSocketMessageType.ExecuteStatus)
+        })
+
+
         if(processInputBuffer)
                 clientObj.getActiveFile().program.write(processInputBuffer) // write buffer
 
@@ -1985,15 +1984,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
             })
             
         }
-        
-        dataTimeout = 
-        setTimeout(() => {
-            replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
-            // clientObj.sendMessage({type: WebSocketMessageType.ExecuteStatus, input: 1})
-        }, 400);
+    
         resolve()
-
-    // })
 
     })
 
@@ -2009,16 +2001,10 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 clientWs.send(JSON.stringify({type: WebSocketMessageType.Output, messageType: ConsoleMessageType.Output, body: data.toString(), clientId: clientId}));  // Send GDB output to the client
          });
 
-        clearTimeout(dataTimeout)
-            dataTimeout = setTimeout(() => {
-                replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
-        }, 100);
 
     });
 
     clientObj.getActiveFile().program.onExit(({exitCode}) => {
-
-        clearTimeout(dataTimeout);
         clearTimeout(programTimeout)
         switch(exitCode)
         {
@@ -2290,9 +2276,6 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                 else if(clientObj.getActiveFile().program)
                                 {   
                                     clientObj.getActiveFile().program.write(messageJSON.command);
-                                    dataTimeout = setTimeout(() => {
-                                        replicateFunction((ws,id, obj) => obj.sendMessage({input: 1}, WebSocketMessageType.ExecuteStatus))
-                                    }, 200);
                                 }
                             
                             }
@@ -2473,13 +2456,12 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                         console.log('handle command: ' + command)
                         if(command == "execute")
                         {
-                            console.log(clientObj.getActiveFile().name, clientObj.openFile)
-                            // fs.accessSync(filePath) // disabled to auto compile
+
 
                             async function executeProgram(): Promise<void> {
                                 return new Promise<void>((resolveExectute, reject) => {
-                                        // const filePath = path.join(rootDirName, "cache", sessionId, "main.exe");
-                                         function runProgram(): Promise<void>[]
+                                       
+                                function runProgram(): Promise<void>[]
                                   {
                                     if(clientSession.files.length == 0)
                                         resolveExectute()
@@ -2493,7 +2475,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                                         if(!clientObj.editorMode.clientCompile)
                                         buildAndRunCppSandbox(folderPath, clientObj.getActiveFile().name ,clientObj.editorMode, clientId, sessionId).then( async res => {
-                                            //     cwd:  path.join(rootDirName, "cache", sessionId,"clientFiles"), // we must add this for the program to have the correct directory for input files.
+                                            
                                             if(res == null) return resolve()
                                             if(!clientObj.getFile(res.fileName))
                                             {
@@ -2504,10 +2486,8 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                                             try {
                                                 
                                                 clientObj.getFile(res.fileName).editorMode.sendError = (err, fatal)  => {
-                                                    // printClientConsoleError(err)
                                                     if(fatal)
                                                     {
-                                                        // closeProcess(clientObj.getActiveFile().process)
                                                         onClosedProgram(-1, 0, `<span class="console-error">Compile error: ${err}</span>`)
                                                         resolve()
                                                     }
@@ -2517,24 +2497,24 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                                                 if(!clientObj.editorMode.isInterpreter)
                                                 {
+                                                    //status update pre compile
                                                    replicateFunction((clientWs, id, localClientObj) => {
                                                         if(replicateProcessCheck(localClientObj))
                                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilăm programul.', clientId: clientId}));  // Send GDB output to the client
                                                     });
-
-                                                    //execSync(`docker exec ${res.imageName} bash -c "g++ -g -O0 clientFiles/${res.fileName} -o main"`)
+                                                    // compile
                                                     await clientObj.getFile(res.fileName).editorMode.compile(res, clientObj.getFile(res.fileName), false)
-                                                    
+                                                    // post compile
                                                     replicateFunction((clientWs, id, localClientObj) => {
                                                         if(replicateProcessCheck(localClientObj))
                                                             clientWs.send(JSON.stringify({type: WebSocketMessageType.ExecuteStatus,body: 'Compilat!', clientId: clientId}));  // Send GDB output to the client
                                                     });
                                                 }
-                                                
+                                                // execute
                                                 clientObj.getActiveFile().process = clientObj.getActiveFile().program = await clientObj.getFile(res.fileName).editorMode.execute(res, clientObj, clientSession) as Nodepty.IPty & EventEmitter
 
 
-
+                                                // connect input/output
                                                 readStdio(clientObj.getActiveFile().program, messageJSON, res).then(resolve)
 
 
@@ -2731,7 +2711,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     {
         try {
             return await new Promise<void>((resolve, reject) => {
-                if (clientObj.getActiveFile().process) {
+                if (process) {
                     let timer;
                     if (process) {
                         process.kill(9);
