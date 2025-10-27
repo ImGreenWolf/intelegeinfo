@@ -2387,6 +2387,15 @@ export function copySessionLink() {
           </select>
       </label>
 
+       <label for="code-permission" title='Alegeti cine poate modifica fisiere - Oricine, doar tu, sau oricui ii acordati permisiunea'>
+        Modificare Fisiere
+          <select id='code-permission' name='codePermission'>
+            <option value='0'>Toata lumea</option>
+            <option value='2'>Doar tu</option>
+            <option value='1'>Doar cu permisiune</option>
+          </select>
+      </label>
+
       <label for="sandbox" title='Daca este pornit, toate persoanele care intră vor avea fisierelelor lor, pe care doar dumneavoastra le veti putea vedea'>
         Izolează colaboratori ?<input type="checkbox" name="sandbox"></label>
 
