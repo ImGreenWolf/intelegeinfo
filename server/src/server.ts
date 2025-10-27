@@ -1713,7 +1713,7 @@ async function buildAndRunCppSandbox(
         const imageTag = buildTag + "_" + editorMode.dockerSafeTag;
         clientSession.currentbuildTag = imageTag;
         if(clientSession.sessionContainer?.process) {
-            console.log('Container already exists', clientObj.openFile)
+            console.log('Container already exists', clientObj.openFile.map(file => file.name))
             
             resolve({
                 imageName: clientSession.sessionContainer.imageName,
