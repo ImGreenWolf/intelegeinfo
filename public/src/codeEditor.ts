@@ -4451,7 +4451,7 @@ export function sendDebugCommand(cmd: string) {
     //normal execute
     cmdBut?.classList.remove("debug-control");
     cmdBut?.classList.add("execute-control");
-    startProgram()
+    // startProgram()
   }
 
   sendWebsocketCommand(cmd, []); //ws.send(JSON.stringify({command: cmd , args: []}));

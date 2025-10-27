@@ -2477,7 +2477,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                                         if(!clientObj.editorMode.clientCompile)
                                         buildAndRunCppSandbox(folderPath, clientObj.getActiveFile().name ,clientObj.editorMode, clientId, sessionId).then( async res => {
-                                            
+                                            console.log(res)
                                             if(res == null) return resolve()
                                             if(!clientObj.getFile(res.fileName))
                                             {
