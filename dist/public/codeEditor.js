@@ -3023,7 +3023,7 @@ function onMessage(event) {
                         activeConsole.onProcessStart({ fileName: messageJson.fileName, clientId: messageJson.clientId });
                     break;
                 case 'container-spawn':
-                    onRun();
+                    // onRun()
                     break;
                 default:
                     const index = 0; //client?.editorSession.findIndex(file => file.fileName === messageJson.fileName) 
