@@ -14,6 +14,8 @@ function generateHmac(data) {
     return crypto_1.default.createHmac("sha256", SECRET).update(data).digest("hex");
 }
 function verifyHmac(data, hmac) {
+    if (typeof data !== 'string' || typeof hmac !== 'string')
+        return false;
     const expected = generateHmac(data);
-    return crypto_1.default.timingSafeEqual(Buffer.from(expected), Buffer.from(hmac));
+    return Buffer.byteLength(expected) === Buffer.byteLength(hmac) && crypto_1.default.timingSafeEqual(Buffer.from(expected), Buffer.from(hmac));
 }

@@ -73,7 +73,7 @@ export async function onSignedIn({ email, username, loginMethod, firstName, last
       if(!user) reject({ error: 'Failed to create user' })
      
       console.log('created account', username)
-      resolve({json: {message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod}, res: onLoggedIn(user, res, req, keepLoggedIn ? keepLoggedIn : true)})
+      resolve({json: {message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod}, res: onLoggedIn(user, res, req, keepLoggedIn)})
 
   }).catch(reason => {
    reject({ error: 'Failed to create user: ' + reason});
@@ -99,11 +99,7 @@ function createUser(params, res: Response, password: string, req)
   } 
     else return res.status(400).json({ error: 'An account with this email already exists! Try logging in!'});
 
-}).catch(async (reason) => 
-    {
-      const result = await onSignedIn(params, res, password, req, true)
-      result.res.send(result.json)
-    })
+}).catch(() => res.status(500).json({ error: 'Failed to create account' }))
 }
 
 
@@ -116,10 +112,10 @@ export function prepareEncrPassForDB(password:string, decrypt=true)
     forge.util.decode64(sanitisedPassword),
     'RSA-OAEP'
   );
-  return bcrypt.hashSync(decryptedPassword, 4);
+  return bcrypt.hashSync(decryptedPassword, 12);
   }else
   {
-      return bcrypt.hashSync(sanitisedPassword, 4);
+      return bcrypt.hashSync(sanitisedPassword, 12);
   }
 
   
@@ -143,7 +139,7 @@ router.post('/', (req, res) => {
     }
     else
     {
-      createUser(req.body, res, password, req)
+      res.status(400).json({ error: 'Use the provider sign-in flow for this login method' });
 
     }
     

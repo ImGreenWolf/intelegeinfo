@@ -9,6 +9,7 @@ export function generateHmac(data: string): string {
 }
 
 export function verifyHmac(data: string, hmac: string): boolean {
+  if (typeof data !== 'string' || typeof hmac !== 'string') return false;
   const expected = generateHmac(data);
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(hmac));
+  return Buffer.byteLength(expected) === Buffer.byteLength(hmac) && crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(hmac));
 }

@@ -68,21 +68,20 @@ router.post('/update', async (req, res) => {
 
         if(req.body.deleteAccount)
         {
-            prisma.user.delete({
+            await prisma.user.delete({
                 where: {
                     id: userId
                 }
-            }).finally(() => {
-                clearAuthCookies(res).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro')
-                return;
-            })
+            });
+            clearAuthCookies(res).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro');
+            return;
         }
         else {
             if(color)
             {
-                var userColor = (color as string).slice(1)
-                if(userColor.length != 6 && color[0] == '#')
+                if(typeof color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color))
                     throw "invalid color"
+                var userColor = color.slice(1)
             }
             const currentUserData = await prisma.user.findUnique({
                 where: {

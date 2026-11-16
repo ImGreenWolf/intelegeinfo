@@ -32,7 +32,8 @@ async function loadChat(chatId: number, chatData: FriendRelation, friend: User) 
     if(!res.ok)
         return;
     const elem = document.getElementById('chat') as HTMLTextAreaElement;
-    elem.value = ''
+    elem.replaceChildren()
+    document.getElementById('chatid-'+chatId)?.classList.remove('unread')
     lastMessage = undefined
     activeConversation = {chatId, chatData, friend};
     scrollToBottom(elem)
@@ -46,7 +47,7 @@ async function loadChat(chatId: number, chatData: FriendRelation, friend: User) 
 function addMessage(message: {content: string, fromId: number, toId: number, container?: HTMLElement}, friend: User, elem = document.getElementById('chat')) {
 
     const ownMessage = message.toId == friend.id
-    if(lastMessage && (lastMessage.toId == friend.id) == ownMessage && message.container) {
+    if(lastMessage && (lastMessage.toId == friend.id) == ownMessage && lastMessage.container) {
         if(!lastMessage.container)  {
             
             const msgContainer = createNode('div', {className: 'chat-content-container'})
@@ -58,6 +59,7 @@ function addMessage(message: {content: string, fromId: number, toId: number, con
         lastMessage.container.appendChild(
             createNode('span', {innerText: message.content, className: 'chat-content'})
         )
+        message.container = lastMessage.container
     } else {
          if(!message.container)  {
             
@@ -90,7 +92,7 @@ function initSocket(chatObj: any, elem = document.getElementById('chat')) {
         
         switch(type) {
             case 'message': 
-            if(convId == activeConversation && activeConversation)
+            if(activeConversation && convId === activeConversation.chatId)
                 addMessage({content, fromId, toId}, activeConversation.friend, elem)
             else 
                 document.getElementById('chatid-'+convId)?.classList.add('unread')
@@ -109,6 +111,8 @@ function initSocket(chatObj: any, elem = document.getElementById('chat')) {
         if(!activeConversation)
             return;
         ev.preventDefault();
+        if (!msg.value.trim() || socket?.readyState !== WebSocket.OPEN)
+            return;
         socket?.send(JSON.stringify({type: 'send', convId: activeConversation.chatId, content: msg.value.trim()}))
         addMessage({content: msg.value, fromId:1, toId: activeConversation.friend.id}, activeConversation.friend, elem)
         msg.value = ''

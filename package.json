@@ -5,7 +5,7 @@
   "main": "dist/server/server.js",
   "scripts": {
     "start": "node --max-old-space-size=1024 dist/server/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test tests/*.test.cjs",
     "build": "npx tsc -b",
     "run": "npx pm2 start dist/server/server.js --watch dist/server/ --node-args='--max-old-space-size=1024'",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate"

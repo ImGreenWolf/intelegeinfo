@@ -34,7 +34,7 @@ router.use(bodyParser.json());
 // router.use(express.static("public/pages/login.html"))
 
 const userNoPassword = Prisma.validator<Prisma.UserDefaultArgs>()({
-  omit: {password: true}
+  omit: {password: true, authId: true}
 })
 
 export const storage = multer.diskStorage({
@@ -59,7 +59,7 @@ export type UserNoPassword = Prisma.UserGetPayload<typeof userNoPassword>
 
 export function generateCode()
 {  
-    let code = (Math.random()*Math.pow(10,6)).toFixed()
+    let code = crypto.randomInt(0, 1000000).toString()
     if(code.length !=6)
         code = "0".repeat(6-code.length) + code
    
@@ -68,7 +68,7 @@ export function generateCode()
 
 export function getJWT(req: any): string
 {
-    return req.cookies[tokenCookieName]
+    return req.cookies?.[tokenCookieName]
 }
 
 export async function getUserData<
@@ -85,7 +85,7 @@ export async function getUserData<
 
     return await prisma.user.findUnique({
         where: { id },
-        omit: { password: true },
+        omit: { password: true, authId: true },
         include: include as any
     }) as any;
 }
@@ -205,7 +205,7 @@ export function getClientJWTValue(token: string): UserState
     {
         return
     }
-    if(!userState) return; //throw {code: 401, message:'invalid state'};
+    if(!userState || typeof userState !== 'object' || !['USER', 'ADMIN'].includes(userState.role) || userState.iss !== 'intelegeinfo.ro') return;
         return userState as UserState
 }
 
@@ -221,9 +221,9 @@ export function getClientId(token: string): number | undefined
     {
         return
     }
-    if(!userState) return; //throw {code: 401, message:'invalid state'};
+    if(!userState || typeof userState !== 'object' || !['USER', 'ADMIN'].includes(userState.role) || userState.iss !== 'intelegeinfo.ro') return;
         const userId= parseInt((userState as UserState).sub);
-    if(!userId) return; //throw {code: 401, message:'couldnt get id'}
+    if(!Number.isSafeInteger(userId) || userId <= 0 || String(userId) !== String(userState.sub)) return;
     return userId;
 }
 
@@ -279,19 +279,9 @@ router.get('/jwt', (req, res) => {
 
 })
 
-router.get('/removeproject', (req, res) => {
-    const id = parseInt(req.query.id as string);
-    prisma.project.delete({
-        where:
-        {
-            id
-        }
-    }).then(project => {
-        res.status(200).send('deleted')
-    }).catch(err => {
-        res.status(500).send('failed: '+ err)
-    })
-
+router.get('/removeproject', (_req, res) => {
+    // Legacy endpoint deleted the underlying project for every saved reference.
+    res.status(405).send('Project deletion via GET is disabled.');
 })
 
 router.get('/picture/:id', (req, res) => {
@@ -379,6 +369,10 @@ router.get('/verifyemail', (req, res) => {
 
 
     const id = parseInt(req.query.id as string);
+    if (!id || getIdFromJWT(req) !== id) {
+        res.status(403).send('You can only verify your own email');
+        return;
+    }
 
     getUserData(id).then( user => {
         if(user.emailValidated) return res.send('Your account is already verified') 
@@ -405,8 +399,7 @@ router.get('/verifyemail', (req, res) => {
             return map.has(match[1]) ? map.get(match[1]) : `${match[0]}`;
         });
 
-        const hmacCode = hmacuUtil.generateHmac(code.toString())
-        console.log('hmaccode:', hmacCode, 'code:', code)
+        const hmacCode = hmacuUtil.generateHmac(`${user.id}:${user.email}:${code}`)
 
         var mailOptions: nodemailer.SendMailOptions  = {
             from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
@@ -426,7 +419,6 @@ router.get('/verifyemail', (req, res) => {
                 res.status(500).send({message: "error sending email",error});
             } else {
                 
-                console.log(info, 'hmaccode:', hmacCode)
                 res.send(parseText(file, req, {code: hmacCode}).replace('#{code}', hmacCode).replace('#{emailCensored}', censoredEmail))
                 }
         })
@@ -442,10 +434,14 @@ router.get('/verifyemail', (req, res) => {
 
 router.post('/verifyemail', (req, res) => {
     const { id, code, hmac } = req.body;
+    if (!getIdFromJWT(req) || getIdFromJWT(req) !== Number(id)) {
+        res.status(403).send('You can only verify your own email');
+        return;
+    }
     
     getUserData(parseInt(id)).then(user => {
         if(user.emailValidated) return res.send('Your account is already verified') 
-        if(hmacuUtil.verifyHmac(code, hmac))
+        if(hmacuUtil.verifyHmac(`${user.id}:${user.email}:${code}`, hmac))
         {
 
             prisma.user.update({
@@ -1008,7 +1004,7 @@ const passwordPagesPath = path.join(rootDirName, 'public','pages')
                 const email = req.query.email as string
                 await transporter.verify(); 
                 const token = jwt.sign(
-                    {email} , privateKeyPem, {algorithm: 'RS256', expiresIn: '1h', issuer: 'intelegeinfo.ro'})
+                    {email, purpose: 'password-reset'} , privateKeyPem, {algorithm: 'RS256', expiresIn: '1h', issuer: 'intelegeinfo.ro'})
 
                 var mailOptions: nodemailer.SendMailOptions  = {
                     from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
@@ -1042,7 +1038,7 @@ const passwordPagesPath = path.join(rootDirName, 'public','pages')
             const tokenString = req.query.token as string
             const token = jwt.verify(tokenString, privateKeyPem)
             const email = (token as JwtPayload).email
-            if(!token || !email)
+            if(!token || !email || (token as JwtPayload).purpose !== 'password-reset')
             {
                 res.status(401).send('Nu s-a putut verifica autetincitatea cererii. Incercati sa resetati parola inca o data.')
                 return;
@@ -1064,14 +1060,13 @@ const passwordPagesPath = path.join(rootDirName, 'public','pages')
         {
             const tokenString = req.query.token as string
             const token = jwt.verify(tokenString, privateKeyPem) as JwtPayload
-            if(!token)
+            if(!token || token.purpose !== 'password-reset' || typeof token.email !== 'string')
             {
                 res.status(401).send('Nu s-a putut verifica autetincitatea cererii. Incercati sa resetati parola inca o data.')
                 return;
             }
             const {password} = req.body
             const hashedPassword = prepareEncrPassForDB(password, false)
-            console.log(hashedPassword)
             prisma.user.update({
                 where: {
                     email: token.email
@@ -1088,6 +1083,7 @@ const passwordPagesPath = path.join(rootDirName, 'public','pages')
             })
             return
         } 
+        res.status(400).send('Reset token is required');
    
   });
 

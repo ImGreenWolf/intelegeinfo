@@ -20,7 +20,8 @@ async function loadChat(chatId, chatData, friend) {
     if (!res.ok)
         return;
     const elem = document.getElementById('chat');
-    elem.value = '';
+    elem.replaceChildren();
+    document.getElementById('chatid-' + chatId)?.classList.remove('unread');
     lastMessage = undefined;
     activeConversation = { chatId, chatData, friend };
     scrollToBottom(elem);
@@ -30,7 +31,7 @@ async function loadChat(chatId, chatData, friend) {
 }
 function addMessage(message, friend, elem = document.getElementById('chat')) {
     const ownMessage = message.toId == friend.id;
-    if (lastMessage && (lastMessage.toId == friend.id) == ownMessage && message.container) {
+    if (lastMessage && (lastMessage.toId == friend.id) == ownMessage && lastMessage.container) {
         if (!lastMessage.container) {
             const msgContainer = createNode('div', { className: 'chat-content-container' });
             const chatMsg = createNode('div', { className: 'console-chat ' + (ownMessage ? 'chat-ownMessage' : ''), html: [msgContainer] });
@@ -38,6 +39,7 @@ function addMessage(message, friend, elem = document.getElementById('chat')) {
             elem?.appendChild(chatMsg);
         }
         lastMessage.container.appendChild(createNode('span', { innerText: message.content, className: 'chat-content' }));
+        message.container = lastMessage.container;
     }
     else {
         if (!message.container) {
@@ -61,7 +63,7 @@ function initSocket(chatObj, elem = document.getElementById('chat')) {
         const { type, convId, content, fromId, toId } = JSON.parse(ev.data);
         switch (type) {
             case 'message':
-                if (convId == activeConversation && activeConversation)
+                if (activeConversation && convId === activeConversation.chatId)
                     addMessage({ content, fromId, toId }, activeConversation.friend, elem);
                 else
                     document.getElementById('chatid-' + convId)?.classList.add('unread');
@@ -79,6 +81,8 @@ function initSocket(chatObj, elem = document.getElementById('chat')) {
         if (!activeConversation)
             return;
         ev.preventDefault();
+        if (!msg.value.trim() || socket?.readyState !== WebSocket.OPEN)
+            return;
         socket?.send(JSON.stringify({ type: 'send', convId: activeConversation.chatId, content: msg.value.trim() }));
         addMessage({ content: msg.value, fromId: 1, toId: activeConversation.friend.id }, activeConversation.friend, elem);
         msg.value = '';

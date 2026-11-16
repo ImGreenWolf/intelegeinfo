@@ -36,10 +36,11 @@ wssAPI.on('connection', ws => {
         if (err) {
             console.error(err)
             ws.send(JSON.stringify({err}))
-            process.exit(2)
+            return;
         }
         let k=0;
-        setInterval(() => {
+        const timer = setInterval(() => {
+            if (ws.readyState !== WebSocket.OPEN) return;
             k++;
             if(k%3==0) 
             {
@@ -53,12 +54,14 @@ wssAPI.on('connection', ws => {
             {
                 pm2.list((err, list) => {
                  //   console.log(err, list)
-                ws.send(JSON.stringify({pm2: list, os: {cpu: os.cpus(), freememory: os.freemem(), totalMem: os.totalmem()}}))
+                if (ws.readyState === WebSocket.OPEN)
+                    ws.send(JSON.stringify({pm2: list, os: {cpu: os.cpus(), freememory: os.freemem(), totalMem: os.totalmem()}}))
             
             })
             }
            
         }, 200);
+        ws.once('close', () => clearInterval(timer));
             
   })
 
@@ -75,6 +78,7 @@ const originalStdoutWrite = process.stdout.write.bind(process.stdout)
 process.stdout.write = (chunk, encoding, callback) => {
     if (typeof chunk === 'string') {
     buffer += chunk + "\n ";
+    buffer = buffer.slice(-100000);
   }
 
   return originalStdoutWrite(chunk, encoding, callback);
@@ -86,6 +90,7 @@ const originalStderrWrite = process.stderr.write.bind(process.stderr)
 process.stderr.write = (chunk, encoding, callback) => {
     if (typeof chunk === 'string') {
     buffer += `<span class='error'>${chunk}</span>\n`;
+    buffer = buffer.slice(-100000);
   }
 
   return originalStderrWrite(chunk, encoding, callback);
@@ -103,7 +108,7 @@ router.get('/api', (req, res) => {
   if (err) {
     console.error(err)
     res.send(err)
-    process.exit(2)
+    return;
   }
 
 

@@ -51,6 +51,7 @@ exports.uploadFromFileData = uploadFromFileData;
 exports.activeAtComponent = activeAtComponent;
 exports.updateActiveAtForUser = updateActiveAtForUser;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const crypto_1 = __importDefault(require("crypto"));
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 // import cookieParser from 'cookie-parser'
@@ -78,7 +79,7 @@ exports.router = express_1.default.Router();
 exports.router.use(body_parser_1.default.json());
 // router.use(express.static("public/pages/login.html"))
 const userNoPassword = prisma_1.Prisma.validator()({
-    omit: { password: true }
+    omit: { password: true, authId: true }
 });
 exports.storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
@@ -94,20 +95,20 @@ if (!fs_1.default.existsSync(path_1.default.join(rootDirName, 'server', 'users',
 }
 exports.upload = (0, multer_1.default)({ storage: exports.storage });
 function generateCode() {
-    let code = (Math.random() * Math.pow(10, 6)).toFixed();
+    let code = crypto_1.default.randomInt(0, 1000000).toString();
     if (code.length != 6)
         code = "0".repeat(6 - code.length) + code;
     return code;
 }
 function getJWT(req) {
-    return req.cookies[server_1.tokenCookieName];
+    return req.cookies?.[server_1.tokenCookieName];
 }
 async function getUserData(id, include) {
     if (!id)
         return undefined;
     return await dbClient_1.default.user.findUnique({
         where: { id },
-        omit: { password: true },
+        omit: { password: true, authId: true },
         include: include
     });
 }
@@ -196,8 +197,8 @@ function getClientJWTValue(token) {
     catch {
         return;
     }
-    if (!userState)
-        return; //throw {code: 401, message:'invalid state'};
+    if (!userState || typeof userState !== 'object' || !['USER', 'ADMIN'].includes(userState.role) || userState.iss !== 'intelegeinfo.ro')
+        return;
     return userState;
 }
 function getClientId(token) {
@@ -210,11 +211,11 @@ function getClientId(token) {
     catch {
         return;
     }
-    if (!userState)
-        return; //throw {code: 401, message:'invalid state'};
+    if (!userState || typeof userState !== 'object' || !['USER', 'ADMIN'].includes(userState.role) || userState.iss !== 'intelegeinfo.ro')
+        return;
     const userId = parseInt(userState.sub);
-    if (!userId)
-        return; //throw {code: 401, message:'couldnt get id'}
+    if (!Number.isSafeInteger(userId) || userId <= 0 || String(userId) !== String(userState.sub))
+        return;
     return userId;
 }
 function createUploadFromFile(fileReq, userId) {
@@ -257,17 +258,9 @@ exports.router.get('/jwt', (req, res) => {
     else
         res.status(401).send({ err: 'Invalid JWT value' });
 });
-exports.router.get('/removeproject', (req, res) => {
-    const id = parseInt(req.query.id);
-    dbClient_1.default.project.delete({
-        where: {
-            id
-        }
-    }).then(project => {
-        res.status(200).send('deleted');
-    }).catch(err => {
-        res.status(500).send('failed: ' + err);
-    });
+exports.router.get('/removeproject', (_req, res) => {
+    // Legacy endpoint deleted the underlying project for every saved reference.
+    res.status(405).send('Project deletion via GET is disabled.');
 });
 exports.router.get('/picture/:id', (req, res) => {
     const id = parseInt(req.params.id);
@@ -322,6 +315,10 @@ oauth2Client.setCredentials({
 });
 exports.router.get('/verifyemail', (req, res) => {
     const id = parseInt(req.query.id);
+    if (!id || getIdFromJWT(req) !== id) {
+        res.status(403).send('You can only verify your own email');
+        return;
+    }
     getUserData(id).then(user => {
         if (user.emailValidated)
             return res.send('Your account is already verified');
@@ -340,8 +337,7 @@ exports.router.get('/verifyemail', (req, res) => {
             const result = fileToSend.replace(/\$\{(.*?)\}/g, (...match) => {
                 return map.has(match[1]) ? map.get(match[1]) : `${match[0]}`;
             });
-            const hmacCode = hmacuUtil.generateHmac(code.toString());
-            console.log('hmaccode:', hmacCode, 'code:', code);
+            const hmacCode = hmacuUtil.generateHmac(`${user.id}:${user.email}:${code}`);
             var mailOptions = {
                 from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
                 to: user.email,
@@ -358,7 +354,6 @@ exports.router.get('/verifyemail', (req, res) => {
                         res.status(500).send({ message: "error sending email", error });
                     }
                     else {
-                        console.log(info, 'hmaccode:', hmacCode);
                         res.send((0, server_1.parseText)(file, req, { code: hmacCode }).replace('#{code}', hmacCode).replace('#{emailCensored}', censoredEmail));
                     }
                 });
@@ -369,10 +364,14 @@ exports.router.get('/verifyemail', (req, res) => {
 });
 exports.router.post('/verifyemail', (req, res) => {
     const { id, code, hmac } = req.body;
+    if (!getIdFromJWT(req) || getIdFromJWT(req) !== Number(id)) {
+        res.status(403).send('You can only verify your own email');
+        return;
+    }
     getUserData(parseInt(id)).then(user => {
         if (user.emailValidated)
             return res.send('Your account is already verified');
-        if (hmacuUtil.verifyHmac(code, hmac)) {
+        if (hmacuUtil.verifyHmac(`${user.id}:${user.email}:${code}`, hmac)) {
             dbClient_1.default.user.update({
                 where: {
                     id: parseInt(id)
@@ -843,7 +842,7 @@ exports.router.get('/reset-password', async (req, res) => {
         try {
             const email = req.query.email;
             await exports.transporter.verify();
-            const token = jsonwebtoken_1.default.sign({ email }, privateKeyPem, { algorithm: 'RS256', expiresIn: '1h', issuer: 'intelegeinfo.ro' });
+            const token = jsonwebtoken_1.default.sign({ email, purpose: 'password-reset' }, privateKeyPem, { algorithm: 'RS256', expiresIn: '1h', issuer: 'intelegeinfo.ro' });
             var mailOptions = {
                 from: 'Intelegeinfo <noreply@intelegeinfo.ro>',
                 to: email,
@@ -871,7 +870,7 @@ exports.router.get('/reset-password', async (req, res) => {
         const tokenString = req.query.token;
         const token = jsonwebtoken_1.default.verify(tokenString, privateKeyPem);
         const email = token.email;
-        if (!token || !email) {
+        if (!token || !email || token.purpose !== 'password-reset') {
             res.status(401).send('Nu s-a putut verifica autetincitatea cererii. Incercati sa resetati parola inca o data.');
             return;
         }
@@ -886,13 +885,12 @@ exports.router.post('/reset-password', async (req, res) => {
     if (req.query.token) {
         const tokenString = req.query.token;
         const token = jsonwebtoken_1.default.verify(tokenString, privateKeyPem);
-        if (!token) {
+        if (!token || token.purpose !== 'password-reset' || typeof token.email !== 'string') {
             res.status(401).send('Nu s-a putut verifica autetincitatea cererii. Incercati sa resetati parola inca o data.');
             return;
         }
         const { password } = req.body;
         const hashedPassword = (0, signup_1.prepareEncrPassForDB)(password, false);
-        console.log(hashedPassword);
         dbClient_1.default.user.update({
             where: {
                 email: token.email
@@ -909,6 +907,7 @@ exports.router.post('/reset-password', async (req, res) => {
         });
         return;
     }
+    res.status(400).send('Reset token is required');
 });
 exports.router.get('/picture', async (req, res) => {
     const id = getIdFromJWT(req);

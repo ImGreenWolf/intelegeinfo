@@ -8,7 +8,7 @@ export declare const tokenCookieName = "iiauthtoken";
 import { Prisma } from "../../generated/prisma";
 import { UUID } from "crypto";
 export declare const joinsqid: sqids;
-export declare function authMiddleware(req: any, res: any, next: any, role?: string): void;
+export declare function authMiddleware(req: any, res: any, next: any, role?: string): any;
 export declare function handlePrismaError(error: any): any;
 import * as https from 'https';
 import * as http from 'http';
@@ -24,16 +24,16 @@ declare function loadShareProject(shareId: any): Promise<{
         files: {
             name: string;
             updatedAt: Date;
-            content: string;
             projectId: number;
+            content: string;
         }[];
     } & {
         id: number;
-        metadata: Prisma.JsonValue | null;
         name: string | null;
+        userId: number | null;
         createdAt: Date;
         fileUUID: string | null;
-        userId: number | null;
+        metadata: Prisma.JsonValue | null;
     };
     createdBy: {
         id: number;
@@ -44,8 +44,8 @@ declare function loadShareProject(shareId: any): Promise<{
     };
 } & {
     id: number;
-    projectId: number;
     creatorId: number | null;
+    projectId: number;
     openedAt: Date;
     sharedAt: Date;
 }>;

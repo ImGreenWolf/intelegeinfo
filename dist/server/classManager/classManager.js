@@ -62,11 +62,17 @@ router.get('/c/:id/:name/u/:userId', ClassMiddlware, async (req, res) => {
                 },
                 take: 1
             }
-        }
+        },
+        omit: { password: true, authId: true }
     });
     res.send(user);
 });
 async function ClassMiddlware(req, res, next) {
+    const userId = (0, usersManager_1.getIdFromJWT)(req);
+    if (!userId) {
+        res.status(401).send('Please log in first');
+        return;
+    }
     const id = parseInt(req.params.id);
     if (!id) {
         res.status(400).send('invalid id');
@@ -93,7 +99,8 @@ async function ClassMiddlware(req, res, next) {
                 include: {
                     User: {
                         omit: {
-                            password: true
+                            password: true,
+                            authId: true
                         },
                         include: {
                             solves: true
@@ -103,7 +110,8 @@ async function ClassMiddlware(req, res, next) {
             },
             Creator: {
                 omit: {
-                    password: true
+                    password: true,
+                    authId: true
                 }
             },
             _count: true,
@@ -111,6 +119,10 @@ async function ClassMiddlware(req, res, next) {
     });
     if (!class_) {
         res.status(404).send('Class not found');
+        return;
+    }
+    if (class_.creatorId !== userId && !class_.Students.some(student => student.userId === userId)) {
+        res.status(403).send('You are not a member of this class');
         return;
     }
     req.class = class_;
@@ -124,12 +136,18 @@ async function ClassMiddlware(req, res, next) {
 }
 router.get('/c/:id/:name', ClassMiddlware, async (req, res) => {
     const user = await (0, usersManager_1.getUserData)((0, usersManager_1.getIdFromJWT)(req), { Assigments: { where: { classId: req.class.id }, include: { Problem: { omit: { sourceCode: true, tests: true } } } }, solves: true });
-    if (!user)
-        res.send("Please log in first!");
+    if (!user) {
+        res.status(401).send("Please log in first!");
+        return;
+    }
     const isOwner = req.class.creatorId == (0, usersManager_1.getIdFromJWT)(req);
     res.send({ ...req.class, isOwner, myAssignments: isOwner ? req.class.Assignments : user.Assigments, mySolves: user.solves });
 });
 router.post('/c/:id/:name/a/create', ClassMiddlware, async (req, res) => {
+    if (req.class.creatorId !== (0, usersManager_1.getIdFromJWT)(req)) {
+        res.status(403).send('Only the class owner can create assignments');
+        return;
+    }
     if (!req.class) {
         res.status(400).send('Class not loaded');
         return;
@@ -153,7 +171,11 @@ router.post('/c/:id/:name/a/create', ClassMiddlware, async (req, res) => {
     res.send(assignment);
 });
 async function AssignmentMiddleware(req, res, next) {
-    const assignment = req.class.Assignments.find(assignment => assignment.id == parseInt(req.params.assigmentId));
+    const assignment = await dbClient_1.default.assignment.findFirst({ where: { id: Number(req.params.assigmentId), classId: req.classId } });
+    if (!assignment) {
+        res.status(404).send('Assignment not found');
+        return;
+    }
     req.assignment = assignment;
     next();
 }
@@ -176,7 +198,8 @@ router.get('/c/:id/:name/a/:assigmentId/l', ClassMiddlware, AssignmentMiddleware
     }
     const assign = await dbClient_1.default.assignment.findFirst({
         where: {
-            id: parseInt(req.params.assigmentId)
+            id: req.assignment.id,
+            classId: req.classId
         },
         include: {
             Problem: {
@@ -211,10 +234,8 @@ router.get('/c/:id/:name/a/:assigmentId/l', ClassMiddlware, AssignmentMiddleware
         else
             users.set(solve.userId, users.get(solve.userId) + 1);
     }
-    let mg = 1;
-    for (const user of users.values())
-        mg *= user;
-    const ress = { assign, averageScore: sum / assign.Problem.solves.length, averageAttempts: Math.sqrt(mg).toFixed(2) };
+    const count = assign.Problem.solves.length;
+    const ress = { assign, averageScore: count ? sum / count : 0, averageAttempts: (users.size ? count / users.size : 0).toFixed(2) };
     res.send(ress);
 });
 router.get('/create', (req, res) => {
@@ -309,7 +330,7 @@ router.post('/join', async (req, res) => {
         res.redirect('/classes/?class=' + encodedId);
     }
     catch (error) {
-        res.status(error.code.startsWith('P') || !error.code ? 500 : error.code).send((0, server_1.handlePrismaError)(error));
+        res.status(typeof error.code === 'number' && error.code >= 400 && error.code <= 599 ? error.code : 500).send((0, server_1.handlePrismaError)(error));
         return;
     }
 });

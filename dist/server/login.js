@@ -46,11 +46,14 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const node_forge_1 = __importDefault(require("node-forge"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const uuid_1 = require("uuid");
 const dbClient_1 = __importDefault(require("./dbClient"));
 const signup = __importStar(require("./signup"));
 const path_1 = __importDefault(require("path"));
 const server_1 = require("./server");
 const usersManager_1 = require("./usersManager");
+const googleapis_1 = require("googleapis");
+const googleIdentityClient = new googleapis_1.google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID);
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.use(express_1.default.static("public/pages/login.html"));
@@ -84,7 +87,7 @@ function onLoggedIn(user, res, req, shouldkeepLoggedIn = false) {
         httpOnly,
         secure, // Set to true in production (HTTPS)
     };
-    return res.cookie(server_1.tokenCookieName, token, cookieOption).cookie('iiauthstate', true, { ...keepLoggedIn, httpOnly: false, maxAge: cookieOption.maxAge, secure: cookieOption.secure });
+    return res.cookie(server_1.tokenCookieName, token, cookieOption).cookie('iiauthstate', true, { ...cookieOption, httpOnly: false });
 }
 function clearAuthCookies(res) {
     return res.clearCookie(server_1.tokenCookieName).clearCookie('iiauthstate');
@@ -102,10 +105,16 @@ router.post('/', (req, res) => {
             },
         }).then((user) => {
             // if(loginMethod != user?.loginMethod) return res.status(401).json({ message: 'Account was not created using this method'});
-            if (!user)
-                return res.status(401).json({ message: 'Couldnt find user!' });
+            if (!user) {
+                res.status(401).json({ message: 'Couldnt find user!' });
+                return;
+            }
             // compare decrypted client password to hased db password
-            bcryptjs_1.default.compare(decryptedPassword, user?.password).then((passwordsMatch) => {
+            if (!user.password) {
+                res.status(401).json({ message: 'Use the provider sign-in flow for this account' });
+                return;
+            }
+            return bcryptjs_1.default.compare(decryptedPassword, user.password).then((passwordsMatch) => {
                 if (email === user?.email && passwordsMatch) {
                     // login succsessfull
                     console.log(`User ${user.username} with id ${user.id} logged in using credentials`);
@@ -116,6 +125,9 @@ router.post('/', (req, res) => {
                     res.status(401).json({ message: 'Invalid credentials' });
                 }
             });
+        }).catch(() => {
+            if (!res.headersSent)
+                res.status(500).json({ error: 'Unable to sign in' });
         });
     }
     catch (err) {
@@ -206,8 +218,14 @@ router.get('/one-time-code', (req, res) => {
 router.post('/one-time-code', async (req, res) => {
     try {
         const { email, keepLoggedIn } = req.body;
-        const token = jsonwebtoken_1.default.sign({ email, keepLoggedIn, date: Date.now() }, privateKeyPem, { algorithm: 'RS256', expiresIn: 3600 });
-        console.log(`https://intelegeinfo.ro/login/one-time-code/callback?token=${token}`);
+        if (typeof email !== 'string' || !email.trim()) {
+            res.status(400).send({ msg: 'Email is required' });
+            return;
+        }
+        const nonce = (0, uuid_1.v4)();
+        const claims = { email, keepLoggedIn: keepLoggedIn === true, nonce };
+        const token = jsonwebtoken_1.default.sign({ ...claims, purpose: 'email-login-poll' }, privateKeyPem, { algorithm: 'RS256', expiresIn: 3600 });
+        const approvalToken = jsonwebtoken_1.default.sign({ ...claims, purpose: 'email-login-approval' }, privateKeyPem, { algorithm: 'RS256', expiresIn: 3600 });
         const user = await dbClient_1.default.user.findFirst({
             where: {
                 email
@@ -217,7 +235,7 @@ router.post('/one-time-code', async (req, res) => {
             res.status(404).send({ msg: 'Nu am gasit contul asociat cu emailul dat...' });
             return;
         }
-        usersManager_1.transporter.sendMail({
+        await usersManager_1.transporter.sendMail({
             to: email,
             from: 'IntelegeInfo <noreply@intelegeinfo.ro>',
             subject: 'Aprobare Logare Intelegeinfo',
@@ -225,7 +243,7 @@ router.post('/one-time-code', async (req, res) => {
         <div>
           <h1>Cerere de logare in contul ${user.username}</h1>
           <p>Apasa pe butonul de mai jos pentru a aproba logarea, iar apoi reveniti la pagina initiala si veti avea access la contul dumneavoastra</p>
-          <a href='https://intelegeinfo.ro/login/one-time-code/callback?token=${token}' style='background-color: #3393ca; border-radius: 0.5em; color: white; font-family: Poppins; padding: 1em 3em;text-decoration: none;'>Aproba</a>
+          <a href='https://intelegeinfo.ro/login/one-time-code/callback?token=${approvalToken}' style='background-color: #3393ca; border-radius: 0.5em; color: white; font-family: Poppins; padding: 1em 3em;text-decoration: none;'>Aproba</a>
           <br>
           <p>Cererea expria intr-o ora!</p>
           <p>
@@ -233,11 +251,11 @@ router.post('/one-time-code', async (req, res) => {
           </p>
         </div>
         `
-        }, (err, info) => {
-            if (err)
-                throw err;
-            res.send({ msg: 'Done! Am trimis linkul cu codul de logare!', token });
         });
+        codeVerifiedAcc.set(nonce, { ...claims, approved: false });
+        const expiry = setTimeout(() => codeVerifiedAcc.delete(nonce), 3600000);
+        expiry.unref();
+        res.send({ msg: 'Done! Am trimis linkul cu codul de logare!', token });
     }
     catch (error) {
         res.status(500).send(error);
@@ -248,10 +266,13 @@ router.get('/one-time-code/callback', (req, res) => {
         const token = req.query.token;
         if (!jsonwebtoken_1.default.verify(token, privateKeyPem))
             throw 'cod invalid!';
-        const obj = jsonwebtoken_1.default.decode(token);
-        const keepLoggedIn = obj.keepLoggedIn;
-        const email = obj.email;
-        codeVerifiedAcc.set(email, obj);
+        const obj = jsonwebtoken_1.default.verify(token, privateKeyPem);
+        if (obj.purpose !== 'email-login-approval' || typeof obj.email !== 'string')
+            throw 'invalid token purpose';
+        const pending = codeVerifiedAcc.get(obj.nonce);
+        if (!pending || pending.email !== obj.email)
+            throw 'Request expired or already used';
+        pending.approved = true;
         res.send(`
       <!DOCTYPE html>
     <html lang="en">
@@ -286,27 +307,26 @@ router.get('/one-time-code/verify', async (req, res) => {
         const keepLoggedIn = req.query.keepLoggedIn == 'true';
         if (!jsonwebtoken_1.default.verify(token, privateKeyPem))
             throw 'invalid token';
-        const clobj = jsonwebtoken_1.default.decode(token);
+        const clobj = jsonwebtoken_1.default.verify(token, privateKeyPem);
+        if (clobj.purpose !== 'email-login-poll' || typeof clobj.email !== 'string')
+            throw 'invalid token purpose';
         const clemail = clobj.email;
-        const verifiedEmail = codeVerifiedAcc.get(clemail);
-        if (!verifiedEmail)
+        const verifiedEmail = codeVerifiedAcc.get(clobj.nonce);
+        if (!verifiedEmail?.approved)
             throw 'email is not verified';
         const obj = verifiedEmail;
         if (!obj)
             throw 'invalid object';
-        console.error(clobj.date - obj.date);
-        if (clobj.date > obj.date)
-            throw 'token has been issued before';
         const email = obj.email;
         if (clemail != email)
             throw 'emails dont match';
-        codeVerifiedAcc.delete(clemail);
+        codeVerifiedAcc.delete(clobj.nonce);
         const user = await dbClient_1.default.user.findFirst({
             where: {
                 email
             }
         });
-        onLoggedIn(user, res, req, keepLoggedIn).send(true);
+        onLoggedIn(user, res, req, obj.keepLoggedIn === true).send(true);
     }
     catch (error) {
         res.status(401).send(error);
@@ -320,7 +340,9 @@ function authMiddleware(req, res, next) {
     if (!token)
         return res.status(401).json({ error: 'Unauthorized' });
     try {
-        const user = jsonwebtoken_1.default.verify(token, privateKeyPem);
+        const user = (0, usersManager_1.getClientJWTValue)(token);
+        if (!user || !(0, usersManager_1.getClientId)(token))
+            return res.status(403).json({ error: 'Invalid token' });
         req.user = user;
         next();
     }
@@ -366,6 +388,8 @@ router.get('/callback', async (req, res) => {
             headers: { Authorization: `Bearer ${tokenData.access_token}` }
         });
         const userInfo = (await userInfoRes.json());
+        if (!tokenRes.ok || !userInfoRes.ok || !userInfo.email || !userInfo.verified_email)
+            throw new Error('Unable to verify Google account');
         const userExists = await dbClient_1.default.user.findFirst({
             where: {
                 email: userInfo.email
@@ -374,7 +398,7 @@ router.get('/callback', async (req, res) => {
         const keepLoggedIn = true;
         if (userExists) {
             try {
-                dbClient_1.default.user.update({
+                await dbClient_1.default.user.update({
                     where: {
                         email: userInfo.email,
                         loginMethod: 'google'
@@ -480,8 +504,13 @@ router.post('/callback', async (req, res) => {
         return res.status(400).send('Empty credential. Something went wrong with the request.');
     }
     try {
-        // TODO Verify user jwt token against google's public key
-        const userInfo = jsonwebtoken_1.default.decode(credential);
+        if (!process.env.GOOGLE_CLIENT_ID)
+            throw new Error('Google sign-in is not configured');
+        const ticket = await googleIdentityClient.verifyIdToken({ idToken: credential, audience: process.env.GOOGLE_CLIENT_ID });
+        const identity = ticket.getPayload();
+        if (!identity?.email || !identity.email_verified)
+            throw new Error('Google email is not verified');
+        const userInfo = { ...identity, id: identity.sub, verified_email: identity.email_verified };
         const userExists = await dbClient_1.default.user.findFirst({
             where: {
                 email: userInfo.email
@@ -490,7 +519,7 @@ router.post('/callback', async (req, res) => {
         const keepLoggedIn = true;
         if (userExists) {
             try {
-                dbClient_1.default.user.update({
+                await dbClient_1.default.user.update({
                     where: {
                         email: userInfo.email,
                         loginMethod: 'google'

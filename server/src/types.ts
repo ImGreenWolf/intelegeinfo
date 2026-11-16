@@ -16,6 +16,7 @@ import { WebSocketMessage } from "../../shared/src/messageTypes"
 import { sha256, sha224 } from 'js-sha256';
 import * as Nodepty from "node-pty"
 import { EventEmitter } from "events";
+import { editorFilePath } from './fileSafety';
 
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
@@ -177,6 +178,7 @@ export class EditorSession {
             // client.canEdit = options.editorPermission == EditorPermission.Everyone;
 
             const permissions: ClientPermissions = EditorOptionsToPermissions( this.editorOptions,client)
+            client.permissions = permissions
             client.sendMessage({type: WebSocketMessageType.Handshake, permissions})
         }
         this.hostClient.permissions.canEdit = true// TODO figure out why i need to add this, when it should be true by default for the host.
@@ -496,7 +498,7 @@ Tralalero Tralala`.split('\n')
     docVerLog: {content: string, op?: CodeChange}[] = []
 
     private updateFilePath() {
-        this.filePath = path.join(this.session.getClientFilesPath(), this.name)
+        this.filePath = editorFilePath(this.session.getClientFilesPath(), this.name)
     }
     constructor(session: EditorSession, name: string, content=undefined,
         options?: {abstract?: boolean /**Doesnt atually create a file on disk, acts just as a variable, use if you already created the file */,
@@ -519,7 +521,7 @@ Tralalero Tralala`.split('\n')
         // const mode =  getEditorMode(this.name).constructor
         const editorModeClass = getEditorMode(this.name)
         this.editorMode = new (editorModeClass as any)
-         if((content == undefined || content == '') && editorModeClass.defaultText != undefined)
+         if(content == undefined && editorModeClass.defaultText != undefined)
             // this.content = editorModeClass.defaultText.toString()
          this.updateContent(editorModeClass.defaultText.toString())
         else
@@ -604,7 +606,15 @@ Tralalero Tralala`.split('\n')
     public rename(newName,clientObj: ClientObject)
     {
         try {
-            fs.rename(this.filePath, path.join(this.session.getClientFilesPath(), newName), () => {
+            const newPath = editorFilePath(this.session.getClientFilesPath(), newName);
+            if (newName === this.name) return;
+            if (this.session.files.some(file => file.name === newName) || fs.existsSync(newPath))
+                throw new Error('File already exists');
+            fs.rename(this.filePath, newPath, (err) => {
+                if (err) {
+                    clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: err.message});
+                    return;
+                }
                 this.session.replicateFunction((cws) => {
                     cws.send(JSON.stringify({
                         type: WebSocketMessageType.FileManagement,
@@ -613,9 +623,14 @@ Tralalero Tralala`.split('\n')
                         newName: newName
                     }))
                 })
-                const index = clientObj.openFileName.findIndex(name => name === this.name)
-                clientObj.openFileName[index] = newName
+                for (const client of this.session.clientsMap.values()) {
+                    const index = client.openFileName.indexOf(this.name);
+                    if (index !== -1) client.openFileName[index] = newName;
+                    if (this.session.clientsActiveFile.get(client.clientId) === this.name)
+                        this.session.clientsActiveFile.set(client.clientId, newName);
+                }
                 this.name = newName
+                this.editorMode = new (getEditorMode(newName) as any)();
 
                 this.updateFilePath()
             })
@@ -635,9 +650,12 @@ Tralalero Tralala`.split('\n')
     }
     public onCloseFile(clientObj: ClientObject) {
         console.log(clientObj.displayName, 'closed file: ', this.name)
-        clientObj.openFile.splice(clientObj.openFile.findIndex(file => file.name == this.name), 1)
-        clientObj.openFileName.splice(clientObj.openFileName.findIndex(name => name == this.name), 1)
-        this.activeClients.splice(this.activeClients.indexOf(clientObj), 1)
+        const fileIndex = clientObj.openFile.indexOf(this);
+        const nameIndex = clientObj.openFileName.indexOf(this.name);
+        const clientIndex = this.activeClients.indexOf(clientObj);
+        if (fileIndex !== -1) clientObj.openFile.splice(fileIndex, 1);
+        if (nameIndex !== -1) clientObj.openFileName.splice(nameIndex, 1);
+        if (clientIndex !== -1) this.activeClients.splice(clientIndex, 1);
     }
 
     public async openFile(clientObj: ClientObject, shared?, closedFileName?: string)
@@ -694,16 +712,16 @@ Tralalero Tralala`.split('\n')
     public async updateFile(clientObj: ClientObject, content?: string) {
        try {
          return new Promise<void>((resolve, reject) => {
-            const fileContent = content || this.content
+            const fileContent = content ?? this.content
             //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
             fs.writeFile(this.filePath, fileContent, (err) => {
-                if(err) console.error("Failed saving file! " + err), reject(err)
+                if(err) { reject(err); return; }
                 // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
     
                 
                 const fileName = this.name
                 if(!clientObj.getFile(this.name))
-                   reject();
+                   { reject(new Error('File is not open')); return; }
                
                 if(!clientObj.getFile(fileName).editorMode.checkCodeSyntax)
                    // send saved file message if doesnt have syntax checker
@@ -739,17 +757,16 @@ Tralalero Tralala`.split('\n')
         // this.content = content
         // this.docVerLog.push({content, op})
         // this.docVer++
-        this.content = content
         this.OTSystem.updateContent(content, op)
     }
 
     public changeContent(data: CodeChange, clientObj: ClientObject)
     {
        
-        if(data.content)
-            this.OTSystem.updateContent(data.content, data, clientObj)
-        else {
-            
+        if (!data.delta) {
+            if (typeof data.content !== 'string') throw new Error('Missing file content');
+            this.OTSystem.updateContent(data.content, undefined, clientObj);
+            return;
         }
          const {doc, deltas} = this.OTSystem.calculateDelta({delta: this.OTSystem.aceDeltaToPos(data.docVer, data.delta), originDocVer: data.docVer})
         // this.content = doc
@@ -848,7 +865,7 @@ import DebugProcess from './editor-modes/ProcessTypes';
 import { Ace } from 'ace-builds';
 function getEditorMode(fileName: string): typeof EditorModes.EditorMode
 {
-    const ext = fileName.trim().split('.')[1]
+    const ext = path.extname(fileName.trim()).slice(1)
     
         for(const mode of EditorModes.modes)
         {
@@ -921,11 +938,13 @@ export class OT_EditorFile {
     }
 
     public updateContent(content: string, op?: CodeChange, clientObj?:ClientObject) {
+        const previousLength = (this.getDocValue() ?? '').length;
         this.setDocValue(content)
         if(!op) {
-            this.docLog.push({delta: {type: 'remove', start: 0, end: this.getDocValue().length}, originDocVer: this.docVer, content: ''})
+            this.docLog.push({delta: {type: 'remove', start: 0, end: previousLength}, originDocVer: this.docVer, content: ''})
             this.docLog.push({delta: {type: 'insert', start: 0, text: content}, originDocVer: this.docVer, content: content})
             this.docVer+=2
+            this.file.docVer = this.docVer;
             
             this.file.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
             if(!clientObj || clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
@@ -935,6 +954,7 @@ export class OT_EditorFile {
         } else {
             this.docLog.push({content, delta: this.aceDeltaToPos(op.docVer, op.delta), originDocVer: op.docVer})
             this.docVer++
+            this.file.docVer = this.docVer;
 
             this.file.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
             if(!clientObj || clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
@@ -942,7 +962,6 @@ export class OT_EditorFile {
             })
         }
          
-        console.dir(this.docLog)
         
     }
 
@@ -952,23 +971,25 @@ export class OT_EditorFile {
             console.error('missmatched doc ver')
             return;
         }
-        console.log(docVer, 'length: ', this.docLog.length)
         const content = this.docLog[docVer-1]?.content
-        if(!content)
+        if(content === undefined)
             throw 'invalid doc log content'
-        console.log(aceDelta, this.docLog[docVer-1])
         const {start: {column: startCol, row: startRow}, end: {column: endCol, row: endRow}, lines} = aceDelta
 
-        const cutStartLines = content.split('\n').slice(0, startRow)
-        const startIndex = cutStartLines.join('\n').length - cutStartLines.at(-1).slice(0, startCol).length
+        const offset = (row: number, column: number) => {
+            const rows = content.split('\n');
+            if (!Number.isInteger(row) || !Number.isInteger(column) || row < 0 || row >= rows.length || column < 0 || column > rows[row].length)
+                throw new Error('Invalid edit position');
+            return rows.slice(0, row).reduce((length, line) => length + line.length + 1, 0) + column;
+        };
+        const startIndex = offset(startRow, startCol);
 
         switch(aceDelta.action) {
             case 'insert':
                 return {type: 'insert', start: startIndex, text: lines.join('\n')}
             case 'remove':
 
-                const cutEndLines = content.split('\n').slice(0, endRow)
-                const endIndex = cutEndLines.join('\n').length - cutEndLines.at(-1).slice(0, endCol).length
+                const endIndex = offset(endRow, endCol);
 
                 return {type: 'remove', start: startIndex, end: endIndex}
 
@@ -1019,7 +1040,7 @@ export class OT_EditorFile {
 
                 return buffer
             case 'remove':
-                buffer = buffer.slice(0, delta.start) +  buffer.slice(delta.end+1)
+                buffer = buffer.slice(0, delta.start) +  buffer.slice(delta.end)
 
                 return buffer
         }

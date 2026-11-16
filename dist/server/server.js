@@ -73,8 +73,8 @@ const dbClient_1 = __importDefault(require("./dbClient"));
 const login_js_1 = __importStar(require("./login.js"));
 const signup_js_1 = __importDefault(require("./signup.js"));
 const profile_js_1 = __importDefault(require("./profile.js"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const cookie_1 = require("cookie");
 const users = __importStar(require("./usersManager"));
 const courses_1 = __importDefault(require("./views/courses"));
 const challangesManager_1 = __importDefault(require("./challanges/challangesManager"));
@@ -82,6 +82,7 @@ const usersManager_1 = require("./usersManager");
 const guideCreator_1 = __importDefault(require("./guideCreator"));
 const Nodepty = __importStar(require("node-pty"));
 const crypto_1 = __importDefault(require("crypto"));
+const fileSafety_1 = require("./fileSafety");
 const EditorModes = __importStar(require("./editor-modes/"));
 const metrics_1 = __importStar(require("./metrics"));
 const examSubjects_1 = __importDefault(require("./examSubjects"));
@@ -103,7 +104,7 @@ app.use('/login', login_js_1.default);
 app.use('/signup', signup_js_1.default);
 app.use('/profile', authMiddleware, profile_js_1.default);
 app.use('/vnc', express_1.default.static(path_1.default.join(exports.rootDirName, 'vnc', 'noVNC')));
-app.use('/metrics', metrics_1.default);
+app.use('/metrics', (req, res, next) => authMiddleware(req, res, next, 'ADMIN'), metrics_1.default);
 app.use('/classes', classManager_1.default);
 app.use('/courses', courses_1.default);
 app.use('/subiecte', examSubjects_1.default);
@@ -112,21 +113,26 @@ app.post('/github/onpull', (req, res) => {
     try {
         if (!req.body)
             throw "Empty request body..";
-        const signature = req.headers['x-hub-signature'];
+        const secret = process.env.GITHUB_WEBHOOK_SECRET;
+        if (!secret) {
+            res.status(503).send('Webhook is not configured');
+            return;
+        }
+        const signature = req.headers['x-hub-signature-256'];
         if (!signature) {
             res.status(400).send('No signature');
             return;
         }
-        const hmac = crypto_1.default.createHmac('sha1', 'info');
+        const hmac = crypto_1.default.createHmac('sha256', secret);
         hmac.update(req.rawBody);
-        const digest = 'sha1=' + hmac.digest('hex');
-        const { commits } = req.body;
-        console.log(commits[0].message);
-        console.log(digest);
-        if (crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = (0, child_process_2.execSync)('cd ' + exports.rootDirName + ' && git fetch origin && git reset --hard origin/staging', { timeout: 2000 });
-            res.status(200).send('pull succesful! data: ' + output.toString() ? output.toString() : '');
-            console.log('pulled! data: ' + output.toString() ? output.toString() : '');
+        const digest = 'sha256=' + hmac.digest('hex');
+        if (Buffer.byteLength(signature) === Buffer.byteLength(digest) && crypto_1.default.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
+            if (req.headers['x-github-event'] !== 'push' || req.body.ref !== 'refs/heads/staging') {
+                res.status(202).send('Event ignored');
+                return;
+            }
+            const output = (0, child_process_2.execSync)('git fetch origin && git reset --hard origin/staging', { cwd: exports.rootDirName, timeout: 2000 });
+            res.status(200).send('pull successful! data: ' + output.toString());
         }
         else {
             console.log('access forbidden...');
@@ -248,7 +254,7 @@ app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id;
     const session = exports.sessionMap.get(sessionId);
     const link = req.protocol + "://" + req.host + '/editor?session=' + sessionId;
-    if (!sessionId) {
+    if (!sessionId || !session) {
         res.status(500).send({ error: "session id invalid" });
         return;
     }
@@ -341,7 +347,11 @@ app.get('/editor/:session/file/:name', (req, res) => {
     const name = req.params.name;
     const session = req.params.session;
     if (name && session) {
-        const file = fs_1.default.readFileSync(path_1.default.join(getClientFilesPath(session), name)).toString();
+        if (!exports.sessionMap.has(session)) {
+            res.status(404).send('Session not found');
+            return;
+        }
+        const file = fs_1.default.readFileSync((0, fileSafety_1.editorFilePath)(getClientFilesPath(session), name)).toString();
         if (file.length > 50)
             res.send(file.substring(0, 50) + "...");
         else
@@ -350,8 +360,10 @@ app.get('/editor/:session/file/:name', (req, res) => {
 });
 app.get('/editor/:session/downloadFiles', (req, res) => {
     const session = req.params.session;
-    if (!session || !exports.sessionMap.has(session))
+    if (!session || !exports.sessionMap.has(session)) {
         res.status(401).send('Didnt find session.');
+        return;
+    }
     const folderPath = getClientFilesPath(session); // Path to folder to download
     res.setHeader('Content-Disposition', 'attachment; filename=folder.zip');
     res.setHeader('Content-Type', 'application/zip');
@@ -373,17 +385,21 @@ function authMiddleware(req, res, next, role) {
     // if() return res.status(403).json({ error: 'failed reading cookies' });
     const token = users.getJWT(req);
     if (!token) {
-        res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({ error: 'Unauthorized' });
     }
     try {
-        const user = jsonwebtoken_1.default.verify(token, privateKeyPem);
-        if (JSON.parse(user).role == role || !role)
-            // req.user = user;
-            next();
+        const user = users.getClientJWTValue(token);
+        if (!user || !users.getClientId(token))
+            return (0, login_js_1.clearAuthCookies)(res).status(403).json({ error: 'Invalid token' });
+        if (role && user.role !== role)
+            return res.status(403).json({ error: 'Forbidden' });
+        req.user = user;
     }
     catch (err) {
         (0, login_js_1.clearAuthCookies)(res).status(403).json({ error: 'Invalid token' });
+        return;
     }
+    next();
 }
 function handle404(req, res, next) {
     res.status(404);
@@ -463,7 +479,7 @@ exports.clients = new Map(); // should be okay to keep local
 exports.runningProcesses = new Map();
 exports.sessionMap = new Map(); // SESSION ID / EDITOR OBJECT
 const buildTag = `cpp-image`;
-exports.wss = new ws_1.default.Server({ noServer: true, clientTracking: true, });
+exports.wss = new ws_1.default.Server({ noServer: true, clientTracking: true });
 const peerConnectionManager_1 = require("./peerConnectionManager");
 //                      END                      //  
 function newWSS(path) {
@@ -474,9 +490,14 @@ function newWSS(path) {
     return wss;
 }
 exports.server.on('upgrade', function upgrade(request, socket, head) {
+    console.log('UPGRADING CONNECTION');
     const { pathname } = new URL(request.url, 'wss://intelegeinfo.ro');
     switch (pathname) {
         case '/api':
+            if (users.getClientJWTValue((0, cookie_1.parse)(request.headers.cookie || '')[exports.tokenCookieName])?.role !== 'ADMIN') {
+                socket.destroy();
+                return;
+            }
             metrics_1.wssAPI.handleUpgrade(request, socket, head, function done(ws) {
                 metrics_1.wssAPI.emit('connection', ws, request);
             });
@@ -492,13 +513,15 @@ exports.server.on('upgrade', function upgrade(request, socket, head) {
             });
             break;
         case '/rtc':
-            exports.wss.handleUpgrade(request, socket, head, function done(ws) {
+            peerConnectionManager_1.wssRTC.handleUpgrade(request, socket, head, function done(ws) {
                 peerConnectionManager_1.wssRTC.emit('connection', ws, request);
             });
             break;
         default:
-            if (!websocketReg || !websocketReg.has(pathname))
+            if (!websocketReg || !websocketReg.has(pathname)) {
                 socket.destroy();
+                return;
+            }
             const routedWS = websocketReg.get(pathname);
             routedWS.handleUpgrade(request, socket, head, function done(ws) {
                 routedWS.emit('connection', ws, request);

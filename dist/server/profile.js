@@ -90,20 +90,19 @@ router.post('/update', async (req, res) => {
     try {
         var { occupationType, color, preferences } = req.body;
         if (req.body.deleteAccount) {
-            dbClient_1.default.user.delete({
+            await dbClient_1.default.user.delete({
                 where: {
                     id: userId
                 }
-            }).finally(() => {
-                (0, login_1.clearAuthCookies)(res).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro');
-                return;
             });
+            (0, login_1.clearAuthCookies)(res).send('Contul tau a fost sters. Ne pare nespus de rau sa vedem ca pleci... Daca vrei sa ne lasi un mesaj, scrie-ne la adresa de email: office@intelegeinfo.ro');
+            return;
         }
         else {
             if (color) {
-                var userColor = color.slice(1);
-                if (userColor.length != 6 && color[0] == '#')
+                if (typeof color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color))
                     throw "invalid color";
+                var userColor = color.slice(1);
             }
             const currentUserData = await dbClient_1.default.user.findUnique({
                 where: {

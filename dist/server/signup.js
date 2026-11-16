@@ -63,7 +63,7 @@ async function onSignedIn({ email, username, loginMethod, firstName, lastName, p
             if (!user)
                 reject({ error: 'Failed to create user' });
             console.log('created account', username);
-            resolve({ json: { message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod }, res: (0, login_1.onLoggedIn)(user, res, req, keepLoggedIn ? keepLoggedIn : true) });
+            resolve({ json: { message: "Sucess", redirect: 'user/verifyEmail', email: user.email, id: user.id, loginMethod }, res: (0, login_1.onLoggedIn)(user, res, req, keepLoggedIn) });
         }).catch(reason => {
             reject({ error: 'Failed to create user: ' + reason });
         });
@@ -82,19 +82,16 @@ function createUser(params, res, password, req) {
         }
         else
             return res.status(400).json({ error: 'An account with this email already exists! Try logging in!' });
-    }).catch(async (reason) => {
-        const result = await onSignedIn(params, res, password, req, true);
-        result.res.send(result.json);
-    });
+    }).catch(() => res.status(500).json({ error: 'Failed to create account' }));
 }
 function prepareEncrPassForDB(password, decrypt = true) {
     const sanitisedPassword = password.trim();
     if (decrypt == true) {
         const decryptedPassword = privateKey.decrypt(node_forge_1.default.util.decode64(sanitisedPassword), 'RSA-OAEP');
-        return bcryptjs_1.default.hashSync(decryptedPassword, 4);
+        return bcryptjs_1.default.hashSync(decryptedPassword, 12);
     }
     else {
-        return bcryptjs_1.default.hashSync(sanitisedPassword, 4);
+        return bcryptjs_1.default.hashSync(sanitisedPassword, 12);
     }
 }
 // POST Signup
@@ -108,7 +105,7 @@ router.post('/', (req, res) => {
             createUser(req.body, res, hashedPassword, req);
         }
         else {
-            createUser(req.body, res, password, req);
+            res.status(400).json({ error: 'Use the provider sign-in flow for this login method' });
         }
     }
     catch (err) {

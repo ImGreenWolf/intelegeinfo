@@ -37,6 +37,7 @@ import profileManager from './profile.js'
 import { UUID } from "crypto";
 import jwt from "jsonwebtoken"
 import cookieParser from 'cookie-parser'
+import { parse as parseCookie } from 'cookie';
 import * as users from './usersManager'
 import  coursesManager  from './views/courses'
 import  challanges  from './challanges/challangesManager'
@@ -47,6 +48,7 @@ import * as Nodepty from "node-pty"
 import { EventEmitter } from "events";
 
 import crypto from 'crypto';
+import { editorFilePath } from './fileSafety';
 import bodyParser from 'body-parser';
 import * as EditorModes from './editor-modes/'
 import Metrics, { wssAPI } from './metrics'
@@ -78,7 +80,7 @@ app.use('/login', loginManager);
 app.use('/signup', signupManager);
 app.use('/profile', authMiddleware, profileManager)
 app.use('/vnc', express.static(path.join(rootDirName, 'vnc', 'noVNC')));
-app.use('/metrics', Metrics)
+app.use('/metrics', (req, res, next) => authMiddleware(req, res, next, 'ADMIN'), Metrics)
 app.use('/classes', classManager)
 app.use('/courses', coursesManager)
 app.use('/subiecte', examSubjects)
@@ -87,21 +89,26 @@ app.post('/github/onpull', (req, res) => {
     try {
         
         if(!req.body) throw "Empty request body.."
-        const signature = req.headers['x-hub-signature'] as string;
+        const secret = process.env.GITHUB_WEBHOOK_SECRET;
+        if (!secret) {
+            res.status(503).send('Webhook is not configured');
+            return;
+        }
+        const signature = req.headers['x-hub-signature-256'] as string;
         if (!signature) {
             res.status(400).send('No signature');
             return;
         }
-        const hmac = crypto.createHmac('sha1', 'info');
+        const hmac = crypto.createHmac('sha256', secret);
         hmac.update((req as unknown as ResponseWRaw).rawBody);
-        const digest = 'sha1=' + hmac.digest('hex');
-        const { commits } = req.body;
-        console.log(commits[0].message);
-        console.log(digest);
-        if (crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
-            const output = execSync('cd ' + rootDirName + ' && git fetch origin && git reset --hard origin/staging', {timeout: 2000});
-            res.status(200).send('pull succesful! data: ' + output.toString() ? output.toString() : '');
-            console.log('pulled! data: ' + output.toString() ? output.toString() : '')
+        const digest = 'sha256=' + hmac.digest('hex');
+        if (Buffer.byteLength(signature) === Buffer.byteLength(digest) && crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))) {
+            if (req.headers['x-github-event'] !== 'push' || req.body.ref !== 'refs/heads/staging') {
+                res.status(202).send('Event ignored');
+                return;
+            }
+            const output = execSync('git fetch origin && git reset --hard origin/staging', {cwd: rootDirName, timeout: 2000});
+            res.status(200).send('pull successful! data: ' + output.toString());
         } else {
             console.log('access forbidden...')
             res.status(401).send('access forbidden...');
@@ -257,7 +264,7 @@ app.get('/editor/sharesession', (req, res) => {
     const sessionId = req.query.id as UUID;
     const session = sessionMap.get(sessionId);
     const link = req.protocol + "://" + req.host+'/editor?session='+sessionId
-    if(!sessionId)
+    if(!sessionId || !session)
     {
         res.status(500).send({error: "session id invalid"})
         return;
@@ -377,7 +384,11 @@ app.get('/editor/:session/file/:name', (req, res) => {
         const session = req.params.session;
         if(name && session)
         {
-            const file = fs.readFileSync(path.join(getClientFilesPath(session), name)).toString()
+            if (!sessionMap.has(session as UUID)) {
+                res.status(404).send('Session not found');
+                return;
+            }
+            const file = fs.readFileSync(editorFilePath(getClientFilesPath(session), name)).toString()
             if(file.length>50)
                 res.send(file.substring(0, 50)+"...")
             else
@@ -389,7 +400,10 @@ app.get('/editor/:session/file/:name', (req, res) => {
 app.get('/editor/:session/downloadFiles', (req, res) => {
     const session = req.params.session;
     
-    if(!session || !sessionMap.has(session as UUID)) res.status(401).send('Didnt find session.')
+    if(!session || !sessionMap.has(session as UUID)) {
+        res.status(401).send('Didnt find session.');
+        return;
+    }
   const folderPath = getClientFilesPath(session); // Path to folder to download
 
   res.setHeader('Content-Disposition', 'attachment; filename=folder.zip');
@@ -427,17 +441,21 @@ export function authMiddleware(req, res, next:any, role?:string) {
 
     if (!token)  
     {
-        res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({ error: 'Unauthorized' });
     }
 
     try {
-        const user = jwt.verify(token, privateKeyPem);
-        if(JSON.parse(user as string).role == role || !role)
-        // req.user = user;
-        next();
+        const user = users.getClientJWTValue(token);
+        if (!user || !users.getClientId(token))
+            return clearAuthCookies(res).status(403).json({ error: 'Invalid token' });
+        if (role && user.role !== role)
+            return res.status(403).json({ error: 'Forbidden' });
+        req.user = user;
     } catch (err) {
        clearAuthCookies(res).status(403).json({ error: 'Invalid token' });
+       return;
     }
+    next();
 }
 function handle404(req:any, res:any, next:NextFunction) 
 {
@@ -587,6 +605,10 @@ server.on('listening', onServerStart)
         const { pathname } = new URL(request.url, 'wss://intelegeinfo.ro');
             switch(pathname){
         case '/api': 
+            if (users.getClientJWTValue(parseCookie(request.headers.cookie || '')[tokenCookieName])?.role !== 'ADMIN') {
+                socket.destroy();
+                return;
+            }
             wssAPI.handleUpgrade(request, socket, head, function done(ws) {
                 wssAPI.emit('connection', ws, request);
             });
@@ -602,14 +624,16 @@ server.on('listening', onServerStart)
             });
             break;
         case '/rtc':
-        wss.handleUpgrade(request, socket, head, function done(ws) {
+        wssRTC.handleUpgrade(request, socket, head, function done(ws) {
         wssRTC.emit('connection', ws, request);
         });
         break
         default:
             
-            if(!websocketReg || !websocketReg.has(pathname))
+            if(!websocketReg || !websocketReg.has(pathname)) {
                 socket.destroy();
+                return;
+            }
             const routedWS = websocketReg.get(pathname)
             routedWS.handleUpgrade(request, socket, head, function done(ws) {
                 routedWS.emit('connection', ws, request);
