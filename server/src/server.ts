@@ -550,7 +550,7 @@ let connectionPromiseTimeout: NodeJS.Timeout;
 
 const unsecureServer = httpServer.listen(PORT);
 const secureServer = httpsServer.listen(SECPORT)
-export const server = process.env.NODE_ENV == 'development' ? unsecureServer : sescureServer;
+export const server = process.env.NODE_ENV == 'development' ? unsecureServer : secureServer;
 
 server.on('listening', onServerStart)
 
@@ -566,7 +566,7 @@ server.on('listening', onServerStart)
 
 
 
-    export const wss = new WebSocket.Server({noServer: true, clientTracking: true,  z});
+    export const wss = new WebSocket.Server({noServer: true, clientTracking: true});
     import { wssFS, wssRTC } from "./peerConnectionManager";
 
     
