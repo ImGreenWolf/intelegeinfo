@@ -17,6 +17,7 @@ import { sha256, sha224 } from 'js-sha256';
 import * as Nodepty from "node-pty"
 import { EventEmitter } from "events";
 import { editorFilePath } from './fileSafety';
+import { editOffset, rebaseOperations, applyOperations } from './editorOperations';
 
 // import { R } from 'ace-builds-internal/lib/bidiutil';
 export class ClientObject {
@@ -540,7 +541,9 @@ Tralalero Tralala`.split('\n')
             if (!fs.existsSync(this.filePath))
             fs.writeFile(this.filePath, this.content, (err) => {
                 if (err) {
-                    throw err;
+                    console.error('File creation failed:', err);
+                    session.replicateFunction((_ws, _id, client) => client.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: 'Could not create file'}));
+                    return;
                 } else   
                 {
                     console.log('Created file ' + this.name)
@@ -573,34 +576,22 @@ Tralalero Tralala`.split('\n')
     }
 
 
-    public delete(clientObj: ClientObject, clientSession: EditorSession)
-    {
-        try {
-            if(clientObj.openFile.indexOf(this) != -1)
-                clientObj.openFile.splice(clientObj.openFile.indexOf(this), 1)
-
-            clientSession.files.splice(clientSession.files.indexOf(this), 1)
-            
-
-            fs.unlink(this.filePath, (err) => {
-            if (err) {
-               throw "Error deleting file: " + err.message;
-            } else {
-                this.session.replicateFunction((cws) => {
-                    cws.send(JSON.stringify({
-                    type: WebSocketMessageType.FileManagement,
-                    command: FileManagementCommands.Delete,
-                    name: this.name,
-                    }))
-                })
+    public delete(clientObj: ClientObject, clientSession: EditorSession) {
+        fs.unlink(this.filePath, err => {
+            if (err && err.code !== 'ENOENT') {
+                clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: 'Could not delete file'});
+                console.error('File deletion failed:', err);
+                return;
             }
+            for (const client of clientSession.clientsMap.values()) {
+                this.onCloseFile(client);
+                if (clientSession.clientsActiveFile.get(client.clientId) === this.name)
+                    clientSession.clientsActiveFile.delete(client.clientId);
+            }
+            const index = clientSession.files.indexOf(this);
+            if (index !== -1) clientSession.files.splice(index, 1);
+            clientSession.replicateFunction(ws => ws.send(JSON.stringify({type: WebSocketMessageType.FileManagement, command: FileManagementCommands.Delete, name: this.name})));
         });
-        }
-        catch(err)
-        {
-             clientObj.sendMessage({type: WebSocketMessageType.Console, messageType: ConsoleMessageType.Notification, body: err})
-            
-        }
     }
 
     public rename(newName,clientObj: ClientObject)
@@ -645,8 +636,7 @@ Tralalero Tralala`.split('\n')
 
     public syncFileContent() {
         const data = fs.readFileSync(this.filePath).toString()
-        // this.content = data
-        this.updateContent(data)
+        if (data !== this.content) this.updateContent(data)
     }
     public onCloseFile(clientObj: ClientObject) {
         console.log(clientObj.displayName, 'closed file: ', this.name)
@@ -768,9 +758,16 @@ Tralalero Tralala`.split('\n')
             this.OTSystem.updateContent(data.content, undefined, clientObj);
             return;
         }
-         const {doc, deltas} = this.OTSystem.calculateDelta({delta: this.OTSystem.aceDeltaToPos(data.docVer, data.delta), originDocVer: data.docVer})
-        // this.content = doc
-        this.OTSystem.updateContent(doc, data, clientObj)
+        try {
+            const {doc, deltas} = this.OTSystem.calculateDelta({delta: this.OTSystem.aceDeltaToPos(data.docVer, data.delta), originDocVer: data.docVer});
+            this.OTSystem.updateContent(doc, data, clientObj, deltas);
+        } catch (err) {
+            if (!clientObj) throw err;
+            // An outdated client must resync rather than repeatedly applying invalid coordinates.
+            clientObj.sendMessage({type: WebSocketMessageType.CodeChange, fileName: this.name,
+                body: this.content, checksum: sha256(this.content), docVer: this.docVer, resync: true});
+            return;
+        }
         const checksum = sha256(this.content)
 
        
@@ -805,7 +802,6 @@ Tralalero Tralala`.split('\n')
     public onFileWatched(eventType: WatchEventType, clientObj) {
         
         this.syncFileContent()
-        this.changeContent({content: this.content, docVer: this.docVer}, clientObj)
         console.log('Synced file content')
     }
     public async setFileContent(content, clientObj) {
@@ -889,7 +885,7 @@ type InsertDelta = { start: number; text: string; type: 'insert' }
 type RemoveDelta = { start: number; end: number; type: 'remove' }
 type Delta = InsertDelta | RemoveDelta
 
-type Operation = {delta: Delta, originDocVer: number, content?: string}
+type Operation = {delta: Delta, deltas?: Delta[], originDocVer: number, content?: string}
 export class OT_EditorFile {
     constructor(file: EditorFile, debug: boolean) {
         // if(!debug)
@@ -911,33 +907,17 @@ export class OT_EditorFile {
     public docVer = 0
     public file: EditorFile
     public calculateDelta(op: Operation): {doc: string, docVer: number, deltas: Delta[]} {
-        if(op.originDocVer == this.docVer)
-            this.setDocValue(this.applyDelta(this.getDocValue(), op.delta))
-        else {
-            if(op.originDocVer > this.docVer)
-                return {doc: this.getDocValue(), docVer: this.docVer, deltas: []}
-
-            let revertedDoc = this.docLog[op.originDocVer-1].content
-            revertedDoc = this.applyDelta(revertedDoc, op.delta)
-
-            for(let index=op.originDocVer+1; index<this.docVer; index++) {
-
-                const loggedOp = this.docLog[index]
-                const delta = loggedOp.delta
-
-                const transformed = this.transformDelta(op.delta, delta)
-                console.log(transformed)
-                revertedDoc = this.applyDelta(revertedDoc, transformed)
-            }
-            this.setDocValue(revertedDoc)
+        if (!Number.isInteger(op.originDocVer) || op.originDocVer < 0 || op.originDocVer > this.docVer)
+            throw new Error('Invalid document version');
+        let deltas = [{...op.delta}] as Delta[];
+        for (let index = op.originDocVer; index < this.docVer; index++) {
+            const entry = this.docLog[index];
+            for (const delta of entry.deltas || [entry.delta]) deltas = rebaseOperations(deltas, delta);
         }
-        // this.docLog.push({delta: op.delta, content: this.getDocValue(), originDocVer: op.originDocVer})
-        // this.docVer++
-
-        return {doc: this.getDocValue(), docVer: this.docVer, deltas: []}
+        return {doc: applyOperations(this.getDocValue(), deltas), docVer: this.docVer, deltas};
     }
 
-    public updateContent(content: string, op?: CodeChange, clientObj?:ClientObject) {
+    public updateContent(content: string, op?: CodeChange, clientObj?:ClientObject, appliedDeltas?: Delta[]) {
         const previousLength = (this.getDocValue() ?? '').length;
         this.setDocValue(content)
         if(!op) {
@@ -952,13 +932,16 @@ export class OT_EditorFile {
             })
              
         } else {
-            this.docLog.push({content, delta: this.aceDeltaToPos(op.docVer, op.delta), originDocVer: op.docVer})
+            const rebased = op.docVer !== this.docVer;
+            const deltas = appliedDeltas || [this.aceDeltaToPos(op.docVer, op.delta)];
+            this.docLog.push({content, delta: deltas[0], deltas, originDocVer: op.docVer})
             this.docVer++
             this.file.docVer = this.docVer;
 
             this.file.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
             if(!clientObj || clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
-                thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientObj?.clientId, delta: op?.delta, fileName: this.file.name, docVer: this.docVer}))
+                thisclientWs.send(JSON.stringify({type: WebSocketMessageType.CodeChange, clientId: clientObj?.clientId, delta: rebased ? undefined : op?.delta,
+                    body: rebased ? content : undefined, checksum: sha256(content), fileName: this.file.name, docVer: this.docVer}))
             })
         }
          
@@ -966,22 +949,13 @@ export class OT_EditorFile {
     }
 
     public aceDeltaToPos(docVer: number = this.docVer, aceDelta: Ace.Delta): Delta {
-        if(docVer > this.docVer)
-        {
-            console.error('missmatched doc ver')
-            return;
-        }
+        if(!Number.isInteger(docVer) || docVer < 0 || docVer > this.docVer) throw new Error('Invalid document version');
         const content = this.docLog[docVer-1]?.content
         if(content === undefined)
             throw 'invalid doc log content'
         const {start: {column: startCol, row: startRow}, end: {column: endCol, row: endRow}, lines} = aceDelta
 
-        const offset = (row: number, column: number) => {
-            const rows = content.split('\n');
-            if (!Number.isInteger(row) || !Number.isInteger(column) || row < 0 || row >= rows.length || column < 0 || column > rows[row].length)
-                throw new Error('Invalid edit position');
-            return rows.slice(0, row).reduce((length, line) => length + line.length + 1, 0) + column;
-        };
+        const offset = (row: number, column: number) => editOffset(content, row, column);
         const startIndex = offset(startRow, startCol);
 
         switch(aceDelta.action) {

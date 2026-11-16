@@ -72,7 +72,11 @@ export function clearAuthCookies(res: Response) {
 
 // Routes
 router.post('/', (req, res) => {
-  const { email, password, loginMethod } = req.body;
+  const { email, password } = req.body || {};
+  if (typeof email !== 'string' || !email.trim() || typeof password !== 'string' || !password || password.length > 8192) {
+    res.status(400).json({error: 'Email and encrypted password are required'});
+    return;
+  }
   try {
 
     const decryptedPassword = privateKey.decrypt(
@@ -119,7 +123,6 @@ router.post('/', (req, res) => {
 
 
   } catch (err) {
-    console.error('Decryption failed:', err);
     res.status(400).json({ error: 'Invalid encrypted password' });
   }
 

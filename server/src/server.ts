@@ -2,6 +2,8 @@ import express, { NextFunction } from "express";
 import fs from "fs";
 import { ChildProcess, exec, spawn } from "child_process";
 import WebSocket, { WebSocketServer } from "ws";
+import { startWebSocketHeartbeat } from './websocketHeartbeat';
+import { handleHttpError } from './httpErrors';
 import path from 'path';
 import { ConsoleMessageType, WebSocketMessageType } from '../../dist/shared/types'
 import { Readable, Writable } from "stream";
@@ -666,39 +668,10 @@ if(isShared) {
 
 
 function cleanUp() {
-    fs.readdir(path.join(rootDirName, "cache"), (err, files) => {
-
-    if (err) {
-        console.error("Error reading cache directory:", err);
-        return;
-    }
-
-    files.forEach((file) => {
-        fs.rm(path.join(rootDirName, "cache", file), { recursive: true, force: true }, (err) => {
-            if (err) {
-                console.error("Error deleting cache folder:", err);
-            } else {
-                console.log("Deleted cache folder for client " + file);
-            }
-        });
-    });
-
-
-    if(process.env.NODE_ENV == 'development') return;
-    let filter = '';
-    EditorModes.modes.forEach(element => {
-        filter += `--filter ancestor=${buildTag}_${element.dockerSafeTag} `
-    });
-    console.log("Async removing previous sandbox builds...")
-    exec(`docker system prune`, {timeout: 3000}, (err, data) => console.log(data))
-
-    console.log("Removing previous sandbox containers: " + execSync(`docker ps ${filter} -q |  xargs --no-run-if-empty docker rm --force | docker system prune`, {timeout: 5000}))
-});
-
+    // Working files belong to editor sessions and must survive process restarts.
+    // Container/image pruning is a maintenance operation, not startup work.
+    fs.mkdirSync(path.join(rootDirName, 'cache'), {recursive: true});
 }
-
-
-
 
 function getClientFilesPath(sessionId) // DEPRECATED
 {
@@ -751,6 +724,7 @@ async function loadShareProject(shareId)
 
 const baseUrl = 'https://intelegeinfo.ro'
 wss.addListener('connection', async (ws: WebSocket, req) => {
+    startWebSocketHeartbeat(ws);
 
     updateUserMeter()
 
@@ -1285,7 +1259,7 @@ function endConnectionPromise()
 
     function sendFileContents(fileContent, fileName) {
         if(clientObj.getFile(fileName))
-            clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, body: {command: FileManagementCommands.Open ,content: fileContent}})); // Send the list of files to the client
+            clientObj.CWebSocket.send(JSON.stringify({type: WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, docVer: clientObj.getFile(fileName).docVer, body: {command: FileManagementCommands.Open ,content: fileContent}})); // Send the list of files to the client
     }  
 
     function clientInfo(thisclientObj?: ClientObject): HandshakeMessage['users'][number] // {clientId: typeof clientId, displayName: typeof clientObj.displayName, color: typeof clientObj.color, openFile: typeof clientObj.openFileName}
@@ -1307,6 +1281,10 @@ function endConnectionPromise()
         const projectId = sqid.decode(saveUUID)[0]
         if(!projectId)
             return
+        if (!clientObj?.clientData?.id) {
+            printClientConsoleError('Please log in before loading a saved project');
+            return;
+        }
         onLoadProject(clientObj, await loadProject(projectId, clientObj.clientData.id), false)
     }
 
@@ -1329,7 +1307,7 @@ function endConnectionPromise()
                 throw {message: 'Nu ai access la acest proiect sau nu esti logat.'}
             }
 
-            if(!savedProject.Project)
+            if(!savedProject?.Project)
                 throw {message: "Am intampinat o eroare..."}
             fs.mkdirSync(clientFilesPath, { recursive: true })
 
@@ -1419,7 +1397,7 @@ function endConnectionPromise()
             } else 
             {
                 // load files from existing session
-                console.warn("Cache folder already exists for sessionId " + sessionId);
+                console.log("Reusing cache folder for sessionId " + sessionId);
 
                 // load project files
                 if(cacheFolderExists && isHost && clientSession.files.length==0)
@@ -1644,6 +1622,11 @@ function endConnectionPromise()
         return new Promise((resolve, reject) => {
             
             console.log("GDB Command to execute: " + command)
+            if (!childProcess || typeof childProcess.sendCommand !== 'function') {
+                printClientConsoleError('Start a debugging session before sending debugger commands');
+                resolve();
+                return;
+            }
             childProcess.sendCommand(command)
             if(command === '-exec-quit' && childProcess)
                         closeProcess(childProcess)
@@ -1703,7 +1686,7 @@ function endConnectionPromise()
         const file = clientSession.files.find(file => file.name == fileName)
         if(!file)
         {
-            console.error(new Error('Couldnt find file ' + fileName))
+            printClientConsoleError('Could not find file ' + fileName)
             return;
         }
 
@@ -2010,20 +1993,14 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         if(!clientSession.fileWatcher)
         {
             clientSession.fileWatcher = fs.watch(path.join(clientSession.getClientFilesPath()), null, (event, fileNameBuf) => {
-                const fileName = fileNameBuf.toString()
-                if(!fileName)
-                    throw new Error('Invalid file name in watcher')
-                const changedFile = clientSession.files.find(file => file.name == fileName)
-                if(!changedFile)
-                {
-                    console.error('Couldnt find file to update in watcher.')
-                    if(event == 'rename')
-                        {
-                            new EditorFile(clientSession, fileName, null, {abstract: true})
-                            console.warn('Created new file from rename event!')
-                        }
-                } 
-                changedFile.onFileWatched(event, clientObj)
+                if (!fileNameBuf) return;
+                const fileName = fileNameBuf.toString();
+                const changedFile = clientSession.files.find(file => file.name === fileName);
+                // Compilation creates executables and temporary files outside the editor model.
+                if (!changedFile || !fs.existsSync(changedFile.filePath)) return;
+                try { changedFile.onFileWatched(event, clientObj); }
+                catch (error) { if (error.code !== 'ENOENT') console.error('File synchronization failed:', error); }
+
             })
             
         }
@@ -2085,12 +2062,13 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     // Handle GDB session commands from client
     ws.addListener("message", async (message: Buffer, isBinary: boolean) => {  
         try {
-            let messageJSON;    
-            if(JSON.parse(message.toString()).data != undefined)
-             messageJSON = JSON.parse(message.toString()).data;
-            else messageJSON = JSON.parse(message.toString());
+            let envelope;
+            try { envelope = JSON.parse(message.toString()); }
+            catch { ws.close(1007, 'Invalid JSON'); return; }
+            const messageJSON = envelope?.data !== undefined ? envelope.data : envelope;
             // console.log(messageJSON)
 
+            if (!messageJSON || typeof messageJSON !== 'object' || !clientObj || !clientSession) return;
             const command = messageJSON.command
             const args = messageJSON.args;
             const type: WebSocketMessageType = messageJSON.type;
@@ -2310,7 +2288,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     switch(messageJSON.action) {
                         default:
                         case 'process':
-                            if(clientObj.getActiveFile().process)
+                            if(clientObj.getActiveFile()?.process)
                             {
                                 if(clientObj.getActiveFile().debugProgram)
                                 {
@@ -2462,7 +2440,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
 
                     case FileManagementCommands.Delete:
                         if(!clientObj.permissions.canEdit) break;
-                        clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj, clientSession)
+                        clientSession.files.find(file => file.name == messageJSON.name)?.delete(clientObj, clientSession)
                     break;
 
                     //  TODO Make this so it just return name and make seperate function for fle content, which will be called only when opening the file on the client. STORE IT IN CACHE, ADD A DIRTY VERIFICATION TO NOT SEND THE SAME SHI MULTIPLE TIMES DONT OPEN THE EDITOR UNTIL THE FILE HAS LOADED ON THE CLIENT SEND THE FILES ON  HANDSHAKE MAKE SURE IT IS ALL REPLICATED
@@ -2472,7 +2450,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                     case FileManagementCommands.Rename:
                         if(!clientObj.permissions.canEdit) break;
                         const file = clientSession.files.find(file => file.name == messageJSON.name)
-                        file.rename(messageJSON.newName, clientObj)
+                        file?.rename(messageJSON.newName, clientObj)
 
                         //  const targetMode = EditorModes.modes.find(mode => mode.extension.includes(messageJSON.newName.split('.').at(-1)))
                         //     if(targetMode)
@@ -3020,9 +2998,9 @@ export function parseText(file: string, req: any, params?)
     const matches = file.matchAll(/\^{[%&*](.*)}/g)
     let text = file
     const locale =  function () {
-        const accLang = req.cookies.ii_lang ? req.cookies.ii_lang : req.headers["accept-language"] as string;
-        if(!accLang)
-            return defaultLang
+        const accLang = req.cookies?.ii_lang || req.headers?.["accept-language"];
+        if(typeof accLang !== 'string' || !accLang)
+            return [defaultLang]
         return accLang.split(',').map(param => param.split(';')[0])
     }()[0]
     const keyDictionary = translation
@@ -3124,6 +3102,7 @@ export function parseHTML(req,res, next)
 }
     
 app.use(parseHTML, express.static('public'),handle404)
+app.use(handleHttpError);
 
 
 

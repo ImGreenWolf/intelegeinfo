@@ -33,6 +33,10 @@ router.get('/', async (req, res) => {
 router.get('/u', async (req, res) => {
     try {
         const myClass = await (0, usersManager_1.getUserData)((0, usersManager_1.getIdFromJWT)(req), { CreatedClasses: true, JoinedClass: { include: { Class: true } } });
+        if (!myClass) {
+            res.status(401).send('Please log in first');
+            return;
+        }
         res.send({ classes: [...myClass.CreatedClasses, ...myClass.JoinedClass.map(joined => joined.Class)], user: myClass });
     }
     catch (error) {

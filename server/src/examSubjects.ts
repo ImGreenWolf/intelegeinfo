@@ -47,10 +47,11 @@ let grid = updateSubjectsGrid()
 
 function updateSubjectsGrid() {
       let grid = ''
+     searchFields.data = [];
      lastUpdate = Date.now()
 
      const addVariant = (variant: {name, file, barem}, folderPath) => {
-      return `<div class='variant-container'><a href='${folderPath + variant.file}'>${variant.name}</a><a href='${folderPath + variant.barem}'>${(variant.barem.split('.')[1] as string)[0].toLocaleUpperCase() + (variant.barem.split('.')[1] as string).substring(1)}</a></div>`
+      return `<div class='variant-container'>${variant.file ? `<a href='${folderPath + variant.file}'>${variant.name}</a>` : ''}${variant.barem ? `<a href='${folderPath + variant.barem}'>Barem</a>` : ''}</div>`
     }
     const addSections = (sections: {name, folderPath, variants: {name, file, barem}[]}, year) => {
       return `<h2>${sections.name}</h2>
@@ -186,7 +187,7 @@ router.get('/', async (req, res) => {
 
 router.use('/pdf', express.static(path.join(rootDirName, 'server', 'libs','pdf')))
 
-router.get('/file/:year/:sub/:file', (req, res) => {
+router.get('/file/:year/:sub/:file', (req, res, next) => {
 
     
     // res.sendFile(path.join(rootDirName, 'server', 'data', 'subiecte', req.params.dir, req.params.name))
@@ -220,7 +221,7 @@ router.get('/file/:year/:sub/:file', (req, res) => {
     }
    catch(err)
    {
-    res.status(200).sendFile(path.join(rootDirName, 'server', 'data', 'formatedSubjects', dir))
+    res.sendFile(dir, {root: path.join(rootDirName, 'server', 'data', 'formatedSubjects')}, err => { if (err) next(err); });
    }
 
 })
@@ -231,6 +232,7 @@ router.get('/file/:year/:sub/:file', (req, res) => {
 router.get('/search', (req, res) => {
 
   let input = req.query.input as string
+  if (typeof input !== 'string' || !input.trim()) { res.status(400).json({error: 'Search input is required'}); return; }
 
   function calcScore(entry: string)
   {

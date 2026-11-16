@@ -303,7 +303,7 @@ async function updateTransporter() {
             pass: process.env.EMAILPASS
         },
         tls: {
-            rejectUnauthorized: false,
+            rejectUnauthorized: true,
         },
     });
 }

@@ -47,6 +47,8 @@ const express_1 = __importDefault(require("express"));
 const fs_1 = __importDefault(require("fs"));
 const child_process_1 = require("child_process");
 const ws_1 = __importDefault(require("ws"));
+const websocketHeartbeat_1 = require("./websocketHeartbeat");
+const httpErrors_1 = require("./httpErrors");
 const path_1 = __importDefault(require("path"));
 const types_1 = require("../../dist/shared/types");
 const types_2 = require("./types");
@@ -545,31 +547,9 @@ if (isShared) {
     // clients will be stored locally.
 }
 function cleanUp() {
-    fs_1.default.readdir(path_1.default.join(exports.rootDirName, "cache"), (err, files) => {
-        if (err) {
-            console.error("Error reading cache directory:", err);
-            return;
-        }
-        files.forEach((file) => {
-            fs_1.default.rm(path_1.default.join(exports.rootDirName, "cache", file), { recursive: true, force: true }, (err) => {
-                if (err) {
-                    console.error("Error deleting cache folder:", err);
-                }
-                else {
-                    console.log("Deleted cache folder for client " + file);
-                }
-            });
-        });
-        if (process.env.NODE_ENV == 'development')
-            return;
-        let filter = '';
-        EditorModes.modes.forEach(element => {
-            filter += `--filter ancestor=${buildTag}_${element.dockerSafeTag} `;
-        });
-        console.log("Async removing previous sandbox builds...");
-        (0, child_process_1.exec)(`docker system prune`, { timeout: 3000 }, (err, data) => console.log(data));
-        console.log("Removing previous sandbox containers: " + (0, child_process_2.execSync)(`docker ps ${filter} -q |  xargs --no-run-if-empty docker rm --force | docker system prune`, { timeout: 5000 }));
-    });
+    // Working files belong to editor sessions and must survive process restarts.
+    // Container/image pruning is a maintenance operation, not startup work.
+    fs_1.default.mkdirSync(path_1.default.join(exports.rootDirName, 'cache'), { recursive: true });
 }
 function getClientFilesPath(sessionId) {
     return path_1.default.join(exports.rootDirName, "cache", sessionId, "clientFiles");
@@ -608,6 +588,7 @@ async function loadShareProject(shareId) {
 }
 const baseUrl = 'https://intelegeinfo.ro';
 exports.wss.addListener('connection', async (ws, req) => {
+    (0, websocketHeartbeat_1.startWebSocketHeartbeat)(ws);
     updateUserMeter();
     let sessionId;
     let clientId;
@@ -1046,7 +1027,7 @@ exports.wss.addListener('connection', async (ws, req) => {
         }
         function sendFileContents(fileContent, fileName) {
             if (clientObj.getFile(fileName))
-                clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, body: { command: types_3.FileManagementCommands.Open, content: fileContent } })); // Send the list of files to the client
+                clientObj.CWebSocket.send(JSON.stringify({ type: types_1.WebSocketMessageType.FileManagement, fileName: clientObj.getFile(fileName).name, docVer: clientObj.getFile(fileName).docVer, body: { command: types_3.FileManagementCommands.Open, content: fileContent } })); // Send the list of files to the client
         }
         function clientInfo(thisclientObj) {
             if (!clientObj && !thisclientObj)
@@ -1065,6 +1046,10 @@ exports.wss.addListener('connection', async (ws, req) => {
             const projectId = exports.sqid.decode(saveUUID)[0];
             if (!projectId)
                 return;
+            if (!clientObj?.clientData?.id) {
+                printClientConsoleError('Please log in before loading a saved project');
+                return;
+            }
             onLoadProject(clientObj, await loadProject(projectId, clientObj.clientData.id), false);
         }
         async function loadShare(saveUUID, clientObj) {
@@ -1082,7 +1067,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 if (!clientObj.clientData && !isPublic) {
                     throw { message: 'Nu ai access la acest proiect sau nu esti logat.' };
                 }
-                if (!savedProject.Project)
+                if (!savedProject?.Project)
                     throw { message: "Am intampinat o eroare..." };
                 fs_1.default.mkdirSync(clientFilesPath, { recursive: true });
                 if (savedProject.Project.files.length != 0 && savedProject.Project.fileUUID == null) {
@@ -1152,7 +1137,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 }
                 else {
                     // load files from existing session
-                    console.warn("Cache folder already exists for sessionId " + sessionId);
+                    console.log("Reusing cache folder for sessionId " + sessionId);
                     // load project files
                     if (cacheFolderExists && isHost && clientSession.files.length == 0)
                         clientSession.files = fs_1.default.readdirSync(clientFilesPath).flatMap((file) => { return new types_2.EditorFile(clientSession, file, fs_1.default.readFileSync(path_1.default.join(clientFilesPath, file)).toString(), { abstract: true }); });
@@ -1331,6 +1316,11 @@ exports.wss.addListener('connection', async (ws, req) => {
         async function executeCommand(childProcess, command, sessionId) {
             return new Promise((resolve, reject) => {
                 console.log("GDB Command to execute: " + command);
+                if (!childProcess || typeof childProcess.sendCommand !== 'function') {
+                    printClientConsoleError('Start a debugging session before sending debugger commands');
+                    resolve();
+                    return;
+                }
                 childProcess.sendCommand(command);
                 if (command === '-exec-quit' && childProcess)
                     closeProcess(childProcess);
@@ -1379,7 +1369,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             console.log('Sent open file');
             const file = clientSession.files.find(file => file.name == fileName);
             if (!file) {
-                console.error(new Error('Couldnt find file ' + fileName));
+                printClientConsoleError('Could not find file ' + fileName);
                 return;
             }
             file.openFile(clientObj, shared, closedFile).then((fileContent) => onOpenFile(closedFile, fileName, fileContent));
@@ -1624,18 +1614,20 @@ exports.wss.addListener('connection', async (ws, req) => {
                         clientObj.getActiveFile().program.write(processInputBuffer); // write buffer
                     if (!clientSession.fileWatcher) {
                         clientSession.fileWatcher = fs_1.default.watch(path_1.default.join(clientSession.getClientFilesPath()), null, (event, fileNameBuf) => {
+                            if (!fileNameBuf)
+                                return;
                             const fileName = fileNameBuf.toString();
-                            if (!fileName)
-                                throw new Error('Invalid file name in watcher');
-                            const changedFile = clientSession.files.find(file => file.name == fileName);
-                            if (!changedFile) {
-                                console.error('Couldnt find file to update in watcher.');
-                                if (event == 'rename') {
-                                    new types_2.EditorFile(clientSession, fileName, null, { abstract: true });
-                                    console.warn('Created new file from rename event!');
-                                }
+                            const changedFile = clientSession.files.find(file => file.name === fileName);
+                            // Compilation creates executables and temporary files outside the editor model.
+                            if (!changedFile || !fs_1.default.existsSync(changedFile.filePath))
+                                return;
+                            try {
+                                changedFile.onFileWatched(event, clientObj);
                             }
-                            changedFile.onFileWatched(event, clientObj);
+                            catch (error) {
+                                if (error.code !== 'ENOENT')
+                                    console.error('File synchronization failed:', error);
+                            }
                         });
                     }
                     resolve();
@@ -1683,12 +1675,18 @@ exports.wss.addListener('connection', async (ws, req) => {
         // Handle GDB session commands from client
         ws.addListener("message", async (message, isBinary) => {
             try {
-                let messageJSON;
-                if (JSON.parse(message.toString()).data != undefined)
-                    messageJSON = JSON.parse(message.toString()).data;
-                else
-                    messageJSON = JSON.parse(message.toString());
+                let envelope;
+                try {
+                    envelope = JSON.parse(message.toString());
+                }
+                catch {
+                    ws.close(1007, 'Invalid JSON');
+                    return;
+                }
+                const messageJSON = envelope?.data !== undefined ? envelope.data : envelope;
                 // console.log(messageJSON)
+                if (!messageJSON || typeof messageJSON !== 'object' || !clientObj || !clientSession)
+                    return;
                 const command = messageJSON.command;
                 const args = messageJSON.args;
                 const type = messageJSON.type;
@@ -1893,7 +1891,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                         switch (messageJSON.action) {
                             default:
                             case 'process':
-                                if (clientObj.getActiveFile().process) {
+                                if (clientObj.getActiveFile()?.process) {
                                     if (clientObj.getActiveFile().debugProgram) {
                                         clientObj.getActiveFile().debugProgram.sendProgramInput(messageJSON.command);
                                         replicateFunction((ws, id, obj) => obj.sendMessage({ input: 1 }, types_1.WebSocketMessageType.ExecuteStatus));
@@ -2016,7 +2014,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                             case types_3.FileManagementCommands.Delete:
                                 if (!clientObj.permissions.canEdit)
                                     break;
-                                clientSession.files.find(file => file.name == messageJSON.name).delete(clientObj, clientSession);
+                                clientSession.files.find(file => file.name == messageJSON.name)?.delete(clientObj, clientSession);
                                 break;
                             //  TODO Make this so it just return name and make seperate function for fle content, which will be called only when opening the file on the client. STORE IT IN CACHE, ADD A DIRTY VERIFICATION TO NOT SEND THE SAME SHI MULTIPLE TIMES DONT OPEN THE EDITOR UNTIL THE FILE HAS LOADED ON THE CLIENT SEND THE FILES ON  HANDSHAKE MAKE SURE IT IS ALL REPLICATED
                             case types_3.FileManagementCommands.List:
@@ -2026,7 +2024,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                                 if (!clientObj.permissions.canEdit)
                                     break;
                                 const file = clientSession.files.find(file => file.name == messageJSON.name);
-                                file.rename(messageJSON.newName, clientObj);
+                                file?.rename(messageJSON.newName, clientObj);
                                 //  const targetMode = EditorModes.modes.find(mode => mode.extension.includes(messageJSON.newName.split('.').at(-1)))
                                 //     if(targetMode)
                                 //         transpileCode(clientObj, file, targetMode).then(val => {
@@ -2435,9 +2433,9 @@ function parseText(file, req, params) {
     const matches = file.matchAll(/\^{[%&*](.*)}/g);
     let text = file;
     const locale = function () {
-        const accLang = req.cookies.ii_lang ? req.cookies.ii_lang : req.headers["accept-language"];
-        if (!accLang)
-            return defaultLang;
+        const accLang = req.cookies?.ii_lang || req.headers?.["accept-language"];
+        if (typeof accLang !== 'string' || !accLang)
+            return [defaultLang];
         return accLang.split(',').map(param => param.split(';')[0]);
     }()[0];
     const keyDictionary = translation;
@@ -2520,6 +2518,7 @@ function parseHTML(req, res, next) {
     }
 }
 app.use(parseHTML, express_1.default.static('public'), handle404);
+app.use(httpErrors_1.handleHttpError);
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
     // application specific logging, throwing an error, or other logic here

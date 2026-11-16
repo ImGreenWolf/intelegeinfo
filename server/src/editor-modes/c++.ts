@@ -260,7 +260,8 @@ int main() {
                 })
                 
                 this.inputTerminal.onExit((e) => {
-                    console.error('TTY EXITED WITH CODE', e)
+                    if (e.exitCode) console.error('TTY exited with error', e);
+                    else console.log('TTY closed', e);
                 })
 
                 this.process.onExit((code) => {

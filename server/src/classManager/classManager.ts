@@ -36,6 +36,7 @@ router.get('/u', async (req,res) => {
 
     try {
         const myClass = await getUserData(getIdFromJWT(req), {CreatedClasses: true, JoinedClass: {include: {Class: true}}}) as any
+        if (!myClass) { res.status(401).send('Please log in first'); return; }
         res.send({classes: [...myClass.CreatedClasses, ...myClass.JoinedClass.map(joined => joined.Class)], user: myClass})
     } catch (error) {
         console.warn(error)

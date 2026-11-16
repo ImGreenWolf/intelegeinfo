@@ -17,18 +17,18 @@ export declare function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, p
 }>;
 export declare function autocompleteProblemDetails(client: any, openFile: EditorFile): Promise<{
     id: number;
-    name: string;
-    description: string | null;
     createdAt: Date;
+    name: string;
     updatedAt: Date;
     authorId: number;
     positiveRatings: number;
     negativeRatings: number;
+    description: string | null;
+    category: string | null;
     requirement: import("../../generated/prisma/runtime/library").JsonValue | null;
     tests: import("../../generated/prisma/runtime/library").JsonValue[];
     averageTimeLimit: number;
     averageMemLimit: number;
-    category: string | null;
     sourceCode: string | null;
     difficulty: import("../../generated/prisma").$Enums.Difficulty | null;
     tags: string[];

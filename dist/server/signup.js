@@ -96,7 +96,12 @@ function prepareEncrPassForDB(password, decrypt = true) {
 }
 // POST Signup
 router.post('/', (req, res) => {
-    const { loginMethod, password } = req.body;
+    const { loginMethod, password, email, username } = req.body || {};
+    if (typeof email !== 'string' || !email.trim() || typeof username !== 'string' || !username.trim() ||
+        typeof password !== 'string' || !password || password.length > 8192) {
+        res.status(400).json({ error: 'Email, username and encrypted password are required' });
+        return;
+    }
     try {
         if (loginMethod === 'local') {
             const hashedPassword = prepareEncrPassForDB(password, true);
@@ -109,7 +114,6 @@ router.post('/', (req, res) => {
         }
     }
     catch (err) {
-        console.error('Decryption failed:', err);
         res.status(400).json({ error: 'Invalid encrypted password' });
     }
 });

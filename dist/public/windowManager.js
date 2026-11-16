@@ -76,13 +76,12 @@ export class EditorWindow {
         }
     }
     destroyEditor() {
-        if (!this.editor)
-            console.error(new Error('Editor isnt valid'));
-        else {
-            this.editor.destroy();
-            this.editor.container.remove();
-            this.editor = undefined;
-        }
+        const editor = this.editor;
+        if (!editor)
+            return;
+        this.editor = undefined;
+        editor.destroy();
+        editor.container.remove();
     }
     createEditor(newSession) {
         if (!this.editor) {
@@ -293,6 +292,9 @@ export class EditorWindow {
                 checksum: sha256(code),
                 docVer: (this.editor?.session).docVer
             })); // Send code to server on change // TODO Remove code from body.
+            const editSession = this.editor.session;
+            if (editSession.docVer !== undefined)
+                editSession.docVer++;
             if (!navigator.onLine)
                 displayMessagePopup('Se pare ca nu esti conectat la internet!');
         });

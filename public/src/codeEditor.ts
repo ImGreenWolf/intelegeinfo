@@ -3508,7 +3508,7 @@ function onRemoteClientJoin(rclient: HandshakeMessage['users'][number])
   }
 
 
-function onOpenFile(fileName, fileContent, client: SessionClient ) {
+function onOpenFile(fileName, fileContent, client: SessionClient, docVer?: number ) {
   
   console.log('opening file:',editorSessions, client);
   
@@ -3518,6 +3518,8 @@ function onOpenFile(fileName, fileContent, client: SessionClient ) {
     updateFileSession(fileName, fileContent)
   
   onFileSessionUpdated(fileName, client)
+  const editSession = editorSessions.get(fileName)?.editor;
+  if (editSession && Number.isInteger(docVer)) editSession.docVer = docVer;
 
   if(editorSessions.get(fileName)?.fileElement!.parentWindow.editor)
       editorSessions.get(fileName)?.fileElement!.onOpenTab(editorSessions.get(fileName)!.fileElement!.parentWindow.editor!.container)
@@ -3931,27 +3933,28 @@ function getEditorSession(fileName)
       // editor.session.getDocument().applyDelta(delta);
       const editorSession: FileEditorSession = editorSessions.get(messageJson.fileName) || editorSessions.values()[0]!
       const delta = messageJson.delta;
-      if(!editorSession.editor)
-        throw 'invalid editor on editor session'
+      if(!editorSession?.editor)
+        break;
       try{
         isRemoteChange = true;
 
-        if(messageJson.body)
+        if(typeof messageJson.body === 'string')
         {
           const cusorPos = editorSession.editor.selection.cursor.getPosition()
           editorSession.editor.getDocument().setValue(messageJson.body)
           editorSession.editor.selection.moveCursorToPosition(cusorPos)
           console.warn('Applied forced file content correction!')
-          if(sha256(editorSession.editor.getValue()) != messageJson.checksum)
+          if(messageJson.checksum && sha256(editorSession.editor.getValue()) != messageJson.checksum)
             console.error('Failed checksum check after force content change.')
         }
         else if(messageJson.clientId != wsClientId && delta)
           editorSession.editor.getDocument().applyDelta(delta);
 
-        if(sha256(editorSession.editor.getValue()) != messageJson.checksum)
+        if(messageJson.checksum && messageJson.clientId !== wsClientId && sha256(editorSession.editor.getValue()) != messageJson.checksum)
           console.error('Checksum failed!')
       } finally {
-        editorSession.editor!.docVer = messageJson.docVer
+        editorSession.editor!.docVer = messageJson.resync || typeof messageJson.body === 'string' ? messageJson.docVer :
+            Math.max(editorSession.editor!.docVer ?? 0, messageJson.docVer);
         isRemoteChange = false;
         document.getElementById('buttons')?.classList.remove('compiled')
         dirtyFile(messageJson.fileName)
@@ -4406,7 +4409,7 @@ function getEditorSession(fileName)
           }
           else
           if(client)
-            onOpenFile(fileName, messageJson.body.content, client)
+            onOpenFile(fileName, messageJson.body.content, client, messageJson.docVer)
           else
             throw 'CLIENT IS INVALID WHILE OPENING FILE'
           

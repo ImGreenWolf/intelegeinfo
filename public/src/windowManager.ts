@@ -109,14 +109,11 @@ export class EditorWindow {
     }
     public destroyEditor()
     {
-         if(!this.editor)
-            console.error(new Error('Editor isnt valid'))
-        else
-        {
-             this.editor.destroy()
-            this.editor.container.remove()
-            this.editor =undefined
-        }
+        const editor = this.editor;
+        if (!editor) return;
+        this.editor = undefined;
+        editor.destroy();
+        editor.container.remove();
            
         
     }
@@ -381,6 +378,8 @@ export class EditorWindow {
                     docVer: (this.editor?.session as (Ace.EditSession & {docVer?: number})).docVer
                 })
             ); // Send code to server on change // TODO Remove code from body.
+            const editSession = this.editor!.session as Ace.EditSession & {docVer?: number};
+            if (editSession.docVer !== undefined) editSession.docVer++;
 
             if(!navigator.onLine)
                 displayMessagePopup('Se pare ca nu esti conectat la internet!')

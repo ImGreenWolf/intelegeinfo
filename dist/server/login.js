@@ -94,7 +94,11 @@ function clearAuthCookies(res) {
 }
 // Routes
 router.post('/', (req, res) => {
-    const { email, password, loginMethod } = req.body;
+    const { email, password } = req.body || {};
+    if (typeof email !== 'string' || !email.trim() || typeof password !== 'string' || !password || password.length > 8192) {
+        res.status(400).json({ error: 'Email and encrypted password are required' });
+        return;
+    }
     try {
         const decryptedPassword = exports.privateKey.decrypt(node_forge_1.default.util.decode64(password), 'RSA-OAEP');
         // TODO: Compare decryptedPassword with stored password hash
@@ -131,7 +135,6 @@ router.post('/', (req, res) => {
         });
     }
     catch (err) {
-        console.error('Decryption failed:', err);
         res.status(400).json({ error: 'Invalid encrypted password' });
     }
 });

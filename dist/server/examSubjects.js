@@ -41,9 +41,10 @@ let lastUpdate = Date.now();
 let grid = updateSubjectsGrid();
 function updateSubjectsGrid() {
     let grid = '';
+    searchFields.data = [];
     lastUpdate = Date.now();
     const addVariant = (variant, folderPath) => {
-        return `<div class='variant-container'><a href='${folderPath + variant.file}'>${variant.name}</a><a href='${folderPath + variant.barem}'>${variant.barem.split('.')[1][0].toLocaleUpperCase() + variant.barem.split('.')[1].substring(1)}</a></div>`;
+        return `<div class='variant-container'>${variant.file ? `<a href='${folderPath + variant.file}'>${variant.name}</a>` : ''}${variant.barem ? `<a href='${folderPath + variant.barem}'>Barem</a>` : ''}</div>`;
     };
     const addSections = (sections, year) => {
         return `<h2>${sections.name}</h2>
@@ -144,7 +145,7 @@ router.get('/', async (req, res) => {
     res.status(200).send((0, server_1.parseText)(html, req));
 });
 router.use('/pdf', express_1.default.static(path_1.default.join(server_1.rootDirName, 'server', 'libs', 'pdf')));
-router.get('/file/:year/:sub/:file', (req, res) => {
+router.get('/file/:year/:sub/:file', (req, res, next) => {
     // res.sendFile(path.join(rootDirName, 'server', 'data', 'subiecte', req.params.dir, req.params.name))
     const dir = path_1.default.join(req.params.year, req.params.sub, unformatName(req.params.file));
     console.log(req.url, dir);
@@ -174,11 +175,16 @@ router.get('/file/:year/:sub/:file', (req, res) => {
             throw 'not iframe';
     }
     catch (err) {
-        res.status(200).sendFile(path_1.default.join(server_1.rootDirName, 'server', 'data', 'formatedSubjects', dir));
+        res.sendFile(dir, { root: path_1.default.join(server_1.rootDirName, 'server', 'data', 'formatedSubjects') }, err => { if (err)
+            next(err); });
     }
 });
 router.get('/search', (req, res) => {
     let input = req.query.input;
+    if (typeof input !== 'string' || !input.trim()) {
+        res.status(400).json({ error: 'Search input is required' });
+        return;
+    }
     function calcScore(entry) {
         let i = 0;
         let matchingChars = 0;

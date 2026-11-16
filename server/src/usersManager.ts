@@ -334,7 +334,7 @@ router.get('/upload/:path', (req, res) => {
             pass: process.env.EMAILPASS
         },
         tls: {
-            rejectUnauthorized: false,    
+            rejectUnauthorized: true,    
         },
       })
     }

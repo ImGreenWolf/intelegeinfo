@@ -167,6 +167,7 @@ type RemoveDelta = {
 type Delta = InsertDelta | RemoveDelta;
 type Operation = {
     delta: Delta;
+    deltas?: Delta[];
     originDocVer: number;
     content?: string;
 };
@@ -182,7 +183,7 @@ export declare class OT_EditorFile {
         docVer: number;
         deltas: Delta[];
     };
-    updateContent(content: string, op?: CodeChange, clientObj?: ClientObject): void;
+    updateContent(content: string, op?: CodeChange, clientObj?: ClientObject, appliedDeltas?: Delta[]): void;
     aceDeltaToPos(docVer: number, aceDelta: Ace.Delta): Delta;
     private transformDelta;
     private applyDelta;

@@ -191,6 +191,7 @@ test('editor preserves empty files and repeated close does not remove other open
         './server': {rootDirName: '.'}, './editor-modes': {Text, modes: []},
         './editor-modes/': {Text, modes: []},
         './fileSafety': load('server/src/fileSafety.ts'),
+        './editorOperations': load('server/src/editorOperations.ts'),
         '../../dist/shared/types': {WebSocketMessageType: {}, ConsoleMessageType: {}, FileManagementCommands: {}}
     });
     const session = {getClientFilesPath: () => 'cache', replicateFunction() {}};
@@ -210,4 +211,43 @@ test('editor preserves empty files and repeated close does not remove other open
     file.onCloseFile(client);
     assert.equal(client.openFile[0], other);
     assert.equal(client.openFileName[0], 'other.txt');
+});
+
+test('rapid edits advance versions, stale edits rebase and invalid edits request a resync', () => {
+    class Text {static defaultText = '';}
+    const {EditorFile} = load('server/src/types.ts', {
+        './server': {rootDirName: '.'}, './editor-modes': {Text, modes: []}, './editor-modes/': {Text, modes: []},
+        './fileSafety': load('server/src/fileSafety.ts'), './editorOperations': load('server/src/editorOperations.ts'),
+        '../../dist/shared/types': {WebSocketMessageType: {}, ConsoleMessageType: {}, FileManagementCommands: {}}
+    });
+    const file = new EditorFile({getClientFilesPath: () => 'cache', replicateFunction() {}}, 'typing.txt', '', {abstract: true});
+    const sent = [];
+    const client = {sendMessage: m => sent.push(m)};
+    const delta = (column, text) => ({action: 'insert', start: {row: 0, column}, end: {row: 0, column: column + text.length}, lines: [text]});
+    const base = file.docVer;
+    for (let i=0;i<20;i++) file.changeContent({docVer: base+i, delta: delta(i, 'a')}, client);
+    assert.equal(file.content, 'a'.repeat(20));
+    assert.equal(file.docVer, base+20);
+    file.changeContent({docVer: base, delta: delta(0, 'B')}, client);
+    assert.equal(file.content, 'a'.repeat(20)+'B');
+    const version = file.docVer;
+    file.changeContent({docVer: version+100, delta: delta(10000,'bad')}, client);
+    assert.equal(file.docVer, version);
+    assert.equal(sent.at(-1).resync, true);
+    assert.equal(sent.at(-1).body, file.content);
+});
+
+test('login rejects absent and malformed bodies before decrypting or querying accounts', () => {
+    const r = router();
+    load('server/src/login.ts', {
+        express: r.express, fs: {readFileSync: () => privateKey},
+        'node-forge': {pki: {privateKeyFromPem: () => ({decrypt() {throw new Error('Bad ciphertext');}})}},
+        './dbClient': {}, './signup': {}, './server': {}, './usersManager': {},
+        googleapis: {google: {auth: {OAuth2: class {}}}}
+    });
+    for (const body of [undefined, {}, {email: 'test@example.com', password: 123}, {email:'test@example.com',password:'invalid'}]) {
+        const res = response();
+        assert.doesNotThrow(() => r.routes.get('POST /')[0]({body}, res));
+        assert.equal(res.statusCode, 400);
+    }
 });
