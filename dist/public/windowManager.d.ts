@@ -11,6 +11,7 @@ export declare class EditorWindow {
     index: number;
     tabs: EditorWindowTab[];
     tooltip: TokenTooltip | undefined;
+    docVer: number;
     constructor(index: any, element: any, tabContainer: any, contentContainer: any);
     destroyEditor(): void;
     createEditor(newSession?: any): Ace.Editor;

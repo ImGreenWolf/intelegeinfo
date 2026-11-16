@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EditorFile = exports.EditorSession = exports.EditorPermission = exports.ClientObject = void 0;
+exports.OT_EditorFile = exports.EditorFile = exports.EditorSession = exports.EditorPermission = exports.ClientObject = void 0;
 exports.randomHexColor = randomHexColor;
 const uuid_1 = require("uuid");
 const types_1 = require("../../dist/shared/types");
@@ -134,6 +134,7 @@ class EditorSession {
     clients = [];
     clientsDisplayNames;
     clientsSockets = new Map();
+    codeChangesBuffer = [];
     messageIndex = 1;
     clientCommandBuffer = new Map();
     process;
@@ -428,6 +429,8 @@ class EditorFile {
     ;
     debugProgram;
     ;
+    docVer = 0;
+    docVerLog = [];
     updateFilePath() {
         this.filePath = path_1.default.join(this.session.getClientFilesPath(), this.name);
     }
@@ -437,15 +440,20 @@ class EditorFile {
             this.linkedUser = options.linkedUser;
         this.name = this.linkedUser ? this.linkedUser.displayName.replaceAll(' ', '-') + "-" + name : name;
         this.updateFilePath();
+        this.OTSystem.setDocValue = (content) => this.content = content;
+        this.OTSystem.getDocValue = () => this.content;
         // const mode =  getEditorMode(this.name).constructor
         const editorModeClass = getEditorMode(this.name);
         this.editorMode = new editorModeClass;
         if ((content == undefined || content == '') && editorModeClass.defaultText != undefined)
-            this.content = editorModeClass.defaultText.toString();
+            // this.content = editorModeClass.defaultText.toString()
+            this.updateContent(editorModeClass.defaultText.toString());
         else if (content == undefined)
-            this.content = '';
+            // this.content = ''
+            this.updateContent('');
         else
-            this.content = content;
+            // this.content = content;
+            this.updateContent(content);
         if (options)
             if (options.abstract != undefined && options.abstract)
                 return;
@@ -529,7 +537,8 @@ class EditorFile {
     }
     syncFileContent() {
         const data = fs_1.default.readFileSync(this.filePath).toString();
-        this.content = data;
+        // this.content = data
+        this.updateContent(data);
     }
     onCloseFile(clientObj) {
         console.log(clientObj.displayName, 'closed file: ', this.name);
@@ -577,81 +586,96 @@ class EditorFile {
     getClients() {
         return this.activeClients;
     }
-    updateFile(clientObj, content) {
+    async updateFile(clientObj, content) {
         try {
-            const fileContent = content || this.content;
-            //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
-            fs_1.default.writeFile(this.filePath, fileContent, (err) => {
-                if (err)
-                    console.error("Failed saving file! " + err);
-                // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
-                const fileName = this.name;
-                if (!clientObj.getFile(this.name))
-                    return;
-                if (!clientObj.getFile(fileName).editorMode.checkCodeSyntax)
-                    // send saved file message if doesnt have syntax checker
-                    this.session.replicateFunction((clientWs, localClientId) => {
-                        if (this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))
-                            clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, fileName, clientId: clientObj.clientId, saved: true }));
-                    });
-                else
-                    clientObj.getFile(fileName).editorMode.checkCodeSyntax(this.session, clientObj.getFile(fileName)).then(json => {
-                        if (!JSON.parse(json)[0])
-                            return this.session.replicateFunction((clientWs, localClientId) => {
-                                if (this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))
-                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, fileName, clientId: clientObj.clientId, saved: true, body: JSON.stringify([{ kind: 'success' }]) }));
-                            });
+            return new Promise((resolve, reject) => {
+                const fileContent = content || this.content;
+                //   TODO make a more efficient way of updating the file, either by streams (streaming updates to file) or a save button.
+                fs_1.default.writeFile(this.filePath, fileContent, (err) => {
+                    if (err)
+                        console.error("Failed saving file! " + err), reject(err);
+                    // if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
+                    const fileName = this.name;
+                    if (!clientObj.getFile(this.name))
+                        reject();
+                    if (!clientObj.getFile(fileName).editorMode.checkCodeSyntax)
+                        // send saved file message if doesnt have syntax checker
                         this.session.replicateFunction((clientWs, localClientId) => {
                             if (this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))
-                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, fileName, clientId: clientObj.clientId, body: json, saved: true }));
+                                clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, fileName, clientId: clientObj.clientId, saved: true }));
                         });
-                    }).catch(err => {
-                        console.error('syntax checker error: ' + err);
-                    });
+                    else
+                        clientObj.getFile(fileName).editorMode.checkCodeSyntax(this.session, clientObj.getFile(fileName)).then(json => {
+                            if (!JSON.parse(json)[0])
+                                this.session.replicateFunction((clientWs, localClientId) => {
+                                    if (this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))
+                                        clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, fileName, clientId: clientObj.clientId, saved: true, body: JSON.stringify([{ kind: 'success' }]) }));
+                                }), resolve();
+                            this.session.replicateFunction((clientWs, localClientId) => {
+                                if (this.session.clientsActiveFile.get(localClientId) === this.session.clientsActiveFile.get(clientObj.clientId))
+                                    clientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CompileResult, fileName, clientId: clientObj.clientId, body: json, saved: true }));
+                            });
+                        }).catch(err => {
+                            console.error('syntax checker error: ' + err);
+                        });
+                    resolve();
+                });
             });
         }
         catch (error) {
             console.error('syntax checker error: ' + error);
         }
     }
+    OTSystem = new OT_EditorFile(this, false);
+    updateContent(content, op) {
+        // this.content = content
+        // this.docVerLog.push({content, op})
+        // this.docVer++
+        this.content = content;
+        this.OTSystem.updateContent(content, op);
+    }
     changeContent(data, clientObj) {
         if (data.content)
-            this.content = data.content;
-        else
-            this.content = this.applyDelta(data.delta).join('\n');
+            this.OTSystem.updateContent(data.content, data, clientObj);
+        else {
+        }
+        const { doc, deltas } = this.OTSystem.calculateDelta({ delta: this.OTSystem.aceDeltaToPos(data.docVer, data.delta), originDocVer: data.docVer });
+        // this.content = doc
+        this.OTSystem.updateContent(doc, data, clientObj);
         const checksum = (0, js_sha256_1.sha256)(this.content);
+        return;
         if (data.clientChecksum) {
             const checksumFailed = checksum !== data.clientChecksum;
             // replicate changes to others
             if (checksumFailed) {
-                clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name, body: this.content, checksum });
+                // clientObj.sendMessage({type: WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name,  body: this.content, checksum, docVer: this.docVer})
                 console.error('Checksum failed for session id:', this.session.sessionId, 'On client:', clientObj.clientId);
             }
             this.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
                 if (clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
-                    thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, delta: data.delta, fileName: this.name, body: checksumFailed ? data.content : undefined, checksum }));
-            }, clientObj);
+                    thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, delta: data.delta, fileName: this.name, body: checksumFailed ? data.content : undefined, checksum, docVer: this.docVer }));
+            });
             return;
         }
         else // replace with an array of clients that have this file open
             this.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
                 if (clientObj.checkClientsFileOpen(thisClientObj))
-                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name, body: this.content, checksum });
+                    clientObj.sendMessage({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj.clientId, fileName: this.name, body: this.content, checksum, docVer: this.docVer });
             });
     }
     onFileWatched(eventType, clientObj) {
         this.syncFileContent();
-        this.changeContent({ content: this.content }, clientObj);
+        this.changeContent({ content: this.content, docVer: this.docVer }, clientObj);
         console.log('Synced file content');
     }
-    setFileContent(content, clientObj) {
-        this.changeContent({ content }, clientObj);
-        this.updateFile(clientObj);
+    async setFileContent(content, clientObj) {
+        this.changeContent({ content, docVer: this.docVer }, clientObj);
+        await this.updateFile(clientObj);
     }
-    applyDelta(delta) {
+    applyDelta(content, delta) {
         if (!delta)
             throw new Error('Invalid delta. Cant apply delta.');
-        const docLines = this.content.split('\n');
+        const docLines = content.split('\n');
         var row = delta.start.row;
         var startColumn = delta.start.column;
         var line = docLines[row] || "";
@@ -702,4 +726,137 @@ function getEditorMode(fileName) {
 }
 function randomHexColor() {
     return Math.floor(Math.max(80, Math.random() * 255)).toString(16) + Math.floor(Math.max(80, Math.random() * 255)).toString(16) + Math.floor(Math.max(80, Math.random() * 255)).toString(16);
+}
+class OT_EditorFile {
+    constructor(file, debug) {
+        // if(!debug)
+        //     return;
+        // new DebugClient(this.getDocValue(), this, [
+        //     {delta: {start: 0, type: 'insert', text: 'hllo '}, originDocVer: 0},
+        //     {delta: {start: 5, type: 'insert', text: 'wrld '}, originDocVer: 1},
+        //     {delta: {start: 6, type: 'insert', text: 'o'}, originDocVer: 1},
+        //     {delta: {start: 1, type: 'insert', text: 'e'}, originDocVer: 0},
+        //     {delta: {type: 'remove', start: 0, end: 5}, originDocVer: 3},
+        //     {delta: {type: 'insert', start: 6, text: 'go on'}, originDocVer: 4}
+        // ])
+        this.file = file;
+    }
+    getDocValue() { return ''; }
+    setDocValue(content) { return; }
+    docLog = [];
+    docVer = 0;
+    file;
+    calculateDelta(op) {
+        if (op.originDocVer == this.docVer)
+            this.setDocValue(this.applyDelta(this.getDocValue(), op.delta));
+        else {
+            if (op.originDocVer > this.docVer)
+                return { doc: this.getDocValue(), docVer: this.docVer, deltas: [] };
+            let revertedDoc = this.docLog[op.originDocVer - 1].content;
+            revertedDoc = this.applyDelta(revertedDoc, op.delta);
+            for (let index = op.originDocVer + 1; index < this.docVer; index++) {
+                const loggedOp = this.docLog[index];
+                const delta = loggedOp.delta;
+                const transformed = this.transformDelta(op.delta, delta);
+                console.log(transformed);
+                revertedDoc = this.applyDelta(revertedDoc, transformed);
+            }
+            this.setDocValue(revertedDoc);
+        }
+        // this.docLog.push({delta: op.delta, content: this.getDocValue(), originDocVer: op.originDocVer})
+        // this.docVer++
+        return { doc: this.getDocValue(), docVer: this.docVer, deltas: [] };
+    }
+    updateContent(content, op, clientObj) {
+        this.setDocValue(content);
+        if (!op) {
+            this.docLog.push({ delta: { type: 'remove', start: 0, end: this.getDocValue().length }, originDocVer: this.docVer, content: '' });
+            this.docLog.push({ delta: { type: 'insert', start: 0, text: content }, originDocVer: this.docVer, content: content });
+            this.docVer += 2;
+            this.file.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                if (!clientObj || clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
+                    thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj?.clientId, fileName: this.file.name, body: this.getDocValue(), docVer: this.docVer }));
+            });
+        }
+        else {
+            this.docLog.push({ content, delta: this.aceDeltaToPos(op.docVer, op.delta), originDocVer: op.docVer });
+            this.docVer++;
+            this.file.session.replicateFunction((thisclientWs, localClientId, thisClientObj) => {
+                if (!clientObj || clientObj.checkClientsFileOpen(thisClientObj) && clientObj.permissions.canEdit)
+                    thisclientWs.send(JSON.stringify({ type: types_1.WebSocketMessageType.CodeChange, clientId: clientObj?.clientId, delta: op?.delta, fileName: this.file.name, docVer: this.docVer }));
+            });
+        }
+        console.dir(this.docLog);
+    }
+    aceDeltaToPos(docVer = this.docVer, aceDelta) {
+        if (docVer > this.docVer) {
+            console.error('missmatched doc ver');
+            return;
+        }
+        console.log(docVer, 'length: ', this.docLog.length);
+        const content = this.docLog[docVer - 1]?.content;
+        if (!content)
+            throw 'invalid doc log content';
+        console.log(aceDelta, this.docLog[docVer - 1]);
+        const { start: { column: startCol, row: startRow }, end: { column: endCol, row: endRow }, lines } = aceDelta;
+        const cutStartLines = content.split('\n').slice(0, startRow);
+        const startIndex = cutStartLines.join('\n').length - cutStartLines.at(-1).slice(0, startCol).length;
+        switch (aceDelta.action) {
+            case 'insert':
+                return { type: 'insert', start: startIndex, text: lines.join('\n') };
+            case 'remove':
+                const cutEndLines = content.split('\n').slice(0, endRow);
+                const endIndex = cutEndLines.join('\n').length - cutEndLines.at(-1).slice(0, endCol).length;
+                return { type: 'remove', start: startIndex, end: endIndex };
+        }
+    }
+    transformDelta(deltaA, cDelta) {
+        if (!deltaA || !cDelta)
+            return cDelta;
+        switch (deltaA.type) {
+            case 'insert':
+                cDelta.start = cDelta.start + deltaA.text.length;
+                if (cDelta.type == 'remove' && cDelta.end)
+                    cDelta.end = cDelta.end + deltaA.text.length;
+                break;
+            case 'remove':
+                const removeLen = (deltaA.end - deltaA.start);
+                cDelta.start = cDelta.start - removeLen;
+                if (deltaA.start >= cDelta.start && cDelta.type == 'insert')
+                    if (removeLen + 1 <= cDelta.text.length)
+                        cDelta.text = this.applyDelta(cDelta.text, { start: deltaA.start - cDelta.start, end: deltaA.end - cDelta.start, type: 'remove' });
+                    else
+                        cDelta = { type: 'remove', start: deltaA.start, end: deltaA.end + cDelta.text.length };
+                // else if(deltaB.type == 'remove' && deltaA.end <= deltaB.end)
+                //     deltaB.
+                if (cDelta.type == 'remove' && cDelta.end)
+                    cDelta.end = cDelta.end - removeLen;
+        }
+        return cDelta;
+    }
+    applyDelta(content, delta) {
+        if (!delta)
+            throw 'invalid delta';
+        let buffer = content;
+        switch (delta.type) {
+            case 'insert':
+                buffer = buffer.slice(0, delta.start) + delta.text + buffer.slice(delta.start);
+                return buffer;
+            case 'remove':
+                buffer = buffer.slice(0, delta.start) + buffer.slice(delta.end + 1);
+                return buffer;
+        }
+    }
+}
+exports.OT_EditorFile = OT_EditorFile;
+class DebugClient {
+    doc = '';
+    docVer = 0;
+    constructor(doc, ref, ops) {
+        this.doc = doc;
+        for (const op of ops)
+            ({ doc: this.doc, docVer: this.docVer } = ref.calculateDelta(op));
+        console.log(this.doc);
+        console.dir(ref.docLog);
+    }
 }

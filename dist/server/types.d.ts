@@ -67,6 +67,7 @@ export declare class EditorSession {
     clients: ClientObject[];
     clientsDisplayNames: string[];
     clientsSockets: Map<UUID, WebSocket>;
+    codeChangesBuffer: any[];
     messageIndex: number;
     clientCommandBuffer: Map<UUID, CommandBuffer>;
     process: DebugProcess | (Nodepty.IPty & EventEmitter) | undefined;
@@ -108,6 +109,12 @@ export declare class EditorSession {
     replicateFunction(callback: (thisClientWs: WebSocket, thisClientId: UUID, clientObj: ClientObject) => void, excludeClientObj?: ClientObject): void;
     getClientFilesPath(): string;
 }
+type CodeChange = {
+    content?: string;
+    delta?: Ace.Delta;
+    clientChecksum?: any;
+    docVer: number;
+};
 export declare class EditorFile {
     name: string;
     content: string;
@@ -119,6 +126,11 @@ export declare class EditorFile {
     process: (Nodepty.IPty & EventEmitter) | DebugProcess;
     program: (Nodepty.IPty & EventEmitter) | undefined;
     debugProgram: DebugProcess | undefined;
+    docVer: number;
+    docVerLog: {
+        content: string;
+        op?: CodeChange;
+    }[];
     private updateFilePath;
     constructor(session: EditorSession, name: string, content?: any, options?: {
         abstract?: boolean /**Doesnt atually create a file on disk, acts just as a variable, use if you already created the file */;
@@ -131,16 +143,48 @@ export declare class EditorFile {
     onCloseFile(clientObj: ClientObject): void;
     openFile(clientObj: ClientObject, shared?: any, closedFileName?: string): Promise<string>;
     getClients(): ClientObject[];
-    updateFile(clientObj: ClientObject, content?: string): void;
-    changeContent(data: {
-        content?: any;
-        delta?: any;
-        clientChecksum?: any;
-    }, clientObj: ClientObject): void;
+    updateFile(clientObj: ClientObject, content?: string): Promise<void>;
+    private OTSystem;
+    private updateContent;
+    changeContent(data: CodeChange, clientObj: ClientObject): void;
     onFileWatched(eventType: WatchEventType, clientObj: any): void;
-    setFileContent(content: any, clientObj: any): void;
+    setFileContent(content: any, clientObj: any): Promise<void>;
     private applyDelta;
 }
 import DebugProcess from './editor-modes/ProcessTypes';
+import { Ace } from 'ace-builds';
 export declare function randomHexColor(): string;
+type InsertDelta = {
+    start: number;
+    text: string;
+    type: 'insert';
+};
+type RemoveDelta = {
+    start: number;
+    end: number;
+    type: 'remove';
+};
+type Delta = InsertDelta | RemoveDelta;
+type Operation = {
+    delta: Delta;
+    originDocVer: number;
+    content?: string;
+};
+export declare class OT_EditorFile {
+    constructor(file: EditorFile, debug: boolean);
+    getDocValue(): string;
+    setDocValue(content: string): void;
+    docLog: Operation[];
+    docVer: number;
+    file: EditorFile;
+    calculateDelta(op: Operation): {
+        doc: string;
+        docVer: number;
+        deltas: Delta[];
+    };
+    updateContent(content: string, op?: CodeChange, clientObj?: ClientObject): void;
+    aceDeltaToPos(docVer: number, aceDelta: Ace.Delta): Delta;
+    private transformDelta;
+    private applyDelta;
+}
 export {};

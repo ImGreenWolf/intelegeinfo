@@ -441,7 +441,7 @@ router.get('/update', async (req, res) => {
             {
                 const client = session.clientsMap.get(req.query.clientId as UUID)
                 if(client)
-                    session.files[0].setFileContent(client, problem.sourceCode)
+                   await session.files[0].setFileContent(client, problem.sourceCode)
             }
             
         }

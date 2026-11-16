@@ -14,6 +14,7 @@ export class EditorWindow {
     index;
     tabs = [];
     tooltip = undefined;
+    docVer = 0;
     constructor(index, element, tabContainer, contentContainer) {
         this.index = index;
         this.tabContainer = tabContainer;
@@ -289,7 +290,8 @@ export class EditorWindow {
                 type: WebSocketMessageType.CodeChange,
                 fileName: name,
                 saveFile: true,
-                checksum: sha256(code)
+                checksum: sha256(code),
+                docVer: (this.editor?.session).docVer
             })); // Send code to server on change // TODO Remove code from body.
             if (!navigator.onLine)
                 displayMessagePopup('Se pare ca nu esti conectat la internet!');

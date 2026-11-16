@@ -386,7 +386,7 @@ exports.router.get('/update', async (req, res) => {
             if (session) {
                 const client = session.clientsMap.get(req.query.clientId);
                 if (client)
-                    session.files[0].setFileContent(client, problem.sourceCode);
+                    await session.files[0].setFileContent(client, problem.sourceCode);
             }
         }
     }

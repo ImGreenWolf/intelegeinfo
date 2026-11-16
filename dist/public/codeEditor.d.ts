@@ -177,7 +177,9 @@ export declare class TokenTooltip extends Tooltip {
 export declare let ws: WebSocket;
 export declare function submitConsole(elem: HTMLTextAreaElement | null, type: WebSocketMessageType | undefined, Console?: Console): void;
 type FileEditorSession = {
-    editor: Ace.EditSession | undefined;
+    editor: (Ace.EditSession & {
+        docVer?: number;
+    }) | undefined;
     fileName: string;
     fileElement: FileElement | undefined;
 };

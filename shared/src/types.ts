@@ -18,7 +18,9 @@ export enum WebSocketMessageType {
     Canvas = 'canvas',
     RTC = 'rtc',
     Utilities = 'utils',
-    Debug = 'debug'
+    Debug = 'debug',
+
+    CodeChangeResync = 'resync'
 }
 
 export enum ConsoleMessageType {

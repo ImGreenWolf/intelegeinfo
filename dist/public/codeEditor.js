@@ -2148,16 +2148,8 @@ export class TokenTooltip extends Tooltip {
     }
     ;
 }
-// export const ws = new WebSocket(WSUrl);
-function doesHttpOnlyCookieExist(cookiename) {
-    var d = new Date();
-    d.setTime(d.getTime() + (1000));
-    var expires = "expires=" + d.toUTCString();
-    document.cookie = cookiename + "=new_value;path=/;" + expires;
-    return document.cookie.indexOf(cookiename + '=') == -1;
-}
 export let ws;
-(async () => {
+async function initialise() {
     const sessionId = new URL(window.location.toString()).searchParams.get("session");
     const saveId = new URL(window.location.toString()).searchParams.get("save");
     // const params: (boolean | string | undefined | null)[] = [sessionId, saveId, inIframe]
@@ -2199,6 +2191,8 @@ export let ws;
     ws.addEventListener('open', (ev) => {
         const sessionId = new URLSearchParams(window.location.search).get("session") ? new URLSearchParams(window.location.search).get("session") : new URLSearchParams(window.location.search).get("save");
         //writeOutput(sessionId || "No session ID found in URL.");
+        if (document.getElementById('connection-message'))
+            document.getElementById('connection-message')?.remove();
         window.onbeforeunload = (ev => {
             if (!inIframe)
                 if (modifiedFile)
@@ -2218,6 +2212,7 @@ export let ws;
         const serviceRestart = ev.code == 1006;
         console.warn(ev.code, ev.reason);
         const socketStopped = document.createElement('div');
+        socketStopped.id = 'connection-message';
         socketStopped.classList.add(serviceRestart ? 'service-stopped' : 'service-error');
         const socketText = document.createElement('p');
         socketText.innerHTML = serviceRestart ? 'Scuze, am pierdut conexiunea la server...' : ev.reason;
@@ -2227,13 +2222,39 @@ export let ws;
         //   setTimeout(() => {
         //     window.location.reload()
         //   }, 2000);
+        if (serviceRestart && false)
+            attemptConnection();
     });
     ws.onerror = (err) => {
         displayMessagePopup("Sorry we encountered an error while connecting to the server...");
         console.error(err);
     };
     ws.onmessage = onMessage;
-})();
+}
+initialise();
+async function attemptConnection() {
+    const loopCheck = setInterval(() => {
+        console.log(ws.readyState);
+        if (ws.readyState == ws.CONNECTING)
+            return;
+        if (ws.readyState == ws.OPEN) {
+            clearInterval(loopCheck);
+            return;
+        }
+        reconnectToSession();
+    }, 1000);
+}
+function reconnectToSession() {
+    console.log('RECONNECTING SESSION', 'state:', ws.readyState);
+    const params = new URLSearchParams(location.search);
+    if (wsSessionId)
+        params.set('session', wsSessionId.toString());
+    if (wsClientId)
+        params.set('client', wsClientId);
+    const WSUrl = (window.location.protocol == "https:" ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + "/editor" + (params.size != 0 ? "?" : "") + params.toString();
+    ws = new WebSocket(WSUrl);
+    initialise();
+}
 export function submitConsole(elem, type, Console) {
     //     const sendText = elem?.value.replace(consoleText, "")
     //     if(sendText == "") return;
@@ -2942,24 +2963,38 @@ function onMessage(event) {
             const delta = messageJson.delta;
             if (!editorSession.editor)
                 throw 'invalid editor on editor session';
-            isRemoteChange = true;
             try {
+                isRemoteChange = true;
                 if (messageJson.body) {
+                    const cusorPos = editorSession.editor.selection.cursor.getPosition();
                     editorSession.editor.getDocument().setValue(messageJson.body);
+                    editorSession.editor.selection.moveCursorToPosition(cusorPos);
                     console.warn('Applied forced file content correction!');
                     if (sha256(editorSession.editor.getValue()) != messageJson.checksum)
                         console.error('Failed checksum check after force content change.');
                 }
-                else
+                else if (messageJson.clientId != wsClientId && delta)
                     editorSession.editor.getDocument().applyDelta(delta);
                 if (sha256(editorSession.editor.getValue()) != messageJson.checksum)
                     console.error('Checksum failed!');
             }
             finally {
+                editorSession.editor.docVer = messageJson.docVer;
                 isRemoteChange = false;
                 document.getElementById('buttons')?.classList.remove('compiled');
                 dirtyFile(messageJson.fileName);
             }
+            const indexToPos = (content, index) => {
+                const lines = content.split('\n');
+                let acc = 0;
+                for (let r = 0; r < lines.length; r++) {
+                    const lineLen = lines[r].length;
+                    if (index <= acc + lineLen)
+                        return { row: r, column: index - acc };
+                    acc += lineLen + 1;
+                }
+                return { row: lines.length - 1, column: Math.max(0, lines[lines.length - 1]?.length ?? 0) };
+            };
             break;
         case WebSocketMessageType.CompileResult:
             if (messageJson.saved)

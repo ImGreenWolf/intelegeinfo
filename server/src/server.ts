@@ -550,7 +550,7 @@ let connectionPromiseTimeout: NodeJS.Timeout;
 
 const unsecureServer = httpServer.listen(PORT);
 const secureServer = httpsServer.listen(SECPORT)
-export const server = process.env.NODE_ENV == 'development' ? unsecureServer : secureServer;
+export const server = process.env.NODE_ENV == 'development' ? unsecureServer : sescureServer;
 
 server.on('listening', onServerStart)
 
@@ -566,7 +566,7 @@ server.on('listening', onServerStart)
 
 
 
-    export const wss = new WebSocket.Server({noServer: true, clientTracking: true,  });
+    export const wss = new WebSocket.Server({noServer: true, clientTracking: true,  z});
     import { wssFS, wssRTC } from "./peerConnectionManager";
 
     
@@ -583,6 +583,7 @@ server.on('listening', onServerStart)
 
 
       server.on('upgrade', function upgrade(request, socket, head) {
+        console.log('UPGRADING CONNECTION')
         const { pathname } = new URL(request.url, 'wss://intelegeinfo.ro');
             switch(pathname){
         case '/api': 
@@ -832,6 +833,7 @@ function endConnectionPromise()
             console.warn('Another user is already connecting')
             var timeout = setTimeout(() => {
                 awaitHandshake()
+                connectionPromise = undefined
             }, 500);  
 
             connectionPromise.then(() => 
@@ -880,7 +882,7 @@ function endConnectionPromise()
 
         // session id to connect to
         const wssessionId: UUID | undefined = urlParams.get('session') != undefined || urlParams.get('session') as UUID != undefined ? urlParams.get('session') as UUID : recoveredSession ? recoveredSession : undefined;
-
+        const wsclientId: UUID | undefined = urlParams.get('client') as UUID
         let isHost = false;
         // //handle heartbeat
         // heartbeatInterval = setInterval(() => {
@@ -907,8 +909,8 @@ function endConnectionPromise()
             
         // }, heartbeatTimeout);
         if(connectionPromiseTimeout)
-        clearTimeout(connectionPromiseTimeout)
-    connectionPromiseTimeout=undefined
+            clearTimeout(connectionPromiseTimeout)
+        connectionPromiseTimeout=undefined
         // TODO Check if session exists, otherwise create a new one and make this client the host.
         if(connectionPromise)
             console.warn('connection promise is taken')
@@ -932,12 +934,17 @@ function endConnectionPromise()
                         resolve()
                         return
                     }
-
-                    clientId = (getThisClientSession() || clientSession)?.spawnClient(ws,urlParams.get('displayName'),userData)
-
-                    clientObj = getThisClientSession().getClientObjectById(clientId);
-                    clients.set(clientId, ws);
-                    isHost = false;
+                    if(wsclientId) {
+                        clientObj = clientSession.clients.find(client => client.clientId == wsclientId)
+                        if(clientObj)
+                            clientId = wsclientId
+                    } else {
+                        clientId = (getThisClientSession() || clientSession)?.spawnClient(ws,urlParams.get('displayName'),userData)
+                        clientObj = getThisClientSession().getClientObjectById(clientId);
+                        clients.set(clientId, ws);
+                        isHost = false;
+                    }
+                   
                     // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
                 }
                 else // there is no session, create it.
@@ -1218,7 +1225,7 @@ function endConnectionPromise()
     {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
             if(!clientSession) return;
-    const session = clientSession.clientsMap.size!=1 ? clientObj.permissions : undefined; //clientObj.isHost
+    const session = clientSession.clientsMap.size!=1 ? clientObj?.permissions : undefined; //clientObj.isHost
         const welcomeMessage =  isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.ro'>intelegeinfo.ro</a>" : !userLoggedIn ?
     `Bine ai venit pe Intelege Info!
      Scrie cod, apoi ruleaza-ti codul apasand butonul mare auriu, sau ruleaza in debugger.
@@ -1239,7 +1246,7 @@ function endConnectionPromise()
         body: welcomeMessage,
         project: clientSession.savedProject,
         share: clientSession.sharedProject,
-        permissions: clientObj.permissions,
+        permissions: clientObj?.permissions,
         files,
         users,
         joinCode: clientSession.joinCode
@@ -2353,18 +2360,19 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
                 case WebSocketMessageType.CodeChange:
                     if(!clientObj.permissions.canEdit) break;
                         const fileName: string = messageJSON.fileName;
-
                         const file = clientObj.getFile(fileName)
                         if(!file)
                             return 
 
-                         const delta = messageJSON.delta
-                        file.changeContent({content: messageJSON.body, delta, clientChecksum: messageJSON.checksum}, clientObj)
+                        const delta = messageJSON.delta
+                        const codeChange = {content: messageJSON.body, delta, clientChecksum: messageJSON.checksum, docVer: messageJSON.docVer}
+                        
+                        file.changeContent(codeChange, clientObj)
 
                         shouldSave=false 
                         if(checkSyntaxTimeout) clearTimeout(checkSyntaxTimeout)
-                            checkSyntaxTimeout = setTimeout(() => {
-                                file.updateFile(clientObj)
+                            checkSyntaxTimeout = setTimeout(async () => {
+                                await file.updateFile(clientObj)
                             }, 200);
                    
                     
@@ -2764,7 +2772,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     }
 
     function onCloseSession() {
-        if(!clientObj.getActiveFile())
+        if(!clientObj || !clientObj.getActiveFile())
             return
         const process = clientObj.getActiveFile().program;
         const closedClientId = clientId;
@@ -2784,6 +2792,9 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
         // console.log("clients in sessions " + clientSession.clients.size)
         if(!clientSession)
             return;
+
+        return 
+
         if(clientSession.clientsMap.size == 0 || clientSession==undefined) 
             {
                    // sessions.delete(sessionId);
@@ -2839,6 +2850,7 @@ async function readStdio(program, messageJSON, res: typeof clientSession.session
     ws.addEventListener("close", () => {
         updateUserMeter()
         onCloseSession();
+        if(clientId)
         console.log("Client " + clientId + " disconnected");
     });
     

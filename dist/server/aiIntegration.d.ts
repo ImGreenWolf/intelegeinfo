@@ -17,8 +17,8 @@ export declare function aiEvaluateExplenation(sessionId: UUID, clientId: UUID, p
 }>;
 export declare function autocompleteProblemDetails(client: any, openFile: EditorFile): Promise<{
     id: number;
-    createdAt: Date;
     name: string;
+    createdAt: Date;
     updatedAt: Date;
     authorId: number;
     positiveRatings: number;

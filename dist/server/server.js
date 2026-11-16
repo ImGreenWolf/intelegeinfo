@@ -676,6 +676,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 console.warn('Another user is already connecting');
                 var timeout = setTimeout(() => {
                     awaitHandshake();
+                    connectionPromise = undefined;
                 }, 500);
                 connectionPromise.then(() => {
                     if (timeout)
@@ -711,6 +712,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             const urlParams = new URL("https://intelegeinfo.ro/editor" + req.url).searchParams;
             // session id to connect to
             const wssessionId = urlParams.get('session') != undefined || urlParams.get('session') != undefined ? urlParams.get('session') : recoveredSession ? recoveredSession : undefined;
+            const wsclientId = urlParams.get('client');
             let isHost = false;
             // //handle heartbeat
             // heartbeatInterval = setInterval(() => {
@@ -756,10 +758,17 @@ exports.wss.addListener('connection', async (ws, req) => {
                                     resolve();
                                     return;
                                 }
-                                clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, urlParams.get('displayName'), userData);
-                                clientObj = getThisClientSession().getClientObjectById(clientId);
-                                exports.clients.set(clientId, ws);
-                                isHost = false;
+                                if (wsclientId) {
+                                    clientObj = clientSession.clients.find(client => client.clientId == wsclientId);
+                                    if (clientObj)
+                                        clientId = wsclientId;
+                                }
+                                else {
+                                    clientId = (getThisClientSession() || clientSession)?.spawnClient(ws, urlParams.get('displayName'), userData);
+                                    clientObj = getThisClientSession().getClientObjectById(clientId);
+                                    exports.clients.set(clientId, ws);
+                                    isHost = false;
+                                }
                                 // printClientConsoleDebug('joining session: ' + clientSession.sessionId)
                             }
                             else // there is no session, create it.
@@ -983,7 +992,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             // replicateSocketMessage(sessionId, clientId, false, {type: WebSocketMessageType.Chat, messageType: ConsoleMessageType.SessionInfo, body: "Client " + clientObj?.displayName + " joined!"});
             if (!clientSession)
                 return;
-            const session = clientSession.clientsMap.size != 1 ? clientObj.permissions : undefined; //clientObj.isHost
+            const session = clientSession.clientsMap.size != 1 ? clientObj?.permissions : undefined; //clientObj.isHost
             const welcomeMessage = isEmbededEditor ? sameOrigin ? "Editorul de cod intelegeinfo " : "Powered by <a href='https://intelegeinfo.ro'>intelegeinfo.ro</a>" : !userLoggedIn ?
                 `Bine ai venit pe Intelege Info!
      Scrie cod, apoi ruleaza-ti codul apasand butonul mare auriu, sau ruleaza in debugger.
@@ -1002,7 +1011,7 @@ exports.wss.addListener('connection', async (ws, req) => {
                 body: welcomeMessage,
                 project: clientSession.savedProject,
                 share: clientSession.sharedProject,
-                permissions: clientObj.permissions,
+                permissions: clientObj?.permissions,
                 files,
                 users,
                 joinCode: clientSession.joinCode
@@ -1924,12 +1933,13 @@ exports.wss.addListener('connection', async (ws, req) => {
                         if (!file)
                             return;
                         const delta = messageJSON.delta;
-                        file.changeContent({ content: messageJSON.body, delta, clientChecksum: messageJSON.checksum }, clientObj);
+                        const codeChange = { content: messageJSON.body, delta, clientChecksum: messageJSON.checksum, docVer: messageJSON.docVer };
+                        file.changeContent(codeChange, clientObj);
                         shouldSave = false;
                         if (checkSyntaxTimeout)
                             clearTimeout(checkSyntaxTimeout);
-                        checkSyntaxTimeout = setTimeout(() => {
-                            file.updateFile(clientObj);
+                        checkSyntaxTimeout = setTimeout(async () => {
+                            await file.updateFile(clientObj);
                         }, 200);
                         break;
                     case types_1.WebSocketMessageType.ConsoleTyping:
@@ -2236,7 +2246,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             }
         }
         function onCloseSession() {
-            if (!clientObj.getActiveFile())
+            if (!clientObj || !clientObj.getActiveFile())
                 return;
             const process = clientObj.getActiveFile().program;
             const closedClientId = clientId;
@@ -2254,6 +2264,7 @@ exports.wss.addListener('connection', async (ws, req) => {
             // console.log("clients in sessions " + clientSession.clients.size)
             if (!clientSession)
                 return;
+            return;
             if (clientSession.clientsMap.size == 0 || clientSession == undefined) {
                 // sessions.delete(sessionId);
                 closeProcess(process)
@@ -2298,7 +2309,8 @@ exports.wss.addListener('connection', async (ws, req) => {
         ws.addEventListener("close", () => {
             updateUserMeter();
             onCloseSession();
-            console.log("Client " + clientId + " disconnected");
+            if (clientId)
+                console.log("Client " + clientId + " disconnected");
         });
         function replicateFunction(callback, excludeClientObj) {
             // if(!getThisClientSession() || !getThisClientSession().clientsSockets) return console.error(new Error("invalid session or client sockers"));

@@ -22,6 +22,8 @@ export class EditorWindow {
     index: number
     tabs: EditorWindowTab[] = []
     tooltip: TokenTooltip | undefined = undefined
+
+    docVer: number = 0
     constructor(index, element, tabContainer, contentContainer)
     {   
         this.index = index
@@ -362,8 +364,8 @@ export class EditorWindow {
             parsedCode = parseCode();
             
             if (isRemoteChange) return;
-                const code = windowEditor.getValue();
-        
+            const code = windowEditor.getValue();
+            
             if (!name) console.error("Current file name is invalid");
             if(name)
             dirtyFile(name)
@@ -371,11 +373,12 @@ export class EditorWindow {
 
             ws.send(
                 JSON.stringify({
-                delta: delta,
-                type: WebSocketMessageType.CodeChange,
-                fileName: name,
-                saveFile: true,
-                checksum: sha256(code)
+                    delta: delta,
+                    type: WebSocketMessageType.CodeChange,
+                    fileName: name,
+                    saveFile: true,
+                    checksum: sha256(code),
+                    docVer: (this.editor?.session as (Ace.EditSession & {docVer?: number})).docVer
                 })
             ); // Send code to server on change // TODO Remove code from body.
 
